@@ -1,6 +1,4 @@
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace Weaviate.Client.Models;
 
 public class Collection : CollectionBase<object, object, object> { }
@@ -12,6 +10,9 @@ public class CollectionBase<TModuleConfig, TShardingConfig, TVectorIndexConfig>
 
     // Define properties of the collection.
     public IList<Property> Properties { get; set; } = new List<Property>();
+
+    // inverted index config
+    public InvertedIndexConfig? InvertedIndexConfig { get; set; }
 
     // Configuration specific to modules in a collection context.
     public TModuleConfig? ModuleConfig { get; set; }
@@ -36,7 +37,7 @@ public class CollectionBase<TModuleConfig, TShardingConfig, TVectorIndexConfig>
 
     // Name of the vector index to use, eg. (HNSW)
     [Obsolete("Use `VectorConfig` instead")]
-    string VectorIndexType { get; set; } = default!;
+    public string VectorIndexType { get; set; } = default!;
 
     [Obsolete("Use `VectorConfig` instead")]
     public string Vectorizer { get; set; } = "";

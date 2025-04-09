@@ -1,16 +1,18 @@
 
+
 namespace Weaviate.Client.Models;
 
-public interface IDataType
+public static class DataType
 {
+    public static string Text { get; } = "text";
+    public static string Int { get; } = "int";
+    public static string Reference(string property) { return $"{property[0].ToString().ToUpper()}{property.Substring(1)}"; }
 }
-
-public class DataType<TData> : IDataType { }
 
 public class Property
 {
-    public string? Name { get; set; }
-    public IList<IDataType> DataType { get; set; } = new List<IDataType>();
+    public required string Name { get; set; }
+    public IList<string> DataType { get; set; } = new List<string>();
     public string? Description { get; set; }
     public bool? IndexFilterable { get; set; }
     public bool? IndexInverted { get; set; }
