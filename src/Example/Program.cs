@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Weaviate.Client;
+using Weaviate.Client.Models;
 
 namespace Example
 {
@@ -71,12 +72,19 @@ namespace Example
             var collectionSphere = await weaviate.Collections.Get("Test_sphere");
 
             // Should throw CollectionNotFound
-            var collectionNotFound = await weaviate.Collections.Get("cat");
+            try
+            {
+                var collectionNotFound = await weaviate.Collections.Get("cat");
+            }
+            catch
+            {
+                Console.WriteLine("cat collection not found");
+            }
 
             // Delete any existing "cat" class
             try
             {
-                await collectionNotFound.Delete();
+                await weaviate.Collections.Delete("cat");
                 Console.WriteLine("Deleted existing 'Cat' collection");
             }
             catch (Exception e)
@@ -84,6 +92,38 @@ namespace Example
                 Console.WriteLine("'Cat' collection not found. Will be created.");
                 Console.WriteLine(e.Message);
             }
+
+            await weaviate.Collections.Create(c =>
+            {
+                c.Description = "Lots of Cats of multiple breeds";
+                c.Name = "cat";
+                c.Properties = new List<Property>() {
+                    new Property {
+                        Name = "Name",
+                        DataType = { DataType.Text },
+                    },
+                    new Property {
+                        Name = "Color",
+                        DataType = { DataType.Text },
+                    },
+                    new Property {
+                        Name = "Breed",
+                        DataType = { DataType.Text },
+                    },
+                    new Property {
+                        Name = "Name",
+                        DataType = { DataType.Text },
+                    },
+                    new Property {
+                        Name = "Counter",
+                        DataType = { DataType.Int },
+                    },
+                };
+            });
+
+            var catCollection = await weaviate.Collections.Get("cat");
+
+            Console.WriteLine(catCollection);
 
             // // Use the C# client to store all cats with a cat class
             // Console.WriteLine("Cats to store: " + cats.Count());
