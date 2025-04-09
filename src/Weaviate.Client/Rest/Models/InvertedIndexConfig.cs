@@ -4,12 +4,12 @@ namespace Weaviate.Client.Rest.Models;
 //
 public class InvertedIndexConfig
 {
-    public BM25Config? Bm25 { get; set; }
+    public BM25Config? Bm25 { get; set; } = null;
     public int CleanupIntervalSeconds { get; set; } = 60;
     public bool IndexNullState { get; set; } = false;
     public bool IndexPropertyLength { get; set; } = false;
     public bool IndexTimestamps { get; set; } = false;
-    public StopwordConfig? Stopwords { get; set; } = new StopwordConfig();
+    public StopwordConfig? Stopwords { get; set; } = null;
 }
 
 // BM25Config tuning parameters for the BM25 algorithm

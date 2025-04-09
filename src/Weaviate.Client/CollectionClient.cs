@@ -31,7 +31,7 @@ public class CollectionClient
     {
         var response = await _client.RestClient.CollectionGet(_collectionName);
 
-        _collection = response.ToCollectionDefinition();
+        _collection = response.ToCollection();
 
         return new CollectionClient(_client, _collection);
     }
