@@ -22,6 +22,7 @@ public class CollectionBase<TModuleConfig, TShardingConfig, TVectorIndexConfig>
     public InvertedIndexConfig? InvertedIndexConfig { get; set; }
 
     // Configuration specific to modules in a collection context.
+    // TODO Switch to IDictionary<string, TModuleConfig>
     public TModuleConfig? ModuleConfig { get; set; }
 
     // multi tenancy config
@@ -39,5 +40,5 @@ public class CollectionBase<TModuleConfig, TShardingConfig, TVectorIndexConfig>
     // Name of the vector index to use, eg. (HNSW)
     public string VectorIndexType { get; set; } = "";
 
-    public string Vectorizer { get; set; } = "";
+    public string Vectorizer { get; set; } = "none";
 }
