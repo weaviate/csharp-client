@@ -7,7 +7,7 @@
 ### Collections
 
 - [x] List collections.
-- [ ] Create collection.
+- [x] Create collection.
 - [x] Delete collection.
 - [x] Get collection configuration.
 
