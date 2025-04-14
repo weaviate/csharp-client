@@ -9,7 +9,7 @@ public class VectorConfig
     /// Vector-index config, that is specific to the type of index selected in vectorIndexType.
     /// </summary>
     [JsonPropertyName("vectorIndexConfig")]
-    public IDictionary<string, object> VectorIndexConfig { get; set; }
+    public IDictionary<string, object> VectorIndexConfig { get; set; } = new Dictionary<string, object>();
 
     /// <summary>
     /// Name of the vector index to use, eg. (HNSW).
@@ -22,5 +22,5 @@ public class VectorConfig
     /// Configuration of a specific vectorizer used by this vector.
     /// </summary>
     [JsonPropertyName("vectorizer")]
-    public IDictionary<string, object> Vectorizer { get; set; }
+    public IDictionary<string, object> Vectorizer { get; set; } = new Dictionary<string, object>();
 }
