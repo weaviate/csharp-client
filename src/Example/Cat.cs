@@ -12,8 +12,3 @@ public record Cat
         return $"Cat {{ Name: {Name}, Color: {Color}, Breed: {Breed} }}";
     }
 }
-
-public record CatObject : Cat
-{
-    public float[] Vector { get; set; } = { };
-}

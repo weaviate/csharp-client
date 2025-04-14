@@ -13,12 +13,13 @@
 
 ### Objects
 
-- [ ] Insert data.
+- [x] Insert data.
   - [ ] Add object with vector data.
-- [ ] Delete data.
+- [x] Delete data.
 - [ ] Update data.
 - [ ] Get object by ID.
-  - [ ] Get object metadata (vectors, schema, etc.)
+- [x] Get objects.
+- [x] Get object metadata (vectors, schema, etc.)
 
 ### Search
 

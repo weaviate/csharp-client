@@ -1,13 +1,10 @@
 namespace Weaviate.Client;
 
-using Weaviate.Client.Models;
-using Weaviate.Client.Rest.Models;
-
 internal static class WeaviateClientExtensions
 {
-    internal static Collection ToCollection(this CollectionGeneric collection)
+    internal static Models.Collection ToCollection(this Rest.Models.CollectionGeneric collection)
     {
-        return new Collection()
+        return new Models.Collection()
         {
             Name = collection.Class,
             Description = collection.Description,
@@ -16,13 +13,44 @@ internal static class WeaviateClientExtensions
                 Name = p.Name,
                 DataType = p.DataType.ToList()
             }).ToList(),
-            InvertedIndexConfig = null,
+            InvertedIndexConfig = (collection.InvertedIndexConfig is Rest.Models.InvertedIndexConfig iic)
+                ? new Models.InvertedIndexConfig()
+                {
+                    Bm25 = iic.Bm25 == null ? null : new Models.BM25Config
+                    {
+                        B = iic.Bm25.B,
+                        K1 = iic.Bm25.K1,
+                    },
+                    Stopwords = (iic.Stopwords is Rest.Models.StopwordConfig swc)
+                    ? new Models.StopwordConfig
+                    {
+                        Additions = swc.Additions,
+                        Preset = swc.Preset,
+                        Removals = swc.Removals,
+                    } : null,
+                    CleanupIntervalSeconds = iic.CleanupIntervalSeconds,
+                    IndexNullState = iic.IndexNullState,
+                    IndexPropertyLength = iic.IndexPropertyLength,
+                    IndexTimestamps = iic.IndexTimestamps,
+                } : null,
             ShardingConfig = collection.ShardingConfig,
-            ReplicationConfig = null,
             ModuleConfig = collection.ModuleConfig,
-            MultiTenancyConfig = null,
+            ReplicationConfig = (collection.ReplicationConfig is Rest.Models.ReplicationConfig rc)
+                ? new Models.ReplicationConfig
+                {
+                    AsyncEnabled = rc.AsyncEnabled,
+                    Factor = rc.Factor,
+                    DeletionStrategy = (Models.DeletionStrategy?)rc.DeletionStrategy,
+                } : null,
+            MultiTenancyConfig = (collection.MultiTenancyConfig is Rest.Models.MultiTenancyConfig mtc)
+                ? new Models.MultiTenancyConfig
+                {
+                    Enabled = mtc.Enabled,
+                    AutoTenantActivation = mtc.AutoTenantActivation,
+                    AutoTenantCreation = mtc.AutoTenantCreation,
+                } : null,
             VectorConfig =
-                collection.VectorConfig.ToList()
+                collection.VectorConfig?.ToList()
                 .ToDictionary(
                     e => e.Key,
                     e => new Models.VectorConfig
@@ -31,7 +59,7 @@ internal static class WeaviateClientExtensions
                         VectorIndexType = e.Value.VectorIndexType,
                         Vectorizer = e.Value.Vectorizer,
                     }
-                    ),
+                    ) ?? new Dictionary<string, Models.VectorConfig>(),
             Vectorizer = collection.Vectorizer,
             VectorIndexType = collection.VectorIndexType,
             VectorIndexConfig = collection.VectorIndexConfig,
@@ -48,21 +76,32 @@ public struct CollectionsClient
         _client = client;
     }
 
-    public async Task<CollectionClient> Create(Action<Collection> collectionConfigurator)
+    public async Task<CollectionClient> Create(Action<Models.Collection> collectionConfigurator)
     {
-        var collection = new Collection();
+        var collection = new Models.Collection();
 
         collectionConfigurator(collection);
 
-        var data = new CollectionGeneric()
+        var data = new Rest.Models.CollectionGeneric()
         {
             Class = collection.Name,
             Description = collection.Description,
             Properties = new List<Rest.Models.Property>(),
-            VectorIndexType = collection.VectorIndexType,
-            VectorIndexConfig = collection.VectorIndexConfig,
+            VectorConfig = collection.VectorConfig?.ToList()
+                .ToDictionary(
+                    e => e.Key,
+                    e => new Rest.Models.VectorConfig
+                    {
+                        VectorIndexConfig = e.Value.VectorIndexConfig,
+                        VectorIndexType = e.Value.VectorIndexType,
+                        Vectorizer = e.Value.Vectorizer,
+                    }
+                    ) ?? new Dictionary<string, Rest.Models.VectorConfig>(),
             ShardingConfig = collection.ShardingConfig,
             ModuleConfig = collection.ModuleConfig,
+            VectorIndexType = collection.VectorIndexType,
+            VectorIndexConfig = collection.VectorIndexConfig,
+            Vectorizer = collection.Vectorizer,
         };
 
         foreach (var property in collection.Properties)
@@ -72,6 +111,26 @@ public struct CollectionsClient
                 Name = property.Name,
                 DataType = [.. property.DataType]
             });
+        }
+
+        if (collection.ReplicationConfig is Models.ReplicationConfig rc)
+        {
+            data.ReplicationConfig = new Rest.Models.ReplicationConfig()
+            {
+                AsyncEnabled = rc.AsyncEnabled,
+                DeletionStrategy = (Rest.Models.DeletionStrategy?)rc.DeletionStrategy,
+                Factor = rc.Factor
+            };
+        }
+
+        if (collection.MultiTenancyConfig is Models.MultiTenancyConfig mtc)
+        {
+            data.MultiTenancyConfig = new Rest.Models.MultiTenancyConfig()
+            {
+                AutoTenantActivation = mtc.AutoTenantActivation,
+                AutoTenantCreation = mtc.AutoTenantCreation,
+                Enabled = mtc.Enabled,
+            };
         }
 
         if (collection.InvertedIndexConfig != null)
@@ -101,7 +160,6 @@ public struct CollectionsClient
         return new CollectionClient(_client, response.ToCollection());
     }
 
-    // TODO Return bool
     public async Task Delete(string name)
     {
         await _client.RestClient.CollectionDelete(name);
@@ -113,14 +171,17 @@ public struct CollectionsClient
     {
         var response = await _client.RestClient.CollectionGet(name);
 
-        // TODO throw if collection is not found.
+        if (response is null)
+        {
+            return null!;
+        }
 
         var collection = new CollectionClient(_client, response.ToCollection());
 
         return collection;
     }
 
-    public async IAsyncEnumerable<Collection> List()
+    public async IAsyncEnumerable<Models.Collection> List()
     {
         var response = await _client.RestClient.CollectionList();
 
