@@ -52,7 +52,7 @@ public class CollectionClient
     // TODO Maybe move to an ObjectClient scope?
     public async Task<WeaviateObject<T>> Insert<T>(WeaviateObject<T> data)
     {
-        var dto = new Rest.Models.WeaviateObject()
+        var dto = new Rest.Dto.WeaviateObject()
         {
             Id = Guid.NewGuid(),
             Class = data.CollectionName,
