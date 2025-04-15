@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Weaviate.Client.Rest.Models
+namespace Weaviate.Client.Rest.Dto
 {
     /// <summary>
     /// Describes which API is effected, usually one of: REST, GraphQL

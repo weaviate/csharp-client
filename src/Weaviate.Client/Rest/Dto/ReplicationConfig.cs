@@ -1,4 +1,4 @@
-namespace Weaviate.Client.Rest.Models;
+namespace Weaviate.Client.Rest.Dto;
 
 using System.Text.Json.Serialization;
 

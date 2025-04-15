@@ -1,4 +1,4 @@
-namespace Weaviate.Client.Rest.Models;
+namespace Weaviate.Client.Rest.Dto;
 
 /// <summary>
 /// Configuration related to multi-tenancy within a class
