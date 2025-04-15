@@ -15,7 +15,7 @@ check_dependencies curl tar realpath dirname grep
 
 branchOrTag="${1:-main}"
 dir="$(realpath "$( dirname "${BASH_SOURCE[0]}" )" )"
-out="${dir}/../src/proto"
+out="${dir}/../src/Weaviate.Client/gRPC/proto"
 
 rm -rf "${out}"
 mkdir -p "${out}"
