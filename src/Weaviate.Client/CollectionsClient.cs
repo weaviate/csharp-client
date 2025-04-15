@@ -2,7 +2,7 @@ namespace Weaviate.Client;
 
 internal static class WeaviateClientExtensions
 {
-    internal static Models.Collection ToCollection(this Rest.Models.CollectionGeneric collection)
+    internal static Models.Collection ToCollection(this Rest.Dto.CollectionGeneric collection)
     {
         return new Models.Collection()
         {
@@ -13,7 +13,7 @@ internal static class WeaviateClientExtensions
                 Name = p.Name,
                 DataType = p.DataType.ToList()
             }).ToList(),
-            InvertedIndexConfig = (collection.InvertedIndexConfig is Rest.Models.InvertedIndexConfig iic)
+            InvertedIndexConfig = (collection.InvertedIndexConfig is Rest.Dto.InvertedIndexConfig iic)
                 ? new Models.InvertedIndexConfig()
                 {
                     Bm25 = iic.Bm25 == null ? null : new Models.BM25Config
@@ -21,7 +21,7 @@ internal static class WeaviateClientExtensions
                         B = iic.Bm25.B,
                         K1 = iic.Bm25.K1,
                     },
-                    Stopwords = (iic.Stopwords is Rest.Models.StopwordConfig swc)
+                    Stopwords = (iic.Stopwords is Rest.Dto.StopwordConfig swc)
                     ? new Models.StopwordConfig
                     {
                         Additions = swc.Additions,
@@ -35,14 +35,14 @@ internal static class WeaviateClientExtensions
                 } : null,
             ShardingConfig = collection.ShardingConfig,
             ModuleConfig = collection.ModuleConfig,
-            ReplicationConfig = (collection.ReplicationConfig is Rest.Models.ReplicationConfig rc)
+            ReplicationConfig = (collection.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
                 ? new Models.ReplicationConfig
                 {
                     AsyncEnabled = rc.AsyncEnabled,
                     Factor = rc.Factor,
                     DeletionStrategy = (Models.DeletionStrategy?)rc.DeletionStrategy,
                 } : null,
-            MultiTenancyConfig = (collection.MultiTenancyConfig is Rest.Models.MultiTenancyConfig mtc)
+            MultiTenancyConfig = (collection.MultiTenancyConfig is Rest.Dto.MultiTenancyConfig mtc)
                 ? new Models.MultiTenancyConfig
                 {
                     Enabled = mtc.Enabled,
@@ -82,21 +82,21 @@ public struct CollectionsClient
 
         collectionConfigurator(collection);
 
-        var data = new Rest.Models.CollectionGeneric()
+        var data = new Rest.Dto.CollectionGeneric()
         {
             Class = collection.Name,
             Description = collection.Description,
-            Properties = new List<Rest.Models.Property>(),
+            Properties = new List<Rest.Dto.Property>(),
             VectorConfig = collection.VectorConfig?.ToList()
                 .ToDictionary(
                     e => e.Key,
-                    e => new Rest.Models.VectorConfig
+                    e => new Rest.Dto.VectorConfig
                     {
                         VectorIndexConfig = e.Value.VectorIndexConfig,
                         VectorIndexType = e.Value.VectorIndexType,
                         Vectorizer = e.Value.Vectorizer,
                     }
-                    ) ?? new Dictionary<string, Rest.Models.VectorConfig>(),
+                    ) ?? new Dictionary<string, Rest.Dto.VectorConfig>(),
             ShardingConfig = collection.ShardingConfig,
             ModuleConfig = collection.ModuleConfig,
             VectorIndexType = collection.VectorIndexType,
@@ -106,7 +106,7 @@ public struct CollectionsClient
 
         foreach (var property in collection.Properties)
         {
-            data.Properties.Add(new Rest.Models.Property()
+            data.Properties.Add(new Rest.Dto.Property()
             {
                 Name = property.Name,
                 DataType = [.. property.DataType]
@@ -115,17 +115,17 @@ public struct CollectionsClient
 
         if (collection.ReplicationConfig is Models.ReplicationConfig rc)
         {
-            data.ReplicationConfig = new Rest.Models.ReplicationConfig()
+            data.ReplicationConfig = new Rest.Dto.ReplicationConfig()
             {
                 AsyncEnabled = rc.AsyncEnabled,
-                DeletionStrategy = (Rest.Models.DeletionStrategy?)rc.DeletionStrategy,
+                DeletionStrategy = (Rest.Dto.DeletionStrategy?)rc.DeletionStrategy,
                 Factor = rc.Factor
             };
         }
 
         if (collection.MultiTenancyConfig is Models.MultiTenancyConfig mtc)
         {
-            data.MultiTenancyConfig = new Rest.Models.MultiTenancyConfig()
+            data.MultiTenancyConfig = new Rest.Dto.MultiTenancyConfig()
             {
                 AutoTenantActivation = mtc.AutoTenantActivation,
                 AutoTenantCreation = mtc.AutoTenantCreation,
@@ -135,14 +135,14 @@ public struct CollectionsClient
 
         if (collection.InvertedIndexConfig != null)
         {
-            data.InvertedIndexConfig = new Rest.Models.InvertedIndexConfig()
+            data.InvertedIndexConfig = new Rest.Dto.InvertedIndexConfig()
             {
-                Bm25 = collection.InvertedIndexConfig.Bm25 == null ? null : new Rest.Models.BM25Config
+                Bm25 = collection.InvertedIndexConfig.Bm25 == null ? null : new Rest.Dto.BM25Config
                 {
                     B = collection.InvertedIndexConfig.Bm25.B,
                     K1 = collection.InvertedIndexConfig.Bm25.K1,
                 },
-                Stopwords = collection.InvertedIndexConfig.Stopwords == null ? null : new Rest.Models.StopwordConfig
+                Stopwords = collection.InvertedIndexConfig.Stopwords == null ? null : new Rest.Dto.StopwordConfig
                 {
                     Additions = collection.InvertedIndexConfig.Stopwords.Additions,
                     Preset = collection.InvertedIndexConfig.Stopwords.Preset,

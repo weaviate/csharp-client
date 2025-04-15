@@ -1,7 +1,7 @@
 namespace Weaviate.Client.Rest.Responses;
 
 using System.Text.Json.Serialization;
-using Weaviate.Client.Rest.Models;
+using Weaviate.Client.Rest.Dto;
 
 internal struct ListCollectionResponse
 {

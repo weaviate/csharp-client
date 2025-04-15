@@ -1,4 +1,4 @@
-namespace Weaviate.Client.Rest.Models;
+namespace Weaviate.Client.Rest.Dto;
 
 // InvertedIndexConfig Configure the inverted index built into Weaviate (default: 60).
 //
