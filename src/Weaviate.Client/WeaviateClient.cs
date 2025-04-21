@@ -6,7 +6,9 @@ namespace Weaviate.Client;
 
 public record ClientConfiguration
 {
-    public required Uri ApiUrl;
+    public required Uri Host;
+    public ushort RestPort = 8080;
+    public ushort GrpcPort = 50051;
     public required string ApiKey;
 }
 
@@ -27,7 +29,7 @@ public class WeaviateClient : IDisposable
 
     public WeaviateClient() : this(new ClientConfiguration()
     {
-        ApiUrl = new Uri("http://localhost:8080"),
+        Host = new Uri("http://localhost"),
         ApiKey = "",
     })
     {
