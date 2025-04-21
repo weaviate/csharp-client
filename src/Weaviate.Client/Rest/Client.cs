@@ -1,5 +1,6 @@
 namespace Weaviate.Client.Rest;
 
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -64,12 +65,18 @@ public class WeaviateRestClient : IDisposable
         _ownershipClient = true;
         _httpClient = new HttpClient(new LoggingHandler(str =>
         {
-            Console.WriteLine(str);
+            Debug.WriteLine(str);
         })
         {
             InnerHandler = new HttpClientHandler() // or SocketsHttpHandler
         });
-        _httpClient.BaseAddress = new Uri(client.Configuration.ApiUrl, new Uri("v1/", UriKind.Relative));
+
+        var ub = new UriBuilder(client.Configuration.Host);
+
+        ub.Port = client.Configuration.RestPort;
+        ub.Path = "v1/";
+
+        _httpClient.BaseAddress = ub.Uri;
     }
 
     internal WeaviateRestClient(WeaviateClient client, HttpClient httpClient)

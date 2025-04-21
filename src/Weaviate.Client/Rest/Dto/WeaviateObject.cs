@@ -1,6 +1,5 @@
 namespace Weaviate.Client.Rest.Dto;
 
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 /// <summary>

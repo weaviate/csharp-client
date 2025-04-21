@@ -10,7 +10,7 @@ public class WeaviateObject<TData, TVector>
 
     public IList<TVector> Vector { get; set; } = new List<TVector>();
 
-    public Guid? Id { get; set; }
+    public Guid? ID { get; set; }
 
     public IDictionary<string, object> Additional { get; set; } = new Dictionary<string, object>();
 
