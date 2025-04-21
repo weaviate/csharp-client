@@ -19,4 +19,21 @@ public class Property
     public bool? IndexRangeFilters { get; set; }
     public bool? IndexSearchable { get; set; }
 
+    public static Property Text(string name)
+    {
+        return new Property
+        {
+            Name = name,
+            DataType = { Models.DataType.Text },
+        };
+    }
+
+    public static Property Int(string name)
+    {
+        return new Property
+        {
+            Name = name,
+            DataType = { Models.DataType.Int },
+        };
+    }
 }

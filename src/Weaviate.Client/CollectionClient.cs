@@ -1,6 +1,7 @@
 namespace Weaviate.Client;
 
 using System.Text.Json;
+using Weaviate.Client.Grpc;
 using Weaviate.Client.Models;
 
 public class CollectionClient
@@ -31,6 +32,45 @@ public class CollectionClient
 
         _client = client;
         _collectionName = name;
+    }
+
+    private WeaviateObject<T> buildWeaviateObject<T>(Rest.Dto.WeaviateObject data)
+    {
+        return new WeaviateObject<T>(this)
+        {
+            Data = buildConcreteTypeObjectFromProperties<T>(data.Properties),
+            Vector = data.Vector ?? WeaviateObject<T>.EmptyVector(),
+            ID = data.Id,
+            Additional = data.Additional,
+            CreationTime = data.CreationTimeUnix.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(data.CreationTimeUnix.Value).DateTime : null,
+            LastUpdateTime = data.LastUpdateTimeUnix.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(data.LastUpdateTimeUnix.Value).DateTime : null,
+            Tenant = data.Tenant,
+            VectorWeights = data.VectorWeights,
+            Vectors = data.Vectors,
+        };
+    }
+
+
+    private static T? buildConcreteTypeObjectFromProperties<T>(object? data)
+    {
+        T? props = default;
+
+        switch (data)
+        {
+            case JsonElement properties:
+                props = properties.Deserialize<T>(_defaultJsonSerializationOptions);
+                break;
+            case IDictionary<string, object?> dict:
+                // TODO: Find a better way for this conversion
+                props = JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(dict), _defaultJsonSerializationOptions);
+                break;
+            case null:
+                return props;
+            default:
+                throw new NotSupportedException($"Unsupported type for properties: {data?.GetType()}");
+        }
+
+        return props;
     }
 
     public async Task Delete()
@@ -75,36 +115,42 @@ public class CollectionClient
         };
     }
 
-    public async IAsyncEnumerable<WeaviateObject<T>> GetObjects<T>(int? limit = null)
-    {
-        var response = await _client.RestClient.ObjectList(_collectionName, limit: limit);
-
-        foreach (var item in response)
-        {
-            T? props = default;
-
-            if (item.Properties is JsonElement properties)
-            {
-                props = properties.Deserialize<T>(_defaultJsonSerializationOptions);
-
-                yield return new WeaviateObject<T>(this)
-                {
-                    Data = props,
-                    Vector = item.Vector ?? WeaviateObject<T>.EmptyVector(),
-                    Id = item.Id,
-                    Additional = item.Additional,
-                    CreationTime = item.CreationTimeUnix == null ? null : DateTimeOffset.FromUnixTimeMilliseconds(item.CreationTimeUnix.Value).DateTime,
-                    LastUpdateTime = item.LastUpdateTimeUnix == null ? null : DateTimeOffset.FromUnixTimeMilliseconds(item.LastUpdateTimeUnix.Value).DateTime,
-                    Tenant = item.Tenant,
-                    VectorWeights = item.VectorWeights,
-                    Vectors = item.Vectors,
-                };
-            }
-        }
-    }
-
     public async Task DeleteObject(Guid id)
     {
         await _client.RestClient.DeleteObject(_collectionName, id);
+    }
+
+    public async IAsyncEnumerable<WeaviateObject<T>> ListObjects<T>(uint? limit = null)
+    {
+        var list = await _client.GrpcClient.FetchObjects(_collectionName, limit: limit);
+
+        foreach (var data in list)
+        {
+            yield return buildWeaviateObject<T>(data);
+        }
+    }
+
+    public async Task<WeaviateObject<T>?> FetchObjectByID<T>(Guid id)
+    {
+        var reply = await _client.GrpcClient.FetchObjects(_collectionName, Filter.WithID(id));
+
+        var data = reply.FirstOrDefault();
+
+        if (data is null)
+        {
+            return null;
+        }
+
+        return buildWeaviateObject<T>(data);
+    }
+
+    public async IAsyncEnumerable<WeaviateObject<T>> FetchObjectsByIDs<T>(ISet<Guid> ids, uint? limit = null)
+    {
+        var list = await _client.GrpcClient.FetchObjects(_collectionName, limit: limit, filter: Filter.WithIDs(ids));
+
+        foreach (var data in list)
+        {
+            yield return buildWeaviateObject<T>(data);
+        }
     }
 }
