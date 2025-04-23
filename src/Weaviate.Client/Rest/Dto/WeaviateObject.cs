@@ -52,12 +52,27 @@ public class WeaviateObject
     /// <summary>
     /// Vector associated with the Object.
     /// </summary>
+    [Obsolete("Use Vectors instead.")]
     [JsonPropertyName("vector")]
-    public IList<float>? Vector { get; set; }
+    public IList<float>? Vector { get; set; } = new List<float>();
+    // {
+    //     get
+    //     {
+    //         return Vectors.ContainsKey("default") ? Vectors["default"] : Vectors["default"] = [];
+    //     }
+    //     set
+    //     {
+    //         if (value != null)
+    //         {
+    //             Vectors["default"] = value;
+    //         }
+    //     }
+    // }
 
     /// <summary>
     /// Weights of the vector.
     /// </summary>
+    [Obsolete("Use Vectors instead.")]
     [JsonPropertyName("vectorWeights")]
     public object? VectorWeights { get; set; }
 
@@ -65,5 +80,5 @@ public class WeaviateObject
     /// Vectors associated with the Object.
     /// </summary>
     [JsonPropertyName("vectors")]
-    public IDictionary<string, object> Vectors { get; set; } = new Dictionary<string, object>();
+    public IDictionary<string, IList<float>>? Vectors { get; set; } = new Dictionary<string, IList<float>>();
 }

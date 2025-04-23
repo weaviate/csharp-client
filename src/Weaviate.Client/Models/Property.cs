@@ -6,7 +6,7 @@ public static class DataType
 {
     public static string Text { get; } = "text";
     public static string Int { get; } = "int";
-    public static string Reference(string property) { return $"{property[0].ToString().ToUpper()}{property.Substring(1)}"; }
+    public static string Reference(string property) => property.Capitalize();
 }
 
 public class Property

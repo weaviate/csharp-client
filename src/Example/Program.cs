@@ -64,15 +64,12 @@ class Program
 
         var weaviate = new WeaviateClient();
 
-        await foreach (var c in weaviate.Collections.List())
-        {
-            Console.WriteLine($"Collection: {c.Name}");
-        }
+        var collection = weaviate.Collections.Use<Cat>("Cat");
 
         // Should throw CollectionNotFound
         try
         {
-            var collectionNotFound = await weaviate.Collections.Get("cat");
+            var collectionNotFound = await collection.Get();
         }
         catch
         {
@@ -82,7 +79,7 @@ class Program
         // Delete any existing "cat" class
         try
         {
-            await weaviate.Collections.Delete("cat");
+            await collection.Delete();
             Console.WriteLine("Deleted existing 'Cat' collection");
         }
         catch (Exception e)
@@ -90,15 +87,17 @@ class Program
             Console.WriteLine($"Error deleting collections: {e.Message}");
         }
 
-        await weaviate.Collections.Create(c =>
+        collection = await weaviate.Collections.Create<Cat>(c =>
         {
             c.Description = "Lots of Cats of multiple breeds";
-            c.Name = "cat";
+            c.Name = "Cat";
             c.Properties = [Property.Text("Name"), Property.Text("Color"), Property.Text("Breed"), Property.Int("Counter")];
         });
 
-        // TODO Maybe pass the expected working type to Collections.Get
-        var collection = await weaviate.Collections.Get("cat");
+        await foreach (var c in weaviate.Collections.List())
+        {
+            Console.WriteLine($"Collection: {c.Name}");
+        }
 
         // // Read 250 cats from JSON file and unmarshal into Cat class
         var cats = await GetCatsAsync<WeaviateObject<Cat>>("cats.json");
@@ -107,11 +106,11 @@ class Program
         Console.WriteLine("Cats to store: " + cats.Count());
         foreach (var cat in cats)
         {
-            var inserted = await collection.Insert(cat);
+            var inserted = await collection.Data.Insert(cat);
         }
 
         // Get all objects and sum up the counter property
-        var objects = collection.ListObjects<Cat>(limit: 250);
+        var objects = collection.Data.List(limit: 250);
         var retrieved = await objects.ToListAsync();
         Console.WriteLine("Cats retrieved: " + retrieved.Count());
         var sum = retrieved.Sum(c => c.Data?.Counter ?? 0);
@@ -120,17 +119,17 @@ class Program
         var firstObj = retrieved.First();
         if (firstObj.ID is Guid id)
         {
-            await collection.DeleteObject(id);
+            await collection.Data.Delete(id);
         }
 
-        objects = collection.ListObjects<Cat>(limit: 5);
+        objects = collection.Data.List(limit: 5);
         retrieved = await objects.ToListAsync();
         Console.WriteLine("Cats retrieved: " + retrieved.Count());
 
         firstObj = retrieved.First();
         if (firstObj.ID is Guid id2)
         {
-            var fetched = await collection.FetchObjectByID<Cat>(id: id2);
+            var fetched = await collection.Data.FetchObjectByID(id: id2);
             Console.WriteLine("Cat retrieved via gRPC matches: " + ((fetched?.ID ?? Guid.Empty) == id2));
         }
 
@@ -142,25 +141,25 @@ class Program
                         .ToHashSet();
 
             var fetched =
-                await collection.FetchObjectsByIDs<Cat>(idList).ToListAsync();
-            Console.WriteLine("Cats retrieved via gRPC matches: " + fetched.ToString());
+                await collection.Data.FetchObjectsByIDs(idList).ToListAsync();
+            Console.WriteLine($"Cats retrieved via gRPC matches:{Environment.NewLine}" + JsonSerializer.Serialize(fetched, new JsonSerializerOptions { WriteIndented = true }).ToString());
         }
 
-        // var queryNearVector = collection
-        //             .Search<NearVector>()
-        //             .WithLimit(5)
-        //             .WithFilter(limit: 5)
-        //             .WithClassName("cat")
-        //             .WithFields(["name", "breed", "color", "counter"])
-        //             .WithMetadata(["score", "distance"]);
+        var queryNearVector =
+            collection
+                .Query
+                .NearVector(
+                    vector: new float[] { 20f, 21f, 22f },
+                    distance: 0.5f,
+                    limit: 5,
+                    fields: ["name", "breed", "color", "counter"],
+                    metadata: ["score", "distance"]
+                );
 
-        // var queryNearVector2 = collection
-        //             .Query<NearVector>()
-        //             .With(
-        //                 limit: 5,
-        //                 fields: ["name", "breed", "color", "counter"],
-        //                 metadata: ["score", "distance"]
-        //             );
+        await foreach (var cat in queryNearVector)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(cat, new JsonSerializerOptions { WriteIndented = true }));
+        }
 
 
         // Cursor API
