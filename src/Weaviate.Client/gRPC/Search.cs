@@ -1,26 +1,32 @@
 namespace Weaviate.Client.Grpc;
 
+using Google.Protobuf;
 using Weaviate.Client.Rest.Dto;
 using Weaviate.V1;
 
 public partial class WeaviateGrpcClient
 {
-    public async Task<IList<WeaviateObject>> FetchObjects(string collection, Filters? filter = null, uint? limit = null)
+    internal SearchRequest BaseSearchRequest(string collection, Filters? filter = null, uint? limit = null)
     {
-        var req = new SearchRequest()
+        return new SearchRequest()
         {
             Collection = collection,
             Filters = filter,
             Uses123Api = true,
             Uses125Api = true,
             Uses127Api = true,
-            Limit = limit ?? 0
+            Limit = limit ?? 0,
+            Metadata = new MetadataRequest()
+            {
+                Uuid = true,
+                Vector = true,
+            }
         };
+    }
 
-        req.Metadata = new MetadataRequest()
-        {
-            Uuid = true,
-        };
+    public async Task<IList<WeaviateObject>> FetchObjects(string collection, Filters? filter = null, uint? limit = null)
+    {
+        var req = BaseSearchRequest(collection, filter, limit);
 
         SearchReply? reply = await _grpcClient.SearchAsync(req);
 
@@ -29,12 +35,12 @@ public partial class WeaviateGrpcClient
             return [];
         }
 
-        return reply.Results
-            .Select(result => new WeaviateObject
-            {
-                Id = Guid.Parse(result.Metadata.Id),
-                Properties = buildObjectFromProperties(result.Properties.NonRefProps),
-            }).ToList();
+        return reply.Results.Select(result => new WeaviateObject
+        {
+            Id = Guid.Parse(result.Metadata.Id),
+            Vector = result.Metadata.Vector,
+            Properties = buildObjectFromProperties(result.Properties.NonRefProps),
+        }).ToList();
     }
 
     public string SearchNearText(string text, int? limit = null)
@@ -42,18 +48,50 @@ public partial class WeaviateGrpcClient
         return "";
     }
 
-    public string SearchNearVector(string collection, float[] vector, int? limit = null, float? distance = null)
+    // TODO Find a way to make IntelliSense know that it's either Distance or Certainty, but not both.
+    public async Task<IEnumerable<WeaviateObject>> SearchNearVector(string collection, float[] vector, float? distance = null, float? certainty = null, uint? limit = null)
     {
-        var request = new SearchRequest()
+        var request = BaseSearchRequest(collection, filter: null, limit: limit);
+
+        using (var vectorStream = vector.ToStream())
         {
-            // For NV search only use vectors from -1.0 to 1.0
-            Collection = collection,
-            NearVector = new NearVector()
+            request.NearVector = new NearVector
             {
+                Vector = { vector }
+                // Vectors = {
+                //     new Vectors {
+                //         Name = "default",
+                //         Type = Vectors.Types.VectorType.SingleFp32,
+                //         VectorBytes = ByteString.FromStream(vectorStream),
+                //     }
+                // },
+                // Targets = null,
+                // VectorForTargets = { },
+            };
 
+            if (distance.HasValue)
+            {
+                request.NearVector.Distance = distance.Value;
             }
-        };
 
-        return "";
+            if (certainty.HasValue)
+            {
+                request.NearVector.Certainty = certainty.Value;
+            }
+        }
+
+        SearchReply? reply = await _grpcClient.SearchAsync(request);
+
+        if (!reply.Results.Any())
+        {
+            return [];
+        }
+
+        return reply.Results.Select(result => new WeaviateObject
+        {
+            Id = Guid.Parse(result.Metadata.Id),
+            Vector = result.Metadata.Vector,
+            Properties = buildObjectFromProperties(result.Properties.NonRefProps),
+        }).ToList();
     }
 }

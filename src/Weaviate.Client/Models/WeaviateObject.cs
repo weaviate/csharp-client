@@ -2,13 +2,11 @@ namespace Weaviate.Client.Models;
 
 public class WeaviateObject<TData, TVector>
 {
-    public CollectionClient? Collection { get; }
+    public CollectionClient<TData>? Collection { get; }
 
     public string? CollectionName { get; }
 
     public required TData? Data { get; set; }
-
-    public IList<TVector> Vector { get; set; } = new List<TVector>();
 
     public Guid? ID { get; set; }
 
@@ -20,11 +18,9 @@ public class WeaviateObject<TData, TVector>
 
     public string? Tenant { get; set; }
 
-    public object? VectorWeights { get; set; }
+    public IDictionary<string, IList<TVector>> Vectors { get; set; } = new Dictionary<string, IList<TVector>>();
 
-    public IDictionary<string, object> Vectors { get; set; } = new Dictionary<string, object>();
-
-    public WeaviateObject(CollectionClient? collection = null) : this(collection?.Name ?? typeof(TData).Name)
+    public WeaviateObject(CollectionClient<TData>? collection = null) : this(collection?.Name ?? typeof(TData).Name)
     {
         Collection = collection;
     }
@@ -32,6 +28,25 @@ public class WeaviateObject<TData, TVector>
     {
         CollectionName = collectionName;
     }
+
+    /// Vector associated with the Object.
+    /// </summary>
+    [Obsolete("Use Vectors instead.")]
+    public IList<TVector>? Vector { get; set; } = new List<TVector>();
+    // {
+    //     get
+    //     {
+    //         return Vectors.ContainsKey("default") ? Vectors["default"] : Vectors["default"] = [];
+    //     }
+    //     set
+    //     {
+    //         if (value != null)
+    //         {
+    //             Vectors["default"] = value;
+    //         }
+    //     }
+    // }
+
 
     public static IList<TVector> EmptyVector()
     {
@@ -42,7 +57,7 @@ public class WeaviateObject<TData, TVector>
 public class WeaviateObject<TData> : WeaviateObject<TData, float>
 {
     [System.Text.Json.Serialization.JsonConstructor]
-    public WeaviateObject(CollectionClient? collection = null) : base(collection) { }
+    public WeaviateObject(CollectionClient<TData>? collection = null) : base(collection) { }
 
     public WeaviateObject(string collectionName) : base(collectionName) { }
 }
