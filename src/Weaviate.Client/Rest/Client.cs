@@ -1,11 +1,9 @@
-namespace Weaviate.Client.Rest;
-
 using System.Diagnostics;
-using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
 using Weaviate.Client.Rest.Dto;
 using Weaviate.Client.Rest.Responses;
+
+namespace Weaviate.Client.Rest;
 
 public class LoggingHandler : DelegatingHandler
 {

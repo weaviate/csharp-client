@@ -1,7 +1,6 @@
-namespace Weaviate.Client.Rest.Dto;
-
-using System;
 using System.Text.Json.Serialization;
+
+namespace Weaviate.Client.Rest.Dto;
 
 public class VectorConfig
 {

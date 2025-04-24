@@ -1,7 +1,5 @@
 namespace Weaviate.Client.Models;
 
-using System.Text.Json.Serialization;
-
 public enum DeletionStrategy
 {
     NoAutomatedResolution,

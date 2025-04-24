@@ -1,8 +1,7 @@
-namespace Weaviate.Client.Grpc;
-
-using Google.Protobuf;
 using Weaviate.Client.Rest.Dto;
 using Weaviate.V1;
+
+namespace Weaviate.Client.Grpc;
 
 public partial class WeaviateGrpcClient
 {
@@ -24,7 +23,7 @@ public partial class WeaviateGrpcClient
         };
     }
 
-    public async Task<IList<WeaviateObject>> FetchObjects(string collection, Filters? filter = null, uint? limit = null)
+    internal async Task<IList<WeaviateObject>> FetchObjects(string collection, Filters? filter = null, uint? limit = null)
     {
         var req = BaseSearchRequest(collection, filter, limit);
 

@@ -1,6 +1,7 @@
-namespace Weaviate.Client.Rest.Dto;
 
 using System.Text.Json.Serialization;
+
+namespace Weaviate.Client.Rest.Dto;
 
 /// <summary>
 /// Represents a Weaviate object with its associated properties and metadata.
