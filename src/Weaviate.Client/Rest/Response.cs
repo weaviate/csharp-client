@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Net;
 
 namespace Weaviate.Client.Rest;

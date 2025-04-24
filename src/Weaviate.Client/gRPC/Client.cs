@@ -1,10 +1,7 @@
 using System.Collections;
 using System.Dynamic;
-using System.Text.Json;
 using Grpc.Net.Client;
-using Weaviate.Client.Rest.Dto;
 using Weaviate.V1;
-using static Weaviate.V1.Value;
 
 namespace Weaviate.Client.Grpc;
 
@@ -54,46 +51,46 @@ public partial class WeaviateGrpcClient : IDisposable
 
         foreach (var r in result.Fields)
         {
-            KindOneofCase kind = r.Value.KindCase;
+            Value.KindOneofCase kind = r.Value.KindCase;
             switch (kind)
             {
-                case KindOneofCase.None:
-                case KindOneofCase.NullValue:
+                case Value.KindOneofCase.None:
+                case Value.KindOneofCase.NullValue:
                     continue;
-                case KindOneofCase.NumberValue:
+                case Value.KindOneofCase.NumberValue:
                     eo[r.Key] = r.Value.NumberValue;
                     break;
-                case KindOneofCase.StringValue:
+                case Value.KindOneofCase.StringValue:
                     eo[r.Key] = r.Value.StringValue;
                     break;
-                case KindOneofCase.BoolValue:
+                case Value.KindOneofCase.BoolValue:
                     eo[r.Key] = r.Value.BoolValue;
                     break;
-                case KindOneofCase.ObjectValue:
+                case Value.KindOneofCase.ObjectValue:
                     eo[r.Key] = buildObjectFromProperties(r.Value.ObjectValue) ?? new object { };
                     break;
-                case KindOneofCase.ListValue:
+                case Value.KindOneofCase.ListValue:
                     eo[r.Key] = buildListFromListValue(r.Value.ListValue);
                     break;
-                case KindOneofCase.DateValue:
+                case Value.KindOneofCase.DateValue:
                     eo[r.Key] = r.Value.DateValue; // TODO Parse date here?
                     break;
-                case KindOneofCase.UuidValue:
+                case Value.KindOneofCase.UuidValue:
                     eo[r.Key] = Guid.Parse(r.Value.UuidValue);
                     break;
-                case KindOneofCase.IntValue:
+                case Value.KindOneofCase.IntValue:
                     eo[r.Key] = r.Value.IntValue;
                     break;
-                case KindOneofCase.GeoValue:
+                case Value.KindOneofCase.GeoValue:
                     eo[r.Key] = r.Value.GeoValue.ToString();
                     break;
-                case KindOneofCase.BlobValue:
+                case Value.KindOneofCase.BlobValue:
                     eo[r.Key] = r.Value.BlobValue;
                     break;
-                case KindOneofCase.PhoneValue:
+                case Value.KindOneofCase.PhoneValue:
                     eo[r.Key] = r.Value.PhoneValue;
                     break;
-                case KindOneofCase.TextValue:
+                case Value.KindOneofCase.TextValue:
                     eo[r.Key] = r.Value.TextValue;
                     break;
             }

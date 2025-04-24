@@ -1,6 +1,7 @@
-namespace Weaviate.Client.Rest.Dto;
 
 using System.Text.Json.Serialization;
+
+namespace Weaviate.Client.Rest.Dto;
 
 public enum DeletionStrategy
 {

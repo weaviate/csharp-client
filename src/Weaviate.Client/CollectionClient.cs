@@ -1,6 +1,7 @@
-namespace Weaviate.Client;
 
 using Weaviate.Client.Models;
+
+namespace Weaviate.Client;
 
 public class CollectionClient<TData>
 {
