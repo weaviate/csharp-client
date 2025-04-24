@@ -1,7 +1,8 @@
-namespace Weaviate.Client.Rest.Responses;
 
 using System.Text.Json.Serialization;
 using Weaviate.Client.Rest.Dto;
+
+namespace Weaviate.Client.Rest.Responses;
 
 /// <summary>
 /// Represents the response for a list of objects from Weaviate.

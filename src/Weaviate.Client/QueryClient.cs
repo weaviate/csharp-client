@@ -1,5 +1,3 @@
-using Weaviate.Client.Models;
-
 namespace Weaviate.Client;
 
 public class QueryClient<TData>
