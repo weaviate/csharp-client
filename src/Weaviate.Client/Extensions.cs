@@ -12,12 +12,12 @@ public static class WeaviateExtensions
         WriteIndented = true, // For readability
     };
 
-    internal static WeaviateObject<T> ToWeaviateObject<T>(this Rest.Dto.WeaviateObject data)
+    public static WeaviateObject<T> ToWeaviateObject<T>(this Rest.Dto.WeaviateObject data)
     {
         return new WeaviateObject<T>(data.Class ?? string.Empty)
         {
             Data = BuildConcreteTypeObjectFromProperties<T>(data.Properties),
-            ID = data.Id,
+            ID = data.ID,
             Additional = data.Additional,
             CreationTime = data.CreationTimeUnix.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(data.CreationTimeUnix.Value).DateTime : null,
             LastUpdateTime = data.LastUpdateTimeUnix.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(data.LastUpdateTimeUnix.Value).DateTime : null,

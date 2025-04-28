@@ -24,7 +24,7 @@ public class WeaviateObject
     /// Unique identifier of the Object.
     /// </summary>
     [JsonPropertyName("id")]
-    public Guid? Id { get; set; }
+    public Guid? ID { get; set; }
 
     /// <summary>
     /// Timestamp of creation of this object in milliseconds since epoch UTC.
