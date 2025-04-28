@@ -12,7 +12,7 @@ public static class WeaviateExtensions
         WriteIndented = true, // For readability
     };
 
-    internal static WeaviateObject<T> BuildWeaviateObject<T>(this Rest.Dto.WeaviateObject data)
+    internal static WeaviateObject<T> ToWeaviateObject<T>(this Rest.Dto.WeaviateObject data)
     {
         return new WeaviateObject<T>(data.Class ?? string.Empty)
         {
@@ -88,7 +88,7 @@ public static class WeaviateExtensions
 
     internal static IEnumerable<WeaviateObject<T>> ToObjects<T>(this IEnumerable<Rest.Dto.WeaviateObject> list)
     {
-        return list.Select(BuildWeaviateObject<T>);
+        return list.Select(ToWeaviateObject<T>);
     }
 
     internal static Rest.Dto.CollectionGeneric ToDto(this Models.Collection collection)
@@ -99,15 +99,15 @@ public static class WeaviateExtensions
             Description = collection.Description,
             Properties = new List<Rest.Dto.Property>(),
             VectorConfig = collection.VectorConfig?.ToList()
-        .ToDictionary(
-            e => e.Key,
-            e => new Rest.Dto.VectorConfig
-            {
-                VectorIndexConfig = e.Value.VectorIndexConfig,
-                VectorIndexType = e.Value.VectorIndexType,
-                Vectorizer = e.Value.Vectorizer,
-            }
-            ) ?? new Dictionary<string, Rest.Dto.VectorConfig>(),
+                .ToDictionary(
+                    e => e.Key,
+                    e => new Rest.Dto.VectorConfig
+                    {
+                        VectorIndexConfig = e.Value.VectorIndexConfig,
+                        VectorIndexType = e.Value.VectorIndexType,
+                        Vectorizer = e.Value.Vectorizer,
+                    }
+                ) ?? new Dictionary<string, Rest.Dto.VectorConfig>(),
             ShardingConfig = collection.ShardingConfig,
             ModuleConfig = collection.ModuleConfig,
             VectorIndexType = collection.VectorIndexType,
@@ -267,7 +267,8 @@ public static class WeaviateExtensions
     {
         var stream = new MemoryStream();
 
-        using (var writer = new BinaryWriter(stream))
+        using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true))
+
         {
             foreach (T item in items)
             {
@@ -279,6 +280,8 @@ public static class WeaviateExtensions
             }
             writer.Flush();
         }
+
+        stream.Seek(0, SeekOrigin.Begin); // Reset the stream position to the beginning
 
         return stream;
     }

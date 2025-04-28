@@ -155,19 +155,6 @@ public class WeaviateRestClient : IDisposable
         return contents;
     }
 
-    internal async Task<IEnumerable<WeaviateObject>> ObjectList(string collectionName, int? limit = null)
-    {
-        var ub = new UriBuilder(new Uri(_httpClient.BaseAddress ?? default!, $"objects"));
-
-        ub.Query = $"?class={collectionName}";
-        ub.Query += limit != null ? $"&limit={limit}" : string.Empty;
-
-        var uri = ub.Uri;
-        var contents = await _httpClient.GetFromJsonAsync<ListObjectsResponse>(uri);
-
-        return contents.Objects;
-    }
-
     internal async Task DeleteObject(string collectionName, Guid id)
     {
         await _httpClient.DeleteAsync($"objects/{collectionName}/{id}");

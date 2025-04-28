@@ -18,7 +18,7 @@ public class WeaviateObject<TData, TVector>
 
     public string? Tenant { get; set; }
 
-    public IDictionary<string, IList<TVector>> Vectors { get; set; } = new Dictionary<string, IList<TVector>>();
+    public IDictionary<string, IEnumerable<TVector>> Vectors { get; set; } = new Dictionary<string, IEnumerable<TVector>>();
 
     public WeaviateObject(CollectionClient<TData>? collection = null) : this(collection?.Name ?? typeof(TData).Name)
     {
