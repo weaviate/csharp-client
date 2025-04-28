@@ -1,3 +1,4 @@
+using Google.Protobuf;
 using Weaviate.Client.Rest.Dto;
 using Weaviate.V1;
 
@@ -19,6 +20,7 @@ public partial class WeaviateGrpcClient
             {
                 Uuid = true,
                 Vector = true,
+                Vectors = { "default" }
             }
         };
     }
@@ -38,6 +40,13 @@ public partial class WeaviateGrpcClient
         {
             Id = Guid.Parse(result.Metadata.Id),
             Vector = result.Metadata.Vector,
+            Vectors = result.Metadata.Vectors.ToDictionary(v => v.Name, v =>
+            {
+                using (var ms = new MemoryStream(v.VectorBytes.ToByteArray()))
+                {
+                    return ms.FromStream<float>().ToList().AsEnumerable();
+                }
+            }),
             Properties = buildObjectFromProperties(result.Properties.NonRefProps),
         }).ToList();
     }
@@ -52,32 +61,34 @@ public partial class WeaviateGrpcClient
     {
         var request = BaseSearchRequest(collection, filter: null, limit: limit);
 
-        using (var vectorStream = vector.ToStream())
+        var vectorStream = vector.ToStream();
+        var vectorBytes = ByteString.FromStream(stream: vectorStream);
+        vectorStream.Dispose();
+
+        request.NearVector = new NearVector
         {
-            request.NearVector = new NearVector
-            {
-                Vector = { vector }
-                // Vectors = {
-                //     new Vectors {
-                //         Name = "default",
-                //         Type = Vectors.Types.VectorType.SingleFp32,
-                //         VectorBytes = ByteString.FromStream(vectorStream),
-                //     }
-                // },
-                // Targets = null,
-                // VectorForTargets = { },
-            };
+            Vector = { vector },
+            Vectors = {
+                    new Vectors {
+                        Name = "default",
+                        Type = Vectors.Types.VectorType.SingleFp32,
+                        VectorBytes = vectorBytes,
+                    }
+                },
+            // Targets = null,
+            // VectorForTargets = { },
+        };
 
-            if (distance.HasValue)
-            {
-                request.NearVector.Distance = distance.Value;
-            }
-
-            if (certainty.HasValue)
-            {
-                request.NearVector.Certainty = certainty.Value;
-            }
+        if (distance.HasValue)
+        {
+            request.NearVector.Distance = distance.Value;
         }
+
+        if (certainty.HasValue)
+        {
+            request.NearVector.Certainty = certainty.Value;
+        }
+
 
         SearchReply? reply = await _grpcClient.SearchAsync(request);
 
@@ -90,6 +101,13 @@ public partial class WeaviateGrpcClient
         {
             Id = Guid.Parse(result.Metadata.Id),
             Vector = result.Metadata.Vector,
+            Vectors = result.Metadata.Vectors.ToDictionary(v => v.Name, v =>
+            {
+                using (var ms = new MemoryStream(v.VectorBytes.ToByteArray()))
+                {
+                    return ms.FromStream<float>().ToList().AsEnumerable();
+                }
+            }),
             Properties = buildObjectFromProperties(result.Properties.NonRefProps),
         }).ToList();
     }

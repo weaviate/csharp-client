@@ -87,11 +87,26 @@ class Program
             Console.WriteLine($"Error deleting collections: {e.Message}");
         }
 
+        var vectorizerConfigNone = new VectorConfig
+        {
+            Vectorizer = new Dictionary<string, object>
+            {
+                { "none", new object { } }
+            },
+            VectorIndexType = "hnsw",
+        };
+
+        var VectorConfigs = new Dictionary<string, VectorConfig>
+        {
+            { "default", vectorizerConfigNone }
+        };
+
         collection = await weaviate.Collections.Create<Cat>(c =>
         {
             c.Description = "Lots of Cats of multiple breeds";
             c.Name = "Cat";
             c.Properties = [Property.Text("Name"), Property.Text("Color"), Property.Text("Breed"), Property.Int("Counter")];
+            c.VectorConfig = VectorConfigs;
         });
 
         await foreach (var c in weaviate.Collections.List())
@@ -106,11 +121,17 @@ class Program
         Console.WriteLine("Cats to store: " + cats.Count());
         foreach (var cat in cats)
         {
+            cat.Vectors = new Dictionary<string, IEnumerable<float>>
+            {
+                { "default", cat.Vector }
+            };
+            cat.Vector = null;
+
             var inserted = await collection.Data.Insert(cat);
         }
 
         // Get all objects and sum up the counter property
-        var objects = collection.Data.List(limit: 250);
+        var objects = collection.Query.List(limit: 250);
         var retrieved = await objects.ToListAsync();
         Console.WriteLine("Cats retrieved: " + retrieved.Count());
         var sum = retrieved.Sum(c => c.Data?.Counter ?? 0);
@@ -122,14 +143,14 @@ class Program
             await collection.Data.Delete(id);
         }
 
-        objects = collection.Data.List(limit: 5);
+        objects = collection.Query.List(limit: 5);
         retrieved = await objects.ToListAsync();
         Console.WriteLine("Cats retrieved: " + retrieved.Count());
 
         firstObj = retrieved.First();
         if (firstObj.ID is Guid id2)
         {
-            var fetched = await collection.Data.FetchObjectByID(id: id2);
+            var fetched = await collection.Query.FetchObjectByID(id: id2);
             Console.WriteLine("Cat retrieved via gRPC matches: " + ((fetched?.ID ?? Guid.Empty) == id2));
         }
 
@@ -141,7 +162,7 @@ class Program
                         .ToHashSet();
 
             var fetched =
-                await collection.Data.FetchObjectsByIDs(idList).ToListAsync();
+                await collection.Query.FetchObjectsByIDs(idList).ToListAsync();
             Console.WriteLine($"Cats retrieved via gRPC matches:{Environment.NewLine}" + JsonSerializer.Serialize(fetched, new JsonSerializerOptions { WriteIndented = true }).ToString());
         }
 

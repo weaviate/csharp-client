@@ -8,7 +8,7 @@ public class VectorConfig
     /// Vector-index config, that is specific to the type of index selected in vectorIndexType.
     /// </summary>
     [JsonPropertyName("vectorIndexConfig")]
-    public IDictionary<string, object> VectorIndexConfig { get; set; } = new Dictionary<string, object>();
+    public object VectorIndexConfig { get; set; } = new object();
 
     /// <summary>
     /// Name of the vector index to use, eg. (HNSW).
