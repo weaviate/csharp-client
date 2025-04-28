@@ -18,8 +18,8 @@ public class DataClient<TData>
     {
         var dto = new Rest.Dto.WeaviateObject()
         {
-            Id = Guid.NewGuid(),
-            Class = data.CollectionName,
+            ID = data.ID ?? Guid.NewGuid(),
+            Class = _collectionName,
             Properties = data.Data,
             Vector = data.Vector?.Count == 0 ? null : data.Vector,
             Vectors = data.Vectors?.Count == 0 ? null : data.Vectors,
@@ -31,7 +31,7 @@ public class DataClient<TData>
 
         var response = await _client.RestClient.ObjectInsert(_collectionName, dto);
 
-        return response.Id!.Value;
+        return response.ID!.Value;
     }
 
     public async Task Delete(Guid id)

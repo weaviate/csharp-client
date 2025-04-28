@@ -31,10 +31,10 @@ public class CollectionClient<TData>
         ArgumentException.ThrowIfNullOrEmpty(name);
 
         _client = client;
-        _dataClient = new DataClient<TData>(this);
-        _queryClient = new QueryClient<TData>(this);
         _collectionName = _backingCollection?.Name ?? name;
         _backingCollection = _backingCollection ?? new Collection { Name = _collectionName };
+        _dataClient = new DataClient<TData>(this);
+        _queryClient = new QueryClient<TData>(this);
     }
 
     public async Task<Collection?> Get()

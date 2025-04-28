@@ -1,5 +1,6 @@
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Models;
+using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 
@@ -73,6 +74,23 @@ public class QueryClient<TData>
         {
             yield return r;
         }
+    }
+
+    public async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> NearVector(float[] vector, GroupByConstraint groupBy, float? distance = null,
+                                   float? certainty = null, uint? limit = null, string[]? fields = null,
+                                   string[]? metadata = null)
+    {
+        var results =
+            await _client.GrpcClient.SearchNearVectorWithGroupBy(
+                _collectionClient.Name,
+                vector,
+                groupBy,
+                distance: distance,
+                certainty: certainty,
+                limit: limit
+            );
+
+        return results;
     }
 
     #endregion
