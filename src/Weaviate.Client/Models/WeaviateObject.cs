@@ -61,3 +61,5 @@ public class WeaviateObject<TData> : WeaviateObject<TData, float>
 
     public WeaviateObject(string collectionName) : base(collectionName) { }
 }
+
+public class WeaviateObject : WeaviateObject<dynamic, float> { }
