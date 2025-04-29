@@ -39,9 +39,7 @@ jobs:
         run: /bin/bash ci/start_weaviate.sh ${{ env.WEAVIATE }}
       - name: Install dependencies
         run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore
       - name: Test with the dotnet CLI
-        run: dotnet test --no-build
+        run: dotnet test
       - name: stop weaviate
         run: /bin/bash ci/stop_weaviate.sh ${{ env.WEAVIATE }}
