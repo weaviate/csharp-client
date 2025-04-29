@@ -1,7 +1,3 @@
-# Ignore the proto directory.
-# Files here are placed by the ./tools/proto_sync.sh script.
-proto/
-
 .vscode/
 
 ## Ignore Visual Studio temporary files, build results, and
