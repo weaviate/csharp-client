@@ -95,7 +95,14 @@ public class WeaviateClientTest
         Assert.NotNull(retrieved);
         Assert.Equal("TestObject", retrieved.Data?.Name);
         Assert.Equal(id, retrieved.ID);
-    }
+
+        // delete after usage
+        await collection.Data.Delete(id);
+        retrieved = await collection.Query.FetchObjectByID(id);
+        Assert.Null(retrieved);
+   }
+
+
 
     [Fact]
     public async Task TestBasicNearVectorSearch()
