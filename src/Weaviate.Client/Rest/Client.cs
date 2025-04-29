@@ -51,15 +51,41 @@ public class LoggingHandler : DelegatingHandler
     }
 }
 
-public class WeaviateRestClient : IDisposable
+public class ExpectedStatusCodes
+{
+    public List<int> Ok { get; private set; }
+    public string Error { get; }
+
+    public ExpectedStatusCodes(object okIn, string error)
+    {
+        Error = error;
+        Ok = InitializeOk(okIn);
+    }
+
+    private List<int> InitializeOk(object okIn)
+    {
+        if (okIn is int singleCode)
+        {
+            return new List<int> { singleCode };
+        }
+        else if (okIn is List<int> codes)
+        {
+            return codes;
+        }
+        else
+        {
+            throw new ArgumentException("okIn must be either an int or a List<int>");
+        }
+    }
+}
+
+public class HttpClientWrapper : IDisposable
 {
     private readonly bool _ownershipClient;
     private readonly HttpClient _httpClient;
-    private WeaviateClient _client;
 
-    internal WeaviateRestClient(WeaviateClient client)
+    internal HttpClientWrapper(WeaviateClient client)
     {
-        _client = client;
         _ownershipClient = true;
         _httpClient = new HttpClient(new LoggingHandler(str =>
         {
@@ -77,9 +103,67 @@ public class WeaviateRestClient : IDisposable
         _httpClient.BaseAddress = ub.Uri;
     }
 
-    internal WeaviateRestClient(WeaviateClient client, HttpClient httpClient)
+    internal HttpClientWrapper(WeaviateClient client, HttpClient httpClient)
     {
-        _client = client;
+        _httpClient = httpClient;
+    }
+
+    public void Dispose()
+    {
+        if (_ownershipClient)
+        {
+            _httpClient.Dispose();
+        }
+    }
+
+    private void ValidateResponseStatusCode(HttpResponseMessage response, ExpectedStatusCodes expectedStatusCodes)
+    {
+        if (!expectedStatusCodes.Ok.Contains((int)response.StatusCode))
+        {
+            throw new HttpRequestException($"Unexpected status code: {response.StatusCode}. Expected one of: {string.Join(", ", expectedStatusCodes.Ok)}");
+        }
+    }
+
+    internal async Task<HttpResponseMessage> GetAsync(string requestUri, ExpectedStatusCodes expectedStatusCodes){
+        var response = await _httpClient.GetAsync(requestUri);
+
+        ValidateResponseStatusCode(response, expectedStatusCodes);
+
+        return response;
+    }
+
+    internal async Task<HttpResponseMessage> DeleteAsync(string requestUri, ExpectedStatusCodes expectedStatusCodes){
+        var response = await _httpClient.DeleteAsync(requestUri);
+
+        ValidateResponseStatusCode(response, expectedStatusCodes);
+
+        return response;
+    }
+
+    internal async Task<HttpResponseMessage> PostAsJsonAsync<TValue>(string? requestUri, TValue value, ExpectedStatusCodes expectedStatusCodes){
+        var response = await _httpClient.PostAsJsonAsync(requestUri, value);
+
+        ValidateResponseStatusCode(response, expectedStatusCodes);
+
+        return response;
+    }
+
+}
+
+
+public class WeaviateRestClient : IDisposable
+{
+    private readonly bool _ownershipClient;
+    private readonly HttpClientWrapper _httpClient;
+
+    internal WeaviateRestClient(WeaviateClient client)
+    {
+        _ownershipClient = true;
+        _httpClient = new HttpClientWrapper(client);
+    }
+
+    internal WeaviateRestClient(WeaviateClient client, HttpClientWrapper httpClient)
+    {
         _httpClient = httpClient;
     }
 
@@ -94,7 +178,7 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<ListCollectionResponse> CollectionList()
     {
-        var response = await _httpClient.GetAsync("schema");
+        var response = await _httpClient.GetAsync("schema", new ExpectedStatusCodes(new List<int> { 200 }, "collection list"));
 
         var contents = await response.Content.ReadFromJsonAsync<ListCollectionResponse>();
 
@@ -103,7 +187,7 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<CollectionGeneric> CollectionGet(string name)
     {
-        var response = await _httpClient.GetAsync($"schema/{name}");
+        var response = await _httpClient.GetAsync($"schema/{name}", new ExpectedStatusCodes(new List<int> { 200 }, "collection get"));
 
         if (response.Content.Headers.ContentLength == 0)
         {
@@ -124,12 +208,12 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task CollectionDelete(object name)
     {
-        await _httpClient.DeleteAsync($"schema/{name}");
+        await _httpClient.DeleteAsync($"schema/{name}", new ExpectedStatusCodes(new List<int> { 200 }, "collection delete"));
     }
 
     internal async Task<CollectionGeneric> CollectionCreate(CollectionGeneric collection)
     {
-        var response = await _httpClient.PostAsJsonAsync($"schema", collection);
+        var response = await _httpClient.PostAsJsonAsync($"schema", collection, new ExpectedStatusCodes(new List<int> { 200 }, "collection create"));
 
         var contents = await response.Content.ReadFromJsonAsync<CollectionGeneric>();
 
@@ -143,7 +227,7 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<WeaviateObject> ObjectInsert(string collectionName, WeaviateObject data)
     {
-        var response = await _httpClient.PostAsJsonAsync($"objects", data);
+        var response = await _httpClient.PostAsJsonAsync($"objects", data, new ExpectedStatusCodes(new List<int> { 200 }, "insert object"));
 
         var contents = await response.Content.ReadFromJsonAsync<WeaviateObject>();
 
@@ -157,6 +241,6 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task DeleteObject(string collectionName, Guid id)
     {
-        await _httpClient.DeleteAsync($"objects/{collectionName}/{id}");
+        await _httpClient.DeleteAsync($"objects/{collectionName}/{id}", new ExpectedStatusCodes(new List<int> { 204, 404 }, "delete object"));
     }
 }
