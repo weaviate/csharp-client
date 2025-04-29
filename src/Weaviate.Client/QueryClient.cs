@@ -55,9 +55,21 @@ public class QueryClient<TData>
 
     #region Search
 
-    public async Task<object> NearText(string text, int? limit = null)
+    public async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> NearText(string text, GroupByConstraint groupBy, float? distance = null,
+                                   float? certainty = null, uint? limit = null, string[]? fields = null,
+                                   string[]? metadata = null)
     {
-        return await Task.FromResult(new object { });
+        var results =
+            await _client.GrpcClient.SearchNearTextWithGroupBy(
+                _collectionClient.Name,
+                text,
+                groupBy,
+                distance: distance,
+                certainty: certainty,
+                limit: limit
+            );
+
+        return results;
     }
 
     public async IAsyncEnumerable<Rest.Dto.WeaviateObject> NearVector(float[] vector, float? distance = null, float? certainty = null, uint? limit = null, string[]? fields = null, string[]? metadata = null)
