@@ -24,7 +24,7 @@ public static class Filter
 
     internal static Filters And(IEnumerable<Filters> filters) => new Filters
     {
-        Operator = Filters.Types.Operator.Or,
+        Operator = Filters.Types.Operator.And,
         Filters_ = { filters }
     };
 }
