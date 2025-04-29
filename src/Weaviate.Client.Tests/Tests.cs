@@ -1,4 +1,3 @@
-using System.Numerics;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Models;
 
