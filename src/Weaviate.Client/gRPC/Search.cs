@@ -58,11 +58,6 @@ public partial class WeaviateGrpcClient
         }).ToList();
     }
 
-    public string SearchNearText(string text, int? limit = null)
-    {
-        return "";
-    }
-
     // TODO Find a way to make IntelliSense know that it's either Distance or Certainty, but not both.
     public async Task<IEnumerable<WeaviateObject>> SearchNearVector(string collection, float[] vector, float? distance = null, float? certainty = null, uint? limit = null)
     {
@@ -187,6 +182,67 @@ public partial class WeaviateGrpcClient
 
         var objects = groups.Values.SelectMany(g => g.Objects).ToList();
 
+
+        return (objects, groups);
+    }
+
+    internal async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> SearchNearTextWithGroupBy(string collection, string query, GroupByConstraint groupBy, float? distance, float? certainty, uint? limit)
+    {
+        var request = BaseSearchRequest(collection, filter: null, limit: limit);
+
+        request.GroupBy = new GroupBy()
+        {
+            Path = { groupBy.PropertyName },
+            NumberOfGroups = Convert.ToInt32(groupBy.NumberOfGroups),
+            ObjectsPerGroup = Convert.ToInt32(groupBy.ObjectsPerGroup),
+        };
+
+        request.NearText = new NearTextSearch
+        {
+            Query = { query },
+            // Targets = null,
+            // VectorForTargets = { },
+        };
+
+        if (distance.HasValue)
+        {
+            request.NearText.Distance = distance.Value;
+        }
+
+        if (certainty.HasValue)
+        {
+            request.NearText.Certainty = certainty.Value;
+        }
+
+
+        SearchReply? reply = await _grpcClient.SearchAsync(request);
+
+        if (!reply.GroupByResults.Any())
+        {
+            return (new List<WeaviateGroupByObject>(), new Dictionary<string, WeaviateGroup>());
+        }
+
+        var groupsEnum = reply.GroupByResults.Select(v => new WeaviateGroup()
+        {
+            Name = v.Name,
+            Objects = v.Objects.Select(obj => new WeaviateGroupByObject
+            {
+                ID = Guid.Parse(obj.Metadata.Id),
+                Vector = obj.Metadata.Vector,
+                Vectors = obj.Metadata.Vectors.ToDictionary(v => v.Name, v =>
+                {
+                    using (var ms = new MemoryStream(v.VectorBytes.ToByteArray()))
+                    {
+                        return ms.FromStream<float>().ToList().AsEnumerable();
+                    }
+                }),
+                Properties = buildObjectFromProperties(obj.Properties.NonRefProps),
+                BelongsToGroup = v.Name,
+            }).ToArray()
+        });
+
+        var groups = groupsEnum.ToDictionary(k => k.Name, v => v);
+        var objects = groupsEnum.SelectMany(g => g.Objects);
 
         return (objects, groups);
     }

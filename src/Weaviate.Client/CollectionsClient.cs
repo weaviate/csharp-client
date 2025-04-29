@@ -1,3 +1,4 @@
+
 namespace Weaviate.Client;
 
 public struct CollectionsClient
@@ -9,15 +10,25 @@ public struct CollectionsClient
         _client = client;
     }
 
-    public async Task<CollectionClient<TData>> Create<TData>(Action<Models.Collection> collectionConfigurator)
+    public async Task<CollectionClient<dynamic>> Create(Models.Collection collection)
     {
-        var collection = new Models.Collection();
+        var response = await _client.RestClient.CollectionCreate(collection.ToDto());
 
-        collectionConfigurator(collection);
+        return new CollectionClient<dynamic>(_client, response.ToModel());
+    }
 
+    public async Task<CollectionClient<TData>> Create<TData>(Models.Collection collection)
+    {
         var response = await _client.RestClient.CollectionCreate(collection.ToDto());
 
         return new CollectionClient<TData>(_client, response.ToModel());
+    }
+
+    public async Task Delete(string collectionName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(collectionName);
+
+        await _client.RestClient.CollectionDelete(collectionName);
     }
 
     public async IAsyncEnumerable<Models.Collection> List()
@@ -28,6 +39,11 @@ public struct CollectionsClient
         {
             yield return c.ToModel();
         }
+    }
+
+    public CollectionClient<dynamic> Use(string name)
+    {
+        return new CollectionClient<dynamic>(_client, name);
     }
 
     public CollectionClient<TData> Use<TData>(string? name = null)
