@@ -1,5 +1,5 @@
 using Google.Protobuf;
-using Weaviate.Client.Rest.Dto;
+using Weaviate.Client.Models;
 using Weaviate.V1;
 
 namespace Weaviate.Client.Grpc;
@@ -32,7 +32,7 @@ public partial class WeaviateGrpcClient
         };
     }
 
-    internal async Task<IList<WeaviateObject>> FetchObjects(string collection, Filters? filter = null, uint? limit = null)
+    internal async Task<IList<Models.WeaviateObject>> FetchObjects(string collection, Filters? filter = null, uint? limit = null)
     {
         var req = BaseSearchRequest(collection, filter, limit);
 
@@ -43,7 +43,7 @@ public partial class WeaviateGrpcClient
             return [];
         }
 
-        return reply.Results.Select(result => new WeaviateObject
+        return reply.Results.Select(result => new Models.WeaviateObject(collection)
         {
             ID = Guid.Parse(result.Metadata.Id),
             Vector = result.Metadata.Vector,
@@ -51,15 +51,15 @@ public partial class WeaviateGrpcClient
             {
                 using (var ms = new MemoryStream(v.VectorBytes.ToByteArray()))
                 {
-                    return ms.FromStream<float>().ToList().AsEnumerable();
+                    return (IList<float>)ms.FromStream<float>().ToList();
                 }
             }),
-            Properties = buildObjectFromProperties(result.Properties.NonRefProps),
+            Data = buildObjectFromProperties(result.Properties.NonRefProps),
         }).ToList();
     }
 
     // TODO Find a way to make IntelliSense know that it's either Distance or Certainty, but not both.
-    public async Task<IEnumerable<WeaviateObject>> SearchNearVector(string collection, float[] vector, float? distance = null, float? certainty = null, uint? limit = null)
+    public async Task<IEnumerable<Models.WeaviateObject>> SearchNearVector(string collection, float[] vector, float? distance = null, float? certainty = null, uint? limit = null)
     {
         var request = BaseSearchRequest(collection, filter: null, limit: limit);
 
@@ -99,7 +99,7 @@ public partial class WeaviateGrpcClient
             return [];
         }
 
-        return reply.Results.Select(result => new WeaviateObject
+        return reply.Results.Select(result => new Models.WeaviateObject(collection)
         {
             ID = Guid.Parse(result.Metadata.Id),
             Vector = result.Metadata.Vector,
@@ -107,14 +107,14 @@ public partial class WeaviateGrpcClient
             {
                 using (var ms = new MemoryStream(v.VectorBytes.ToByteArray()))
                 {
-                    return ms.FromStream<float>().ToList().AsEnumerable();
+                    return (IList<float>)ms.FromStream<float>().ToList();
                 }
             }),
-            Properties = buildObjectFromProperties(result.Properties.NonRefProps),
+            Data = buildObjectFromProperties(result.Properties.NonRefProps),
         }).ToList();
     }
 
-    public async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> SearchNearVectorWithGroupBy(string collection, float[] vector, GroupByConstraint groupBy, float? distance = null, float? certainty = null, uint? limit = null)
+    public async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> SearchNearVectorWithGroupBy(string collection, float[] vector, Models.GroupByConstraint groupBy, float? distance = null, float? certainty = null, uint? limit = null)
     {
         var request = BaseSearchRequest(collection, filter: null, limit: limit);
 
@@ -164,7 +164,7 @@ public partial class WeaviateGrpcClient
         var groups = reply.GroupByResults.ToDictionary(k => k.Name, v => new WeaviateGroup()
         {
             Name = v.Name,
-            Objects = v.Objects.Select(obj => new WeaviateGroupByObject
+            Objects = v.Objects.Select(obj => new WeaviateGroupByObject(collection)
             {
                 ID = Guid.Parse(obj.Metadata.Id),
                 Vector = obj.Metadata.Vector,
@@ -172,10 +172,10 @@ public partial class WeaviateGrpcClient
                 {
                     using (var ms = new MemoryStream(v.VectorBytes.ToByteArray()))
                     {
-                        return ms.FromStream<float>().ToList().AsEnumerable();
+                        return (IList<float>)ms.FromStream<float>().ToList();
                     }
                 }),
-                Properties = buildObjectFromProperties(obj.Properties.NonRefProps),
+                Data = buildObjectFromProperties(obj.Properties.NonRefProps),
                 BelongsToGroup = v.Name,
             }).ToArray()
         });
@@ -186,7 +186,7 @@ public partial class WeaviateGrpcClient
         return (objects, groups);
     }
 
-    internal async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> SearchNearTextWithGroupBy(string collection, string query, GroupByConstraint groupBy, float? distance, float? certainty, uint? limit)
+    internal async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> SearchNearTextWithGroupBy(string collection, string query, Models.GroupByConstraint groupBy, float? distance, float? certainty, uint? limit)
     {
         var request = BaseSearchRequest(collection, filter: null, limit: limit);
 
@@ -225,7 +225,7 @@ public partial class WeaviateGrpcClient
         var groupsEnum = reply.GroupByResults.Select(v => new WeaviateGroup()
         {
             Name = v.Name,
-            Objects = v.Objects.Select(obj => new WeaviateGroupByObject
+            Objects = v.Objects.Select(obj => new WeaviateGroupByObject(collection)
             {
                 ID = Guid.Parse(obj.Metadata.Id),
                 Vector = obj.Metadata.Vector,
@@ -233,10 +233,10 @@ public partial class WeaviateGrpcClient
                 {
                     using (var ms = new MemoryStream(v.VectorBytes.ToByteArray()))
                     {
-                        return ms.FromStream<float>().ToList().AsEnumerable();
+                        return (IList<float>)ms.FromStream<float>().ToList();
                     }
                 }),
-                Properties = buildObjectFromProperties(obj.Properties.NonRefProps),
+                Data = buildObjectFromProperties(obj.Properties.NonRefProps),
                 BelongsToGroup = v.Name,
             }).ToArray()
         });
