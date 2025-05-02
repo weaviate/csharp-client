@@ -6,7 +6,7 @@ namespace Weaviate.Client.Rest.Dto;
 /// <summary>
 /// Represents a Weaviate object with its associated properties and metadata.
 /// </summary>
-public class WeaviateObject
+public record WeaviateObject
 {
     /// <summary>
     /// Additional properties associated with the object.

@@ -7,6 +7,11 @@ internal class TestData
     public string Name { get; set; } = string.Empty;
 }
 
+internal class TestDataValue
+{
+    public string Value { get; set; } = string.Empty;
+}
+
 [Collection("BasicTests")]
 public class WeaviateClientTest : IDisposable
 {
@@ -15,6 +20,11 @@ public class WeaviateClientTest : IDisposable
     public WeaviateClientTest()
     {
         _weaviate = new WeaviateClient();
+    }
+
+    public void Dispose()
+    {
+        _weaviate.Dispose();
     }
 
     async Task<CollectionClient<TData>> CollectionFactory<TData>(string name, string description, IList<Property> properties, IDictionary<string, VectorConfig>? vectorConfig = null)
@@ -57,6 +67,14 @@ public class WeaviateClientTest : IDisposable
     async Task<CollectionClient<dynamic>> CollectionFactory(string name, string description, IList<Property> properties, IDictionary<string, VectorConfig>? vectorConfig = null)
     {
         return await CollectionFactory<dynamic>(name, description, properties, vectorConfig);
+    }
+
+    WeaviateObject<TData> DataFactory<TData>(TData value)
+    {
+        return new WeaviateObject<TData>()
+        {
+            Data = value
+        };
     }
 
     [Fact]
@@ -110,21 +128,21 @@ public class WeaviateClientTest : IDisposable
     public async Task TestBasicNearVectorSearch()
     {
         // Arrange
-        var collectionClient = await CollectionFactory("", "Test collection description", [
+        var collectionClient = await CollectionFactory<TestData>("", "Test collection description", [
             Property.Text("Name")
         ]);
 
         // Act
-        await collectionClient.Data.Insert(new WeaviateObject<dynamic>()
+        await collectionClient.Data.Insert(new WeaviateObject<TestData>()
         {
-            Data = new { Name = "TestObject1" },
+            Data = new TestData { Name = "TestObject1" },
             Vectors = new Dictionary<string, IList<float>>
             {
                 { "default", new float[] { 0.1f, 0.2f, 0.3f } }
             }
         });
 
-        await collectionClient.Data.Insert(new WeaviateObject<dynamic>()
+        await collectionClient.Data.Insert(new WeaviateObject<TestData>()
         {
             Data = new TestData { Name = "TestObject2" },
             Vectors = new Dictionary<string, IList<float>>
@@ -133,7 +151,7 @@ public class WeaviateClientTest : IDisposable
             }
         });
 
-        await collectionClient.Data.Insert(new WeaviateObject<dynamic>()
+        await collectionClient.Data.Insert(new WeaviateObject<TestData>()
         {
             Data = new TestData { Name = "TestObject3" },
             Vectors = new Dictionary<string, IList<float>>
@@ -148,10 +166,55 @@ public class WeaviateClientTest : IDisposable
 
         await foreach (var obj in retrieved)
         {
-            var lobj = obj.ToWeaviateObject<TestData>();
-            Assert.Equal("TestObject1", lobj.Data!.Name);
+            Assert.Equal("TestObject1", obj.Data!.Name);
             break;
         }
+    }
+
+    [Fact]
+    public async Task TestBasicNearTextSearch()
+    {
+        // Arrange
+        var collectionClient = await CollectionFactory<TestDataValue>("", "Test collection description", [
+            Property.Text("value")
+        ], new Dictionary<string, VectorConfig>
+        {
+            {
+                "default", new VectorConfig
+                {
+                    Vectorizer = new Dictionary<string, object> {
+                        {
+                            "text2vec-contextionary", new {
+                                vectorizeClassName = false
+                            }
+                        }
+                    },
+                    VectorIndexType = "hnsw"
+                }
+            }
+        });
+
+        string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
+        var tasks = values.Select(s => new TestDataValue { Value = s }).Select(DataFactory).Select(collectionClient.Data.Insert);
+        Guid[] guids = await Task.WhenAll(tasks);
+        var concepts = "hiking";
+
+        // Act
+        var retriever = collectionClient.Query.NearText(
+            "cake",
+            moveTo: new Move(1.0f, objects: guids[0]),
+            moveAway: new Move(0.5f, concepts: concepts),
+            fields: ["value"]
+        );
+        var retrieved = await retriever.ToListAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.NotNull(retrieved);
+        Assert.Equal(4, retrieved.Count());
+
+        Assert.Equal(retrieved[0].ID, guids[2]);
+        Assert.Contains("default", retrieved[0].Vectors.Keys);
+        Assert.Equal("apple cake", retrieved[0].Data?.Value);
     }
 
     [Fact]
@@ -165,35 +228,21 @@ public class WeaviateClientTest : IDisposable
             {
                 "default", new VectorConfig
                 {
-                    Vectorizer = new Dictionary<string, object> { { "text2vec-contextionary", new {
-                        vectorizeClassName = false
-                     } } },
+                    Vectorizer = new Dictionary<string, object> {
+                        {
+                            "text2vec-contextionary", new {
+                                vectorizeClassName = false
+                            }
+                        }
+                    },
                     VectorIndexType = "hnsw"
                 }
             }
         });
 
-        Guid[] objects = [
-            await collectionClient.Data.Insert(new WeaviateObject<dynamic>()
-            {
-                Data = new { Value = "Apple" },
-            }),
-
-            await collectionClient.Data.Insert(new WeaviateObject<dynamic>()
-            {
-                Data = new { Value = "Mountain climbing" },
-            }),
-
-            await collectionClient.Data.Insert(new WeaviateObject<dynamic>()
-            {
-                Data = new { Value = "apple cake" },
-            }),
-
-            await collectionClient.Data.Insert(new WeaviateObject<dynamic>()
-            {
-                Data = new { Value = "cake" },
-            })
-        ];
+        string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
+        var tasks = values.Select(s => new { Value = s }).Select(DataFactory<dynamic>).Select(collectionClient.Data.Insert);
+        Guid[] guids = await Task.WhenAll(tasks);
 
         // Act
         var retrieved = await collectionClient.Query.NearText(
@@ -207,29 +256,24 @@ public class WeaviateClientTest : IDisposable
         );
 
         // Assert
-        Assert.NotNull(retrieved.Item1);
-        Assert.NotNull(retrieved.Item2);
+        Assert.NotNull(retrieved.Objects);
+        Assert.NotNull(retrieved.Groups);
 
-        var retrievedObjects = retrieved.Item1.ToArray();
+        var retrievedObjects = retrieved.Objects.ToArray();
 
-        Assert.Equal(2, retrieved.Item1.Count());
-        Assert.Equal(2, retrieved.Item2.Count());
+        Assert.Equal(2, retrieved.Objects.Count());
+        Assert.Equal(2, retrieved.Groups.Count());
 
-        var obj = await collectionClient.Query.FetchObjectByID(objects[3]);
+        var obj = await collectionClient.Query.FetchObjectByID(guids[3]);
         Assert.NotNull(obj);
-        Assert.Equal(objects[3], obj.ID);
+        Assert.Equal(guids[3], obj.ID);
         Assert.Contains("default", obj.Vectors.Keys);
 
-        Assert.Equal(objects[3], retrievedObjects[0].ID);
+        Assert.Equal(guids[3], retrievedObjects[0].ID);
         Assert.Contains("default", retrievedObjects[0].Vectors.Keys);
         Assert.Equal("cake", retrievedObjects[0].BelongsToGroup);
-        Assert.Equal(objects[2], retrievedObjects[1].ID);
+        Assert.Equal(guids[2], retrievedObjects[1].ID);
         Assert.Contains("default", retrievedObjects[1].Vectors.Keys);
         Assert.Equal("apple cake", retrievedObjects[1].BelongsToGroup);
-    }
-
-    public void Dispose()
-    {
-        _weaviate.Dispose();
     }
 }
