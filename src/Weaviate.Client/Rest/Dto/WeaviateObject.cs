@@ -81,5 +81,5 @@ public class WeaviateObject
     /// Vectors associated with the Object.
     /// </summary>
     [JsonPropertyName("vectors")]
-    public IDictionary<string, IEnumerable<float>>? Vectors { get; set; } = new Dictionary<string, IEnumerable<float>>();
+    public IDictionary<string, IList<float>>? Vectors { get; set; } = new Dictionary<string, IList<float>>();
 }

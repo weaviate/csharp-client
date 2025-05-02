@@ -1,4 +1,3 @@
-using Weaviate.Client.Grpc;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
