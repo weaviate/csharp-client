@@ -44,34 +44,65 @@ public static class WeaviateExtensions
         };
     }
 
+    public static WeaviateObject<T> ToWeaviateObject<T>(this Models.WeaviateObject data)
+    {
+        var obj = (T)BuildConcreteTypeObjectFromProperties<T>(data.Data);
+
+        return new WeaviateObject<T>(data.CollectionName ?? string.Empty)
+        {
+            Data = obj,
+            ID = data.ID,
+            Additional = data.Additional,
+            CreationTime = data.CreationTime,
+            LastUpdateTime = data.LastUpdateTime,
+            Tenant = data.Tenant,
+            Vector = data.Vector,
+            Vectors = data.Vectors,
+        };
+    }
+
     internal static T? BuildConcreteTypeObjectFromProperties<T>(object? data)
     {
-        T? props = default;
-
         switch (data)
         {
             case JsonElement properties:
-                props = properties.Deserialize<T>(_defaultJsonSerializationOptions);
-                break;
-            case IDictionary<string, object?> dict:
-                props = UnmarshallProperties<T>(dict);
-                break;
+                return properties.Deserialize<T>(_defaultJsonSerializationOptions);
+            case IDictionary<string, object> dict:
+                return UnmarshallProperties<T>(dict);
             case null:
-                return props;
+                return default;
             default:
                 throw new NotSupportedException($"Unsupported type for properties: {data?.GetType()}");
         }
-
-        return props;
     }
 
-    private static T? UnmarshallProperties<T>(IDictionary<string, object?> dict)
+    private static T? UnmarshallProperties<T>(IDictionary<string, object> dict)
     {
         if (dict == null)
             throw new ArgumentNullException(nameof(dict));
 
         // Create an instance of T using the default constructor
         var props = Activator.CreateInstance<T>();
+
+        if (typeof(T) == typeof(IDictionary<string, object>))
+        {
+            var target = (IDictionary<string, object>)props;
+
+            foreach (var kvp in dict)
+            {
+                if (kvp.Value is IDictionary<string, object> subDict)
+                {
+                    dynamic? v = UnmarshallProperties<dynamic>(subDict);
+
+                    target[Capitalize(kvp.Key)] = v ?? subDict;
+                }
+                else
+                {
+                    target[Capitalize(kvp.Key)] = kvp.Value;
+                }
+            }
+            return props;
+        }
 
         var type = typeof(T);
         var properties = type.GetProperties();
@@ -255,15 +286,13 @@ public static class WeaviateExtensions
         };
     }
 
-    internal static IEnumerable<T> FromStream<T>(this Stream stream) where T : struct
+    internal static IEnumerable<T> FromByteString<T>(this Google.Protobuf.ByteString byteString) where T : struct
     {
-        // Ensure the stream is readable and seekable for the Length check
-        if (!stream.CanRead)
-            throw new ArgumentException("Stream must be readable.", nameof(stream));
-        if (!stream.CanSeek)
-            throw new ArgumentException("Stream must be seekable to check Length.", nameof(stream));
+        using var stream = new MemoryStream();
 
-        // Keep the stream open after the reader is disposed
+        byteString.WriteTo(stream);
+        stream.Seek(0, SeekOrigin.Begin); // Reset the stream position to the beginning
+
         using var reader = new BinaryReader(stream);
 
         while (stream.Position < stream.Length)
@@ -308,12 +337,11 @@ public static class WeaviateExtensions
         return stream;
     }
 
-    internal static byte[] ToByteArray<T>(this IEnumerable<T> items) where T : struct
+    internal static Google.Protobuf.ByteString ToByteString<T>(this IEnumerable<T> items) where T : struct
     {
-        using (var stream = items.ToStream())
-        {
-            return stream.ToArray();
-        }
+        using var stream = items.ToStream();
+
+        return Google.Protobuf.ByteString.FromStream(stream);
     }
 
     public static string Capitalize(this string str)
