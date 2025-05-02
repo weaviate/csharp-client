@@ -45,9 +45,10 @@ public partial class WeaviateGrpcClient : IDisposable
         }
     }
 
-    private static object? buildObjectFromProperties(Properties result)
+    private static ExpandoObject buildObjectFromProperties(Properties result)
     {
-        var eo = new ExpandoObject() as IDictionary<string, object>;
+        var eoBase = new ExpandoObject();
+        var eo = eoBase as IDictionary<string, object>;
 
         foreach (var r in result.Fields)
         {
@@ -96,7 +97,7 @@ public partial class WeaviateGrpcClient : IDisposable
             }
         }
 
-        return eo;
+        return eoBase;
     }
 
     public void Dispose()

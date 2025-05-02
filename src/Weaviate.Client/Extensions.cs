@@ -12,6 +12,23 @@ public static class WeaviateExtensions
         WriteIndented = true, // For readability
     };
 
+    public static WeaviateObject<T> ToWeaviateObject<T>(this WeaviateObject<dynamic> data)
+    {
+        var obj = (T)BuildConcreteTypeObjectFromProperties<T>(data.Data);
+
+        return new WeaviateObject<T>(data.CollectionName ?? string.Empty)
+        {
+            Data = obj,
+            ID = data.ID,
+            Additional = data.Additional,
+            CreationTime = data.CreationTime,
+            LastUpdateTime = data.LastUpdateTime,
+            Tenant = data.Tenant,
+            Vector = data.Vector,
+            Vectors = data.Vectors,
+        };
+    }
+
     public static WeaviateObject<T> ToWeaviateObject<T>(this Rest.Dto.WeaviateObject data)
     {
         return new WeaviateObject<T>(data.Class ?? string.Empty)
@@ -86,12 +103,17 @@ public static class WeaviateExtensions
         return props;
     }
 
+    internal static IEnumerable<WeaviateObject<T>> ToObjects<T>(this IEnumerable<WeaviateObject<dynamic>> list)
+    {
+        return list.Select(ToWeaviateObject<T>);
+    }
+
     internal static IEnumerable<WeaviateObject<T>> ToObjects<T>(this IEnumerable<Rest.Dto.WeaviateObject> list)
     {
         return list.Select(ToWeaviateObject<T>);
     }
 
-    internal static Rest.Dto.CollectionGeneric ToDto(this Models.Collection collection)
+    internal static Rest.Dto.CollectionGeneric ToDto(this Collection collection)
     {
         var data = new Rest.Dto.CollectionGeneric()
         {
@@ -124,7 +146,7 @@ public static class WeaviateExtensions
             });
         }
 
-        if (collection.ReplicationConfig is Models.ReplicationConfig rc)
+        if (collection.ReplicationConfig is ReplicationConfig rc)
         {
             data.ReplicationConfig = new Rest.Dto.ReplicationConfig()
             {
@@ -134,7 +156,7 @@ public static class WeaviateExtensions
             };
         }
 
-        if (collection.MultiTenancyConfig is Models.MultiTenancyConfig mtc)
+        if (collection.MultiTenancyConfig is MultiTenancyConfig mtc)
         {
             data.MultiTenancyConfig = new Rest.Dto.MultiTenancyConfig()
             {
@@ -169,27 +191,27 @@ public static class WeaviateExtensions
         return data;
     }
 
-    internal static Models.Collection ToModel(this Rest.Dto.CollectionGeneric collection)
+    internal static Collection ToModel(this Rest.Dto.CollectionGeneric collection)
     {
-        return new Models.Collection()
+        return new Collection()
         {
             Name = collection.Class,
             Description = collection.Description,
-            Properties = collection.Properties.Select(p => new Models.Property()
+            Properties = collection.Properties.Select(p => new Property()
             {
                 Name = p.Name,
                 DataType = p.DataType.ToList()
             }).ToList(),
             InvertedIndexConfig = (collection.InvertedIndexConfig is Rest.Dto.InvertedIndexConfig iic)
-                ? new Models.InvertedIndexConfig()
+                ? new InvertedIndexConfig()
                 {
-                    Bm25 = iic.Bm25 == null ? null : new Models.BM25Config
+                    Bm25 = iic.Bm25 == null ? null : new BM25Config
                     {
                         B = iic.Bm25.B,
                         K1 = iic.Bm25.K1,
                     },
                     Stopwords = (iic.Stopwords is Rest.Dto.StopwordConfig swc)
-                    ? new Models.StopwordConfig
+                    ? new StopwordConfig
                     {
                         Additions = swc.Additions,
                         Preset = swc.Preset,
@@ -203,14 +225,14 @@ public static class WeaviateExtensions
             ShardingConfig = collection.ShardingConfig,
             ModuleConfig = collection.ModuleConfig,
             ReplicationConfig = (collection.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
-                ? new Models.ReplicationConfig
+                ? new ReplicationConfig
                 {
                     AsyncEnabled = rc.AsyncEnabled,
                     Factor = rc.Factor,
-                    DeletionStrategy = (Models.DeletionStrategy?)rc.DeletionStrategy,
+                    DeletionStrategy = (DeletionStrategy?)rc.DeletionStrategy,
                 } : null,
             MultiTenancyConfig = (collection.MultiTenancyConfig is Rest.Dto.MultiTenancyConfig mtc)
-                ? new Models.MultiTenancyConfig
+                ? new MultiTenancyConfig
                 {
                     Enabled = mtc.Enabled,
                     AutoTenantActivation = mtc.AutoTenantActivation,
@@ -220,13 +242,13 @@ public static class WeaviateExtensions
                 collection.VectorConfig?.ToList()
                 .ToDictionary(
                     e => e.Key,
-                    e => new Models.VectorConfig
+                    e => new VectorConfig
                     {
                         VectorIndexConfig = e.Value.VectorIndexConfig,
                         VectorIndexType = e.Value.VectorIndexType,
                         Vectorizer = e.Value.Vectorizer,
                     }
-                    ) ?? new Dictionary<string, Models.VectorConfig>(),
+                    ) ?? new Dictionary<string, VectorConfig>(),
             Vectorizer = collection.Vectorizer,
             VectorIndexType = collection.VectorIndexType,
             VectorIndexConfig = collection.VectorIndexConfig,

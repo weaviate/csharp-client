@@ -55,7 +55,7 @@ public class QueryClient<TData>
 
     #region Search
 
-    public async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> NearText(string text, GroupByConstraint groupBy, float? distance = null,
+    public async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> NearText(string text, Models.GroupByConstraint groupBy, float? distance = null,
                                    float? certainty = null, uint? limit = null, string[]? fields = null,
                                    string[]? metadata = null)
     {
@@ -72,7 +72,7 @@ public class QueryClient<TData>
         return results;
     }
 
-    public async IAsyncEnumerable<Rest.Dto.WeaviateObject> NearVector(float[] vector, float? distance = null, float? certainty = null, uint? limit = null, string[]? fields = null, string[]? metadata = null)
+    public async IAsyncEnumerable<Models.WeaviateObject> NearVector(float[] vector, float? distance = null, float? certainty = null, uint? limit = null, string[]? fields = null, string[]? metadata = null)
     {
         var results =
             await _client.GrpcClient.SearchNearVector(
@@ -88,7 +88,7 @@ public class QueryClient<TData>
         }
     }
 
-    public async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> NearVector(float[] vector, GroupByConstraint groupBy, float? distance = null,
+    public async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> NearVector(float[] vector, Models.GroupByConstraint groupBy, float? distance = null,
                                    float? certainty = null, uint? limit = null, string[]? fields = null,
                                    string[]? metadata = null)
     {

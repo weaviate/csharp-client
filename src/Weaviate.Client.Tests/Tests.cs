@@ -1,4 +1,3 @@
-using Weaviate.Client.Grpc;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests;
@@ -119,7 +118,7 @@ public class WeaviateClientTest : IDisposable
         await collectionClient.Data.Insert(new WeaviateObject<dynamic>()
         {
             Data = new { Name = "TestObject1" },
-            Vectors = new Dictionary<string, IEnumerable<float>>
+            Vectors = new Dictionary<string, IList<float>>
             {
                 { "default", new float[] { 0.1f, 0.2f, 0.3f } }
             }
@@ -128,7 +127,7 @@ public class WeaviateClientTest : IDisposable
         await collectionClient.Data.Insert(new WeaviateObject<dynamic>()
         {
             Data = new TestData { Name = "TestObject2" },
-            Vectors = new Dictionary<string, IEnumerable<float>>
+            Vectors = new Dictionary<string, IList<float>>
             {
                 { "default", new float[] { 0.3f, 0.4f, 0.5f } }
             }
@@ -137,7 +136,7 @@ public class WeaviateClientTest : IDisposable
         await collectionClient.Data.Insert(new WeaviateObject<dynamic>()
         {
             Data = new TestData { Name = "TestObject3" },
-            Vectors = new Dictionary<string, IEnumerable<float>>
+            Vectors = new Dictionary<string, IList<float>>
             {
                 { "default", new float[] { 0.5f, 0.6f, 0.7f } }
             }
