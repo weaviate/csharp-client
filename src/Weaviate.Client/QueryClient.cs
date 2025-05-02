@@ -46,21 +46,53 @@ public class QueryClient<TData>
     {
         var list = await _client.GrpcClient.FetchObjects(_collectionName, limit: limit, filter: Filter.WithIDs(ids));
 
-        foreach (var data in list.ToObjects<TData>())
+        foreach (var r in list.Select(x => x.ToWeaviateObject<TData>()))
         {
-            yield return data;
+            yield return r;
         }
     }
     #endregion
 
     #region Search
 
-    public async Task<object> NearText(string text, int? limit = null)
+    public async IAsyncEnumerable<WeaviateObject<TData>> NearText(string text, float? distance = null, float? certainty = null, uint? limit = null, string[]? fields = null,
+                                   string[]? metadata = null, Move? moveTo = null, Move? moveAway = null)
     {
-        return await Task.FromResult(new object { });
+        var results =
+            await _client.GrpcClient.SearchNearText(
+                _collectionClient.Name,
+                text,
+                distance: distance,
+                certainty: certainty,
+                limit: limit,
+                moveTo: moveTo,
+                moveAway: moveAway
+            );
+
+        foreach (var r in results.Select(x => x.ToWeaviateObject<TData>()))
+        {
+            yield return r;
+        }
     }
 
-    public async IAsyncEnumerable<Rest.Dto.WeaviateObject> NearVector(float[] vector, float? distance = null, float? certainty = null, uint? limit = null, string[]? fields = null, string[]? metadata = null)
+    public async Task<GroupByResult> NearText(string text, Models.GroupByConstraint groupBy, float? distance = null,
+                                   float? certainty = null, uint? limit = null, string[]? fields = null,
+                                   string[]? metadata = null)
+    {
+        var results =
+            await _client.GrpcClient.SearchNearText(
+                _collectionClient.Name,
+                text,
+                groupBy,
+                distance: distance,
+                certainty: certainty,
+                limit: limit
+            );
+
+        return results;
+    }
+
+    public async IAsyncEnumerable<WeaviateObject<TData>> NearVector(float[] vector, float? distance = null, float? certainty = null, uint? limit = null, string[]? fields = null, string[]? metadata = null)
     {
         var results =
             await _client.GrpcClient.SearchNearVector(
@@ -70,18 +102,19 @@ public class QueryClient<TData>
                 certainty: certainty,
                 limit: limit
             );
+
         foreach (var r in results)
         {
-            yield return r;
+            yield return r.ToWeaviateObject<TData>();
         }
     }
 
-    public async Task<(IEnumerable<WeaviateGroupByObject>, IDictionary<string, WeaviateGroup>)> NearVector(float[] vector, GroupByConstraint groupBy, float? distance = null,
+    public async Task<GroupByResult> NearVector(float[] vector, GroupByConstraint groupBy, float? distance = null,
                                    float? certainty = null, uint? limit = null, string[]? fields = null,
                                    string[]? metadata = null)
     {
         var results =
-            await _client.GrpcClient.SearchNearVectorWithGroupBy(
+            await _client.GrpcClient.SearchNearVector(
                 _collectionClient.Name,
                 vector,
                 groupBy,

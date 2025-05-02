@@ -6,7 +6,7 @@ namespace Weaviate.Client.Rest.Dto;
 /// <summary>
 /// Represents a Weaviate object with its associated properties and metadata.
 /// </summary>
-public class WeaviateObject
+public record WeaviateObject
 {
     /// <summary>
     /// Additional properties associated with the object.
@@ -81,5 +81,5 @@ public class WeaviateObject
     /// Vectors associated with the Object.
     /// </summary>
     [JsonPropertyName("vectors")]
-    public IDictionary<string, IEnumerable<float>>? Vectors { get; set; } = new Dictionary<string, IEnumerable<float>>();
+    public IDictionary<string, IList<float>>? Vectors { get; set; } = new Dictionary<string, IList<float>>();
 }
