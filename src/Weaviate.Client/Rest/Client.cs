@@ -36,15 +36,15 @@ public class LoggingHandler : DelegatingHandler
 
         _log($"Response: {response.StatusCode}");
 
+        foreach (var header in response.Headers)
+        {
+            _log($"Response Header: {header.Key}: {string.Join(", ", header.Value)}");
+        }
+
         if (response.Content != null)
         {
             var responseContent = await response.Content.ReadAsStringAsync();
             _log($"Response Content: {responseContent}");
-        }
-
-        foreach (var header in response.Headers)
-        {
-            _log($"Response Header: {header.Key}: {string.Join(", ", header.Value)}");
         }
 
         return response;
