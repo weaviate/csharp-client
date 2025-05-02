@@ -13,17 +13,30 @@ internal class TestDataValue
 }
 
 [Collection("BasicTests")]
-public class WeaviateClientTest : IDisposable
+public class WeaviateClientTest : IAsyncDisposable
 {
+    const bool _deleteCollectionsAfterTest = true;
+
+    private readonly ITestOutputHelper _output;
+    private readonly TestTraceListener _listener;
     WeaviateClient _weaviate;
 
-    public WeaviateClientTest()
+    public WeaviateClientTest(ITestOutputHelper output)
     {
         _weaviate = new WeaviateClient();
+        _output = output;
+
+        _listener = new TestTraceListener(_output);
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
+        if (_deleteCollectionsAfterTest && TestContext.Current.TestMethod?.MethodName is not null)
+        {
+            await _weaviate.Collections.Delete(TestContext.Current.TestMethod!.MethodName);
+        }
+
+        _listener.Dispose();
         _weaviate.Dispose();
     }
 
