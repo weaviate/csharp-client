@@ -101,13 +101,15 @@ class Program
             { "default", vectorizerConfigNone }
         };
 
-        collection = await weaviate.Collections.Create<Cat>(c =>
+        var catCollection = new Collection()
         {
-            c.Description = "Lots of Cats of multiple breeds";
-            c.Name = "Cat";
-            c.Properties = [Property.Text("Name"), Property.Text("Color"), Property.Text("Breed"), Property.Int("Counter")];
-            c.VectorConfig = VectorConfigs;
-        });
+            Name = "Cat",
+            Description = "Lots of Cats of multiple breeds",
+            Properties = [Property.Text("Name"), Property.Text("Color"), Property.Text("Breed"), Property.Int("Counter")],
+            VectorConfig = VectorConfigs
+        };
+
+        collection = await weaviate.Collections.Create<Cat>(catCollection);
 
         await foreach (var c in weaviate.Collections.List())
         {
@@ -121,7 +123,7 @@ class Program
         Console.WriteLine("Cats to store: " + cats.Count());
         foreach (var cat in cats)
         {
-            cat.Vectors = new Dictionary<string, IEnumerable<float>>
+            cat.Vectors = new Dictionary<string, IList<float>>
             {
                 { "default", cat.Vector }
             };
