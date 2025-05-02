@@ -124,7 +124,8 @@ public class HttpClientWrapper : IDisposable
         }
     }
 
-    internal async Task<HttpResponseMessage> GetAsync(string requestUri, ExpectedStatusCodes expectedStatusCodes){
+    internal async Task<HttpResponseMessage> GetAsync(string requestUri, ExpectedStatusCodes expectedStatusCodes)
+    {
         var response = await _httpClient.GetAsync(requestUri);
 
         ValidateResponseStatusCode(response, expectedStatusCodes);
@@ -132,7 +133,8 @@ public class HttpClientWrapper : IDisposable
         return response;
     }
 
-    internal async Task<HttpResponseMessage> DeleteAsync(string requestUri, ExpectedStatusCodes expectedStatusCodes){
+    internal async Task<HttpResponseMessage> DeleteAsync(string requestUri, ExpectedStatusCodes expectedStatusCodes)
+    {
         var response = await _httpClient.DeleteAsync(requestUri);
 
         ValidateResponseStatusCode(response, expectedStatusCodes);
@@ -140,7 +142,8 @@ public class HttpClientWrapper : IDisposable
         return response;
     }
 
-    internal async Task<HttpResponseMessage> PostAsJsonAsync<TValue>(string? requestUri, TValue value, ExpectedStatusCodes expectedStatusCodes){
+    internal async Task<HttpResponseMessage> PostAsJsonAsync<TValue>(string? requestUri, TValue value, ExpectedStatusCodes expectedStatusCodes)
+    {
         var response = await _httpClient.PostAsJsonAsync(requestUri, value);
 
         ValidateResponseStatusCode(response, expectedStatusCodes);

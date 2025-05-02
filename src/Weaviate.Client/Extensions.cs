@@ -12,6 +12,23 @@ public static class WeaviateExtensions
         WriteIndented = true, // For readability
     };
 
+    public static WeaviateObject<T> ToWeaviateObject<T>(this WeaviateObject<dynamic> data)
+    {
+        var obj = (T)BuildConcreteTypeObjectFromProperties<T>(data.Data);
+
+        return new WeaviateObject<T>(data.CollectionName ?? string.Empty)
+        {
+            Data = obj,
+            ID = data.ID,
+            Additional = data.Additional,
+            CreationTime = data.CreationTime,
+            LastUpdateTime = data.LastUpdateTime,
+            Tenant = data.Tenant,
+            Vector = data.Vector,
+            Vectors = data.Vectors,
+        };
+    }
+
     public static WeaviateObject<T> ToWeaviateObject<T>(this Rest.Dto.WeaviateObject data)
     {
         return new WeaviateObject<T>(data.Class ?? string.Empty)
@@ -27,34 +44,65 @@ public static class WeaviateExtensions
         };
     }
 
+    public static WeaviateObject<T> ToWeaviateObject<T>(this Models.WeaviateObject data)
+    {
+        var obj = (T)BuildConcreteTypeObjectFromProperties<T>(data.Data);
+
+        return new WeaviateObject<T>(data.CollectionName ?? string.Empty)
+        {
+            Data = obj,
+            ID = data.ID,
+            Additional = data.Additional,
+            CreationTime = data.CreationTime,
+            LastUpdateTime = data.LastUpdateTime,
+            Tenant = data.Tenant,
+            Vector = data.Vector,
+            Vectors = data.Vectors,
+        };
+    }
+
     internal static T? BuildConcreteTypeObjectFromProperties<T>(object? data)
     {
-        T? props = default;
-
         switch (data)
         {
             case JsonElement properties:
-                props = properties.Deserialize<T>(_defaultJsonSerializationOptions);
-                break;
-            case IDictionary<string, object?> dict:
-                props = UnmarshallProperties<T>(dict);
-                break;
+                return properties.Deserialize<T>(_defaultJsonSerializationOptions);
+            case IDictionary<string, object> dict:
+                return UnmarshallProperties<T>(dict);
             case null:
-                return props;
+                return default;
             default:
                 throw new NotSupportedException($"Unsupported type for properties: {data?.GetType()}");
         }
-
-        return props;
     }
 
-    private static T? UnmarshallProperties<T>(IDictionary<string, object?> dict)
+    private static T? UnmarshallProperties<T>(IDictionary<string, object> dict)
     {
         if (dict == null)
             throw new ArgumentNullException(nameof(dict));
 
         // Create an instance of T using the default constructor
         var props = Activator.CreateInstance<T>();
+
+        if (typeof(T) == typeof(IDictionary<string, object>))
+        {
+            var target = (IDictionary<string, object>)props;
+
+            foreach (var kvp in dict)
+            {
+                if (kvp.Value is IDictionary<string, object> subDict)
+                {
+                    dynamic? v = UnmarshallProperties<dynamic>(subDict);
+
+                    target[Capitalize(kvp.Key)] = v ?? subDict;
+                }
+                else
+                {
+                    target[Capitalize(kvp.Key)] = kvp.Value;
+                }
+            }
+            return props;
+        }
 
         var type = typeof(T);
         var properties = type.GetProperties();
@@ -86,12 +134,17 @@ public static class WeaviateExtensions
         return props;
     }
 
+    internal static IEnumerable<WeaviateObject<T>> ToObjects<T>(this IEnumerable<WeaviateObject<dynamic>> list)
+    {
+        return list.Select(ToWeaviateObject<T>);
+    }
+
     internal static IEnumerable<WeaviateObject<T>> ToObjects<T>(this IEnumerable<Rest.Dto.WeaviateObject> list)
     {
         return list.Select(ToWeaviateObject<T>);
     }
 
-    internal static Rest.Dto.CollectionGeneric ToDto(this Models.Collection collection)
+    internal static Rest.Dto.CollectionGeneric ToDto(this Collection collection)
     {
         var data = new Rest.Dto.CollectionGeneric()
         {
@@ -124,7 +177,7 @@ public static class WeaviateExtensions
             });
         }
 
-        if (collection.ReplicationConfig is Models.ReplicationConfig rc)
+        if (collection.ReplicationConfig is ReplicationConfig rc)
         {
             data.ReplicationConfig = new Rest.Dto.ReplicationConfig()
             {
@@ -134,7 +187,7 @@ public static class WeaviateExtensions
             };
         }
 
-        if (collection.MultiTenancyConfig is Models.MultiTenancyConfig mtc)
+        if (collection.MultiTenancyConfig is MultiTenancyConfig mtc)
         {
             data.MultiTenancyConfig = new Rest.Dto.MultiTenancyConfig()
             {
@@ -169,27 +222,27 @@ public static class WeaviateExtensions
         return data;
     }
 
-    internal static Models.Collection ToModel(this Rest.Dto.CollectionGeneric collection)
+    internal static Collection ToModel(this Rest.Dto.CollectionGeneric collection)
     {
-        return new Models.Collection()
+        return new Collection()
         {
             Name = collection.Class,
             Description = collection.Description,
-            Properties = collection.Properties.Select(p => new Models.Property()
+            Properties = collection.Properties.Select(p => new Property()
             {
                 Name = p.Name,
                 DataType = p.DataType.ToList()
             }).ToList(),
             InvertedIndexConfig = (collection.InvertedIndexConfig is Rest.Dto.InvertedIndexConfig iic)
-                ? new Models.InvertedIndexConfig()
+                ? new InvertedIndexConfig()
                 {
-                    Bm25 = iic.Bm25 == null ? null : new Models.BM25Config
+                    Bm25 = iic.Bm25 == null ? null : new BM25Config
                     {
                         B = iic.Bm25.B,
                         K1 = iic.Bm25.K1,
                     },
                     Stopwords = (iic.Stopwords is Rest.Dto.StopwordConfig swc)
-                    ? new Models.StopwordConfig
+                    ? new StopwordConfig
                     {
                         Additions = swc.Additions,
                         Preset = swc.Preset,
@@ -203,14 +256,14 @@ public static class WeaviateExtensions
             ShardingConfig = collection.ShardingConfig,
             ModuleConfig = collection.ModuleConfig,
             ReplicationConfig = (collection.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
-                ? new Models.ReplicationConfig
+                ? new ReplicationConfig
                 {
                     AsyncEnabled = rc.AsyncEnabled,
                     Factor = rc.Factor,
-                    DeletionStrategy = (Models.DeletionStrategy?)rc.DeletionStrategy,
+                    DeletionStrategy = (DeletionStrategy?)rc.DeletionStrategy,
                 } : null,
             MultiTenancyConfig = (collection.MultiTenancyConfig is Rest.Dto.MultiTenancyConfig mtc)
-                ? new Models.MultiTenancyConfig
+                ? new MultiTenancyConfig
                 {
                     Enabled = mtc.Enabled,
                     AutoTenantActivation = mtc.AutoTenantActivation,
@@ -220,28 +273,26 @@ public static class WeaviateExtensions
                 collection.VectorConfig?.ToList()
                 .ToDictionary(
                     e => e.Key,
-                    e => new Models.VectorConfig
+                    e => new VectorConfig
                     {
                         VectorIndexConfig = e.Value.VectorIndexConfig,
                         VectorIndexType = e.Value.VectorIndexType,
                         Vectorizer = e.Value.Vectorizer,
                     }
-                    ) ?? new Dictionary<string, Models.VectorConfig>(),
+                    ) ?? new Dictionary<string, VectorConfig>(),
             Vectorizer = collection.Vectorizer,
             VectorIndexType = collection.VectorIndexType,
             VectorIndexConfig = collection.VectorIndexConfig,
         };
     }
 
-    internal static IEnumerable<T> FromStream<T>(this Stream stream) where T : struct
+    internal static IEnumerable<T> FromByteString<T>(this Google.Protobuf.ByteString byteString) where T : struct
     {
-        // Ensure the stream is readable and seekable for the Length check
-        if (!stream.CanRead)
-            throw new ArgumentException("Stream must be readable.", nameof(stream));
-        if (!stream.CanSeek)
-            throw new ArgumentException("Stream must be seekable to check Length.", nameof(stream));
+        using var stream = new MemoryStream();
 
-        // Keep the stream open after the reader is disposed
+        byteString.WriteTo(stream);
+        stream.Seek(0, SeekOrigin.Begin); // Reset the stream position to the beginning
+
         using var reader = new BinaryReader(stream);
 
         while (stream.Position < stream.Length)
@@ -286,12 +337,11 @@ public static class WeaviateExtensions
         return stream;
     }
 
-    internal static byte[] ToByteArray<T>(this IEnumerable<T> items) where T : struct
+    internal static Google.Protobuf.ByteString ToByteString<T>(this IEnumerable<T> items) where T : struct
     {
-        using (var stream = items.ToStream())
-        {
-            return stream.ToArray();
-        }
+        using var stream = items.ToStream();
+
+        return Google.Protobuf.ByteString.FromStream(stream);
     }
 
     public static string Capitalize(this string str)
