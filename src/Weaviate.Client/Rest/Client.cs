@@ -2,8 +2,6 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
 
-using ExpectedStatus = (int[] statusCodes, string error);
-
 namespace Weaviate.Client.Rest;
 
 public static class HttpResponseMessageExtensions
@@ -104,14 +102,15 @@ public class LoggingHandler : DelegatingHandler
     }
 }
 
-public class HttpClientWrapper : IDisposable
+public class WeaviateRestClient : IDisposable
 {
     private readonly bool _ownershipClient;
     private readonly HttpClient _httpClient;
 
-    internal HttpClientWrapper(WeaviateClient client)
+    internal WeaviateRestClient(WeaviateClient client)
     {
         _ownershipClient = true;
+
         _httpClient = new HttpClient(new LoggingHandler(str =>
         {
             Debug.WriteLine(str);
@@ -128,93 +127,7 @@ public class HttpClientWrapper : IDisposable
         _httpClient.BaseAddress = ub.Uri;
     }
 
-    internal HttpClientWrapper(WeaviateClient client, HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
-    public void Dispose()
-    {
-        if (_ownershipClient)
-        {
-            _httpClient.Dispose();
-        }
-    }
-
-    private void ValidateResponseStatusCode(HttpResponseMessage response, int[] expectedStatusCodes, string error)
-    {
-        ValidateResponseStatusCode(response, expectedStatusCodes.Select(x => (HttpStatusCode)x).ToArray(), error);
-    }
-
-    private void ValidateResponseStatusCode(HttpResponseMessage response, HttpStatusCode[] expectedStatusCodes, string error)
-    {
-        response.EnsureExpectedStatusCodeAsync([.. expectedStatusCodes], error).Wait();
-    }
-
-    internal async Task<HttpResponseMessage> GetAsync(string requestUri, (int[] statusCodes, string error) expected)
-    {
-        var response = await _httpClient.GetAsync(requestUri);
-
-        ValidateResponseStatusCode(response, expected.statusCodes, expected.error);
-
-        return response;
-    }
-
-    internal async Task<HttpResponseMessage> DeleteAsync(string requestUri, ExpectedStatus expected)
-    {
-        var response = await _httpClient.DeleteAsync(requestUri);
-
-        ValidateResponseStatusCode(response, expected.statusCodes, expected.error);
-
-        return response;
-    }
-
-    internal async Task<HttpResponseMessage> PostAsJsonAsync<TValue>(string? requestUri, TValue value, (int[] statusCodes, string error) expected)
-    {
-        var response = await _httpClient.PostAsJsonAsync(requestUri, value);
-
-        ValidateResponseStatusCode(response, expected.statusCodes, expected.error);
-
-        return response;
-    }
-
-    internal async Task<HttpResponseMessage> PutAsJsonAsync<TValue>(string? requestUri, TValue value, (int[] statusCodes, string error) expected)
-    {
-        var response = await _httpClient.PutAsJsonAsync(requestUri, value);
-
-        ValidateResponseStatusCode(response, expected.statusCodes, expected.error);
-
-        return response;
-    }
-
-    internal async Task<HttpResponseMessage> DeleteAsJsonAsync<TValue>(string? requestUri, TValue value, (int[] statusCodes, string error) expected)
-    {
-
-        var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
-        request.Content = JsonContent.Create(value, mediaType: null, null);
-
-        var response = await _httpClient.SendAsync(request);
-
-        ValidateResponseStatusCode(response, expected.statusCodes, expected.error);
-
-        return response;
-    }
-}
-
-
-public class WeaviateRestClient : IDisposable
-{
-    private readonly bool _ownershipClient;
-    private readonly HttpClient _httpClientBase;
-    private readonly HttpClientWrapper _httpClient;
-
-    internal WeaviateRestClient(WeaviateClient client)
-    {
-        _ownershipClient = true;
-        _httpClient = new HttpClientWrapper(client);
-    }
-
-    internal WeaviateRestClient(WeaviateClient client, HttpClientWrapper httpClient)
+    internal WeaviateRestClient(WeaviateClient client, HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
@@ -230,7 +143,9 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<Dto.Schema?> CollectionList()
     {
-        var response = await _httpClient.GetAsync("schema", ([200], "collection list"));
+        var response = await _httpClient.GetAsync("schema");
+
+        await response.EnsureExpectedStatusCodeAsync([200], "collection list");
 
         var contents = await response.Content.ReadFromJsonAsync<Dto.Schema>();
 
@@ -239,7 +154,9 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<Dto.Class?> CollectionGet(string name)
     {
-        var response = await _httpClient.GetAsync($"schema/{name}", ([200], "collection get"));
+        var response = await _httpClient.GetAsync($"schema/{name}");
+
+        await response.EnsureExpectedStatusCodeAsync([200], "collection get");
 
         if (response.Content.Headers.ContentLength == 0)
         {
@@ -256,14 +173,18 @@ public class WeaviateRestClient : IDisposable
         return contents;
     }
 
-    internal async Task CollectionDelete(object name)
+    internal async Task CollectionDelete(string name)
     {
-        var respnse = await _httpClient.DeleteAsync($"schema/{name}", ([200], "collection delete"));
+        var response = await _httpClient.DeleteAsync($"schema/{name}");
+
+        await response.EnsureExpectedStatusCodeAsync([200], "collection delete");
     }
 
     internal async Task<Dto.Class> CollectionCreate(Dto.Class collection)
     {
-        var response = await _httpClient.PostAsJsonAsync($"schema", collection, ([200], "collection create"));
+        var response = await _httpClient.PostAsJsonAsync($"schema", collection);
+
+        await response.EnsureExpectedStatusCodeAsync([200], "collection create");
 
         var contents = await response.Content.ReadFromJsonAsync<Dto.Class>();
 
@@ -277,7 +198,9 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<Dto.Object> ObjectInsert(string collectionName, Dto.Object data)
     {
-        var response = await _httpClient.PostAsJsonAsync($"objects", data, ([200], "insert object"));
+        var response = await _httpClient.PostAsJsonAsync($"objects", data);
+
+        await response.EnsureExpectedStatusCodeAsync([200], "insert object");
 
         var contents = await response.Content.ReadFromJsonAsync<Dto.Object>();
 
@@ -291,7 +214,9 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task DeleteObject(string collectionName, Guid id)
     {
-        await _httpClient.DeleteAsync($"objects/{collectionName}/{id}", ([204, 404], "delete object"));
+        var response = await _httpClient.DeleteAsync($"objects/{collectionName}/{id}");
+
+        await response.EnsureExpectedStatusCodeAsync([204, 404], "delete object");
     }
 
     internal async Task ReferenceAdd(string collectionName, Guid from, string fromProperty, Guid to)
@@ -301,7 +226,9 @@ public class WeaviateRestClient : IDisposable
         var beacons = DataClient<object>.MakeBeacons(to);
         var reference = beacons.First();
 
-        var response = await _httpClient.PostAsJsonAsync(path, reference, new ExpectedStatus([200], "reference add"));
+        var response = await _httpClient.PostAsJsonAsync(path, reference);
+
+        await response.EnsureExpectedStatusCodeAsync([200], "reference add");
     }
 
     internal async Task ReferenceReplace(string collectionName, Guid from, string fromProperty, Guid[] to)
@@ -311,7 +238,9 @@ public class WeaviateRestClient : IDisposable
         var beacons = DataClient<object>.MakeBeacons(to);
         var reference = beacons;
 
-        var response = await _httpClient.PutAsJsonAsync(path, reference, new ExpectedStatus([200], "reference replace"));
+        var response = await _httpClient.PutAsJsonAsync(path, reference);
+
+        await response.EnsureExpectedStatusCodeAsync([200], "reference replace");
     }
 
 
@@ -322,6 +251,11 @@ public class WeaviateRestClient : IDisposable
         var beacons = DataClient<object>.MakeBeacons(to);
         var reference = beacons.First();
 
-        var response = await _httpClient.DeleteAsJsonAsync(path, reference, new ExpectedStatus([200], "reference delete"));
+        var request = new HttpRequestMessage(HttpMethod.Delete, path);
+        request.Content = JsonContent.Create(reference, mediaType: null, null);
+
+        var response = await _httpClient.SendAsync(request);
+
+        await response.EnsureExpectedStatusCodeAsync([200], "reference delete");
     }
 }
