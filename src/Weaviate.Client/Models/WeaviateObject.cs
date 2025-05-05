@@ -26,7 +26,7 @@ public record WeaviateObject<TData, TVector>
 
     public Guid? ID { get; set; }
 
-    public IDictionary<string, object> Additional { get; set; } = new Dictionary<string, object>();
+    public IDictionary<string, dynamic> Additional { get; set; } = new Dictionary<string, object>();
 
     public string? Tenant { get; set; }
 
