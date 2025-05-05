@@ -32,12 +32,12 @@ public static class WeaviateExtensions
         };
     }
 
-    public static WeaviateObject<T> ToWeaviateObject<T>(this Rest.Dto.WeaviateObject data)
+    public static WeaviateObject<T> ToWeaviateObject<T>(this Rest.Dto.Object data)
     {
         return new WeaviateObject<T>(data.Class ?? string.Empty)
         {
             Data = BuildConcreteTypeObjectFromProperties<T>(data.Properties),
-            ID = data.ID,
+            ID = data.Id,
             Additional = data.Additional,
             Metadata = new WeaviateObject<T>.ObjectMetadata
             {
@@ -46,7 +46,7 @@ public static class WeaviateExtensions
             },
             Tenant = data.Tenant,
             Vector = data.Vector,
-            Vectors = data.Vectors,
+            Vectors = (IDictionary<string, IList<float>>)data.Vectors ?? new Dictionary<string, IList<float>>(),
         };
     }
 
@@ -95,10 +95,8 @@ public static class WeaviateExtensions
         // Create an instance of T using the default constructor
         var props = Activator.CreateInstance<T>();
 
-        if (typeof(T) == typeof(IDictionary<string, object>))
+        if (props is IDictionary<string, object> target)
         {
-            var target = (IDictionary<string, object>)props;
-
             foreach (var kvp in dict)
             {
                 if (kvp.Value is IDictionary<string, object> subDict)
@@ -150,16 +148,16 @@ public static class WeaviateExtensions
         return list.Select(ToWeaviateObject<T>);
     }
 
-    internal static IEnumerable<WeaviateObject<T>> ToObjects<T>(this IEnumerable<Rest.Dto.WeaviateObject> list)
+    internal static IEnumerable<WeaviateObject<T>> ToObjects<T>(this IEnumerable<Rest.Dto.Object> list)
     {
         return list.Select(ToWeaviateObject<T>);
     }
 
-    internal static Rest.Dto.CollectionGeneric ToDto(this Collection collection)
+    internal static Rest.Dto.Class ToDto(this Collection collection)
     {
-        var data = new Rest.Dto.CollectionGeneric()
+        var data = new Rest.Dto.Class()
         {
-            Class = collection.Name,
+            Class1 = collection.Name,
             Description = collection.Description,
             Properties = new List<Rest.Dto.Property>(),
             VectorConfig = collection.VectorConfig?.ToList()
@@ -193,7 +191,7 @@ public static class WeaviateExtensions
             data.ReplicationConfig = new Rest.Dto.ReplicationConfig()
             {
                 AsyncEnabled = rc.AsyncEnabled,
-                DeletionStrategy = (Rest.Dto.DeletionStrategy?)rc.DeletionStrategy,
+                DeletionStrategy = (Rest.Dto.ReplicationConfigDeletionStrategy?)rc.DeletionStrategy,
                 Factor = rc.Factor
             };
         }
@@ -233,11 +231,43 @@ public static class WeaviateExtensions
         return data;
     }
 
-    internal static Collection ToModel(this Rest.Dto.CollectionGeneric collection)
+    internal static Collection ToModel(this Rest.Dto.Class collection)
     {
+        var tf = (Rest.Dto.VectorConfig v) =>
+        {
+            var vic = v.VectorIndexConfig;
+            var vit = v.VectorIndexType;
+            var vectorizer = v.Vectorizer;
+
+            var vc = new VectorConfig()
+            {
+                VectorIndexConfig = vic,
+                VectorIndexType = vit
+            };
+
+            if (vectorizer is Dictionary<string, object> vecAsDict)
+            {
+                vc.Vectorizer = vecAsDict.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => JsonSerializer.Deserialize<object>(JsonSerializer.Serialize(kvp.Value))
+                );
+            }
+            else if (vectorizer is System.Text.Json.JsonElement vecAsJson)
+            {
+                vc.Vectorizer = JsonSerializer.Deserialize<Dictionary<string, object>>(vecAsJson);
+            }
+
+            return vc;
+        };
+
+        var vectorConfig = collection.VectorConfig?
+            .Select(e => new KeyValuePair<string, VectorConfig>(e.Key, tf(e.Value)))
+            .ToDictionary()
+            ?? new Dictionary<string, VectorConfig>();
+
         return new Collection()
         {
-            Name = collection.Class,
+            Name = collection.Class1,
             Description = collection.Description,
             Properties = collection.Properties.Select(p => new Property()
             {
@@ -249,48 +279,38 @@ public static class WeaviateExtensions
                 {
                     Bm25 = iic.Bm25 == null ? null : new BM25Config
                     {
-                        B = iic.Bm25.B,
-                        K1 = iic.Bm25.K1,
+                        B = iic.Bm25.B ?? BM25Config.Default.B,
+                        K1 = iic.Bm25.K1 ?? BM25Config.Default.K1,
                     },
                     Stopwords = (iic.Stopwords is Rest.Dto.StopwordConfig swc)
                     ? new StopwordConfig
                     {
-                        Additions = swc.Additions,
-                        Preset = swc.Preset,
-                        Removals = swc.Removals,
+                        Additions = swc.Additions?.ToList() ?? new List<string>(),
+                        Preset = swc.Preset ?? string.Empty,
+                        Removals = swc.Removals?.ToList() ?? new List<string>(),
                     } : null,
-                    CleanupIntervalSeconds = iic.CleanupIntervalSeconds,
-                    IndexNullState = iic.IndexNullState,
-                    IndexPropertyLength = iic.IndexPropertyLength,
-                    IndexTimestamps = iic.IndexTimestamps,
+                    CleanupIntervalSeconds = iic.CleanupIntervalSeconds.HasValue ? Convert.ToInt32(iic.CleanupIntervalSeconds) : InvertedIndexConfig.Default.CleanupIntervalSeconds,
+                    IndexNullState = iic.IndexNullState ?? InvertedIndexConfig.Default.IndexNullState,
+                    IndexPropertyLength = iic.IndexPropertyLength ?? InvertedIndexConfig.Default.IndexPropertyLength,
+                    IndexTimestamps = iic.IndexTimestamps ?? InvertedIndexConfig.Default.IndexTimestamps,
                 } : null,
             ShardingConfig = collection.ShardingConfig,
             ModuleConfig = collection.ModuleConfig,
             ReplicationConfig = (collection.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
                 ? new ReplicationConfig
                 {
-                    AsyncEnabled = rc.AsyncEnabled,
-                    Factor = rc.Factor,
+                    AsyncEnabled = rc.AsyncEnabled ?? ReplicationConfig.Default.AsyncEnabled,
+                    Factor = rc.Factor ?? ReplicationConfig.Default.Factor,
                     DeletionStrategy = (DeletionStrategy?)rc.DeletionStrategy,
                 } : null,
             MultiTenancyConfig = (collection.MultiTenancyConfig is Rest.Dto.MultiTenancyConfig mtc)
                 ? new MultiTenancyConfig
                 {
-                    Enabled = mtc.Enabled,
-                    AutoTenantActivation = mtc.AutoTenantActivation,
-                    AutoTenantCreation = mtc.AutoTenantCreation,
+                    Enabled = mtc.Enabled ?? MultiTenancyConfig.Default.Enabled,
+                    AutoTenantActivation = mtc.AutoTenantActivation ?? MultiTenancyConfig.Default.AutoTenantActivation,
+                    AutoTenantCreation = mtc.AutoTenantCreation ?? MultiTenancyConfig.Default.AutoTenantCreation,
                 } : null,
-            VectorConfig =
-                collection.VectorConfig?.ToList()
-                .ToDictionary(
-                    e => e.Key,
-                    e => new VectorConfig
-                    {
-                        VectorIndexConfig = e.Value.VectorIndexConfig,
-                        VectorIndexType = e.Value.VectorIndexType,
-                        Vectorizer = e.Value.Vectorizer,
-                    }
-                    ) ?? new Dictionary<string, VectorConfig>(),
+            VectorConfig = vectorConfig,
             Vectorizer = collection.Vectorizer,
             VectorIndexType = collection.VectorIndexType,
             VectorIndexConfig = collection.VectorIndexConfig,
