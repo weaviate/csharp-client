@@ -1,5 +1,7 @@
 using System.Dynamic;
+using System.Text.Json;
 using Weaviate.Client.Models;
+using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 
@@ -9,7 +11,7 @@ public class DataClient<TData>
     private WeaviateClient _client => _collectionClient.Client;
     private string _collectionName => _collectionClient.Name;
 
-    public DataClient(CollectionClient<TData> collectionClient)
+    internal DataClient(CollectionClient<TData> collectionClient)
     {
         _collectionClient = collectionClient;
     }
@@ -53,14 +55,20 @@ public class DataClient<TData>
             }
         }
 
-        var dto = new Rest.Dto.WeaviateObject()
+        var additional = Rest.Dto.AdditionalProperties.FromJson(JsonSerializer.Serialize(data.Additional));
+
+        var vector = (C11yVector?)(data.Vector?.Count == 0 ? null : data.Vector);
+
+        var vectors = data.Vectors?.Count == 0 ? null : Rest.Dto.Vectors.FromJson(JsonSerializer.Serialize(data.Vectors));
+
+        var dto = new Rest.Dto.Object()
         {
-            ID = data.ID ?? Guid.NewGuid(),
+            Id = data.ID ?? Guid.NewGuid(),
             Class = _collectionName,
             Properties = obj,
-            Vector = data.Vector?.Count == 0 ? null : data.Vector,
-            Vectors = data.Vectors?.Count == 0 ? null : data.Vectors,
-            Additional = data.Additional,
+            Vector = vector,
+            Vectors = vectors,
+            Additional = additional,
             CreationTimeUnix = data.Metadata.CreationTime.HasValue ? new DateTimeOffset(data.Metadata.CreationTime.Value).ToUnixTimeMilliseconds() : null,
             LastUpdateTimeUnix = data.Metadata.LastUpdateTime.HasValue ? new DateTimeOffset(data.Metadata.LastUpdateTime.Value).ToUnixTimeMilliseconds() : null,
             Tenant = data.Tenant
@@ -68,7 +76,7 @@ public class DataClient<TData>
 
         var response = await _client.RestClient.ObjectInsert(_collectionName, dto);
 
-        return response.ID!.Value;
+        return response.Id!.Value;
     }
 
     public async Task Delete(Guid id)

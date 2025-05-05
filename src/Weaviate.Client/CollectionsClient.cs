@@ -35,7 +35,7 @@ public struct CollectionsClient
     {
         var response = await _client.RestClient.CollectionList();
 
-        foreach (var c in response.Collections)
+        foreach (var c in response?.Classes ?? Enumerable.Empty<Rest.Dto.Class>())
         {
             yield return c.ToModel();
         }
