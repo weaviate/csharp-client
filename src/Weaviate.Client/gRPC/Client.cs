@@ -30,7 +30,7 @@ public partial class WeaviateGrpcClient : IDisposable
             case ListValue.KindOneofCase.BoolValues:
                 return list.BoolValues.Values;
             case ListValue.KindOneofCase.ObjectValues:
-                return list.ObjectValues.Values.Select(v => buildObjectFromProperties(v)).ToList();
+                return list.ObjectValues.Values.Select(v => MakeNonRefs(v)).ToList();
             case ListValue.KindOneofCase.DateValues:
                 return list.DateValues.Values; // TODO Parse dates here?
             case ListValue.KindOneofCase.UuidValues:
@@ -45,9 +45,15 @@ public partial class WeaviateGrpcClient : IDisposable
         }
     }
 
-    private static ExpandoObject buildObjectFromProperties(Properties result)
+    private static ExpandoObject MakeNonRefs(Properties result)
     {
         var eoBase = new ExpandoObject();
+
+        if (result is null)
+        {
+            return eoBase;
+        }
+
         var eo = eoBase as IDictionary<string, object>;
 
         foreach (var r in result.Fields)
@@ -68,7 +74,7 @@ public partial class WeaviateGrpcClient : IDisposable
                     eo[r.Key] = r.Value.BoolValue;
                     break;
                 case Value.KindOneofCase.ObjectValue:
-                    eo[r.Key] = buildObjectFromProperties(r.Value.ObjectValue) ?? new object { };
+                    eo[r.Key] = MakeNonRefs(r.Value.ObjectValue) ?? new object { };
                     break;
                 case Value.KindOneofCase.ListValue:
                     eo[r.Key] = buildListFromListValue(r.Value.ListValue);

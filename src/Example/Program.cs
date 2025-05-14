@@ -172,11 +172,11 @@ class Program
             collection
                 .Query
                 .NearVector(
-                    vector: new float[] { 20f, 21f, 22f },
+                    vector: [20f, 21f, 22f],
                     distance: 0.5f,
                     limit: 5,
                     fields: ["name", "breed", "color", "counter"],
-                    metadata: ["score", "distance"]
+                    metadata: MetadataOptions.Score | MetadataOptions.Distance
                 );
 
         await foreach (var cat in queryNearVector)

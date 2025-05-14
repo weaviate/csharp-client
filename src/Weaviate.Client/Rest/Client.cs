@@ -36,15 +36,15 @@ public class LoggingHandler : DelegatingHandler
 
         _log($"Response: {response.StatusCode}");
 
+        foreach (var header in response.Headers)
+        {
+            _log($"Response Header: {header.Key}: {string.Join(", ", header.Value)}");
+        }
+
         if (response.Content != null)
         {
             var responseContent = await response.Content.ReadAsStringAsync();
             _log($"Response Content: {responseContent}");
-        }
-
-        foreach (var header in response.Headers)
-        {
-            _log($"Response Header: {header.Key}: {string.Join(", ", header.Value)}");
         }
 
         return response;
@@ -116,39 +116,53 @@ public class HttpClientWrapper : IDisposable
         }
     }
 
-    private void ValidateResponseStatusCode(HttpResponseMessage response, ExpectedStatusCodes expectedStatusCodes)
+    private HttpResponseMessage ValidateResponseStatusCode(HttpResponseMessage response, ExpectedStatusCodes expectedStatusCodes)
     {
         if (!expectedStatusCodes.Ok.Contains((int)response.StatusCode))
         {
             throw new HttpRequestException($"Unexpected status code: {response.StatusCode}. Expected one of: {string.Join(", ", expectedStatusCodes.Ok)}");
         }
+
+        return response;
     }
 
     internal async Task<HttpResponseMessage> GetAsync(string requestUri, ExpectedStatusCodes expectedStatusCodes)
     {
         var response = await _httpClient.GetAsync(requestUri);
 
-        ValidateResponseStatusCode(response, expectedStatusCodes);
-
-        return response;
+        return ValidateResponseStatusCode(response, expectedStatusCodes);
     }
 
     internal async Task<HttpResponseMessage> DeleteAsync(string requestUri, ExpectedStatusCodes expectedStatusCodes)
     {
         var response = await _httpClient.DeleteAsync(requestUri);
 
-        ValidateResponseStatusCode(response, expectedStatusCodes);
-
-        return response;
+        return ValidateResponseStatusCode(response, expectedStatusCodes);
     }
 
     internal async Task<HttpResponseMessage> PostAsJsonAsync<TValue>(string? requestUri, TValue value, ExpectedStatusCodes expectedStatusCodes)
     {
         var response = await _httpClient.PostAsJsonAsync(requestUri, value);
 
-        ValidateResponseStatusCode(response, expectedStatusCodes);
+        return ValidateResponseStatusCode(response, expectedStatusCodes);
+    }
 
-        return response;
+    internal async Task<HttpResponseMessage> PutAsJsonAsync<TValue>(string? requestUri, TValue value, ExpectedStatusCodes expectedStatusCodes)
+    {
+        var response = await _httpClient.PutAsJsonAsync(requestUri, value);
+
+        return ValidateResponseStatusCode(response, expectedStatusCodes);
+    }
+
+    internal async Task<HttpResponseMessage> DeleteAsJsonAsync<TValue>(string? requestUri, TValue value, ExpectedStatusCodes expectedStatusCodes)
+    {
+
+        var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
+        request.Content = JsonContent.Create(value, mediaType: null, null);
+
+        var response = await _httpClient.SendAsync(request);
+
+        return ValidateResponseStatusCode(response, expectedStatusCodes);
     }
 
 }
@@ -245,5 +259,36 @@ public class WeaviateRestClient : IDisposable
     internal async Task DeleteObject(string collectionName, Guid id)
     {
         await _httpClient.DeleteAsync($"objects/{collectionName}/{id}", new ExpectedStatusCodes(new List<int> { 204, 404 }, "delete object"));
+    }
+
+    internal async Task ReferenceAdd(string collectionName, Guid from, string fromProperty, Guid to)
+    {
+        var path = $"objects/{collectionName}/{from}/references/{fromProperty}";
+
+        var beacons = DataClient<object>.MakeBeacons(to);
+        var reference = beacons.First();
+
+        var response = await _httpClient.PostAsJsonAsync(path, reference, new ExpectedStatusCodes(new List<int> { 200 }, "reference add"));
+    }
+
+    internal async Task ReferenceReplace(string collectionName, Guid from, string fromProperty, Guid[] to)
+    {
+        var path = $"objects/{collectionName}/{from}/references/{fromProperty}";
+
+        var beacons = DataClient<object>.MakeBeacons(to);
+        var reference = beacons;
+
+        var response = await _httpClient.PutAsJsonAsync(path, reference, new ExpectedStatusCodes(new List<int> { 200 }, "reference replace"));
+    }
+
+
+    internal async Task ReferenceDelete(string collectionName, Guid from, string fromProperty, Guid to)
+    {
+        var path = $"objects/{collectionName}/{from}/references/{fromProperty}";
+
+        var beacons = DataClient<object>.MakeBeacons(to);
+        var reference = beacons.First();
+
+        var response = await _httpClient.DeleteAsJsonAsync(path, reference, new ExpectedStatusCodes(new List<int> { 200 }, "reference delete"));
     }
 }
