@@ -14,8 +14,6 @@ public record WeaviateObject<TData, TVector>
         public double? RerankScore { get; init; }
     }
 
-    public CollectionClient<TData>? Collection { get; }
-
     public string? CollectionName { get; }
 
     public required TData? Data { get; set; }
@@ -34,10 +32,6 @@ public record WeaviateObject<TData, TVector>
 
     public IDictionary<string, IList<TVector>> Vectors { get; set; } = new Dictionary<string, IList<TVector>>();
 
-    public WeaviateObject(CollectionClient<TData>? collection = null) : this(collection?.Name ?? typeof(TData).Name)
-    {
-        Collection = collection;
-    }
     public WeaviateObject(string collectionName)
     {
         CollectionName = collectionName;
@@ -57,10 +51,7 @@ public record WeaviateObject<TData, TVector>
 
 public record WeaviateObject<TData> : WeaviateObject<TData, float>
 {
-    [System.Text.Json.Serialization.JsonConstructor]
-    public WeaviateObject(CollectionClient<TData>? collection = null) : base(collection) { }
-
-    public WeaviateObject(string collectionName) : base(collectionName) { }
+    public WeaviateObject(string? collectionName = null) : base(collectionName ?? typeof(TData).Name) { }
 }
 
 public record WeaviateObject : WeaviateObject<dynamic>
