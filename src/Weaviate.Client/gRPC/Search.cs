@@ -1,3 +1,4 @@
+using Google.Protobuf.Collections;
 using Weaviate.Client.Models;
 using Weaviate.V1;
 
@@ -7,8 +8,23 @@ namespace Weaviate.Client.Grpc;
 
 public partial class WeaviateGrpcClient
 {
-    internal SearchRequest BaseSearchRequest(string collection, Filters? filter = null, uint? limit = null, GroupByConstraint? groupBy = null)
+    internal SearchRequest BaseSearchRequest(string collection, Filters? filter = null, uint? limit = null, GroupByConstraint? groupBy = null, MetadataQuery? metadata = null, IList<QueryReference>? reference = null, string[]? fields = null)
     {
+        var metadataRequest = new MetadataRequest()
+        {
+            Uuid = true,
+            Vector = metadata?.Vector ?? false,
+            LastUpdateTimeUnix = metadata?.LastUpdateTime ?? false,
+            CreationTimeUnix = metadata?.CreationTime ?? false,
+            Certainty = metadata?.Certainty ?? false,
+            Distance = metadata?.Distance ?? false,
+            Score = metadata?.Score ?? false,
+            ExplainScore = metadata?.ExplainScore ?? false,
+            IsConsistent = metadata?.IsConsistent ?? false
+        };
+
+        metadataRequest.Vectors.AddRange(metadata?.Vectors.ToArray() ?? []);
+
         return new SearchRequest()
         {
             Collection = collection,
@@ -23,11 +39,80 @@ public partial class WeaviateGrpcClient
                 NumberOfGroups = Convert.ToInt32(groupBy.NumberOfGroups),
                 ObjectsPerGroup = Convert.ToInt32(groupBy.ObjectsPerGroup),
             } : null,
+            Metadata = metadataRequest,
+            Properties = MakePropsRequest(fields, reference)
+        };
+    }
+
+    private PropertiesRequest? MakePropsRequest(string[]? fields, IList<QueryReference>? reference)
+    {
+        if (fields is null && reference is null) return null;
+
+        var req = new PropertiesRequest();
+
+        if (fields is not null)
+        {
+            req.NonRefProperties.AddRange(fields);
+        }
+        else
+        {
+            req.ReturnAllNonrefProperties = true;
+        }
+
+        foreach (var r in reference ?? [])
+        {
+            if (reference is not null)
+            {
+                req.RefProperties.Add(MakeRefPropsRequest(r));
+            }
+        }
+
+        return req;
+    }
+
+    private RefPropertiesRequest? MakeRefPropsRequest(QueryReference? reference)
+    {
+        if (reference is null) return null;
+
+        return new RefPropertiesRequest()
+        {
             Metadata = new MetadataRequest()
             {
                 Uuid = true,
-                Vector = true,
-                Vectors = { "default" }
+                LastUpdateTimeUnix = reference.Metadata?.LastUpdateTime ?? false,
+                CreationTimeUnix = reference.Metadata?.CreationTime ?? false,
+                Certainty = reference.Metadata?.Certainty ?? false,
+                Distance = reference.Metadata?.Distance ?? false,
+                Score = reference.Metadata?.Score ?? false,
+                ExplainScore = reference.Metadata?.ExplainScore ?? false,
+                IsConsistent = reference.Metadata?.IsConsistent ?? false
+            },
+            Properties = MakePropsRequest(reference.Fields, reference.References),
+            ReferenceProperty = reference.LinkOn,
+        };
+    }
+
+    private static WeaviateObject BuildObjectFromResult(MetadataResult metadata, Properties properties, RepeatedField<RefPropertiesResult> references, string collection)
+    {
+        var data = MakeNonRefs(properties);
+
+        return new Models.WeaviateObject(collection)
+        {
+            ID = !string.IsNullOrEmpty(metadata.Id) ? Guid.Parse(metadata.Id) : Guid.Empty,
+            Vector = metadata.Vector,
+            Vectors = metadata.Vectors.ToDictionary(v => v.Name, v => (IList<float>)v.VectorBytes.FromByteString<float>().ToList()),
+            Data = data,
+            Properties = data as IDictionary<string, dynamic>,
+            References = MakeRefs(references),
+            Metadata = new WeaviateObject.ObjectMetadata()
+            {
+                LastUpdateTime = metadata.LastUpdateTimeUnixPresent ? DateTimeOffset.FromUnixTimeMilliseconds(metadata.LastUpdateTimeUnix).DateTime : null,
+                CreationTime = metadata.CreationTimeUnixPresent ? DateTimeOffset.FromUnixTimeMilliseconds(metadata.CreationTimeUnix).DateTime : null,
+                Certainty = metadata.CertaintyPresent ? metadata.Certainty : null,
+                Distance = metadata.DistancePresent ? metadata.Distance : null,
+                Score = metadata.ScorePresent ? metadata.Score : null,
+                ExplainScore = metadata.ExplainScorePresent ? metadata.ExplainScore : null,
+                IsConsistent = metadata.IsConsistentPresent ? metadata.IsConsistent : null
             }
         };
     }
@@ -39,13 +124,19 @@ public partial class WeaviateGrpcClient
             return [];
         }
 
-        return reply.Results.Select(result => new Models.WeaviateObject(collection)
+        return reply.Results.Select(r => BuildObjectFromResult(r.Metadata, r.Properties.NonRefProps, r.Properties.RefProps, collection));
+    }
+
+    private static IDictionary<string, IList<WeaviateObject>> MakeRefs(RepeatedField<RefPropertiesResult> refProps)
+    {
+        var result = new Dictionary<string, IList<WeaviateObject>>();
+
+        foreach (var refProp in refProps)
         {
-            ID = Guid.Parse(result.Metadata.Id),
-            Vector = result.Metadata.Vector,
-            Vectors = result.Metadata.Vectors.ToDictionary(v => v.Name, v => (IList<float>)v.VectorBytes.FromByteString<float>().ToList()),
-            Data = buildObjectFromProperties(result.Properties.NonRefProps),
-        });
+            result[refProp.PropName] = refProp.Properties.Select(p => BuildObjectFromResult(p.Metadata, p.NonRefProps, p.RefProps, p.TargetCollection)).ToList();
+        }
+
+        return result;
     }
 
     private static Models.GroupByResult BuildGroupByResult(string collection, SearchReply reply)
@@ -63,7 +154,7 @@ public partial class WeaviateGrpcClient
                 ID = Guid.Parse(obj.Metadata.Id),
                 Vector = obj.Metadata.Vector,
                 Vectors = obj.Metadata.Vectors.ToDictionary(v => v.Name, v => (IList<float>)v.VectorBytes.FromByteString<float>().ToList()),
-                Data = buildObjectFromProperties(obj.Properties.NonRefProps),
+                Data = MakeNonRefs(obj.Properties.NonRefProps),
                 BelongsToGroup = v.Name,
             }).ToArray()
         });
@@ -144,18 +235,31 @@ public partial class WeaviateGrpcClient
         }
     }
 
-    internal async Task<IEnumerable<WeaviateObject>> FetchObjects(string collection, Filters? filter = null, uint? limit = null)
+    private void BuildBM25(SearchRequest request, string query, string[]? properties = null)
     {
-        var req = BaseSearchRequest(collection, filter, limit);
+        request.Bm25Search = new BM25()
+        {
+            Query = query,
+        };
+
+        if (properties is not null)
+        {
+            request.Bm25Search.Properties.AddRange(properties);
+        }
+    }
+
+    internal async Task<IEnumerable<WeaviateObject>> FetchObjects(string collection, Filters? filter = null, uint? limit = null, string[]? fields = null, IList<QueryReference>? reference = null, MetadataQuery? metadata = null)
+    {
+        var req = BaseSearchRequest(collection, filter, limit, fields: fields, metadata: metadata, reference: reference);
 
         SearchReply? reply = await _grpcClient.SearchAsync(req);
 
         return BuildResult(collection, reply);
     }
 
-    public async Task<IEnumerable<WeaviateObject>> SearchNearVector(string collection, float[] vector, float? distance = null, float? certainty = null, uint? limit = null)
+    public async Task<IEnumerable<WeaviateObject>> SearchNearVector(string collection, float[] vector, float? distance = null, float? certainty = null, uint? limit = null, string[]? fields = null, IList<QueryReference>? reference = null, MetadataQuery? metadata = null)
     {
-        var request = BaseSearchRequest(collection, filter: null, limit: limit);
+        var request = BaseSearchRequest(collection, filter: null, limit: limit, fields: fields, metadata: metadata, reference: reference);
 
         BuildNearVector(vector, distance, certainty, request);
 
@@ -164,9 +268,9 @@ public partial class WeaviateGrpcClient
         return BuildResult(collection, reply);
     }
 
-    internal async Task<IEnumerable<WeaviateObject>> SearchNearText(string collection, string query, float? distance, float? certainty, uint? limit, Move? moveTo, Move? moveAway)
+    internal async Task<IEnumerable<WeaviateObject>> SearchNearText(string collection, string query, float? distance, float? certainty, uint? limit, Move? moveTo, Move? moveAway, string[]? fields = null, IList<QueryReference>? reference = null, MetadataQuery? metadata = null)
     {
-        var request = BaseSearchRequest(collection, filter: null, limit: limit);
+        var request = BaseSearchRequest(collection, filter: null, limit: limit, fields: fields, metadata: metadata, reference: reference);
 
         BuildNearText(query, distance, certainty, request, moveTo, moveAway);
 
@@ -175,9 +279,9 @@ public partial class WeaviateGrpcClient
         return BuildResult(collection, reply);
     }
 
-    public async Task<Models.GroupByResult> SearchNearVector(string collection, float[] vector, GroupByConstraint groupBy, float? distance = null, float? certainty = null, uint? limit = null)
+    public async Task<Models.GroupByResult> SearchNearVector(string collection, float[] vector, GroupByConstraint groupBy, float? distance = null, float? certainty = null, uint? limit = null, string[]? fields = null, IList<QueryReference>? reference = null, MetadataQuery? metadata = null)
     {
-        var request = BaseSearchRequest(collection, filter: null, limit: limit, groupBy: groupBy);
+        var request = BaseSearchRequest(collection, filter: null, limit: limit, groupBy: groupBy, fields: fields, metadata: metadata, reference: reference);
 
         BuildNearVector(vector, distance, certainty, request);
 
@@ -186,14 +290,25 @@ public partial class WeaviateGrpcClient
         return BuildGroupByResult(collection, reply);
     }
 
-    internal async Task<Models.GroupByResult> SearchNearText(string collection, string query, GroupByConstraint groupBy, float? distance, float? certainty, uint? limit)
+    internal async Task<Models.GroupByResult> SearchNearText(string collection, string query, GroupByConstraint groupBy, float? distance, float? certainty, uint? limit, string[]? fields = null, IList<QueryReference>? reference = null, MetadataQuery? metadata = null)
     {
-        var request = BaseSearchRequest(collection, filter: null, limit: limit, groupBy: groupBy);
+        var request = BaseSearchRequest(collection, filter: null, limit: limit, groupBy: groupBy, fields: fields, metadata: metadata, reference: reference);
 
         BuildNearText(query, distance, certainty, request, moveTo: null, moveAway: null);
 
         SearchReply? reply = await _grpcClient.SearchAsync(request);
 
         return BuildGroupByResult(collection, reply);
+    }
+
+    internal async Task<IEnumerable<WeaviateObject>> SearchBM25(string collection, string query, string[]? searchFields, string[]? fields = null, IList<QueryReference>? reference = null, MetadataQuery? metadata = null)
+    {
+        var request = BaseSearchRequest(collection, filter: null, limit: null, groupBy: null, fields: fields, metadata: metadata, reference: reference);
+
+        BuildBM25(request, query, properties: searchFields);
+
+        SearchReply? reply = await _grpcClient.SearchAsync(request);
+
+        return BuildResult(collection, reply);
     }
 }
