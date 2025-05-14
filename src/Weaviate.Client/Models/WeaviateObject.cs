@@ -2,19 +2,33 @@ namespace Weaviate.Client.Models;
 
 public record WeaviateObject<TData, TVector>
 {
+    public record ObjectMetadata
+    {
+        public DateTime? CreationTime { get; set; }
+        public DateTime? LastUpdateTime { get; set; }
+        public double? Distance { get; init; }
+        public double? Certainty { get; init; }
+        public double? Score { get; init; }
+        public string? ExplainScore { get; init; }
+        public bool? IsConsistent { get; init; }
+        public double? RerankScore { get; init; }
+    }
+
     public CollectionClient<TData>? Collection { get; }
 
     public string? CollectionName { get; }
 
     public required TData? Data { get; set; }
 
+    public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+
+    public IDictionary<string, IList<WeaviateObject>> References { get; set; } = new Dictionary<string, IList<WeaviateObject>>();
+
+    public ObjectMetadata Metadata { get; set; } = new ObjectMetadata();
+
     public Guid? ID { get; set; }
 
     public IDictionary<string, object> Additional { get; set; } = new Dictionary<string, object>();
-
-    public DateTime? CreationTime { get; set; }
-
-    public DateTime? LastUpdateTime { get; set; }
 
     public string? Tenant { get; set; }
 
