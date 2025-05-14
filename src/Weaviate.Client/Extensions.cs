@@ -38,7 +38,7 @@ public static class WeaviateExtensions
         {
             Data = BuildConcreteTypeObjectFromProperties<T>(data.Properties),
             ID = data.Id,
-            Additional = data.Additional,
+            Additional = data.Additional ?? [],
             Metadata = new WeaviateObject<T>.ObjectMetadata
             {
                 CreationTime = data.CreationTimeUnix.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(data.CreationTimeUnix.Value).DateTime : null,
@@ -46,7 +46,7 @@ public static class WeaviateExtensions
             },
             Tenant = data.Tenant,
             Vector = data.Vector,
-            Vectors = (IDictionary<string, IList<float>>)data.Vectors ?? new Dictionary<string, IList<float>>(),
+            Vectors = data.Vectors?.ToDictionary(kv => kv.Key, kv => (IList<float>)kv.Value) ?? [],
         };
     }
 
