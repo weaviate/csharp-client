@@ -18,9 +18,9 @@ public class QueryClient<TData>
 
 
     #region Objects
-    public async IAsyncEnumerable<WeaviateObject<TData>> List(uint? limit = null)
+    public async IAsyncEnumerable<WeaviateObject<TData>> List(uint? limit = null, IList<QueryReference>? references = null, MetadataQuery? metadata = null)
     {
-        var list = await _client.GrpcClient.FetchObjects(_collectionName, limit: limit);
+        var list = await _client.GrpcClient.FetchObjects(_collectionName, limit: limit, reference: references, metadata: metadata);
 
         foreach (var data in list.ToObjects<TData>())
         {
@@ -28,9 +28,9 @@ public class QueryClient<TData>
         }
     }
 
-    public async Task<WeaviateObject<TData>?> FetchObjectByID(Guid id)
+    public async Task<WeaviateObject<TData>?> FetchObjectByID(Guid id, IList<QueryReference>? references = null, MetadataQuery? metadata = null)
     {
-        var reply = await _client.GrpcClient.FetchObjects(_collectionName, Filter.WithID(id));
+        var reply = await _client.GrpcClient.FetchObjects(_collectionName, filter: Filter.WithID(id), reference: references, metadata: metadata);
 
         var data = reply.FirstOrDefault();
 
@@ -42,9 +42,9 @@ public class QueryClient<TData>
         return data.ToWeaviateObject<TData>();
     }
 
-    public async IAsyncEnumerable<WeaviateObject<TData>> FetchObjectsByIDs(ISet<Guid> ids, uint? limit = null)
+    public async IAsyncEnumerable<WeaviateObject<TData>> FetchObjectsByIDs(ISet<Guid> ids, uint? limit = null, IList<QueryReference>? references = null, MetadataQuery? metadata = null)
     {
-        var list = await _client.GrpcClient.FetchObjects(_collectionName, limit: limit, filter: Filter.WithIDs(ids));
+        var list = await _client.GrpcClient.FetchObjects(_collectionName, limit: limit, filter: Filter.WithIDs(ids), reference: references, metadata: metadata);
 
         foreach (var r in list.Select(x => x.ToWeaviateObject<TData>()))
         {
@@ -55,8 +55,15 @@ public class QueryClient<TData>
 
     #region Search
 
-    public async IAsyncEnumerable<WeaviateObject<TData>> NearText(string text, float? distance = null, float? certainty = null, uint? limit = null, string[]? fields = null,
-                                   string[]? metadata = null, Move? moveTo = null, Move? moveAway = null)
+    public async IAsyncEnumerable<WeaviateObject<TData>> NearText(string text,
+                                                                  float? distance = null,
+                                                                  float? certainty = null,
+                                                                  uint? limit = null,
+                                                                  string[]? fields = null,
+                                                                  IList<QueryReference>? references = null,
+                                                                  MetadataQuery? metadata = null,
+                                                                  Move? moveTo = null,
+                                                                  Move? moveAway = null)
     {
         var results =
             await _client.GrpcClient.SearchNearText(
@@ -65,6 +72,8 @@ public class QueryClient<TData>
                 distance: distance,
                 certainty: certainty,
                 limit: limit,
+                reference: references,
+                metadata: metadata,
                 moveTo: moveTo,
                 moveAway: moveAway
             );
@@ -75,9 +84,14 @@ public class QueryClient<TData>
         }
     }
 
-    public async Task<GroupByResult> NearText(string text, Models.GroupByConstraint groupBy, float? distance = null,
-                                   float? certainty = null, uint? limit = null, string[]? fields = null,
-                                   string[]? metadata = null)
+    public async Task<GroupByResult> NearText(string text,
+                                              Models.GroupByConstraint groupBy,
+                                              float? distance = null,
+                                              float? certainty = null,
+                                              uint? limit = null,
+                                              string[]? fields = null,
+                                              IList<QueryReference>? references = null,
+                                              MetadataQuery? metadata = null)
     {
         var results =
             await _client.GrpcClient.SearchNearText(
@@ -86,13 +100,21 @@ public class QueryClient<TData>
                 groupBy,
                 distance: distance,
                 certainty: certainty,
-                limit: limit
+                limit: limit,
+                reference: references,
+                metadata: metadata
             );
 
         return results;
     }
 
-    public async IAsyncEnumerable<WeaviateObject<TData>> NearVector(float[] vector, float? distance = null, float? certainty = null, uint? limit = null, string[]? fields = null, string[]? metadata = null)
+    public async IAsyncEnumerable<WeaviateObject<TData>> NearVector(float[] vector,
+                                                                    float? distance = null,
+                                                                    float? certainty = null,
+                                                                    uint? limit = null,
+                                                                    string[]? fields = null,
+                                                                    IList<QueryReference>? references = null,
+                                                                    MetadataQuery? metadata = null)
     {
         var results =
             await _client.GrpcClient.SearchNearVector(
@@ -100,7 +122,9 @@ public class QueryClient<TData>
                 vector,
                 distance: distance,
                 certainty: certainty,
-                limit: limit
+                limit: limit,
+                reference: references,
+                metadata: metadata
             );
 
         foreach (var r in results)
@@ -109,9 +133,14 @@ public class QueryClient<TData>
         }
     }
 
-    public async Task<GroupByResult> NearVector(float[] vector, GroupByConstraint groupBy, float? distance = null,
-                                   float? certainty = null, uint? limit = null, string[]? fields = null,
-                                   string[]? metadata = null)
+    public async Task<GroupByResult> NearVector(float[] vector,
+                                                GroupByConstraint groupBy,
+                                                float? distance = null,
+                                                float? certainty = null,
+                                                uint? limit = null,
+                                                string[]? fields = null,
+                                                IList<QueryReference>? references = null,
+                                                MetadataQuery? metadata = null)
     {
         var results =
             await _client.GrpcClient.SearchNearVector(
@@ -120,10 +149,31 @@ public class QueryClient<TData>
                 groupBy,
                 distance: distance,
                 certainty: certainty,
-                limit: limit
+                limit: limit,
+                reference: references,
+                metadata: metadata
             );
 
         return results;
+    }
+
+    public async Task<IEnumerable<WeaviateObject<TData>>> BM25(string query,
+                                                               string[]? searchFields = null,
+                                                               string[]? fields = null,
+                                                               IList<QueryReference>? references = null,
+                                                               MetadataQuery? metadata = null)
+    {
+        var results =
+            await _client.GrpcClient.SearchBM25(
+                _collectionClient.Name,
+                query: query,
+                searchFields: searchFields,
+                fields: fields,
+                reference: references,
+                metadata: metadata
+            );
+
+        return results.Select(r => r.ToWeaviateObject<TData>());
     }
 
     #endregion
