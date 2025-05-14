@@ -290,7 +290,11 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         foreach (var r in reviewsData)
         {
-            await reviews.Data.Insert(DataFactory<dynamic>(r), references: new[] { ("forMovie", movieIds[(int)r.movie_id]) });
+            await reviews.Data.Insert(
+                DataFactory<dynamic>(r),
+                references: new Dictionary<string, Guid> {
+                    { "forMovie", movieIds[(int)r.movie_id] }
+                });
         }
 
         // Act

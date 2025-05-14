@@ -21,12 +21,6 @@ public class DataClient<TData>
         ];
     }
 
-    public async Task<Guid> Insert(WeaviateObject<TData> data, ICollection<(string Key, Guid Value)> references)
-    {
-        var dict = references?.ToDictionary(e => e.Key, e => e.Value);
-        return await Insert(data, dict);
-    }
-
     public async Task<Guid> Insert(WeaviateObject<TData> data, Dictionary<string, Guid>? references = null)
     {
         ExpandoObject obj = new ExpandoObject();
