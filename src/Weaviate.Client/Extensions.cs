@@ -21,8 +21,11 @@ public static class WeaviateExtensions
             Data = obj,
             ID = data.ID,
             Additional = data.Additional,
-            CreationTime = data.CreationTime,
-            LastUpdateTime = data.LastUpdateTime,
+            Metadata = new WeaviateObject<T>.ObjectMetadata
+            {
+                CreationTime = data.Metadata.CreationTime,
+                LastUpdateTime = data.Metadata.LastUpdateTime,
+            },
             Tenant = data.Tenant,
             Vector = data.Vector,
             Vectors = data.Vectors,
@@ -36,8 +39,11 @@ public static class WeaviateExtensions
             Data = BuildConcreteTypeObjectFromProperties<T>(data.Properties),
             ID = data.ID,
             Additional = data.Additional,
-            CreationTime = data.CreationTimeUnix.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(data.CreationTimeUnix.Value).DateTime : null,
-            LastUpdateTime = data.LastUpdateTimeUnix.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(data.LastUpdateTimeUnix.Value).DateTime : null,
+            Metadata = new WeaviateObject<T>.ObjectMetadata
+            {
+                CreationTime = data.CreationTimeUnix.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(data.CreationTimeUnix.Value).DateTime : null,
+                LastUpdateTime = data.LastUpdateTimeUnix.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(data.LastUpdateTimeUnix.Value).DateTime : null,
+            },
             Tenant = data.Tenant,
             Vector = data.Vector,
             Vectors = data.Vectors,
@@ -53,11 +59,16 @@ public static class WeaviateExtensions
             Data = obj,
             ID = data.ID,
             Additional = data.Additional,
-            CreationTime = data.CreationTime,
-            LastUpdateTime = data.LastUpdateTime,
+            Metadata = new WeaviateObject<T>.ObjectMetadata
+            {
+                CreationTime = data.Metadata.CreationTime,
+                LastUpdateTime = data.Metadata.LastUpdateTime,
+            },
+            References = data.References,
             Tenant = data.Tenant,
             Vector = data.Vector,
             Vectors = data.Vectors,
+            Properties = data.Properties,
         };
     }
 

@@ -1,0 +1,53 @@
+using Weaviate.Client.Models;
+
+namespace Weaviate.Client.Tests.Integration;
+
+public partial class BasicTests
+{
+    [Fact]
+    public async Task CollectionCreation()
+    {
+        // Arrange
+
+        // Act
+        var collectionClient = await CollectionFactory("", "Test collection description", [
+            Property.Text("Name")
+        ]);
+
+        // Assert
+        var collection = await _weaviate.Collections.Use<dynamic>(collectionClient.Name).Get();
+        Assert.NotNull(collection);
+        Assert.Equal("CollectionCreation", collection.Name);
+        Assert.Equal("Test collection description", collection.Description);
+    }
+
+    [Fact]
+    public async Task ObjectCreation()
+    {
+        // Arrange
+        var collectionClient = await CollectionFactory<TestData>("", "Test collection description", [
+            Property.Text("Name")
+        ]);
+
+        // Act
+        var id = Guid.NewGuid();
+        var obj = await collectionClient.Data.Insert(new WeaviateObject<TestData>()
+        {
+            Data = new TestData { Name = "TestObject" },
+            ID = id,
+        });
+
+        // Assert
+
+        // Assert object exists
+        var retrieved = await collectionClient.Query.FetchObjectByID(id);
+        Assert.NotNull(retrieved);
+        Assert.Equal(id, retrieved.ID);
+        Assert.Equal("TestObject", retrieved.Data?.Name);
+
+        // Delete after usage
+        await collectionClient.Data.Delete(id);
+        retrieved = await collectionClient.Query.FetchObjectByID(id);
+        Assert.Null(retrieved);
+    }
+}
