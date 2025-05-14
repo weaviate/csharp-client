@@ -96,4 +96,12 @@ public partial class BasicTests : IAsyncDisposable
             Data = value
         };
     }
+
+    WeaviateObject<TData> DataFactory<TData>(TData value, string collectionName)
+    {
+        return new WeaviateObject<TData>(collectionName)
+        {
+            Data = value
+        };
+    }
 }
