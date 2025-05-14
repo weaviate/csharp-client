@@ -2,28 +2,36 @@ namespace Weaviate.Client.Models;
 
 public record WeaviateObject<TData, TVector>
 {
-    public CollectionClient<TData>? Collection { get; }
+    public record ObjectMetadata
+    {
+        public DateTime? CreationTime { get; set; }
+        public DateTime? LastUpdateTime { get; set; }
+        public double? Distance { get; init; }
+        public double? Certainty { get; init; }
+        public double? Score { get; init; }
+        public string? ExplainScore { get; init; }
+        public bool? IsConsistent { get; init; }
+        public double? RerankScore { get; init; }
+    }
 
     public string? CollectionName { get; }
 
     public required TData? Data { get; set; }
 
+    public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+
+    public IDictionary<string, IList<WeaviateObject>> References { get; set; } = new Dictionary<string, IList<WeaviateObject>>();
+
+    public ObjectMetadata Metadata { get; set; } = new ObjectMetadata();
+
     public Guid? ID { get; set; }
 
     public IDictionary<string, object> Additional { get; set; } = new Dictionary<string, object>();
-
-    public DateTime? CreationTime { get; set; }
-
-    public DateTime? LastUpdateTime { get; set; }
 
     public string? Tenant { get; set; }
 
     public IDictionary<string, IList<TVector>> Vectors { get; set; } = new Dictionary<string, IList<TVector>>();
 
-    public WeaviateObject(CollectionClient<TData>? collection = null) : this(collection?.Name ?? typeof(TData).Name)
-    {
-        Collection = collection;
-    }
     public WeaviateObject(string collectionName)
     {
         CollectionName = collectionName;
@@ -43,10 +51,7 @@ public record WeaviateObject<TData, TVector>
 
 public record WeaviateObject<TData> : WeaviateObject<TData, float>
 {
-    [System.Text.Json.Serialization.JsonConstructor]
-    public WeaviateObject(CollectionClient<TData>? collection = null) : base(collection) { }
-
-    public WeaviateObject(string collectionName) : base(collectionName) { }
+    public WeaviateObject(string? collectionName = null) : base(collectionName ?? typeof(TData).Name) { }
 }
 
 public record WeaviateObject : WeaviateObject<dynamic>
