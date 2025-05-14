@@ -56,68 +56,20 @@ public class SimpleHttpResponseException : Exception
     }
 }
 
-public class LoggingHandler : DelegatingHandler
-{
-    private readonly Action<string> _log;
-
-    public LoggingHandler(Action<string> log)
-    {
-        _log = log;
-    }
-
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-    {
-        _log($"Request: {request.Method} {request.RequestUri}");
-
-        if (request.Content != null)
-        {
-            var requestContent = await request.Content.ReadAsStringAsync();
-            _log($"Request Content: {requestContent}");
-
-            // Buffer the content so it can be read again.
-            request.Content = new StringContent(requestContent, System.Text.Encoding.UTF8, "application/json");
-        }
-
-        foreach (var header in request.Headers)
-        {
-            _log($"Request Header: {header.Key}: {string.Join(", ", header.Value)}");
-        }
-
-        var response = await base.SendAsync(request, cancellationToken);
-
-        _log($"Response: {response.StatusCode}");
-
-        foreach (var header in response.Headers)
-        {
-            _log($"Response Header: {header.Key}: {string.Join(", ", header.Value)}");
-        }
-
-        if (response.Content != null)
-        {
-            var responseContent = await response.Content.ReadAsStringAsync();
-            _log($"Response Content: {responseContent}");
-        }
-
-        return response;
-    }
-}
-
 public class WeaviateRestClient : IDisposable
 {
     private readonly bool _ownershipClient;
     private readonly HttpClient _httpClient;
 
-    internal WeaviateRestClient(WeaviateClient client)
+    internal WeaviateRestClient(WeaviateClient client, HttpClient? httpClient = null)
     {
-        _ownershipClient = true;
+        if (httpClient is null)
+        {
+            httpClient = new HttpClient();
+            _ownershipClient = true;
+        }
 
-        _httpClient = new HttpClient(new LoggingHandler(str =>
-        {
-            Debug.WriteLine(str);
-        })
-        {
-            InnerHandler = new HttpClientHandler() // or SocketsHttpHandler
-        });
+        _httpClient = httpClient;
 
         var ub = new UriBuilder(client.Configuration.Host);
 
@@ -125,11 +77,6 @@ public class WeaviateRestClient : IDisposable
         ub.Path = "v1/";
 
         _httpClient.BaseAddress = ub.Uri;
-    }
-
-    internal WeaviateRestClient(WeaviateClient client, HttpClient httpClient)
-    {
-        _httpClient = httpClient;
     }
 
     public void Dispose()

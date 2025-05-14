@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Weaviate.Client.Models;
 
 [assembly: CaptureConsole]
@@ -21,10 +22,19 @@ public partial class BasicTests : IAsyncDisposable
     const bool _deleteCollectionsAfterTest = true;
 
     WeaviateClient _weaviate;
+    HttpClient _httpClient;
 
-    public BasicTests(ITestOutputHelper output)
+    public BasicTests()
     {
-        _weaviate = new WeaviateClient();
+        _httpClient = new HttpClient(new LoggingHandler(str =>
+        {
+            Debug.WriteLine(str);
+        })
+        {
+            InnerHandler = new HttpClientHandler()
+        });
+
+        _weaviate = new WeaviateClient(httpClient: _httpClient);
     }
 
     public async ValueTask DisposeAsync()
