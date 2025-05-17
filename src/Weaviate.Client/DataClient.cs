@@ -18,60 +18,74 @@ public class DataClient<TData>
 
     public static IDictionary<string, string>[] MakeBeacons(params Guid[] guids)
     {
-        return [
-            .. guids.Select(uuid => new Dictionary<string, string> { { "beacon", $"weaviate://localhost/{uuid}" } })
+        return
+        [
+            .. guids.Select(uuid => new Dictionary<string, string>
+            {
+                { "beacon", $"weaviate://localhost/{uuid}" },
+            }),
         ];
     }
 
-    public async Task<Guid> Insert(WeaviateObject<TData> data, Dictionary<string, Guid>? references = null)
+    internal static IDictionary<string, object?> BuildDynamicObject(object? data)
     {
-        ExpandoObject obj = new ExpandoObject();
+        var obj = new ExpandoObject();
+        var propDict = obj as IDictionary<string, object?>;
 
-        if (obj is IDictionary<string, object> propDict)
+        if (data is null)
         {
-            if (references is not null)
+            return propDict;
+        }
+
+        foreach (var propertyInfo in data.GetType().GetProperties())
+        {
+            if (!propertyInfo.CanRead)
+                continue; // skip non-readable properties
+
+            var value = propertyInfo.GetValue(data);
+
+            if (value is null)
             {
-                foreach (var kvp in references)
-                {
-                    propDict[kvp.Key] = MakeBeacons(kvp.Value);
-                }
+                continue;
             }
-
-            foreach (var property in data.Data?.GetType().GetProperties() ?? [])
+            else if (propertyInfo.PropertyType.IsNativeType())
             {
-                if (!property.CanRead)
-                {
-                    continue;
-                }
-
-                object? value = property.GetValue(data.Data);
-
-                if (value is null)
-                {
-                    continue;
-                }
-
-                propDict[property.Name] = value;
+                propDict[propertyInfo.Name] = value;
+            }
+            else
+            {
+                propDict[propertyInfo.Name] = BuildDynamicObject(value); // recursive call
             }
         }
 
-        var additional = Rest.Dto.AdditionalProperties.FromJson(JsonSerializer.Serialize(data.Additional));
+        return obj;
+    }
 
-        var vector = (C11yVector?)(data.Vector?.Count == 0 ? null : data.Vector);
+    public async Task<Guid> Insert(
+        TData data,
+        Guid? id = null,
+        NamedVectors? vectors = null,
+        Dictionary<string, Guid>? references = null,
+        string? tenant = null
+    )
+    {
+        var propDict = BuildDynamicObject(data);
 
-        var vectors = data.Vectors?.Count == 0 ? null : Rest.Dto.Vectors.FromJson(JsonSerializer.Serialize(data.Vectors));
+        foreach (var kvp in references ?? [])
+        {
+            propDict[kvp.Key] = MakeBeacons(kvp.Value);
+        }
+
+        var dtoVectors =
+            vectors?.Count == 0 ? null : Vectors.FromJson(JsonSerializer.Serialize(vectors));
 
         var dto = new Rest.Dto.Object()
         {
-            Id = data.ID ?? Guid.NewGuid(),
+            Id = id ?? Guid.NewGuid(),
             Class = _collectionName,
-            Properties = obj,
-            Vector = vector,
-            Vectors = vectors,
-            Additional = additional,
-            CreationTimeUnix = data.Metadata.CreationTime.HasValue ? new DateTimeOffset(data.Metadata.CreationTime.Value).ToUnixTimeMilliseconds() : null,
-            LastUpdateTimeUnix = data.Metadata.LastUpdateTime.HasValue ? new DateTimeOffset(data.Metadata.LastUpdateTime.Value).ToUnixTimeMilliseconds() : null,
-            Tenant = data.Tenant
+            Properties = propDict,
+            Vectors = dtoVectors,
+            Tenant = tenant,
         };
 
         var response = await _client.RestClient.ObjectInsert(_collectionName, dto);

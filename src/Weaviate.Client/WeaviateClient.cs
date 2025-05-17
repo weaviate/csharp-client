@@ -2,6 +2,8 @@
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Weaviate.Client.Tests")]
+
 namespace Weaviate.Client;
 
 public record ClientConfiguration
