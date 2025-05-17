@@ -26,13 +26,15 @@ public partial class BasicTests : IAsyncDisposable
 
     public BasicTests()
     {
-        _httpClient = new HttpClient(new LoggingHandler(str =>
-        {
-            Debug.WriteLine(str);
-        })
-        {
-            InnerHandler = new HttpClientHandler()
-        });
+        _httpClient = new HttpClient(
+            new LoggingHandler(str =>
+            {
+                Debug.WriteLine(str);
+            })
+            {
+                InnerHandler = new HttpClientHandler(),
+            }
+        );
 
         _weaviate = new WeaviateClient(httpClient: _httpClient);
     }
@@ -47,11 +49,13 @@ public partial class BasicTests : IAsyncDisposable
         _weaviate.Dispose();
     }
 
-    async Task<CollectionClient<TData>> CollectionFactory<TData>(string name,
-                                                                 string description,
-                                                                 IList<Property> properties,
-                                                                 IList<ReferenceProperty>? references = null,
-                                                                 IDictionary<string, VectorConfig>? vectorConfig = null)
+    async Task<CollectionClient<TData>> CollectionFactory<TData>(
+        string name,
+        string description,
+        IList<Property> properties,
+        IList<ReferenceProperty>? references = null,
+        IDictionary<string, VectorConfig>? vectorConfig = null
+    )
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -65,11 +69,13 @@ public partial class BasicTests : IAsyncDisposable
             vectorConfig = new Dictionary<string, VectorConfig>
             {
                 {
-                    "default", new VectorConfig {
+                    "default",
+                    new VectorConfig
+                    {
                         Vectorizer = new Dictionary<string, object> { { "none", new { } } },
-                        VectorIndexType = "hnsw"
+                        VectorIndexType = "hnsw",
                     }
-                }
+                },
             };
         }
 
@@ -90,28 +96,20 @@ public partial class BasicTests : IAsyncDisposable
         return collectionClient;
     }
 
-    async Task<CollectionClient<dynamic>> CollectionFactory(string name,
-                                                            string description,
-                                                            IList<Property> properties,
-                                                            IList<ReferenceProperty>? references = null,
-                                                            IDictionary<string, VectorConfig>? vectorConfig = null)
+    async Task<CollectionClient<dynamic>> CollectionFactory(
+        string name,
+        string description,
+        IList<Property> properties,
+        IList<ReferenceProperty>? references = null,
+        IDictionary<string, VectorConfig>? vectorConfig = null
+    )
     {
-        return await CollectionFactory<dynamic>(name, description, properties, references, vectorConfig);
-    }
-
-    WeaviateObject<TData> DataFactory<TData>(TData value)
-    {
-        return new WeaviateObject<TData>()
-        {
-            Data = value
-        };
-    }
-
-    WeaviateObject<TData> DataFactory<TData>(TData value, string collectionName)
-    {
-        return new WeaviateObject<TData>(collectionName)
-        {
-            Data = value
-        };
+        return await CollectionFactory<dynamic>(
+            name,
+            description,
+            properties,
+            references,
+            vectorConfig
+        );
     }
 }
