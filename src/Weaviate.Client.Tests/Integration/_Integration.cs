@@ -9,6 +9,7 @@ namespace Weaviate.Client.Tests.Integration;
 internal class TestData
 {
     public string Name { get; set; } = string.Empty;
+    public int Size { get; set; } = 0;
 }
 
 internal class TestDataValue
@@ -52,7 +53,7 @@ public partial class BasicTests : IAsyncDisposable
     async Task<CollectionClient<TData>> CollectionFactory<TData>(
         string name,
         string description,
-        IList<Property> properties,
+        IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
         IDictionary<string, VectorConfig>? vectorConfig = null
     )
@@ -60,6 +61,11 @@ public partial class BasicTests : IAsyncDisposable
         if (string.IsNullOrEmpty(name))
         {
             name = TestContext.Current.TestMethod?.MethodName ?? string.Empty;
+        }
+
+        if (properties is null)
+        {
+            properties = Property.FromType<TData>();
         }
 
         ArgumentException.ThrowIfNullOrEmpty(name);

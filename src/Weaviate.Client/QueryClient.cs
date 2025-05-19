@@ -19,6 +19,7 @@ public class QueryClient<TData>
     #region Objects
     public async Task<WeaviateResult> List(
         uint? limit = null,
+        V1.Filters? filter = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
     )
@@ -26,6 +27,7 @@ public class QueryClient<TData>
         return await _client.GrpcClient.FetchObjects(
             _collectionName,
             limit: limit,
+            filter: filter,
             reference: references,
             metadata: metadata
         );
