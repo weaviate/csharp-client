@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "csharpier": {
+      "version": "1.0.1",
+      "commands": [
+        "csharpier"
+      ],
+      "rollForward": false
+    },
+    "nswag.consolecore": {
+      "version": "14.4.0",
+      "commands": [
+        "nswag"
+      ],
+      "rollForward": false
+    }
+  }
+}

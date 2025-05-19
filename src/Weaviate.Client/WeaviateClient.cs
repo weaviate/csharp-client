@@ -2,6 +2,8 @@
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Weaviate.Client.Tests")]
+
 namespace Weaviate.Client;
 
 public record ClientConfiguration
@@ -14,6 +16,14 @@ public record ClientConfiguration
 
 public class WeaviateClient : IDisposable
 {
+    private static readonly Lazy<ClientConfiguration> _defaultOptions = new Lazy<ClientConfiguration>(() => new()
+    {
+        Host = new Uri("http://localhost"),
+        ApiKey = "",
+    });
+
+    public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
+
     private bool _isDisposed = false;
     private readonly WeaviateGrpcClient _grpcClient;
     private readonly WeaviateRestClient _restClient;
@@ -27,19 +37,11 @@ public class WeaviateClient : IDisposable
 
     public CollectionsClient Collections { get; }
 
-    public WeaviateClient() : this(new ClientConfiguration()
+    public WeaviateClient(ClientConfiguration? configuration = null, HttpClient? httpClient = null)
     {
-        Host = new Uri("http://localhost"),
-        ApiKey = "",
-    })
-    {
-    }
+        Configuration = configuration ?? DefaultOptions;
 
-    public WeaviateClient(ClientConfiguration configuration)
-    {
-        Configuration = configuration;
-
-        _restClient = new WeaviateRestClient(this);
+        _restClient = new WeaviateRestClient(this, httpClient);
         _grpcClient = new WeaviateGrpcClient(this);
 
         Collections = new CollectionsClient(this);

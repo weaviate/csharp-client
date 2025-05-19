@@ -5,6 +5,13 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public class MultiTenancyConfig
 {
+    private static readonly Lazy<MultiTenancyConfig> _default = new(() => new());
+
+    /// <summary>
+    /// Gets the default configuration.
+    /// </summary>
+    public static MultiTenancyConfig Default => _default.Value;
+
     /// <summary>
     /// Existing tenants should (not) be turned HOT implicitly when they are accessed and in another activity status (default: false).
     /// </summary>

@@ -14,16 +14,23 @@ public enum MetadataOptions
     IsConsistent = 1 << 7, // 2^7
 }
 
-public record MetadataQuery(MetadataOptions Options = MetadataOptions.None, HashSet<string>? Vectors = null)
+public record MetadataQuery(
+    MetadataOptions Options = MetadataOptions.None,
+    HashSet<string>? Vectors = null
+)
 {
     // Implicit conversion from MetadataOptions to MetadataQuery
-    public static implicit operator MetadataQuery(MetadataOptions options) => new MetadataQuery(options);
+    public static implicit operator MetadataQuery(MetadataOptions options) =>
+        new MetadataQuery(options);
 
     // Implicit conversion from HashSet<string> to MetadataQuery
-    public static implicit operator MetadataQuery(HashSet<string> vectors) => new MetadataQuery(MetadataOptions.None, vectors);
+    public static implicit operator MetadataQuery(string[] vectors) =>
+        new MetadataQuery(MetadataOptions.None, [.. vectors]);
 
     // Implicit conversion from (MetadataOptions, HashSet<string>) to MetadataQuery
-    public static implicit operator MetadataQuery((MetadataOptions options, HashSet<string> vectors) metadata) => new MetadataQuery(metadata.options, metadata.vectors);
+    public static implicit operator MetadataQuery(
+        (MetadataOptions options, string[] vectors) metadata
+    ) => new MetadataQuery(metadata.options, [.. metadata.vectors]);
 
     readonly HashSet<string> _vectors = [.. Vectors ?? new HashSet<string>()];
 
