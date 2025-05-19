@@ -40,7 +40,7 @@ public partial class UnitTests
             new
             {
                 author_username = "kineticandroid",
-                content = @"Take the story of Frankenstein's monster, remove the hateful creator, and replace the little girl's flowers with a brightly pastel Reagan-era suburb. Though not my personal favorite Tim Burton film, I feel like this one best encapsulates his style and story interests.",
+                content = @"Take the story of Frankenstein's monster.",
                 rating = (double?)null,
                 movie_id = 162,
                 review_id = 162,
@@ -48,17 +48,7 @@ public partial class UnitTests
             new
             {
                 author_username = "r96sk",
-                content = @"Very enjoyable.
-
-It's funny the way we picture things in our minds. I had heard of <em>'Edward Scissorhands'</em> but actually knew very little about it, typified by the fact I was expecting this to be very dark - probably just based on the seeing the cover here and there. It's much sillier than expected, but in a positive way.
-
-I do kinda end up wishing they went down a more dark/creative route, instead of relying on the novelty of having scissors as hands; though, to be fair, they do touch on the deeper side a bit. With that said, I did get a good amount of entertainment seeing this plot unfold. It's weird and wonderful.
-
-Johnny Depp is a great actor and is very good here, mainly via his facial expressions and body language. It's cool to see Winona Ryder involved, someone I've thoroughly enjoyed in more recent times in <em>'Stranger Things'</em>. Alan Arkin and Anthony Michael Hall also appear.
-
-The film looks neat, as I've come to expect from Tim Burton. It has the obvious touch of Bo Welch to it, with the neighbourhood looking not too dissimilar to what Welch would create for 2003's <em>'The Cat in the Hat'</em> - which I, truly, enjoyed.
-
-Undoubtedly worth a watch.",
+                content = @"Very enjoyable.",
                 rating = (double?)8.0,
                 movie_id = 162,
                 review_id = 162,
@@ -83,23 +73,25 @@ Undoubtedly worth a watch.",
     }
 
     [Theory]
-    [InlineData(typeof(bool))]
-    [InlineData(typeof(char))]
-    [InlineData(typeof(sbyte))]
-    [InlineData(typeof(byte))]
-    [InlineData(typeof(short))]
-    [InlineData(typeof(ushort))]
-    [InlineData(typeof(int))]
-    [InlineData(typeof(uint))]
-    [InlineData(typeof(long))]
-    [InlineData(typeof(ulong))]
-    [InlineData(typeof(float))]
-    [InlineData(typeof(double))]
-    [InlineData(typeof(double?))]
-    [InlineData(typeof(decimal))]
-    [InlineData(typeof(string))]
-    [InlineData(typeof(DateTime))]
-    public void TestIsNativeTypeCheck(Type type)
+    [InlineData(typeof(bool), true)]
+    [InlineData(typeof(char), true)]
+    [InlineData(typeof(sbyte), true)]
+    [InlineData(typeof(byte), true)]
+    [InlineData(typeof(short), true)]
+    [InlineData(typeof(ushort), true)]
+    [InlineData(typeof(int), true)]
+    [InlineData(typeof(uint), true)]
+    [InlineData(typeof(long), true)]
+    [InlineData(typeof(ulong), true)]
+    [InlineData(typeof(float), true)]
+    [InlineData(typeof(double), true)]
+    [InlineData(typeof(double?), true)]
+    [InlineData(typeof(decimal), true)]
+    [InlineData(typeof(string), true)]
+    [InlineData(typeof(DateTime), true)]
+    [InlineData(typeof(Object), false)]
+    [InlineData(typeof(WeaviateObject), false)]
+    public void TestIsNativeTypeCheck(Type type, bool expected)
     {
         // Arrange
 
@@ -107,6 +99,6 @@ Undoubtedly worth a watch.",
         var result = type.IsNativeType();
 
         // Assert
-        Assert.True(result);
+        Assert.Equal(expected, result);
     }
 }

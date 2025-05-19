@@ -6,7 +6,11 @@ namespace Weaviate.Client.Rest;
 
 public static class HttpResponseMessageExtensions
 {
-    public static async Task EnsureExpectedStatusCodeAsync(this HttpResponseMessage response, SortedSet<HttpStatusCode> codes, string error = "")
+    public static async Task EnsureExpectedStatusCodeAsync(
+        this HttpResponseMessage response,
+        SortedSet<HttpStatusCode> codes,
+        string error = ""
+    )
     {
         if (codes.Contains(response.StatusCode))
         {
@@ -18,22 +22,39 @@ public static class HttpResponseMessageExtensions
         if (response.Content != null)
             response.Content.Dispose();
 
-        content = $"Unexpected status code {response.StatusCode}. Expected: {string.Join(", ", codes)}. {error}. Server replied: {content}";
+        content =
+            $"Unexpected status code {response.StatusCode}. Expected: {string.Join(", ", codes)}. {error}. Server replied: {content}";
 
         throw new SimpleHttpResponseException(response.StatusCode, codes, content);
     }
 
-    public static async Task EnsureExpectedStatusCodeAsync(this HttpResponseMessage response, SortedSet<int> codes, string error = "")
+    public static async Task EnsureExpectedStatusCodeAsync(
+        this HttpResponseMessage response,
+        SortedSet<int> codes,
+        string error = ""
+    )
     {
-        await EnsureExpectedStatusCodeAsync(response, [.. codes.Select(x => (HttpStatusCode)x)], error);
+        await EnsureExpectedStatusCodeAsync(
+            response,
+            [.. codes.Select(x => (HttpStatusCode)x)],
+            error
+        );
     }
 
-    public static async Task EnsureExpectedStatusCodeAsync(this HttpResponseMessage response, int code, string error = "")
+    public static async Task EnsureExpectedStatusCodeAsync(
+        this HttpResponseMessage response,
+        int code,
+        string error = ""
+    )
     {
         await EnsureExpectedStatusCodeAsync(response, [(HttpStatusCode)code], error);
     }
 
-    public static async Task EnsureExpectedStatusCodeAsync(this HttpResponseMessage response, HttpStatusCode code, string error = "")
+    public static async Task EnsureExpectedStatusCodeAsync(
+        this HttpResponseMessage response,
+        HttpStatusCode code,
+        string error = ""
+    )
     {
         await EnsureExpectedStatusCodeAsync(response, [code], error);
     }
@@ -47,9 +68,15 @@ public static class HttpResponseMessageExtensions
 public class SimpleHttpResponseException : Exception
 {
     public HttpStatusCode StatusCode { get; private set; }
-    public ISet<HttpStatusCode> ExpectedStatusCodes { get; private set; } = new SortedSet<HttpStatusCode>();
+    public ISet<HttpStatusCode> ExpectedStatusCodes { get; private set; } =
+        new SortedSet<HttpStatusCode>();
 
-    public SimpleHttpResponseException(HttpStatusCode statusCode, SortedSet<HttpStatusCode> expectedStatusCodes, string content) : base(content)
+    public SimpleHttpResponseException(
+        HttpStatusCode statusCode,
+        SortedSet<HttpStatusCode> expectedStatusCodes,
+        string content
+    )
+        : base(content)
     {
         StatusCode = statusCode;
         ExpectedStatusCodes = expectedStatusCodes;
@@ -87,10 +114,9 @@ public class WeaviateRestClient : IDisposable
         }
     }
 
-
     internal async Task<Dto.Schema?> CollectionList()
     {
-        var response = await _httpClient.GetAsync("schema");
+        var response = await _httpClient.GetAsync(WeaviateEndpoints.Collection());
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection list");
 
@@ -101,7 +127,7 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<Dto.Class?> CollectionGet(string name)
     {
-        var response = await _httpClient.GetAsync($"schema/{name}");
+        var response = await _httpClient.GetAsync(WeaviateEndpoints.Collection(name));
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection get");
 
@@ -122,14 +148,17 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task CollectionDelete(string name)
     {
-        var response = await _httpClient.DeleteAsync($"schema/{name}");
+        var response = await _httpClient.DeleteAsync(WeaviateEndpoints.Collection(name));
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection delete");
     }
 
     internal async Task<Dto.Class> CollectionCreate(Dto.Class collection)
     {
-        var response = await _httpClient.PostAsJsonAsync($"schema", collection);
+        var response = await _httpClient.PostAsJsonAsync(
+            WeaviateEndpoints.Collection(),
+            collection
+        );
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection create");
 
@@ -145,30 +174,26 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<Dto.Object> ObjectInsert(string collectionName, Dto.Object data)
     {
-        var response = await _httpClient.PostAsJsonAsync($"objects", data);
+        var response = await _httpClient.PostAsJsonAsync(WeaviateEndpoints.Objects(), data);
 
         await response.EnsureExpectedStatusCodeAsync([200], "insert object");
 
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Object>();
-
-        if (contents is null)
-        {
-            throw new WeaviateRestException();
-        }
-
-        return contents;
+        return await response.Content.ReadFromJsonAsync<Dto.Object>()
+            ?? throw new WeaviateRestException();
     }
 
     internal async Task DeleteObject(string collectionName, Guid id)
     {
-        var response = await _httpClient.DeleteAsync($"objects/{collectionName}/{id}");
+        var response = await _httpClient.DeleteAsync(
+            WeaviateEndpoints.CollectionObject(collectionName, id)
+        );
 
         await response.EnsureExpectedStatusCodeAsync([204, 404], "delete object");
     }
 
     internal async Task ReferenceAdd(string collectionName, Guid from, string fromProperty, Guid to)
     {
-        var path = $"objects/{collectionName}/{from}/references/{fromProperty}";
+        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
 
         var beacons = DataClient<object>.MakeBeacons(to);
         var reference = beacons.First();
@@ -178,9 +203,14 @@ public class WeaviateRestClient : IDisposable
         await response.EnsureExpectedStatusCodeAsync([200], "reference add");
     }
 
-    internal async Task ReferenceReplace(string collectionName, Guid from, string fromProperty, Guid[] to)
+    internal async Task ReferenceReplace(
+        string collectionName,
+        Guid from,
+        string fromProperty,
+        Guid[] to
+    )
     {
-        var path = $"objects/{collectionName}/{from}/references/{fromProperty}";
+        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
 
         var beacons = DataClient<object>.MakeBeacons(to);
         var reference = beacons;
@@ -190,10 +220,14 @@ public class WeaviateRestClient : IDisposable
         await response.EnsureExpectedStatusCodeAsync([200], "reference replace");
     }
 
-
-    internal async Task ReferenceDelete(string collectionName, Guid from, string fromProperty, Guid to)
+    internal async Task ReferenceDelete(
+        string collectionName,
+        Guid from,
+        string fromProperty,
+        Guid to
+    )
     {
-        var path = $"objects/{collectionName}/{from}/references/{fromProperty}";
+        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
 
         var beacons = DataClient<object>.MakeBeacons(to);
         var reference = beacons.First();
