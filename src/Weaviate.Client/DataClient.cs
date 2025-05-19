@@ -1,5 +1,7 @@
 using System.Dynamic;
+using System.Text.Json;
 using Weaviate.Client.Models;
+using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 
@@ -9,66 +11,86 @@ public class DataClient<TData>
     private WeaviateClient _client => _collectionClient.Client;
     private string _collectionName => _collectionClient.Name;
 
-    public DataClient(CollectionClient<TData> collectionClient)
+    internal DataClient(CollectionClient<TData> collectionClient)
     {
         _collectionClient = collectionClient;
     }
 
     public static IDictionary<string, string>[] MakeBeacons(params Guid[] guids)
     {
-        return [
-            .. guids.Select(uuid => new Dictionary<string, string> { { "beacon", $"weaviate://localhost/{uuid}" } })
+        return
+        [
+            .. guids.Select(uuid => new Dictionary<string, string>
+            {
+                { "beacon", $"weaviate://localhost/{uuid}" },
+            }),
         ];
     }
 
-    public async Task<Guid> Insert(WeaviateObject<TData> data, Dictionary<string, Guid>? references = null)
+    internal static IDictionary<string, object?> BuildDynamicObject(object? data)
     {
-        ExpandoObject obj = new ExpandoObject();
+        var obj = new ExpandoObject();
+        var propDict = obj as IDictionary<string, object?>;
 
-        if (obj is IDictionary<string, object> propDict)
+        if (data is null)
         {
-            if (references is not null)
+            return propDict;
+        }
+
+        foreach (var propertyInfo in data.GetType().GetProperties())
+        {
+            if (!propertyInfo.CanRead)
+                continue; // skip non-readable properties
+
+            var value = propertyInfo.GetValue(data);
+
+            if (value is null)
             {
-                foreach (var kvp in references)
-                {
-                    propDict[kvp.Key] = MakeBeacons(kvp.Value);
-                }
+                continue;
             }
-
-            foreach (var property in data.Data?.GetType().GetProperties() ?? [])
+            else if (propertyInfo.PropertyType.IsNativeType())
             {
-                if (!property.CanRead)
-                {
-                    continue;
-                }
-
-                object? value = property.GetValue(data.Data);
-
-                if (value is null)
-                {
-                    continue;
-                }
-
-                propDict[property.Name] = value;
+                propDict[propertyInfo.Name] = value;
+            }
+            else
+            {
+                propDict[propertyInfo.Name] = BuildDynamicObject(value); // recursive call
             }
         }
 
-        var dto = new Rest.Dto.WeaviateObject()
+        return obj;
+    }
+
+    public async Task<Guid> Insert(
+        TData data,
+        Guid? id = null,
+        NamedVectors? vectors = null,
+        Dictionary<string, Guid>? references = null,
+        string? tenant = null
+    )
+    {
+        var propDict = BuildDynamicObject(data);
+
+        foreach (var kvp in references ?? [])
         {
-            ID = data.ID ?? Guid.NewGuid(),
+            propDict[kvp.Key] = MakeBeacons(kvp.Value);
+        }
+
+        var dtoVectors =
+            vectors?.Count == 0 ? null : Vectors.FromJson(JsonSerializer.Serialize(vectors));
+
+        var dto = new Rest.Dto.Object()
+        {
+            Id = id ?? Guid.NewGuid(),
             Class = _collectionName,
-            Properties = obj,
-            Vector = data.Vector?.Count == 0 ? null : data.Vector,
-            Vectors = data.Vectors?.Count == 0 ? null : data.Vectors,
-            Additional = data.Additional,
-            CreationTimeUnix = data.Metadata.CreationTime.HasValue ? new DateTimeOffset(data.Metadata.CreationTime.Value).ToUnixTimeMilliseconds() : null,
-            LastUpdateTimeUnix = data.Metadata.LastUpdateTime.HasValue ? new DateTimeOffset(data.Metadata.LastUpdateTime.Value).ToUnixTimeMilliseconds() : null,
-            Tenant = data.Tenant
+            Properties = propDict,
+            Vectors = dtoVectors,
+            Tenant = tenant,
         };
 
         var response = await _client.RestClient.ObjectInsert(_collectionName, dto);
 
-        return response.ID!.Value;
+        return response.Id!.Value;
     }
 
     public async Task Delete(Guid id)
