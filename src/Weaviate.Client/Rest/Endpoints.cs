@@ -2,12 +2,27 @@ namespace Weaviate.Client.Rest;
 
 internal static class WeaviateEndpoints
 {
-    public static string Schema() => $"/schema";
-    public static string Schema(string className) => $"schema/{className}";
-    public static string SchemaProperties(string className) => $"schema/{className}/properties";
-    public static string SchemaShards(string className) => $"schema/{className}/shards";
-    public static string SchemaShard(string className, string shardName) => $"schema/{className}/shards/{shardName}";
-    public static string SchemaTenants(string className) => $"schema/{className}/tenants";
-    public static string SchemaTenant(string className, string tenantName) => $"schema/{className}/tenants/{tenantName}";
+    public static string Collection() => $"schema";
 
+    public static string Collection(string collectionName) => $"schema/{collectionName}";
+
+    public static string CollectionProperties(string className) => $"schema/{className}/properties";
+
+    public static string CollectionShards(string className) => $"schema/{className}/shards";
+
+    public static string CollectionShard(string className, string shardName) =>
+        $"schema/{className}/shards/{shardName}";
+
+    public static string CollectionTenants(string className) => $"schema/{className}/tenants";
+
+    public static string CollectionTenant(string className, string tenantName) =>
+        $"schema/{className}/tenants/{tenantName}";
+
+    public static string Objects() => $"objects";
+
+    internal static string? CollectionObject(string collectionName, Guid id) =>
+        $"objects/{collectionName}/{id}";
+
+    internal static string? Reference(string collectionName, Guid from, string fromProperty) =>
+        $"objects/{collectionName}/{from}/references/{fromProperty}";
 }
