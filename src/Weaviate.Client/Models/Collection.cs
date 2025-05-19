@@ -1,4 +1,3 @@
-
 namespace Weaviate.Client.Models;
 
 public class Collection : CollectionBase<object, object, object> { }
@@ -28,8 +27,6 @@ public class CollectionBase<TModuleConfig, TShardingConfig, TVectorIndexConfig>
 
     // Configure named vectors. Either use this field or `vectorizer`, `vectorIndexType`, and `vectorIndexConfig` fields. Available from `v1.24.0`.
     public IDictionary<string, VectorConfig> VectorConfig { get; set; } = default!;
-
-    // TODO Find a way to elegantly remove the following legacy properties
 
     // Vector-index config, that is specific to the type of index selected in vectorIndexType
     [Obsolete("Use `VectorConfig` instead")]

@@ -4,6 +4,10 @@ namespace Weaviate.Client.Models;
 //
 public class StopwordConfig
 {
+    private static readonly Lazy<StopwordConfig> defaultInstance = new Lazy<StopwordConfig>(() => new StopwordConfig());
+
+    public static StopwordConfig Default => defaultInstance.Value;
+
     /// <summary>
     /// Stopwords to be considered additionally (default: []). Can be any array of custom strings.
     /// </summary>

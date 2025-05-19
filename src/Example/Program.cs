@@ -3,6 +3,8 @@ using System.Text.Json;
 using Weaviate.Client;
 using Weaviate.Client.Models;
 
+using CatDataWithVectors = (Example.Cat Data, float[] Vector);
+
 namespace Example;
 
 class Program
@@ -28,7 +30,7 @@ class Program
         };
     }
 
-    static async Task<IEnumerable<T>> GetCatsAsync<T>(string filename)
+    static async Task<IEnumerable<CatDataWithVectors>> GetCatsAsync(string filename)
     {
         try
         {
@@ -41,7 +43,7 @@ class Program
             using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
             {
                 // Deserialize directly from the stream for better performance, especially with large files
-                var data = await JsonSerializer.DeserializeAsync<IList<T>>(fs) ?? [];
+                var data = await JsonSerializer.DeserializeAsync<IList<CatDataWithVectors>>(fs) ?? [];
 
                 return data;
             }
@@ -117,26 +119,25 @@ class Program
         }
 
         // // Read 250 cats from JSON file and unmarshal into Cat class
-        var cats = await GetCatsAsync<WeaviateObject<Cat>>("cats.json");
+        var cats = await GetCatsAsync("cats.json");
 
         // Use the C# client to store all cats with a cat class
         Console.WriteLine("Cats to store: " + cats.Count());
         foreach (var cat in cats)
         {
-            cat.Vectors = new Dictionary<string, IList<float>>
+            var vectors = new NamedVectors()
             {
                 { "default", cat.Vector }
             };
-            cat.Vector = null;
 
-            var inserted = await collection.Data.Insert(cat);
+            var inserted = await collection.Data.Insert(cat.Data, vectors: vectors);
         }
 
         // Get all objects and sum up the counter property
-        var objects = collection.Query.List(limit: 250);
-        var retrieved = await objects.ToListAsync();
+        var result = await collection.Query.List(limit: 250);
+        var retrieved = result.Objects.ToList();
         Console.WriteLine("Cats retrieved: " + retrieved.Count());
-        var sum = retrieved.Sum(c => c.Data?.Counter ?? 0);
+        var sum = retrieved.Sum(c => c.As<Cat>()?.Counter ?? 0);
 
         // Delete object
         var firstObj = retrieved.First();
@@ -145,15 +146,15 @@ class Program
             await collection.Data.Delete(id);
         }
 
-        objects = collection.Query.List(limit: 5);
-        retrieved = await objects.ToListAsync();
+        result = await collection.Query.List(limit: 5);
+        retrieved = result.Objects.ToList();
         Console.WriteLine("Cats retrieved: " + retrieved.Count());
 
         firstObj = retrieved.First();
         if (firstObj.ID is Guid id2)
         {
             var fetched = await collection.Query.FetchObjectByID(id: id2);
-            Console.WriteLine("Cat retrieved via gRPC matches: " + ((fetched?.ID ?? Guid.Empty) == id2));
+            Console.WriteLine("Cat retrieved via gRPC matches: " + ((fetched?.Objects.First().ID ?? Guid.Empty) == id2));
         }
 
         {
@@ -163,13 +164,12 @@ class Program
                         .Select(c => c.ID!.Value)
                         .ToHashSet();
 
-            var fetched =
-                await collection.Query.FetchObjectsByIDs(idList).ToListAsync();
-            Console.WriteLine($"Cats retrieved via gRPC matches:{Environment.NewLine}" + JsonSerializer.Serialize(fetched, new JsonSerializerOptions { WriteIndented = true }).ToString());
+            var fetched = await collection.Query.FetchObjectsByIDs(idList);
+            Console.WriteLine($"Cats retrieved via gRPC matches:{Environment.NewLine} {JsonSerializer.Serialize(fetched.Objects, new JsonSerializerOptions { WriteIndented = true })}");
         }
 
         var queryNearVector =
-            collection
+            await collection
                 .Query
                 .NearVector(
                     vector: [20f, 21f, 22f],
@@ -179,7 +179,7 @@ class Program
                     metadata: MetadataOptions.Score | MetadataOptions.Distance
                 );
 
-        await foreach (var cat in queryNearVector)
+        foreach (var cat in queryNearVector.Objects)
         {
             Console.WriteLine(JsonSerializer.Serialize(cat, new JsonSerializerOptions { WriteIndented = true }));
         }
