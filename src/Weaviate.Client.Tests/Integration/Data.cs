@@ -27,11 +27,7 @@ public partial class BasicTests
     public async Task ObjectCreation()
     {
         // Arrange
-        var collectionClient = await CollectionFactory<TestData>(
-            "",
-            "Test collection description",
-            [Property.Text("Name")]
-        );
+        var collectionClient = await CollectionFactory<TestData>("", "Test collection description");
 
         // Act
         var id = Guid.NewGuid();

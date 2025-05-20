@@ -58,10 +58,12 @@ public partial class BasicTests : IAsyncDisposable
         IDictionary<string, VectorConfig>? vectorConfig = null
     )
     {
-        if (string.IsNullOrEmpty(name))
+        if (!string.IsNullOrEmpty(name))
         {
-            name = TestContext.Current.TestMethod?.MethodName ?? string.Empty;
+            name = "_" + name;
         }
+
+        name = $"{TestContext.Current.TestMethod?.MethodName ?? string.Empty}{name}";
 
         if (properties is null)
         {
