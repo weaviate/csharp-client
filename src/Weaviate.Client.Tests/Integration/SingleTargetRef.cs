@@ -13,7 +13,7 @@ public partial class BasicTests
     {
         // Arrange
 
-        var cA = await CollectionFactory<TestData>("A", "Collection A", [Property.Text("Name")]);
+        var cA = await CollectionFactory<TestData>("A", "Collection A");
 
         var uuid_A1 = await cA.Data.Insert(new TestData() { Name = "A1" });
         var uuid_A2 = await cA.Data.Insert(new TestData() { Name = "A2" });
@@ -21,7 +21,6 @@ public partial class BasicTests
         var cB = await CollectionFactory<TestData>(
             name: "B",
             description: "Collection B",
-            properties: [Property.Text("Name")],
             references: [Property.Reference("a", cA.Name)]
         );
 
@@ -35,7 +34,6 @@ public partial class BasicTests
         var cC = await CollectionFactory<TestData>(
             "C",
             "Collection C",
-            [Property.Text("Name")],
             references: [Property.Reference("b", cB.Name)]
         );
 
@@ -128,7 +126,7 @@ public partial class BasicTests
                 Property.Int("review_id"),
                 Property.Int("movie_id"),
             ],
-            references: [Property.Reference("forMovie", targetCollection: "Movie")],
+            references: [Property.Reference("forMovie", targetCollection: movies.Name)],
             vectorConfig: new Dictionary<string, VectorConfig>
             {
                 {
