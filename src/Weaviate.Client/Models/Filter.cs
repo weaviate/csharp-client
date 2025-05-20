@@ -53,6 +53,12 @@ public record Filter
                 int v => f => f.ValueInt = v,
                 double v => f => f.ValueNumber = v,
                 string v => f => f.ValueText = v,
+                DateTime v => f => f.ValueText = v.ToUniversalTime().ToString("o"),
+                IEnumerable<DateTime> v => f =>
+                    f.ValueTextArray = new TextArray
+                    {
+                        Values = { v.Select(vv => vv.ToUniversalTime().ToString("o")) },
+                    },
                 IEnumerable<bool> v => f =>
                     f.ValueBooleanArray = new BooleanArray { Values = { v } },
                 IEnumerable<long> v => f => f.ValueIntArray = new IntArray { Values = { v } },
@@ -78,9 +84,58 @@ public record Filter
     internal static Filter And(IEnumerable<Filter> filters) =>
         new NestedFilter(Filters.Types.Operator.And, filters);
 
+    public record FilterBase<T>
+    {
+        protected readonly Filter _filter;
+
+        protected FilterBase(Filter filter)
+        {
+            _filter = filter;
+        }
+
+        public Filter ContainsAny(IEnumerable<T> value) =>
+            _filter.WithOperator(Filters.Types.Operator.ContainsAny).ByValue(value);
+
+        public Filter Equal(T value) =>
+            _filter.WithOperator(Filters.Types.Operator.Equal).ByValue(value);
+
+        public Filter NotEqual(T value) =>
+            _filter.WithOperator(Filters.Types.Operator.NotEqual).ByValue(value);
+
+        public Filter GreaterThan(T value) =>
+            _filter.WithOperator(Filters.Types.Operator.GreaterThan).ByValue(value);
+
+        public Filter GreaterThanEqual(T value) =>
+            _filter.WithOperator(Filters.Types.Operator.GreaterThanEqual).ByValue(value);
+
+        public Filter LessThan(T value) =>
+            _filter.WithOperator(Filters.Types.Operator.LessThan).ByValue(value);
+
+        public Filter LessThanEqual(T value) =>
+            _filter.WithOperator(Filters.Types.Operator.LessThanEqual).ByValue(value);
+    }
+
     public static PropertyFilter Property(string name)
     {
         return new PropertyFilter(name);
+    }
+
+    public static FilterTime CreationTime => new("_creationTimeUnix");
+    public static FilterTime UpdateTime => new("_creationTimeUnix");
+
+    public record FilterTime : FilterBase<DateTime>
+    {
+        public FilterTime(string timeField)
+            : base(
+                timeField switch
+                {
+                    "_creationTimeUnix" => new Filter().ByProperty(timeField),
+                    "_lastUpdateTimeUnix" => new Filter().ByProperty(timeField),
+                    _ => throw new WeaviateException("Unsupported time field for filter"),
+                }
+            ) { }
+
+        public static implicit operator Filter(FilterTime filterTime) => filterTime._filter;
     }
 
     public record NestedFilter
