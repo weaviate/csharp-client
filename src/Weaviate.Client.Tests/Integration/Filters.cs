@@ -24,6 +24,40 @@ public partial class BasicTests
     }
 
     [Fact]
+    public async Task FilteringWithMetadataDates()
+    {
+        // Arrange
+        var cA = await CollectionFactory<TestData>(
+            "A",
+            "Collection A",
+            invertedIndexConfig: new InvertedIndexConfig { IndexTimestamps = true }
+        );
+
+        var uuid_A1 = await cA.Data.Insert(new() { Name = "A1", Size = 3 });
+        var uuid_A2 = await cA.Data.Insert(new() { Name = "A2", Size = 5 });
+
+        var objsA1 = await cA.Query.FetchObjectByID(
+            uuid_A1,
+            metadata: MetadataOptions.CreationTime
+        );
+
+        // Act
+        var objA1 = objsA1.First();
+        Assert.NotNull(objA1.Metadata.CreationTime);
+        Assert.Equal(DateTimeKind.Utc, objA1.Metadata.CreationTime.Value.Kind);
+
+        var filter = Filter.CreationTime.Equal(objA1.Metadata.CreationTime.Value);
+        var list = await cA.Query.List(filter: filter);
+
+        Assert.NotEmpty(list);
+
+        var obj = list.First();
+
+        // Assert
+        Assert.Equal(objA1.ID, obj.ID);
+    }
+
+    [Fact]
     public async Task FilteringWithExpressions()
     {
         // Arrange

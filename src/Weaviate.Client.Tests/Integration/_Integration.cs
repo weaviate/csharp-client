@@ -55,7 +55,8 @@ public partial class BasicTests : IAsyncDisposable
         string description,
         IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
-        IDictionary<string, VectorConfig>? vectorConfig = null
+        IDictionary<string, VectorConfig>? vectorConfig = null,
+        InvertedIndexConfig? invertedIndexConfig = null
     )
     {
         if (!string.IsNullOrEmpty(name))
@@ -72,20 +73,17 @@ public partial class BasicTests : IAsyncDisposable
 
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        if (vectorConfig is null)
+        vectorConfig ??= new Dictionary<string, VectorConfig>
         {
-            vectorConfig = new Dictionary<string, VectorConfig>
             {
+                "default",
+                new VectorConfig
                 {
-                    "default",
-                    new VectorConfig
-                    {
-                        Vectorizer = new Dictionary<string, object> { { "none", new { } } },
-                        VectorIndexType = "hnsw",
-                    }
-                },
-            };
-        }
+                    Vectorizer = new Dictionary<string, object> { { "none", new { } } },
+                    VectorIndexType = "hnsw",
+                }
+            },
+        };
 
         references = references ?? [];
 
@@ -95,6 +93,7 @@ public partial class BasicTests : IAsyncDisposable
             Description = description,
             Properties = properties.Concat(references!.Select(p => (Property)p)).ToList(),
             VectorConfig = vectorConfig,
+            InvertedIndexConfig = invertedIndexConfig,
         };
 
         await _weaviate.Collections.Delete(name);
