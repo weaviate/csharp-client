@@ -107,10 +107,10 @@ public partial class WeaviateGrpcClient
         return new Metadata
         {
             LastUpdateTime = metadata.LastUpdateTimeUnixPresent
-                ? DateTimeOffset.FromUnixTimeMilliseconds(metadata.LastUpdateTimeUnix).DateTime
+                ? DateTimeOffset.FromUnixTimeMilliseconds(metadata.LastUpdateTimeUnix).UtcDateTime
                 : null,
             CreationTime = metadata.CreationTimeUnixPresent
-                ? DateTimeOffset.FromUnixTimeMilliseconds(metadata.CreationTimeUnix).DateTime
+                ? DateTimeOffset.FromUnixTimeMilliseconds(metadata.CreationTimeUnix).UtcDateTime
                 : null,
             Certainty = metadata.CertaintyPresent ? metadata.Certainty : null,
             Distance = metadata.DistancePresent ? metadata.Distance : null,
