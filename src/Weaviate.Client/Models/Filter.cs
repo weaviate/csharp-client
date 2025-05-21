@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using Weaviate.V1;
 
 namespace Weaviate.Client.Models;
@@ -22,35 +21,44 @@ public static class Filter
     public static FilterBase And(IEnumerable<FilterBase> filters) =>
         new NestedFilter(Filters.Types.Operator.And, filters);
 
-    public static PropertyFilter Property(string name)
+    public static FilterBase Property(string name)
     {
-        return new PropertyFilter(name);
+        return new PropertyFilter(name.Decapitalize());
     }
 
-    public static TimeFilter CreationTime => new("_creationTimeUnix");
-    public static TimeFilter UpdateTime => new("_creationTimeUnix");
+    public static FilterBase CreationTime => new TimeFilter("_creationTimeUnix");
+    public static FilterBase UpdateTime => new TimeFilter("_creationTimeUnix");
 }
 
-public record FilterBase<T> : FilterBase
+public record TypedFilter<T>
 {
-    internal FilterBase(FilterBase parent)
-        : base(parent) { }
+    readonly FilterBase _internal;
 
-    protected FilterBase() { }
+    internal TypedFilter(FilterBase parent)
+    {
+        _internal = parent;
+    }
 
-    public FilterBase ContainsAny(IEnumerable<T> value) => base.ContainsAny(value);
+    public static implicit operator FilterBase(TypedFilter<T> filter)
+    {
+        return filter._internal;
+    }
 
-    public FilterBase Equal(T value) => base.Equal(value);
+    public FilterBase ContainsAll(IEnumerable<T> value) => _internal.ContainsAll(value);
 
-    public FilterBase NotEqual(T value) => base.NotEqual(value);
+    public FilterBase ContainsAny(IEnumerable<T> value) => _internal.ContainsAny(value);
 
-    public FilterBase GreaterThan(T value) => base.GreaterThan(value);
+    public FilterBase Equal(T value) => _internal.Equal(value);
 
-    public FilterBase GreaterThanEqual(T value) => base.GreaterThanEqual(value);
+    public FilterBase NotEqual(T value) => _internal.NotEqual(value);
 
-    public FilterBase LessThan(T value) => base.LessThan(value);
+    public FilterBase GreaterThan(T value) => _internal.GreaterThan(value);
 
-    public FilterBase LessThanEqual(T value) => base.LessThanEqual(value);
+    public FilterBase GreaterThanEqual(T value) => _internal.GreaterThanEqual(value);
+
+    public FilterBase LessThan(T value) => _internal.LessThan(value);
+
+    public FilterBase LessThanEqual(T value) => _internal.LessThanEqual(value);
 }
 
 public record FilterBase
@@ -80,7 +88,7 @@ public record FilterBase
         return this;
     }
 
-    internal FilterBase ByValue<T>(T value)
+    protected FilterBase ByValue<T>(T value)
     {
         Action<Filters> assigner = (
             value switch
@@ -149,65 +157,15 @@ public record FilterBase
     public FilterBase IsNull() => WithOperator(Filters.Types.Operator.IsNull);
 }
 
-public static class Filter<T>
-{
-    public class PropertyFilter<TResult>
-    {
-        private readonly PropertyFilter _prop;
-
-        internal PropertyFilter(string name)
-        {
-            _prop = Filter.Property(name.ToLower());
-        }
-
-        public Filters ContainsAny(IEnumerable<TResult> values) => _prop.ContainsAny(values);
-
-        public Filters ContainsAll(IEnumerable<TResult> values) => _prop.ContainsAll(values);
-
-        public Filters Equal(TResult value) => _prop.Equal(value);
-
-        public Filters NotEqual(TResult value) => _prop.NotEqual(value);
-
-        public Filters GreaterThan(TResult value) => _prop.GreaterThan(value);
-
-        public Filters GreaterThanEqual(TResult value) => _prop.GreaterThanEqual(value);
-
-        public Filters LessThan(TResult value) => _prop.LessThan(value);
-
-        public Filters LessThanEqual(TResult value) => _prop.LessThanEqual(value);
-
-        public Filters WithinGeoRange(GeoCoordinatesConstraint value) =>
-            _prop.WithinGeoRange(value);
-
-        public Filters Like(TResult value) => _prop.Like(value);
-
-        public Filters IsNull() => _prop.IsNull();
-    }
-
-    public static PropertyFilter<TResult> Property<TResult>(Expression<Func<T, TResult>> selector)
-    {
-        var member = selector.Body as MemberExpression;
-        if (member != null)
-        {
-            var mi = member.Member;
-            return new PropertyFilter<TResult>(mi.Name);
-        }
-
-        throw new ArgumentException("Expression is not a member access", nameof(selector));
-    }
-}
-
-public record PropertyFilter : FilterBase
+internal record PropertyFilter : FilterBase
 {
     internal PropertyFilter(string name)
     {
         ByProperty(name);
     }
-
-    public FilterBase<T> As<T>() => new(this);
 }
 
-public record NestedFilter : FilterBase
+internal record NestedFilter : FilterBase
 {
     internal NestedFilter(Filters.Types.Operator op, IEnumerable<FilterBase> filters)
     {
@@ -216,15 +174,15 @@ public record NestedFilter : FilterBase
     }
 }
 
-public record TimeFilter : FilterBase<DateTime>
+internal record TimeFilter : TypedFilter<DateTime>
 {
     internal TimeFilter(string timeField)
-    {
-        _ = timeField switch
-        {
-            "_creationTimeUnix" => ByProperty(timeField),
-            "_lastUpdateTimeUnix" => ByProperty(timeField),
-            _ => throw new WeaviateException("Unsupported time field for filter"),
-        };
-    }
+        : base(
+            timeField switch
+            {
+                "_creationTimeUnix" => Filter.Property(timeField),
+                "_lastUpdateTimeUnix" => Filter.Property(timeField),
+                _ => throw new WeaviateException("Unsupported time field for filter"),
+            }
+        ) { }
 }
