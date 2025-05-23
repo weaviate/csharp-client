@@ -64,7 +64,7 @@ public record Filter
         new ReferenceFilter(name.Decapitalize());
 
     public static Typed<DateTime> CreationTime => new TimeFilter("_creationTimeUnix");
-    public static Typed<DateTime> UpdateTime => new TimeFilter("_creationTimeUnix");
+    public static Typed<DateTime> UpdateTime => new TimeFilter("_lastUpdateTimeUnix");
 
     protected Filter WithOperator(Filters.Types.Operator op)
     {
@@ -114,7 +114,9 @@ public record Filter
                 IEnumerable<double> v => f =>
                     f.ValueNumberArray = new NumberArray { Values = { v } },
                 IEnumerable<string> v => f => f.ValueTextArray = new TextArray { Values = { v } },
-                _ => throw new WeaviateException("Unsupported type for filter"),
+                _ => throw new WeaviateException(
+                    $"Unsupported type '{typeof(T).Name}' for filter value. Check the documentation for supported filter value types."
+                ),
             }
         );
 
