@@ -7,7 +7,7 @@ public static class Filter<T>
 {
     public class PropertyFilter<TResult>
     {
-        private readonly Filter _prop;
+        private readonly Filter.PropertyFilter _prop;
 
         internal PropertyFilter(string name)
         {
