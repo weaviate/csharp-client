@@ -78,6 +78,72 @@ public partial class BasicTests
         Assert.Equal(uuid_A2, objs[0].ID);
     }
 
+    public static IEnumerable<TheoryDataRow<Filter, int>> FilteringReferencesTestCases
+    {
+        get
+        {
+            yield return (Filter.Reference("ref").Property("size").GreaterThan(3), 1);
+            yield return (Filter.Reference("ref").Property("name").Length().LessThan(6), 0);
+            yield return (Filter.Reference("ref").ID().Equal(_reusableUuids[1]), 1);
+            yield return (
+                Filter.Reference("ref2").Reference("ref").Property("name").Length().LessThan(6),
+                2
+            );
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(BasicTests.FilteringReferencesTestCases), MemberType = typeof(BasicTests))]
+    public async Task FilteringReferences(Filter filter, int expected)
+    {
+        var cTarget = await CollectionFactory<TestData>(
+            "Target",
+            "Collection Target",
+            invertedIndexConfig: new InvertedIndexConfig() { IndexPropertyLength = true }
+        );
+
+        var uuidsTo = new[]
+        {
+            await cTarget.Data.Insert(new() { Name = "first", Size = 0 }, id: _reusableUuids[0]),
+            await cTarget.Data.Insert(new() { Name = "second", Size = 15 }, id: _reusableUuids[1]),
+        };
+
+        var cFrom = await CollectionFactory(
+            "From",
+            properties: [Property.Text("name")],
+            references: [Property.Reference("ref", cTarget.Name)]
+        );
+
+        await cFrom.AddReference(Property.Reference("ref2", cFrom.Name));
+
+        var uuidsFrom = new List<Guid>
+        {
+            await cFrom.Data.Insert(new { Name = "first" }, references: [("ref", uuidsTo[0])]),
+            await cFrom.Data.Insert(new { Name = "second" }, references: [("ref", uuidsTo[1])]),
+        };
+
+        var third = await cFrom.Data.Insert(
+            new { Name = "third" },
+            references: [("ref2", uuidsFrom[0])]
+        );
+
+        var fourth = await cFrom.Data.Insert(
+            new { Name = "fourth" },
+            references: [("ref2", uuidsFrom[1])]
+        );
+
+        uuidsFrom.AddRange([third, fourth]);
+
+        // Act
+        var objects = await cFrom.Query.List(filter: filter);
+
+        var objs = objects.ToList();
+
+        // Assert
+        Assert.Single(objs);
+        Assert.Equal(uuidsFrom[expected], objs.First().ID);
+    }
+
     [Fact]
     public async Task FilteringWithComplexExpressions()
     {

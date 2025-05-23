@@ -24,10 +24,7 @@ public partial class BasicTests
             references: [Property.Reference("a", cA.Name)]
         );
 
-        var uuid_B = await cB.Data.Insert(
-            new() { Name = "B" },
-            references: new Dictionary<string, Guid> { { "a", uuid_A1 } }
-        );
+        var uuid_B = await cB.Data.Insert(new() { Name = "B" }, references: [("a", uuid_A1)]);
 
         await cB.Data.ReferenceAdd(from: uuid_B, fromProperty: "a", to: uuid_A2);
 
@@ -39,7 +36,7 @@ public partial class BasicTests
 
         var uuid_C = await cC.Data.Insert(
             new TestData { Name = "find me" },
-            references: new Dictionary<string, Guid> { { "b", uuid_B } }
+            references: [("b", uuid_B)]
         );
 
         // Act
@@ -133,10 +130,7 @@ public partial class BasicTests
                     "default",
                     new VectorConfig
                     {
-                        Vectorizer = new Dictionary<string, object>
-                        {
-                            { "text2vec-contextionary", new { vectorizeClassName = false } },
-                        },
+                        Vectorizer = Vectorizer.Text2VecContextionary(),
                         VectorIndexType = "hnsw",
                     }
                 },
@@ -300,13 +294,10 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         foreach (var r in reviewsData)
         {
-            await reviews.Data.Insert(
-                r,
-                references: new Dictionary<string, Guid>
-                {
-                    { "forMovie", movieIds[(int)r.movie_id] },
-                }
-            );
+            // Using dynamic make somo implicit conversions impossible.
+            Guid movieId = movieIds[(int)r.movie_id];
+            ObjectReference movieRef = ("forMovie", movieId);
+            await reviews.Data.Insert(r, references: new List<ObjectReference>() { movieRef });
         }
 
         // Act

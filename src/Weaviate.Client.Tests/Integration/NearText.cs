@@ -18,10 +18,7 @@ public partial class BasicTests
                     "default",
                     new VectorConfig
                     {
-                        Vectorizer = new Dictionary<string, object>
-                        {
-                            { "text2vec-contextionary", new { vectorizeClassName = false } },
-                        },
+                        Vectorizer = Vectorizer.Text2VecContextionary(),
                         VectorIndexType = "hnsw",
                     }
                 },
@@ -68,10 +65,7 @@ public partial class BasicTests
                     "default",
                     new VectorConfig
                     {
-                        Vectorizer = new Dictionary<string, object>
-                        {
-                            { "text2vec-contextionary", new { vectorizeClassName = false } },
-                        },
+                        Vectorizer = Vectorizer.Text2VecContextionary(),
                         VectorIndexType = "hnsw",
                     }
                 },
