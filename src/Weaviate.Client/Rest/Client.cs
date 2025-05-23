@@ -1,6 +1,6 @@
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
+using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client.Rest;
 
@@ -238,5 +238,14 @@ public class WeaviateRestClient : IDisposable
         var response = await _httpClient.SendAsync(request);
 
         await response.EnsureExpectedStatusCodeAsync([200], "reference delete");
+    }
+
+    internal async Task CollectionAddProperty(string collectionName, Property property)
+    {
+        var path = WeaviateEndpoints.CollectionProperties(collectionName);
+
+        var response = await _httpClient.PostAsJsonAsync(path, property);
+
+        await response.EnsureExpectedStatusCodeAsync([200], "collection property add");
     }
 }

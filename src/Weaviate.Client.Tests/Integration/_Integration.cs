@@ -25,6 +25,14 @@ public partial class BasicTests : IAsyncDisposable
     WeaviateClient _weaviate;
     HttpClient _httpClient;
 
+    static readonly Guid[] _reusableUuids =
+    [
+        Guid.NewGuid(),
+        Guid.NewGuid(),
+        Guid.NewGuid(),
+        Guid.NewGuid(),
+    ];
+
     public BasicTests()
     {
         _httpClient = new HttpClient(
@@ -52,13 +60,15 @@ public partial class BasicTests : IAsyncDisposable
 
     async Task<CollectionClient<TData>> CollectionFactory<TData>(
         string name,
-        string description,
+        string? description = null,
         IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
         IDictionary<string, VectorConfig>? vectorConfig = null,
         InvertedIndexConfig? invertedIndexConfig = null
     )
     {
+        description ??= TestContext.Current.TestMethod?.MethodName ?? string.Empty;
+
         if (!string.IsNullOrEmpty(name))
         {
             name = "_" + name;
@@ -105,10 +115,11 @@ public partial class BasicTests : IAsyncDisposable
 
     async Task<CollectionClient<dynamic>> CollectionFactory(
         string name,
-        string description,
-        IList<Property> properties,
+        string? description = null,
+        IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
-        IDictionary<string, VectorConfig>? vectorConfig = null
+        IDictionary<string, VectorConfig>? vectorConfig = null,
+        InvertedIndexConfig? invertedIndexConfig = null
     )
     {
         return await CollectionFactory<dynamic>(
@@ -116,7 +127,8 @@ public partial class BasicTests : IAsyncDisposable
             description,
             properties,
             references,
-            vectorConfig
+            vectorConfig,
+            invertedIndexConfig
         );
     }
 }

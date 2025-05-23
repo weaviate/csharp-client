@@ -65,7 +65,7 @@ public class DataClient<TData>
         TData data,
         Guid? id = null,
         NamedVectors? vectors = null,
-        Dictionary<string, Guid>? references = null,
+        IEnumerable<ObjectReference>? references = null,
         string? tenant = null
     )
     {
@@ -73,7 +73,7 @@ public class DataClient<TData>
 
         foreach (var kvp in references ?? [])
         {
-            propDict[kvp.Key] = MakeBeacons(kvp.Value);
+            propDict[kvp.Name] = MakeBeacons(kvp.TargetID);
         }
 
         var dtoVectors =
