@@ -6,11 +6,11 @@ namespace Weaviate.Client.Tests;
 public partial class UnitTests
 {
     [Fact]
-    public void FilterByReferenceStacksUp()
+    public void FilterByReferenceDoesNotChangePreviousFilter()
     {
         // Arrange
         var f1 = Filter.Reference("ref");
-        var f2 = f1.Reference("ref2");
+        var f2 = f1.Reference("ref2").Property("prop").Equal("value");
 
         // Act
         Filters filter = f2;
@@ -20,7 +20,7 @@ public partial class UnitTests
         Assert.Equal("ref2", filter.Target.SingleTarget.Target.SingleTarget.On);
 
         // CAUTION. f1 and f2 are different objects, but they have the same reference to filter.
-        // TODO: Look for a way to avoid this.
+        Assert.Equal((Filters)f2, (Filters)f1);
         Assert.NotNull(((Filters)f2).Target.SingleTarget.Target);
         Assert.NotNull(((Filters)f1).Target.SingleTarget.Target);
     }
