@@ -59,7 +59,7 @@ public partial class BasicTests : IAsyncDisposable
     }
 
     async Task<CollectionClient<TData>> CollectionFactory<TData>(
-        string name,
+        string? name = null,
         string? description = null,
         IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
@@ -69,12 +69,9 @@ public partial class BasicTests : IAsyncDisposable
     {
         description ??= TestContext.Current.TestMethod?.MethodName ?? string.Empty;
 
-        if (!string.IsNullOrEmpty(name))
-        {
-            name = "_" + name;
-        }
+        name ??= typeof(TData).Name + TestContext.Current.Test?.UniqueID;
 
-        name = $"{TestContext.Current.TestMethod?.MethodName ?? string.Empty}{name}";
+        name = $"{TestContext.Current.TestMethod?.MethodName ?? string.Empty}_{name}";
 
         if (properties is null)
         {
@@ -114,7 +111,7 @@ public partial class BasicTests : IAsyncDisposable
     }
 
     async Task<CollectionClient<dynamic>> CollectionFactory(
-        string name,
+        string? name = null,
         string? description = null,
         IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,

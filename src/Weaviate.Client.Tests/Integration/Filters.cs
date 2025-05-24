@@ -84,7 +84,7 @@ public partial class BasicTests
         {
             yield return (Filter.Reference("ref").Property("size").GreaterThan(3), 1);
             yield return (Filter.Reference("ref").Property("name").Length().LessThan(6), 0);
-            yield return (Filter.Reference("ref").ID().Equal(_reusableUuids[1]), 1);
+            yield return (Filter.Reference("ref").ID.Equal(_reusableUuids[1]), 1);
             yield return (
                 Filter.Reference("ref2").Reference("ref").Property("name").Length().LessThan(6),
                 2
@@ -155,5 +155,29 @@ public partial class BasicTests
         await Task.Yield();
         // Assert
         Assert.True(true);
+    }
+
+    public static IEnumerable<TheoryDataRow<Filter>> FilterByIDTestCases
+    {
+        get
+        {
+            yield return Filter.ID.Equal(_reusableUuids[0]);
+            yield return Filter.ID.ContainsAny([_reusableUuids[0]]);
+            yield return Filter.ID.NotEqual(_reusableUuids[0]);
+            yield return Filter.Property("_id").Equal(_reusableUuids[0]);
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(FilterByIDTestCases), MemberType = typeof(BasicTests))]
+    public async Task FilterByID(Filter filter)
+    {
+        // Arrange
+        var c = await CollectionFactory(
+            properties: [Property.Text("Name")],
+            invertedIndexConfig: new InvertedIndexConfig() { IndexPropertyLength = true }
+        );
+
+        await c.Query.List(filter: filter);
     }
 }
