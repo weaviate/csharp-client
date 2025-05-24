@@ -4,52 +4,105 @@ namespace Weaviate.Client.Models;
 
 public record GeoCoordinatesConstraint(float Latitude, float Longitude, float Distance);
 
+public interface IFilterEquality<T>
+{
+    Filter Equal(T value);
+    Filter NotEqual(T value);
+}
+
+public interface IFilterContains<T>
+{
+    Filter ContainsAll(IEnumerable<T> value);
+
+    Filter ContainsAny(IEnumerable<T> value);
+}
+
+public interface IFilterCompare<T>
+{
+    public Filter GreaterThan(T value);
+    public Filter GreaterThanEqual(T value);
+    public Filter LessThan(T value);
+    public Filter LessThanEqual(T value);
+}
+
 public record Filter
 {
-    public record TypedBase<T>
+    public abstract record TypedBase<T>
     {
-        protected readonly PropertyFilter _internal;
+        protected PropertyFilter Internal { get; }
 
-        internal TypedBase(PropertyFilter parent)
+        protected TypedBase(PropertyFilter parent)
         {
-            _internal = parent;
+            Internal = parent;
         }
 
         public static implicit operator Filter(TypedBase<T> filter)
         {
-            return filter._internal;
+            return filter.Internal;
         }
+
+        protected Filter InternalEqual(T value) => Internal.Equal(value);
+
+        protected Filter InternalNotEqual(T value) => Internal.NotEqual(value);
+
+        protected Filter InternalGreaterThan(T value) => Internal.GreaterThan(value);
+
+        protected Filter InternalGreaterThanEqual(T value) => Internal.GreaterThanEqual(value);
+
+        protected Filter InternalLessThan(T value) => Internal.LessThan(value);
+
+        protected Filter InternalLessThanEqual(T value) => Internal.LessThanEqual(value);
+
+        protected Filter InternalContainsAll(IEnumerable<T> value) => Internal.ContainsAll(value);
+
+        protected Filter InternalContainsAny(IEnumerable<T> value) => Internal.ContainsAny(value);
     }
 
-    public record TypedEquality<T>(PropertyFilter parent) : TypedBase<T>(parent)
+    public record TypedGuid(PropertyFilter Parent)
+        : TypedBase<Guid>(Parent),
+            IFilterEquality<Guid>,
+            IFilterContains<Guid>
     {
-        public Filter Equal(T value) => _internal.Equal(value);
+        public Filter ContainsAll(IEnumerable<Guid> value) => InternalContainsAll(value);
 
-        public Filter NotEqual(T value) => _internal.NotEqual(value);
+        public Filter ContainsAny(IEnumerable<Guid> value) => InternalContainsAny(value);
+
+        public Filter Equal(Guid value) => InternalEqual(value);
+
+        public Filter NotEqual(Guid value) => InternalNotEqual(value);
     }
 
-    public record Typed<T>(PropertyFilter parent) : TypedEquality<T>(parent)
+    public record TypedValue<T>(PropertyFilter Parent)
+        : TypedBase<T>(Parent),
+            IFilterEquality<T>,
+            IFilterContains<T>,
+            IFilterCompare<T>
+        where T : struct
     {
-        public Filter ContainsAll(IEnumerable<T> value) => _internal.ContainsAll(value);
+        public Filter ContainsAll(IEnumerable<T> value) => InternalContainsAll(value);
 
-        public Filter ContainsAny(IEnumerable<T> value) => _internal.ContainsAny(value);
+        public Filter ContainsAny(IEnumerable<T> value) => InternalContainsAny(value);
 
-        public virtual Filter GreaterThan(T value) => _internal.GreaterThan(value);
+        public Filter Equal(T value) => InternalEqual(value);
 
-        public virtual Filter GreaterThanEqual(T value) => _internal.GreaterThanEqual(value);
+        public Filter NotEqual(T value) => InternalNotEqual(value);
 
-        public virtual Filter LessThan(T value) => _internal.LessThan(value);
+        public Filter GreaterThan(T value) => InternalGreaterThan(value);
 
-        public virtual Filter LessThanEqual(T value) => _internal.LessThanEqual(value);
+        public Filter GreaterThanEqual(T value) => InternalGreaterThanEqual(value);
+
+        public Filter LessThan(T value) => InternalLessThan(value);
+
+        public Filter LessThanEqual(T value) => InternalLessThanEqual(value);
     }
 
-    protected V1.Filters _filter { get; init; } = new V1.Filters();
+    protected V1.Filters FiltersMessage { get; init; } = new V1.Filters();
 
-    public static implicit operator V1.Filters(Filter f) => f._filter;
+    public static implicit operator V1.Filters(Filter f) => f.FiltersMessage;
 
     protected Filter() { }
 
-    public static Filter WithID(Guid id) => Property("_id").Equal(id.ToString());
+    public static Filter WithID(Guid id) => Property("_id").Equal(id);
 
     public static Filter WithIDs(ISet<Guid> ids) => Or(ids.Select(WithID));
 
@@ -59,29 +112,31 @@ public record Filter
     public static Filter And(IEnumerable<Filter> filters) =>
         new NestedFilter(Filters.Types.Operator.And, filters);
 
-    public static PropertyFilter Property(string name) => new PropertyFilter(name.Decapitalize());
+    public static TypedGuid ID => new(Property("_id"));
 
-    public static ReferenceFilter Reference(string name) =>
-        new ReferenceFilter(name.Decapitalize());
+    public static PropertyFilter Property(string name) => new(name.Decapitalize());
 
-    public static Typed<DateTime> CreationTime => new TimeFilter("_creationTimeUnix");
-    public static Typed<DateTime> UpdateTime => new TimeFilter("_lastUpdateTimeUnix");
+    public static ReferenceFilter Reference(string name) => new(name.Decapitalize());
+
+    public static TypedValue<DateTime> CreationTime => new TimeFilter("_creationTimeUnix");
+
+    public static TypedValue<DateTime> UpdateTime => new TimeFilter("_lastUpdateTimeUnix");
 
     protected Filter WithOperator(Filters.Types.Operator op)
     {
-        _filter.Operator = op;
+        FiltersMessage.Operator = op;
         return this;
     }
 
     protected Filter WithProperty(string property)
     {
-        _filter.Target = new FilterTarget() { Property = property };
+        FiltersMessage.Target = new FilterTarget() { Property = property };
         return this;
     }
 
     protected Filter WithNestedFilters(IEnumerable<Filter> filters)
     {
-        _filter.Filters_.AddRange(filters.Select(f => f._filter));
+        FiltersMessage.Filters_.AddRange(filters.Select(f => f.FiltersMessage));
 
         return this;
     }
@@ -115,13 +170,15 @@ public record Filter
                 IEnumerable<double> v => f =>
                     f.ValueNumberArray = new NumberArray { Values = { v } },
                 IEnumerable<string> v => f => f.ValueTextArray = new TextArray { Values = { v } },
+                IEnumerable<Guid> v => f =>
+                    f.ValueTextArray = new TextArray { Values = { v.ToString() } },
                 _ => throw new WeaviateException(
                     $"Unsupported type '{typeof(T).Name}' for filter value. Check the documentation for supported filter value types."
                 ),
             }
         );
 
-        assigner(_filter);
+        assigner(FiltersMessage);
 
         return this;
     }
@@ -132,7 +189,7 @@ public record Filter
 
         internal PropertyFilter(string name, FilterTarget target, V1.Filters parentFilter)
         {
-            _filter = parentFilter;
+            FiltersMessage = parentFilter;
             _target = target;
             _target.Property = name;
         }
@@ -142,11 +199,11 @@ public record Filter
             WithProperty(name);
         }
 
-        public Typed<int> Length()
+        public TypedValue<int> Length()
         {
             _target!.Property = $"len({_target!.Property})";
 
-            return new Typed<int>(this);
+            return new TypedValue<int>(this);
         }
 
         public Filter ContainsAll<T>(IEnumerable<T> value) =>
@@ -193,7 +250,7 @@ public record Filter
                 SingleTarget = new FilterReferenceSingleTarget() { On = name },
             };
 
-            _filter.Target = _target;
+            FiltersMessage.Target = _target;
         }
 
         public new ReferenceFilter Reference(string name)
@@ -211,15 +268,18 @@ public record Filter
         public new PropertyFilter Property(string name)
         {
             _target.SingleTarget.Target = new FilterTarget();
-            return new PropertyFilter(name, _target.SingleTarget.Target, _filter);
+            return new PropertyFilter(name, _target.SingleTarget.Target, FiltersMessage);
         }
 
-        public TypedEquality<Guid> ID()
+        public new TypedGuid ID
         {
-            _target.SingleTarget.Target = new FilterTarget();
-            return new TypedEquality<Guid>(
-                new PropertyFilter("_id", _target.SingleTarget.Target, _filter)
-            );
+            get
+            {
+                _target.SingleTarget.Target = new FilterTarget();
+                return new TypedGuid(
+                    new PropertyFilter("_id", _target.SingleTarget.Target, FiltersMessage)
+                );
+            }
         }
     }
 
@@ -229,7 +289,7 @@ public record Filter
             WithOperator(op).WithNestedFilters(filters);
     }
 
-    public record TimeFilter : Typed<DateTime>
+    public record TimeFilter : TypedValue<DateTime>
     {
         internal TimeFilter(string timeField)
             : base(

@@ -1,3 +1,4 @@
+using System.Reflection;
 using Weaviate.Client.Models;
 using Weaviate.V1;
 
@@ -5,6 +6,36 @@ namespace Weaviate.Client.Tests;
 
 public partial class UnitTests
 {
+    [Theory]
+    [InlineData(
+        typeof(Filter.TypedGuid),
+        new[] { "Equal", "NotEqual", "ContainsAny", "ContainsAll" },
+        new[] { "GreaterThan", "GreaterThanEqual", "LessThan", "LessThanEqual" }
+    )]
+    public async Task TypeSupportedOperations(
+        Type t,
+        string[] expectedMethodList,
+        string[] unexpectedMethodList
+    )
+    {
+        // Arrange
+        var methods = new HashSet<string>(expectedMethodList);
+
+        // Act
+        var actualMethods = t.GetMethods(
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static
+            )
+            .Select(m => m.Name)
+            .Distinct()
+            .ToHashSet();
+
+        // Assert
+        Assert.Subset(actualMethods, methods);
+        Assert.Empty(actualMethods.Intersect(unexpectedMethodList));
+
+        await Task.Yield();
+    }
+
     [Fact]
     public void FilterByReferenceDoesNotChangePreviousFilter()
     {
