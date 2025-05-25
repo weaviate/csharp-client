@@ -187,11 +187,10 @@ public record Filter
     {
         FilterTarget? _target;
 
-        internal PropertyFilter(string name, FilterTarget target, V1.Filters parentFilter)
+        internal PropertyFilter(FilterTarget target, V1.Filters parentFilter)
         {
             FiltersMessage = parentFilter;
             _target = target;
-            _target.Property = name;
         }
 
         internal PropertyFilter(string name)
@@ -255,30 +254,38 @@ public record Filter
 
         public new ReferenceFilter Reference(string name)
         {
-            var nextTarget = new FilterTarget()
+            _target.SingleTarget.Target = new FilterTarget()
             {
                 SingleTarget = new FilterReferenceSingleTarget() { On = name },
             };
 
-            _target.SingleTarget.Target = nextTarget;
-
-            return new ReferenceFilter(this) { _target = nextTarget };
+            return new ReferenceFilter(this) { _target = _target!.SingleTarget.Target };
         }
 
         public new PropertyFilter Property(string name)
         {
-            _target.SingleTarget.Target = new FilterTarget();
-            return new PropertyFilter(name, _target.SingleTarget.Target, FiltersMessage);
+            _target.SingleTarget.Target = new FilterTarget() { Property = name };
+
+            return new PropertyFilter(_target.SingleTarget.Target, FiltersMessage);
+        }
+
+        internal TypedValue<int> Count
+        {
+            get
+            {
+                _target.Count = new FilterReferenceCount { On = _target.SingleTarget.On };
+
+                return new TypedValue<int>(new PropertyFilter(_target, FiltersMessage));
+            }
         }
 
         public new TypedGuid ID
         {
             get
             {
-                _target.SingleTarget.Target = new FilterTarget();
-                return new TypedGuid(
-                    new PropertyFilter("_id", _target.SingleTarget.Target, FiltersMessage)
-                );
+                _target ??= new FilterTarget() { Property = "_id" };
+
+                return new TypedGuid(new PropertyFilter(_target, FiltersMessage));
             }
         }
     }

@@ -57,7 +57,7 @@ public partial class UnitTests
     }
 
     [Fact]
-    public void FilterByReferenceCreatesProperGrpcMessage()
+    public void FilterByReferenceCreatesProperGrpcMessage_1()
     {
         // Arrange
         var f = Filter.Reference("ref").Property("name").Equal("John");
@@ -80,7 +80,7 @@ public partial class UnitTests
     }
 
     [Fact]
-    public void FilterByReferenceCreatesProperGrpcMessage2()
+    public void FilterByReferenceCreatesProperGrpcMessage_2()
     {
         // Arrange
         var f = Filter.Reference("ref").Property("size").GreaterThan(3);
@@ -99,6 +99,24 @@ public partial class UnitTests
             ValueInt = 3,
         };
 
+        Assert.Equal(expected, f);
+    }
+
+    [Fact]
+    public void FilterByReferenceCreatesProperGrpcMessage_3()
+    {
+        // Arrange
+        var f = Filter.Reference("ref").Count.Equal(1);
+
+        var expected = new Filters()
+        {
+            Target = new FilterTarget() { Count = new FilterReferenceCount { On = "ref" } },
+            Operator = Filters.Types.Operator.Equal,
+            ValueInt = 1,
+        };
+
+        // Act
+        // Assert
         Assert.Equal(expected, f);
     }
 }
