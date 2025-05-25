@@ -180,4 +180,54 @@ public partial class BasicTests
 
         await c.Query.List(filter: filter);
     }
+
+    public static IEnumerable<TheoryDataRow<Filter, int[]>> RefCountFilterTestCases
+    {
+        get
+        {
+            yield return (Filter.Reference("ref").Count.NotEqual(1), new int[] { 0, 2 });
+            yield return (Filter.Reference("ref").Count.LessThan(2), new int[] { 0, 1 });
+            yield return (Filter.Reference("ref").Count.LessThanEqual(1), new int[] { 0, 1 });
+            yield return (Filter.Reference("ref").Count.GreaterThan(0), new int[] { 1, 2 });
+            yield return (Filter.Reference("ref").Count.GreaterThanEqual(1), new int[] { 1, 2 });
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(RefCountFilterTestCases))]
+    public async Task TestRefCountFilter(Filter filter, int[] results)
+    {
+        // Arrange
+        var collection = await CollectionFactory();
+
+        await collection.AddReference(Property.Reference("ref", collection.Name));
+
+        var uuids = new List<Guid>
+        {
+            await collection.Data.Insert(new { }, id: _reusableUuids[0]),
+            await collection.Data.Insert(
+                new { },
+                id: _reusableUuids[1],
+                references: [("ref", _reusableUuids[0])]
+            ),
+            await collection.Data.Insert(
+                new { },
+                id: _reusableUuids[2],
+                references: [("ref", new[] { _reusableUuids[0], _reusableUuids[1] })]
+            ),
+        };
+
+        // Act
+        var objects = await collection.Query.List(filter: filter);
+        var objs = objects.ToList();
+
+        // Assert
+        Assert.Equal(results.Length, objs.Count);
+
+        var expectedUuids = results.Select(result => uuids[result]).ToList();
+        Assert.True(
+            objs.Where(obj => obj.ID.HasValue)
+                .All(obj => expectedUuids.Contains(obj.ID ?? Guid.Empty))
+        );
+    }
 }
