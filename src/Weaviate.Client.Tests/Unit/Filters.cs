@@ -8,8 +8,8 @@ public partial class UnitTests
 {
     [Theory]
     [InlineData(
-        typeof(Filter.TypedGuid),
-        new[] { "Equal", "NotEqual", "ContainsAny", "ContainsAll" },
+        typeof(TypedGuid),
+        new[] { "Equal", "NotEqual", "ContainsAny" },
         new[] { "GreaterThan", "GreaterThanEqual", "LessThan", "LessThanEqual" }
     )]
     public async Task TypeSupportedOperations(
@@ -113,6 +113,26 @@ public partial class UnitTests
             Target = new FilterTarget() { Count = new FilterReferenceCount { On = "ref" } },
             Operator = Filters.Types.Operator.Equal,
             ValueInt = 1,
+        };
+
+        // Act
+        // Assert
+        Assert.Equal(expected, f);
+    }
+
+    [Fact]
+    public void FilterRequestCreatesProperGrpcMessage_4()
+    {
+        // Arrange
+        Guid id = Guid.NewGuid();
+
+        var f = Filter.ID.ContainsAny([id]);
+
+        var expected = new Filters()
+        {
+            Target = new FilterTarget() { Property = "_id" },
+            Operator = Filters.Types.Operator.ContainsAny,
+            ValueTextArray = new TextArray() { Values = { id.ToString() } },
         };
 
         // Act

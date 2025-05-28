@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using Weaviate.V1;
 
 namespace Weaviate.Client.Models;
 
@@ -7,7 +6,7 @@ public static class Filter<T>
 {
     public class PropertyFilter<TResult>
     {
-        private readonly Filter.PropertyFilter _prop;
+        private readonly PropertyFilter _prop;
 
         internal PropertyFilter(string name)
         {
