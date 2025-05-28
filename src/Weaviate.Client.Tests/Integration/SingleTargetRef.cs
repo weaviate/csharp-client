@@ -13,7 +13,7 @@ public partial class BasicTests
     {
         // Arrange
 
-        var cA = await CollectionFactory<TestData>("A", "Collection A", [Property.Text("Name")]);
+        var cA = await CollectionFactory<TestData>("A", "Collection A");
 
         var uuid_A1 = await cA.Data.Insert(new TestData() { Name = "A1" });
         var uuid_A2 = await cA.Data.Insert(new TestData() { Name = "A2" });
@@ -21,27 +21,22 @@ public partial class BasicTests
         var cB = await CollectionFactory<TestData>(
             name: "B",
             description: "Collection B",
-            properties: [Property.Text("Name")],
             references: [Property.Reference("a", cA.Name)]
         );
 
-        var uuid_B = await cB.Data.Insert(
-            new() { Name = "B" },
-            references: new Dictionary<string, Guid> { { "a", uuid_A1 } }
-        );
+        var uuid_B = await cB.Data.Insert(new() { Name = "B" }, references: [("a", uuid_A1)]);
 
         await cB.Data.ReferenceAdd(from: uuid_B, fromProperty: "a", to: uuid_A2);
 
         var cC = await CollectionFactory<TestData>(
             "C",
             "Collection C",
-            [Property.Text("Name")],
             references: [Property.Reference("b", cB.Name)]
         );
 
         var uuid_C = await cC.Data.Insert(
             new TestData { Name = "find me" },
-            references: new Dictionary<string, Guid> { { "b", uuid_B } }
+            references: [("b", uuid_B)]
         );
 
         // Act
@@ -128,17 +123,14 @@ public partial class BasicTests
                 Property.Int("review_id"),
                 Property.Int("movie_id"),
             ],
-            references: [Property.Reference("forMovie", targetCollection: "Movie")],
+            references: [Property.Reference("forMovie", targetCollection: movies.Name)],
             vectorConfig: new Dictionary<string, VectorConfig>
             {
                 {
                     "default",
                     new VectorConfig
                     {
-                        Vectorizer = new Dictionary<string, object>
-                        {
-                            { "text2vec-contextionary", new { vectorizeClassName = false } },
-                        },
+                        Vectorizer = Vectorizer.Text2VecContextionary(),
                         VectorIndexType = "hnsw",
                     }
                 },
@@ -302,13 +294,10 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         foreach (var r in reviewsData)
         {
-            await reviews.Data.Insert(
-                r,
-                references: new Dictionary<string, Guid>
-                {
-                    { "forMovie", movieIds[(int)r.movie_id] },
-                }
-            );
+            // Using dynamic make somo implicit conversions impossible.
+            Guid movieId = movieIds[(int)r.movie_id];
+            ObjectReference movieRef = ("forMovie", movieId);
+            await reviews.Data.Insert(r, references: new List<ObjectReference>() { movieRef });
         }
 
         // Act

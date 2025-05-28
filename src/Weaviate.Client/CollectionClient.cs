@@ -1,4 +1,3 @@
-
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
@@ -56,5 +55,15 @@ public class CollectionClient<TData>
         await _client.RestClient.CollectionDelete(_collectionName);
 
         _backingCollection = null;
+    }
+
+    // TODO Move to a Config scope
+    internal async Task AddReference(ReferenceProperty referenceProperty)
+    {
+        var p = (Property)referenceProperty;
+
+        var dto = new Rest.Dto.Property() { Name = p.Name, DataType = [.. p.DataType] };
+
+        await _client.RestClient.CollectionAddProperty(_collectionName, dto);
     }
 }

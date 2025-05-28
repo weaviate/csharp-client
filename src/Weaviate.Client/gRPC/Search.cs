@@ -9,6 +9,7 @@ public partial class WeaviateGrpcClient
     internal SearchRequest BaseSearchRequest(
         string collection,
         Filters? filter = null,
+        IEnumerable<SortBy>? sort = null,
         uint? limit = null,
         GroupByRequest? groupBy = null,
         MetadataQuery? metadata = null,
@@ -31,7 +32,7 @@ public partial class WeaviateGrpcClient
 
         metadataRequest.Vectors.AddRange(metadata?.Vectors.ToArray() ?? []);
 
-        return new SearchRequest()
+        var request = new SearchRequest()
         {
             Collection = collection,
             Filters = filter,
@@ -50,6 +51,13 @@ public partial class WeaviateGrpcClient
             Metadata = metadataRequest,
             Properties = MakePropsRequest(fields, reference),
         };
+
+        if (sort is not null)
+        {
+            request.SortBy.AddRange(sort);
+        }
+
+        return request;
     }
 
     private PropertiesRequest? MakePropsRequest(string[]? fields, IList<QueryReference>? reference)
@@ -107,10 +115,10 @@ public partial class WeaviateGrpcClient
         return new Metadata
         {
             LastUpdateTime = metadata.LastUpdateTimeUnixPresent
-                ? DateTimeOffset.FromUnixTimeMilliseconds(metadata.LastUpdateTimeUnix).DateTime
+                ? DateTimeOffset.FromUnixTimeMilliseconds(metadata.LastUpdateTimeUnix).UtcDateTime
                 : null,
             CreationTime = metadata.CreationTimeUnixPresent
-                ? DateTimeOffset.FromUnixTimeMilliseconds(metadata.CreationTimeUnix).DateTime
+                ? DateTimeOffset.FromUnixTimeMilliseconds(metadata.CreationTimeUnix).UtcDateTime
                 : null,
             Certainty = metadata.CertaintyPresent ? metadata.Certainty : null,
             Distance = metadata.DistancePresent ? metadata.Distance : null,
@@ -319,6 +327,7 @@ public partial class WeaviateGrpcClient
     internal async Task<WeaviateResult> FetchObjects(
         string collection,
         Filters? filter = null,
+        IEnumerable<SortBy>? sort = null,
         uint? limit = null,
         string[]? fields = null,
         IList<QueryReference>? reference = null,
@@ -328,6 +337,7 @@ public partial class WeaviateGrpcClient
         var req = BaseSearchRequest(
             collection,
             filter,
+            sort,
             limit,
             fields: fields,
             metadata: metadata,

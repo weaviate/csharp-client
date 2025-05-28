@@ -10,6 +10,8 @@ public partial class UnitTests
     {
         // Arrange
         var v1 = new NamedVectors { { "default", 0.1f, 0.2f, 0.3f } };
+
+        Assert.Equal(v1["default"], [0.1f, 0.2f, 0.3f]);
     }
 
     [Fact]
