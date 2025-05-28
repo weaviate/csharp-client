@@ -73,10 +73,7 @@ public partial class BasicTests : IAsyncDisposable
 
         name = $"{TestContext.Current.TestMethod?.MethodName ?? string.Empty}_{name}";
 
-        if (properties is null)
-        {
-            properties = Property.FromType<TData>();
-        }
+        properties ??= Property.FromType<TData>();
 
         ArgumentException.ThrowIfNullOrEmpty(name);
 
