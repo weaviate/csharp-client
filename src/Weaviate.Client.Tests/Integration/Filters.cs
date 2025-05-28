@@ -78,24 +78,13 @@ public partial class BasicTests
         Assert.Equal(uuid_A2, objs[0].ID);
     }
 
-    public static IEnumerable<TheoryDataRow<Filter, int>> FilteringReferencesTestCases
-    {
-        get
-        {
-            yield return (Filter.Reference("ref").Property("size").GreaterThan(3), 1);
-            yield return (Filter.Reference("ref").Property("name").Length().LessThan(6), 0);
-            yield return (Filter.Reference("ref").ID.Equal(_reusableUuids[1]), 1);
-            yield return (
-                Filter.Reference("ref2").Reference("ref").Property("name").Length().LessThan(6),
-                2
-            );
-        }
-    }
-
     [Theory]
-    [MemberData(nameof(BasicTests.FilteringReferencesTestCases), MemberType = typeof(BasicTests))]
-    public async Task FilteringReferences(Filter filter, int expected)
+    [ClassData(typeof(DatasetFilteringReferences))]
+    public async Task FilteringReferences(string key)
     {
+        var (filter, expected) = DatasetFilteringReferences.Cases[key];
+
+        // Arrange
         var cTarget = await CollectionFactory<TestData>(
             "Target",
             "Collection Target",
@@ -144,59 +133,33 @@ public partial class BasicTests
         Assert.Equal(uuidsFrom[expected], objs.First().ID);
     }
 
-    [Fact]
-    public async Task FilteringWithComplexExpressions()
+    [Theory]
+    [ClassData(typeof(DatasetFilterByID))]
+    public async Task FilterByID(string key)
     {
-        // Arrange
-        // TODO
-        // var filter = Filter<TestData>.Build(x => x.Name == "A2" && Size > 3 && Size < 5);
-        // Act
-        //var list = await cA.Query.List(filter: filter);
-        await Task.Yield();
-        // Assert
-        Assert.True(true);
-    }
+        var filter = DatasetFilterByID.Cases[key];
 
-    public static IEnumerable<TheoryDataRow<Filter>> FilterByIDTestCases
-    {
-        get
+        // Arrange
+        var c = await CollectionFactory(properties: [Property.Text("Name")]);
+
+        var uuids = new[]
         {
-            yield return Filter.ID.Equal(_reusableUuids[0]);
-            yield return Filter.ID.ContainsAny([_reusableUuids[0]]);
-            yield return Filter.ID.NotEqual(_reusableUuids[0]);
-            yield return Filter.Property("_id").Equal(_reusableUuids[0]);
-        }
+            await c.Data.Insert(new { Name = "first" }, _reusableUuids[0]),
+            await c.Data.Insert(new { Name = "second" }, _reusableUuids[1]),
+        };
+
+        var objects = (await c.Query.List(filter: filter)).ToList();
+
+        Assert.Single(objects);
+        Assert.Equal(_reusableUuids[0], objects[0].ID);
     }
 
     [Theory]
-    [MemberData(nameof(FilterByIDTestCases), MemberType = typeof(BasicTests))]
-    public async Task FilterByID(Filter filter)
+    [ClassData(typeof(DatasetRefCountFilter))]
+    public async Task FilteringWithRefCount(string key)
     {
-        // Arrange
-        var c = await CollectionFactory(
-            properties: [Property.Text("Name")],
-            invertedIndexConfig: new InvertedIndexConfig() { IndexPropertyLength = true }
-        );
+        var (filter, results) = DatasetRefCountFilter.Cases[key];
 
-        await c.Query.List(filter: filter);
-    }
-
-    public static IEnumerable<TheoryDataRow<Filter, int[]>> RefCountFilterTestCases
-    {
-        get
-        {
-            yield return (Filter.Reference("ref").Count.NotEqual(1), new int[] { 0, 2 });
-            yield return (Filter.Reference("ref").Count.LessThan(2), new int[] { 0, 1 });
-            yield return (Filter.Reference("ref").Count.LessThanEqual(1), new int[] { 0, 1 });
-            yield return (Filter.Reference("ref").Count.GreaterThan(0), new int[] { 1, 2 });
-            yield return (Filter.Reference("ref").Count.GreaterThanEqual(1), new int[] { 1, 2 });
-        }
-    }
-
-    [Theory]
-    [MemberData(nameof(RefCountFilterTestCases))]
-    public async Task TestRefCountFilter(Filter filter, int[] results)
-    {
         // Arrange
         var collection = await CollectionFactory();
 
@@ -229,5 +192,136 @@ public partial class BasicTests
             objs.Where(obj => obj.ID.HasValue)
                 .All(obj => expectedUuids.Contains(obj.ID ?? Guid.Empty))
         );
+    }
+
+    [Fact]
+    public async Task FilterByNestedReferenceCount()
+    {
+        // Arrange
+        var one = await CollectionFactory("one");
+        var two = await CollectionFactory(
+            "two",
+            references: [Property.Reference("ref2", one.Name)]
+        );
+
+        await one.AddReference(Property.Reference("ref1", one.Name));
+
+        var uuid11 = await one.Data.Insert(new { });
+        var uuid12 = await one.Data.Insert(new { }, references: [("ref1", uuid11)]);
+        var uuid13 = await one.Data.Insert(
+            new { },
+            references: [("ref1", new[] { uuid11, uuid12 })]
+        );
+
+        await two.Data.Insert(new { });
+        var uuid21 = await two.Data.Insert(new { }, references: [("ref2", uuid12)]);
+        await two.Data.Insert(new { }, references: [("ref2", uuid13)]);
+
+        // Act
+        var objects = await two.Query.List(
+            filter: Filter.Reference("ref2").Reference("ref1").Count.Equal(1),
+            references:
+            [
+                new QueryReference("ref2", [], references: [new QueryReference("ref1", [])]),
+            ]
+        );
+
+        var objs = objects.ToList();
+
+        // Assert
+        Assert.Single(objs);
+        Assert.Equal(uuid21, objs[0].ID);
+    }
+
+    [Fact]
+    public async Task TimeFilterContains()
+    {
+        // Arrange
+        var collection = await CollectionFactory(
+            invertedIndexConfig: new InvertedIndexConfig() { IndexTimestamps = true }
+        );
+
+        await collection.Data.Insert(new { });
+        await Task.Delay(10, TestContext.Current.CancellationToken);
+
+        var uuid2 = await collection.Data.Insert(new { });
+        await Task.Delay(10, TestContext.Current.CancellationToken);
+
+        var uuid3 = await collection.Data.Insert(new { });
+
+        var obj2 = await collection.Query.FetchObjectByID(
+            uuid2,
+            metadata: MetadataOptions.CreationTime
+        );
+        var obj3 = await collection.Query.FetchObjectByID(
+            uuid3,
+            metadata: MetadataOptions.CreationTime
+        );
+
+        // Act
+        var objects = await collection.Query.List(
+            filter: Filter.CreationTime.ContainsAny(
+                [
+                    obj2.First().Metadata.CreationTime!.Value,
+                    obj3.First().Metadata.CreationTime!.Value,
+                ]
+            )
+        );
+
+        var objs = objects.ToList();
+
+        // Assert
+        Assert.Equal(2, objs.Count);
+        var expectedUuids = new HashSet<Guid>([uuid2, uuid3]);
+        Assert.True(objs.All(obj => obj.ID != null && expectedUuids.Contains(obj.ID.Value)));
+    }
+
+    public static Dictionary<string, Filter> Cases =>
+        new()
+        {
+            ["IdEquals"] = Filter.ID.Equal(_reusableUuids[0]),
+            ["IdContainsAny"] = Filter.ID.ContainsAny([_reusableUuids[0]]),
+            ["IdNotEqual"] = Filter.ID.NotEqual(_reusableUuids[1]),
+            ["IdWithProperty(_id)Equal"] = Filter.Property("_id").Equal(_reusableUuids[0]),
+        };
+
+    [Theory]
+    [ClassData(typeof(DatasetTimeFilter))]
+    public async Task TimeFiltering(string key)
+    {
+        var (filterValue, results, filterFunc) = DatasetTimeFilter.Cases[key];
+
+        // Arrange
+        var collection = await CollectionFactory(
+            invertedIndexConfig: new InvertedIndexConfig() { IndexTimestamps = true }
+        );
+
+        await collection.Data.Insert(new { });
+        await Task.Delay(10, TestContext.Current.CancellationToken);
+        await collection.Data.Insert(new { });
+        await Task.Delay(10, TestContext.Current.CancellationToken);
+        await collection.Data.Insert(new { });
+
+        var allObjects = await collection.Query.List(
+            sort: [Sort.ByCreationTime()],
+            metadata: MetadataOptions.CreationTime
+        );
+        var allObjectsList = allObjects.ToList();
+
+        var referenceTime = allObjectsList[filterValue].Metadata.CreationTime!.Value;
+
+        var weaviateFilter = filterFunc(referenceTime);
+
+        // Act
+        var objects = await collection.Query.List(filter: weaviateFilter);
+        var objs = objects.ToList();
+
+        // Assert
+        Assert.Equal(results.Length, objs.Count);
+
+        var expectedUuids = new HashSet<Guid>(
+            results.Select(result => allObjectsList[result].ID!.Value)
+        );
+        Assert.True(objs.All(obj => obj.ID != null && expectedUuids.Contains(obj.ID.Value)));
     }
 }

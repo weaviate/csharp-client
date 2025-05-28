@@ -1,6 +1,4 @@
-using Weaviate.Client.Grpc;
 using Weaviate.Client.Models;
-using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 
@@ -20,6 +18,7 @@ public class QueryClient<TData>
     public async Task<WeaviateResult> List(
         uint? limit = null,
         V1.Filters? filter = null,
+        IEnumerable<V1.SortBy>? sort = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
     )
@@ -27,6 +26,7 @@ public class QueryClient<TData>
         return await _client.GrpcClient.FetchObjects(
             _collectionName,
             limit: limit,
+            sort: sort,
             filter: filter,
             reference: references,
             metadata: metadata
