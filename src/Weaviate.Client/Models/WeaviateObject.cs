@@ -1,10 +1,15 @@
+using System.Collections;
 using System.Dynamic;
 
 namespace Weaviate.Client.Models;
 
-public partial record WeaviateResult
+public partial record WeaviateResult : IEnumerable<WeaviateObject>
 {
     public required IEnumerable<WeaviateObject> Objects { get; init; } = [];
+
+    public IEnumerator<WeaviateObject> GetEnumerator() => Objects.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
 public partial class NamedVector<T> : List<T>

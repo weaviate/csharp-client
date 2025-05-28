@@ -9,6 +9,7 @@ namespace Weaviate.Client.Tests.Integration;
 internal class TestData
 {
     public string Name { get; set; } = string.Empty;
+    public int Size { get; set; } = 0;
 }
 
 internal class TestDataValue
@@ -23,6 +24,14 @@ public partial class BasicTests : IAsyncDisposable
 
     WeaviateClient _weaviate;
     HttpClient _httpClient;
+
+    static readonly Guid[] _reusableUuids =
+    [
+        Guid.NewGuid(),
+        Guid.NewGuid(),
+        Guid.NewGuid(),
+        Guid.NewGuid(),
+    ];
 
     public BasicTests()
     {
@@ -50,34 +59,35 @@ public partial class BasicTests : IAsyncDisposable
     }
 
     async Task<CollectionClient<TData>> CollectionFactory<TData>(
-        string name,
-        string description,
-        IList<Property> properties,
+        string? name = null,
+        string? description = null,
+        IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
-        IDictionary<string, VectorConfig>? vectorConfig = null
+        IDictionary<string, VectorConfig>? vectorConfig = null,
+        InvertedIndexConfig? invertedIndexConfig = null
     )
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            name = TestContext.Current.TestMethod?.MethodName ?? string.Empty;
-        }
+        description ??= TestContext.Current.TestMethod?.MethodName ?? string.Empty;
+
+        name ??= typeof(TData).Name + TestContext.Current.Test?.UniqueID;
+
+        name = $"{TestContext.Current.TestMethod?.MethodName ?? string.Empty}_{name}";
+
+        properties ??= Property.FromType<TData>();
 
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        if (vectorConfig is null)
+        vectorConfig ??= new Dictionary<string, VectorConfig>
         {
-            vectorConfig = new Dictionary<string, VectorConfig>
             {
+                "default",
+                new VectorConfig
                 {
-                    "default",
-                    new VectorConfig
-                    {
-                        Vectorizer = new Dictionary<string, object> { { "none", new { } } },
-                        VectorIndexType = "hnsw",
-                    }
-                },
-            };
-        }
+                    Vectorizer = new Dictionary<string, object> { { "none", new { } } },
+                    VectorIndexType = "hnsw",
+                }
+            },
+        };
 
         references = references ?? [];
 
@@ -87,6 +97,7 @@ public partial class BasicTests : IAsyncDisposable
             Description = description,
             Properties = properties.Concat(references!.Select(p => (Property)p)).ToList(),
             VectorConfig = vectorConfig,
+            InvertedIndexConfig = invertedIndexConfig,
         };
 
         await _weaviate.Collections.Delete(name);
@@ -97,11 +108,12 @@ public partial class BasicTests : IAsyncDisposable
     }
 
     async Task<CollectionClient<dynamic>> CollectionFactory(
-        string name,
-        string description,
-        IList<Property> properties,
+        string? name = null,
+        string? description = null,
+        IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
-        IDictionary<string, VectorConfig>? vectorConfig = null
+        IDictionary<string, VectorConfig>? vectorConfig = null,
+        InvertedIndexConfig? invertedIndexConfig = null
     )
     {
         return await CollectionFactory<dynamic>(
@@ -109,7 +121,8 @@ public partial class BasicTests : IAsyncDisposable
             description,
             properties,
             references,
-            vectorConfig
+            vectorConfig,
+            invertedIndexConfig
         );
     }
 }

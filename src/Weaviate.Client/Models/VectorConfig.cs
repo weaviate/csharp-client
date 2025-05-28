@@ -15,5 +15,5 @@ public class VectorConfig
     /// <summary>
     /// Configuration of a specific vectorizer used by this vector.
     /// </summary>
-    public IDictionary<string, dynamic> Vectorizer { get; set; } = new Dictionary<string, object>();
+    public Dictionary<string, dynamic> Vectorizer { get; set; } = new Dictionary<string, object>();
 }
