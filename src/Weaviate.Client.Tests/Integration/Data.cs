@@ -8,10 +8,11 @@ public partial class BasicTests
     public async Task CollectionCreation()
     {
         // Arrange
+        var collectionName = "CollectionCreation" + TestContext.Current.Test?.UniqueID;
 
         // Act
         var collectionClient = await CollectionFactory(
-            "",
+            collectionName,
             "Test collection description",
             [Property.Text("Name")]
         );
@@ -19,7 +20,7 @@ public partial class BasicTests
         // Assert
         var collection = await _weaviate.Collections.Use<dynamic>(collectionClient.Name).Get();
         Assert.NotNull(collection);
-        Assert.Equal("CollectionCreation", collection.Name);
+        Assert.Equal("CollectionCreation_" + collectionName, collection.Name);
         Assert.Equal("Test collection description", collection.Description);
     }
 
@@ -27,11 +28,7 @@ public partial class BasicTests
     public async Task ObjectCreation()
     {
         // Arrange
-        var collectionClient = await CollectionFactory<TestData>(
-            "",
-            "Test collection description",
-            [Property.Text("Name")]
-        );
+        var collectionClient = await CollectionFactory<TestData>("", "Test collection description");
 
         // Act
         var id = Guid.NewGuid();

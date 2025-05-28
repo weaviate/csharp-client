@@ -8,11 +8,7 @@ public partial class BasicTests
     public async Task NearVectorSearch()
     {
         // Arrange
-        var collectionClient = await CollectionFactory<TestData>(
-            "",
-            "Test collection description",
-            [Property.Text("Name")]
-        );
+        var collectionClient = await CollectionFactory<TestData>("", "Test collection description");
 
         // Act
         await collectionClient.Data.Insert(

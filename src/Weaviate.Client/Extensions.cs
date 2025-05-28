@@ -343,6 +343,13 @@ public static class WeaviateExtensions
         return char.ToUpper(str[0]) + str[1..];
     }
 
+    public static string Decapitalize(this string str)
+    {
+        if (string.IsNullOrEmpty(str))
+            return str;
+        return char.ToLower(str[0]) + str[1..];
+    }
+
     public static bool IsNativeType(this Type type)
     {
         if (type.IsValueType && !type.IsClass)
