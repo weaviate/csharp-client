@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Dynamic;
+using Grpc.Core;
 using Grpc.Net.Client;
 using Weaviate.V1;
 
@@ -7,23 +8,36 @@ namespace Weaviate.Client.Grpc;
 
 public partial class WeaviateGrpcClient : IDisposable
 {
-    private readonly WeaviateClient _client;
     private readonly GrpcChannel _channel;
     private readonly V1.Weaviate.WeaviateClient _grpcClient;
 
-    public WeaviateGrpcClient(WeaviateClient client)
+    AsyncAuthInterceptor _AuthInterceptorFactory(string apiKey)
     {
-        _client = client;
+        return (
+            async (context, metadata) =>
+            {
+                metadata.Add("Authorization", $"Bearer {apiKey}");
+                await Task.CompletedTask;
+            }
+        );
+    }
 
-        var ub = new UriBuilder(client.Configuration.Host);
+    public WeaviateGrpcClient(Uri grpcUri, string? apiKey = null)
+    {
+        var options = new GrpcChannelOptions();
 
-        ub.Port = client.Configuration.GrpcPort;
+        if (apiKey != null)
+        {
+            var credentials = CallCredentials.FromInterceptor(_AuthInterceptorFactory(apiKey));
+            options.Credentials = ChannelCredentials.Create(new SslCredentials(), credentials);
+        }
+        ;
 
-        _channel = GrpcChannel.ForAddress(ub.Uri);
+        _channel = GrpcChannel.ForAddress(grpcUri, options);
         _grpcClient = new V1.Weaviate.WeaviateClient(_channel);
     }
 
-    private static IList buildListFromListValue(ListValue list)
+    private static IList MakeListValue(ListValue list)
     {
         switch (list.KindCase)
         {
@@ -77,7 +91,7 @@ public partial class WeaviateGrpcClient : IDisposable
                     eo[r.Key] = MakeNonRefs(r.Value.ObjectValue) ?? new object { };
                     break;
                 case Value.KindOneofCase.ListValue:
-                    eo[r.Key] = buildListFromListValue(r.Value.ListValue);
+                    eo[r.Key] = MakeListValue(r.Value.ListValue);
                     break;
                 case Value.KindOneofCase.DateValue:
                     eo[r.Key] = r.Value.DateValue; // TODO Parse date here?
