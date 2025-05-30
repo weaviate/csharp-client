@@ -88,7 +88,7 @@ public class WeaviateRestClient : IDisposable
     private readonly bool _ownershipClient;
     private readonly HttpClient _httpClient;
 
-    internal WeaviateRestClient(WeaviateClient client, HttpClient? httpClient = null)
+    internal WeaviateRestClient(Uri restUri, HttpClient? httpClient = null)
     {
         if (httpClient is null)
         {
@@ -97,13 +97,7 @@ public class WeaviateRestClient : IDisposable
         }
 
         _httpClient = httpClient;
-
-        var ub = new UriBuilder(client.Configuration.Host);
-
-        ub.Port = client.Configuration.RestPort;
-        ub.Path = "v1/";
-
-        _httpClient.BaseAddress = ub.Uri;
+        _httpClient.BaseAddress = restUri;
     }
 
     public void Dispose()
