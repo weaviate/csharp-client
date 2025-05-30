@@ -2,15 +2,25 @@ namespace Weaviate.Client;
 
 public static class Connect
 {
+    public static ClientConfiguration LocalConfig(
+        ushort restPort,
+        ushort grpcPort,
+        bool useSsl,
+        string? apiKey
+    ) => new("localhost", "localhost", restPort, grpcPort, useSsl, apiKey);
+
     public static WeaviateClient Local(
         ushort restPort = 8080,
         ushort grpcPort = 50051,
-        string? apiKey = null,
-        bool useSsl = false
-    ) => new(new ClientConfiguration("localhost", "localhost", apiKey, restPort, grpcPort, useSsl));
+        bool useSsl = false,
+        string? apiKey = null
+    ) => LocalConfig(restPort, grpcPort, useSsl, apiKey).Client();
 
-    public static WeaviateClient Cloud(string cloudUrl, string? apiKey = null) =>
-        new(new ClientConfiguration(cloudUrl, $"grpc-{cloudUrl}", apiKey, 443, 443, true));
+    public static ClientConfiguration CloudConfig(string restEndpoint, string? apiKey = null) =>
+        new ClientConfiguration(restEndpoint, $"grpc-{restEndpoint}", 443, 443, true, apiKey);
+
+    public static WeaviateClient Cloud(string restEndpoint, string? apiKey = null) =>
+        CloudConfig(restEndpoint, apiKey).Client();
 
     public static WeaviateClient FromEnvironment(string prefix = "WEAVIATE_")
     {
@@ -50,10 +60,10 @@ public static class Connect
             new ClientConfiguration(
                 restEndpoint,
                 grpcEndpoint,
-                apiKey,
                 Convert.ToUInt16(restPort),
                 Convert.ToUInt16(grpcPort),
-                useSsl
+                useSsl,
+                apiKey
             )
         );
     }
