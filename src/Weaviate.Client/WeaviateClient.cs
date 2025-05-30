@@ -6,16 +6,16 @@ using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
 
-public record ClientConfiguration(
+public sealed record ClientConfiguration(
     string RestAddress = "localhost",
     string GrpcAddress = "localhost",
-    string? ApiKey = null,
     ushort RestPort = 8080,
     ushort GrpcPort = 50051,
-    bool UseSsl = false
+    bool UseSsl = false,
+    string? ApiKey = null
 )
 {
-    public virtual Uri RestUri =>
+    public Uri RestUri =>
         new UriBuilder()
         {
             Host = RestAddress,
@@ -24,7 +24,7 @@ public record ClientConfiguration(
             Path = "v1/",
         }.Uri;
 
-    public virtual Uri GrpcUri =>
+    public Uri GrpcUri =>
         new UriBuilder()
         {
             Host = GrpcAddress,
@@ -32,6 +32,8 @@ public record ClientConfiguration(
             Port = GrpcPort,
             Path = "",
         }.Uri;
+
+    public WeaviateClient Client() => new(this);
 };
 
 public class WeaviateClient : IDisposable
