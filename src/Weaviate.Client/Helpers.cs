@@ -10,7 +10,7 @@ public static class Connect
     ) => new(new ClientConfiguration("localhost", "localhost", apiKey, restPort, grpcPort, useSsl));
 
     public static WeaviateClient Cloud(string cloudUrl, string? apiKey = null) =>
-        new(new ClientConfiguration(cloudUrl, $"grpc-{cloudUrl}", apiKey));
+        new(new ClientConfiguration(cloudUrl, $"grpc-{cloudUrl}", apiKey, 443, 443, true));
 
     public static WeaviateClient FromEnvironment(string prefix = "WEAVIATE_")
     {
