@@ -6,32 +6,54 @@ using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
 
-public record ClientConfiguration
+public record ClientConfiguration(
+    string RestAddress = "localhost",
+    string GrpcAddress = "localhost",
+    string? ApiKey = null,
+    ushort RestPort = 8080,
+    ushort GrpcPort = 50051,
+    bool UseSsl = false
+)
 {
-    public required Uri Host;
-    public ushort RestPort = 8080;
-    public ushort GrpcPort = 50051;
-    public required string ApiKey;
-}
+    public virtual Uri RestUri =>
+        new UriBuilder()
+        {
+            Host = RestAddress,
+            Scheme = UseSsl ? "https" : "http",
+            Port = RestPort,
+            Path = "v1/",
+        }.Uri;
+
+    public virtual Uri GrpcUri =>
+        new UriBuilder()
+        {
+            Host = GrpcAddress,
+            Scheme = UseSsl ? "https" : "http",
+            Port = GrpcPort,
+            Path = "",
+        }.Uri;
+};
 
 public class WeaviateClient : IDisposable
 {
-    private static readonly Lazy<ClientConfiguration> _defaultOptions = new Lazy<ClientConfiguration>(() => new()
-    {
-        Host = new Uri("http://localhost"),
-        ApiKey = "",
-    });
+    private static readonly Lazy<ClientConfiguration> _defaultOptions = new(() =>
+        new()
+        {
+            ApiKey = null,
+            RestPort = 8080,
+            GrpcPort = 50051,
+        }
+    );
 
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
 
     private bool _isDisposed = false;
-    private readonly WeaviateGrpcClient _grpcClient;
-    private readonly WeaviateRestClient _restClient;
 
     [NotNull]
-    internal WeaviateRestClient RestClient => _restClient;
+    internal WeaviateRestClient RestClient { get; init; }
+
     [NotNull]
-    internal WeaviateGrpcClient GrpcClient => _grpcClient;
+    internal WeaviateGrpcClient GrpcClient { get; init; }
 
     public ClientConfiguration Configuration { get; }
 
@@ -41,8 +63,19 @@ public class WeaviateClient : IDisposable
     {
         Configuration = configuration ?? DefaultOptions;
 
-        _restClient = new WeaviateRestClient(this, httpClient);
-        _grpcClient = new WeaviateGrpcClient(this);
+        httpClient ??= new HttpClient();
+
+        if (!string.IsNullOrEmpty(Configuration.ApiKey))
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue(
+                    "Bearer",
+                    Configuration.ApiKey
+                );
+        }
+
+        RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
+        GrpcClient = new WeaviateGrpcClient(Configuration.GrpcUri, Configuration.ApiKey);
 
         Collections = new CollectionsClient(this);
     }
@@ -52,7 +85,7 @@ public class WeaviateClient : IDisposable
         if (_isDisposed)
             return;
 
-        _grpcClient?.Dispose();
+        GrpcClient?.Dispose();
         RestClient?.Dispose();
 
         _isDisposed = true;
