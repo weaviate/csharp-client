@@ -1,36 +1,13 @@
-﻿
-using System.Text.Json;
-using Weaviate.Client;
+﻿using System.Text.Json;
 using Weaviate.Client.Models;
-
-using CatDataWithVectors = (Example.Cat Data, float[] Vector);
 
 namespace Example;
 
 class Program
 {
-    static private ClientConfiguration GetConfiguration()
-    {
-        var instanceUrl = Environment.GetEnvironmentVariable("WEAVIATE_CLUSTER_URL");
-        if (string.IsNullOrEmpty(instanceUrl))
-        {
-            throw new Exception("Required environment variable WEAVIATE_CLUSTER_URL is missing.");
-        }
+    private record CatDataWithVectors(float[] Vector, Cat Data);
 
-        var apiKey = Environment.GetEnvironmentVariable("WEAVIATE_API_KEY");
-        if (string.IsNullOrEmpty(apiKey))
-        {
-            throw new Exception("Required environment variable WEAVIATE_API_KEY is missing.");
-        }
-
-        return new ClientConfiguration
-        {
-            Host = new Uri(instanceUrl),
-            ApiKey = apiKey
-        };
-    }
-
-    static async Task<IEnumerable<CatDataWithVectors>> GetCatsAsync(string filename)
+    static async Task<List<CatDataWithVectors>> GetCatsAsync(string filename)
     {
         try
         {
@@ -40,13 +17,19 @@ class Program
                 return []; // Return an empty list if the file doesn't exist
             }
 
-            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
-            {
-                // Deserialize directly from the stream for better performance, especially with large files
-                var data = await JsonSerializer.DeserializeAsync<IList<CatDataWithVectors>>(fs) ?? [];
+            using FileStream fs = new FileStream(
+                filename,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read,
+                bufferSize: 4096,
+                useAsync: true
+            );
 
-                return data;
-            }
+            // Deserialize directly from the stream for better performance, especially with large files
+            var data = await JsonSerializer.DeserializeAsync<List<CatDataWithVectors>>(fs) ?? [];
+
+            return data;
         }
         catch (JsonException ex)
         {
@@ -62,9 +45,13 @@ class Program
 
     static async Task Main()
     {
-        //var config = GetConfiguration();
+        // Read 250 cats from JSON file and unmarshal into Cat class
+        var cats = await GetCatsAsync("cats.json");
 
-        var weaviate = new WeaviateClient();
+        // Use the C# client to store all cats with a cat class
+        Console.WriteLine("Cats to store: " + cats.Count);
+
+        var weaviate = Weaviate.Client.Connect.Local();
 
         var collection = weaviate.Collections.Use<Cat>("Cat");
 
@@ -93,22 +80,25 @@ class Program
         {
             Vectorizer = new Dictionary<string, object>
             {
-                { "none", new object { } }
+                {
+                    "none",
+                    new object { }
+                },
             },
             VectorIndexType = "hnsw",
         };
 
         var VectorConfigs = new Dictionary<string, VectorConfig>
         {
-            { "default", vectorizerConfigNone }
+            { "default", vectorizerConfigNone },
         };
 
         var catCollection = new Collection()
         {
             Name = "Cat",
             Description = "Lots of Cats of multiple breeds",
-            Properties = [Property.Text("Name"), Property.Text("Color"), Property.Text("Breed"), Property.Int("Counter")],
-            VectorConfig = VectorConfigs
+            Properties = Property.FromType<Cat>(),
+            VectorConfig = VectorConfigs,
         };
 
         collection = await weaviate.Collections.Create<Cat>(catCollection);
@@ -118,17 +108,9 @@ class Program
             Console.WriteLine($"Collection: {c.Name}");
         }
 
-        // // Read 250 cats from JSON file and unmarshal into Cat class
-        var cats = await GetCatsAsync("cats.json");
-
-        // Use the C# client to store all cats with a cat class
-        Console.WriteLine("Cats to store: " + cats.Count());
         foreach (var cat in cats)
         {
-            var vectors = new NamedVectors()
-            {
-                { "default", cat.Vector }
-            };
+            var vectors = new NamedVectors() { { "default", cat.Vector } };
 
             var inserted = await collection.Data.Insert(cat.Data, vectors: vectors);
         }
@@ -154,36 +136,39 @@ class Program
         if (firstObj.ID is Guid id2)
         {
             var fetched = await collection.Query.FetchObjectByID(id: id2);
-            Console.WriteLine("Cat retrieved via gRPC matches: " + ((fetched?.Objects.First().ID ?? Guid.Empty) == id2));
+            Console.WriteLine(
+                "Cat retrieved via gRPC matches: "
+                    + ((fetched?.Objects.First().ID ?? Guid.Empty) == id2)
+            );
         }
 
         {
             var idList = retrieved
-                        .Where(c => c.ID.HasValue)
-                        .Take(10)
-                        .Select(c => c.ID!.Value)
-                        .ToHashSet();
+                .Where(c => c.ID.HasValue)
+                .Take(10)
+                .Select(c => c.ID!.Value)
+                .ToHashSet();
 
             var fetched = await collection.Query.FetchObjectsByIDs(idList);
-            Console.WriteLine($"Cats retrieved via gRPC matches:{Environment.NewLine} {JsonSerializer.Serialize(fetched.Objects, new JsonSerializerOptions { WriteIndented = true })}");
+            Console.WriteLine(
+                $"Cats retrieved via gRPC matches:{Environment.NewLine} {JsonSerializer.Serialize(fetched.Objects, new JsonSerializerOptions { WriteIndented = true })}"
+            );
         }
 
-        var queryNearVector =
-            await collection
-                .Query
-                .NearVector(
-                    vector: [20f, 21f, 22f],
-                    distance: 0.5f,
-                    limit: 5,
-                    fields: ["name", "breed", "color", "counter"],
-                    metadata: MetadataOptions.Score | MetadataOptions.Distance
-                );
+        var queryNearVector = await collection.Query.NearVector(
+            vector: [20f, 21f, 22f],
+            distance: 0.5f,
+            limit: 5,
+            fields: ["name", "breed", "color", "counter"],
+            metadata: MetadataOptions.Score | MetadataOptions.Distance
+        );
 
         foreach (var cat in queryNearVector.Objects)
         {
-            Console.WriteLine(JsonSerializer.Serialize(cat, new JsonSerializerOptions { WriteIndented = true }));
+            Console.WriteLine(
+                JsonSerializer.Serialize(cat, new JsonSerializerOptions { WriteIndented = true })
+            );
         }
-
 
         // Cursor API
         // var objects = collection.Iterator<Cat>();
