@@ -4,6 +4,10 @@
 
 ## Features
 
+### Helpers
+
+- [x] Connection helpers: Local, Cloud, Custom, FromEnvironment
+
 ### Collections
 
 - [x] List collections.
@@ -14,16 +18,29 @@
 ### Objects
 
 - [x] Insert data.
-  - [ ] Add object with vector data.
+  - [X] Add object with named vector data.
 - [x] Delete data.
-- [ ] Update data.
-- [ ] Get object by ID.
+- [X] Update data.
+- [X] Get object by ID.
 - [x] Get objects.
 - [x] Get object metadata (vectors, schema, etc.)
 
 ### Search
 
-- [ ] Query objects over gRPC.
-- [ ] Perform a search with:
-  - Search mode: BM5, Hybrid, Near vector.
-  - Pagination: Limit, Offset.
+- [X] Query objects over gRPC.
+- [X] Perform a search with:
+  - Search mode:
+    - [X] BM5
+    - [X] Hybrid
+    - [X] Near vector
+  - Pagination:
+    - [X] Limit
+    - [ ] Offset.
+- Filters
+  - [X] Property
+    - [X] Property Length
+  - [X] Creation/Update Time
+  - [X] Single-Target References
+    - [X] Reference Count
+  - [ ] Multi-Target References
+  - [ ] Geo Coordinates
