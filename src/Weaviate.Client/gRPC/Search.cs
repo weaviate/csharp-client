@@ -36,8 +36,10 @@ public partial class WeaviateGrpcClient
         {
             Collection = collection,
             Filters = filter,
+#pragma warning disable CS0612 // Type or member is obsolete
             Uses123Api = true,
             Uses125Api = true,
+#pragma warning restore CS0612 // Type or member is obsolete
             Uses127Api = true,
             Limit = limit ?? 0,
             GroupBy = groupBy is not null
