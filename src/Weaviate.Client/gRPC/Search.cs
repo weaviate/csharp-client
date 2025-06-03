@@ -328,8 +328,8 @@ public partial class WeaviateGrpcClient
 
     internal async Task<WeaviateResult> FetchObjects(
         string collection,
-        Filters? filter = null,
-        IEnumerable<SortBy>? sort = null,
+        Filter? filter = null,
+        IEnumerable<Sort>? sort = null,
         uint? limit = null,
         string[]? fields = null,
         IList<QueryReference>? reference = null,
@@ -338,8 +338,8 @@ public partial class WeaviateGrpcClient
     {
         var req = BaseSearchRequest(
             collection,
-            filter,
-            sort,
+            filter?.InternalFilter,
+            sort?.Select(s => s.InternalSort),
             limit,
             fields: fields,
             metadata: metadata,

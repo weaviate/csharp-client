@@ -4,9 +4,7 @@ public record Sort
 {
     private Sort() { }
 
-    V1.SortBy InternalSort { get; init; } = new V1.SortBy();
-
-    public static implicit operator V1.SortBy(Sort sort) => sort.InternalSort;
+    internal V1.SortBy InternalSort { get; init; } = new V1.SortBy();
 
     public static Sort ByCreationTime(bool ascending = true)
     {

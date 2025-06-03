@@ -44,16 +44,16 @@ public partial class UnitTests
         var f2 = f1.Reference("ref2").Property("prop").Equal("value");
 
         // Act
-        Filters filter = f2;
+        Filters filter = f2.InternalFilter;
 
         // Assert
         Assert.Equal("ref", filter.Target.SingleTarget.On);
         Assert.Equal("ref2", filter.Target.SingleTarget.Target.SingleTarget.On);
 
         // CAUTION. f1 and f2 are different objects, but they have the same reference to filter.
-        Assert.Equal((Filters)f2, (Filters)f1);
-        Assert.NotNull(((Filters)f2).Target.SingleTarget.Target);
-        Assert.NotNull(((Filters)f1).Target.SingleTarget.Target);
+        Assert.Equal(f2.InternalFilter, f1.InternalFilter);
+        Assert.NotNull(f2.InternalFilter.Target.SingleTarget.Target);
+        Assert.NotNull(f1.InternalFilter.Target.SingleTarget.Target);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public partial class UnitTests
             ValueText = "John",
         };
 
-        Assert.Equal(expected, f);
+        Assert.Equal(expected, f.InternalFilter);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public partial class UnitTests
             ValueInt = 3,
         };
 
-        Assert.Equal(expected, f);
+        Assert.Equal(expected, f.InternalFilter);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public partial class UnitTests
 
         // Act
         // Assert
-        Assert.Equal(expected, f);
+        Assert.Equal(expected, f.InternalFilter);
     }
 
     [Fact]
@@ -137,6 +137,6 @@ public partial class UnitTests
 
         // Act
         // Assert
-        Assert.Equal(expected, f);
+        Assert.Equal(expected, f.InternalFilter);
     }
 }
