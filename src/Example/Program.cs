@@ -97,7 +97,7 @@ class Program
         {
             Name = "Cat",
             Description = "Lots of Cats of multiple breeds",
-            Properties = Property.FromType<Cat>(),
+            Properties = Property.FromCollection<Cat>(),
             VectorConfig = VectorConfigs,
         };
 
@@ -108,12 +108,19 @@ class Program
             Console.WriteLine($"Collection: {c.Name}");
         }
 
-        foreach (var cat in cats)
-        {
-            var vectors = new NamedVectors() { { "default", cat.Vector } };
+        // // Normal Insertion Demo
+        // foreach (var cat in cats)
+        // {
+        //     var vectors = new NamedVectors() { { "default", cat.Vector } };
 
-            var inserted = await collection.Data.Insert(cat.Data, vectors: vectors);
-        }
+        //     var inserted = await collection.Data.Insert(cat.Data, vectors: vectors);
+        // }
+
+        // Batch Insertion Demo
+        var batchInsertions = await collection.Data.InsertMany(add =>
+        {
+            cats.ForEach(c => add(c.Data, vectors: new() { { "default", c.Vector } }));
+        });
 
         // Get all objects and sum up the counter property
         var result = await collection.Query.List(limit: 250);

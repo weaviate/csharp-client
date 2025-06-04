@@ -86,4 +86,85 @@ public partial class BasicTests
         public DatasetTimeFilter()
             : base(Cases.Keys) { }
     }
+
+    public class DatasetBatchInsertMany : TheoryData<string>
+    {
+        public static Dictionary<
+            string,
+            (
+                int expectedObjects,
+                int expectedErrors,
+                Action<DataClient<dynamic>.InsertDelegate>[] batcher
+            )
+        > Cases =>
+            new()
+            {
+                ["2 simple objects, no errors"] = (
+                    2,
+                    0,
+                    [
+                        add =>
+                        {
+                            add(
+                                new { Name = "some name" },
+                                vectors: new() { { "default", 1, 2, 3 } }
+                            );
+                            add(new { Name = "some other name" }, id: _reusableUuids[0]);
+                        },
+                    ]
+                ),
+                ["all data types"] = (
+                    1,
+                    0,
+                    [
+                        add =>
+                        {
+                            add(
+                                new
+                                {
+                                    Name = "some name",
+                                    Size = 3,
+                                    Price = 10.5,
+                                    IsAvailable = true,
+                                    AvailableSince = new DateTime(2023, 1, 1),
+                                }
+                            );
+                        },
+                    ]
+                ),
+                ["wrong type for property"] = (
+                    0,
+                    1,
+                    [
+                        add =>
+                        {
+                            add(new { Name = 1 });
+                        },
+                    ]
+                ),
+                ["batch with self-reference"] = (
+                    5,
+                    0,
+                    [
+                        add =>
+                        {
+                            add(new { Name = "Name 1" }, id: _reusableUuids[0]);
+                            add(new { Name = "Name 2" }, id: _reusableUuids[1]);
+                            add(new { Name = "Name 3" }, id: _reusableUuids[2]);
+                            add(new { Name = "Name 4" }, id: _reusableUuids[3]);
+                        },
+                        add =>
+                        {
+                            add(
+                                new { Name = "Name 5" },
+                                references: [new ObjectReference("ref", _reusableUuids[1])]
+                            );
+                        },
+                    ]
+                ),
+            };
+
+        public DatasetBatchInsertMany()
+            : base(Cases.Keys) { }
+    }
 }
