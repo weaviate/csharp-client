@@ -26,7 +26,7 @@ public record Sort
 
     public Sort Descending()
     {
-        InternalSort.Ascending = true;
+        InternalSort.Ascending = false;
         return this;
     }
 }
