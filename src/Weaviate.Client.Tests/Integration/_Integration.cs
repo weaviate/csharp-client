@@ -21,6 +21,7 @@ internal class TestDataValue
 public partial class BasicTests : IAsyncDisposable
 {
     const bool _deleteCollectionsAfterTest = true;
+    List<string> _collections = new();
 
     WeaviateClient _weaviate;
     HttpClient _httpClient;
@@ -50,9 +51,9 @@ public partial class BasicTests : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (_deleteCollectionsAfterTest && TestContext.Current.TestMethod?.MethodName is not null)
+        if (_deleteCollectionsAfterTest && _collections.Count > 0)
         {
-            await _weaviate.Collections.Delete(TestContext.Current.TestMethod!.MethodName);
+            await Task.WhenAll(_collections.Select(c => _weaviate.Collections.Delete(c)));
         }
 
         _weaviate.Dispose();
@@ -73,7 +74,7 @@ public partial class BasicTests : IAsyncDisposable
 
         name = $"{TestContext.Current.TestMethod?.MethodName ?? string.Empty}_{name}";
 
-        properties ??= Property.FromType<TData>();
+        properties ??= Property.FromCollection<TData>();
 
         ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -89,7 +90,7 @@ public partial class BasicTests : IAsyncDisposable
             },
         };
 
-        references = references ?? [];
+        references ??= [];
 
         var c = new Collection
         {
@@ -103,6 +104,8 @@ public partial class BasicTests : IAsyncDisposable
         await _weaviate.Collections.Delete(name);
 
         var collectionClient = await _weaviate.Collections.Create<TData>(c);
+
+        _collections.Add(name);
 
         return collectionClient;
     }
