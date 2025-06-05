@@ -91,9 +91,6 @@ public static class WeaviateExtensions
                     ) ?? new Dictionary<string, Rest.Dto.VectorConfig>(),
             ShardingConfig = collection.ShardingConfig,
             ModuleConfig = collection.ModuleConfig,
-            VectorIndexType = collection.VectorIndexType,
-            VectorIndexConfig = collection.VectorIndexConfig,
-            Vectorizer = collection.Vectorizer,
         };
 
         foreach (var property in collection.Properties)
@@ -264,9 +261,6 @@ public static class WeaviateExtensions
                     }
                     : null,
             VectorConfig = vectorConfig,
-            Vectorizer = collection?.Vectorizer ?? string.Empty,
-            VectorIndexType = collection?.VectorIndexType ?? string.Empty,
-            VectorIndexConfig = collection?.VectorIndexConfig,
         };
     }
 
