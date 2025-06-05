@@ -17,8 +17,8 @@ public class QueryClient<TData>
     #region Objects
     public async Task<WeaviateResult> List(
         uint? limit = null,
-        V1.Filters? filter = null,
-        IEnumerable<V1.SortBy>? sort = null,
+        Filter? filter = null,
+        IEnumerable<Sort>? sort = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
     )
