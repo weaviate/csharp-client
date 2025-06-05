@@ -99,9 +99,7 @@ public record TypedValue<T>(PropertyFilter Parent)
 
 public partial record Filter
 {
-    protected V1.Filters FiltersMessage { get; init; } = new V1.Filters();
-
-    public static implicit operator V1.Filters(Filter f) => f.FiltersMessage;
+    internal V1.Filters InternalFilter { get; init; } = new V1.Filters();
 
     protected Filter() { }
 
@@ -127,19 +125,19 @@ public partial record Filter
 
     internal Filter WithOperator(Filters.Types.Operator op)
     {
-        FiltersMessage.Operator = op;
+        InternalFilter.Operator = op;
         return this;
     }
 
     internal Filter WithProperty(string property)
     {
-        FiltersMessage.Target = new FilterTarget() { Property = property };
+        InternalFilter.Target = new FilterTarget() { Property = property };
         return this;
     }
 
     internal Filter WithNestedFilters(IEnumerable<Filter> filters)
     {
-        FiltersMessage.Filters_.AddRange(filters.Select(f => f.FiltersMessage));
+        InternalFilter.Filters_.AddRange(filters.Select(f => f.InternalFilter));
 
         return this;
     }
@@ -181,7 +179,7 @@ public partial record Filter
             }
         );
 
-        assigner(FiltersMessage);
+        assigner(InternalFilter);
 
         return this;
     }
@@ -193,7 +191,7 @@ public record PropertyFilter : Filter
 
     internal PropertyFilter(FilterTarget target, V1.Filters parentFilter)
     {
-        FiltersMessage = parentFilter;
+        InternalFilter = parentFilter;
         _target = target;
     }
 
@@ -255,7 +253,7 @@ public record ReferenceFilter : Filter
             SingleTarget = new FilterReferenceSingleTarget() { On = name },
         };
 
-        FiltersMessage.Target = _target;
+        InternalFilter.Target = _target;
     }
 
     public new ReferenceFilter Reference(string name)
@@ -272,7 +270,7 @@ public record ReferenceFilter : Filter
     {
         _target.SingleTarget.Target = new FilterTarget() { Property = name };
 
-        return new PropertyFilter(_target.SingleTarget.Target, FiltersMessage);
+        return new PropertyFilter(_target.SingleTarget.Target, InternalFilter);
     }
 
     internal TypedValue<int> Count
@@ -281,7 +279,7 @@ public record ReferenceFilter : Filter
         {
             _target.Count = new FilterReferenceCount { On = _target.SingleTarget.On };
 
-            return new TypedValue<int>(new PropertyFilter(_target, FiltersMessage));
+            return new TypedValue<int>(new PropertyFilter(_target, InternalFilter));
         }
     }
 
