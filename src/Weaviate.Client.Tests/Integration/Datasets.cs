@@ -94,6 +94,8 @@ public partial class BasicTests
             (
                 int expectedObjects,
                 int expectedErrors,
+                int expectedReferences,
+                int expectedReferencedObjects,
                 Action<DataClient<dynamic>.InsertDelegate>[] batcher
             )
         > Cases =>
@@ -101,6 +103,8 @@ public partial class BasicTests
             {
                 ["2 simple objects, no errors"] = (
                     2,
+                    0,
+                    0,
                     0,
                     [
                         add =>
@@ -115,6 +119,8 @@ public partial class BasicTests
                 ),
                 ["all data types"] = (
                     1,
+                    0,
+                    0,
                     0,
                     [
                         add =>
@@ -135,6 +141,8 @@ public partial class BasicTests
                 ["wrong type for property"] = (
                     0,
                     1,
+                    0,
+                    0,
                     [
                         add =>
                         {
@@ -145,6 +153,8 @@ public partial class BasicTests
                 ["batch with self-reference"] = (
                     5,
                     0,
+                    1,
+                    1,
                     [
                         add =>
                         {
@@ -158,6 +168,35 @@ public partial class BasicTests
                             add(
                                 new { Name = "Name 5" },
                                 references: [new ObjectReference("ref", _reusableUuids[1])]
+                            );
+                        },
+                    ]
+                ),
+                ["batch with multiple self-references"] = (
+                    5,
+                    0,
+                    1,
+                    2,
+                    [
+                        add =>
+                        {
+                            add(new { Name = "Name 1" }, id: _reusableUuids[0]);
+                            add(new { Name = "Name 2" }, id: _reusableUuids[1]);
+                            add(new { Name = "Name 3" }, id: _reusableUuids[2]);
+                            add(new { Name = "Name 4" }, id: _reusableUuids[3]);
+                        },
+                        add =>
+                        {
+                            add(
+                                new { Name = "Name 5" },
+                                references:
+                                [
+                                    new ObjectReference(
+                                        "ref",
+                                        _reusableUuids[1],
+                                        _reusableUuids[2]
+                                    ),
+                                ]
                             );
                         },
                     ]
