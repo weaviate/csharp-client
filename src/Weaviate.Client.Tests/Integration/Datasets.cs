@@ -201,6 +201,40 @@ public partial class BasicTests
                         },
                     ]
                 ),
+                ["batch with multiple self-reference properties"] = (
+                    7,
+                    0,
+                    3,
+                    4,
+                    [
+                        add =>
+                        {
+                            add(new { Name = "Name 1" }, id: _reusableUuids[0]);
+                            add(new { Name = "Name 2" }, id: _reusableUuids[1]);
+                            add(new { Name = "Name 3" }, id: _reusableUuids[2]);
+                            add(new { Name = "Name 4" }, id: _reusableUuids[3]);
+                        },
+                        add =>
+                        {
+                            add(
+                                new { Name = "Name 5" },
+                                references: [new("ref", _reusableUuids[1])]
+                            );
+                            add(
+                                new { Name = "Name 6" },
+                                references: [new("ref2", _reusableUuids[2])]
+                            );
+                            add(
+                                new { Name = "Name 7" },
+                                references:
+                                [
+                                    new("ref", _reusableUuids[1]),
+                                    new("ref2", _reusableUuids[2]),
+                                ]
+                            );
+                        },
+                    ]
+                ),
             };
 
         public DatasetBatchInsertMany()
