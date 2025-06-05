@@ -7,10 +7,15 @@ public record QueryReference
     public MetadataQuery? Metadata { get; init; }
     public IList<QueryReference>? References { get; init; }
 
-    public QueryReference(string linkOn, string[] fields, MetadataQuery? metadata = null, params QueryReference[]? references)
+    public QueryReference(
+        string linkOn,
+        string[]? fields = null,
+        MetadataQuery? metadata = null,
+        params QueryReference[]? references
+    )
     {
         LinkOn = linkOn;
-        Fields = fields;
+        Fields = fields ?? [];
         Metadata = metadata;
         References = references;
     }

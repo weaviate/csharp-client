@@ -5,6 +5,7 @@ public static class DataType
     public static string Date { get; } = "date";
     public static string GeoCoordinate { get; } = "geo";
     public static string Int { get; } = "int";
+    public static string Bool { get; } = "boolean";
     public static string List { get; } = "list";
     public static string Number { get; } = "number";
     public static string Object { get; } = "object";
@@ -60,44 +61,52 @@ public class Property
         return new Property { Name = name, DataType = { Models.DataType.Number } };
     }
 
+    internal static Property Bool(string name)
+    {
+        return new Property { Name = name, DataType = { Models.DataType.Bool } };
+    }
+
     public static ReferenceProperty Reference(string name, string targetCollection)
     {
         return new ReferenceProperty { Name = name, TargetCollection = targetCollection };
     }
 
-    // Extract collection properties from type specified by TData.
-    public static IList<Property> FromType<TData>()
+    private static Property For(Type t, string name)
     {
-        return
-        [
-            .. typeof(TData)
-                .GetProperties()
-                .Select(x =>
-                    Type.GetTypeCode(x.PropertyType) switch
-                    {
-                        TypeCode.String => Property.Text(x.Name),
-                        TypeCode.Int16 => Property.Int(x.Name),
-                        TypeCode.UInt16 => Property.Int(x.Name),
-                        TypeCode.Int32 => Property.Int(x.Name),
-                        TypeCode.UInt32 => Property.Int(x.Name),
-                        TypeCode.Int64 => Property.Int(x.Name),
-                        TypeCode.UInt64 => Property.Int(x.Name),
-                        TypeCode.DateTime => Property.Date(x.Name),
-                        TypeCode.Boolean => null,
-                        TypeCode.Char => null,
-                        TypeCode.SByte => null,
-                        TypeCode.Byte => null,
-                        TypeCode.Single => null,
-                        TypeCode.Double => null,
-                        TypeCode.Decimal => null,
-                        TypeCode.Empty => null,
-                        TypeCode.Object => null,
-                        TypeCode.DBNull => null,
-                        _ => null,
-                    }
-                )
-                .Where(p => p is not null)
-                .Select(p => p!),
-        ];
+        Func<string, Property>? f = Type.GetTypeCode(t) switch
+        {
+            TypeCode.String => Text,
+            TypeCode.Int16 => Int,
+            TypeCode.UInt16 => Int,
+            TypeCode.Int32 => Int,
+            TypeCode.UInt32 => Int,
+            TypeCode.Int64 => Int,
+            TypeCode.UInt64 => Int,
+            TypeCode.DateTime => Date,
+            TypeCode.Boolean => Bool,
+            TypeCode.Char => Text,
+            TypeCode.SByte => null,
+            TypeCode.Byte => null,
+            TypeCode.Single => Number,
+            TypeCode.Double => Number,
+            TypeCode.Decimal => Number,
+            TypeCode.Empty => null,
+            TypeCode.Object => null,
+            TypeCode.DBNull => null,
+            _ => null,
+        };
+
+        return f!(name);
+    }
+
+    public static Property For<TField>(string name)
+    {
+        return For(typeof(TField), name);
+    }
+
+    // Extract collection properties from type specified by TData.
+    public static IList<Property> FromCollection<TData>()
+    {
+        return [.. typeof(TData).GetProperties().Select(x => For(x.PropertyType, x.Name))];
     }
 }
