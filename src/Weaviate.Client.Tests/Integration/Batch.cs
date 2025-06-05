@@ -14,6 +14,8 @@ public partial class BasicTests
         (
             int expectedObjects,
             int expectedErrors,
+            int expectedReferences,
+            int expectedReferencedObjects,
             Action<DataClient<dynamic>.InsertDelegate>[] batcher
         ) = DatasetBatchInsertMany.Cases[key];
 
@@ -37,5 +39,10 @@ public partial class BasicTests
 
         Assert.Equal(expectedObjects, data.Count());
         Assert.Equal(expectedErrors, result.Count(r => r.Error != null));
+        Assert.Equal(expectedReferences, data.Count(r => r.References.Any()));
+        Assert.Equal(
+            expectedReferencedObjects,
+            data.Select(d => d.References.Sum(r => r.Value.Count)).Sum()
+        );
     }
 }
