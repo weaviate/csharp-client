@@ -1,7 +1,4 @@
-using System.Diagnostics;
-using System.Text.Json;
 using Weaviate.Client.Models;
-using Xunit.v3;
 
 namespace Weaviate.Client.Tests.Integration;
 
@@ -32,10 +29,11 @@ public partial class BasicTests
         );
 
         await client.AddReference(Property.Reference("ref", client.Name));
+        await client.AddReference(Property.Reference("ref2", client.Name));
 
         var result = await client.Data.InsertMany(batcher);
 
-        var data = await client.Query.List(references: [new("ref")]);
+        var data = await client.Query.List(references: [new("ref"), new("ref2")]);
 
         Assert.Equal(expectedObjects, data.Count());
         Assert.Equal(expectedErrors, result.Count(r => r.Error != null));
