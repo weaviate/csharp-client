@@ -9,7 +9,10 @@ public class LoggingHandler : DelegatingHandler
         _log = log;
     }
 
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken
+    )
     {
         _log($"Request: {request.Method} {request.RequestUri}");
 
@@ -19,7 +22,11 @@ public class LoggingHandler : DelegatingHandler
             _log($"Request Content: {requestContent}");
 
             // Buffer the content so it can be read again.
-            request.Content = new StringContent(requestContent, System.Text.Encoding.UTF8, "application/json");
+            request.Content = new StringContent(
+                requestContent,
+                System.Text.Encoding.UTF8,
+                "application/json"
+            );
         }
 
         foreach (var header in request.Headers)
