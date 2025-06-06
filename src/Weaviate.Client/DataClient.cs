@@ -1,5 +1,8 @@
 using System.Collections.Frozen;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Dynamic;
+using System.Reflection;
 using System.Text.Json;
 using Google.Protobuf.WellKnownTypes;
 using Weaviate.Client.Models;
@@ -7,29 +10,214 @@ using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 
-public class DataClient<TData>
+internal class ObjectHelper
 {
-    private readonly CollectionClient<TData> _collectionClient;
-    private WeaviateClient _client => _collectionClient.Client;
-    private string _collectionName => _collectionClient.Name;
-
-    internal DataClient(CollectionClient<TData> collectionClient)
+    internal static T? UnmarshallProperties<T>(IDictionary<string, object?> dict)
+        where T : new()
     {
-        _collectionClient = collectionClient;
-    }
+        ArgumentNullException.ThrowIfNull(dict);
 
-    public static IDictionary<string, string>[] MakeBeacons(params Guid[] guids)
-    {
-        return
-        [
-            .. guids.Select(uuid => new Dictionary<string, string>
+        // Create an instance of T using the default constructor
+        var instance = new T();
+
+        if (instance is IDictionary<string, object?> target)
+        {
+            foreach (var kvp in dict)
             {
-                { "beacon", $"weaviate://localhost/{uuid}" },
-            }),
-        ];
+                if (kvp.Value is IDictionary<string, object?> subDict)
+                {
+                    object? nestedValue = UnmarshallProperties<ExpandoObject>(subDict);
+
+                    target[kvp.Key.Capitalize()] = nestedValue ?? subDict;
+                }
+                else
+                {
+                    if (kvp.Value?.GetType() == typeof(Rest.Dto.GeoCoordinates))
+                    {
+                        var value = (Rest.Dto.GeoCoordinates)kvp.Value;
+                        target[kvp.Key.Capitalize()] = new GeoCoordinate(
+                            value.Latitude ?? 0f,
+                            value.Longitude ?? 0f
+                        );
+                    }
+                    else
+                    {
+                        target[kvp.Key.Capitalize()] = kvp.Value;
+                    }
+                }
+            }
+            return instance;
+        }
+
+        var type = typeof(T);
+        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.CanWrite)
+            .ToArray();
+
+        foreach (var property in properties)
+        {
+            var matchingKey = dict.Keys.FirstOrDefault(k =>
+                string.Equals(k, property.Name, StringComparison.OrdinalIgnoreCase)
+            );
+
+            if (matchingKey is null)
+            {
+                continue;
+            }
+
+            var value = dict[matchingKey];
+
+            try
+            {
+                var convertedValue = ConvertValue(value, property.PropertyType);
+                property.SetValue(instance, convertedValue);
+            }
+            catch (Exception ex)
+            {
+                // Skip if conversion fails
+                Debug.WriteLine($"Failed to convert property {property.Name}: {ex.Message}");
+                continue;
+            }
+        }
+
+        return instance;
     }
 
-    internal static IDictionary<string, object?> BuildDynamicObject(object? data)
+    private static object? ConvertValue(object? value, System.Type targetType)
+    {
+        // Handle null values
+        if (value == null)
+        {
+            if (IsNullableType(targetType) || !targetType.IsValueType)
+            {
+                return null;
+            }
+            // For non-nullable value types, return default value
+            return Activator.CreateInstance(targetType);
+        }
+
+        // If types already match, return as-is
+        if (targetType.IsAssignableFrom(value.GetType()))
+        {
+            return value;
+        }
+
+        // Handle nullable types
+        if (IsNullableType(targetType))
+        {
+            var underlyingType = Nullable.GetUnderlyingType(targetType)!;
+            return ConvertValue(value, underlyingType);
+        }
+
+        // Handle nested objects (dictionaries -> custom types)
+        if (
+            value is IDictionary<string, object?> nestedDict
+            && !typeof(IDictionary<string, object?>).IsAssignableFrom(targetType)
+        )
+        {
+            var method = typeof(ObjectHelper)
+                .GetMethod("UnmarshallProperties", BindingFlags.Static | BindingFlags.NonPublic)!
+                .MakeGenericMethod(targetType);
+            return method.Invoke(null, new object[] { nestedDict });
+        }
+
+        // Handle collections
+        if (
+            IsCollectionType(targetType)
+            && value is System.Collections.IEnumerable enumerable
+            && !(value is string)
+        )
+        {
+            return ConvertCollection(enumerable, targetType);
+        }
+
+        // Handle enums
+        if (targetType.IsEnum)
+        {
+            if (value is string stringValue)
+            {
+                return System.Enum.Parse(targetType, stringValue, true);
+            }
+            return System.Enum.ToObject(targetType, value);
+        }
+
+        // Try TypeConverter first (handles more cases than Convert.ChangeType)
+        var converter = TypeDescriptor.GetConverter(targetType);
+        if (converter.CanConvertFrom(value.GetType()))
+        {
+            return converter.ConvertFrom(value);
+        }
+
+        // Fallback to Convert.ChangeType for basic types
+        return Convert.ChangeType(value, targetType);
+    }
+
+    private static bool IsNullableType(System.Type type)
+    {
+        return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+    }
+
+    private static bool IsCollectionType(System.Type type)
+    {
+        return type.IsArray
+            || (
+                type.IsGenericType
+                && (
+                    type.GetGenericTypeDefinition() == typeof(List<>)
+                    || type.GetGenericTypeDefinition() == typeof(IList<>)
+                    || type.GetGenericTypeDefinition() == typeof(ICollection<>)
+                    || type.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+                )
+            );
+    }
+
+    private static object? ConvertCollection(
+        System.Collections.IEnumerable source,
+        System.Type targetType
+    )
+    {
+        if (targetType.IsArray)
+        {
+            var elementType = targetType.GetElementType()!;
+            var items = new List<object?>();
+
+            foreach (var item in source)
+            {
+                items.Add(ConvertValue(item, elementType));
+            }
+
+            var array = Array.CreateInstance(elementType, items.Count);
+            for (int i = 0; i < items.Count; i++)
+            {
+                array.SetValue(items[i], i);
+            }
+            return array;
+        }
+
+        if (targetType.IsGenericType)
+        {
+            var elementType = targetType.GetGenericArguments()[0];
+            var listType = typeof(List<>).MakeGenericType(elementType);
+            var list = (System.Collections.IList)Activator.CreateInstance(listType)!;
+
+            foreach (var item in source)
+            {
+                list.Add(ConvertValue(item, elementType));
+            }
+
+            return list;
+        }
+
+        // Fallback - convert to object array
+        var fallbackItems = new List<object?>();
+        foreach (var item in source)
+        {
+            fallbackItems.Add(item);
+        }
+        return fallbackItems.ToArray();
+    }
+
+    internal static IDictionary<string, object?> BuildDataTransferObject(object? data)
     {
         var obj = new ExpandoObject();
         var propDict = obj as IDictionary<string, object?>;
@@ -54,13 +242,45 @@ public class DataClient<TData>
             {
                 propDict[propertyInfo.Name] = value;
             }
+            else if (propertyInfo.PropertyType == typeof(GeoCoordinate))
+            {
+                var newValue = (GeoCoordinate)value;
+                propDict[propertyInfo.Name] = new GeoCoordinates
+                {
+                    Latitude = newValue.Latitude,
+                    Longitude = newValue.Longitude,
+                };
+            }
             else
             {
-                propDict[propertyInfo.Name] = BuildDynamicObject(value); // recursive call
+                propDict[propertyInfo.Name] = BuildDataTransferObject(value); // recursive call
             }
         }
 
         return obj;
+    }
+}
+
+public class DataClient<TData>
+{
+    private readonly CollectionClient<TData> _collectionClient;
+    private WeaviateClient _client => _collectionClient.Client;
+    private string _collectionName => _collectionClient.Name;
+
+    internal DataClient(CollectionClient<TData> collectionClient)
+    {
+        _collectionClient = collectionClient;
+    }
+
+    public static IDictionary<string, string>[] MakeBeacons(params Guid[] guids)
+    {
+        return
+        [
+            .. guids.Select(uuid => new Dictionary<string, string>
+            {
+                { "beacon", $"weaviate://localhost/{uuid}" },
+            }),
+        ];
     }
 
     // Helper method to convert C# objects to protobuf Values
@@ -128,7 +348,7 @@ public class DataClient<TData>
         string? tenant = null
     )
     {
-        var propDict = BuildDynamicObject(data);
+        var propDict = ObjectHelper.BuildDataTransferObject(data);
 
         foreach (var kvp in references ?? [])
         {
