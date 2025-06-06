@@ -167,12 +167,15 @@ public partial record Filter
                     },
                 IEnumerable<bool> v => f =>
                     f.ValueBooleanArray = new BooleanArray { Values = { v } },
+                IEnumerable<int> v => f =>
+                    f.ValueIntArray = new IntArray { Values = { v.Select(Convert.ToInt64) } },
                 IEnumerable<long> v => f => f.ValueIntArray = new IntArray { Values = { v } },
                 IEnumerable<double> v => f =>
                     f.ValueNumberArray = new NumberArray { Values = { v } },
                 IEnumerable<string> v => f => f.ValueTextArray = new TextArray { Values = { v } },
                 IEnumerable<Guid> v => f =>
                     f.ValueTextArray = new TextArray { Values = { v.Select(g => g.ToString()) } },
+                // TODO Perhaps add a case handling generic IEnumerable
                 _ => throw new WeaviateException(
                     $"Unsupported type '{typeof(T).Name}' for filter value. Check the documentation for supported filter value types."
                 ),
