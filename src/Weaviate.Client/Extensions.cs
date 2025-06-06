@@ -13,63 +13,6 @@ public static class WeaviateExtensions
             WriteIndented = true, // For readability
         };
 
-    private static T? UnmarshallProperties<T>(IDictionary<string, object> dict)
-    {
-        if (dict == null)
-            throw new ArgumentNullException(nameof(dict));
-
-        // Create an instance of T using the default constructor
-        var props = Activator.CreateInstance<T>();
-
-        if (props is IDictionary<string, object> target)
-        {
-            foreach (var kvp in dict)
-            {
-                if (kvp.Value is IDictionary<string, object> subDict)
-                {
-                    dynamic? v = UnmarshallProperties<dynamic>(subDict);
-
-                    target[Capitalize(kvp.Key)] = v ?? subDict;
-                }
-                else
-                {
-                    target[Capitalize(kvp.Key)] = kvp.Value;
-                }
-            }
-            return props;
-        }
-
-        var type = typeof(T);
-        var properties = type.GetProperties();
-
-        foreach (var property in properties)
-        {
-            var matchingKey = dict.Keys.FirstOrDefault(k =>
-                string.Equals(k, property.Name, StringComparison.OrdinalIgnoreCase)
-            );
-
-            if (matchingKey != null)
-            {
-                var value = dict[matchingKey];
-                if (value != null)
-                {
-                    try
-                    {
-                        var convertedValue = Convert.ChangeType(value, property.PropertyType);
-                        property.SetValue(props, convertedValue);
-                    }
-                    catch
-                    {
-                        // Skip if conversion fails
-                        continue;
-                    }
-                }
-            }
-        }
-
-        return props;
-    }
-
     internal static Rest.Dto.Class ToDto(this Collection collection)
     {
         var data = new Rest.Dto.Class()
@@ -279,7 +222,9 @@ public static class WeaviateExtensions
             // Temporary variable to hold the read object before casting
             object value = Type.GetTypeCode(typeof(T)) switch
             {
+                TypeCode.Int16 => reader.ReadInt16(),
                 TypeCode.Int32 => reader.ReadInt32(),
+                TypeCode.Int64 => reader.ReadInt64(),
                 TypeCode.Single => reader.ReadSingle(),
                 TypeCode.Double => reader.ReadDouble(),
                 TypeCode.String => reader.ReadString(),
@@ -346,12 +291,17 @@ public static class WeaviateExtensions
 
     public static bool IsNativeType(this Type type)
     {
-        if (type.IsValueType && !type.IsClass)
+        // Handle nullable types
+        var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+
+        // Check basic value types (excluding structs that aren't primitives)
+        if (underlyingType.IsPrimitive)
         {
             return true;
         }
 
-        switch (Type.GetTypeCode(type))
+        // Check common .NET types using TypeCode
+        switch (Type.GetTypeCode(underlyingType))
         {
             case TypeCode.Boolean:
             case TypeCode.Char:
@@ -369,11 +319,56 @@ public static class WeaviateExtensions
             case TypeCode.String:
             case TypeCode.DateTime:
                 return true;
-            case TypeCode.Empty:
-            case TypeCode.Object:
-            case TypeCode.DBNull:
-            default:
-                return false;
         }
+
+        // Check for other common native types
+        if (
+            underlyingType == typeof(Guid)
+            || underlyingType == typeof(TimeSpan)
+            || underlyingType == typeof(DateTimeOffset)
+            || underlyingType == typeof(DateTime)
+            || underlyingType == typeof(Uri)
+        )
+        {
+            return true;
+        }
+
+        // Check for arrays of native types
+        if (type.IsArray)
+        {
+            return type.GetElementType()?.IsNativeType() == true;
+        }
+
+        // Check for generic IEnumerable<T> where T is native
+        if (type.IsGenericType)
+        {
+            var genericDefinition = type.GetGenericTypeDefinition();
+
+            // Handle common generic collection types
+            if (
+                genericDefinition == typeof(IEnumerable<>)
+                || genericDefinition == typeof(ICollection<>)
+                || genericDefinition == typeof(IList<>)
+                || genericDefinition == typeof(List<>)
+                || genericDefinition == typeof(HashSet<>)
+                || genericDefinition == typeof(ISet<>)
+                || genericDefinition == typeof(Queue<>)
+                || genericDefinition == typeof(Stack<>)
+            )
+            {
+                var elementType = type.GetGenericArguments()[0];
+                return elementType.IsNativeType();
+            }
+        }
+
+        // Check for non-generic IEnumerable (less precise, but handles ArrayList, etc.)
+        if (typeof(System.Collections.IEnumerable).IsAssignableFrom(type) && type != typeof(string))
+        {
+            // For non-generic collections, we can't determine the element type at compile time
+            // Consider them as native for serialization purposes.
+            return true;
+        }
+
+        return false;
     }
 }

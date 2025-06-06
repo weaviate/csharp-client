@@ -1,3 +1,5 @@
+using System.Dynamic;
+using System.Text.Json;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests;
@@ -34,6 +36,19 @@ public partial class UnitTests
     }
 
     [Fact]
+    public void TestBuildDynamicObjectPropertiesGeoCoordinate()
+    {
+        var geo = new { TestingPropertyType = new GeoCoordinate(12.345f, 67.890f) };
+        var props = ObjectHelper.BuildDataTransferObject(geo);
+
+        dynamic? concrete = ObjectHelper.UnmarshallProperties<ExpandoObject>(props);
+
+        Assert.NotNull(concrete);
+        Assert.Equal(geo.TestingPropertyType.Latitude, concrete!.TestingPropertyType.Latitude);
+        Assert.Equal(geo.TestingPropertyType.Longitude, concrete!.TestingPropertyType.Longitude);
+    }
+
+    [Fact]
     public void TestBuildDynamicObject()
     {
         // Arrange
@@ -58,7 +73,7 @@ public partial class UnitTests
         };
 
         // Act
-        var obj = review.Select(r => DataClient<dynamic>.BuildDynamicObject(r)).ToList();
+        var obj = review.Select(r => ObjectHelper.BuildDataTransferObject(r)).ToList();
 
         // Assert
         Assert.Equal("kineticandroid", obj[0]["author_username"]);
@@ -76,6 +91,7 @@ public partial class UnitTests
 
     [Theory]
     [InlineData(typeof(bool), true)]
+    [InlineData(typeof(bool[]), true)]
     [InlineData(typeof(char), true)]
     [InlineData(typeof(sbyte), true)]
     [InlineData(typeof(byte), true)]
@@ -89,9 +105,20 @@ public partial class UnitTests
     [InlineData(typeof(double), true)]
     [InlineData(typeof(double?), true)]
     [InlineData(typeof(decimal), true)]
+    [InlineData(typeof(short[]), true)]
+    [InlineData(typeof(ushort[]), true)]
+    [InlineData(typeof(int[]), true)]
+    [InlineData(typeof(uint[]), true)]
+    [InlineData(typeof(long[]), true)]
+    [InlineData(typeof(ulong[]), true)]
+    [InlineData(typeof(float[]), true)]
+    [InlineData(typeof(double[]), true)]
+    [InlineData(typeof(decimal[]), true)]
     [InlineData(typeof(string), true)]
+    [InlineData(typeof(string[]), true)]
     [InlineData(typeof(DateTime), true)]
     [InlineData(typeof(Object), false)]
+    [InlineData(typeof(Object[]), false)]
     [InlineData(typeof(WeaviateObject), false)]
     public void TestIsNativeTypeCheck(Type type, bool expected)
     {

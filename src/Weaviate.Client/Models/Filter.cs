@@ -2,7 +2,7 @@ using Weaviate.V1;
 
 namespace Weaviate.Client.Models;
 
-public record GeoCoordinatesConstraint(float Latitude, float Longitude, float Distance);
+public record GeoCoordinateConstraint(float Latitude, float Longitude, float Distance);
 
 public interface IFilterEquality<T>
 {
@@ -148,7 +148,7 @@ public partial record Filter
             value switch
             {
                 bool v => f => f.ValueBoolean = v,
-                GeoCoordinatesConstraint v => f =>
+                GeoCoordinateConstraint v => f =>
                     f.ValueGeo = new GeoCoordinatesFilter
                     {
                         Distance = v.Distance,
@@ -234,7 +234,7 @@ public record PropertyFilter : Filter
     public Filter LessThanEqual<T>(T value) =>
         WithOperator(Filters.Types.Operator.LessThanEqual).WithValue(value);
 
-    public Filter WithinGeoRange(GeoCoordinatesConstraint value) =>
+    public Filter WithinGeoRange(GeoCoordinateConstraint value) =>
         WithOperator(Filters.Types.Operator.WithinGeoRange).WithValue(value);
 
     public Filter Like<T>(T value) => WithOperator(Filters.Types.Operator.Like).WithValue(value);
