@@ -35,7 +35,7 @@ public partial class UnitTests
     }
 
     [Fact]
-    public void FilterByReferenceDoesNotChangePreviousFilter()
+    public void FilterByReferencChainingChangePreviousFilterBecauseRefs()
     {
         // Arrange
         var f1 = Filter.Reference("ref");
