@@ -321,13 +321,7 @@ public partial class BasicTests
 
         // Arrange
         var collection = await CollectionFactory(
-            vectorConfig: new Dictionary<string, VectorConfig>
-            {
-                {
-                    "default",
-                    new VectorConfig { Vectorizer = Vectorizer.None, VectorIndexType = "hnsw" }
-                },
-            },
+            vectorConfig: NamedVectorConfig.None(),
             properties:
             [
                 Property.TextArray("texts"),
@@ -382,13 +376,7 @@ public partial class BasicTests
 
         // Arrange
         var collection = await CollectionFactory(
-            vectorConfig: new Dictionary<string, VectorConfig>
-            {
-                {
-                    "default",
-                    new VectorConfig { Vectorizer = Vectorizer.None, VectorIndexType = "hnsw" }
-                },
-            },
+            vectorConfig: NamedVectorConfig.None(),
             properties:
             [
                 Property.Text("text"),

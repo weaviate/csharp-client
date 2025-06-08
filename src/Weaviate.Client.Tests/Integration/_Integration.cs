@@ -64,31 +64,29 @@ public partial class BasicTests : IAsyncDisposable
         string? description = null,
         IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
-        IDictionary<string, VectorConfig>? vectorConfig = null,
+        NamedVectorConfigList? vectorConfig = null,
         InvertedIndexConfig? invertedIndexConfig = null
     )
     {
         description ??= TestContext.Current.TestMethod?.MethodName ?? string.Empty;
 
-        name ??= typeof(TData).Name + TestContext.Current.Test?.UniqueID;
+        var strings = new string?[]
+        {
+            TestContext.Current.TestMethod?.MethodName,
+            typeof(TData).Name,
+            TestContext.Current.Test?.UniqueID,
+            name,
+        }
+            .Where(s => !string.IsNullOrEmpty(s))
+            .Cast<string>();
 
-        name = $"{TestContext.Current.TestMethod?.MethodName ?? string.Empty}_{name}";
+        name = string.Join("_", strings);
 
         properties ??= Property.FromCollection<TData>();
 
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        vectorConfig ??= new Dictionary<string, VectorConfig>
-        {
-            {
-                "default",
-                new VectorConfig
-                {
-                    Vectorizer = new Dictionary<string, object> { { "none", new { } } },
-                    VectorIndexType = "hnsw",
-                }
-            },
-        };
+        vectorConfig ??= NamedVectorConfig.None("default");
 
         references ??= [];
 
@@ -105,7 +103,7 @@ public partial class BasicTests : IAsyncDisposable
 
         var collectionClient = await _weaviate.Collections.Create<TData>(c);
 
-        _collections.Add(name);
+        _collections.Add(collectionClient.Name);
 
         return collectionClient;
     }
@@ -115,7 +113,7 @@ public partial class BasicTests : IAsyncDisposable
         string? description = null,
         IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
-        IDictionary<string, VectorConfig>? vectorConfig = null,
+        NamedVectorConfigList? vectorConfig = null,
         InvertedIndexConfig? invertedIndexConfig = null
     )
     {

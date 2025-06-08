@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Weaviate.Client.Models;
+using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client;
 
@@ -27,9 +28,9 @@ public static class WeaviateExtensions
                         e => e.Key,
                         e => new Rest.Dto.VectorConfig
                         {
-                            VectorIndexConfig = e.Value.VectorIndexConfig,
+                            VectorIndexConfig = e.Value.VectorIndexConfig.Configuration,
                             VectorIndexType = e.Value.VectorIndexType,
-                            Vectorizer = e.Value.Vectorizer,
+                            Vectorizer = e.Value.Vectorizer?.ToDto(),
                         }
                     ) ?? new Dictionary<string, Rest.Dto.VectorConfig>(),
             ShardingConfig = collection.ShardingConfig,
@@ -96,31 +97,52 @@ public static class WeaviateExtensions
 
     internal static Collection ToModel(this Rest.Dto.Class collection)
     {
+        static VectorIndexConfig vicFactory(string type, object? config)
+        {
+            return type switch
+            {
+                "hnsw" => new VectorIndexConfigHNSW(),
+                "flat" => new VectorIndexConfigFlat(),
+                "dynamic" => new VectorIndexConfigDynamic(),
+                _ => VectorIndexConfig.Default,
+            };
+        }
+
         var tf = (Rest.Dto.VectorConfig v) =>
         {
-            var vic = v.VectorIndexConfig;
-            var vit = v.VectorIndexType;
             var vectorizer = v.Vectorizer;
+            var vic = vicFactory(v.VectorIndexType ?? "hnsw", v.VectorIndexConfig);
 
-            var vc = new VectorConfig()
-            {
-                VectorIndexConfig = vic ?? new { },
-                VectorIndexType = vit,
-            };
+            var vc = new VectorConfig() { VectorIndexConfig = vic };
 
             if (vectorizer is Dictionary<string, object> vecAsDict)
             {
-                foreach (var kvp in vecAsDict)
+                if (vecAsDict.Count > 0)
                 {
-                    vc.Vectorizer[kvp.Key] = kvp.Value;
+                    var key = vecAsDict.Keys.First();
+
+                    vc.Vectorizer = VectorizerConfigFactory.Create(key, vecAsDict.Values.First());
+                }
+                else
+                {
+                    // TODO Throw Exception for unexpected scenario?
+                    vc.Vectorizer = new NoneConfig();
                 }
             }
             else if (vectorizer is JsonElement vecAsJson)
             {
                 var vec = JsonSerializer.Deserialize<Dictionary<string, object>>(vecAsJson) ?? [];
-                foreach (var kvp in vec)
+
+                if (vec.Count > 0)
                 {
-                    vc.Vectorizer[kvp.Key] = kvp.Value;
+                    var item = vec.First();
+
+                    vc.Vectorizer = VectorizerConfigFactory.Create(item.Key, item.Value);
+                }
+                else
+                {
+                    // TODO Throw Exception for unexpected scenario?
+                    vc.Vectorizer = new NoneConfig();
                 }
             }
 

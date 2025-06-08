@@ -1,4 +1,3 @@
-
 namespace Weaviate.Client;
 
 public struct CollectionsClient

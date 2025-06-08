@@ -1,19 +1,21 @@
+using Weaviate.Client.Models.Vectorizers;
+
 namespace Weaviate.Client.Models;
 
-public class VectorConfig
+public record VectorConfig
 {
     /// <summary>
     /// Vector-index config, that is specific to the type of index selected in vectorIndexType.
     /// </summary>
-    public dynamic VectorIndexConfig { get; set; } = new object();
+    public VectorIndexConfig VectorIndexConfig { get; set; } = VectorIndexConfig.Default;
 
     /// <summary>
     /// Name of the vector index to use, eg. (HNSW).
     /// </summary>
-    public string? VectorIndexType { get; set; }
+    public string? VectorIndexType => VectorIndexConfig?.Identifier;
 
     /// <summary>
     /// Configuration of a specific vectorizer used by this vector.
     /// </summary>
-    public Dictionary<string, dynamic> Vectorizer { get; set; } = new Dictionary<string, object>();
+    public VectorizerConfig? Vectorizer { get; set; }
 }

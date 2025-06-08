@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Weaviate.Client.Models;
+using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
@@ -124,17 +125,7 @@ public partial class BasicTests
                 Property.Int("movie_id"),
             ],
             references: [Property.Reference("forMovie", targetCollection: movies.Name)],
-            vectorConfig: new Dictionary<string, VectorConfig>
-            {
-                {
-                    "default",
-                    new VectorConfig
-                    {
-                        Vectorizer = Vectorizer.Text2VecContextionary(),
-                        VectorIndexType = "hnsw",
-                    }
-                },
-            }
+            vectorConfig: NamedVectorConfig.New("default", new Text2VecContextionaryConfig())
         );
 
         var moviesData = new[]
