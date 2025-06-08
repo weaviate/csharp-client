@@ -1,38 +1,70 @@
+using Weaviate.Client.Models.Vectorizers;
+
 namespace Weaviate.Client.Models;
 
-public record VectorizerList(params Vectorizer[] Vectorizers)
+public record NamedVectorConfigList
 {
-    public static implicit operator Dictionary<string, object>(VectorizerList list)
+    private List<NamedVectorConfig> _internalList = new();
+
+    private static NamedVectorConfigList _Builder(params NamedVectorConfig[] configs)
     {
-        return list.Vectorizers.ToDictionary(v => v.Name, v => v.Configuration);
+        return new() { _internalList = [.. configs] };
     }
 
-    public static implicit operator VectorizerList(Vectorizer[] list)
+    public static implicit operator NamedVectorConfigList(NamedVectorConfig[] configs)
     {
-        return new VectorizerList(list);
+        return _Builder(configs);
+    }
+
+    public static implicit operator NamedVectorConfigList(NamedVectorConfig config)
+    {
+        return _Builder(config);
+    }
+
+    public static implicit operator Dictionary<string, VectorConfig>(NamedVectorConfigList configs)
+    {
+        var dict = configs._internalList.ToDictionary(
+            config => config.Name,
+            config => new VectorConfig
+            {
+                Vectorizer = config.Vectorizer,
+                VectorIndexConfig = config.VectorIndex ?? VectorIndexConfig.Default,
+            }
+        );
+
+        return dict;
     }
 }
 
-public record Vectorizer
+public record NamedVectorConfig
 {
     public string Name { get; }
-    public object Configuration { get; }
+    public VectorizerConfig Vectorizer { get; }
+    public VectorIndexConfig? VectorIndex { get; }
 
-    private Vectorizer(string name, object configuration)
+    private NamedVectorConfig(
+        string name,
+        VectorizerConfig vectorizer,
+        VectorIndexConfig? vectorIndex = null
+    )
     {
         Name = name;
-        Configuration = configuration;
+        Vectorizer = vectorizer;
+        VectorIndex = vectorIndex;
     }
 
-    public static implicit operator Dictionary<string, object>(Vectorizer vectorizer)
-    {
-        return new Dictionary<string, object> { [vectorizer.Name] = vectorizer.Configuration };
-    }
+    // TODO Maybe have a global config value for default named vector
+    public static NamedVectorConfig None(string name = "default") => New(name);
 
-    public static readonly Vectorizer None = new("none", new { });
-
-    public static Vectorizer Text2VecContextionary(bool vectorizeClassName = false)
+    public static NamedVectorConfig New(
+        string namedVector,
+        VectorizerConfig? config = null,
+        VectorIndexConfig? vectorIndexConfig = null
+    )
     {
-        return new Vectorizer("text2vec-contextionary", new { VectorizeClassName = false });
+        config ??= new NoneConfig();
+        vectorIndexConfig ??= new VectorIndexConfigHNSW();
+
+        return new(namedVector, config, vectorIndexConfig);
     }
 }

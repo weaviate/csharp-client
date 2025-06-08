@@ -8,7 +8,7 @@ public partial class BasicTests
     public async Task CollectionCreation()
     {
         // Arrange
-        var collectionName = "CollectionCreation" + TestContext.Current.Test?.UniqueID;
+        var collectionName = "RandomCollectionName";
 
         // Act
         var collectionClient = await CollectionFactory(
@@ -20,7 +20,10 @@ public partial class BasicTests
         // Assert
         var collection = await _weaviate.Collections.Use<dynamic>(collectionClient.Name).Get();
         Assert.NotNull(collection);
-        Assert.Equal("CollectionCreation_" + collectionName, collection.Name);
+        Assert.Equal(
+            $"CollectionCreation_Object_{TestContext.Current.Test?.UniqueID}_RandomCollectionName",
+            collection.Name
+        );
         Assert.Equal("Test collection description", collection.Description);
     }
 
