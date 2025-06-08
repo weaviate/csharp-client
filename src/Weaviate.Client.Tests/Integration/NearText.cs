@@ -1,4 +1,5 @@
 using Weaviate.Client.Models;
+using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
@@ -9,20 +10,10 @@ public partial class BasicTests
     {
         // Arrange
         var collectionClient = await CollectionFactory<TestDataValue>(
-            "",
+            null,
             "Test collection description",
             [Property.Text("value")],
-            vectorConfig: new Dictionary<string, VectorConfig>
-            {
-                {
-                    "default",
-                    new VectorConfig
-                    {
-                        Vectorizer = Vectorizer.Text2VecContextionary(),
-                        VectorIndexType = "hnsw",
-                    }
-                },
-            }
+            vectorConfig: NamedVectorConfig.New("default", new Text2VecContextionaryConfig())
         );
 
         string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
@@ -52,24 +43,14 @@ public partial class BasicTests
     }
 
     [Fact]
-    public async Task NearTextGroupBySearch()
+    public async Task Test_Search_NearText_GroupBy()
     {
         // Arrange
         CollectionClient<dynamic>? collectionClient = await CollectionFactory(
             "",
             "Test collection description",
             [Property.Text("value")],
-            vectorConfig: new Dictionary<string, VectorConfig>
-            {
-                {
-                    "default",
-                    new VectorConfig
-                    {
-                        Vectorizer = Vectorizer.Text2VecContextionary(),
-                        VectorIndexType = "hnsw",
-                    }
-                },
-            }
+            vectorConfig: NamedVectorConfig.New("default", new Text2VecContextionaryConfig())
         );
 
         string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
