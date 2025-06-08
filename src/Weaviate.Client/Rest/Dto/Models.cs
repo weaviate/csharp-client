@@ -26,7 +26,7 @@ namespace Weaviate.Client.Rest.Dto
 {
     using System = global::System;
 
-
+    
 
     /// <summary>
     /// the type of user
@@ -577,7 +577,7 @@ namespace Weaviate.Client.Rest.Dto
     /// A map of named vectors for multi-vector representations.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Vectors : System.Collections.Generic.Dictionary<string, dynamic>
+    public partial class Vectors : System.Collections.Generic.Dictionary<string, object>
     {
 
         public string ToJson()
@@ -813,7 +813,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("variables")]
-        public dynamic? Variables { get; set; } = default!;
+        public object? Variables { get; set; } = default!;
 
         public string ToJson()
         {
@@ -871,7 +871,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.Generic.IDictionary<string, dynamic>? Data { get; set; } = default!;
+        public System.Collections.Generic.IDictionary<string, object>? Data { get; set; } = default!;
 
         /// <summary>
         /// Array with errors.
@@ -1194,7 +1194,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("modules")]
-        public dynamic? Modules { get; set; } = default!;
+        public object? Modules { get; set; } = default!;
 
         /// <summary>
         /// Max message size for GRPC connection in bytes.
@@ -1283,7 +1283,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("value")]
-        public dynamic? Value { get; set; } = default!;
+        public object? Value { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("merge")]
         public Object? Merge { get; set; } = default!;
@@ -1342,7 +1342,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("value")]
-        public dynamic? Value { get; set; } = default!;
+        public object? Value { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("merge")]
         public Object? Merge { get; set; } = default!;
@@ -1881,14 +1881,14 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("vectorIndexConfig")]
-        public dynamic? VectorIndexConfig { get; set; } = default!;
+        public object? VectorIndexConfig { get; set; } = default!;
 
         /// <summary>
         /// Manage how the index should be sharded and distributed in the cluster
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("shardingConfig")]
-        public dynamic? ShardingConfig { get; set; } = default!;
+        public object? ShardingConfig { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("replicationConfig")]
         public ReplicationConfig? ReplicationConfig { get; set; } = default!;
@@ -1911,7 +1911,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("moduleConfig")]
-        public dynamic? ModuleConfig { get; set; } = default!;
+        public object? ModuleConfig { get; set; } = default!;
 
         /// <summary>
         /// Description of the collection for metadata purposes.
@@ -1968,7 +1968,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("moduleConfig")]
-        public dynamic? ModuleConfig { get; set; } = default!;
+        public object? ModuleConfig { get; set; } = default!;
 
         /// <summary>
         /// The name of the property (required). Multiple words should be concatenated in camelCase, e.g. `nameOfAuthor`.
@@ -2047,7 +2047,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("vectorizer")]
-        public dynamic? Vectorizer { get; set; } = default!;
+        public object? Vectorizer { get; set; } = default!;
 
         /// <summary>
         /// Name of the vector index to use, eg. (HNSW)
@@ -2061,7 +2061,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("vectorIndexConfig")]
-        public dynamic? VectorIndexConfig { get; set; } = default!;
+        public object? VectorIndexConfig { get; set; } = default!;
 
         public string ToJson()
         {
@@ -2869,14 +2869,14 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("vectorIndexingStatus")]
-        public dynamic? VectorIndexingStatus { get; set; } = default!;
+        public object? VectorIndexingStatus { get; set; } = default!;
 
         /// <summary>
         /// The status of vector compression/quantization.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("compressed")]
-        public dynamic? Compressed { get; set; } = default!;
+        public object? Compressed { get; set; } = default!;
 
         /// <summary>
         /// The length of the vector indexing queue.
@@ -3128,7 +3128,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("payload")]
-        public dynamic? Payload { get; set; } = default!;
+        public object? Payload { get; set; } = default!;
 
         public string ToJson()
         {
@@ -3211,7 +3211,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("latestConfiguration")]
-        public dynamic? LatestConfiguration { get; set; } = default!;
+        public object? LatestConfiguration { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("latestConfigurationIndex")]
         public string? LatestConfigurationIndex { get; set; } = default!;
@@ -3296,10 +3296,10 @@ namespace Weaviate.Client.Rest.Dto
         public bool? IsVoter { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("leaderId")]
-        public dynamic? LeaderId { get; set; } = default!;
+        public object? LeaderId { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("leaderAddress")]
-        public dynamic? LeaderAddress { get; set; } = default!;
+        public object? LeaderAddress { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("open")]
         public bool? Open { get; set; } = default!;
@@ -3308,7 +3308,7 @@ namespace Weaviate.Client.Rest.Dto
         public bool? Ready { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("candidates")]
-        public dynamic? Candidates { get; set; } = default!;
+        public object? Candidates { get; set; } = default!;
 
         /// <summary>
         /// Weaviate Raft statistics.
@@ -3386,7 +3386,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("schema")]
-        public dynamic? Schema { get; set; } = default!;
+        public object? Schema { get; set; } = default!;
 
         /// <summary>
         /// If using a direct reference, specify the URI to point to the cross-ref here. Should be in the form of weaviate://localhost/&lt;uuid&gt; for the example of a local cross-ref to an object
@@ -3432,7 +3432,7 @@ namespace Weaviate.Client.Rest.Dto
     /// (Response only) Additional meta information about a single object.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class AdditionalProperties : System.Collections.Generic.Dictionary<string, dynamic>
+    public partial class AdditionalProperties : System.Collections.Generic.Dictionary<string, object>
     {
 
         public string ToJson()
@@ -3739,10 +3739,10 @@ namespace Weaviate.Client.Rest.Dto
         public string? Class { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("vectorWeights")]
-        public dynamic? VectorWeights { get; set; } = default!;
+        public object? VectorWeights { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("properties")]
-        public dynamic? Properties { get; set; } = default!;
+        public object? Properties { get; set; } = default!;
 
         /// <summary>
         /// ID of the Object.
@@ -4050,7 +4050,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("settings")]
-        public dynamic? Settings { get; set; } = default!;
+        public object? Settings { get; set; } = default!;
 
         /// <summary>
         /// error message if status == failed
@@ -5134,7 +5134,7 @@ namespace Weaviate.Client.Rest.Dto
         public string? ConcatenatedWord1 { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("singleWords")]
-        public System.Collections.Generic.ICollection<dynamic>? SingleWords { get; set; } = default!;
+        public System.Collections.Generic.ICollection<object>? SingleWords { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("concatenatedVector")]
         public C11yVector? ConcatenatedVector { get; set; } = default!;
@@ -6216,10 +6216,10 @@ namespace Weaviate.Client.Rest.Dto
 
 }
 
-#pragma warning restore 108
-#pragma warning restore 114
-#pragma warning restore 472
-#pragma warning restore 612
+#pragma warning restore  108
+#pragma warning restore  114
+#pragma warning restore  472
+#pragma warning restore  612
 #pragma warning restore 1573
 #pragma warning restore 1591
 #pragma warning restore 8073
