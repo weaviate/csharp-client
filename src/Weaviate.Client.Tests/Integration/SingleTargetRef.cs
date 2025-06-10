@@ -125,7 +125,8 @@ public partial class BasicTests
                 Property.Int("movie_id"),
             ],
             references: [Property.Reference("forMovie", targetCollection: movies.Name)],
-            vectorConfig: NamedVectorConfig.New("default", new Text2VecContextionaryConfig())
+            // vectorConfig: Vector.Text2VecContextionary("default")
+            vectorConfig: Vector.Name("default").With(new VectorizerConfig.Text2VecContextionary())
         );
 
         var moviesData = new[]

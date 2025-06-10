@@ -1,7 +1,50 @@
+using System.Collections;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Models;
+
+public class JsonConverterEmptyCollectionAsNull : JsonConverter<IEnumerable>
+{
+    public override IEnumerable? Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
+    {
+        if (reader.TokenType == JsonTokenType.Null)
+        {
+            return null;
+        }
+
+        // Deserialize to the actual type
+        return (IEnumerable?)JsonSerializer.Deserialize(ref reader, typeToConvert, options);
+    }
+
+    public override void Write(
+        Utf8JsonWriter writer,
+        IEnumerable value,
+        JsonSerializerOptions options
+    )
+    {
+        // If the collection is null or empty, write null
+        if (value == null || !value.Cast<object>().Any())
+        {
+            writer.WriteNullValue();
+        }
+        else
+        {
+            // Serialize normally using the actual type
+            JsonSerializer.Serialize(writer, value, value.GetType(), options);
+        }
+    }
+
+    public override bool CanConvert(Type typeToConvert)
+    {
+        return typeof(IEnumerable).IsAssignableFrom(typeToConvert)
+            && typeToConvert != typeof(string); // Exclude strings
+    }
+}
 
 public class FlexibleStringConverter : JsonConverter<string?>
 {
