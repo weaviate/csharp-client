@@ -42,17 +42,19 @@ public partial class WeaviateGrpcClient : IDisposable
         switch (list.KindCase)
         {
             case ListValue.KindOneofCase.BoolValues:
-                return list.BoolValues.Values;
+                return list.BoolValues.Values.ToArray();
             case ListValue.KindOneofCase.ObjectValues:
-                return list.ObjectValues.Values.Select(v => MakeNonRefs(v)).ToList();
+                return list.ObjectValues.Values.Select(v => MakeNonRefs(v)).ToArray();
             case ListValue.KindOneofCase.DateValues:
-                return list.DateValues.Values; // TODO Parse dates here?
+                return list.DateValues.Values.Select(v => DateTime.Parse(v)).ToArray();
             case ListValue.KindOneofCase.UuidValues:
-                return list.UuidValues.Values.Select(v => Guid.Parse(v)).ToList();
+                return list.UuidValues.Values.Select(v => Guid.Parse(v)).ToArray();
             case ListValue.KindOneofCase.TextValues:
                 return list.TextValues.Values;
-            case ListValue.KindOneofCase.IntValues: // TODO Decode list.IntValues according to docs
-            case ListValue.KindOneofCase.NumberValues: // TODO Decode list.NumberValues according to docs
+            case ListValue.KindOneofCase.IntValues:
+                return list.IntValues.Values.FromByteString<long>().ToArray();
+            case ListValue.KindOneofCase.NumberValues:
+                return list.NumberValues.Values.FromByteString<double>().ToArray();
             case ListValue.KindOneofCase.None:
             default:
                 return new List<object> { };
@@ -105,7 +107,10 @@ public partial class WeaviateGrpcClient : IDisposable
                     eo[r.Key] = r.Value.IntValue;
                     break;
                 case Value.KindOneofCase.GeoValue:
-                    eo[r.Key] = r.Value.GeoValue.ToString();
+                    eo[r.Key] = new Models.GeoCoordinate(
+                        r.Value.GeoValue.Latitude,
+                        r.Value.GeoValue.Longitude
+                    );
                     break;
                 case Value.KindOneofCase.BlobValue:
                     eo[r.Key] = r.Value.BlobValue;

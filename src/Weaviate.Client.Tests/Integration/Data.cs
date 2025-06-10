@@ -41,18 +41,15 @@ public partial class BasicTests
 
         // Assert object exists
         var retrieved = await collectionClient.Query.FetchObjectByID(id);
-        var objects = retrieved.Objects.ToList();
 
         Assert.NotNull(retrieved);
-        Assert.Single(objects);
-        Assert.Equal(id, objects[0].ID);
-        Assert.Equal("TestObject", objects[0].Properties["name"]);
-        Assert.Equal("TestObject", objects[0].As<TestData>()?.Name);
+        Assert.Equal(id, retrieved.ID);
+        Assert.Equal("TestObject", retrieved.Properties["name"]);
+        Assert.Equal("TestObject", retrieved.As<TestData>()?.Name);
 
         // Delete after usage
         await collectionClient.Data.Delete(id);
         retrieved = await collectionClient.Query.FetchObjectByID(id);
-        Assert.NotNull(retrieved.Objects);
-        Assert.Empty(retrieved.Objects);
+        Assert.Null(retrieved);
     }
 }

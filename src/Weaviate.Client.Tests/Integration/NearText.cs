@@ -99,11 +99,10 @@ public partial class BasicTests
         Assert.Equal(2, retrieved.Objects.Count());
         Assert.Equal(2, retrieved.Groups.Count());
 
-        var result = await collectionClient.Query.FetchObjectByID(
+        var obj = await collectionClient.Query.FetchObjectByID(
             guids[3],
             metadata: new MetadataQuery(Vectors: ["default"])
         );
-        var obj = result.Objects.First();
 
         Assert.NotNull(obj);
         Assert.Equal(guids[3], obj.ID);
