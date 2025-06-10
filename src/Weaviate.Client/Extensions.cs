@@ -240,7 +240,7 @@ public static class WeaviateExtensions
         }
     }
 
-    internal static MemoryStream ToStream<T>(this IEnumerable<T> items)
+    internal static Stream ToStream<T>(this IEnumerable<T> items)
         where T : struct
     {
         var stream = new MemoryStream();
@@ -251,7 +251,13 @@ public static class WeaviateExtensions
             {
                 switch (item)
                 {
+                    case long v:
+                        writer.Write(v);
+                        break;
                     case int v:
+                        writer.Write(v);
+                        break;
+                    case double v:
                         writer.Write(v);
                         break;
                     case float v:
@@ -271,7 +277,6 @@ public static class WeaviateExtensions
         where T : struct
     {
         using var stream = items.ToStream();
-
         return Google.Protobuf.ByteString.FromStream(stream);
     }
 
@@ -324,6 +329,7 @@ public static class WeaviateExtensions
         // Check for other common native types
         if (
             underlyingType == typeof(Guid)
+            || underlyingType == typeof(GeoCoordinate)
             || underlyingType == typeof(TimeSpan)
             || underlyingType == typeof(DateTimeOffset)
             || underlyingType == typeof(DateTime)
