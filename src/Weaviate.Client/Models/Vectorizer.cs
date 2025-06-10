@@ -29,6 +29,8 @@ public record Vectorizer
         return new Dictionary<string, object> { [vectorizer.Name] = vectorizer.Configuration };
     }
 
+    public static readonly Vectorizer None = new("none", new { });
+
     public static Vectorizer Text2VecContextionary(bool vectorizeClassName = false)
     {
         return new Vectorizer("text2vec-contextionary", new { VectorizeClassName = false });

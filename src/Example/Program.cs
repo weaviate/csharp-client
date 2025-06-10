@@ -144,8 +144,7 @@ class Program
         {
             var fetched = await collection.Query.FetchObjectByID(id: id2);
             Console.WriteLine(
-                "Cat retrieved via gRPC matches: "
-                    + ((fetched?.Objects.First().ID ?? Guid.Empty) == id2)
+                "Cat retrieved via gRPC matches: " + ((fetched?.ID ?? Guid.Empty) == id2)
             );
         }
 
