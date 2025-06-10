@@ -42,7 +42,7 @@ public partial class BasicTests
         );
 
         // Act
-        var objA1 = objsA1.First();
+        var objA1 = objsA1;
         Assert.NotNull(objA1.Metadata.CreationTime);
         Assert.Equal(DateTimeKind.Utc, objA1.Metadata.CreationTime.Value.Kind);
 
@@ -261,10 +261,7 @@ public partial class BasicTests
         // Act
         var objects = await collection.Query.List(
             filter: Filter.CreationTime.ContainsAny(
-                [
-                    obj2.First().Metadata.CreationTime!.Value,
-                    obj3.First().Metadata.CreationTime!.Value,
-                ]
+                [obj2.Metadata.CreationTime!.Value, obj3.Metadata.CreationTime!.Value]
             )
         );
 
