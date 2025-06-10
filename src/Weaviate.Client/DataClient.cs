@@ -259,6 +259,271 @@ internal class ObjectHelper
 
         return obj;
     }
+
+    internal static V1.BatchObject.Types.Properties BuildBatchProperties<TProps>(TProps data)
+    {
+        var props = new V1.BatchObject.Types.Properties();
+
+        if (data is null)
+        {
+            return props;
+        }
+
+        Google.Protobuf.WellKnownTypes.Struct? nonRefProps = null;
+
+        foreach (var propertyInfo in data.GetType().GetProperties())
+        {
+            if (propertyInfo is null)
+            {
+                continue;
+            }
+
+            if (!propertyInfo.CanRead)
+                continue; // skip non-readable properties
+
+            var value = propertyInfo.GetValue(data);
+
+            if (value is null)
+            {
+                continue;
+            }
+
+            if (propertyInfo.PropertyType.IsArray)
+            {
+                switch (value)
+                {
+                    case bool[] v:
+                        props.BooleanArrayProperties.Add(
+                            new V1.BooleanArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { v },
+                            }
+                        );
+                        break;
+                    case int[] v:
+                        props.IntArrayProperties.Add(
+                            new V1.IntArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { v.Select(Convert.ToInt64) },
+                            }
+                        );
+                        break;
+                    case long[] v:
+                        props.IntArrayProperties.Add(
+                            new V1.IntArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { v },
+                            }
+                        );
+                        break;
+                    case double[] v:
+                        props.NumberArrayProperties.Add(
+                            new V1.NumberArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                ValuesBytes = v.ToByteString(),
+                            }
+                        );
+                        break;
+                    case float[] v:
+                        props.NumberArrayProperties.Add(
+                            new V1.NumberArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                ValuesBytes = v.Select(Convert.ToDouble).ToByteString(),
+                            }
+                        );
+                        break;
+                    case string[] v:
+                        props.TextArrayProperties.Add(
+                            new V1.TextArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { v },
+                            }
+                        );
+                        break;
+                    case Guid[] v:
+                        props.TextArrayProperties.Add(
+                            new V1.TextArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { v.Select(v => v.ToString()) },
+                            }
+                        );
+                        break;
+                    case DateTime[] v:
+                        props.TextArrayProperties.Add(
+                            new V1.TextArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { v.Select(v => v.ToUniversalTime().ToString("o")) },
+                            }
+                        );
+                        break;
+                    case DateTimeOffset[] v:
+                        props.TextArrayProperties.Add(
+                            new V1.TextArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { v.Select(dto => dto.ToUniversalTime().ToString("o")) },
+                            }
+                        );
+                        break;
+
+                    // Handle general IEnumerable<T> (e.g., List<T>, HashSet<T>)
+                    case System.Collections.IEnumerable enumerable
+                        when enumerable is IEnumerable<bool> bools:
+                        props.BooleanArrayProperties.Add(
+                            new V1.BooleanArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { bools },
+                            }
+                        );
+                        continue;
+                    case System.Collections.IEnumerable enumerable
+                        when enumerable is IEnumerable<int> ints:
+                        props.IntArrayProperties.Add(
+                            new V1.IntArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { ints.Select(Convert.ToInt64) },
+                            }
+                        );
+                        continue;
+                    case System.Collections.IEnumerable enumerable
+                        when enumerable is IEnumerable<long> longs:
+                        props.IntArrayProperties.Add(
+                            new V1.IntArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { longs },
+                            }
+                        );
+                        continue;
+                    case System.Collections.IEnumerable enumerable
+                        when enumerable is IEnumerable<double> doubles:
+                        props.NumberArrayProperties.Add(
+                            new V1.NumberArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                ValuesBytes = doubles.ToByteString(),
+                            }
+                        );
+                        continue;
+                    case System.Collections.IEnumerable enumerable
+                        when enumerable is IEnumerable<float> floats:
+                        props.NumberArrayProperties.Add(
+                            new V1.NumberArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                ValuesBytes = floats.Select(f => (double)f).ToByteString(),
+                            }
+                        );
+                        continue;
+                    case System.Collections.IEnumerable enumerable
+                        when enumerable is IEnumerable<string> strings:
+                        props.TextArrayProperties.Add(
+                            new V1.TextArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { strings },
+                            }
+                        );
+                        continue;
+                    case System.Collections.IEnumerable enumerable
+                        when enumerable is IEnumerable<Guid> guids:
+                        props.TextArrayProperties.Add(
+                            new V1.TextArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values = { guids.Select(g => g.ToString()) },
+                            }
+                        );
+                        continue;
+                    case System.Collections.IEnumerable enumerable
+                        when enumerable is IEnumerable<DateTime> dateTimes:
+                        props.TextArrayProperties.Add(
+                            new V1.TextArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values =
+                                {
+                                    dateTimes.Select(dt => dt.ToUniversalTime().ToString("o")),
+                                },
+                            }
+                        );
+                        continue;
+                    case System.Collections.IEnumerable enumerable
+                        when enumerable is IEnumerable<DateTimeOffset> dateTimeOffsets:
+                        props.TextArrayProperties.Add(
+                            new V1.TextArrayProperties()
+                            {
+                                PropName = propertyInfo.Name,
+                                Values =
+                                {
+                                    dateTimeOffsets.Select(dto =>
+                                        dto.ToUniversalTime().ToString("o")
+                                    ),
+                                },
+                            }
+                        );
+                        continue;
+                    default:
+                        throw new WeaviateException(
+                            $"Unsupported array type '{value.GetType().GetElementType()?.Name ?? value.GetType().Name}' for property '{propertyInfo.Name}'. Check the documentation for supported array value types."
+                        );
+                }
+                continue; // Move to the next property after handling array
+            }
+
+            if (propertyInfo.PropertyType.IsNativeType())
+            {
+                nonRefProps ??= new();
+
+                nonRefProps.Fields.Add(propertyInfo.Name, ConvertToProtoValue(value));
+            }
+        }
+
+        props.NonRefProperties = nonRefProps;
+
+        return props;
+    }
+
+    // Helper method to convert C# objects to protobuf Values
+    internal static Value ConvertToProtoValue(object obj)
+    {
+        return obj switch
+        {
+            null => Value.ForNull(),
+            bool b => Value.ForBool(b),
+            int i => Value.ForNumber(i),
+            long l => Value.ForNumber(l),
+            float f => Value.ForNumber(f),
+            double d => Value.ForNumber(d),
+            decimal dec => Value.ForNumber((double)dec),
+            string s => Value.ForString(s),
+            DateTime dt => Value.ForString(dt.ToUniversalTime().ToString("o")),
+            Guid uuid => Value.ForString(uuid.ToString()),
+            GeoCoordinate v => Value.ForStruct(
+                new Struct
+                {
+                    Fields =
+                    {
+                        ["latitude"] = Value.ForNumber(v.Latitude),
+                        ["longitude"] = Value.ForNumber(v.Longitude),
+                    },
+                }
+            ),
+            // Dictionary<string, object> dict => Value.ForStruct(CreateStructFromDictionary(dict)),
+            // IEnumerable<object> enumerable => CreateListValue(enumerable),
+            _ => throw new ArgumentException($"Unsupported type: {obj.GetType()}"),
+        };
+    }
 }
 
 public class DataClient<TData>
@@ -281,63 +546,6 @@ public class DataClient<TData>
                 { "beacon", $"weaviate://localhost/{uuid}" },
             }),
         ];
-    }
-
-    // Helper method to convert C# objects to protobuf Values
-    public static Value ConvertToValue(object obj)
-    {
-        return obj switch
-        {
-            null => Value.ForNull(),
-            bool b => Value.ForBool(b),
-            int i => Value.ForNumber(i),
-            long l => Value.ForNumber(l),
-            float f => Value.ForNumber(f),
-            double d => Value.ForNumber(d),
-            decimal dec => Value.ForNumber((double)dec),
-            string s => Value.ForString(s),
-            DateTime dt => Value.ForString(dt.ToUniversalTime().ToString("o")),
-            Guid uuid => Value.ForString(uuid.ToString()),
-            // Dictionary<string, object> dict => Value.ForStruct(CreateStructFromDictionary(dict)),
-            // IEnumerable<object> enumerable => CreateListValue(enumerable),
-            _ => throw new ArgumentException($"Unsupported type: {obj.GetType()}"),
-        };
-    }
-
-    private V1.BatchObject.Types.Properties BuildBatchProperties<TProps>(TProps data)
-    {
-        var props = new V1.BatchObject.Types.Properties();
-
-        if (data is null)
-        {
-            return props;
-        }
-
-        Google.Protobuf.WellKnownTypes.Struct? nonRefProps = null;
-
-        foreach (var propertyInfo in data.GetType().GetProperties())
-        {
-            if (!propertyInfo.CanRead)
-                continue; // skip non-readable properties
-
-            var value = propertyInfo.GetValue(data);
-
-            if (value is null)
-            {
-                continue;
-            }
-
-            if (propertyInfo.PropertyType.IsNativeType())
-            {
-                nonRefProps ??= new();
-
-                nonRefProps.Fields.Add(propertyInfo.Name, ConvertToValue(value));
-            }
-        }
-
-        props.NonRefProperties = nonRefProps;
-
-        return props;
     }
 
     public async Task<Guid> Insert(
@@ -392,7 +600,7 @@ public class DataClient<TData>
                     {
                         Collection = _collectionName,
                         Uuid = (r.ID ?? Guid.NewGuid()).ToString(),
-                        Properties = BuildBatchProperties(r.Data),
+                        Properties = ObjectHelper.BuildBatchProperties(r.Data),
                     };
 
                     if (r.References?.Any() ?? false)
