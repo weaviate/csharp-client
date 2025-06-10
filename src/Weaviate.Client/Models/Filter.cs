@@ -2,7 +2,7 @@ using Weaviate.V1;
 
 namespace Weaviate.Client.Models;
 
-public record GeoCoordinatesConstraint(float Latitude, float Longitude, float Distance);
+public record GeoCoordinateConstraint(float Latitude, float Longitude, float Distance);
 
 public interface IFilterEquality<T>
 {
@@ -148,7 +148,7 @@ public partial record Filter
             value switch
             {
                 bool v => f => f.ValueBoolean = v,
-                GeoCoordinatesConstraint v => f =>
+                GeoCoordinateConstraint v => f =>
                     f.ValueGeo = new GeoCoordinatesFilter
                     {
                         Distance = v.Distance,
@@ -167,12 +167,15 @@ public partial record Filter
                     },
                 IEnumerable<bool> v => f =>
                     f.ValueBooleanArray = new BooleanArray { Values = { v } },
+                IEnumerable<int> v => f =>
+                    f.ValueIntArray = new IntArray { Values = { v.Select(Convert.ToInt64) } },
                 IEnumerable<long> v => f => f.ValueIntArray = new IntArray { Values = { v } },
                 IEnumerable<double> v => f =>
                     f.ValueNumberArray = new NumberArray { Values = { v } },
                 IEnumerable<string> v => f => f.ValueTextArray = new TextArray { Values = { v } },
                 IEnumerable<Guid> v => f =>
                     f.ValueTextArray = new TextArray { Values = { v.Select(g => g.ToString()) } },
+                // TODO Perhaps add a case handling generic IEnumerable
                 _ => throw new WeaviateException(
                     $"Unsupported type '{typeof(T).Name}' for filter value. Check the documentation for supported filter value types."
                 ),
@@ -234,7 +237,7 @@ public record PropertyFilter : Filter
     public Filter LessThanEqual<T>(T value) =>
         WithOperator(Filters.Types.Operator.LessThanEqual).WithValue(value);
 
-    public Filter WithinGeoRange(GeoCoordinatesConstraint value) =>
+    public Filter WithinGeoRange(GeoCoordinateConstraint value) =>
         WithOperator(Filters.Types.Operator.WithinGeoRange).WithValue(value);
 
     public Filter Like<T>(T value) => WithOperator(Filters.Types.Operator.Like).WithValue(value);

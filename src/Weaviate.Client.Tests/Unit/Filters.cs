@@ -12,7 +12,7 @@ public partial class UnitTests
         new[] { "Equal", "NotEqual", "ContainsAny" },
         new[] { "GreaterThan", "GreaterThanEqual", "LessThan", "LessThanEqual" }
     )]
-    public async Task TypeSupportedOperations(
+    public void TypeSupportedOperations(
         Type t,
         string[] expectedMethodList,
         string[] unexpectedMethodList
@@ -32,12 +32,10 @@ public partial class UnitTests
         // Assert
         Assert.Subset(actualMethods, methods);
         Assert.Empty(actualMethods.Intersect(unexpectedMethodList));
-
-        await Task.Yield();
     }
 
     [Fact]
-    public void FilterByReferenceDoesNotChangePreviousFilter()
+    public void FilterByReferencChainingChangePreviousFilterBecauseRefs()
     {
         // Arrange
         var f1 = Filter.Reference("ref");

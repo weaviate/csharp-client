@@ -42,7 +42,7 @@ public partial class BasicTests
         );
 
         // Act
-        var objA1 = objsA1.First();
+        var objA1 = objsA1;
         Assert.NotNull(objA1.Metadata.CreationTime);
         Assert.Equal(DateTimeKind.Utc, objA1.Metadata.CreationTime.Value.Kind);
 
@@ -261,10 +261,7 @@ public partial class BasicTests
         // Act
         var objects = await collection.Query.List(
             filter: Filter.CreationTime.ContainsAny(
-                [
-                    obj2.First().Metadata.CreationTime!.Value,
-                    obj3.First().Metadata.CreationTime!.Value,
-                ]
+                [obj2.Metadata.CreationTime!.Value, obj3.Metadata.CreationTime!.Value]
             )
         );
 
@@ -275,15 +272,6 @@ public partial class BasicTests
         var expectedUuids = new HashSet<Guid>([uuid2, uuid3]);
         Assert.True(objs.All(obj => obj.ID != null && expectedUuids.Contains(obj.ID.Value)));
     }
-
-    public static Dictionary<string, Filter> Cases =>
-        new()
-        {
-            ["IdEquals"] = Filter.ID.Equal(_reusableUuids[0]),
-            ["IdContainsAny"] = Filter.ID.ContainsAny([_reusableUuids[0]]),
-            ["IdNotEqual"] = Filter.ID.NotEqual(_reusableUuids[1]),
-            ["IdWithProperty(_id)Equal"] = Filter.Property("_id").Equal(_reusableUuids[0]),
-        };
 
     [Theory]
     [ClassData(typeof(DatasetTimeFilter))]
@@ -323,5 +311,180 @@ public partial class BasicTests
             results.Select(result => allObjectsList[result].ID!.Value)
         );
         Assert.True(objs.All(obj => obj.ID != null && expectedUuids.Contains(obj.ID.Value)));
+    }
+
+    [Theory]
+    [ClassData(typeof(DatasetFilterArrayTypes))]
+    public async Task FilterArrayTypes(string key)
+    {
+        (Filter filter, int[] results) = DatasetFilterArrayTypes.Cases[key];
+
+        // Arrange
+        var collection = await CollectionFactory(
+            vectorConfig: new Dictionary<string, VectorConfig>
+            {
+                {
+                    "default",
+                    new VectorConfig { Vectorizer = Vectorizer.None, VectorIndexType = "hnsw" }
+                },
+            },
+            properties:
+            [
+                Property.TextArray("texts"),
+                Property.IntArray("ints"),
+                Property.NumberArray("floats"),
+            ]
+        );
+
+        var uuids = new[]
+        {
+            await collection.Data.Insert(
+                new
+                {
+                    texts = new[] { "an", "apple" },
+                    ints = new[] { 1, 2 },
+                    floats = new[] { 1.0, 2.0 },
+                }
+            ),
+            await collection.Data.Insert(
+                new
+                {
+                    texts = new[] { "a", "banana" },
+                    ints = new[] { 2, 3 },
+                    floats = new[] { 2.0, 3.0 },
+                }
+            ),
+            await collection.Data.Insert(
+                new
+                {
+                    texts = new[] { "a", "text" },
+                    ints = new[] { 4, 5 },
+                    floats = new[] { 4.0, 5.0 },
+                }
+            ),
+        };
+
+        // Act
+        var objects = await collection.Query.List(filter: filter);
+
+        // Assert
+        Assert.Equal(results.Length, objects.Count());
+
+        var expectedUuids = results.Select(result => uuids[result]).ToHashSet();
+        Assert.True(objects.All(obj => expectedUuids.Contains(obj.ID!.Value)));
+    }
+
+    [Theory]
+    [ClassData(typeof(DatasetFilterContains))]
+    public async Task FilterContains(string test)
+    {
+        (Filter filter, int[] results) = DatasetFilterContains.Cases[test];
+
+        // Arrange
+        var collection = await CollectionFactory(
+            vectorConfig: new Dictionary<string, VectorConfig>
+            {
+                {
+                    "default",
+                    new VectorConfig { Vectorizer = Vectorizer.None, VectorIndexType = "hnsw" }
+                },
+            },
+            properties:
+            [
+                Property.Text("text"),
+                Property.TextArray("texts"),
+                Property.Int("int"),
+                Property.IntArray("ints"),
+                Property.Number("float"),
+                Property.NumberArray("floats"),
+                Property.Bool("bool"),
+                Property.BoolArray("bools"),
+                Property.DateArray("dates"),
+                Property.Date("date"),
+                Property.UuidArray("uuids"),
+                Property.Uuid("uuid"),
+            ]
+        );
+
+        var uuids = new[]
+        {
+            await collection.Data.Insert(
+                new
+                {
+                    text = "this is a test",
+                    texts = new[] { "this", "is", "a", "test" },
+                    @int = 1,
+                    ints = new[] { 1, 2, 4 },
+                    @float = 0.5,
+                    floats = new[] { 0.4, 0.9, 2.0 },
+                    @bool = true,
+                    bools = new[] { true, false },
+                    dates = new[] { NOW, LATER, MUCH_LATER },
+                    date = NOW,
+                    uuids = new[] { UUID1, UUID3, UUID2 },
+                    uuid = UUID1,
+                },
+                id: UUID1
+            ),
+            await collection.Data.Insert(
+                new
+                {
+                    text = "this is not a real test",
+                    texts = new[] { "this", "is", "not", "a", "real", "test" },
+                    @int = 1,
+                    ints = new[] { 5, 6, 9 },
+                    @float = 0.3,
+                    floats = new[] { 0.1, 0.7, 2.0 },
+                    @bool = true,
+                    bools = new[] { false, false },
+                    dates = new[] { NOW, NOW, MUCH_LATER },
+                    date = LATER,
+                    uuids = new[] { UUID2, UUID2 },
+                    uuid = UUID2,
+                },
+                id: UUID2
+            ),
+            await collection.Data.Insert(
+                new
+                {
+                    text = "real deal",
+                    texts = new[] { "real", "deal" },
+                    @int = 3,
+                    ints = new int[0],
+                    floats = new double[0],
+                    @bool = false,
+                    bools = new bool[0],
+                    dates = new DateTime[0],
+                    uuids = new Guid[0],
+                },
+                id: UUID3
+            ),
+            await collection.Data.Insert(
+                new
+                {
+                    text = "not real deal",
+                    texts = new[] { "not", "real", "deal" },
+                    @int = 4,
+                    ints = new[] { 4 },
+                    @float = 8.0,
+                    floats = new[] { 0.7 },
+                    @bool = true,
+                    bools = new[] { true },
+                    dates = new[] { MUCH_LATER },
+                    date = MUCH_LATER,
+                    uuids = new[] { UUID1, UUID2 },
+                    uuid = UUID2,
+                }
+            ),
+        };
+
+        // Act
+        var objects = await collection.Query.List(filter: filter);
+
+        // Assert
+        Assert.Equal(results.Length, objects.Count());
+
+        var expectedUuids = results.Select(result => uuids[result]).ToHashSet();
+        Assert.True(objects.All(obj => expectedUuids.Contains(obj.ID!.Value)));
     }
 }

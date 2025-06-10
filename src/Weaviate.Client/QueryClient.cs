@@ -33,18 +33,20 @@ public class QueryClient<TData>
         );
     }
 
-    public async Task<WeaviateResult> FetchObjectByID(
+    public async Task<WeaviateObject?> FetchObjectByID(
         Guid id,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
     )
     {
-        return await _client.GrpcClient.FetchObjects(
-            _collectionName,
-            filter: Filter.WithID(id),
-            reference: references,
-            metadata: metadata
-        );
+        return (
+            await _client.GrpcClient.FetchObjects(
+                _collectionName,
+                filter: Filter.WithID(id),
+                reference: references,
+                metadata: metadata
+            )
+        ).SingleOrDefault();
     }
 
     public async Task<WeaviateResult> FetchObjectsByIDs(

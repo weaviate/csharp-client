@@ -51,13 +51,15 @@ public partial record WeaviateObject
     public NamedVectors Vectors { get; set; } = new NamedVectors();
 
     public T? As<T>()
+        where T : new()
     {
-        return UnmarshallProperties<T>(Properties);
+        return ObjectHelper.UnmarshallProperties<T>(Properties);
     }
 
     public void Do<T>(Action<T> action)
+        where T : new()
     {
-        var data = UnmarshallProperties<T>(Properties);
+        var data = As<T>();
         if (data is not null)
         {
             action(data);
@@ -70,8 +72,9 @@ public partial record WeaviateObject
     }
 
     public TResult? Get<TSource, TResult>(Func<TSource, TResult> func)
+        where TSource : new()
     {
-        var data = UnmarshallProperties<TSource>(Properties);
+        var data = ObjectHelper.UnmarshallProperties<TSource>(Properties);
         if (data is not null)
         {
             return func(data);
@@ -82,62 +85,5 @@ public partial record WeaviateObject
     public TResult? Get<TResult>(Func<dynamic, TResult> func)
     {
         return Get<ExpandoObject, TResult>(func);
-    }
-
-    internal static T? UnmarshallProperties<T>(IDictionary<string, object?> dict)
-    {
-        if (dict == null)
-            throw new ArgumentNullException(nameof(dict));
-
-        // Create an instance of T using the default constructor
-        var props = Activator.CreateInstance<T>();
-
-        if (props is IDictionary<string, object?> target)
-        {
-            foreach (var kvp in dict)
-            {
-                if (kvp.Value is IDictionary<string, object?> subDict)
-                {
-                    object? v = UnmarshallProperties<dynamic>(subDict);
-
-                    target[kvp.Key.Capitalize()] = v ?? subDict;
-                }
-                else
-                {
-                    target[kvp.Key.Capitalize()] = kvp.Value;
-                }
-            }
-            return props;
-        }
-
-        var type = typeof(T);
-        var properties = type.GetProperties();
-
-        foreach (var property in properties)
-        {
-            var matchingKey = dict.Keys.FirstOrDefault(k =>
-                string.Equals(k, property.Name, StringComparison.OrdinalIgnoreCase)
-            );
-
-            if (matchingKey != null)
-            {
-                var value = dict[matchingKey];
-                if (value != null)
-                {
-                    try
-                    {
-                        var convertedValue = Convert.ChangeType(value, property.PropertyType);
-                        property.SetValue(props, convertedValue);
-                    }
-                    catch
-                    {
-                        // Skip if conversion fails
-                        continue;
-                    }
-                }
-            }
-        }
-
-        return props;
     }
 }
