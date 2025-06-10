@@ -1,4 +1,5 @@
 using Weaviate.Client.Models;
+using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
@@ -43,7 +44,7 @@ public partial class BasicTests
 
         // Act
         var objA1 = objsA1;
-        Assert.NotNull(objA1.Metadata.CreationTime);
+        Assert.NotNull(objA1?.Metadata.CreationTime);
         Assert.Equal(DateTimeKind.Utc, objA1.Metadata.CreationTime.Value.Kind);
 
         var filter = Filter.CreationTime.Equal(objA1.Metadata.CreationTime.Value);
@@ -261,7 +262,7 @@ public partial class BasicTests
         // Act
         var objects = await collection.Query.List(
             filter: Filter.CreationTime.ContainsAny(
-                [obj2.Metadata.CreationTime!.Value, obj3.Metadata.CreationTime!.Value]
+                [obj2!.Metadata.CreationTime!.Value, obj3!.Metadata.CreationTime!.Value]
             )
         );
 
@@ -321,7 +322,9 @@ public partial class BasicTests
 
         // Arrange
         var collection = await CollectionFactory(
-            vectorConfig: NamedVectorConfig.None(),
+            // vectorConfig: Vector.Name("default").With(new VectorizerConfig.None()),
+            // vectorConfig: Vector.Name("default"),
+            vectorConfig: Vector.None("default"),
             properties:
             [
                 Property.TextArray("texts"),
@@ -376,7 +379,7 @@ public partial class BasicTests
 
         // Arrange
         var collection = await CollectionFactory(
-            vectorConfig: NamedVectorConfig.None(),
+            vectorConfig: Vector.None(Vector.DefaultVectorName),
             properties:
             [
                 Property.Text("text"),

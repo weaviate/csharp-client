@@ -57,7 +57,7 @@ public partial class BasicTests
         // 3. Retrieve the object and confirm all properties match
         var obj = await c.Query.FetchObjectByID(id);
 
-        var concreteObj = obj.As<TestProperties>();
+        var concreteObj = obj?.As<TestProperties>();
 
         Assert.Equivalent(testData, concreteObj);
     }

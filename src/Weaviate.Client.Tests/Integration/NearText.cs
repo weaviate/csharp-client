@@ -13,7 +13,11 @@ public partial class BasicTests
             null,
             "Test collection description",
             [Property.Text("value")],
-            vectorConfig: NamedVectorConfig.New("default", new Text2VecContextionaryConfig())
+            // vectorConfig: Vector.Text2VecContextionary("default", new VectorizerConfig.Text2VecContextionary())
+            vectorConfig: Vector
+                .Name("default")
+                .With(new VectorizerConfig.Text2VecContextionary())
+                .From<TestDataValue>(t => t.Value)
         );
 
         string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
@@ -29,7 +33,8 @@ public partial class BasicTests
             moveTo: new Move(1.0f, objects: guids[0]),
             moveAway: new Move(0.5f, concepts: concepts),
             fields: ["value"],
-            metadata: new MetadataQuery(Vectors: new HashSet<string>(["default"]))
+            // metadata: new MetadataQuery("default")
+            metadata: new MetadataQuery("default")
         );
         var retrieved = retriever.Objects.ToList();
 
@@ -50,7 +55,8 @@ public partial class BasicTests
             "",
             "Test collection description",
             [Property.Text("value")],
-            vectorConfig: NamedVectorConfig.New("default", new Text2VecContextionaryConfig())
+            //vectorConfig: Vector.Text2VecContextionary("default", new())
+            vectorConfig: Vector.Name("default").With(new VectorizerConfig.Text2VecContextionary())
         );
 
         string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
@@ -68,7 +74,7 @@ public partial class BasicTests
                 NumberOfGroups = 2,
                 ObjectsPerGroup = 100,
             },
-            metadata: new MetadataQuery(Vectors: ["default"])
+            metadata: new MetadataQuery("default")
         );
 
         // Assert
@@ -82,7 +88,7 @@ public partial class BasicTests
 
         var obj = await collectionClient.Query.FetchObjectByID(
             guids[3],
-            metadata: new MetadataQuery(Vectors: ["default"])
+            metadata: new MetadataQuery("default")
         );
 
         Assert.NotNull(obj);

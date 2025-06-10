@@ -2,7 +2,7 @@ using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Models;
 
-public record VectorConfig
+public record VectorConfig(string Name)
 {
     /// <summary>
     /// Vector-index config, that is specific to the type of index selected in vectorIndexType.
