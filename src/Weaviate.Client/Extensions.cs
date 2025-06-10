@@ -97,23 +97,11 @@ public static class WeaviateExtensions
 
     internal static Collection ToModel(this Rest.Dto.Class collection)
     {
-        static VectorIndexConfig vicFactory(string type, object? config)
-        {
-            return type switch
-            {
-                "hnsw" => new VectorIndexConfigHNSW(),
-                "flat" => new VectorIndexConfigFlat(),
-                "dynamic" => new VectorIndexConfigDynamic(),
-                _ => VectorIndexConfig.Default,
-            };
-        }
-
-        var tf = (Rest.Dto.VectorConfig v) =>
+        var makeVectorConfig = (string name, Rest.Dto.VectorConfig v) =>
         {
             var vectorizer = v.Vectorizer;
-            var vic = vicFactory(v.VectorIndexType ?? "hnsw", v.VectorIndexConfig);
-
-            var vc = new VectorConfig() { VectorIndexConfig = vic };
+            var vic = VectorIndexConfig.Factory(v.VectorIndexType ?? "hnsw", v.VectorIndexConfig);
+            VectorizerConfig? vc = null;
 
             if (vectorizer is Dictionary<string, object> vecAsDict)
             {
@@ -121,12 +109,7 @@ public static class WeaviateExtensions
                 {
                     var key = vecAsDict.Keys.First();
 
-                    vc.Vectorizer = VectorizerConfigFactory.Create(key, vecAsDict.Values.First());
-                }
-                else
-                {
-                    // TODO Throw Exception for unexpected scenario?
-                    vc.Vectorizer = new NoneConfig();
+                    vc = VectorizerConfigFactory.Create(key, vecAsDict.Values.First());
                 }
             }
             else if (vectorizer is JsonElement vecAsJson)
@@ -137,23 +120,18 @@ public static class WeaviateExtensions
                 {
                     var item = vec.First();
 
-                    vc.Vectorizer = VectorizerConfigFactory.Create(item.Key, item.Value);
-                }
-                else
-                {
-                    // TODO Throw Exception for unexpected scenario?
-                    vc.Vectorizer = new NoneConfig();
+                    vc = VectorizerConfigFactory.Create(item.Key, item.Value);
                 }
             }
 
-            return vc;
+            return new VectorConfig(name) { Vectorizer = vc, VectorIndexConfig = vic };
         };
 
         var vectorConfig =
             collection
                 .VectorConfig?.Select(e => new KeyValuePair<string, VectorConfig>(
                     e.Key,
-                    tf(e.Value)
+                    makeVectorConfig(e.Key, e.Value)
                 ))
                 .ToDictionary() ?? new Dictionary<string, VectorConfig>();
 

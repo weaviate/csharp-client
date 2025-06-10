@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Weaviate.Client.Models;
+using Weaviate.Client.Models.Vectorizers;
 
 [assembly: CaptureConsole]
 [assembly: CaptureTrace]
@@ -64,7 +65,7 @@ public partial class BasicTests : IAsyncDisposable
         string? description = null,
         IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
-        NamedVectorConfigList? vectorConfig = null,
+        VectorConfigList? vectorConfig = null,
         InvertedIndexConfig? invertedIndexConfig = null
     )
     {
@@ -86,7 +87,15 @@ public partial class BasicTests : IAsyncDisposable
 
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        vectorConfig ??= NamedVectorConfig.None("default");
+        vectorConfig ??= Vector.None("default");
+
+        // Alternative #1
+        // Specify VectorizerConfig.None
+        vectorConfig ??= Vector.Name("default").With(new VectorizerConfig.None());
+
+        // Alternative #2
+        // Default is VectorizerConfig.None
+        vectorConfig ??= Vector.Name("default");
 
         references ??= [];
 
@@ -113,7 +122,7 @@ public partial class BasicTests : IAsyncDisposable
         string? description = null,
         IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
-        NamedVectorConfigList? vectorConfig = null,
+        VectorConfigList? vectorConfig = null,
         InvertedIndexConfig? invertedIndexConfig = null
     )
     {
