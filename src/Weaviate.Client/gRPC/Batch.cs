@@ -8,7 +8,10 @@ public partial class WeaviateGrpcClient
     {
         var request = new BatchObjectsRequest { Objects = { objects } };
 
-        BatchObjectsReply reply = await _grpcClient.BatchObjectsAsync(request);
+        BatchObjectsReply reply = await _grpcClient.BatchObjectsAsync(
+            request,
+            headers: _defaultHeaders
+        );
 
         return reply;
     }
