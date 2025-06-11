@@ -87,13 +87,6 @@ public partial class BasicTests : IAsyncDisposable
 
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        vectorConfig ??= Vector.None("default");
-
-        // Alternative #1
-        // Specify VectorizerConfig.None
-        vectorConfig ??= Vector.Name("default").With(new VectorizerConfig.None());
-
-        // Alternative #2
         // Default is VectorizerConfig.None
         vectorConfig ??= Vector.Name("default");
 

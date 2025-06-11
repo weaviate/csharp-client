@@ -322,9 +322,7 @@ public partial class BasicTests
 
         // Arrange
         var collection = await CollectionFactory(
-            // vectorConfig: Vector.Name("default").With(new VectorizerConfig.None()),
-            // vectorConfig: Vector.Name("default"),
-            vectorConfig: Vector.None("default"),
+            vectorConfig: Vector.Name("default"),
             properties:
             [
                 Property.TextArray("texts"),
@@ -379,7 +377,7 @@ public partial class BasicTests
 
         // Arrange
         var collection = await CollectionFactory(
-            vectorConfig: Vector.None(Vector.DefaultVectorName),
+            vectorConfig: Vector.Name(Vector.DefaultVectorName),
             properties:
             [
                 Property.Text("text"),
