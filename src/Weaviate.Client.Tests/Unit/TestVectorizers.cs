@@ -33,7 +33,7 @@ public partial class UnitTests
     }
 
     [Fact]
-    public void Test_NamedVectorConfig_None_Has_Null_Properties()
+    public void Test_NamedVectorConfig_None_Has_No_Properties()
     {
         // Arrange
         var vc = Vector.Name(Vector.DefaultVectorName).With(new VectorizerConfig.None()).Build();
@@ -84,11 +84,11 @@ public partial class UnitTests
             {
                 PropertyNameCaseInsensitive = true, // Case-insensitive property matching
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Convert JSON names to PascalCase (C# convention)
-                WriteIndented = true, // For readability
+                WriteIndented = false, // For readability
             }
         );
 
         // Assert
-        Assert.Contains("properties", json);
+        Assert.Contains("\"properties\":[\"name\"]", json);
     }
 }

@@ -10,7 +10,7 @@ public partial class BasicTests
     readonly Guid TO_UUID2 = new Guid("577887c1-4c6b-5594-aa62-f0c17883d9cf");
 
     [Fact]
-    public async Task SingleTargetReference()
+    public async Task Test_SingleTargetReference_Basic()
     {
         // Arrange
 
@@ -97,7 +97,7 @@ public partial class BasicTests
     }
 
     [Fact]
-    public async Task SingleTargetReference_MovieReviews()
+    public async Task Test_SingleTargetReference_Complex()
     {
         // Arrange
         var movies = await CollectionFactory<dynamic>(
