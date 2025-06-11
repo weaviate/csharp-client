@@ -156,14 +156,15 @@ public class WeaviateRestClient : IDisposable
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection create");
 
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>();
+        var json = await response.Content.ReadAsStringAsync();
+        var contents = Dto.Class.FromJson(json);
 
         if (contents is null)
         {
             throw new WeaviateRestException();
         }
 
-        return collection;
+        return contents;
     }
 
     internal async Task<Dto.Object> ObjectInsert(string collectionName, Dto.Object data)

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Weaviate.Client.Models;
+using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
@@ -9,7 +10,7 @@ public partial class BasicTests
     readonly Guid TO_UUID2 = new Guid("577887c1-4c6b-5594-aa62-f0c17883d9cf");
 
     [Fact]
-    public async Task SingleTargetReference()
+    public async Task Test_SingleTargetReference_Basic()
     {
         // Arrange
 
@@ -96,7 +97,7 @@ public partial class BasicTests
     }
 
     [Fact]
-    public async Task SingleTargetReference_MovieReviews()
+    public async Task Test_SingleTargetReference_Complex()
     {
         // Arrange
         var movies = await CollectionFactory<dynamic>(
@@ -124,17 +125,7 @@ public partial class BasicTests
                 Property.Int("movie_id"),
             ],
             references: [Property.Reference("forMovie", targetCollection: movies.Name)],
-            vectorConfig: new Dictionary<string, VectorConfig>
-            {
-                {
-                    "default",
-                    new VectorConfig
-                    {
-                        Vectorizer = Vectorizer.Text2VecContextionary(),
-                        VectorIndexType = "hnsw",
-                    }
-                },
-            }
+            vectorConfig: Vector.Name("default").With(new VectorizerConfig.Text2VecContextionary())
         );
 
         var moviesData = new[]
