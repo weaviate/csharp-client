@@ -32,7 +32,6 @@ public partial class BasicTests
             moveTo: new Move(1.0f, objects: guids[0]),
             moveAway: new Move(0.5f, concepts: concepts),
             fields: ["value"],
-            // metadata: new MetadataQuery("default")
             metadata: new MetadataQuery("default")
         );
         var retrieved = retriever.Objects.ToList();
