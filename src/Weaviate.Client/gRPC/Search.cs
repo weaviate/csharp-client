@@ -346,7 +346,7 @@ public partial class WeaviateGrpcClient
             reference: reference
         );
 
-        SearchReply? reply = await _grpcClient.SearchAsync(req);
+        SearchReply? reply = await _grpcClient.SearchAsync(req, headers: _defaultHeaders);
 
         return BuildResult(collection, reply);
     }
@@ -373,7 +373,7 @@ public partial class WeaviateGrpcClient
 
         BuildNearVector(vector, distance, certainty, request);
 
-        SearchReply? reply = await _grpcClient.SearchAsync(request);
+        SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
         return BuildResult(collection, reply);
     }
@@ -402,7 +402,7 @@ public partial class WeaviateGrpcClient
 
         BuildNearText(query, distance, certainty, request, moveTo, moveAway);
 
-        SearchReply? reply = await _grpcClient.SearchAsync(request);
+        SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
         return BuildResult(collection, reply);
     }
@@ -431,7 +431,7 @@ public partial class WeaviateGrpcClient
 
         BuildNearVector(vector, distance, certainty, request);
 
-        SearchReply? reply = await _grpcClient.SearchAsync(request);
+        SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
         return BuildGroupByResult(collection, reply);
     }
@@ -460,7 +460,7 @@ public partial class WeaviateGrpcClient
 
         BuildNearText(query, distance, certainty, request, moveTo: null, moveAway: null);
 
-        SearchReply? reply = await _grpcClient.SearchAsync(request);
+        SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
         return BuildGroupByResult(collection, reply);
     }
@@ -486,7 +486,7 @@ public partial class WeaviateGrpcClient
 
         BuildBM25(request, query, properties: searchFields);
 
-        SearchReply? reply = await _grpcClient.SearchAsync(request);
+        SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
         return BuildResult(collection, reply);
     }
