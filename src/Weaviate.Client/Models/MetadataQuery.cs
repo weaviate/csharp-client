@@ -14,25 +14,28 @@ public enum MetadataOptions
     IsConsistent = 1 << 7, // 2^7
 }
 
-public record MetadataQuery(
-    MetadataOptions Options = MetadataOptions.None,
-    HashSet<string>? Vectors = null
-)
+public record MetadataQuery
 {
+    public MetadataQuery(params string[] vectors)
+        : this(MetadataOptions.None, vectors) { }
+
+    public MetadataQuery(MetadataOptions options = MetadataOptions.None, params string[] vectors)
+    {
+        _vectors = new(vectors);
+        Options = options;
+    }
+
     // Implicit conversion from MetadataOptions to MetadataQuery
-    public static implicit operator MetadataQuery(MetadataOptions options) =>
-        new MetadataQuery(options);
+    public static implicit operator MetadataQuery(MetadataOptions options) => new(options);
 
     // Implicit conversion from HashSet<string> to MetadataQuery
     public static implicit operator MetadataQuery(string[] vectors) =>
-        new MetadataQuery(MetadataOptions.None, [.. vectors]);
+        new(MetadataOptions.None, vectors);
 
     // Implicit conversion from (MetadataOptions, HashSet<string>) to MetadataQuery
     public static implicit operator MetadataQuery(
         (MetadataOptions options, string[] vectors) metadata
-    ) => new MetadataQuery(metadata.options, [.. metadata.vectors]);
-
-    readonly HashSet<string> _vectors = [.. Vectors ?? new HashSet<string>()];
+    ) => new(metadata.options, metadata.vectors);
 
     public bool Vector => (Options & MetadataOptions.Vector) != 0;
     public bool CreationTime => (Options & MetadataOptions.CreationTime) != 0;
@@ -43,5 +46,8 @@ public record MetadataQuery(
     public bool ExplainScore => (Options & MetadataOptions.ExplainScore) != 0;
     public bool IsConsistent => (Options & MetadataOptions.IsConsistent) != 0;
 
+    readonly HashSet<string> _vectors = new HashSet<string>();
     public HashSet<string> Vectors => _vectors;
+
+    public MetadataOptions Options { get; }
 }

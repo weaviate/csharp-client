@@ -1,5 +1,4 @@
 using System.Dynamic;
-using System.Text.Json;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests;
