@@ -1,4 +1,5 @@
 using Weaviate.Client.Models;
+using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
@@ -9,20 +10,13 @@ public partial class BasicTests
     {
         // Arrange
         var collectionClient = await CollectionFactory<TestDataValue>(
-            "",
+            null,
             "Test collection description",
             [Property.Text("value")],
-            vectorConfig: new Dictionary<string, VectorConfig>
-            {
-                {
-                    "default",
-                    new VectorConfig
-                    {
-                        Vectorizer = Vectorizer.Text2VecContextionary(),
-                        VectorIndexType = "hnsw",
-                    }
-                },
-            }
+            vectorConfig: Vector
+                .Name("default")
+                .With(new VectorizerConfig.Text2VecContextionary())
+                .From<TestDataValue>(t => t.Value)
         );
 
         string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
@@ -38,7 +32,7 @@ public partial class BasicTests
             moveTo: new Move(1.0f, objects: guids[0]),
             moveAway: new Move(0.5f, concepts: concepts),
             fields: ["value"],
-            metadata: new MetadataQuery(Vectors: new HashSet<string>(["default"]))
+            metadata: new MetadataQuery("default")
         );
         var retrieved = retriever.Objects.ToList();
 
@@ -52,24 +46,14 @@ public partial class BasicTests
     }
 
     [Fact]
-    public async Task NearTextGroupBySearch()
+    public async Task Test_Search_NearText_GroupBy()
     {
         // Arrange
         CollectionClient<dynamic>? collectionClient = await CollectionFactory(
             "",
             "Test collection description",
             [Property.Text("value")],
-            vectorConfig: new Dictionary<string, VectorConfig>
-            {
-                {
-                    "default",
-                    new VectorConfig
-                    {
-                        Vectorizer = Vectorizer.Text2VecContextionary(),
-                        VectorIndexType = "hnsw",
-                    }
-                },
-            }
+            vectorConfig: Vector.Name("default").With(new VectorizerConfig.Text2VecContextionary())
         );
 
         string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
@@ -87,7 +71,7 @@ public partial class BasicTests
                 NumberOfGroups = 2,
                 ObjectsPerGroup = 100,
             },
-            metadata: new MetadataQuery(Vectors: ["default"])
+            metadata: new MetadataQuery("default")
         );
 
         // Assert
@@ -101,7 +85,7 @@ public partial class BasicTests
 
         var obj = await collectionClient.Query.FetchObjectByID(
             guids[3],
-            metadata: new MetadataQuery(Vectors: ["default"])
+            metadata: new MetadataQuery("default")
         );
 
         Assert.NotNull(obj);

@@ -61,7 +61,7 @@
       "requiredPropertiesMustBeDefined": true,
       "dateType": "System.DateTimeOffset",
       "jsonConverters": null,
-      "anyType": "dynamic",
+      "anyType": "object",
       "dateTimeType": "System.DateTimeOffset",
       "timeType": "System.TimeSpan",
       "timeSpanType": "System.TimeSpan",
