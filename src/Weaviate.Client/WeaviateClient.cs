@@ -34,7 +34,7 @@ public sealed record ClientConfiguration(
             Path = "",
         }.Uri;
 
-    public WeaviateClient Client() => new(this);
+    public WeaviateClient Client(HttpClient? baseClient = null) => new(this, baseClient);
 };
 
 public class WeaviateClient : IDisposable
@@ -62,6 +62,13 @@ public class WeaviateClient : IDisposable
 
     public CollectionsClient Collections { get; }
 
+    static bool IsWeaviateDomain(string url)
+    {
+        return url.ToLower().Contains("weaviate.io")
+            || url.ToLower().Contains("semi.technology")
+            || url.ToLower().Contains("weaviate.cloud");
+    }
+
     public WeaviateClient(ClientConfiguration? configuration = null, HttpClient? httpClient = null)
     {
         Configuration = configuration ?? DefaultOptions;
@@ -77,20 +84,13 @@ public class WeaviateClient : IDisposable
                 );
         }
 
-        if (Configuration.AddEmbeddingHeader)
+        var wcdHost =
+            (Configuration.AddEmbeddingHeader && IsWeaviateDomain(Configuration.RestAddress))
+                ? Configuration.RestAddress
+                : null;
+
+        if (wcdHost != null)
         {
-            static bool IsWeaviateDomain(string url)
-            {
-                return url.ToLower().Contains("weaviate.io")
-                    || url.ToLower().Contains("semi.technology")
-                    || url.ToLower().Contains("weaviate.cloud");
-            }
-
-            if (!IsWeaviateDomain(Configuration.RestAddress))
-            {
-                return;
-            }
-
             httpClient.DefaultRequestHeaders.Add(
                 "X-Weaviate-Cluster-URL",
                 Configuration.RestUri.ToString()
@@ -98,7 +98,7 @@ public class WeaviateClient : IDisposable
         }
 
         RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
-        GrpcClient = new WeaviateGrpcClient(Configuration.GrpcUri, Configuration.ApiKey);
+        GrpcClient = new WeaviateGrpcClient(Configuration.GrpcUri, Configuration.ApiKey, wcdHost);
 
         Collections = new CollectionsClient(this);
     }

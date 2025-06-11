@@ -9,6 +9,7 @@ namespace Weaviate.Client.Grpc;
 public partial class WeaviateGrpcClient : IDisposable
 {
     private readonly GrpcChannel _channel;
+    internal Metadata? _defaultHeaders = null;
     private readonly V1.Weaviate.WeaviateClient _grpcClient;
 
     AsyncAuthInterceptor _AuthInterceptorFactory(string apiKey)
@@ -22,7 +23,7 @@ public partial class WeaviateGrpcClient : IDisposable
         );
     }
 
-    public WeaviateGrpcClient(Uri grpcUri, string? apiKey = null)
+    public WeaviateGrpcClient(Uri grpcUri, string? apiKey = null, string? wcdHost = null)
     {
         var options = new GrpcChannelOptions();
 
@@ -31,9 +32,14 @@ public partial class WeaviateGrpcClient : IDisposable
             var credentials = CallCredentials.FromInterceptor(_AuthInterceptorFactory(apiKey));
             options.Credentials = ChannelCredentials.Create(new SslCredentials(), credentials);
         }
-        ;
 
         _channel = GrpcChannel.ForAddress(grpcUri, options);
+
+        // Create default headers
+        if (!string.IsNullOrEmpty(wcdHost))
+        {
+            _defaultHeaders = new Metadata { { "X-Weaviate-Cluster-URL", wcdHost } };
+        }
         _grpcClient = new V1.Weaviate.WeaviateClient(_channel);
     }
 
