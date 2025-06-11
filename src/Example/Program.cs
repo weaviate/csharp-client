@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Weaviate.Client.Models;
+using Weaviate.Client.Models.Vectorizers;
 
 namespace Example;
 
@@ -76,17 +77,7 @@ class Program
             Console.WriteLine($"Error deleting collections: {e.Message}");
         }
 
-        var vectorizerConfigNone = new VectorConfig
-        {
-            Vectorizer = new Dictionary<string, object>
-            {
-                {
-                    "none",
-                    new object { }
-                },
-            },
-            VectorIndexType = "hnsw",
-        };
+        var vectorizerConfigNone = Vector.Name("default");
 
         var VectorConfigs = new Dictionary<string, VectorConfig>
         {
