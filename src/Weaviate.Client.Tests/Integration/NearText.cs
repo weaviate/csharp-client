@@ -13,7 +13,6 @@ public partial class BasicTests
             null,
             "Test collection description",
             [Property.Text("value")],
-            // vectorConfig: Vector.Text2VecContextionary("default", new VectorizerConfig.Text2VecContextionary())
             vectorConfig: Vector
                 .Name("default")
                 .With(new VectorizerConfig.Text2VecContextionary())
@@ -55,7 +54,6 @@ public partial class BasicTests
             "",
             "Test collection description",
             [Property.Text("value")],
-            //vectorConfig: Vector.Text2VecContextionary("default", new())
             vectorConfig: Vector.Name("default").With(new VectorizerConfig.Text2VecContextionary())
         );
 

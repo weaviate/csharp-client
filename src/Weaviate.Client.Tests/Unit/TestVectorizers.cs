@@ -10,34 +10,22 @@ public partial class UnitTests
     public void Test_VectorizerList_ImplicitConversion()
     {
         // Arrange
-        var namedVectorConfig1 = Vector.Text2VecContextionary(
-            "default",
-            new VectorizerConfig.Text2VecContextionary(),
-            sourceProperties: ["name"]
-        );
-        var namedVectorConfig2 = Vector.Text2VecWeaviate(
-            "fromSizes",
-            new VectorizerConfig.Text2VecWeaviate(),
-            null,
-            "size"
-        );
-        var namedVectorConfig3 = Vector
-            .Name("location")
-            .With(new VectorizerConfig.Text2VecContextionary())
-            .From("location");
-
-        // Act
         VectorConfigList ncList = new[]
         {
-            namedVectorConfig1,
-            namedVectorConfig2,
-            namedVectorConfig3,
+            Vector.Name("default").With(new VectorizerConfig.Text2VecContextionary()).From("name"),
+            Vector.Name("fromSizes").With(new VectorizerConfig.Text2VecWeaviate()).From("size"),
+            Vector
+                .Name("location")
+                .With(new VectorizerConfig.Text2VecContextionary())
+                .From("location"),
             Vector
                 .Name("nein")
                 .With(new VectorizerConfig.None())
                 .With(new VectorIndexConfig.HNSW()),
             Vector.Name("built").With(new VectorizerConfig.None()).Build(),
         };
+
+        // Act
         Dictionary<string, VectorConfig> asDict = ncList;
 
         // Assert
@@ -48,7 +36,6 @@ public partial class UnitTests
     public void Test_NamedVectorConfig_None_Has_Null_Properties()
     {
         // Arrange
-        // var vc = Configuration.None(Configuration.DefaultVectorName);
         var vc = Vector.Name(Vector.DefaultVectorName).With(new VectorizerConfig.None()).Build();
 
         // Act
@@ -76,13 +63,6 @@ public partial class UnitTests
     public void Test_NamedVectorConfig_Has_Properties()
     {
         // Arrange
-        // var vc = Vector.Text2VecContextionary(
-        //     "default",
-        //     new VectorizerConfig.Text2VecContextionary(),
-        //     null,
-        //     "name"
-        // );
-
         var defaultVec = Vector
             .Name("default")
             .With(new VectorizerConfig.Text2VecContextionary())
