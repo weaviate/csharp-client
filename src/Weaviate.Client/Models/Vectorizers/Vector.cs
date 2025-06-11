@@ -12,8 +12,8 @@ public abstract class Vector
     public sealed record Builder
     {
         private readonly string _name;
-        private VectorizerConfig? _vectorizerConfig = null;
-        private VectorIndexConfig? _vectorIndexConfig = null;
+        private VectorizerConfig? _vectorizerConfig;
+        private VectorIndexConfig? _vectorIndexConfig;
         private string[] _properties = [];
 
         internal Builder(string namedVector)
@@ -98,7 +98,11 @@ public abstract class Vector
 
         public VectorConfig Build()
         {
-            return New(_name, _vectorizerConfig, _vectorIndexConfig, _properties);
+            return new(_name)
+            {
+                Vectorizer = _vectorizerConfig ?? new VectorizerConfig.None(),
+                VectorIndexConfig = _vectorIndexConfig ?? VectorIndexConfig.Default,
+            };
         }
 
         public static implicit operator VectorConfig(Builder src)
@@ -118,57 +122,5 @@ public abstract class Vector
     {
         get => defaultVectorName;
         set => defaultVectorName = value;
-    }
-
-    private static VectorConfig New(
-        string namedVector,
-        VectorizerConfig? config = null,
-        VectorIndexConfig? vectorIndexConfig = null,
-        params string[] sourceProperties
-    )
-    {
-        config ??= new VectorizerConfig.None();
-
-        config.Properties = [.. sourceProperties];
-
-        vectorIndexConfig ??= new VectorIndexConfig.HNSW();
-
-        return new(namedVector) { Vectorizer = config, VectorIndexConfig = vectorIndexConfig };
-    }
-
-    public static VectorConfig None(
-        string name,
-        VectorIndexConfig? vectorIndexConfig = null,
-        params string[] sourceProperties
-    ) => New(name, vectorIndexConfig: vectorIndexConfig, sourceProperties: sourceProperties);
-
-    public static VectorConfig Text2VecContextionary(
-        string name,
-        VectorizerConfig.Text2VecContextionary? vectorConfig = null,
-        VectorIndexConfig? vectorIndexConfig = null,
-        params string[] sourceProperties
-    )
-    {
-        return New(
-            namedVector: name,
-            config: vectorConfig ?? new VectorizerConfig.Text2VecContextionary(),
-            vectorIndexConfig: vectorIndexConfig,
-            sourceProperties
-        );
-    }
-
-    public static VectorConfig Text2VecWeaviate(
-        string name,
-        VectorizerConfig.Text2VecWeaviate? vectorConfig = null,
-        VectorIndexConfig? vectorIndexConfig = null,
-        params string[] sourceProperties
-    )
-    {
-        return New(
-            namedVector: name,
-            config: vectorConfig ?? new VectorizerConfig.Text2VecWeaviate(),
-            vectorIndexConfig: vectorIndexConfig,
-            sourceProperties
-        );
     }
 }
