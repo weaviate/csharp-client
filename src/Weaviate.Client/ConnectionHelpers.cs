@@ -16,11 +16,27 @@ public static class Connect
         string? apiKey = null
     ) => LocalConfig(restPort, grpcPort, useSsl, apiKey).Client();
 
-    public static ClientConfiguration CloudConfig(string restEndpoint, string? apiKey = null) =>
-        new ClientConfiguration(restEndpoint, $"grpc-{restEndpoint}", 443, 443, true, apiKey);
+    public static ClientConfiguration CloudConfig(
+        string restEndpoint,
+        string? apiKey = null,
+        bool? addEmbeddingHeader = null
+    ) =>
+        new ClientConfiguration(
+            restEndpoint,
+            $"grpc-{restEndpoint}",
+            443,
+            443,
+            true,
+            apiKey,
+            addEmbeddingHeader ?? false
+        );
 
-    public static WeaviateClient Cloud(string restEndpoint, string? apiKey = null) =>
-        CloudConfig(restEndpoint, apiKey).Client();
+    public static WeaviateClient Cloud(
+        string restEndpoint,
+        string? apiKey = null,
+        bool? addEmbeddingHeader = null,
+        HttpClient? httpClient = null
+    ) => CloudConfig(restEndpoint, apiKey, addEmbeddingHeader).Client(httpClient);
 
     public static WeaviateClient FromEnvironment(string prefix = "WEAVIATE_")
     {

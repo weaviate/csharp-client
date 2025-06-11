@@ -12,7 +12,8 @@ public sealed record ClientConfiguration(
     ushort RestPort = 8080,
     ushort GrpcPort = 50051,
     bool UseSsl = false,
-    string? ApiKey = null
+    string? ApiKey = null,
+    bool AddEmbeddingHeader = false
 )
 {
     public Uri RestUri =>
@@ -33,7 +34,7 @@ public sealed record ClientConfiguration(
             Path = "",
         }.Uri;
 
-    public WeaviateClient Client() => new(this);
+    public WeaviateClient Client(HttpClient? baseClient = null) => new(this, baseClient);
 };
 
 public class WeaviateClient : IDisposable
@@ -61,6 +62,13 @@ public class WeaviateClient : IDisposable
 
     public CollectionsClient Collections { get; }
 
+    static bool IsWeaviateDomain(string url)
+    {
+        return url.ToLower().Contains("weaviate.io")
+            || url.ToLower().Contains("semi.technology")
+            || url.ToLower().Contains("weaviate.cloud");
+    }
+
     public WeaviateClient(ClientConfiguration? configuration = null, HttpClient? httpClient = null)
     {
         Configuration = configuration ?? DefaultOptions;
@@ -76,8 +84,21 @@ public class WeaviateClient : IDisposable
                 );
         }
 
+        var wcdHost =
+            (Configuration.AddEmbeddingHeader && IsWeaviateDomain(Configuration.RestAddress))
+                ? Configuration.RestAddress
+                : null;
+
+        if (wcdHost != null)
+        {
+            httpClient.DefaultRequestHeaders.Add(
+                "X-Weaviate-Cluster-URL",
+                Configuration.RestUri.ToString()
+            );
+        }
+
         RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
-        GrpcClient = new WeaviateGrpcClient(Configuration.GrpcUri, Configuration.ApiKey);
+        GrpcClient = new WeaviateGrpcClient(Configuration.GrpcUri, Configuration.ApiKey, wcdHost);
 
         Collections = new CollectionsClient(this);
     }
