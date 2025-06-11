@@ -61,4 +61,4 @@ jobs:
       - name: Install dependencies and build
         run: dotnet pack -c Release -o out  src/Weaviate.Client/
       - name: Push generated package to GitHub registry
-        run: dotnet nuget push ./csharp-client/out/*.nupkg --skip-duplicate --api-key ${{ secrets.NUGET_APIKEY }}
+        run: dotnet nuget push ./csharp-client/out/*.nupkg --skip-duplicate --api-key ${{ secrets.NUGET_APIKEY }} --source https://api.nuget.org/v3/index.json
