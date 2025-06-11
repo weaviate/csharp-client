@@ -112,7 +112,7 @@ public abstract class Vector
 
         public static implicit operator VectorConfigList(Builder src)
         {
-            return src;
+            return src.Build();
         }
     }
 
