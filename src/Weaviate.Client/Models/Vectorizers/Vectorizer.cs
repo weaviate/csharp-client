@@ -14,6 +14,7 @@ public abstract partial record VectorizerConfig
     }
 
     [JsonConverter(typeof(JsonConverterEmptyCollectionAsNull))]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ICollection<string>? Properties
     {
         get { return _properties.Count == 0 ? null : _properties; }

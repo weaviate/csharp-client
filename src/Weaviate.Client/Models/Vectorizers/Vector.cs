@@ -35,11 +35,14 @@ public abstract class Vector
             }
         }
 
+        public Builder With(VectorIndexConfig indexConfig) =>
+            new(this with { _vectorIndexConfig = indexConfig });
+
+        public Builder With(VectorizerConfig vectorizerConfig) =>
+            new(this with { _vectorizerConfig = vectorizerConfig });
+
         public Builder From(params string[] properties) =>
-            new Builder(this) with
-            {
-                _properties = properties,
-            };
+            new(this with { _properties = properties });
 
         private static MemberExpression? GetMemberExpression<TData>(
             Expression<Func<TData, object>> expression
@@ -78,23 +81,11 @@ public abstract class Vector
                 .Select(GetMemberExpression)
                 .Where(me => me != null)
                 .Select(me => me!.Member)
-                .Select(mi => mi.Name)
+                .Select(mi => mi.Name.Decapitalize())
                 .ToArray();
 
             return From(names);
         }
-
-        public Builder With(VectorIndexConfig indexConfig) =>
-            new Builder(this) with
-            {
-                _vectorIndexConfig = indexConfig,
-            };
-
-        public Builder With(VectorizerConfig vectorizerConfig) =>
-            new Builder(this) with
-            {
-                _vectorizerConfig = vectorizerConfig,
-            };
 
         public VectorConfig Build()
         {
