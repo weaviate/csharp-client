@@ -191,8 +191,11 @@ public abstract partial record VectorizerConfig
     /// </summary>
     public partial record Text2VecContextionary : VectorizerConfig
     {
-        public Text2VecContextionary()
-            : base("text2vec-contextionary") { }
+        public Text2VecContextionary(bool? vectorizeClassName = null)
+            : base("text2vec-contextionary")
+        {
+            VectorizeClassName = vectorizeClassName;
+        }
     }
 
     /// <summary>
@@ -325,9 +328,14 @@ public abstract partial record VectorizerConfig
     /// The configuration for text vectorization using Weaviate's self-hosted text-based embedding models.
     /// See the documentation for detailed usage.
     /// </summary>
-    public partial record Text2VecWeaviate : VectorizerConfig
+        public partial record Text2VecWeaviate : VectorizerConfig
     {
-        public Text2VecWeaviate()
-            : base("text2vec-weaviate") { }
+        public bool? VectorizeClassName { get; init; }
+
+        public Text2VecWeaviate(bool? vectorizeClassName = null)
+            : base("text2vec-weaviate")
+        {
+            VectorizeClassName = vectorizeClassName;
+        }
     }
 }

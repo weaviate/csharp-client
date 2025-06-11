@@ -297,6 +297,6 @@ public abstract partial record VectorizerConfig
 
         [JsonConverter(typeof(FlexibleStringConverter))]
         public string? Model { get; set; } = null;
-        public bool? VectorizeCollectionName { get; set; } = null;
+        public bool? vectorizeClassName { get; set; } = null;
     }
 }

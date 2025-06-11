@@ -2,8 +2,44 @@ using System.Linq.Expressions;
 
 namespace Weaviate.Client.Models.Vectorizers;
 
+
+public abstract class Vector2
+{
+    public sealed record Vectorizer
+    {
+        private readonly string _name;
+        private VectorizerConfig? _vectorizerConfig;
+        private VectorIndexConfig? _vectorIndexConfig;
+        private string[] _properties = [];
+
+        internal Vectorizer(string name, VectorizerConfig? _vectorizerConfig = null, VectorIndexConfig? _vectorIndexConfig = null, string[]? properties = null)
+        {
+            _name = name ?? throw new ArgumentNullException(nameof(name));
+            this._vectorizerConfig = _vectorizerConfig;
+            this._vectorIndexConfig = _vectorIndexConfig;
+            _properties = properties ?? Array.Empty<string>();
+        }
+
+    }
+
+    public static Vectorizer None(string name = "default", VectorIndexConfig? _vectorIndexConfig = null)
+    {
+        return new Vectorizer(name, null, _vectorIndexConfig);
+    }
+
+
+    public static Vectorizer Text2vec_Contextionary(string name = "default", VectorIndexConfig? _vectorIndexConfig= null, string[]? properties = null, bool? VectorizeCollectionName = null)
+    {
+        return new Vectorizer(name, new VectorizerConfig.Text2VecContextionary(VectorizeCollectionName), _vectorIndexConfig, properties);
+    }
+    public static Vectorizer Text2vec_Weaviate(string name = "default", VectorIndexConfig? _vectorIndexConfig = null, string[]? properties = null, bool? VectorizeCollectionName = null)
+    {
+        return new Vectorizer(name, new VectorizerConfig.Text2VecWeaviate(VectorizeCollectionName), _vectorIndexConfig, properties);
+    }
+
 public abstract class Vector
 {
+
     public static Builder Name(string name)
     {
         return new Builder(name);
