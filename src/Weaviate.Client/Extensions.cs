@@ -25,12 +25,12 @@ public static class WeaviateExtensions
                 collection
                     .VectorConfig?.ToList()
                     .ToDictionary(
-                        e => e.Key,
+                        e => e.Name,
                         e => new Rest.Dto.VectorConfig
                         {
-                            VectorIndexConfig = e.Value.VectorIndexConfig.Configuration,
-                            VectorIndexType = e.Value.VectorIndexType,
-                            Vectorizer = e.Value.Vectorizer?.ToDto(),
+                            VectorIndexConfig = e.VectorIndexConfig.Configuration,
+                            VectorIndexType = e.VectorIndexType,
+                            Vectorizer = e.Vectorizer?.ToDto(),
                         }
                     ) ?? new Dictionary<string, Rest.Dto.VectorConfig>(),
             ShardingConfig = collection.ShardingConfig,
@@ -127,13 +127,9 @@ public static class WeaviateExtensions
             return new VectorConfig(name) { Vectorizer = vc, VectorIndexConfig = vic };
         };
 
-        var vectorConfig =
-            collection
-                .VectorConfig?.Select(e => new KeyValuePair<string, VectorConfig>(
-                    e.Key,
-                    makeVectorConfig(e.Key, e.Value)
-                ))
-                .ToDictionary() ?? new Dictionary<string, VectorConfig>();
+        var vectorConfig = new VectorConfigList(
+            [.. collection.VectorConfig?.Select(e => makeVectorConfig(e.Key, e.Value)) ?? []]
+        );
 
         ShardingConfig? shardingConfig = (
             collection.ShardingConfig as JsonElement?
