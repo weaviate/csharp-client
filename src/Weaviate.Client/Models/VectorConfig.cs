@@ -7,7 +7,7 @@ public record VectorConfig(string Name)
     /// <summary>
     /// Vector-index config, that is specific to the type of index selected in vectorIndexType.
     /// </summary>
-    public VectorIndexConfig VectorIndexConfig { get; set; } = VectorIndexConfig.Default;
+    public VectorIndexConfig? VectorIndexConfig { get; set; }
 
     /// <summary>
     /// Name of the vector index to use, eg. (HNSW).

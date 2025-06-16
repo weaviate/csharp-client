@@ -20,29 +20,28 @@ public static class WeaviateExtensions
         {
             Class1 = collection.Name,
             Description = collection.Description,
-            Properties = new List<Rest.Dto.Property>(),
-            VectorConfig =
-                collection
-                    .VectorConfig?.ToList()
-                    .ToDictionary(
-                        e => e.Name,
-                        e => new Rest.Dto.VectorConfig
-                        {
-                            VectorIndexConfig = e.VectorIndexConfig.Configuration,
-                            VectorIndexType = e.VectorIndexType,
-                            Vectorizer = e.Vectorizer?.ToDto(),
-                        }
-                    ) ?? new Dictionary<string, Rest.Dto.VectorConfig>(),
+            Properties = collection.Properties.Any()
+                ?
+                [
+                    .. collection.Properties.Select(p => new Rest.Dto.Property()
+                    {
+                        Name = p.Name,
+                        DataType = [.. p.DataType],
+                    }),
+                ]
+                : null,
+            VectorConfig = collection.VectorConfig?.Values.ToDictionary(
+                e => e.Name,
+                e => new Rest.Dto.VectorConfig
+                {
+                    VectorIndexConfig = e.VectorIndexConfig?.Configuration,
+                    VectorIndexType = e.VectorIndexType,
+                    Vectorizer = e.Vectorizer?.ToDto(),
+                }
+            ),
             ShardingConfig = collection.ShardingConfig,
             ModuleConfig = collection.ModuleConfig,
         };
-
-        foreach (var property in collection.Properties)
-        {
-            data.Properties.Add(
-                new Rest.Dto.Property() { Name = property.Name, DataType = [.. property.DataType] }
-            );
-        }
 
         if (collection.ReplicationConfig is ReplicationConfig rc)
         {
