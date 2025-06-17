@@ -7,27 +7,15 @@ using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
-internal class TestData
-{
-    public string Name { get; set; } = string.Empty;
-    public int Size { get; set; } = 0;
-}
-
-internal class TestDataValue
-{
-    public string Value { get; set; } = string.Empty;
-}
-
-[Collection("BasicTests")]
-public partial class BasicTests : IAsyncDisposable
+public abstract partial class IntegrationTests : IAsyncDisposable
 {
     const bool _deleteCollectionsAfterTest = true;
     List<string> _collections = new();
 
-    WeaviateClient _weaviate;
+    protected WeaviateClient _weaviate;
     HttpClient _httpClient;
 
-    static readonly Guid[] _reusableUuids =
+    protected static readonly Guid[] _reusableUuids =
     [
         Guid.NewGuid(),
         Guid.NewGuid(),
@@ -35,7 +23,7 @@ public partial class BasicTests : IAsyncDisposable
         Guid.NewGuid(),
     ];
 
-    public BasicTests()
+    public IntegrationTests()
     {
         _httpClient = new HttpClient(
             new LoggingHandler(str =>
@@ -60,7 +48,7 @@ public partial class BasicTests : IAsyncDisposable
         _weaviate.Dispose();
     }
 
-    async Task<CollectionClient<TData>> CollectionFactory<TData>(
+    protected async Task<CollectionClient<TData>> CollectionFactory<TData>(
         string? name = null,
         string? description = null,
         IList<Property>? properties = null,
@@ -110,7 +98,7 @@ public partial class BasicTests : IAsyncDisposable
         return collectionClient;
     }
 
-    async Task<CollectionClient<dynamic>> CollectionFactory(
+    protected async Task<CollectionClient<dynamic>> CollectionFactory(
         string? name = null,
         string? description = null,
         IList<Property>? properties = null,

@@ -524,6 +524,18 @@ internal class ObjectHelper
             _ => throw new ArgumentException($"Unsupported type: {obj.GetType()}"),
         };
     }
+
+    internal static Guid GuidFromByteString(Google.Protobuf.ByteString x)
+    {
+        byte[] bytes = x.ToByteArray();
+        if (BitConverter.IsLittleEndian)
+        {
+            Array.Reverse(bytes, 0, 4); // Reverse first 4 bytes
+            Array.Reverse(bytes, 4, 2); // Reverse next 2 bytes
+            Array.Reverse(bytes, 6, 2); // Reverse next 2 bytes
+        }
+        return new Guid(bytes);
+    }
 }
 
 public class DataClient<TData>
@@ -725,5 +737,29 @@ public class DataClient<TData>
     public async Task ReferenceDelete(Guid from, string fromProperty, Guid to)
     {
         await _client.RestClient.ReferenceDelete(_collectionName, from, fromProperty, to);
+    }
+
+    internal async Task<DeleteManyResult> DeleteMany(
+        Filter where,
+        bool dryRun = false,
+        bool verbose = false
+    )
+    {
+        var reply = await _client.GrpcClient.DeleteMany(_collectionName, where, dryRun, verbose);
+
+        var result = new DeleteManyResult
+        {
+            Failed = reply.Failed,
+            Matches = reply.Matches,
+            Successful = reply.Successful,
+            Objects = reply.Objects.Select(o => new DeleteManyObjectResult
+            {
+                Error = string.IsNullOrEmpty(o.Error) ? null : o.Error,
+                Successful = o.Successful,
+                Uuid = ObjectHelper.GuidFromByteString(o.Uuid),
+            }),
+        };
+
+        return result;
     }
 }

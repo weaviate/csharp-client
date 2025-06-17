@@ -4,7 +4,8 @@ using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
-public partial class BasicTests
+[Collection("ReferenceTests")]
+public partial class ReferenceTests : IntegrationTests
 {
     readonly Guid TO_UUID = new Guid("8ad0d33c-8db1-4437-87f3-72161ca2a51a");
     readonly Guid TO_UUID2 = new Guid("577887c1-4c6b-5594-aa62-f0c17883d9cf");

@@ -9,3 +9,18 @@ public record BatchInsertRequest<TData>(
 );
 
 public record BatchInsertResponse(int Index, Guid? ID = null, WeaviateException? Error = null);
+
+public class DeleteManyResult
+{
+    public long Failed { get; set; }
+    public long Matches { get; set; }
+    public long Successful { get; set; }
+    public IEnumerable<DeleteManyObjectResult> Objects { get; set; } = [];
+}
+
+public class DeleteManyObjectResult
+{
+    public Guid Uuid { get; set; }
+    public bool Successful { get; set; }
+    public string? Error { get; set; }
+}

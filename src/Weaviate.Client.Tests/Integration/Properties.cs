@@ -2,7 +2,8 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
-public partial class BasicTests
+[Collection("PropertiesTests")]
+public partial class PropertyTests : IntegrationTests
 {
     [Fact]
     public async Task AllPropertiesSaveRetrieve()
