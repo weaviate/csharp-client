@@ -3,7 +3,8 @@ using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
-public partial class BasicTests
+[Collection("FilterTests")]
+public partial class FilterTests : IntegrationTests
 {
     [Fact]
     public async Task Filtering()

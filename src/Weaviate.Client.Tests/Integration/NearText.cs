@@ -3,7 +3,8 @@ using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
-public partial class BasicTests
+[Collection("SearchTests")]
+public partial class SearchTests : IntegrationTests
 {
     [Fact]
     public async Task NearTextSearch()

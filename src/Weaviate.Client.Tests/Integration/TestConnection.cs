@@ -1,6 +1,7 @@
 namespace Weaviate.Client.Tests.Integration;
 
-public partial class BasicTests
+[Collection("ConnectionTests")]
+public partial class ConnectionTests : IntegrationTests
 {
     [Fact]
     public async Task ConnectToLocal()

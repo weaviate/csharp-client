@@ -213,29 +213,27 @@ public static class WeaviateExtensions
         using var stream = new MemoryStream();
 
         byteString.WriteTo(stream);
-        stream.Seek(0, SeekOrigin.Begin); // Reset the stream position to the beginning
+        stream.Seek(0, SeekOrigin.Begin);
 
         using var reader = new BinaryReader(stream);
 
         while (stream.Position < stream.Length)
         {
-            // Temporary variable to hold the read object before casting
-            object value = Type.GetTypeCode(typeof(T)) switch
+            object value = typeof(T) switch
             {
-                TypeCode.Int16 => reader.ReadInt16(),
-                TypeCode.Int32 => reader.ReadInt32(),
-                TypeCode.Int64 => reader.ReadInt64(),
-                TypeCode.Single => reader.ReadSingle(),
-                TypeCode.Double => reader.ReadDouble(),
-                TypeCode.String => reader.ReadString(),
-                TypeCode.Byte => reader.ReadByte(),
-                TypeCode.Boolean => reader.ReadBoolean(),
+                Type t when t == typeof(int) => reader.ReadInt32(),
+                Type t when t == typeof(long) => reader.ReadInt64(),
+                Type t when t == typeof(short) => reader.ReadInt16(),
+                Type t when t == typeof(float) => reader.ReadSingle(),
+                Type t when t == typeof(double) => reader.ReadDouble(),
+                Type t when t == typeof(byte) => reader.ReadByte(),
+                Type t when t == typeof(bool) => reader.ReadBoolean(),
+                Type t when t == typeof(string) => reader.ReadString(),
                 _ => throw new NotSupportedException(
-                    $"The type '{typeof(T).FullName}' is not supported by FromStream<T>."
-                ), // Handle unsupported types gracefully
+                    $"The type '{typeof(T).FullName}' is not supported by FromByteString<T>."
+                ),
             };
 
-            // Cast the object to T and yield
             yield return (T)value;
         }
     }
@@ -262,6 +260,9 @@ public static class WeaviateExtensions
                         break;
                     case float v:
                         writer.Write(v);
+                        break;
+                    case Guid v:
+                        writer.Write(v.ToByteArray());
                         break;
                 }
             }
