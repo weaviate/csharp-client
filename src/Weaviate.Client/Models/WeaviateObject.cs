@@ -49,32 +49,38 @@ public partial record WeaviateObject
         new Dictionary<string, IList<WeaviateObject>>();
 
     public NamedVectors Vectors { get; set; } = new NamedVectors();
+}
 
-    public T? As<T>()
+public static class WeaviateObjectExtensions
+{
+    public static T? As<T>(this WeaviateObject obj)
         where T : new()
     {
-        return ObjectHelper.UnmarshallProperties<T>(Properties);
+        return ObjectHelper.UnmarshallProperties<T>(obj.Properties);
     }
 
-    public void Do<T>(Action<T> action)
+    public static void Do<T>(this WeaviateObject obj, Action<T> action)
         where T : new()
     {
-        var data = As<T>();
+        var data = obj.As<T>();
         if (data is not null)
         {
             action(data);
         }
     }
 
-    public void Do(Action<dynamic> action)
+    public static void Do(this WeaviateObject obj, Action<dynamic> action)
     {
-        Do<ExpandoObject>(action);
+        obj.Do<ExpandoObject>(action);
     }
 
-    public TResult? Get<TSource, TResult>(Func<TSource, TResult> func)
+    public static TResult? Get<TSource, TResult>(
+        this WeaviateObject obj,
+        Func<TSource, TResult> func
+    )
         where TSource : new()
     {
-        var data = ObjectHelper.UnmarshallProperties<TSource>(Properties);
+        var data = obj.As<TSource>();
         if (data is not null)
         {
             return func(data);
@@ -82,8 +88,8 @@ public partial record WeaviateObject
         return default;
     }
 
-    public TResult? Get<TResult>(Func<dynamic, TResult> func)
+    public static TResult? Get<TResult>(this WeaviateObject obj, Func<dynamic, TResult> func)
     {
-        return Get<ExpandoObject, TResult>(func);
+        return obj.Get<ExpandoObject, TResult>(func);
     }
 }

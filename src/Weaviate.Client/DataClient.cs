@@ -588,6 +588,17 @@ public class DataClient<TData>
         string? tenant = null
     );
 
+    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(params TData[] data)
+    {
+        return await InsertMany(add =>
+        {
+            foreach (var o in data)
+            {
+                add(o);
+            }
+        });
+    }
+
     public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
         params BatchInsertRequest<TData>[] requests
     )

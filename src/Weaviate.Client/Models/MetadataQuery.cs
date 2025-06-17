@@ -12,6 +12,8 @@ public enum MetadataOptions
     Score = 1 << 5, // 2^5
     ExplainScore = 1 << 6, // 2^6
     IsConsistent = 1 << 7, // 2^7
+    Full =
+        CreationTime | LastUpdateTime | Distance | Certainty | Score | ExplainScore | IsConsistent,
 }
 
 public record MetadataQuery
