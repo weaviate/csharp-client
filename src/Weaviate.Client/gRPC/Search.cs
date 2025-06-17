@@ -14,7 +14,8 @@ public partial class WeaviateGrpcClient
         GroupByRequest? groupBy = null,
         MetadataQuery? metadata = null,
         IList<QueryReference>? reference = null,
-        string[]? fields = null
+        string[]? fields = null,
+        Guid? after = null
     )
     {
         var metadataRequest = new MetadataRequest()
@@ -53,6 +54,11 @@ public partial class WeaviateGrpcClient
             Metadata = metadataRequest,
             Properties = MakePropsRequest(fields, reference),
         };
+
+        if (after is not null)
+        {
+            request.After = after.ToString();
+        }
 
         if (sort is not null)
         {
@@ -333,7 +339,8 @@ public partial class WeaviateGrpcClient
         uint? limit = null,
         string[]? fields = null,
         IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null
+        MetadataQuery? metadata = null,
+        Guid? after = null
     )
     {
         var req = BaseSearchRequest(
@@ -343,7 +350,8 @@ public partial class WeaviateGrpcClient
             limit,
             fields: fields,
             metadata: metadata,
-            reference: reference
+            reference: reference,
+            after: after
         );
 
         SearchReply? reply = await _grpcClient.SearchAsync(req, headers: _defaultHeaders);
