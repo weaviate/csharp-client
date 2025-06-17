@@ -2,7 +2,7 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
-public partial class BasicTests
+public partial class BasicTests : IntegrationTests
 {
     [Fact]
     public async Task CollectionCreation()

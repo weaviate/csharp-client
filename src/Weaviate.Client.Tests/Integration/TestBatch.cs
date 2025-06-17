@@ -2,7 +2,8 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
-public partial class BasicTests
+[Collection("BatchTests")]
+public partial class BatchTests : IntegrationTests
 {
     [Theory]
     [ClassData(typeof(DatasetBatchInsertMany))]

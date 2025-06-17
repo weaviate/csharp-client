@@ -105,13 +105,11 @@ public partial record Filter
 
     public static Filter WithID(Guid id) => Property("_id").Equal(id);
 
-    public static Filter WithIDs(ISet<Guid> ids) => Or(ids.Select(WithID));
+    public static Filter WithIDs(ISet<Guid> ids) => Or([.. ids.Select(WithID)]);
 
-    public static Filter Or(IEnumerable<Filter> filters) =>
-        new NestedFilter(Filters.Types.Operator.Or, filters);
+    public static Filter Or(params Filter[] filters) => new OrNestedFilter(filters);
 
-    public static Filter And(IEnumerable<Filter> filters) =>
-        new NestedFilter(Filters.Types.Operator.And, filters);
+    public static Filter And(params Filter[] filters) => new AndNestedFilter(filters);
 
     public static TypedGuid ID => new(Property("_id"));
 
@@ -135,7 +133,7 @@ public partial record Filter
         return this;
     }
 
-    internal Filter WithNestedFilters(IEnumerable<Filter> filters)
+    internal Filter WithNestedFilters(params Filter[] filters)
     {
         InternalFilter.Filters_.AddRange(filters.Select(f => f.InternalFilter));
 
@@ -186,6 +184,63 @@ public partial record Filter
 
         return this;
     }
+
+    #region Operators
+    public static Filter operator &(Filter left, Filter right)
+    {
+        // If left is already an AND filter, combine with its operands
+        if (left is AndNestedFilter leftNested)
+        {
+            // If right is also an AND filter, combine all operands
+            if (right is AndNestedFilter rightNested)
+            {
+                return new AndNestedFilter([.. leftNested.Filters, .. rightNested.Filters]);
+            }
+            else
+            {
+                return new AndNestedFilter([.. leftNested.Filters, right]);
+            }
+        }
+        // If right is an AND filter but left is not
+        else if (right is AndNestedFilter rightNested)
+        {
+            return new AndNestedFilter([left, .. rightNested.Filters]);
+        }
+        // Neither is an AND filter
+        else
+        {
+            return new AndNestedFilter(left, right);
+        }
+    }
+
+    // OR operator (|)
+    public static Filter operator |(Filter left, Filter right)
+    {
+        // If left is already an OR filter, combine with its operands
+        if (left is OrNestedFilter leftNested)
+        {
+            // If right is also an OR filter, combine all operands
+            if (right is OrNestedFilter rightNested)
+            {
+                return new OrNestedFilter([.. leftNested.Filters, .. rightNested.Filters]);
+            }
+            else
+            {
+                return new OrNestedFilter([.. leftNested.Filters, right]);
+            }
+        }
+        // If right is an OR filter but left is not
+        else if (right is OrNestedFilter rightNested)
+        {
+            return new OrNestedFilter([left, .. rightNested.Filters]);
+        }
+        // Neither is an OR filter
+        else
+        {
+            return new OrNestedFilter(left, right);
+        }
+    }
+    #endregion
 }
 
 public record PropertyFilter : Filter
@@ -292,11 +347,17 @@ public record ReferenceFilter : Filter
     }
 }
 
-public record NestedFilter : Filter
+public abstract record NestedFilter : Filter
 {
-    internal NestedFilter(Filters.Types.Operator op, IEnumerable<Filter> filters) =>
+    internal NestedFilter(Filters.Types.Operator op, params Filter[] filters) =>
         WithOperator(op).WithNestedFilters(filters);
 }
+
+public record AndNestedFilter(params Filter[] Filters)
+    : NestedFilter(V1.Filters.Types.Operator.And, Filters) { }
+
+public record OrNestedFilter(params Filter[] Filters)
+    : NestedFilter(V1.Filters.Types.Operator.Or, Filters) { }
 
 public record TimeFilter : TypedValue<DateTime>
 {
