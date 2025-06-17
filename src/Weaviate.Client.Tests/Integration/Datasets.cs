@@ -2,7 +2,18 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
-public partial class BasicTests
+internal class TestData
+{
+    public string Name { get; set; } = string.Empty;
+    public int Size { get; set; } = 0;
+}
+
+internal class TestDataValue
+{
+    public string Value { get; set; } = string.Empty;
+}
+
+public partial class FilterTests
 {
     public class DatasetFilterArrayTypes : TheoryData<string>
     {
@@ -241,7 +252,10 @@ public partial class BasicTests
         public DatasetTimeFilter()
             : base(Cases.Keys) { }
     }
+}
 
+public partial class BatchTests
+{
     public class DatasetBatchInsertMany : TheoryData<string>
     {
         public static Dictionary<
