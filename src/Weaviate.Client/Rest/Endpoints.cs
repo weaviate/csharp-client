@@ -25,4 +25,6 @@ internal static class WeaviateEndpoints
 
     internal static string? Reference(string collectionName, Guid from, string fromProperty) =>
         $"objects/{collectionName}/{from}/references/{fromProperty}";
+
+    internal static string? ReferencesAdd() => "batch/references";
 }
