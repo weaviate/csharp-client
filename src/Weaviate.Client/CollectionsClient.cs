@@ -1,3 +1,5 @@
+using Weaviate.Client.Models;
+
 namespace Weaviate.Client;
 
 public struct CollectionsClient
@@ -28,6 +30,32 @@ public struct CollectionsClient
         ArgumentException.ThrowIfNullOrEmpty(collectionName);
 
         await _client.RestClient.CollectionDelete(collectionName);
+    }
+
+    public async Task DeleteAll()
+    {
+        var list = await List().Select(l => l.Name).ToListAsync();
+
+        var tasks = list.Select(Delete);
+
+        await Task.WhenAll(tasks);
+    }
+
+    public async Task<bool> Exists(string collectionName)
+    {
+        return await _client.RestClient.CollectionExists(collectionName);
+    }
+
+    public async Task<Collection?> Export(string collectionName)
+    {
+        var response = await _client.RestClient.CollectionGet(collectionName);
+
+        if (response is null)
+        {
+            return null;
+        }
+
+        return response.ToModel();
     }
 
     public async IAsyncEnumerable<Models.Collection> List()
