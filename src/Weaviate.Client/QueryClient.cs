@@ -16,6 +16,7 @@ public class QueryClient<TData>
 
     #region Objects
     public async Task<WeaviateResult> List(
+        string[]? properties = null,
         uint? limit = null,
         Filter? filter = null,
         IEnumerable<Sort>? sort = null,
@@ -25,6 +26,7 @@ public class QueryClient<TData>
     {
         return await _client.GrpcClient.FetchObjects(
             _collectionName,
+            fields: properties,
             limit: limit,
             sort: sort,
             filter: filter,
@@ -35,6 +37,7 @@ public class QueryClient<TData>
 
     public async Task<WeaviateObject?> FetchObjectByID(
         Guid id,
+        string[]? properties = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
     )
@@ -42,6 +45,7 @@ public class QueryClient<TData>
         return (
             await _client.GrpcClient.FetchObjects(
                 _collectionName,
+                fields: properties,
                 filter: Filter.WithID(id),
                 reference: references,
                 metadata: metadata
@@ -51,6 +55,7 @@ public class QueryClient<TData>
 
     public async Task<WeaviateResult> FetchObjectsByIDs(
         ISet<Guid> ids,
+        string[]? properties = null,
         uint? limit = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
@@ -58,6 +63,7 @@ public class QueryClient<TData>
     {
         return await _client.GrpcClient.FetchObjects(
             _collectionName,
+            fields: properties,
             limit: limit,
             filter: Filter.WithIDs(ids),
             reference: references,
