@@ -190,7 +190,7 @@ public class WeaviateRestClient : IDisposable
     {
         var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
 
-        var beacons = DataClient<object>.MakeBeacons(to);
+        var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons.First();
 
         var response = await _httpClient.PostAsJsonAsync(path, reference);
@@ -207,7 +207,7 @@ public class WeaviateRestClient : IDisposable
     {
         var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
 
-        var beacons = DataClient<object>.MakeBeacons(to);
+        var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons;
 
         var response = await _httpClient.PutAsJsonAsync(path, reference);
@@ -224,7 +224,7 @@ public class WeaviateRestClient : IDisposable
     {
         var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
 
-        var beacons = DataClient<object>.MakeBeacons(to);
+        var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons.First();
 
         var request = new HttpRequestMessage(HttpMethod.Delete, path);
@@ -242,5 +242,33 @@ public class WeaviateRestClient : IDisposable
         var response = await _httpClient.PostAsJsonAsync(path, property);
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection property add");
+    }
+
+    internal async Task<BatchReferenceResponse[]> ReferenceAddMany(
+        string collectionName,
+        Models.DataReference[] references
+    )
+    {
+        var batchRefs = references.SelectMany(r =>
+            ObjectHelper
+                .MakeBeacons(r.To)
+                .SelectMany(b => b.Values)
+                .Select(beacon => new BatchReference
+                {
+                    From = new Uri(
+                        ObjectHelper.MakeBeaconSource(collectionName, r.From, r.FromProperty)
+                    ),
+                    To = new Uri(beacon),
+                })
+        );
+
+        var path = WeaviateEndpoints.ReferencesAdd();
+
+        var response = await _httpClient.PostAsJsonAsync(path, batchRefs);
+
+        await response.EnsureExpectedStatusCodeAsync([200], "reference add many");
+
+        return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>()
+            ?? throw new WeaviateRestException();
     }
 }
