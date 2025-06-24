@@ -8,8 +8,11 @@ public partial class ConnectionTests : IntegrationTests
     {
         var client = Connect.Local();
 
-        var ex = await Record.ExceptionAsync(() =>
-            client.Collections.List().ToListAsync(TestContext.Current.CancellationToken).AsTask()
+        var ex = await Record.ExceptionAsync(async () =>
+            await client
+                .Collections.List()
+                .ToListAsync(TestContext.Current.CancellationToken)
+                .AsTask()
         );
         Assert.Null(ex);
     }

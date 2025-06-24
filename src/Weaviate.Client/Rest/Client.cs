@@ -271,4 +271,18 @@ public class WeaviateRestClient : IDisposable
         return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>()
             ?? throw new WeaviateRestException();
     }
+
+    internal async Task<bool> CollectionExists(object collectionName)
+    {
+        var path = WeaviateEndpoints.Collection();
+
+        var response = await _httpClient.GetAsync(path);
+
+        await response.EnsureExpectedStatusCodeAsync([200], "collection property add");
+
+        var schema = await response.Content.ReadFromJsonAsync<Schema>();
+
+        return schema?.Classes?.Any(c => c.Class1 is not null && c.Class1!.Equals(collectionName))
+            ?? false;
+    }
 }
