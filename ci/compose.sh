@@ -15,7 +15,7 @@ function exec_all {
 }
 
 function compose_up_all {
-  exec_all up -d
+  exec_all up -d --quiet-pull
 }
 
 function compose_down_all {
