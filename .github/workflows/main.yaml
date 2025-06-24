@@ -8,57 +8,123 @@ on:
     tags:
       - '**'
     paths-ignore:
-      - docs/**
-      - README.rst
-      - LICENSE.md
-      - publishing.md
+      - 'docs/**'
+      - 'README.rst'
+      - 'LICENSE.md'
+      - 'publishing.md'
   pull_request:
 
 env:
-  WEAVIATE: 1.30.2
+  WEAVIATE_VERSION: 1.30.2
+  DOTNET_VERSION: '8.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
+  check_formatting:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get list of changed C# files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            **.cs
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Check formatting
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          dotnet tool restore
+          dotnet csharpier check ${{ steps.changed-files.outputs.all_changed_files }}
+
   integration-tests:
     name: Run Integration Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-      - name: Setup dotnet 8
+      - name: Check for required secrets
+        run: |
+          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then echo "Warning: DOCKER_USERNAME is not set"; fi
+          if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then echo "Warning: DOCKER_PASSWORD is not set"; fi
+          if [ -z "${{ secrets.NUGET_APIKEY }}" ]; then echo "Warning: NUGET_APIKEY is not set"; fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/.*proj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ !github.event.pull_request.head.repo.fork && github.triggering_actor != 'dependabot[bot]' }}
         with:
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
+
       - name: start weaviate
-        run: /bin/bash ci/start_weaviate.sh ${{ env.WEAVIATE }}
-      - name: Install dependencies
-        run: dotnet restore
-      - name: Test with the dotnet CLI
-        run: dotnet test
+        run: /bin/bash ci/start_weaviate.sh ${{ env.WEAVIATE_VERSION }}
+
+      - name: Run integration tests
+        run: dotnet test --no-restore
+        
       - name: stop weaviate
-        run: /bin/bash ci/stop_weaviate.sh ${{ env.WEAVIATE }}
+        if: always()
+        run: /bin/bash ci/stop_weaviate.sh ${{ env.WEAVIATE_VERSION }}
 
   build-and-publish:
-    name: Build and publish to Nuget
+    name: Build and Publish to NuGet
     needs: [integration-tests]
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags')
+    permissions:
+      contents: read
     steps:
-      - name: Checkout
+      - name: Check for required secrets
+        run: |
+          if [ -z "${{ secrets.NUGET_APIKEY }}" ]; then echo "Warning: NUGET_APIKEY is not set"; fi
+
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      - name: Setup dotnet 8
+          fetch-depth: 1
+          fetch-tags: true
+
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
-      - name: Install dependencies and build
-        run: dotnet pack -c Release -o out  src/Weaviate.Client/
-      - name: Push generated package to GitHub registry
-        run: dotnet nuget push ./out/*.nupkg --skip-duplicate --api-key ${{ secrets.NUGET_APIKEY }} --source https://api.nuget.org/v3/index.json
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/.*proj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Create NuGet package
+        run: dotnet pack -c Release -o out src/Weaviate.Client/
+
+      - name: Push package to NuGet
+        run: dotnet nuget push './out/*.nupkg' --skip-duplicate --api-key ${{ secrets.NUGET_APIKEY }} --source https://api.nuget.org/v3/index.json

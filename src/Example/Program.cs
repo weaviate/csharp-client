@@ -77,19 +77,12 @@ class Program
             Console.WriteLine($"Error deleting collections: {e.Message}");
         }
 
-        var vectorizerConfigNone = Vector.Name("default");
-
-        var VectorConfigs = new Dictionary<string, VectorConfig>
-        {
-            { "default", vectorizerConfigNone },
-        };
-
         var catCollection = new Collection()
         {
             Name = "Cat",
             Description = "Lots of Cats of multiple breeds",
             Properties = Property.FromCollection<Cat>(),
-            VectorConfig = VectorConfigs,
+            VectorConfig = Vector.Name("default"),
         };
 
         collection = await weaviate.Collections.Create<Cat>(catCollection);
