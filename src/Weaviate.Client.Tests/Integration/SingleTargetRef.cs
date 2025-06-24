@@ -294,20 +294,11 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         // Act
         var fun = await reviews.Query.NearText("Fun for the whole family", limit: 2);
-        Console.WriteLine(
-            JsonSerializer.Serialize(fun, new JsonSerializerOptions { WriteIndented = true })
-        );
 
         var disappointed = await reviews.Query.NearText(
             "Disapointed by this movie",
             limit: 2,
             references: [new QueryReference("forMovie", ["title"])]
-        );
-        Console.WriteLine(
-            JsonSerializer.Serialize(
-                disappointed,
-                new JsonSerializerOptions { WriteIndented = true }
-            )
         );
 
         // Assert
