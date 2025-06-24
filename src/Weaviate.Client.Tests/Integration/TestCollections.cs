@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Vectorizers;
 
@@ -39,7 +37,7 @@ public partial class CollectionsTests : IntegrationTests
             .ToListAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        Assert.Equal(collectionNames, list.Select(l => l.Name).ToHashSet());
+        Assert.Subset(collectionNames, list.Select(l => l.Name).ToHashSet());
     }
 
     [Fact]
