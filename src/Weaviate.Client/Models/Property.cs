@@ -1,8 +1,43 @@
 namespace Weaviate.Client.Models;
 
+public enum PropertyTokenization
+{
+    Word = 0,
+    Lowercase = 1,
+    Whitespace = 2,
+    Field = 3,
+    Trigram = 4,
+    Gse = 5,
+    Kagome_kr = 6,
+    Kagome_ja = 7,
+    Gse_ch = 8,
+}
+
+public delegate Property PropertyFactory(
+    string name,
+    string? description = null,
+    bool? indexFilterable = null,
+    bool? indexRangeFilters = null,
+    bool? indexSearchable = null,
+    PropertyTokenization? tokenization = null
+);
+
 internal class PropertyHelper
 {
-    internal static Property For(Type t, string name)
+    internal static PropertyFactory Factory(string dataType) =>
+        (name, description, indexFilterable, indexRangeFilters, indexSearchable, tokenization) =>
+            new Property
+            {
+                Name = name,
+                DataType = { dataType },
+                Description = description,
+                IndexFilterable = indexFilterable,
+                IndexRangeFilters = indexRangeFilters,
+                IndexSearchable = indexSearchable,
+                PropertyTokenization = tokenization,
+            };
+
+    internal static PropertyFactory ForType(Type t)
     {
         // Handle nullable types - get the underlying type
         Type actualType = Nullable.GetUnderlyingType(t) ?? t;
@@ -10,21 +45,21 @@ internal class PropertyHelper
         // Handle special types first
         if (actualType == typeof(Guid))
         {
-            return Property.Uuid(name);
+            return Property.Uuid;
         }
 
         if (actualType == typeof(GeoCoordinate))
         {
-            return Property.GeoCoordinate(name);
+            return Property.GeoCoordinate;
         }
 
         if (actualType == typeof(PhoneNumber))
         {
-            return Property.PhoneNumber(name);
+            return Property.PhoneNumber;
         }
 
         // Handle primitive types
-        Func<string, Property>? f = Type.GetTypeCode(actualType) switch
+        PropertyFactory? f = Type.GetTypeCode(actualType) switch
         {
             TypeCode.String => Property.Text,
             TypeCode.Int16 => Property.Int,
@@ -49,13 +84,13 @@ internal class PropertyHelper
 
         if (f is not null)
         {
-            return f(name);
+            return f;
         }
 
         // Handle arrays and collections
         if (IsArrayOrCollection(actualType, out Type? elementType))
         {
-            return HandleCollectionType(elementType, name);
+            return HandleCollectionType(elementType);
         }
 
         throw new NotSupportedException($"Type {t.Name} not supported");
@@ -107,7 +142,7 @@ internal class PropertyHelper
         return false;
     }
 
-    private static Property HandleCollectionType(Type? elementType, string name)
+    private static PropertyFactory HandleCollectionType(Type? elementType)
     {
         if (elementType == null)
             return null!; // or throw an exception
@@ -115,11 +150,11 @@ internal class PropertyHelper
         // Handle special collection element types
         if (elementType == typeof(Guid))
         {
-            return Property.UuidArray(name); // Assuming you have array-specific methods
+            return Property.UuidArray; // Assuming you have array-specific methods
         }
 
         // Handle primitive collection element types
-        Func<string, Property>? f = Type.GetTypeCode(elementType) switch
+        PropertyFactory? f = Type.GetTypeCode(elementType) switch
         {
             TypeCode.String => Property.TextArray,
             TypeCode.Int16 => Property.IntArray,
@@ -137,40 +172,51 @@ internal class PropertyHelper
             _ => null,
         };
 
-        return f!(name);
+        return f!;
     }
 }
 
 public static class DataType
 {
-    public static string Text { get; } = "text";
-    public static string TextArray { get; } = "text[]";
-    public static string Int { get; } = "int";
-    public static string IntArray { get; } = "int[]";
-    public static string Bool { get; } = "boolean";
-    public static string BoolArray { get; } = "boolean[]";
-    public static string Number { get; } = "number";
-    public static string NumberArray { get; } = "number[]";
-    public static string Date { get; } = "date";
-    public static string DateArray { get; } = "date[]";
-    public static string Uuid { get; } = "uuid";
-    public static string UuidArray { get; } = "uuid[]";
-    public static string GeoCoordinate { get; } = "geoCoordinates";
-    public static string Blob { get; } = "blob";
-    public static string PhoneNumber { get; } = "phone";
-    public static string Object { get; } = "object";
-    public static string ObjectArray { get; } = "object[]";
+    public static string Text => "text";
+    public static string TextArray => "text[]";
+    public static string Int => "int";
+    public static string IntArray => "int[]";
+    public static string Bool => "boolean";
+    public static string BoolArray => "boolean[]";
+    public static string Number => "number";
+    public static string NumberArray => "number[]";
+    public static string Date => "date";
+    public static string DateArray => "date[]";
+    public static string Uuid => "uuid";
+    public static string UuidArray => "uuid[]";
+    public static string GeoCoordinate => "geoCoordinates";
+    public static string Blob => "blob";
+    public static string PhoneNumber => "phone";
+    public static string Object => "object";
+    public static string ObjectArray => "object[]";
 }
 
 public record ReferenceProperty
 {
     public required string Name { get; set; }
+    public required string? Description { get; set; }
     public required string TargetCollection { get; set; }
 
     public static implicit operator Property(ReferenceProperty p)
     {
-        return new Property { Name = p.Name, DataType = { p.TargetCollection.Capitalize() } };
+        return new Property
+        {
+            Name = p.Name,
+            DataType = { p.TargetCollection.Capitalize() },
+            Description = p.Description,
+        };
     }
+}
+
+public static class Property<TField>
+{
+    public static PropertyFactory New => PropertyHelper.ForType(typeof(TField));
 }
 
 public partial record Property
@@ -179,65 +225,46 @@ public partial record Property
     public IList<string> DataType { get; set; } = new List<string>();
     public string? Description { get; set; }
     public bool? IndexFilterable { get; set; }
-    public bool? IndexInverted { get; set; }
+
+    [Obsolete]
+    public bool? IndexInverted { get; internal set; }
     public bool? IndexRangeFilters { get; set; }
     public bool? IndexSearchable { get; set; }
+    public PropertyTokenization? PropertyTokenization { get; internal set; }
 
-    public static Property Text(string name) =>
-        new() { Name = name, DataType = { Models.DataType.Text } };
+    public static PropertyFactory Text => PropertyHelper.Factory(Models.DataType.Text);
+    public static PropertyFactory TextArray => PropertyHelper.Factory(Models.DataType.TextArray);
+    public static PropertyFactory Int => PropertyHelper.Factory(Models.DataType.Int);
+    public static PropertyFactory IntArray => PropertyHelper.Factory(Models.DataType.IntArray);
+    public static PropertyFactory Bool => PropertyHelper.Factory(Models.DataType.Bool);
+    public static PropertyFactory BoolArray => PropertyHelper.Factory(Models.DataType.BoolArray);
+    public static PropertyFactory Number => PropertyHelper.Factory(Models.DataType.Number);
+    public static PropertyFactory NumberArray =>
+        PropertyHelper.Factory(Models.DataType.NumberArray);
+    public static PropertyFactory Date => PropertyHelper.Factory(Models.DataType.Date);
+    public static PropertyFactory DateArray => PropertyHelper.Factory(Models.DataType.DateArray);
+    public static PropertyFactory Uuid => PropertyHelper.Factory(Models.DataType.Uuid);
+    public static PropertyFactory UuidArray => PropertyHelper.Factory(Models.DataType.UuidArray);
+    public static PropertyFactory GeoCoordinate =>
+        PropertyHelper.Factory(Models.DataType.GeoCoordinate);
+    public static PropertyFactory Blob => PropertyHelper.Factory(Models.DataType.Blob);
+    public static PropertyFactory PhoneNumber =>
+        PropertyHelper.Factory(Models.DataType.PhoneNumber);
+    public static PropertyFactory Object => PropertyHelper.Factory(Models.DataType.Object);
+    public static PropertyFactory ObjectArray =>
+        PropertyHelper.Factory(Models.DataType.ObjectArray);
 
-    public static Property TextArray(string name) =>
-        new() { Name = name, DataType = { Models.DataType.TextArray } };
-
-    public static Property Int(string name) =>
-        new() { Name = name, DataType = { Models.DataType.Int } };
-
-    public static Property IntArray(string name) =>
-        new() { Name = name, DataType = { Models.DataType.IntArray } };
-
-    public static Property Bool(string name) =>
-        new() { Name = name, DataType = { Models.DataType.Bool } };
-
-    public static Property BoolArray(string name) =>
-        new() { Name = name, DataType = { Models.DataType.BoolArray } };
-
-    public static Property Number(string name) =>
-        new() { Name = name, DataType = { Models.DataType.Number } };
-
-    public static Property NumberArray(string name) =>
-        new() { Name = name, DataType = { Models.DataType.NumberArray } };
-
-    public static Property Date(string name) =>
-        new() { Name = name, DataType = { Models.DataType.Date } };
-
-    public static Property DateArray(string name) =>
-        new() { Name = name, DataType = { Models.DataType.DateArray } };
-
-    public static Property Uuid(string name) =>
-        new() { Name = name, DataType = { Models.DataType.Uuid } };
-
-    public static Property UuidArray(string name) =>
-        new() { Name = name, DataType = { Models.DataType.UuidArray } };
-
-    public static Property GeoCoordinate(string name) =>
-        new() { Name = name, DataType = { Models.DataType.GeoCoordinate } };
-
-    public static Property Blob(string name) =>
-        new() { Name = name, DataType = { Models.DataType.Blob } };
-
-    public static Property PhoneNumber(string name) =>
-        new() { Name = name, DataType = { Models.DataType.PhoneNumber } };
-
-    public static Property Object(string name) =>
-        new() { Name = name, DataType = { Models.DataType.Object } };
-
-    public static Property ObjectArray(string name) =>
-        new() { Name = name, DataType = { Models.DataType.ObjectArray } };
-
-    public static ReferenceProperty Reference(string name, string targetCollection) =>
-        new() { Name = name, TargetCollection = targetCollection };
-
-    public static Property For<TField>(string name) => PropertyHelper.For(typeof(TField), name);
+    public static ReferenceProperty Reference(
+        string name,
+        string targetCollection,
+        string? description = null
+    ) =>
+        new()
+        {
+            Name = name,
+            TargetCollection = targetCollection,
+            Description = description,
+        };
 
     // Extract collection properties from type specified by TData.
     public static IList<Property> FromCollection<TData>()
@@ -246,7 +273,7 @@ public partial record Property
         [
             .. typeof(TData)
                 .GetProperties()
-                .Select(x => PropertyHelper.For(x.PropertyType, x.Name)),
+                .Select(x => PropertyHelper.ForType(x.PropertyType)(x.Name)),
         ];
     }
 }
