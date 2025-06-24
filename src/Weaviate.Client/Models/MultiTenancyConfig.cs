@@ -27,4 +27,3 @@ public class MultiTenancyConfig
     /// </summary>
     public bool Enabled { get; set; }
 }
-

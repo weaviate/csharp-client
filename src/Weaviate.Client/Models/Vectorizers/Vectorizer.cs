@@ -4,7 +4,7 @@ namespace Weaviate.Client.Models.Vectorizers;
 
 public abstract partial record VectorizerConfig
 {
-    protected readonly string _identifier;
+    private readonly string _identifier;
     protected HashSet<string> _properties = new();
 
     protected VectorizerConfig(string identifier)
@@ -29,6 +29,9 @@ public abstract partial record VectorizerConfig
             _properties = [.. value];
         }
     }
+
+    [JsonIgnore()]
+    public string Identifier => _identifier;
 
     public virtual Dictionary<string, object?> ToDto()
     {

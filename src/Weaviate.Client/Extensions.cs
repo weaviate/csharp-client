@@ -135,9 +135,12 @@ public static class WeaviateExtensions
                 ))
                 .ToDictionary() ?? new Dictionary<string, VectorConfig>();
 
-        var shardingConfig = ObjectHelper.JsonElementToExpandoObject(
+        ShardingConfig? shardingConfig = (
             collection.ShardingConfig as JsonElement?
+        )?.Deserialize<ShardingConfig>(
+            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
         );
+
         var moduleConfig = ObjectHelper.JsonElementToExpandoObject(
             collection.ModuleConfig as JsonElement?
         );
