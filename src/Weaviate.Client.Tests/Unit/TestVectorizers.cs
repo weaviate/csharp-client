@@ -26,7 +26,7 @@ public partial class UnitTests
         };
 
         // Act
-        
+
         // Assert
         Assert.Equal(["default", "fromSizes", "location", "nein", "built"], ncList.Keys);
     }
