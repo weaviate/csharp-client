@@ -4,7 +4,7 @@ public enum DeletionStrategy
 {
     NoAutomatedResolution,
     DeleteOnConflict,
-    TimeBasedResolution
+    TimeBasedResolution,
 }
 
 /// <summary>
@@ -28,7 +28,8 @@ public class ReplicationConfig
     /// Conflict resolution strategy for deleted objects.
     /// Enum: [NoAutomatedResolution DeleteOnConflict TimeBasedResolution]
     /// </summary>
-    public DeletionStrategy? DeletionStrategy { get; set; } = Models.DeletionStrategy.NoAutomatedResolution;
+    public DeletionStrategy? DeletionStrategy { get; set; } =
+        Models.DeletionStrategy.NoAutomatedResolution;
 
     /// <summary>
     /// Number of times a class is replicated (default: 1).

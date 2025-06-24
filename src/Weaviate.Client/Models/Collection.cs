@@ -1,6 +1,8 @@
+using System.Dynamic;
+
 namespace Weaviate.Client.Models;
 
-public class Collection : CollectionBase<object, object, object> { }
+public class Collection : CollectionBase<dynamic, dynamic, dynamic> { }
 
 public class CollectionBase<TModuleConfig, TShardingConfig, TVectorIndexConfig>
 {
