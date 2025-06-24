@@ -50,6 +50,12 @@ jobs:
     name: Run Integration Tests
     runs-on: ubuntu-latest
     steps:
+      - name: Check for required secrets
+        run: |
+          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then echo "Warning: DOCKER_USERNAME is not set"; fi
+          if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then echo "Warning: DOCKER_PASSWORD is not set"; fi
+          if [ -z "${{ secrets.NUGET_APIKEY }}" ]; then echo "Warning: NUGET_APIKEY is not set"; fi
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -94,6 +100,10 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Check for required secrets
+        run: |
+          if [ -z "${{ secrets.NUGET_APIKEY }}" ]; then echo "Warning: NUGET_APIKEY is not set"; fi
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
