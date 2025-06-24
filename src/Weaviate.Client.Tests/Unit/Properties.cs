@@ -6,29 +6,26 @@ public partial class UnitTests
 {
     public static TheoryData<string> PropertyCasesKeys => [.. PropertyCases.Keys];
 
-    private static Dictionary<
-        string,
-        (Func<string, Property>, Func<string, Property>)
-    > PropertyCases = new()
+    private static Dictionary<string, (PropertyFactory, PropertyFactory)> PropertyCases = new()
     {
-        ["Text"] = (Property.Text, Property.For<string>),
-        ["TextArray"] = (Property.TextArray, Property.For<string[]>),
-        ["Int"] = (Property.Int, Property.For<int>),
-        ["IntArray"] = (Property.IntArray, Property.For<int[]>),
-        ["Bool"] = (Property.Bool, Property.For<bool>),
-        ["BoolArray"] = (Property.BoolArray, Property.For<bool[]>),
-        ["Number"] = (Property.Number, Property.For<double>),
-        ["NumberArray"] = (Property.NumberArray, Property.For<double[]>),
-        ["Date"] = (Property.Date, Property.For<DateTime>),
-        ["DateArray"] = (Property.DateArray, Property.For<DateTime[]>),
-        ["Uuid"] = (Property.Uuid, Property.For<Guid>),
-        ["UuidArray"] = (Property.UuidArray, Property.For<Guid[]>),
-        ["Geo"] = (Property.GeoCoordinate, Property.For<GeoCoordinate>),
-        ["Phone"] = (Property.PhoneNumber, Property.For<PhoneNumber>),
+        ["Text"] = (Property.Text, Property<string>.New),
+        ["TextArray"] = (Property.TextArray, Property<string[]>.New),
+        ["Int"] = (Property.Int, Property<int>.New),
+        ["IntArray"] = (Property.IntArray, Property<int[]>.New),
+        ["Bool"] = (Property.Bool, Property<bool>.New),
+        ["BoolArray"] = (Property.BoolArray, Property<bool[]>.New),
+        ["Number"] = (Property.Number, Property<double>.New),
+        ["NumberArray"] = (Property.NumberArray, Property<double[]>.New),
+        ["Date"] = (Property.Date, Property<DateTime>.New),
+        ["DateArray"] = (Property.DateArray, Property<DateTime[]>.New),
+        ["Uuid"] = (Property.Uuid, Property<Guid>.New),
+        ["UuidArray"] = (Property.UuidArray, Property<Guid[]>.New),
+        ["Geo"] = (Property.GeoCoordinate, Property<GeoCoordinate>.New),
+        ["Phone"] = (Property.PhoneNumber, Property<PhoneNumber>.New),
         // TODO Add support for the properties below
-        // ["Blob"] = (Property.Blob, Property.For<byte[]>),
-        // ["Object"] = (Property.Object, Property.For<object>),
-        // ["ObjectArray"] = (Property.ObjectArray, Property.For<object[]>),
+        // ["Blob"] = (Property.Blob, Property<byte[]>.New),
+        // ["Object"] = (Property.Object, Property<object>.New),
+        // ["ObjectArray"] = (Property.ObjectArray, Property<object[]>.New),
     };
 
     [Theory]

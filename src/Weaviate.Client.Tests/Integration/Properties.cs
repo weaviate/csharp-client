@@ -51,6 +51,7 @@ public partial class PropertyTests : IntegrationTests
             TestUuid = Guid.NewGuid(),
             TestUuidArray = new[] { Guid.NewGuid(), Guid.NewGuid() },
             TestGeo = new GeoCoordinate(12.345f, 67.890f),
+            // TestPhone = new PhoneNumber(),
         };
 
         var id = await c.Data.Insert(testData);
@@ -161,5 +162,79 @@ public partial class PropertyTests : IntegrationTests
 
             Assert.Equivalent(testData[r.Index], concreteObj);
         }
+    }
+
+    [Fact]
+    public async Task Test_Properties_Extra_Options()
+    {
+        Property[] props =
+        [
+            Property.Text(
+                "Name",
+                "Some Description",
+                true,
+                false,
+                true,
+                PropertyTokenization.Lowercase
+            ),
+            Property.Text(
+                "Nickname",
+                "No Description",
+                indexFilterable: true,
+                indexRangeFilters: false,
+                indexSearchable: false,
+                tokenization: PropertyTokenization.Lowercase
+            ),
+            Property.Int(
+                "Age",
+                "In years",
+                indexFilterable: true,
+                indexRangeFilters: true,
+                indexSearchable: false,
+                tokenization: null
+            ),
+        ];
+
+        // 1. Create collection
+        var c = await CollectionFactory(
+            description: "Testing collection properties",
+            properties: props
+        );
+
+        var export = await _weaviate.Collections.Export(c.Name);
+
+        Assert.NotNull(export);
+        Assert.Equal(3, export.Properties.Count);
+
+        // var propA = export.Properties.First(p => p.Name == "Name");
+        var propA = export.Properties[0];
+
+        Assert.Equal("name", propA.Name);
+        Assert.Equal("Some Description", propA.Description);
+        Assert.True(propA.IndexFilterable);
+        Assert.False(propA.IndexRangeFilters);
+        Assert.True(propA.IndexSearchable);
+#pragma warning disable CS0612 // Type or member is obsolete
+        Assert.Null(propA.IndexInverted);
+#pragma warning restore CS0612 // Type or member is obsolete
+
+        // var propB = export.Properties.First(p => p.Name == "Nickname");
+        var propB = export.Properties[1];
+        Assert.Equal("nickname", propB.Name);
+        Assert.True(propB.IndexFilterable);
+        Assert.False(propB.IndexRangeFilters);
+        Assert.False(propB.IndexSearchable);
+#pragma warning disable CS0612 // Type or member is obsolete
+        Assert.Null(propB.IndexInverted);
+#pragma warning restore CS0612 // Type or member is obsolete
+
+        var propC = export.Properties[2];
+        Assert.Equal("age", propC.Name);
+        Assert.True(propC.IndexFilterable);
+        Assert.True(propC.IndexRangeFilters);
+        Assert.False(propC.IndexSearchable);
+#pragma warning disable CS0612 // Type or member is obsolete
+        Assert.Null(propC.IndexInverted);
+#pragma warning restore CS0612 // Type or member is obsolete
     }
 }
