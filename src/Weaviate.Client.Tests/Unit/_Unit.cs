@@ -18,8 +18,9 @@ public record TestProperties
     public Guid? TestUuid { get; set; }
     public Guid[]? TestUuidArray { get; set; }
     public GeoCoordinate? TestGeo { get; set; }
+
     // // public byte[]? TestBlob { get; set; }
-    // // public PhoneNumber? TestPhone { get; set; }
+    public PhoneNumber? TestPhone { get; set; }
     // // public object? TestObject { get; set; }
     // // public object? TestObjectArray { get; set; }
 }

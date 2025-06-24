@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Weaviate.Client.Tests;
 
 public class LoggingHandler : DelegatingHandler
@@ -18,7 +20,7 @@ public class LoggingHandler : DelegatingHandler
 
         if (request.Content != null)
         {
-            var requestContent = await request.Content.ReadAsStringAsync();
+            var requestContent = await request.Content.ReadAsStringAsync(CancellationToken.None);
             _log($"Request Content: {requestContent}");
 
             // Buffer the content so it can be read again.
@@ -45,7 +47,21 @@ public class LoggingHandler : DelegatingHandler
 
         if (response.Content != null)
         {
-            var responseContent = await response.Content.ReadAsStringAsync();
+            string responseContent = "";
+
+            var responseContentJson = await response.Content.ReadAsStringAsync(
+                CancellationToken.None
+            );
+
+            if (responseContentJson.Length > 0)
+            {
+                var responseContentDoc = JsonDocument.Parse(responseContentJson);
+                responseContent = JsonSerializer.Serialize(
+                    responseContentDoc,
+                    new JsonSerializerOptions { WriteIndented = true }
+                );
+            }
+
             _log($"Response Content: {responseContent}");
         }
 
