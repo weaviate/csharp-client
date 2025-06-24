@@ -18,6 +18,21 @@ env:
   WEAVIATE: 1.30.2
 
 jobs:
+  check_formatting:
+    runs-on: ubuntu-latest
+    name: Check Formatting
+    steps:
+      - name: Get list of changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+      - name: Setup dotnet 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+      - uses: actions/checkout@v2
+      - run: |
+          dotnet tool restore
+          dotnet csharpier check ${{ steps.changed-files.outputs.all_changed_files }}
   integration-tests:
     name: Run Integration Tests
     runs-on: ubuntu-latest
