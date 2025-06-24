@@ -4,7 +4,10 @@ set -eou pipefail
 
 export WEAVIATE_VERSION=$1
 
-source ./ci/compose.sh
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+# shellcheck disable=SC1091
+source compose.sh
 
 echo "Stop existing session if running"
 compose_down_all
