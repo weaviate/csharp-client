@@ -1,8 +1,10 @@
+using System.Dynamic;
+
 namespace Weaviate.Client.Models;
 
-public class Collection : CollectionBase<object, object, object> { }
+public class Collection : CollectionBase<dynamic, dynamic> { }
 
-public class CollectionBase<TModuleConfig, TShardingConfig, TVectorIndexConfig>
+public class CollectionBase<TModuleConfig, TVectorIndexConfig>
 {
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
@@ -23,7 +25,7 @@ public class CollectionBase<TModuleConfig, TShardingConfig, TVectorIndexConfig>
     public ReplicationConfig? ReplicationConfig { get; set; }
 
     // Manage how the index should be sharded and distributed in the cluster
-    public TShardingConfig? ShardingConfig { get; set; }
+    public ShardingConfig? ShardingConfig { get; set; }
 
     // Configure named vectors. Either use this field or `vectorizer`, `vectorIndexType`, and `vectorIndexConfig` fields. Available from `v1.24.0`.
     public Dictionary<string, VectorConfig> VectorConfig { get; set; } = default!;

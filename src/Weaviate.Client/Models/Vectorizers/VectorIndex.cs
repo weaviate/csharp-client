@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Weaviate.Client.Models.Vectorizers;
 
 public abstract record VectorIndexConfig(string Identifier, dynamic? Configuration)
@@ -8,6 +10,11 @@ public abstract record VectorIndexConfig(string Identifier, dynamic? Configurati
 
     internal static VectorIndexConfig Factory(string type, object? vectorIndexConfig)
     {
+        if (vectorIndexConfig is JsonElement vic)
+        {
+            vectorIndexConfig = ObjectHelper.JsonElementToExpandoObject(vic);
+        }
+
         return type switch
         {
             "hnsw" => new VectorIndexConfig.HNSW() { Configuration = vectorIndexConfig },

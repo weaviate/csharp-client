@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
+using System.Text.Json;
 using Google.Protobuf.WellKnownTypes;
 using Weaviate.Client.Models;
 using Weaviate.Client.Rest.Dto;
@@ -10,6 +11,48 @@ namespace Weaviate.Client;
 
 internal class ObjectHelper
 {
+    public static dynamic? JsonElementToExpandoObject(JsonElement? e)
+    {
+        if (e is null)
+        {
+            return null;
+        }
+
+        var element = e.Value;
+
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            var expando = new ExpandoObject();
+            var dictionary = (IDictionary<string, object?>)expando;
+
+            foreach (var property in element.EnumerateObject())
+            {
+                dictionary[property.Name] = JsonElementToExpandoObject(property.Value);
+            }
+
+            return expando;
+        }
+
+        if (element.ValueKind == JsonValueKind.Array)
+        {
+            return element
+                .EnumerateArray()
+                .Cast<JsonElement?>()
+                .Select(JsonElementToExpandoObject)
+                .ToArray();
+        }
+
+        return element.ValueKind switch
+        {
+            JsonValueKind.String => element.GetString(),
+            JsonValueKind.Number => element.TryGetInt32(out int i) ? i : element.GetDouble(),
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            JsonValueKind.Null => null,
+            _ => element.ToString(),
+        };
+    }
+
     public static string MakeBeaconSource(string collection, Guid fromUuid, string fromProperty) =>
         $"weaviate://localhost/{collection}/{fromUuid}/{fromProperty}";
 
