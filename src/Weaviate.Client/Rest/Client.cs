@@ -95,7 +95,11 @@ public class WeaviateRestClient : IDisposable
         PropertyNameCaseInsensitive = true, // Case-insensitive property matching
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Convert JSON names to PascalCase (C# convention)
         WriteIndented = true, // For readability
-        Converters = { new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase) },
+        Converters =
+        {
+            new EnumMemberJsonConverterFactory(),
+            new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase),
+        },
     };
 
     internal WeaviateRestClient(Uri restUri, HttpClient? httpClient = null)
@@ -282,7 +286,7 @@ public class WeaviateRestClient : IDisposable
 
         await response.EnsureExpectedStatusCodeAsync([200], "reference add many");
 
-        return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>()
+        return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>(_options)
             ?? throw new WeaviateRestException();
     }
 
