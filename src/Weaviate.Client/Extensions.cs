@@ -135,6 +135,16 @@ public static class WeaviateExtensions
                 ))
                 .ToDictionary() ?? new Dictionary<string, VectorConfig>();
 
+        ShardingConfig? shardingConfig = (
+            collection.ShardingConfig as JsonElement?
+        )?.Deserialize<ShardingConfig>(
+            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
+        );
+
+        var moduleConfig = ObjectHelper.JsonElementToExpandoObject(
+            collection.ModuleConfig as JsonElement?
+        );
+
         return new Collection()
         {
             Name = collection.Class1 ?? string.Empty,
@@ -180,17 +190,7 @@ public static class WeaviateExtensions
                             iic.IndexTimestamps ?? InvertedIndexConfig.Default.IndexTimestamps,
                     }
                     : null,
-            ShardingConfig = collection?.ShardingConfig,
-            ModuleConfig = collection?.ModuleConfig,
-            ReplicationConfig =
-                (collection?.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
-                    ? new ReplicationConfig
-                    {
-                        AsyncEnabled = rc.AsyncEnabled ?? ReplicationConfig.Default.AsyncEnabled,
-                        Factor = rc.Factor ?? ReplicationConfig.Default.Factor,
-                        DeletionStrategy = (DeletionStrategy?)rc.DeletionStrategy,
-                    }
-                    : null,
+            ModuleConfig = moduleConfig,
             MultiTenancyConfig =
                 (collection?.MultiTenancyConfig is Rest.Dto.MultiTenancyConfig mtc)
                     ? new MultiTenancyConfig
@@ -203,6 +203,16 @@ public static class WeaviateExtensions
                             mtc.AutoTenantCreation ?? MultiTenancyConfig.Default.AutoTenantCreation,
                     }
                     : null,
+            ReplicationConfig =
+                (collection?.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
+                    ? new ReplicationConfig
+                    {
+                        AsyncEnabled = rc.AsyncEnabled ?? ReplicationConfig.Default.AsyncEnabled,
+                        Factor = rc.Factor ?? ReplicationConfig.Default.Factor,
+                        DeletionStrategy = (DeletionStrategy?)rc.DeletionStrategy,
+                    }
+                    : null,
+            ShardingConfig = shardingConfig,
             VectorConfig = vectorConfig,
         };
     }
