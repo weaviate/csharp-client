@@ -17,9 +17,9 @@ public abstract record VectorIndexConfig(string Identifier, dynamic? Configurati
 
         return type switch
         {
-            "hnsw" => new VectorIndexConfig.HNSW() { Configuration = vectorIndexConfig },
-            "flat" => new VectorIndexConfig.Flat() { Configuration = vectorIndexConfig },
-            "dynamic" => new VectorIndexConfig.Dynamic() { Configuration = vectorIndexConfig },
+            "hnsw" => new HNSW() { Configuration = vectorIndexConfig },
+            "flat" => new Flat() { Configuration = vectorIndexConfig },
+            "dynamic" => new Dynamic() { Configuration = vectorIndexConfig },
             _ => VectorIndexConfig.Default,
         };
     }

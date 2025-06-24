@@ -26,10 +26,9 @@ public partial class UnitTests
         };
 
         // Act
-        Dictionary<string, VectorConfig> asDict = ncList;
 
         // Assert
-        Assert.Equal(["default", "fromSizes", "location", "nein", "built"], asDict.Keys);
+        Assert.Equal(["default", "fromSizes", "location", "nein", "built"], ncList.Keys);
     }
 
     [Fact]
@@ -84,7 +83,7 @@ public partial class UnitTests
             {
                 PropertyNameCaseInsensitive = true, // Case-insensitive property matching
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Convert JSON names to PascalCase (C# convention)
-                WriteIndented = false, // For readability
+                WriteIndented = false, // For testability
             }
         );
 

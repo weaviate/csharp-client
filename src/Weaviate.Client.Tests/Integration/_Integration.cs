@@ -35,7 +35,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable
             }
         );
 
-        _weaviate = new WeaviateClient(httpClient: _httpClient);
+        _weaviate = Connect.Local(httpClient: _httpClient);
     }
 
     public async ValueTask DisposeAsync()

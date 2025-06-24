@@ -20,29 +20,28 @@ public static class WeaviateExtensions
         {
             Class1 = collection.Name,
             Description = collection.Description,
-            Properties = new List<Rest.Dto.Property>(),
-            VectorConfig =
-                collection
-                    .VectorConfig?.ToList()
-                    .ToDictionary(
-                        e => e.Key,
-                        e => new Rest.Dto.VectorConfig
-                        {
-                            VectorIndexConfig = e.Value.VectorIndexConfig.Configuration,
-                            VectorIndexType = e.Value.VectorIndexType,
-                            Vectorizer = e.Value.Vectorizer?.ToDto(),
-                        }
-                    ) ?? new Dictionary<string, Rest.Dto.VectorConfig>(),
+            Properties = collection.Properties.Any()
+                ?
+                [
+                    .. collection.Properties.Select(p => new Rest.Dto.Property()
+                    {
+                        Name = p.Name,
+                        DataType = [.. p.DataType],
+                    }),
+                ]
+                : null,
+            VectorConfig = collection.VectorConfig?.Values.ToDictionary(
+                e => e.Name,
+                e => new Rest.Dto.VectorConfig
+                {
+                    VectorIndexConfig = e.VectorIndexConfig?.Configuration,
+                    VectorIndexType = e.VectorIndexType,
+                    Vectorizer = e.Vectorizer?.ToDto(),
+                }
+            ),
             ShardingConfig = collection.ShardingConfig,
             ModuleConfig = collection.ModuleConfig,
         };
-
-        foreach (var property in collection.Properties)
-        {
-            data.Properties.Add(
-                new Rest.Dto.Property() { Name = property.Name, DataType = [.. property.DataType] }
-            );
-        }
 
         if (collection.ReplicationConfig is ReplicationConfig rc)
         {
@@ -127,13 +126,9 @@ public static class WeaviateExtensions
             return new VectorConfig(name) { Vectorizer = vc, VectorIndexConfig = vic };
         };
 
-        var vectorConfig =
-            collection
-                .VectorConfig?.Select(e => new KeyValuePair<string, VectorConfig>(
-                    e.Key,
-                    makeVectorConfig(e.Key, e.Value)
-                ))
-                .ToDictionary() ?? new Dictionary<string, VectorConfig>();
+        var vectorConfig = new VectorConfigList(
+            [.. collection.VectorConfig?.Select(e => makeVectorConfig(e.Key, e.Value)) ?? []]
+        );
 
         ShardingConfig? shardingConfig = (
             collection.ShardingConfig as JsonElement?

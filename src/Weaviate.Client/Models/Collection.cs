@@ -28,7 +28,7 @@ public class CollectionBase<TModuleConfig, TVectorIndexConfig>
     public ShardingConfig? ShardingConfig { get; set; }
 
     // Configure named vectors. Either use this field or `vectorizer`, `vectorIndexType`, and `vectorIndexConfig` fields. Available from `v1.24.0`.
-    public Dictionary<string, VectorConfig> VectorConfig { get; set; } = default!;
+    public VectorConfigList VectorConfig { get; set; } = default!;
 
     // Vector-index config, that is specific to the type of index selected in vectorIndexType
     [Obsolete("Use `VectorConfig` instead")]

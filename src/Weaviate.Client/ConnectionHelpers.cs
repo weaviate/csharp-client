@@ -13,8 +13,9 @@ public static class Connect
         ushort restPort = 8080,
         ushort grpcPort = 50051,
         bool useSsl = false,
-        string? apiKey = null
-    ) => LocalConfig(restPort, grpcPort, useSsl, apiKey).Client();
+        string? apiKey = null,
+        HttpClient? httpClient = null
+    ) => LocalConfig(restPort, grpcPort, useSsl, apiKey).Client(httpClient);
 
     public static ClientConfiguration CloudConfig(
         string restEndpoint,

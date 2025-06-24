@@ -1,23 +1,25 @@
 #!/usr/bin/env bash
 
-set -eou pipefail
-
 function ls_compose {
-  ls ci | grep 'docker-compose'
+  for file in *; do
+    if [[ "$file" == *"docker-compose"* ]]; then
+      echo "${file}"
+    fi
+  done
 }
 
 function exec_all {
   for file in $(ls_compose); do
-    docker compose -f $(echo "ci/${file} ${1}")
+    docker compose -f "${file}" "$@"
   done
 }
 
 function compose_up_all {
-  exec_all "up -d"
+  exec_all up -d --quiet-pull
 }
 
 function compose_down_all {
-  exec_all "down --remove-orphans"
+  exec_all down --remove-orphans
 }
 
 function all_weaviate_ports {
@@ -31,7 +33,7 @@ function wait(){
   echo "Waiting for $1"
   while true; do
     # first check if weaviate already responds
-    if ! curl -s $1 > /dev/null; then
+    if ! curl -s "$1" > /dev/null; then
       continue
     fi
 
@@ -47,7 +49,7 @@ function wait(){
         exit 1
       else
         sleep 2
-        let ALREADY_WAITING=$ALREADY_WAITING+2
+        (( ALREADY_WAITING+=2 )) || true
       fi
     fi
   done
