@@ -2,7 +2,8 @@ namespace Weaviate.Client.Models;
 
 public record InvertedIndexConfig
 {
-    private static readonly Lazy<InvertedIndexConfig> defaultInstance = new Lazy<InvertedIndexConfig>(() => new());
+    private static readonly Lazy<InvertedIndexConfig> defaultInstance =
+        new Lazy<InvertedIndexConfig>(() => new());
 
     public static InvertedIndexConfig Default => defaultInstance.Value;
 
