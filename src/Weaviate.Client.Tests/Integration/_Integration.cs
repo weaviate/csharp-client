@@ -54,7 +54,11 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
         VectorConfigList? vectorConfig = null,
-        InvertedIndexConfig? invertedIndexConfig = null
+        MultiTenancyConfig? multiTenancyConfig = null,
+        InvertedIndexConfig? invertedIndexConfig = null,
+        ReplicationConfig? replicationConfig = null,
+        ShardingConfig? shardingConfig = null,
+        string collectionNamePartSeparator = "_"
     )
     {
         description ??= TestContext.Current.TestMethod?.MethodName ?? string.Empty;
@@ -69,7 +73,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable
             .Where(s => !string.IsNullOrEmpty(s))
             .Cast<string>();
 
-        name = string.Join("_", strings);
+        name = string.Join(collectionNamePartSeparator, strings);
 
         properties ??= Property.FromCollection<TData>();
 
@@ -86,7 +90,10 @@ public abstract partial class IntegrationTests : IAsyncDisposable
             Description = description,
             Properties = properties.Concat(references!.Select(p => (Property)p)).ToList(),
             VectorConfig = vectorConfig,
+            MultiTenancyConfig = multiTenancyConfig,
             InvertedIndexConfig = invertedIndexConfig,
+            ReplicationConfig = replicationConfig,
+            ShardingConfig = shardingConfig,
         };
 
         await _weaviate.Collections.Delete(name);
@@ -104,7 +111,11 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         IList<Property>? properties = null,
         IList<ReferenceProperty>? references = null,
         VectorConfigList? vectorConfig = null,
-        InvertedIndexConfig? invertedIndexConfig = null
+        MultiTenancyConfig? multiTenancyConfig = null,
+        InvertedIndexConfig? invertedIndexConfig = null,
+        ReplicationConfig? replicationConfig = null,
+        ShardingConfig? shardingConfig = null,
+        string collectionNamePartSeparator = "_"
     )
     {
         return await CollectionFactory<dynamic>(
@@ -113,7 +124,11 @@ public abstract partial class IntegrationTests : IAsyncDisposable
             properties,
             references,
             vectorConfig,
-            invertedIndexConfig
+            multiTenancyConfig,
+            invertedIndexConfig,
+            replicationConfig,
+            shardingConfig,
+            collectionNamePartSeparator
         );
     }
 }
