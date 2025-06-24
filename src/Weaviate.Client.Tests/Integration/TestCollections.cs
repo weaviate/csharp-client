@@ -9,6 +9,40 @@ namespace Weaviate.Client.Tests.Integration;
 public partial class CollectionsTests : IntegrationTests
 {
     [Fact]
+    public async Task Test_Collections_List()
+    {
+        // Arrange
+        var collection = new[]
+        {
+            await CollectionFactory(
+                name: "Collection1",
+                properties: [Property.Text("Name")],
+                vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            ),
+            await CollectionFactory(
+                name: "Collection2",
+                properties: [Property.Text("Lastname")],
+                vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            ),
+            await CollectionFactory(
+                name: "Collection3",
+                properties: [Property.Text("Address")],
+                vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            ),
+        };
+
+        var collectionNames = collection.Select(c => c.Name).ToHashSet();
+
+        // Act
+        var list = await _weaviate
+            .Collections.List()
+            .ToListAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(collectionNames, list.Select(l => l.Name).ToHashSet());
+    }
+
+    [Fact]
     public async Task Test_Collections_Exists()
     {
         var collection = await CollectionFactory(
