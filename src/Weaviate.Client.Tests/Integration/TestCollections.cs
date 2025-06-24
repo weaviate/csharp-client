@@ -37,7 +37,7 @@ public partial class CollectionsTests : IntegrationTests
             .ToListAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        Assert.Subset(collectionNames, list.Select(l => l.Name).ToHashSet());
+        Assert.ProperSubset(list.Select(l => l.Name).ToHashSet(), collectionNames);
     }
 
     [Fact]
