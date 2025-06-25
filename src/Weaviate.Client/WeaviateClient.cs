@@ -48,6 +48,11 @@ public class WeaviateClient : IDisposable
         }
     );
 
+    public async Task<MetaInfo> GetMeta()
+    {
+        return await RestClient.GetMeta();
+    }
+
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
 
     private bool _isDisposed = false;
