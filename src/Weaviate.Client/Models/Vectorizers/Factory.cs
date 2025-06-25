@@ -10,31 +10,31 @@ internal static class VectorizerConfigFactory
 {
     private static readonly Dictionary<string, Type> _configTypes = new()
     {
-        { "none", typeof(VectorizerConfig.None) },
-        { "img2vec-neural", typeof(VectorizerConfig.Img2VecNeural) },
-        { "multi2vec-clip", typeof(VectorizerConfig.Multi2VecClip) },
-        { "multi2vec-cohere", typeof(VectorizerConfig.Multi2VecCohere) },
-        { "multi2vec-bind", typeof(VectorizerConfig.Multi2VecBind) },
-        { "multi2vec-palm", typeof(VectorizerConfig.Multi2VecGoogle) },
-        { "multi2vec-jinaai", typeof(VectorizerConfig.Multi2VecJinaAI) },
-        { "multi2vec-voyageai", typeof(VectorizerConfig.Multi2VecVoyageAI) },
-        { "ref2vec-centroid", typeof(VectorizerConfig.Ref2VecCentroid) },
-        { "text2vec-aws", typeof(VectorizerConfig.Text2VecAWS) },
-        { "text2vec-azure-openai", typeof(VectorizerConfig.Text2VecAzureOpenAI) },
-        { "text2vec-cohere", typeof(VectorizerConfig.Text2VecCohere) },
-        { "text2vec-contextionary", typeof(VectorizerConfig.Text2VecContextionary) },
-        { "text2vec-databricks", typeof(VectorizerConfig.Text2VecDatabricks) },
-        { "text2vec-gpt4all", typeof(VectorizerConfig.Text2VecGPT4All) },
-        { "text2vec-huggingface", typeof(VectorizerConfig.Text2VecHuggingFace) },
-        { "text2vec-jinaai", typeof(VectorizerConfig.Text2VecJinaAI) },
-        { "text2vec-nvidia", typeof(VectorizerConfig.Text2VecNvidia) },
-        { "text2vec-mistral", typeof(VectorizerConfig.Text2VecMistral) },
-        { "text2vec-ollama", typeof(VectorizerConfig.Text2VecOllama) },
-        { "text2vec-openai", typeof(VectorizerConfig.Text2VecOpenAI) },
-        { "text2vec-palm", typeof(VectorizerConfig.Text2VecGoogle) },
-        { "text2vec-transformers", typeof(VectorizerConfig.Text2VecTransformers) },
-        { "text2vec-voyageai", typeof(VectorizerConfig.Text2VecVoyageAI) },
-        { "text2vec-weaviate", typeof(VectorizerConfig.Text2VecWeaviate) },
+        { "none", typeof(Vectorizer.None) },
+        { "img2vec-neural", typeof(Vectorizer.Img2VecNeural) },
+        { "multi2vec-clip", typeof(Vectorizer.Multi2VecClip) },
+        { "multi2vec-cohere", typeof(Vectorizer.Multi2VecCohere) },
+        { "multi2vec-bind", typeof(Vectorizer.Multi2VecBind) },
+        { "multi2vec-palm", typeof(Vectorizer.Multi2VecGoogle) },
+        { "multi2vec-jinaai", typeof(Vectorizer.Multi2VecJinaAI) },
+        { "multi2vec-voyageai", typeof(Vectorizer.Multi2VecVoyageAI) },
+        { "ref2vec-centroid", typeof(Vectorizer.Ref2VecCentroid) },
+        { "text2vec-aws", typeof(Vectorizer.Text2VecAWS) },
+        { "text2vec-azure-openai", typeof(Vectorizer.Text2VecAzureOpenAI) },
+        { "text2vec-cohere", typeof(Vectorizer.Text2VecCohere) },
+        { "text2vec-contextionary", typeof(Vectorizer.Text2VecContextionary) },
+        { "text2vec-databricks", typeof(Vectorizer.Text2VecDatabricks) },
+        { "text2vec-gpt4all", typeof(Vectorizer.Text2VecGPT4All) },
+        { "text2vec-huggingface", typeof(Vectorizer.Text2VecHuggingFace) },
+        { "text2vec-jinaai", typeof(Vectorizer.Text2VecJinaAI) },
+        { "text2vec-nvidia", typeof(Vectorizer.Text2VecNvidia) },
+        { "text2vec-mistral", typeof(Vectorizer.Text2VecMistral) },
+        { "text2vec-ollama", typeof(Vectorizer.Text2VecOllama) },
+        { "text2vec-openai", typeof(Vectorizer.Text2VecOpenAI) },
+        { "text2vec-palm", typeof(Vectorizer.Text2VecGoogle) },
+        { "text2vec-transformers", typeof(Vectorizer.Text2VecTransformers) },
+        { "text2vec-voyageai", typeof(Vectorizer.Text2VecVoyageAI) },
+        { "text2vec-weaviate", typeof(Vectorizer.Text2VecWeaviate) },
     };
 
     /// <summary>
@@ -55,7 +55,7 @@ internal static class VectorizerConfigFactory
 
         if (type == "none")
         {
-            return new VectorizerConfig.None();
+            return new Vectorizer.None();
         }
 
         try

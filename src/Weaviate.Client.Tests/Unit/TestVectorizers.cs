@@ -7,35 +7,38 @@ namespace Weaviate.Client.Tests;
 public partial class UnitTests
 {
     [Fact]
-    public void Test_VectorizerList_ImplicitConversion()
+    public void Test_VectorConfigList()
     {
         // Arrange
         VectorConfigList ncList = new[]
         {
-            Vector.Name("default").With(new VectorizerConfig.Text2VecContextionary()).From("name"),
-            Vector.Name("fromSizes").With(new VectorizerConfig.Text2VecWeaviate()).From("size"),
-            Vector
-                .Name("location")
-                .With(new VectorizerConfig.Text2VecContextionary())
-                .From("location"),
-            Vector
-                .Name("nein")
-                .With(new VectorizerConfig.None())
-                .With(new VectorIndexConfig.HNSW()),
-            Vector.Name("built").With(new VectorizerConfig.None()).Build(),
+            new VectorConfig(
+                "default",
+                new Vectorizer.Text2VecContextionary { Properties = ["breed", "color"] },
+                new VectorIndexConfig.HNSW() { Configuration = new { Option = "Value" } }
+            ),
+            new VectorConfig(
+                "fromSizes",
+                new Vectorizer.Text2VecContextionary { Properties = ["size"] }
+            ),
+            new VectorConfig(
+                "location",
+                new Vectorizer.Text2VecContextionary { Properties = ["location"] }
+            ),
+            new VectorConfig("nein", new Vectorizer.None()),
         };
 
         // Act
 
         // Assert
-        Assert.Equal(["default", "fromSizes", "location", "nein", "built"], ncList.Keys);
+        Assert.Equal(["default", "fromSizes", "location", "nein"], ncList.Keys);
     }
 
     [Fact]
     public void Test_NamedVectorConfig_None_Has_No_Properties()
     {
         // Arrange
-        var vc = Vector.Name(Vector.DefaultVectorName).With(new VectorizerConfig.None()).Build();
+        var vc = new VectorConfig("default", new Vectorizer.None());
 
         // Act
         var dto = vc.Vectorizer?.ToDto() ?? default;
@@ -62,10 +65,10 @@ public partial class UnitTests
     public void Test_NamedVectorConfig_Has_Properties()
     {
         // Arrange
-        var defaultVec = Vector
-            .Name("default")
-            .With(new VectorizerConfig.Text2VecContextionary())
-            .From("name");
+        var defaultVec = new VectorConfig(
+            "default",
+            new Vectorizer.Text2VecContextionary() { Properties = ["name"] }
+        );
 
         // Build explicitely, when typing as VectorConfig is needed,
         // like when accessing the Vectorizer property.
