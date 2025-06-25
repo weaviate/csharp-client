@@ -37,6 +37,8 @@ public partial class ClientTests : IntegrationTests
         var client = Connect.Local();
         var meta = await client.GetMeta();
 
-        Assert.Equal("http://127.0.0.1:8080", meta.Hostname);
+        // ip is different depending on the environment
+        Assert.Contains("8080", meta.Hostname);
+        Assert.Contains("http://", meta.Hostname);
     }
 }
