@@ -1,5 +1,3 @@
-using Weaviate.Client.Rest.Dto;
-
 namespace Weaviate.Client.Tests.Integration;
 
 [Collection("ClientTests")]
