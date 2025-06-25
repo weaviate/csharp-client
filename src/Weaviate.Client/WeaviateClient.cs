@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
 
@@ -48,9 +49,20 @@ public class WeaviateClient : IDisposable
         }
     );
 
-    public async Task<MetaInfo> GetMeta()
+    public async Task<Models.MetaInfo> GetMeta()
     {
-        return await RestClient.GetMeta();
+        var meta = await RestClient.GetMeta();
+
+        return new Models.MetaInfo
+        {
+            GrpcMaxMessageSize = meta?.GrpcMaxMessageSize ?? 0,
+            Hostname = meta?.Hostname ?? string.Empty,
+            Version = meta?.Version ?? string.Empty,
+            Modules =
+                (meta?.Modules as JsonElement?)
+                    ?.EnumerateObject()
+                    .ToDictionary(k => k.Name, k => (object)k.Value) ?? [],
+        };
     }
 
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
