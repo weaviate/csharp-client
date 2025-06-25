@@ -128,3 +128,10 @@ jobs:
 
       - name: Push package to NuGet
         run: dotnet nuget push './out/*.nupkg' --skip-duplicate --api-key ${{ secrets.NUGET_APIKEY }} --source https://api.nuget.org/v3/index.json
+
+      - name: GH Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          draft: true
+          files: ./out/*.nupkg
