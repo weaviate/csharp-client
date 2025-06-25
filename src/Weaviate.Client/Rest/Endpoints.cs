@@ -18,6 +18,8 @@ internal static class WeaviateEndpoints
     public static string CollectionTenant(string className, string tenantName) =>
         $"schema/{className}/tenants/{tenantName}";
 
+    public static string Meta() => $"meta";
+
     public static string Objects() => $"objects";
 
     internal static string? CollectionObject(string collectionName, Guid id) =>

@@ -31,10 +31,11 @@ public partial class UnitTests
     [Fact]
     public void NamedVectorInitialization()
     {
-        // Arrange
-        var v1 = new NamedVectors { { "default", 0.1f, 0.2f, 0.3f } };
+        var v1 = new NamedVectors();
+        v1.Add("default", new[] { 0.1f, 0.2f, 0.3f });
 
-        Assert.Equal(v1["default"], [0.1f, 0.2f, 0.3f]);
+        // Act & Assert
+        Assert.Equal(new[] { 0.1f, 0.2f, 0.3f }, v1["default"]);
     }
 
     [Fact]
