@@ -34,10 +34,11 @@ public partial class CollectionsTests : IntegrationTests
         // Act
         var list = await _weaviate
             .Collections.List()
-            .ToListAsync(TestContext.Current.CancellationToken);
+            .Select(x => x.Name)
+            .ToHashSetAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        Assert.ProperSubset(list.Select(l => l.Name).ToHashSet(), collectionNames);
+        Assert.Superset(collectionNames, list);
     }
 
     [Fact]

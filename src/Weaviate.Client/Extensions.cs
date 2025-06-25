@@ -6,14 +6,6 @@ namespace Weaviate.Client;
 
 public static class WeaviateExtensions
 {
-    private static readonly JsonSerializerOptions _defaultJsonSerializationOptions =
-        new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true, // Case-insensitive property matching
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Convert JSON names to PascalCase (C# convention)
-            WriteIndented = true, // For readability
-        };
-
     internal static Rest.Dto.Class ToDto(this Collection collection)
     {
         var data = new Rest.Dto.Class()
@@ -27,6 +19,14 @@ public static class WeaviateExtensions
                     {
                         Name = p.Name,
                         DataType = [.. p.DataType],
+                        Description = p.Description,
+                        IndexFilterable = p.IndexFilterable,
+#pragma warning disable CS0612 // Type or member is obsolete
+                        IndexInverted = p.IndexInverted,
+#pragma warning restore CS0612 // Type or member is obsolete
+                        IndexRangeFilters = p.IndexRangeFilters,
+                        IndexSearchable = p.IndexSearchable,
+                        Tokenization = (Rest.Dto.PropertyTokenization?)p.PropertyTokenization,
                     }),
                 ]
                 : null,
@@ -150,6 +150,14 @@ public static class WeaviateExtensions
                     {
                         Name = p.Name ?? string.Empty,
                         DataType = p.DataType?.ToList() ?? [],
+                        Description = p.Description,
+                        IndexFilterable = p.IndexFilterable,
+#pragma warning disable CS0612 // Type or member is obsolete
+                        IndexInverted = p.IndexInverted,
+#pragma warning restore CS0612 // Type or member is obsolete
+                        IndexRangeFilters = p.IndexRangeFilters,
+                        IndexSearchable = p.IndexSearchable,
+                        PropertyTokenization = (PropertyTokenization?)p.Tokenization,
                     })
                     .ToList() ?? [],
             InvertedIndexConfig =
