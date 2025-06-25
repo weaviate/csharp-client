@@ -126,7 +126,7 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonPropertyName("dbUserType")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public DBUserInfoDbUserType DbUserType { get; set; } = default!;
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonPropertyName("action")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public PermissionAction Action { get; set; } = default!;
 
         public string ToJson()
@@ -414,7 +414,7 @@ namespace Weaviate.Client.Rest.Dto
         public System.Collections.Generic.ICollection<string>? Groups { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("userType")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public UserTypeInput? UserType { get; set; } = default!;
 
         public string ToJson()
@@ -1016,7 +1016,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("deletionStrategy")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public ReplicationConfigDeletionStrategy? DeletionStrategy { get; set; } = default!;
 
         public string ToJson()
@@ -1267,7 +1267,7 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonPropertyName("op")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public PatchDocumentObjectOp Op { get; set; } = default!;
 
         /// <summary>
@@ -1326,7 +1326,7 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonPropertyName("op")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public PatchDocumentActionOp Op { get; set; } = default!;
 
         /// <summary>
@@ -1562,7 +1562,7 @@ namespace Weaviate.Client.Rest.Dto
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("state")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public ReplicationReplicateDetailsReplicaStatusState? State { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("errors")]
@@ -2010,7 +2010,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("tokenization")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public PropertyTokenization? Tokenization { get; set; } = default!;
 
         /// <summary>
@@ -2105,7 +2105,7 @@ namespace Weaviate.Client.Rest.Dto
         public bool? IndexRangeFilters { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("tokenization")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public NestedPropertyTokenization? Tokenization { get; set; } = default!;
 
         /// <summary>
@@ -2277,7 +2277,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public BackupCreateStatusResponseStatus? Status { get; set; } = Weaviate.Client.Rest.Dto.BackupCreateStatusResponseStatus.STARTED;
 
         public string ToJson()
@@ -2338,7 +2338,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public BackupRestoreStatusResponseStatus? Status { get; set; } = Weaviate.Client.Rest.Dto.BackupRestoreStatusResponseStatus.STARTED;
 
         public string ToJson()
@@ -2408,7 +2408,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("CompressionLevel")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public BackupConfigCompressionLevel? CompressionLevel { get; set; } = Weaviate.Client.Rest.Dto.BackupConfigCompressionLevel.DefaultCompression;
 
         public string ToJson()
@@ -2590,7 +2590,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public BackupCreateResponseStatus? Status { get; set; } = Weaviate.Client.Rest.Dto.BackupCreateResponseStatus.STARTED;
 
         public string ToJson()
@@ -2737,7 +2737,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public BackupRestoreResponseStatus? Status { get; set; } = Weaviate.Client.Rest.Dto.BackupRestoreResponseStatus.STARTED;
 
         public string ToJson()
@@ -2982,7 +2982,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public NodeStatusStatus? Status { get; set; } = Weaviate.Client.Rest.Dto.NodeStatusStatus.HEALTHY;
 
         /// <summary>
@@ -3277,7 +3277,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public StatisticsStatus? Status { get; set; } = Weaviate.Client.Rest.Dto.StatisticsStatus.HEALTHY;
 
         [System.Text.Json.Serialization.JsonPropertyName("bootstrapped")]
@@ -4028,7 +4028,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public ClassificationStatus? Status { get; set; } = default!;
 
         /// <summary>
@@ -4159,7 +4159,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("operator")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public WhereFilterOperator? Operator { get; set; } = default!;
 
         /// <summary>
@@ -4329,7 +4329,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("activityStatus")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public TenantActivityStatus? ActivityStatus { get; set; } = default!;
 
         public string ToJson()
@@ -4498,7 +4498,7 @@ namespace Weaviate.Client.Rest.Dto
         public System.Collections.Generic.ICollection<string>? Roles { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("userType")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public UserTypeInput? UserType { get; set; } = default!;
 
         public string ToJson()
@@ -4531,7 +4531,7 @@ namespace Weaviate.Client.Rest.Dto
         public System.Collections.Generic.ICollection<string>? Roles { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("userType")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public UserTypeInput? UserType { get; set; } = default!;
 
         public string ToJson()
@@ -4723,7 +4723,7 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonPropertyName("userType")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public UserTypeOutput UserType { get; set; } = default!;
 
         public string ToJson()
@@ -4774,7 +4774,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public Status? Status { get; set; } = default!;
 
         public string ToJson()
@@ -4888,7 +4888,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("verbosity")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public NodesVerbosity? Verbosity { get; set; } = Weaviate.Client.Rest.Dto.NodesVerbosity.Minimal;
 
         /// <summary>
@@ -4997,7 +4997,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("scope")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public RolesScope? Scope { get; set; } = Weaviate.Client.Rest.Dto.RolesScope.Match;
 
         public string ToJson()
@@ -5619,7 +5619,7 @@ namespace Weaviate.Client.Rest.Dto
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public ResultStatus? Status { get; set; } = Weaviate.Client.Rest.Dto.ResultStatus.SUCCESS;
 
         [System.Text.Json.Serialization.JsonPropertyName("errors")]
@@ -5649,7 +5649,7 @@ namespace Weaviate.Client.Rest.Dto
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public Result2Status? Status { get; set; } = Weaviate.Client.Rest.Dto.Result2Status.SUCCESS;
 
         [System.Text.Json.Serialization.JsonPropertyName("errors")]
@@ -6137,7 +6137,7 @@ namespace Weaviate.Client.Rest.Dto
         public System.Guid? Id { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public ObjectsStatus? Status { get; set; } = Weaviate.Client.Rest.Dto.ObjectsStatus.SUCCESS;
 
         [System.Text.Json.Serialization.JsonPropertyName("errors")]

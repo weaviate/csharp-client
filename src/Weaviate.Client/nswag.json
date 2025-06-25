@@ -89,7 +89,7 @@
       "generateDtoTypes": true,
       "generateOptionalPropertiesAsNullable": true,
       "generateNullableReferenceTypes": true,
-      "templateDirectory": null,
+      "templateDirectory": "./Rest/Schema/Templates",
       "serviceHost": null,
       "serviceSchemes": null,
       "output": "./Rest/Dto/Models.cs",

@@ -22,11 +22,11 @@ public partial class BatchTests : IntegrationTests
             description: "Testing Batch InsertMany",
             properties:
             [
-                Property.For<string>("Name"),
-                Property.For<int>("Size"),
-                Property.For<double>("Price"),
-                Property.For<bool>("IsAvailable"),
-                Property.For<DateTime>("AvailableSince"),
+                Property<string>.New("Name"),
+                Property<int>.New("Size"),
+                Property<double>.New("Price"),
+                Property<bool>.New("IsAvailable"),
+                Property<DateTime>.New("AvailableSince"),
             ]
         );
 
