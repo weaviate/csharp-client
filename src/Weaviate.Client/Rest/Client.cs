@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client.Rest;
@@ -88,6 +90,18 @@ public class WeaviateRestClient : IDisposable
     private readonly bool _ownershipClient;
     private readonly HttpClient _httpClient;
 
+    private JsonSerializerOptions _options = new()
+    {
+        PropertyNameCaseInsensitive = true, // Case-insensitive property matching
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Convert JSON names to PascalCase (C# convention)
+        WriteIndented = true, // For readability
+        Converters =
+        {
+            new EnumMemberJsonConverterFactory(),
+            new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase),
+        },
+    };
+
     internal WeaviateRestClient(Uri restUri, HttpClient? httpClient = null)
     {
         if (httpClient is null)
@@ -114,7 +128,7 @@ public class WeaviateRestClient : IDisposable
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection list");
 
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Schema>();
+        var contents = await response.Content.ReadFromJsonAsync<Dto.Schema>(options: _options);
 
         return contents;
     }
@@ -130,7 +144,7 @@ public class WeaviateRestClient : IDisposable
             return default;
         }
 
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>();
+        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>(options: _options);
 
         if (contents is null)
         {
@@ -151,13 +165,13 @@ public class WeaviateRestClient : IDisposable
     {
         var response = await _httpClient.PostAsJsonAsync(
             WeaviateEndpoints.Collection(),
-            collection
+            collection,
+            options: _options
         );
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection create");
 
-        var json = await response.Content.ReadAsStringAsync();
-        var contents = Dto.Class.FromJson(json);
+        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>(options: _options);
 
         if (contents is null)
         {
@@ -169,7 +183,11 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<Dto.Object> ObjectInsert(string collectionName, Dto.Object data)
     {
-        var response = await _httpClient.PostAsJsonAsync(WeaviateEndpoints.Objects(), data);
+        var response = await _httpClient.PostAsJsonAsync(
+            WeaviateEndpoints.Objects(),
+            data,
+            options: _options
+        );
 
         await response.EnsureExpectedStatusCodeAsync([200], "insert object");
 
@@ -193,7 +211,7 @@ public class WeaviateRestClient : IDisposable
         var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons.First();
 
-        var response = await _httpClient.PostAsJsonAsync(path, reference);
+        var response = await _httpClient.PostAsJsonAsync(path, reference, options: _options);
 
         await response.EnsureExpectedStatusCodeAsync([200], "reference add");
     }
@@ -210,7 +228,7 @@ public class WeaviateRestClient : IDisposable
         var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons;
 
-        var response = await _httpClient.PutAsJsonAsync(path, reference);
+        var response = await _httpClient.PutAsJsonAsync(path, reference, options: _options);
 
         await response.EnsureExpectedStatusCodeAsync([200], "reference replace");
     }
@@ -228,7 +246,7 @@ public class WeaviateRestClient : IDisposable
         var reference = beacons.First();
 
         var request = new HttpRequestMessage(HttpMethod.Delete, path);
-        request.Content = JsonContent.Create(reference, mediaType: null, null);
+        request.Content = JsonContent.Create(reference, mediaType: null, options: _options);
 
         var response = await _httpClient.SendAsync(request);
 
@@ -239,7 +257,7 @@ public class WeaviateRestClient : IDisposable
     {
         var path = WeaviateEndpoints.CollectionProperties(collectionName);
 
-        var response = await _httpClient.PostAsJsonAsync(path, property);
+        var response = await _httpClient.PostAsJsonAsync(path, property, options: _options);
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection property add");
     }
@@ -264,11 +282,11 @@ public class WeaviateRestClient : IDisposable
 
         var path = WeaviateEndpoints.ReferencesAdd();
 
-        var response = await _httpClient.PostAsJsonAsync(path, batchRefs);
+        var response = await _httpClient.PostAsJsonAsync(path, batchRefs, options: _options);
 
         await response.EnsureExpectedStatusCodeAsync([200], "reference add many");
 
-        return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>()
+        return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>(_options)
             ?? throw new WeaviateRestException();
     }
 
@@ -280,7 +298,7 @@ public class WeaviateRestClient : IDisposable
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection property add");
 
-        var schema = await response.Content.ReadFromJsonAsync<Schema>();
+        var schema = await response.Content.ReadFromJsonAsync<Schema>(options: _options);
 
         return schema?.Classes?.Any(c => c.Class1 is not null && c.Class1!.Equals(collectionName))
             ?? false;
