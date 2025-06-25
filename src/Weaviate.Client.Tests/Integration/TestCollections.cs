@@ -15,17 +15,17 @@ public partial class CollectionsTests : IntegrationTests
             await CollectionFactory(
                 name: "Collection1",
                 properties: [Property.Text("Name")],
-                vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+                vectorConfig: new VectorConfig("default", new Vectorizer.None())
             ),
             await CollectionFactory(
                 name: "Collection2",
                 properties: [Property.Text("Lastname")],
-                vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+                vectorConfig: new VectorConfig("default", new Vectorizer.None())
             ),
             await CollectionFactory(
                 name: "Collection3",
                 properties: [Property.Text("Address")],
-                vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+                vectorConfig: new VectorConfig("default", new Vectorizer.None())
             ),
         };
 
@@ -46,7 +46,7 @@ public partial class CollectionsTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("Name")],
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.None())
         );
 
         bool exists = await _weaviate.Collections.Exists(collection.Name);
@@ -69,7 +69,7 @@ public partial class CollectionsTests : IntegrationTests
             name: "MyOwnSuffix",
             description: "My own description too",
             properties: [Property.Text("Name")],
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.None())
         );
 
         var export = await _weaviate.Collections.Export(collection.Name);
@@ -211,9 +211,10 @@ public partial class CollectionsTests : IntegrationTests
             properties: [Property.Text("Name"), Property.Int("SomeNumber")],
             references: null,
             collectionNamePartSeparator: "",
-            vectorConfig: Vector
-                .Name("nondefault")
-                .With(new VectorizerConfig.Text2VecContextionary() { VectorizeClassName = false }),
+            vectorConfig: new VectorConfig(
+                "nondefault",
+                new Vectorizer.Text2VecContextionary() { VectorizeClassName = false }
+            ),
             invertedIndexConfig: new()
             {
                 Bm25 = new() { B = 0.70f, K1 = 1.3f },
@@ -383,9 +384,10 @@ public partial class CollectionsTests : IntegrationTests
             properties: [Property.Text("Name"), Property.Int("SomeNumber")],
             references: null,
             collectionNamePartSeparator: "",
-            vectorConfig: Vector
-                .Name("nondefault")
-                .With(new VectorizerConfig.Text2VecContextionary() { VectorizeClassName = false }),
+            vectorConfig: new VectorConfig(
+                "nondefault",
+                new Vectorizer.Text2VecContextionary() { VectorizeClassName = false }
+            ),
             multiTenancyConfig: new()
             {
                 AutoTenantActivation = true,
