@@ -85,14 +85,6 @@ public class SimpleHttpResponseException : Exception
     }
 }
 
-public struct MetaInfo
-{
-    public string Hostname { get; set; }
-    public string Version { get; set; }
-    public Dictionary<string, object> Modules { get; set; }
-    public int GrpcMaxMessageSize { get; set; }
-}
-
 public class WeaviateRestClient : IDisposable
 {
     private readonly bool _ownershipClient;
@@ -312,7 +304,7 @@ public class WeaviateRestClient : IDisposable
             ?? false;
     }
 
-    internal async Task<MetaInfo> GetMeta()
+    internal async Task<Dto.Meta?> GetMeta()
     {
         var path = WeaviateEndpoints.Meta();
 
@@ -320,7 +312,7 @@ public class WeaviateRestClient : IDisposable
 
         await response.EnsureExpectedStatusCodeAsync([200], "get meta endpoint");
 
-        var meta = await response.Content.ReadFromJsonAsync<MetaInfo>(options: _options);
+        var meta = await response.Content.ReadFromJsonAsync<Meta>(options: _options);
 
         return meta;
     }
