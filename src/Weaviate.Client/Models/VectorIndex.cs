@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Weaviate.Client.Models.Vectorizers;
+namespace Weaviate.Client.Models;
 
 public abstract record VectorIndexConfig(string Identifier, dynamic? Configuration)
 {

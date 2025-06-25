@@ -123,7 +123,7 @@ public static class WeaviateExtensions
                 }
             }
 
-            return new VectorConfig(name) { Vectorizer = vc, VectorIndexConfig = vic };
+            return new VectorConfig(name, vc, vic);
         };
 
         var vectorConfig = new VectorConfigList(

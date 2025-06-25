@@ -1,5 +1,4 @@
 using Weaviate.Client.Models;
-using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
@@ -10,7 +9,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("name")],
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.None())
         );
 
         await collection.Data.InsertMany(new { Name = "Name 1" }, new { Name = "Name 2" });
@@ -61,7 +60,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Int("data"), Property.Text("text")],
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.Text2VecContextionary())
+            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecContextionary())
         );
 
         // Insert test data
@@ -167,7 +166,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("this"), Property.Text("that")],
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.None())
         );
 
         var insertData = Enumerable
@@ -215,7 +214,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Int("data")],
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.None())
         );
 
         if (count > 0)
@@ -261,7 +260,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Int("data")],
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.None())
         );
 
         var insertData = Enumerable.Range(0, 10).Select(i => new { data = i }).ToArray();
