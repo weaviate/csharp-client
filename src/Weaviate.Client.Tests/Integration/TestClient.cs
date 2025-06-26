@@ -1,7 +1,7 @@
 namespace Weaviate.Client.Tests.Integration;
 
-[Collection("ConnectionTests")]
-public partial class ConnectionTests : IntegrationTests
+[Collection("ClientTests")]
+public partial class ClientTests : IntegrationTests
 {
     [Fact]
     public async Task ConnectToLocal()
@@ -29,5 +29,16 @@ public partial class ConnectionTests : IntegrationTests
             client.Collections.List().ToListAsync(TestContext.Current.CancellationToken).AsTask()
         );
         Assert.Null(ex);
+    }
+
+    [Fact]
+    public async Task TestMeta()
+    {
+        var client = Connect.Local();
+        var meta = await client.GetMeta();
+
+        // ip is different depending on the environment
+        Assert.Contains("8080", meta.Hostname);
+        Assert.Contains("http://", meta.Hostname);
     }
 }
