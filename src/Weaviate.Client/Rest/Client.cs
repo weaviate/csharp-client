@@ -303,4 +303,17 @@ public class WeaviateRestClient : IDisposable
         return schema?.Classes?.Any(c => c.Class1 is not null && c.Class1!.Equals(collectionName))
             ?? false;
     }
+
+    internal async Task<Dto.Meta?> GetMeta()
+    {
+        var path = WeaviateEndpoints.Meta();
+
+        var response = await _httpClient.GetAsync(path);
+
+        await response.EnsureExpectedStatusCodeAsync([200], "get meta endpoint");
+
+        var meta = await response.Content.ReadFromJsonAsync<Meta>(options: _options);
+
+        return meta;
+    }
 }
