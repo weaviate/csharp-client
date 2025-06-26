@@ -9,7 +9,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
         await collection.Data.InsertMany(new { Name = "Name 1" }, new { Name = "Name 2" });
@@ -166,7 +166,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("this"), Property.Text("that")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
         var insertData = Enumerable
@@ -214,7 +214,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Int("data")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
         if (count > 0)
@@ -260,7 +260,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Int("data")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
         var insertData = Enumerable.Range(0, 10).Select(i => new { data = i }).ToArray();
