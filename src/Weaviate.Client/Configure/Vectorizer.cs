@@ -6,7 +6,7 @@ public static partial class Configure
 {
     public static class Vectors
     {
-        public static VectorConfig None(string name = "default") => new(name);
+        public static VectorConfig SelfProvided(string name = "default") => new(name);
 
         public class VectorConfigBuilder(VectorizerConfig Config)
         {
