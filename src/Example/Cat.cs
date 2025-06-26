@@ -9,6 +9,6 @@ public record Cat
 
     public override string ToString()
     {
-        return $"Cat {{ Name: {Name}, Color: {Color}, Breed: {Breed} }}";
+        return $"Cat ({Counter}) {{ Name: {Name}, Color: {Color}, Breed: {Breed} }}";
     }
 }
