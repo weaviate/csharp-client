@@ -34,7 +34,7 @@ public static class WeaviateExtensions
                 e => e.Name,
                 e => new Rest.Dto.VectorConfig
                 {
-                    VectorIndexConfig = e.VectorIndexConfig?.Configuration,
+                    VectorIndexConfig = e.VectorIndexConfig,
                     VectorIndexType = e.VectorIndexType,
                     Vectorizer = e.Vectorizer?.ToDto(),
                 }
@@ -123,7 +123,7 @@ public static class WeaviateExtensions
                 }
             }
 
-            return new VectorConfig(name) { Vectorizer = vc, VectorIndexConfig = vic };
+            return new VectorConfig(name, vc, vic);
         };
 
         var vectorConfig = new VectorConfigList(

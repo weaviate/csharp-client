@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Weaviate.Client.Models.Vectorizers;
+namespace Weaviate.Client.Models;
 
-public abstract partial record VectorizerConfig
+public abstract record VectorizerConfig
 {
     private readonly string _identifier;
     protected HashSet<string> _properties = new();
