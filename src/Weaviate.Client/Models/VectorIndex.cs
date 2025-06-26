@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static Weaviate.Client.Models.VectorIndexConfig;
 
 namespace Weaviate.Client.Models;
 
@@ -51,56 +52,60 @@ public abstract record VectorIndexConfig()
         Acorn,
     }
 
-    public enum PQEncoderType
-    {
-        Kmeans,
-        Tile,
-    }
-
-    public enum PQEncoderDistribution
-    {
-        LogNormal,
-        Normal,
-    }
-
-    public class PQEncoderConfig
-    {
-        public PQEncoderType Type { get; set; }
-        public PQEncoderDistribution Distribution { get; set; }
-    }
-
     public abstract class QuantizerConfig
     {
         public abstract string Type { get; }
-    }
-
-    public class BQConfig : QuantizerConfig
-    {
-        public bool Cache { get; set; }
-        public int RescoreLimit { get; set; }
-        public override string Type => "bq";
-    }
-
-    public class SQConfig : QuantizerConfig
-    {
-        public int RescoreLimit { get; set; }
-        public int TrainingLimit { get; set; }
-        public override string Type => "sq";
-    }
-
-    public class PQConfig : QuantizerConfig
-    {
-        public bool BitCompression { get; set; }
-        public int Centroids { get; set; }
-        public required PQEncoderConfig Encoder { get; set; }
-        public int Segments { get; set; }
-        public int TrainingLimit { get; set; }
-        public override string Type => "pq";
     }
 }
 
 public static class VectorIndex
 {
+    public static class Quantizers
+    {
+        public enum DistributionType
+        {
+            LogNormal,
+            Normal,
+        }
+
+        public enum EncoderType
+        {
+            Kmeans,
+            Tile,
+        }
+
+        public class BQConfig : QuantizerConfig
+        {
+            public bool Cache { get; set; }
+            public int RescoreLimit { get; set; }
+            public override string Type => "bq";
+        }
+
+        public class SQConfig : QuantizerConfig
+        {
+            public int RescoreLimit { get; set; }
+            public int TrainingLimit { get; set; }
+            public override string Type => "sq";
+        }
+
+        public class PQConfig : QuantizerConfig
+        {
+            public class EncoderConfig
+            {
+                public EncoderType Type { get; set; }
+                public DistributionType Distribution { get; set; }
+            }
+
+            public bool BitCompression { get; set; }
+            public int Centroids { get; set; }
+            public required EncoderConfig Encoder { get; set; }
+            public int Segments { get; set; }
+            public int TrainingLimit { get; set; }
+
+            public override string Type => "pq";
+        }
+    }
+
     public sealed record HNSW : VectorIndexConfig
     {
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -155,7 +160,7 @@ public static class VectorIndex
         public int? VectorCacheMaxObjects { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public BQConfig? Quantizer { get; set; }
+        public Quantizers.BQConfig? Quantizer { get; set; }
 
         [JsonIgnore]
         public override string Type => "flat";
@@ -168,11 +173,7 @@ public static class VectorIndex
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public float? Threshold { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public required HNSW? Hnsw { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public required Flat? Flat { get; set; }
 
         [JsonIgnore]
