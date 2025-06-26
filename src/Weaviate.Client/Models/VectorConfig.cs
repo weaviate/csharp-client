@@ -16,13 +16,13 @@ public record VectorConfig
     {
         Name = name;
         Vectorizer = vectorizer ?? new Vectorizer.None();
-        VectorIndexConfig = vectorIndexConfig ?? VectorIndexConfig.Default;
+        VectorIndexConfig = vectorIndexConfig ?? new VectorIndex.HNSW();
     }
 
     /// <summary>
     /// Name of the vector index to use, eg. (HNSW).
     /// </summary>
-    public string? VectorIndexType => VectorIndexConfig?.Identifier;
+    public string? VectorIndexType => VectorIndexConfig?.Type;
 
     /// <summary>
     /// Name of the vector configuration.
