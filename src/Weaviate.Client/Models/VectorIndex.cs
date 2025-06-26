@@ -1,32 +1,181 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Models;
 
-public abstract record VectorIndexConfig(string Identifier, dynamic? Configuration)
+public abstract record VectorIndexConfig()
 {
-    private static readonly Lazy<VectorIndexConfig> _default = new(() => new HNSW());
-
-    public static VectorIndexConfig Default => _default.Value;
+    [JsonIgnore]
+    public abstract string Type { get; }
 
     internal static VectorIndexConfig Factory(string type, object? vectorIndexConfig)
     {
+        VectorIndexConfig? result = null;
+
+        JsonSerializerOptions options = new()
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true, // For readability
+            Converters = { new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase) },
+        };
+
         if (vectorIndexConfig is JsonElement vic)
         {
-            vectorIndexConfig = ObjectHelper.JsonElementToExpandoObject(vic);
+            result = type switch
+            {
+                "hnsw" => JsonSerializer.Deserialize<VectorIndex.HNSW>(vic.GetRawText(), options),
+                "flat" => JsonSerializer.Deserialize<VectorIndex.Flat>(vic.GetRawText(), options),
+                "dynamic" => JsonSerializer.Deserialize<VectorIndex.Dynamic>(
+                    vic.GetRawText(),
+                    options
+                ),
+                _ => null,
+            };
         }
 
-        return type switch
-        {
-            "hnsw" => new HNSW() { Configuration = vectorIndexConfig },
-            "flat" => new Flat() { Configuration = vectorIndexConfig },
-            "dynamic" => new Dynamic() { Configuration = vectorIndexConfig },
-            _ => VectorIndexConfig.Default,
-        };
+        return result ?? throw new WeaviateException("Unable to create VectorIndexConfig");
     }
 
-    public sealed record HNSW() : VectorIndexConfig("hnsw", new { });
+    public enum VectorDistance
+    {
+        Cosine,
+        Dot,
+        L2Squared,
+        Hamming,
+    }
 
-    public sealed record Flat() : VectorIndexConfig("flat", new { });
+    public enum VectorIndexFilterStrategy
+    {
+        Sweeping,
+        Acorn,
+    }
 
-    public sealed record Dynamic() : VectorIndexConfig("dynamic", new { });
-};
+    public enum PQEncoderType
+    {
+        Kmeans,
+        Tile,
+    }
+
+    public enum PQEncoderDistribution
+    {
+        LogNormal,
+        Normal,
+    }
+
+    public class PQEncoderConfig
+    {
+        public PQEncoderType Type { get; set; }
+        public PQEncoderDistribution Distribution { get; set; }
+    }
+
+    public abstract class QuantizerConfig
+    {
+        public abstract string Type { get; }
+    }
+
+    public class BQConfig : QuantizerConfig
+    {
+        public bool Cache { get; set; }
+        public int RescoreLimit { get; set; }
+        public override string Type => "bq";
+    }
+
+    public class SQConfig : QuantizerConfig
+    {
+        public int RescoreLimit { get; set; }
+        public int TrainingLimit { get; set; }
+        public override string Type => "sq";
+    }
+
+    public class PQConfig : QuantizerConfig
+    {
+        public bool BitCompression { get; set; }
+        public int Centroids { get; set; }
+        public required PQEncoderConfig Encoder { get; set; }
+        public int Segments { get; set; }
+        public int TrainingLimit { get; set; }
+        public override string Type => "pq";
+    }
+}
+
+public static class VectorIndex
+{
+    public sealed record HNSW : VectorIndexConfig
+    {
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? CleanupIntervalSeconds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public VectorDistance? Distance { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? DynamicEfMin { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? DynamicEfMax { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? DynamicEfFactor { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? EfConstruction { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? Ef { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public VectorIndexFilterStrategy? FilterStrategy { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? FlatSearchCutoff { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? MaxConnections { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public QuantizerConfig? Quantizer { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? Skip { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public long? VectorCacheMaxObjects { get; set; }
+
+        [JsonIgnore]
+        public override string Type => "hnsw";
+    }
+
+    public sealed record Flat : VectorIndexConfig
+    {
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public VectorDistance? Distance { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? VectorCacheMaxObjects { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public BQConfig? Quantizer { get; set; }
+
+        [JsonIgnore]
+        public override string Type => "flat";
+    }
+
+    public sealed record Dynamic : VectorIndexConfig
+    {
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public VectorDistance? Distance { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public float? Threshold { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public required HNSW? Hnsw { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public required Flat? Flat { get; set; }
+
+        [JsonIgnore]
+        public override string Type => "dynamic";
+    }
+}
