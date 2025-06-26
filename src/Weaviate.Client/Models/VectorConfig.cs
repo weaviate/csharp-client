@@ -15,7 +15,7 @@ public record VectorConfig
     )
     {
         Name = name;
-        Vectorizer = vectorizer ?? new Vectorizer.None();
+        Vectorizer = vectorizer ?? new Vectorizer.SelfProvided();
         VectorIndexConfig = vectorIndexConfig ?? new VectorIndex.HNSW();
     }
 
