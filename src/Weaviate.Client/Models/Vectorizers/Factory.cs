@@ -10,7 +10,7 @@ internal static class VectorizerConfigFactory
 {
     private static readonly Dictionary<string, Type> _configTypes = new()
     {
-        { "none", typeof(Vectorizer.None) },
+        { "none", typeof(Vectorizer.SelfProvided) },
         { "img2vec-neural", typeof(Vectorizer.Img2VecNeural) },
         { "multi2vec-clip", typeof(Vectorizer.Multi2VecClip) },
         { "multi2vec-cohere", typeof(Vectorizer.Multi2VecCohere) },
@@ -55,7 +55,7 @@ internal static class VectorizerConfigFactory
 
         if (type == "none")
         {
-            return new Vectorizer.None();
+            return new Vectorizer.SelfProvided();
         }
 
         try

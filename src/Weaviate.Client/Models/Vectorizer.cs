@@ -4,7 +4,7 @@ namespace Weaviate.Client.Models;
 
 public static partial class Vectorizer
 {
-    public partial record None { }
+    public partial record SelfProvided { }
 
     public partial record Img2VecNeural
     {
