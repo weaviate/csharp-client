@@ -15,17 +15,17 @@ public partial class CollectionsTests : IntegrationTests
             await CollectionFactory(
                 name: "Collection1",
                 properties: [Property.Text("Name")],
-                vectorConfig: new VectorConfig("default", new Vectorizer.None())
+                vectorConfig: Configure.Vectors.None()
             ),
             await CollectionFactory(
                 name: "Collection2",
                 properties: [Property.Text("Lastname")],
-                vectorConfig: new VectorConfig("default", new Vectorizer.None())
+                vectorConfig: Configure.Vectors.None()
             ),
             await CollectionFactory(
                 name: "Collection3",
                 properties: [Property.Text("Address")],
-                vectorConfig: new VectorConfig("default", new Vectorizer.None())
+                vectorConfig: Configure.Vectors.None()
             ),
         };
 
