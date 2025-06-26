@@ -39,7 +39,7 @@ public partial class UnitTests
                 "location",
                 new Vectorizer.Text2VecContextionary { Properties = ["location"] }
             ),
-            new VectorConfig("nein", new Vectorizer.None()),
+            new VectorConfig("nein", new Vectorizer.SelfProvided()),
             contextionaryVectorizer.New("contextionary1", properties: ["breed"]),
             contextionaryVectorizer.New("contextionary2", properties: ["color"]),
             Configure
@@ -67,10 +67,10 @@ public partial class UnitTests
     }
 
     [Fact]
-    public void Test_NamedVectorConfig_None_Has_No_Properties()
+    public void Test_NamedVectorConfig_SelfProvided_Has_No_Properties()
     {
         // Arrange
-        var vc = new VectorConfig("default", new Vectorizer.None());
+        var vc = new VectorConfig("default", new Vectorizer.SelfProvided());
 
         // Act
         var dto = vc.Vectorizer?.ToDto() ?? default;
