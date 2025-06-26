@@ -41,7 +41,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Check formatting
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         run: |
           dotnet tool restore
           dotnet csharpier check ${{ steps.changed-files.outputs.all_changed_files }}
