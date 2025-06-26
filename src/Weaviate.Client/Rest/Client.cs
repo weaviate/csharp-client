@@ -100,8 +100,8 @@ public class WeaviateRestClient : IDisposable
 
     private JsonSerializerOptions _options = new()
     {
-        PropertyNameCaseInsensitive = true, // Case-insensitive property matching
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Convert JSON names to PascalCase (C# convention)
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = true, // For readability
         Converters =
         {
