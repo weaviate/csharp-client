@@ -15,7 +15,7 @@ public partial class UnitTests
             new VectorConfig(
                 "default",
                 new Vectorizer.Text2VecContextionary { Properties = ["breed", "color"] },
-                new VectorIndexConfig.HNSW() { Configuration = new { Option = "Value" } }
+                new VectorIndex.HNSW()
             ),
             new VectorConfig(
                 "fromSizes",
