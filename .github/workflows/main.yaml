@@ -25,15 +25,15 @@ jobs:
     name: Check Formatting
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Get list of changed C# files
         id: changed-files
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v46
         with:
           files: |
             **.cs
-
-      - name: Checkout code
-        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -41,7 +41,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Check formatting
-        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           dotnet tool restore
           dotnet csharpier check ${{ steps.changed-files.outputs.all_changed_files }}
