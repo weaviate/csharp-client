@@ -15,17 +15,17 @@ public partial class CollectionsTests : IntegrationTests
             await CollectionFactory(
                 name: "Collection1",
                 properties: [Property.Text("Name")],
-                vectorConfig: Configure.Vectors.None()
+                vectorConfig: Configure.Vectors.SelfProvided()
             ),
             await CollectionFactory(
                 name: "Collection2",
                 properties: [Property.Text("Lastname")],
-                vectorConfig: Configure.Vectors.None()
+                vectorConfig: Configure.Vectors.SelfProvided()
             ),
             await CollectionFactory(
                 name: "Collection3",
                 properties: [Property.Text("Address")],
-                vectorConfig: Configure.Vectors.None()
+                vectorConfig: Configure.Vectors.SelfProvided()
             ),
         };
 
@@ -46,7 +46,7 @@ public partial class CollectionsTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("Name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
         bool exists = await _weaviate.Collections.Exists(collection.Name);
@@ -69,7 +69,7 @@ public partial class CollectionsTests : IntegrationTests
             name: "MyOwnSuffix",
             description: "My own description too",
             properties: [Property.Text("Name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
         var export = await _weaviate.Collections.Export(collection.Name);
