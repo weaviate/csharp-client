@@ -1,5 +1,4 @@
 using Weaviate.Client.Models;
-using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
@@ -323,7 +322,7 @@ public partial class FilterTests : IntegrationTests
 
         // Arrange
         var collection = await CollectionFactory(
-            vectorConfig: Vector.Name("default"),
+            vectorConfig: new VectorConfig("default"),
             properties:
             [
                 Property.TextArray("texts"),
@@ -378,7 +377,7 @@ public partial class FilterTests : IntegrationTests
 
         // Arrange
         var collection = await CollectionFactory(
-            vectorConfig: Vector.Name(Vector.DefaultVectorName),
+            vectorConfig: new VectorConfig("default"),
             properties:
             [
                 Property.Text("text"),

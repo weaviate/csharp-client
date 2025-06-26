@@ -1,11 +1,11 @@
-namespace Weaviate.Client.Models.Vectorizers;
+namespace Weaviate.Client.Models;
 
-public abstract partial record VectorizerConfig
+public static partial class Vectorizer
 {
     // All record constructors for derived types
-    public partial record None : VectorizerConfig
+    public partial record SelfProvided : VectorizerConfig
     {
-        public None()
+        public SelfProvided()
             : base("none") { }
     }
 

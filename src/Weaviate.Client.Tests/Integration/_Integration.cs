@@ -79,8 +79,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable
 
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        // Default is VectorizerConfig.None
-        vectorConfig ??= Vector.Name("default");
+        // Default is Vectorizer.SelfProvided
+        vectorConfig ??= new VectorConfig("default");
 
         references ??= [];
 

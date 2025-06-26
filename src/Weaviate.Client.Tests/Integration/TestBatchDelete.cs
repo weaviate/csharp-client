@@ -11,7 +11,7 @@ public partial class BatchDeleteTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("Name")],
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
         await collection.Data.InsertMany(batcher =>
@@ -34,7 +34,7 @@ public partial class BatchDeleteTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("Name"), Property.Int("Age")],
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
         await collection.Data.InsertMany(batcher =>
@@ -62,7 +62,7 @@ public partial class BatchDeleteTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("Name"), Property.Int("Age")],
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
         await collection.Data.InsertMany(batcher =>
@@ -90,7 +90,7 @@ public partial class BatchDeleteTests : IntegrationTests
     public async Task Test_Dry_Run(bool dryRun)
     {
         var collection = await CollectionFactory(
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
         var uuid1 = await collection.Data.Insert(new { });
@@ -128,7 +128,7 @@ public partial class BatchDeleteTests : IntegrationTests
     public async Task Test_Verbosity(bool verbose)
     {
         var collection = await CollectionFactory(
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.None())
+            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
         var uuid1 = await collection.Data.Insert(new { });
