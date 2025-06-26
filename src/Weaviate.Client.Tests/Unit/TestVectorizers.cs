@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Vectorizers;
+using Quantizers = Weaviate.Client.Models.VectorIndex.Quantizers;
 
 namespace Weaviate.Client.Tests;
 
@@ -9,6 +10,8 @@ public partial class UnitTests
     [Fact]
     public void Test_VectorConfigList()
     {
+        var contextionaryVectorizer = Configure.Vectors.Text2VecContextionary(true);
+
         // Arrange
         VectorConfigList ncList = new[]
         {
@@ -16,6 +19,17 @@ public partial class UnitTests
                 "default",
                 new Vectorizer.Text2VecContextionary { Properties = ["breed", "color"] },
                 new VectorIndex.HNSW()
+                {
+                    Distance = VectorIndexConfig.VectorDistance.Cosine,
+                    Quantizer = new Quantizers.PQConfig
+                    {
+                        Encoder = new Quantizers.PQConfig.EncoderConfig
+                        {
+                            Distribution = Quantizers.DistributionType.Normal,
+                            Type = Quantizers.EncoderType.Kmeans,
+                        },
+                    },
+                }
             ),
             new VectorConfig(
                 "fromSizes",
@@ -26,12 +40,30 @@ public partial class UnitTests
                 new Vectorizer.Text2VecContextionary { Properties = ["location"] }
             ),
             new VectorConfig("nein", new Vectorizer.None()),
+            contextionaryVectorizer.New("contextionary1", properties: ["breed"]),
+            contextionaryVectorizer.New("contextionary2", properties: ["color"]),
+            Configure
+                .Vectors.Text2VecWeaviate(vectorizeCollectionName: true)
+                .New("weaviate", properties: ["color"]),
+            Configure.Vectors.Img2VecNeural([]).New("neural", properties: ["color"]),
         };
 
         // Act
 
         // Assert
-        Assert.Equal(["default", "fromSizes", "location", "nein"], ncList.Keys);
+        Assert.Equal(
+            [
+                "default",
+                "fromSizes",
+                "location",
+                "nein",
+                "contextionary1",
+                "contextionary2",
+                "weaviate",
+                "neural",
+            ],
+            ncList.Keys
+        );
     }
 
     [Fact]
