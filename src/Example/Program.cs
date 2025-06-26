@@ -1,11 +1,13 @@
 ﻿using System.Text.Json;
+using Weaviate.Client;
 using Weaviate.Client.Models;
-using Weaviate.Client.Models.Vectorizers;
 
 namespace Example;
 
 class Program
 {
+    private static readonly bool _useBatchInsert = true;
+
     private record CatDataWithVectors(float[] Vector, Cat Data);
 
     static async Task<List<CatDataWithVectors>> GetCatsAsync(string filename)
@@ -82,7 +84,7 @@ class Program
             Name = "Cat",
             Description = "Lots of Cats of multiple breeds",
             Properties = Property.FromCollection<Cat>(),
-            VectorConfig = new VectorConfig("default", new Vectorizer.Text2VecWeaviate()),
+            VectorConfig = Configure.Vectors.Text2VecContextionary().New("default"),
         };
 
         collection = await weaviate.Collections.Create<Cat>(catCollection);
@@ -92,19 +94,24 @@ class Program
             Console.WriteLine($"Collection: {c.Name}");
         }
 
-        // // Normal Insertion Demo
-        // foreach (var cat in cats)
-        // {
-        //     var vectors = new NamedVectors() { { "default", cat.Vector } };
-
-        //     var inserted = await collection.Data.Insert(cat.Data, vectors: vectors);
-        // }
-
-        // Batch Insertion Demo
-        var batchInsertions = await collection.Data.InsertMany(add =>
+        if (_useBatchInsert)
         {
-            cats.ForEach(c => add(c.Data, vectors: new() { { "default", c.Vector } }));
-        });
+            // Batch Insertion Demo
+            var batchInsertions = await collection.Data.InsertMany(add =>
+            {
+                cats.ForEach(c => add(c.Data, vectors: new() { { "default", c.Vector } }));
+            });
+        }
+        else
+        {
+            // Normal Insertion Demo
+            foreach (var cat in cats)
+            {
+                var vectors = new NamedVectors() { { "default", cat.Vector } };
+
+                var inserted = await collection.Data.Insert(cat.Data, vectors: vectors);
+            }
+        }
 
         // Get all objects and sum up the counter property
         var result = await collection.Query.List(limit: 250);
@@ -145,6 +152,8 @@ class Program
             );
         }
 
+        Console.WriteLine("Querying Neighboring Cats: [20,21,22]");
+
         var queryNearVector = await collection.Query.NearVector(
             vector: [20f, 21f, 22f],
             distance: 0.5f,
@@ -153,56 +162,40 @@ class Program
             metadata: MetadataOptions.Score | MetadataOptions.Distance
         );
 
-        foreach (var cat in queryNearVector.Objects)
+        foreach (var cat in queryNearVector.Objects.Select(o => o.As<Cat>()))
         {
-            Console.WriteLine(
-                JsonSerializer.Serialize(cat, new JsonSerializerOptions { WriteIndented = true })
-            );
+            // Console.WriteLine(
+            //     JsonSerializer.Serialize(cat, new JsonSerializerOptions { WriteIndented = true })
+            // );
+
+            Console.WriteLine(cat);
         }
 
-        // Cursor API
-        // var objects = collection.Iterator<Cat>();
-        // var sum = await objects.SumAsync(c => c.Counter);
+        Console.WriteLine();
+        Console.WriteLine("Using collection iterator:");
 
-        // // Print all cats found
-        // await foreach (var cat in objects)
-        // {
-        //     Console.WriteLine(cat);
-        // }
+        // Cursor API demo
+        var objects = collection.Iterator().Select(o => o.As<Cat>());
+        var sumWithIterator = await objects.SumAsync(c => c!.Counter);
 
-        // Console.WriteLine($"Sum of counter on cats: {sum}");
+        // Print all cats found
+        foreach (var cat in await objects.OrderBy(x => x!.Counter).ToListAsync())
+        {
+            Console.WriteLine(cat);
+        }
 
-        // // Do a quick search
-        // var queryNearVector = weaviate
-        //             .Get()
-        //             .WithOperator(new SearchOperatorNearVector(
-        //                 vector: [20, 21, 22]
-        //             ))
-        //             .WithFilter(limit: 5)
-        //             .WithClassName("cat")
-        //             .WithFields(["name", "breed", "color", "counter"])
-        //             .WithMetadata(["score", "distance"]);
+        Console.WriteLine($"Sum of counter on cats: {sumWithIterator}");
 
-        // Console.WriteLine();
-        // Console.WriteLine("Querying Neighboring Cats: [20,21,22]");
-        // var found = await weaviate.Query<Cat>(queryNearVector);
-        // foreach (var cat in found)
-        // {
-        //     Console.WriteLine(cat);
-        // }
+        var sphynxQuery = await collection.Query.BM25(
+            query: "Sphynx",
+            metadata: MetadataOptions.Score
+        );
 
-        // var sphynxQuery = await collection.Search<Cat>(new SearchOperatorBM25(
-        //                 query: "Sphynx"
-        //             ), query =>
-        //             {
-        //                 query.WithMetadata(["score"]);
-        //             });
-
-        // Console.WriteLine();
-        // Console.WriteLine("Querying Cat Breed: Sphynx");
-        // foreach (var cat in sphynxQuery.Select(c => c.Object))
-        // {
-        //     Console.WriteLine(cat);
-        // }
+        Console.WriteLine();
+        Console.WriteLine("Querying Cat Breed: Sphynx");
+        foreach (var cat in sphynxQuery)
+        {
+            Console.WriteLine(cat);
+        }
     }
 }
