@@ -14,10 +14,10 @@ public partial class SearchTests : IntegrationTests
             null,
             "Test collection description",
             [Property.Text("value")],
-            vectorConfig: Vector
-                .Name("default")
-                .With(new VectorizerConfig.Text2VecContextionary())
-                .From<TestDataValue>(t => t.Value)
+            vectorConfig: new VectorConfig(
+                "default",
+                new Vectorizer.Text2VecContextionary() { Properties = ["value"] }
+            )
         );
 
         string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
@@ -54,7 +54,7 @@ public partial class SearchTests : IntegrationTests
             "",
             "Test collection description",
             [Property.Text("value")],
-            vectorConfig: Vector.Name("default").With(new VectorizerConfig.Text2VecContextionary())
+            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecContextionary())
         );
 
         string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];

@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Weaviate.Client.Models.Vectorizers;
+namespace Weaviate.Client.Models;
 
-public abstract partial record VectorizerConfig
+public static partial class Vectorizer
 {
     public partial record None { }
 
