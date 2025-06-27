@@ -104,12 +104,6 @@ public static partial class Vectorizer
         public Multi2VecGoogleWeights? Weights { get; set; } = null;
     }
 
-    [Obsolete("Use Multi2VecGoogleConfig instead.")]
-    public partial record Multi2VecPalm
-    {
-        // Inherits all properties from Multi2VecGoogleConfig
-    }
-
     public partial record Multi2VecJinaAIWeights
     {
         public double[]? ImageFields { get; set; } = null;
@@ -254,12 +248,6 @@ public static partial class Vectorizer
         public string? ModelVersion { get; set; } = null;
         public string? Type { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
-    }
-
-    [Obsolete("Use Text2VecGoogleConfig instead.")]
-    public partial record Text2VecPalm
-    {
-        // Inherits all properties from Text2VecGoogleConfig
     }
 
     public partial record Text2VecGoogle

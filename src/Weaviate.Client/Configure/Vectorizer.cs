@@ -141,35 +141,6 @@ public static partial class Configure
                 }
             );
 
-        [Obsolete("Use Multi2VecGoogle instead.")]
-        public static VectorConfigBuilder Multi2VecPalm(
-            string projectId,
-            string location,
-            string[]? imageFields = null,
-            string[]? textFields = null,
-            string[]? videoFields = null,
-            int? videoIntervalSeconds = null,
-            string? modelId = null,
-            int? dimensions = null,
-            bool? vectorizeCollectionName = null,
-            Vectorizer.Multi2VecGoogleWeights? weights = null
-        ) =>
-            new(
-                new Vectorizer.Multi2VecPalm
-                {
-                    ProjectId = projectId,
-                    Location = location,
-                    ImageFields = imageFields,
-                    TextFields = textFields,
-                    VideoFields = videoFields,
-                    VideoIntervalSeconds = videoIntervalSeconds,
-                    ModelId = modelId,
-                    Dimensions = dimensions,
-                    VectorizeCollectionName = vectorizeCollectionName,
-                    Weights = weights,
-                }
-            );
-
         public static VectorConfigBuilder Multi2VecJinaAI(
             string? baseURL = null,
             int? dimensions = null,
@@ -402,15 +373,6 @@ public static partial class Configure
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
-
-        [Obsolete("Use Text2VecGoogle instead.")]
-        public static VectorConfigBuilder Text2VecPalm(
-            string? apiEndpoint = null,
-            string? modelId = null,
-            string? projectId = null,
-            string? titleProperty = null,
-            bool? vectorizeCollectionName = null
-        ) => new(new Vectorizer.Text2VecPalm());
 
         public static VectorConfigBuilder Text2VecGoogle(
             string? apiEndpoint = null,
