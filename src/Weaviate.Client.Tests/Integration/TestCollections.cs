@@ -187,7 +187,7 @@ public partial class CollectionsTests : IntegrationTests
         // Assert.False(config?.multivector.enabled);
         // Assert.Equal("maxSim", config?.multivector.aggregation);
 
-        if (collection.WeaviateVersion >= new WeaviateVersion("1.31.0"))
+        if (collection.WeaviateVersion >= new System.Version("1.31.0"))
         {
             // Assert.NotNull(config?..muvera);
             // Assert.False(config?.multivector.muvera.enabled);
