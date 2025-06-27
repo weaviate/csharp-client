@@ -65,7 +65,7 @@ public class WeaviateClient : IDisposable
         };
     }
 
-    public required Models.WeaviateVersion WeaviateVersion { get; set; }
+    public Models.WeaviateVersion WeaviateVersion { get; set; }
 
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
 
