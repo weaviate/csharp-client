@@ -2,12 +2,10 @@ namespace Weaviate.Client.Models;
 
 public class WeaviateVersion : IComparable<WeaviateVersion>, IEquatable<WeaviateVersion>
 {
-    public string OriginalString { get; set; }
     public Version? ParsedVersion { get; set; }
 
     public WeaviateVersion(string versionString)
     {
-        OriginalString = versionString;
         ParsedVersion = ParseVersionIgnoringPrerelease(versionString);
     }
 
