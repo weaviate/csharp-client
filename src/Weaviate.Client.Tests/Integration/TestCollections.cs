@@ -187,12 +187,14 @@ public partial class CollectionsTests : IntegrationTests
         // Assert.False(config?.multivector.enabled);
         // Assert.Equal("maxSim", config?.multivector.aggregation);
 
-        // Available from v1.31
-        // Assert.NotNull(config?.multivector.muvera);
-        // Assert.False(config?.multivector.muvera.enabled);
-        // Assert.Equal(16, config?.multivector.muvera.dprojections);
-        // Assert.Equal(4, config?.multivector.muvera.ksim);
-        // Assert.Equal(10, config?.multivector.muvera.repetitions);
+        if (collection.WeaviateVersion >= new WeaviateVersion("1.31.0"))
+        {
+            // Assert.NotNull(config?..muvera);
+            // Assert.False(config?.multivector.muvera.enabled);
+            // Assert.Equal(16, config?.multivector.muvera.dprojections);
+            // Assert.Equal(4, config?.multivector.muvera.ksim);
+            // Assert.Equal(10, config?.multivector.muvera.repetitions);
+        }
 
         // Obsolete properties should be null/empty for new VectorConfig usage
 #pragma warning disable CS0618 // Type or member is obsolete
