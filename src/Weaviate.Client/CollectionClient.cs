@@ -7,7 +7,7 @@ public class CollectionClient<TData>
 {
     public const uint ITERATOR_CACHE_SIZE = 100;
 
-    public WeaviateVersion WeaviateVersion => _client.WeaviateVersion;
+    public System.Version WeaviateVersion => _client.WeaviateVersion;
 
     private readonly WeaviateClient _client;
     private DataClient<TData> _dataClient;
