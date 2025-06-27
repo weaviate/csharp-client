@@ -57,13 +57,17 @@ public class WeaviateClient : IDisposable
         {
             GrpcMaxMessageSize = meta?.GrpcMaxMessageSize ?? 0,
             Hostname = meta?.Hostname ?? string.Empty,
-            Version = meta?.Version ?? string.Empty,
+            Version =
+                Models.MetaInfo.ParseWeaviateVersion(meta?.Version ?? string.Empty)
+                ?? new System.Version(0, 0),
             Modules =
                 (meta?.Modules as JsonElement?)
                     ?.EnumerateObject()
                     .ToDictionary(k => k.Name, k => (object)k.Value) ?? [],
         };
     }
+
+    public System.Version WeaviateVersion { get; set; }
 
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
 
@@ -116,6 +120,9 @@ public class WeaviateClient : IDisposable
 
         RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
         GrpcClient = new WeaviateGrpcClient(Configuration.GrpcUri, Configuration.ApiKey, wcdHost);
+
+        var meta = GetMeta().Result;
+        WeaviateVersion = meta.Version;
 
         Collections = new CollectionsClient(this);
     }

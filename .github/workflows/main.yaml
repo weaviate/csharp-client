@@ -15,7 +15,8 @@ on:
   pull_request:
 
 env:
-  WEAVIATE_VERSION: 1.30.2
+  WEAVIATE_130: 1.30.2
+  WEAVIATE_131: 1.31.3
   DOTNET_VERSION: '8.x'
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -49,6 +50,14 @@ jobs:
   integration-tests:
     name: Run Integration Tests
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server: [
+          $WEAVIATE_130,
+          $WEAVIATE_131
+        ]
+
     steps:
       - name: Check for required secrets
         run: |
@@ -83,14 +92,14 @@ jobs:
           password: ${{secrets.DOCKER_PASSWORD}}
 
       - name: start weaviate
-        run: /bin/bash ci/start_weaviate.sh ${{ env.WEAVIATE_VERSION }}
+        run: /bin/bash ci/start_weaviate.sh ${{ matrix.server }}
 
       - name: Run integration tests
         run: dotnet test --no-restore
         
       - name: stop weaviate
         if: always()
-        run: /bin/bash ci/stop_weaviate.sh ${{ env.WEAVIATE_VERSION }}
+        run: /bin/bash ci/stop_weaviate.sh ${{ matrix.server }}
 
   build-and-publish:
     name: Build and Publish to NuGet
