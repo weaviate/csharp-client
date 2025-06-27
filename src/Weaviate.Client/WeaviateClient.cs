@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using Grpc.Core;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
 
