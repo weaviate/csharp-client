@@ -42,8 +42,17 @@
       },
       "Grpc.Core.Api": {
         "type": "Transitive",
-        "resolved": "2.70.0",
-        "contentHash": "66UotvWcSIq41oiQhLWcQACyKPM4umxXNiht5DQTLZJfNwEswWOcS7Z0xIEHyNIBE7ZpjotH22bEjTkvhPxmVw=="
+        "resolved": "2.71.0",
+        "contentHash": "QquqUC37yxsDzd1QaDRsH2+uuznWPTS8CVE2Yzwl3CvU4geTNkolQXoVN812M2IwT6zpv3jsZRc9ExJFNFslTg=="
+      },
+      "Grpc.HealthCheck": {
+        "type": "Transitive",
+        "resolved": "2.71.0",
+        "contentHash": "XpBBFCPat0nOCrAkmjAiZfdWtFlx5OsvRKaQzvY/Vt1FFKH3z2BgowNYUe3uFMs3JDYGn0u6iYJILmlA9ez63A==",
+        "dependencies": {
+          "Google.Protobuf": "3.30.2",
+          "Grpc.Core.Api": "2.71.0"
+        }
       },
       "Grpc.Net.Client": {
         "type": "Transitive",
@@ -260,6 +269,7 @@
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[3.30.2, )",
+          "Grpc.HealthCheck": "[2.71.0, )",
           "Grpc.Net.ClientFactory": "[2.70.0, )",
           "System.Linq.Async": "[6.0.3, )"
         }
