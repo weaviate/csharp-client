@@ -3,7 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Weaviate.Client.Models;
 
-public record VectorConfigList : IReadOnlyDictionary<string, VectorConfig>
+public record VectorConfigList
+    : IReadOnlyDictionary<string, VectorConfig>,
+        IEquatable<VectorConfigList>
 {
     private List<VectorConfig> _internalList = new();
 
@@ -32,9 +34,6 @@ public record VectorConfigList : IReadOnlyDictionary<string, VectorConfig>
         return new(config);
     }
 
-    // public static implicit operator Dictionary<string, VectorConfig>(VectorConfigList configs) =>
-    //     configs._internalList.ToDictionary(config => config.Name, config => config);
-
     // IReadOnlyDictionary<string, VectorConfig> implementation
     public VectorConfig this[string key] =>
         _internalList.FirstOrDefault(config => config.Name == key)
@@ -61,5 +60,23 @@ public record VectorConfigList : IReadOnlyDictionary<string, VectorConfig>
         return _internalList
             .Select(config => new KeyValuePair<string, VectorConfig>(config.Name, config))
             .GetEnumerator();
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(_internalList);
+        return hash.ToHashCode();
+    }
+
+    public virtual bool Equals(VectorConfigList? other)
+    {
+        if (other is null)
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return _internalList.SequenceEqual(other._internalList);
     }
 }

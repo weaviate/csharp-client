@@ -212,6 +212,16 @@ public record ReferenceProperty
             Description = p.Description,
         };
     }
+
+    public static implicit operator ReferenceProperty(Property p)
+    {
+        return new ReferenceProperty
+        {
+            Name = p.Name,
+            Description = p.Description,
+            TargetCollection = p.DataType.First(t => char.IsUpper(t.First())).Decapitalize(),
+        };
+    }
 }
 
 public static class Property<TField>
@@ -219,9 +229,15 @@ public static class Property<TField>
     public static PropertyFactory New => PropertyHelper.ForType(typeof(TField));
 }
 
-public partial record Property
+public record Property : IEquatable<Property>
 {
-    public required string Name { get; set; }
+    private string _name = string.Empty;
+
+    public required string Name
+    {
+        get => _name;
+        set => _name = value.Decapitalize();
+    }
     public IList<string> DataType { get; set; } = new List<string>();
     public string? Description { get; set; }
     public bool? IndexFilterable { get; set; }
@@ -267,13 +283,43 @@ public partial record Property
         };
 
     // Extract collection properties from type specified by TData.
-    public static IList<Property> FromCollection<TData>()
+    public static IEnumerable<Property> FromCollection<TData>()
     {
-        return
-        [
-            .. typeof(TData)
-                .GetProperties()
-                .Select(x => PropertyHelper.ForType(x.PropertyType)(x.Name)),
-        ];
+        return typeof(TData)
+            .GetProperties()
+            .Select(x => PropertyHelper.ForType(x.PropertyType)(x.Name));
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Name);
+        hash.Add(DataType);
+        hash.Add(Description);
+#pragma warning disable CS0612 // Type or member is obsolete
+        hash.Add(IndexInverted);
+#pragma warning restore CS0612 // Type or member is obsolete
+        hash.Add(IndexFilterable);
+        hash.Add(IndexRangeFilters);
+        hash.Add(IndexSearchable);
+        hash.Add(PropertyTokenization);
+        return hash.ToHashCode();
+    }
+
+    public virtual bool Equals(Property? other)
+    {
+        if (other is null)
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return Name == other.Name
+            && DataType.SequenceEqual(other.DataType)
+            && Description == other.Description
+            && IndexFilterable == other.IndexFilterable
+            && IndexRangeFilters == other.IndexRangeFilters
+            && IndexSearchable == other.IndexSearchable
+            && PropertyTokenization == other.PropertyTokenization;
     }
 }

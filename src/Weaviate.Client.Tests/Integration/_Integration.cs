@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Weaviate.Client.Models;
-using Weaviate.Client.Models.Vectorizers;
 
 [assembly: CaptureConsole]
 [assembly: CaptureTrace]
@@ -48,7 +47,36 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         _weaviate.Dispose();
     }
 
-    protected async Task<CollectionClient<TData>> CollectionFactory<TData>(
+    public string MakeUniqueCollectionName<TData>(
+        string? suffix,
+        string collectionNamePartSeparator = "_"
+    )
+    {
+        var strings = new string?[]
+        {
+            TestContext.Current.TestMethod?.MethodName,
+            TestContext.Current.Test?.UniqueID,
+            typeof(TData).Name,
+            suffix,
+        }
+            .Where(s => !string.IsNullOrEmpty(s))
+            .Cast<string>();
+
+        return string.Join(collectionNamePartSeparator, strings);
+    }
+
+    public async Task<CollectionClient<TData>> CollectionFactory<TData>(Collection c)
+    {
+        await _weaviate.Collections.Delete(c.Name);
+
+        var collectionClient = await _weaviate.Collections.Create<TData>(c);
+
+        _collections.Add(collectionClient.Name);
+
+        return collectionClient;
+    }
+
+    public async Task<CollectionClient<TData>> CollectionFactory<TData>(
         string? name = null,
         string? description = null,
         IList<Property>? properties = null,
@@ -61,21 +89,11 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         string collectionNamePartSeparator = "_"
     )
     {
+        name = MakeUniqueCollectionName<TData>(name, collectionNamePartSeparator);
+
         description ??= TestContext.Current.TestMethod?.MethodName ?? string.Empty;
 
-        var strings = new string?[]
-        {
-            TestContext.Current.TestMethod?.MethodName,
-            typeof(TData).Name,
-            TestContext.Current.Test?.UniqueID,
-            name,
-        }
-            .Where(s => !string.IsNullOrEmpty(s))
-            .Cast<string>();
-
-        name = string.Join(collectionNamePartSeparator, strings);
-
-        properties ??= Property.FromCollection<TData>();
+        properties ??= [.. Property.FromCollection<TData>()];
 
         ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -96,13 +114,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable
             ShardingConfig = shardingConfig,
         };
 
-        await _weaviate.Collections.Delete(name);
-
-        var collectionClient = await _weaviate.Collections.Create<TData>(c);
-
-        _collections.Add(collectionClient.Name);
-
-        return collectionClient;
+        return await CollectionFactory<TData>(c);
     }
 
     protected async Task<CollectionClient<dynamic>> CollectionFactory(

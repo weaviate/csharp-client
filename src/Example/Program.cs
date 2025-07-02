@@ -83,8 +83,8 @@ class Program
         {
             Name = "Cat",
             Description = "Lots of Cats of multiple breeds",
-            Properties = Property.FromCollection<Cat>(),
-            VectorConfig = Configure.Vectors.Text2VecContextionary().New("default"),
+            Properties = [.. Property.FromCollection<Cat>()],
+            VectorConfig = new VectorConfig("default", new Vectorizer.Text2VecWeaviate()),
         };
 
         collection = await weaviate.Collections.Create<Cat>(catCollection);
