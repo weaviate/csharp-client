@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.30.2" />
+    <PackageReference Include="Grpc.HealthCheck" Version="2.71.0" />
     <PackageReference Include="Grpc.Net.ClientFactory" Version="2.70.0" />
     <PackageReference Include="Grpc.Tools" Version="2.71.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,65 +19,15 @@
     <PackageReference Include="System.Linq.Async" Version="6.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <Protobuf
-      Include="gRPC\proto\v1\tenants.proto"
-      GrpcServices="Client"
-      AdditionalImportDirs="gRPC\proto"
-      Access="Internal"
-    />
-    <Protobuf
-      Include="gRPC\proto\v1\weaviate.proto"
-      GrpcServices="Client"
-      AdditionalImportDirs="gRPC\proto"
-      Access="Internal"
-    />
-    <Protobuf
-      Include="gRPC\proto\v1\aggregate.proto"
-      GrpcServices="Client"
-      AdditionalImportDirs="gRPC\proto"
-      Access="Internal"
-    />
-    <Protobuf
-      Include="gRPC\proto\v1\base.proto"
-      GrpcServices="Client"
-      AdditionalImportDirs="gRPC\proto"
-      Access="Internal"
-    />
-    <Protobuf
-      Include="gRPC\proto\v1\base_search.proto"
-      GrpcServices="Client"
-      AdditionalImportDirs="gRPC\proto"
-      Access="Internal"
-    />
-    <Protobuf
-      Include="gRPC\proto\v1\batch.proto"
-      GrpcServices="Client"
-      AdditionalImportDirs="gRPC\proto"
-      Access="Internal"
-    />
-    <Protobuf
-      Include="gRPC\proto\v1\batch_delete.proto"
-      GrpcServices="Client"
-      AdditionalImportDirs="gRPC\proto"
-      Access="Internal"
-    />
-    <Protobuf
-      Include="gRPC\proto\v1\generative.proto"
-      GrpcServices="Client"
-      AdditionalImportDirs="gRPC\proto"
-      Access="Internal"
-    />
-    <Protobuf
-      Include="gRPC\proto\v1\properties.proto"
-      GrpcServices="Client"
-      AdditionalImportDirs="gRPC\proto"
-      Access="Internal"
-    />
-    <Protobuf
-      Include="gRPC\proto\v1\search_get.proto"
-      GrpcServices="Client"
-      AdditionalImportDirs="gRPC\proto"
-      Access="Internal"
-    />
+    <Protobuf Include="gRPC\proto\v1\tenants.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
+    <Protobuf Include="gRPC\proto\v1\weaviate.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
+    <Protobuf Include="gRPC\proto\v1\aggregate.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
+    <Protobuf Include="gRPC\proto\v1\base.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
+    <Protobuf Include="gRPC\proto\v1\base_search.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
+    <Protobuf Include="gRPC\proto\v1\batch.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
+    <Protobuf Include="gRPC\proto\v1\batch_delete.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
+    <Protobuf Include="gRPC\proto\v1\generative.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
+    <Protobuf Include="gRPC\proto\v1\properties.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
+    <Protobuf Include="gRPC\proto\v1\search_get.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
   </ItemGroup>
 </Project>
