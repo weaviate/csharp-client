@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <ProjectReference Include="..\Weaviate.Client\Weaviate.Client.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="cats.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -12,11 +10,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="System.Linq.Async" Version="6.0.3" />
   </ItemGroup>
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
@@ -24,5 +20,4 @@
     <Nullable>enable</Nullable>
     <OutputPath>../bin/$(Configuration)/net8.0/win-x64/publish/</OutputPath>
   </PropertyGroup>
-
 </Project>
