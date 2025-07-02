@@ -9,27 +9,25 @@ public abstract record VectorIndexConfig()
     [JsonIgnore]
     public abstract string Type { get; }
 
-    internal static VectorIndexConfig Factory(string type, object? vectorIndexConfig)
+    internal static VectorIndexConfig Factory(string? type, object? vectorIndexConfig)
     {
         VectorIndexConfig? result = null;
-
-        JsonSerializerOptions options = new()
-        {
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true, // For readability
-            Converters = { new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase) },
-        };
 
         if (vectorIndexConfig is JsonElement vic)
         {
             result = type switch
             {
-                "hnsw" => JsonSerializer.Deserialize<VectorIndex.HNSW>(vic.GetRawText(), options),
-                "flat" => JsonSerializer.Deserialize<VectorIndex.Flat>(vic.GetRawText(), options),
+                "hnsw" => JsonSerializer.Deserialize<VectorIndex.HNSW>(
+                    vic.GetRawText(),
+                    Rest.WeaviateRestClient.RestJsonSerializerOptions
+                ),
+                "flat" => JsonSerializer.Deserialize<VectorIndex.Flat>(
+                    vic.GetRawText(),
+                    Rest.WeaviateRestClient.RestJsonSerializerOptions
+                ),
                 "dynamic" => JsonSerializer.Deserialize<VectorIndex.Dynamic>(
                     vic.GetRawText(),
-                    options
+                    Rest.WeaviateRestClient.RestJsonSerializerOptions
                 ),
                 _ => null,
             };
@@ -40,15 +38,25 @@ public abstract record VectorIndexConfig()
 
     public enum VectorDistance
     {
+        [System.Runtime.Serialization.EnumMember(Value = "cosine")]
         Cosine,
+
+        [System.Runtime.Serialization.EnumMember(Value = "dot")]
         Dot,
+
+        [System.Runtime.Serialization.EnumMember(Value = "l2squared")]
         L2Squared,
+
+        [System.Runtime.Serialization.EnumMember(Value = "hamming")]
         Hamming,
     }
 
     public enum VectorIndexFilterStrategy
     {
+        [System.Runtime.Serialization.EnumMember(Value = "sweeping")]
         Sweeping,
+
+        [System.Runtime.Serialization.EnumMember(Value = "acorn")]
         Acorn,
     }
 
@@ -74,21 +82,21 @@ public static class VectorIndex
             Tile,
         }
 
-        public class BQConfig : QuantizerConfig
+        public class BQ : QuantizerConfig
         {
             public bool Cache { get; set; }
             public int RescoreLimit { get; set; }
             public override string Type => "bq";
         }
 
-        public class SQConfig : QuantizerConfig
+        public class SQ : QuantizerConfig
         {
             public int RescoreLimit { get; set; }
             public int TrainingLimit { get; set; }
             public override string Type => "sq";
         }
 
-        public class PQConfig : QuantizerConfig
+        public class PQ : QuantizerConfig
         {
             public class EncoderConfig
             {
@@ -160,7 +168,7 @@ public static class VectorIndex
         public int? VectorCacheMaxObjects { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Quantizers.BQConfig? Quantizer { get; set; }
+        public Quantizers.BQ? Quantizer { get; set; }
 
         [JsonIgnore]
         public override string Type => "flat";

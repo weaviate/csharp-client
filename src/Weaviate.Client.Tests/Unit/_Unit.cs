@@ -26,18 +26,8 @@ public record TestProperties
 }
 
 [Collection("Unit Tests")]
-public partial class UnitTests
+public partial class MiscTests
 {
-    [Fact]
-    public void NamedVectorInitialization()
-    {
-        var v1 = new NamedVectors();
-        v1.Add("default", new[] { 0.1f, 0.2f, 0.3f });
-
-        // Act & Assert
-        Assert.Equal(new[] { 0.1f, 0.2f, 0.3f }, v1["default"]);
-    }
-
     [Fact]
     public void MetadataQueryImplicitConversion()
     {
