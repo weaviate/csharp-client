@@ -45,7 +45,7 @@ public partial class WeaviateGrpcClient : IDisposable
             if (response.Status != HealthCheckResponse.Types.ServingStatus.Serving)
             {
                 throw new WeaviateException(
-                    "GRPC health checkk failed and "
+                    "GRPC health check failed and "
                         + grpcUri.AbsoluteUri
                         + " is not reachable. Please check if the Weaviate instance is running and accessible. Details: "
                         + response.Status
@@ -56,7 +56,7 @@ public partial class WeaviateGrpcClient : IDisposable
         {
             // Handle gRPC specific exceptions
             throw new WeaviateException(
-                "GRPC health checkk failed and "
+                "GRPC health check failed and "
                     + grpcUri.AbsoluteUri
                     + " is not reachable. Please check if the Weaviate instance is running and accessible. Details:"
                     + ex.Status.Detail
