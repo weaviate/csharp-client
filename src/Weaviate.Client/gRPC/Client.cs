@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Dynamic;
 using Grpc.Core;
+using Grpc.Health.V1;
 using Grpc.Net.Client;
 using Weaviate.V1;
 
@@ -34,7 +35,33 @@ public partial class WeaviateGrpcClient : IDisposable
         }
 
         _channel = GrpcChannel.ForAddress(grpcUri, options);
+        var healthClient = new Health.HealthClient(_channel);
+        var request = new HealthCheckRequest();
+        try
+        {
+            var response = healthClient.Check(request);
 
+            // Check if service is serving
+            if (response.Status != HealthCheckResponse.Types.ServingStatus.Serving)
+            {
+                throw new WeaviateException(
+                    "GRPC health checkk failed and "
+                        + grpcUri.AbsoluteUri
+                        + " is not reachable. Please check if the Weaviate instance is running and accessible. Details: "
+                        + response.Status
+                );
+            }
+        }
+        catch (RpcException ex)
+        {
+            // Handle gRPC specific exceptions
+            throw new WeaviateException(
+                "GRPC health checkk failed and "
+                    + grpcUri.AbsoluteUri
+                    + " is not reachable. Please check if the Weaviate instance is running and accessible. Details:"
+                    + ex.Status.Detail
+            );
+        }
         // Create default headers
         if (!string.IsNullOrEmpty(wcdHost))
         {
