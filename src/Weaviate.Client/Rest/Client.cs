@@ -100,6 +100,7 @@ public class WeaviateRestClient : IDisposable
             new EnumMemberJsonConverterFactory(),
             new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase),
         },
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
     internal WeaviateRestClient(Uri restUri, HttpClient? httpClient = null)
