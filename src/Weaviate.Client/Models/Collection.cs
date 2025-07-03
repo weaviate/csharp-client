@@ -1,22 +1,19 @@
-using System.Dynamic;
-
 namespace Weaviate.Client.Models;
 
-public class Collection : CollectionBase<dynamic, dynamic> { }
-
-public class CollectionBase<TModuleConfig, TVectorIndexConfig>
+public partial record Collection : IEquatable<Collection>
 {
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
 
     // Define properties of the collection.
-    public IList<Property> Properties { get; set; } = new List<Property>();
+    public List<Property> Properties { get; set; } = [];
+    public List<ReferenceProperty> References { get; set; } = [];
 
     // inverted index config
     public InvertedIndexConfig? InvertedIndexConfig { get; set; }
 
     // Configuration specific to modules in a collection context.
-    public TModuleConfig? ModuleConfig { get; set; }
+    public ModuleConfigList? ModuleConfig { get; set; }
 
     // multi tenancy config
     public MultiTenancyConfig? MultiTenancyConfig { get; set; }
@@ -32,7 +29,7 @@ public class CollectionBase<TModuleConfig, TVectorIndexConfig>
 
     // Vector-index config, that is specific to the type of index selected in vectorIndexType
     [Obsolete("Use `VectorConfig` instead")]
-    public TVectorIndexConfig? VectorIndexConfig { get; set; }
+    public object? VectorIndexConfig { get; set; }
 
     // Name of the vector index to use, eg. (HNSW)
     [Obsolete("Use `VectorConfig` instead")]
@@ -40,4 +37,64 @@ public class CollectionBase<TModuleConfig, TVectorIndexConfig>
 
     [Obsolete("Use `VectorConfig` instead")]
     public string Vectorizer { get; set; } = "";
+
+    public override string ToString()
+    {
+        return System.Text.Json.JsonSerializer.Serialize(
+            this.ToDto(),
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Name);
+        hash.Add(Description);
+        hash.Add(Properties);
+        hash.Add(References);
+        hash.Add(InvertedIndexConfig);
+        hash.Add(ModuleConfig);
+        hash.Add(MultiTenancyConfig);
+        hash.Add(ReplicationConfig);
+        hash.Add(ShardingConfig);
+        hash.Add(VectorConfig);
+        return hash.ToHashCode();
+    }
+
+    public virtual bool Equals(Collection? other)
+    {
+        if (other is null)
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return Name == other.Name
+            && Description == other.Description
+            && Properties.SequenceEqual(other.Properties)
+            && References.SequenceEqual(other.References)
+            && EqualityComparer<InvertedIndexConfig?>.Default.Equals(
+                InvertedIndexConfig,
+                other.InvertedIndexConfig
+            )
+            && EqualityComparer<IDictionary<string, object>?>.Default.Equals(
+                ModuleConfig,
+                other.ModuleConfig
+            )
+            && EqualityComparer<MultiTenancyConfig?>.Default.Equals(
+                MultiTenancyConfig,
+                other.MultiTenancyConfig
+            )
+            && EqualityComparer<ReplicationConfig?>.Default.Equals(
+                ReplicationConfig,
+                other.ReplicationConfig
+            )
+            && EqualityComparer<ShardingConfig?>.Default.Equals(
+                ShardingConfig ?? ShardingConfig.Zero,
+                other.ShardingConfig ?? ShardingConfig.Zero
+            )
+            && EqualityComparer<VectorConfigList>.Default.Equals(VectorConfig, other.VectorConfig)
+            && true;
+    }
 }

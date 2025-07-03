@@ -10,7 +10,7 @@ public enum DeletionStrategy
 /// <summary>
 /// ReplicationConfig Configure how replication is executed in a cluster.
 /// </summary>
-public class ReplicationConfig
+public record ReplicationConfig : IEquatable<ReplicationConfig>
 {
     private static readonly Lazy<ReplicationConfig> _default = new(() => new());
 
