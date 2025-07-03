@@ -283,13 +283,13 @@ public class InvertedIndexConfigTests
         var expectedJson =
             @"{""bm25"":{""b"":0.7,""k1"":1.3},""cleanupIntervalSeconds"":30,""indexNullState"":true,""indexPropertyLength"":true,""indexTimestamps"":true,""stopwords"":{""additions"":[""plus""],""preset"":""none"",""removals"":[""minus""]}}";
 
-        var opt = WeaviateRestClient.RestJsonSerializerOptions;
-        opt.WriteIndented = false;
-
         // Act
-        var json = System.Text.Json.JsonSerializer.Serialize(config, opt);
+        var json = System.Text.Json.JsonSerializer.Serialize(
+            config,
+            WeaviateRestClient.RestJsonSerializerOptions
+        );
 
         // Assert
-        Assert.Equal(expectedJson, json);
+        Assert.True(JsonComparer.AreJsonEqual(expectedJson, json));
     }
 }
