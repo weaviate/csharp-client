@@ -41,4 +41,53 @@ public partial class ClientTests : IntegrationTests
         Assert.Contains("8080", meta.Hostname);
         Assert.Contains("http://", meta.Hostname);
     }
+
+    [Fact]
+    public async Task TestNodesMinimal()
+    {
+        var client = Connect.Local();
+        var nodesMinimal = await client.Nodes.NodesMinimal();
+
+        // ip is different depending on the environment
+        Assert.Single(nodesMinimal);
+        var node = nodesMinimal[0];
+        Assert.NotNull(node);
+        Assert.NotNull(node.GitHash);
+        Assert.NotNull(node.Name);
+        Assert.NotNull(node.Version);
+    }
+
+    [Fact]
+    public async Task TestNodesVerbose()
+    {
+        var client = Connect.Local();
+        var nodesVerbose = await client.Nodes.NodesVerbose();
+        Assert.Single(nodesVerbose);
+        var nodeV = nodesVerbose[0];
+        Assert.NotNull(nodeV);
+        Assert.NotNull(nodeV.GitHash);
+        Assert.NotNull(nodeV.Name);
+        Assert.NotNull(nodeV.Version);
+        // additional verbose options
+        Assert.NotNull(nodeV.Shards);
+    }
+
+    [Fact]
+    public async Task TestNodesVerboseWithCollection()
+    {
+        var client = Connect.Local();
+
+        var collectionName = "TestNodesVerboseWithCollection";
+        var collection = await CollectionFactory(collectionName);
+
+        var nodesVerbose = await client.Nodes.NodesVerbose(collection.Name);
+        Assert.Single(nodesVerbose);
+        var nodeV = nodesVerbose[0];
+        Assert.NotNull(nodeV);
+        Assert.NotNull(nodeV.GitHash);
+        Assert.NotNull(nodeV.Name);
+        Assert.NotNull(nodeV.Version);
+        // additional verbose options
+        Assert.NotNull(nodeV.Shards);
+    }
 }
