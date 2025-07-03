@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Weaviate.Client.Grpc;
+using Weaviate.Client.Models;
 using Weaviate.Client.Rest;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Weaviate.Client.Tests")]
@@ -82,6 +83,7 @@ public class WeaviateClient : IDisposable
     public ClientConfiguration Configuration { get; }
 
     public CollectionsClient Collections { get; }
+    public NodesClient Nodes { get; }
 
     static bool IsWeaviateDomain(string url)
     {
@@ -124,6 +126,7 @@ public class WeaviateClient : IDisposable
         var meta = GetMeta().Result;
         WeaviateVersion = meta.Version;
 
+        Nodes = new NodesClient(RestClient);
         Collections = new CollectionsClient(this);
     }
 
