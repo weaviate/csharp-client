@@ -38,6 +38,14 @@ public partial record Collection : IEquatable<Collection>
     [Obsolete("Use `VectorConfig` instead")]
     public string Vectorizer { get; set; } = "";
 
+    public override string ToString()
+    {
+        return System.Text.Json.JsonSerializer.Serialize(
+            this.ToDto(),
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+    }
+
     public override int GetHashCode()
     {
         var hash = new HashCode();
@@ -84,7 +92,7 @@ public partial record Collection : IEquatable<Collection>
             )
             && EqualityComparer<ShardingConfig?>.Default.Equals(
                 ShardingConfig ?? ShardingConfig.Zero,
-                other.ShardingConfig
+                other.ShardingConfig ?? ShardingConfig.Zero
             )
             && EqualityComparer<VectorConfigList>.Default.Equals(VectorConfig, other.VectorConfig)
             && true;
