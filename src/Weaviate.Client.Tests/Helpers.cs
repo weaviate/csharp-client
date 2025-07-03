@@ -70,7 +70,7 @@ public class LoggingHandler : DelegatingHandler
     }
 }
 
-public static class JsonSortComparer
+public static class JsonComparer
 {
     /// <summary>
     /// Sorts all properties in a JSON document recursively by property name
@@ -140,7 +140,7 @@ public static class JsonSortComparer
     /// <param name="json1">First JSON string</param>
     /// <param name="json2">Second JSON string</param>
     /// <returns>True if the JSON documents are equivalent</returns>
-    public static bool AreJsonStringsEqual(string json1, string json2)
+    public static bool AreJsonEqual(string json1, string json2)
     {
         if (string.IsNullOrEmpty(json1) && string.IsNullOrEmpty(json2))
             return true;
@@ -167,7 +167,7 @@ public static class JsonSortComparer
     /// <param name="doc1">First JsonDocument</param>
     /// <param name="doc2">Second JsonDocument</param>
     /// <returns>True if the JSON documents are equivalent</returns>
-    public static bool AreJsonDocumentsEqual(JsonDocument doc1, JsonDocument doc2)
+    public static bool AreJsonEqual(JsonDocument doc1, JsonDocument doc2)
     {
         if (doc1 == null && doc2 == null)
             return true;
