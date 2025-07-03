@@ -191,29 +191,15 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 Properties = [_nameProperty],
                 VectorConfig =
                 [
-                    Configure
-                        .Vectors.Text2VecContextionary(true)
-                        .New("hnswbase", _vectorIndexConfigHNSW_base),
+                    Configure.Vectors.SelfProvided("hnswbase", _vectorIndexConfigHNSW_base),
                     // TODO BQ is only returning Enabled property for HNSW
-                    // Configure
-                    //     .Vectors.Text2VecContextionary()
-                    //     .New("hnswbq", _vectorIndexConfigHNSW_BQ),
-                    Configure
-                        .Vectors.Text2VecContextionary(true)
-                        .New("hnswpq", _vectorIndexConfigHNSW_PQ),
-                    Configure
-                        .Vectors.Text2VecContextionary(true)
-                        .New("hnswsq", _vectorIndexConfigHNSW_SQ),
-                    Configure
-                        .Vectors.Text2VecContextionary(true)
-                        .New("flatbase", _vectorIndexConfigFlat_base),
-                    Configure
-                        .Vectors.Text2VecContextionary(true)
-                        .New("flatbq", _vectorIndexConfigFlat_BQ),
+                    // Configure.Vectors.SelfProvided("hnswbq", _vectorIndexConfigHNSW_BQ),
+                    Configure.Vectors.SelfProvided("hnswpq", _vectorIndexConfigHNSW_PQ),
+                    Configure.Vectors.SelfProvided("hnswsq", _vectorIndexConfigHNSW_SQ),
+                    Configure.Vectors.SelfProvided("flatbase", _vectorIndexConfigFlat_base),
+                    Configure.Vectors.SelfProvided("flatbq", _vectorIndexConfigFlat_BQ),
                     // Requires ASYNC_INDEXING: 'true'
-                    // Configure
-                    //     .Vectors.Text2VecContextionary(true)
-                    //     .New("dynamicbase", _vectorIndexConfigDynamic_base),
+                    // Configure.Vectors.SelfProvided("dynamicbase", _vectorIndexConfigDynamic_base),
                 ],
                 InvertedIndexConfig = InvertedIndexConfig.Default,
                 ReplicationConfig = ReplicationConfig.Default,
