@@ -316,4 +316,29 @@ public class WeaviateRestClient : IDisposable
 
         return meta;
     }
+
+    internal async Task<NodeStatus[]> Nodes(string? collection, string verbosity)
+    {
+        var path = WeaviateEndpoints.Nodes();
+
+        if (collection is not null)
+        {
+            path += $"/{collection}";
+        }
+
+        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+        query["output"] = verbosity.ToLowerInvariant();
+        path += $"?{query}";
+        var response = await _httpClient.GetAsync(path);
+        var responseContent = await response.Content.ReadAsStringAsync();
+
+        // Print the response content
+        Console.WriteLine(responseContent);
+        await response.EnsureExpectedStatusCodeAsync([200], "get nodes");
+        var nodes = await response.Content.ReadFromJsonAsync<NodesStatusResponse>(
+            options: _options
+        );
+
+        return nodes?.Nodes?.ToArray() ?? Array.Empty<NodeStatus>();
+    }
 }

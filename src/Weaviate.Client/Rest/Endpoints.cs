@@ -20,6 +20,8 @@ internal static class WeaviateEndpoints
 
     public static string Meta() => $"meta";
 
+    public static string Nodes() => $"nodes";
+
     public static string Objects() => $"objects";
 
     internal static string? CollectionObject(string collectionName, Guid id) =>
