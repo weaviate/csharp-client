@@ -3,13 +3,20 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Weaviate.Client.Models;
 
-public record VectorConfigList : IReadOnlyDictionary<string, VectorConfig>
+public record VectorConfigList
+    : IReadOnlyDictionary<string, VectorConfig>,
+        IEquatable<VectorConfigList>
 {
-    private List<VectorConfig> _internalList = new();
+    private SortedList<string, VectorConfig> _internalList = new();
 
     public VectorConfigList(params VectorConfig[] vectorConfigs)
     {
-        _internalList = [.. vectorConfigs];
+        _internalList.Clear();
+
+        foreach (var c in vectorConfigs)
+        {
+            _internalList.Add(c.Name, c);
+        }
     }
 
     public IEnumerator<VectorConfig> GetEnumerator()
@@ -32,34 +39,50 @@ public record VectorConfigList : IReadOnlyDictionary<string, VectorConfig>
         return new(config);
     }
 
-    // public static implicit operator Dictionary<string, VectorConfig>(VectorConfigList configs) =>
-    //     configs._internalList.ToDictionary(config => config.Name, config => config);
+    public void Add(params VectorConfig[] vectorConfigs)
+    {
+        foreach (var c in vectorConfigs)
+        {
+            _internalList.Add(c.Name, c);
+        }
+    }
 
     // IReadOnlyDictionary<string, VectorConfig> implementation
     public VectorConfig this[string key] =>
-        _internalList.FirstOrDefault(config => config.Name == key)
-        ?? throw new KeyNotFoundException($"The key '{key}' was not found.");
+        _internalList[key] ?? throw new KeyNotFoundException($"The key '{key}' was not found.");
 
-    public IEnumerable<string> Keys => _internalList.Select(config => config.Name);
+    public IEnumerable<string> Keys => _internalList.Keys;
 
-    public IEnumerable<VectorConfig> Values => _internalList;
+    public IEnumerable<VectorConfig> Values => _internalList.Values;
 
     public int Count => _internalList.Count;
 
-    public bool ContainsKey(string key) => _internalList.Any(config => config.Name == key);
+    public bool ContainsKey(string key) => _internalList.ContainsKey(key);
 
     public bool TryGetValue(string key, [NotNullWhen(true)] out VectorConfig? value)
     {
-        value = _internalList.FirstOrDefault(config => config.Name == key);
-        return value != null;
+        return _internalList.TryGetValue(key, out value);
     }
 
     IEnumerator<KeyValuePair<string, VectorConfig>> IEnumerable<
         KeyValuePair<string, VectorConfig>
-    >.GetEnumerator()
+    >.GetEnumerator() => _internalList.GetEnumerator();
+
+    public override int GetHashCode()
     {
-        return _internalList
-            .Select(config => new KeyValuePair<string, VectorConfig>(config.Name, config))
-            .GetEnumerator();
+        var hash = new HashCode();
+        hash.Add(_internalList);
+        return hash.ToHashCode();
+    }
+
+    public virtual bool Equals(VectorConfigList? other)
+    {
+        if (other is null)
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return _internalList.SequenceEqual(other._internalList);
     }
 }

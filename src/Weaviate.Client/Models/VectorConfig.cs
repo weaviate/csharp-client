@@ -3,7 +3,7 @@ namespace Weaviate.Client.Models;
 /// <summary>
 /// Represents a vector configuration with name, vectorizer, and index settings.
 /// </summary>
-public record VectorConfig
+public record VectorConfig : IEquatable<VectorConfig>
 {
     /// <param name="Name">The name of the vector configuration.</param>
     /// <param name="Vectorizer">Configuration of a specific vectorizer used by this vector.</param>
@@ -38,4 +38,25 @@ public record VectorConfig
     /// Vector-index config, that is specific to the type of index selected in vectorIndexType.
     /// </summary>
     public VectorIndexConfig? VectorIndexConfig { get; }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public virtual bool Equals(VectorConfig? other)
+    {
+        if (other is null)
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return Name == other.Name
+            && EqualityComparer<VectorizerConfig?>.Default.Equals(Vectorizer, other.Vectorizer)
+            && EqualityComparer<VectorIndexConfig?>.Default.Equals(
+                VectorIndexConfig,
+                other.VectorIndexConfig
+            );
+    }
 }

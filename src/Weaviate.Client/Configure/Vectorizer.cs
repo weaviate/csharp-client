@@ -6,7 +6,10 @@ public static partial class Configure
 {
     public static class Vectors
     {
-        public static VectorConfig SelfProvided(string name = "default") => new(name);
+        public static VectorConfig SelfProvided(
+            string name = "default",
+            VectorIndexConfig? indexConfig = null
+        ) => new(name, new Vectorizer.SelfProvided(), indexConfig);
 
         public class VectorConfigBuilder(VectorizerConfig Config)
         {

@@ -4,7 +4,7 @@ using Weaviate.V1;
 
 namespace Weaviate.Client.Tests;
 
-public partial class UnitTests
+public partial class FilterTests
 {
     [Theory]
     [InlineData(
@@ -12,7 +12,7 @@ public partial class UnitTests
         new[] { "Equal", "NotEqual", "ContainsAny" },
         new[] { "GreaterThan", "GreaterThanEqual", "LessThan", "LessThanEqual" }
     )]
-    public void TypeSupportedOperations(
+    public void FilterTypeSupportedOperations(
         Type t,
         string[] expectedMethodList,
         string[] unexpectedMethodList

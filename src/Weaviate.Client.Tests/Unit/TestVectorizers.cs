@@ -5,8 +5,18 @@ using Quantizers = Weaviate.Client.Models.VectorIndex.Quantizers;
 
 namespace Weaviate.Client.Tests;
 
-public partial class UnitTests
+public partial class VectorConfigListTests
 {
+    [Fact]
+    public void NamedVectorInitialization()
+    {
+        var v1 = new NamedVectors();
+        v1.Add("default", new[] { 0.1f, 0.2f, 0.3f });
+
+        // Act & Assert
+        Assert.Equal(new[] { 0.1f, 0.2f, 0.3f }, v1["default"]);
+    }
+
     [Fact]
     public void Test_VectorConfigList()
     {
@@ -21,9 +31,9 @@ public partial class UnitTests
                 new VectorIndex.HNSW()
                 {
                     Distance = VectorIndexConfig.VectorDistance.Cosine,
-                    Quantizer = new Quantizers.PQConfig
+                    Quantizer = new Quantizers.PQ
                     {
-                        Encoder = new Quantizers.PQConfig.EncoderConfig
+                        Encoder = new Quantizers.PQ.EncoderConfig
                         {
                             Distribution = Quantizers.DistributionType.Normal,
                             Type = Quantizers.EncoderType.Kmeans,
@@ -53,14 +63,14 @@ public partial class UnitTests
         // Assert
         Assert.Equal(
             [
+                "contextionary1",
+                "contextionary2",
                 "default",
                 "fromSizes",
                 "location",
                 "nein",
-                "contextionary1",
-                "contextionary2",
-                "weaviate",
                 "neural",
+                "weaviate",
             ],
             ncList.Keys
         );

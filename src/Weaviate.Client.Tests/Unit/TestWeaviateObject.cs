@@ -2,10 +2,10 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests;
 
-public partial class UnitTests
+public partial class WeaviateObjectTests
 {
     [Fact]
-    public void DynamicPropertyAccess()
+    public void WeaviateObject_Methods_For_Typed_Property_Access()
     {
         WeaviateObject obj = new()
         {
