@@ -90,7 +90,7 @@ public class WeaviateRestClient : IDisposable
     private readonly bool _ownershipClient;
     private readonly HttpClient _httpClient;
 
-    private JsonSerializerOptions _options = new()
+    internal static readonly JsonSerializerOptions RestJsonSerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -100,6 +100,7 @@ public class WeaviateRestClient : IDisposable
             new EnumMemberJsonConverterFactory(),
             new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase),
         },
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
     internal WeaviateRestClient(Uri restUri, HttpClient? httpClient = null)
@@ -128,7 +129,9 @@ public class WeaviateRestClient : IDisposable
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection list");
 
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Schema>(options: _options);
+        var contents = await response.Content.ReadFromJsonAsync<Dto.Schema>(
+            options: RestJsonSerializerOptions
+        );
 
         return contents;
     }
@@ -144,7 +147,9 @@ public class WeaviateRestClient : IDisposable
             return default;
         }
 
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>(options: _options);
+        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>(
+            options: RestJsonSerializerOptions
+        );
 
         if (contents is null)
         {
@@ -166,12 +171,14 @@ public class WeaviateRestClient : IDisposable
         var response = await _httpClient.PostAsJsonAsync(
             WeaviateEndpoints.Collection(),
             collection,
-            options: _options
+            options: RestJsonSerializerOptions
         );
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection create");
 
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>(options: _options);
+        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>(
+            options: RestJsonSerializerOptions
+        );
 
         if (contents is null)
         {
@@ -186,7 +193,7 @@ public class WeaviateRestClient : IDisposable
         var response = await _httpClient.PostAsJsonAsync(
             WeaviateEndpoints.Objects(),
             data,
-            options: _options
+            options: RestJsonSerializerOptions
         );
 
         await response.EnsureExpectedStatusCodeAsync([200], "insert object");
@@ -211,7 +218,11 @@ public class WeaviateRestClient : IDisposable
         var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons.First();
 
-        var response = await _httpClient.PostAsJsonAsync(path, reference, options: _options);
+        var response = await _httpClient.PostAsJsonAsync(
+            path,
+            reference,
+            options: RestJsonSerializerOptions
+        );
 
         await response.EnsureExpectedStatusCodeAsync([200], "reference add");
     }
@@ -228,7 +239,11 @@ public class WeaviateRestClient : IDisposable
         var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons;
 
-        var response = await _httpClient.PutAsJsonAsync(path, reference, options: _options);
+        var response = await _httpClient.PutAsJsonAsync(
+            path,
+            reference,
+            options: RestJsonSerializerOptions
+        );
 
         await response.EnsureExpectedStatusCodeAsync([200], "reference replace");
     }
@@ -246,7 +261,11 @@ public class WeaviateRestClient : IDisposable
         var reference = beacons.First();
 
         var request = new HttpRequestMessage(HttpMethod.Delete, path);
-        request.Content = JsonContent.Create(reference, mediaType: null, options: _options);
+        request.Content = JsonContent.Create(
+            reference,
+            mediaType: null,
+            options: RestJsonSerializerOptions
+        );
 
         var response = await _httpClient.SendAsync(request);
 
@@ -257,7 +276,11 @@ public class WeaviateRestClient : IDisposable
     {
         var path = WeaviateEndpoints.CollectionProperties(collectionName);
 
-        var response = await _httpClient.PostAsJsonAsync(path, property, options: _options);
+        var response = await _httpClient.PostAsJsonAsync(
+            path,
+            property,
+            options: RestJsonSerializerOptions
+        );
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection property add");
     }
@@ -282,12 +305,17 @@ public class WeaviateRestClient : IDisposable
 
         var path = WeaviateEndpoints.ReferencesAdd();
 
-        var response = await _httpClient.PostAsJsonAsync(path, batchRefs, options: _options);
+        var response = await _httpClient.PostAsJsonAsync(
+            path,
+            batchRefs,
+            options: RestJsonSerializerOptions
+        );
 
         await response.EnsureExpectedStatusCodeAsync([200], "reference add many");
 
-        return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>(_options)
-            ?? throw new WeaviateRestException();
+        return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>(
+                RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestException();
     }
 
     internal async Task<bool> CollectionExists(object collectionName)
@@ -298,7 +326,9 @@ public class WeaviateRestClient : IDisposable
 
         await response.EnsureExpectedStatusCodeAsync([200], "collection property add");
 
-        var schema = await response.Content.ReadFromJsonAsync<Schema>(options: _options);
+        var schema = await response.Content.ReadFromJsonAsync<Schema>(
+            options: RestJsonSerializerOptions
+        );
 
         return schema?.Classes?.Any(c => c.Class1 is not null && c.Class1!.Equals(collectionName))
             ?? false;
@@ -312,7 +342,9 @@ public class WeaviateRestClient : IDisposable
 
         await response.EnsureExpectedStatusCodeAsync([200], "get meta endpoint");
 
-        var meta = await response.Content.ReadFromJsonAsync<Meta>(options: _options);
+        var meta = await response.Content.ReadFromJsonAsync<Meta>(
+            options: RestJsonSerializerOptions
+        );
 
         return meta;
     }

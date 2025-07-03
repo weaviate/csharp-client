@@ -20,7 +20,7 @@ public static class Connect
     public static ClientConfiguration CloudConfig(
         string restEndpoint,
         string? apiKey = null,
-        bool? addEmbeddingHeader = null
+        bool? addEmbeddingHeader = true
     ) =>
         new ClientConfiguration(
             restEndpoint,
@@ -29,13 +29,13 @@ public static class Connect
             443,
             true,
             apiKey,
-            addEmbeddingHeader ?? false
+            addEmbeddingHeader ?? true
         );
 
     public static WeaviateClient Cloud(
         string restEndpoint,
         string? apiKey = null,
-        bool? addEmbeddingHeader = null,
+        bool? addEmbeddingHeader = true,
         HttpClient? httpClient = null
     ) => CloudConfig(restEndpoint, apiKey, addEmbeddingHeader).Client(httpClient);
 

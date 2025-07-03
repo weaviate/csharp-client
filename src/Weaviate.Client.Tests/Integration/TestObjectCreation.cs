@@ -5,29 +5,6 @@ namespace Weaviate.Client.Tests.Integration;
 public partial class BasicTests : IntegrationTests
 {
     [Fact]
-    public async Task CollectionCreation()
-    {
-        // Arrange
-        var collectionName = "RandomCollectionName";
-
-        // Act
-        var collectionClient = await CollectionFactory(
-            collectionName,
-            "Test collection description",
-            [Property.Text("Name")]
-        );
-
-        // Assert
-        var collection = await _weaviate.Collections.Use<dynamic>(collectionClient.Name).Get();
-        Assert.NotNull(collection);
-        Assert.Equal(
-            $"CollectionCreation_Object_{TestContext.Current.Test?.UniqueID}_RandomCollectionName",
-            collection.Name
-        );
-        Assert.Equal("Test collection description", collection.Description);
-    }
-
-    [Fact]
     public async Task ObjectCreation()
     {
         // Arrange

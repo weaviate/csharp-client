@@ -1,11 +1,33 @@
 using Weaviate.Client.Models;
-using Weaviate.Client.Models.Vectorizers;
 
 namespace Weaviate.Client.Tests.Integration;
 
 [Collection("TestCollections")]
 public partial class CollectionsTests : IntegrationTests
 {
+    [Fact]
+    public async Task CollectionClient_Creates_And_Retrieves_Collection()
+    {
+        // Arrange
+        var collectionName = "RandomCollectionName";
+
+        // Act
+        var collectionClient = await CollectionFactory(
+            collectionName,
+            "Test collection description",
+            [Property.Text("Name")]
+        );
+
+        // Assert
+        var collection = await _weaviate.Collections.Use<dynamic>(collectionClient.Name).Get();
+        Assert.NotNull(collection);
+        Assert.Equal(
+            $"CollectionClient_Creates_And_Retrieves_Collection_{TestContext.Current.Test?.UniqueID}_Object_RandomCollectionName",
+            collection.Name
+        );
+        Assert.Equal("Test collection description", collection.Description);
+    }
+
     [Fact]
     public async Task Test_Collections_List()
     {
@@ -62,6 +84,21 @@ public partial class CollectionsTests : IntegrationTests
         Assert.False(exists);
     }
 
+    [Theory]
+    [ClassData(typeof(DatasetCollectionCreateAndExport))]
+    public async Task Test_Collections_Export_Cases(string key)
+    {
+        var c = DatasetCollectionCreateAndExport.Cases[key];
+
+        c.Name = MakeUniqueCollectionName<dynamic>(c.Name);
+
+        var client = await CollectionFactory<dynamic>(c);
+
+        var export = await _weaviate.Collections.Export(client.Name);
+
+        Assert.Equal(c, export);
+    }
+
     [Fact]
     public async Task Test_Collections_Export()
     {
@@ -98,7 +135,7 @@ public partial class CollectionsTests : IntegrationTests
 
         // Stopwords validation
         Assert.NotNull(export.InvertedIndexConfig.Stopwords);
-        Assert.Equal("en", export.InvertedIndexConfig.Stopwords.Preset);
+        Assert.Equal(StopwordConfig.Presets.EN, export.InvertedIndexConfig.Stopwords.Preset);
         Assert.Empty(export.InvertedIndexConfig.Stopwords.Additions);
         Assert.Empty(export.InvertedIndexConfig.Stopwords.Removals);
 
@@ -126,9 +163,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(128, export.ShardingConfig?.ActualVirtualCount);
         Assert.Equal(1, export.ShardingConfig?.DesiredCount);
         Assert.Equal(128, export.ShardingConfig?.DesiredVirtualCount);
-        Assert.Equal("murmur3", export.ShardingConfig?.Function);
+        Assert.Equal(ShardingConfig.Functions.Murmur3, export.ShardingConfig?.Function);
         Assert.Equal("_id", export.ShardingConfig?.Key);
-        Assert.Equal("hash", export.ShardingConfig?.Strategy);
+        Assert.Equal(ShardingConfig.Strategies.Hash, export.ShardingConfig?.Strategy);
         Assert.Equal(128, export.ShardingConfig?.VirtualPerPhysical);
 
         // VectorConfig validation
@@ -161,41 +198,6 @@ public partial class CollectionsTests : IntegrationTests
         Assert.False(config?.Skip);
         Assert.Equal(1000000000000L, config?.VectorCacheMaxObjects);
 
-        // TODO: Binary Quantization (bq) validation
-        // Assert.NotNull(config?.bq);
-        // Assert.False(config?.bq.enabled);
-
-        // TODO: Product Quantization (pq) validation
-        // Assert.NotNull(config?.pq);
-        // Assert.False(config?.pq.enabled);
-        // Assert.False(config?.pq.bitCompression);
-        // Assert.Equal(256, config?.pq.centroids);
-        // Assert.Equal(0, config?.pq.segments);
-        // Assert.Equal(100000, config?.pq.trainingLimit);
-        // Assert.NotNull(config?.pq.encoder);
-        // Assert.Equal("log-normal", config?.pq.encoder.distribution);
-        // Assert.Equal("kmeans", config?.pq.encoder.type);
-
-        // TODO: Scalar Quantization (sq) validation
-        // Assert.NotNull(config?.sq);
-        // Assert.False(config?.sq.enabled);
-        // Assert.Equal(20, config?.sq.rescoreLimit);
-        // Assert.Equal(100000, config?.sq.trainingLimit);
-
-        // TODO: Multivector validation
-        // Assert.NotNull(config?.multivector);
-        // Assert.False(config?.multivector.enabled);
-        // Assert.Equal("maxSim", config?.multivector.aggregation);
-
-        if (collection.WeaviateVersion >= new System.Version("1.31.0"))
-        {
-            // Assert.NotNull(config?..muvera);
-            // Assert.False(config?.multivector.muvera.enabled);
-            // Assert.Equal(16, config?.multivector.muvera.dprojections);
-            // Assert.Equal(4, config?.multivector.muvera.ksim);
-            // Assert.Equal(10, config?.multivector.muvera.repetitions);
-        }
-
         // Obsolete properties should be null/empty for new VectorConfig usage
 #pragma warning disable CS0618 // Type or member is obsolete
         Assert.Null(export.VectorIndexConfig);
@@ -226,7 +228,7 @@ public partial class CollectionsTests : IntegrationTests
                 IndexTimestamps = true,
                 Stopwords = new()
                 {
-                    Preset = "none",
+                    Preset = StopwordConfig.Presets.None,
                     Additions = ["plus"],
                     Removals = ["minus"],
                 },
@@ -273,7 +275,7 @@ public partial class CollectionsTests : IntegrationTests
 
         // Stopwords validation
         Assert.NotNull(export.InvertedIndexConfig.Stopwords);
-        Assert.Equal("none", export.InvertedIndexConfig.Stopwords.Preset);
+        Assert.Equal(StopwordConfig.Presets.None, export.InvertedIndexConfig.Stopwords.Preset);
         Assert.NotEmpty(export.InvertedIndexConfig.Stopwords.Additions);
         Assert.NotEmpty(export.InvertedIndexConfig.Stopwords.Removals);
 
@@ -301,9 +303,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(136, export.ShardingConfig?.ActualVirtualCount);
         Assert.Equal(1, export.ShardingConfig?.DesiredCount);
         Assert.Equal(136, export.ShardingConfig?.DesiredVirtualCount);
-        Assert.Equal("murmur3", export.ShardingConfig?.Function);
+        Assert.Equal(ShardingConfig.Functions.Murmur3, export.ShardingConfig?.Function);
         Assert.Equal("_id", export.ShardingConfig?.Key);
-        Assert.Equal("hash", export.ShardingConfig?.Strategy);
+        Assert.Equal(ShardingConfig.Strategies.Hash, export.ShardingConfig?.Strategy);
         Assert.Equal(136, export.ShardingConfig?.VirtualPerPhysical);
 
         // VectorConfig validation
@@ -405,7 +407,7 @@ public partial class CollectionsTests : IntegrationTests
                 IndexTimestamps = true,
                 Stopwords = new()
                 {
-                    Preset = "none",
+                    Preset = StopwordConfig.Presets.None,
                     Additions = ["plus"],
                     Removals = ["minus"],
                 },
@@ -444,7 +446,7 @@ public partial class CollectionsTests : IntegrationTests
 
         // Stopwords validation
         Assert.NotNull(export.InvertedIndexConfig.Stopwords);
-        Assert.Equal("none", export.InvertedIndexConfig.Stopwords.Preset);
+        Assert.Equal(StopwordConfig.Presets.None, export.InvertedIndexConfig.Stopwords.Preset);
         Assert.NotEmpty(export.InvertedIndexConfig.Stopwords.Additions);
         Assert.NotEmpty(export.InvertedIndexConfig.Stopwords.Removals);
 
@@ -472,9 +474,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(0, export.ShardingConfig?.ActualVirtualCount);
         Assert.Equal(0, export.ShardingConfig?.DesiredCount);
         Assert.Equal(0, export.ShardingConfig?.DesiredVirtualCount);
-        Assert.Equal("", export.ShardingConfig?.Function);
+        Assert.Equal(ShardingConfig.Functions.None, export.ShardingConfig?.Function);
         Assert.Equal("", export.ShardingConfig?.Key);
-        Assert.Equal("", export.ShardingConfig?.Strategy);
+        Assert.Equal(ShardingConfig.Strategies.None, export.ShardingConfig?.Strategy);
         Assert.Equal(0, export.ShardingConfig?.VirtualPerPhysical);
 
         // VectorConfig validation
