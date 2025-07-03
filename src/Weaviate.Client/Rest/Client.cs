@@ -368,7 +368,7 @@ public class WeaviateRestClient : IDisposable
         Console.WriteLine(responseContent);
         await response.EnsureExpectedStatusCodeAsync([200], "get nodes");
         var nodes = await response.Content.ReadFromJsonAsync<NodesStatusResponse>(
-            options: _options
+            options: RestJsonSerializerOptions
         );
 
         return nodes?.Nodes?.ToArray() ?? Array.Empty<NodeStatus>();
