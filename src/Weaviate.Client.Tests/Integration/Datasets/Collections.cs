@@ -1,4 +1,5 @@
 using Weaviate.Client.Models;
+using static Weaviate.Client.Models.VectorIndex;
 
 namespace Weaviate.Client.Tests.Integration;
 
@@ -12,7 +13,7 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
         tokenization: PropertyTokenization.Word
     );
 
-    private static VectorIndexConfig _vectorIndexConfig = new VectorIndex.HNSW()
+    private static VectorIndex.HNSW _vectorIndexConfigHNSW_base = new VectorIndex.HNSW()
     {
         CleanupIntervalSeconds = 300,
         Distance = VectorIndexConfig.VectorDistance.Cosine,
@@ -28,6 +29,51 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
         VectorCacheMaxObjects = 1000000000000L,
     };
 
+    private static VectorIndexConfig _vectorIndexConfigHNSW_BQ = _vectorIndexConfigHNSW_base with
+    {
+        Quantizer = new Quantizers.BQ() { Cache = true, RescoreLimit = 64 },
+    };
+
+    private static VectorIndexConfig _vectorIndexConfigHNSW_PQ = _vectorIndexConfigHNSW_base with
+    {
+        Quantizer = new Quantizers.PQ()
+        {
+            Encoder = new()
+            {
+                Distribution = Quantizers.DistributionType.LogNormal,
+                Type = Quantizers.EncoderType.Kmeans,
+            },
+            BitCompression = false,
+            Segments = 0,
+            Centroids = 256,
+            TrainingLimit = 100000,
+        },
+    };
+
+    private static VectorIndexConfig _vectorIndexConfigHNSW_SQ = _vectorIndexConfigHNSW_base with
+    {
+        Quantizer = new Quantizers.SQ() { TrainingLimit = 100000, RescoreLimit = 20 },
+    };
+
+    private static VectorIndex.Flat _vectorIndexConfigFlat_base = new VectorIndex.Flat()
+    {
+        Distance = VectorIndexConfig.VectorDistance.Cosine,
+        VectorCacheMaxObjects = 1000000000000L,
+    };
+
+    private static VectorIndex.Flat _vectorIndexConfigFlat_BQ = _vectorIndexConfigFlat_base with
+    {
+        Quantizer = new Quantizers.BQ() { Cache = true, RescoreLimit = 64 },
+    };
+
+    private static VectorIndex.Dynamic _vectorIndexConfigDynamic_base = new VectorIndex.Dynamic()
+    {
+        Flat = _vectorIndexConfigFlat_base,
+        Hnsw = _vectorIndexConfigHNSW_base,
+        Distance = VectorIndexConfig.VectorDistance.Cosine,
+        Threshold = 1000,
+    };
+
     public static Dictionary<string, Collection> Cases =>
         new()
         {
@@ -39,7 +85,7 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 VectorConfig = new VectorConfig(
                     "default",
                     new Vectorizer.SelfProvided(),
-                    vectorIndexConfig: _vectorIndexConfig
+                    vectorIndexConfig: _vectorIndexConfigHNSW_base
                 ),
                 InvertedIndexConfig = InvertedIndexConfig.Default,
                 ReplicationConfig = ReplicationConfig.Default,
@@ -62,7 +108,7 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 ],
                 VectorConfig = Configure
                     .Vectors.Text2VecContextionary(false)
-                    .New("nondefault", _vectorIndexConfig),
+                    .New("nondefault", _vectorIndexConfigHNSW_base),
                 InvertedIndexConfig = new()
                 {
                     Bm25 = new() { B = 0.70f, K1 = 1.3f },
@@ -109,7 +155,7 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 ],
                 VectorConfig = Configure
                     .Vectors.Text2VecContextionary(false)
-                    .New("nondefault", _vectorIndexConfig),
+                    .New("nondefault", _vectorIndexConfigHNSW_base),
                 InvertedIndexConfig = new()
                 {
                     Bm25 = new() { B = 0.70f, K1 = 1.3f },
@@ -137,6 +183,42 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                     AutoTenantCreation = true,
                     Enabled = true,
                 },
+            },
+            ["with all vector index configurations"] = new Collection
+            {
+                Name = "AllVectorIndexConfigurations",
+                Description = "Vector Index Configurations",
+                Properties = [_nameProperty],
+                VectorConfig =
+                [
+                    Configure
+                        .Vectors.Text2VecContextionary(true)
+                        .New("hnswbase", _vectorIndexConfigHNSW_base),
+                    // TODO BQ is only returning Enabled property for HNSW
+                    // Configure
+                    //     .Vectors.Text2VecContextionary()
+                    //     .New("hnswbq", _vectorIndexConfigHNSW_BQ),
+                    Configure
+                        .Vectors.Text2VecContextionary(true)
+                        .New("hnswpq", _vectorIndexConfigHNSW_PQ),
+                    Configure
+                        .Vectors.Text2VecContextionary(true)
+                        .New("hnswsq", _vectorIndexConfigHNSW_SQ),
+                    Configure
+                        .Vectors.Text2VecContextionary(true)
+                        .New("flatbase", _vectorIndexConfigFlat_base),
+                    Configure
+                        .Vectors.Text2VecContextionary(true)
+                        .New("flatbq", _vectorIndexConfigFlat_BQ),
+                    // Requires ASYNC_INDEXING: 'true'
+                    // Configure
+                    //     .Vectors.Text2VecContextionary(true)
+                    //     .New("dynamicbase", _vectorIndexConfigDynamic_base),
+                ],
+                InvertedIndexConfig = InvertedIndexConfig.Default,
+                ReplicationConfig = ReplicationConfig.Default,
+                ShardingConfig = ShardingConfig.Default,
+                MultiTenancyConfig = MultiTenancyConfig.Default,
             },
         };
 
