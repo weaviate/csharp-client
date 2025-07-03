@@ -254,16 +254,6 @@ internal static class VectorIndexSerialization
         throw new WeaviateException("Unable to create VectorIndexConfig");
     }
 
-    private static JsonSerializerOptions _options =>
-        new Lazy<JsonSerializerOptions>(() =>
-        {
-            var o = new JsonSerializerOptions(
-                Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
-            );
-            o.WriteIndented = false;
-            return o;
-        }).Value;
-
     public static object? ToDto(VectorIndexConfig? config) =>
         config switch
         {
@@ -276,36 +266,45 @@ internal static class VectorIndexSerialization
     public static string SerializeHnsw(VectorIndex.HNSW hnsw)
     {
         var dto = hnsw.ToDto();
-        return JsonSerializer.Serialize(dto, _options);
+        return JsonSerializer.Serialize(dto, Rest.WeaviateRestClient.RestJsonSerializerOptions);
     }
 
     public static VectorIndex.HNSW DeserializeHnsw(string json)
     {
-        var dto = JsonSerializer.Deserialize<HnswDto>(json, _options);
+        var dto = JsonSerializer.Deserialize<HnswDto>(
+            json,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
         return dto?.ToHnsw() ?? new VectorIndex.HNSW();
     }
 
     public static string SerializeFlat(VectorIndex.Flat flat)
     {
         var dto = flat.ToDto();
-        return JsonSerializer.Serialize(dto, _options);
+        return JsonSerializer.Serialize(dto, Rest.WeaviateRestClient.RestJsonSerializerOptions);
     }
 
     public static VectorIndex.Flat DeserializeFlat(string json)
     {
-        var dto = JsonSerializer.Deserialize<FlatDto>(json, _options);
+        var dto = JsonSerializer.Deserialize<FlatDto>(
+            json,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
         return dto?.ToFlat() ?? new VectorIndex.Flat();
     }
 
     public static string SerializeDynamic(VectorIndex.Dynamic dynamic)
     {
         var dto = dynamic.ToDto();
-        return JsonSerializer.Serialize(dto, _options);
+        return JsonSerializer.Serialize(dto, Rest.WeaviateRestClient.RestJsonSerializerOptions);
     }
 
     public static VectorIndex.Dynamic DeserializeDynamic(string json)
     {
-        var dto = JsonSerializer.Deserialize<DynamicDto>(json, _options);
+        var dto = JsonSerializer.Deserialize<DynamicDto>(
+            json,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
         return dto?.ToDynamic() ?? new VectorIndex.Dynamic() { Flat = null, Hnsw = null };
     }
 }
