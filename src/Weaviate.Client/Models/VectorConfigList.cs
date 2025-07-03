@@ -7,11 +7,16 @@ public record VectorConfigList
     : IReadOnlyDictionary<string, VectorConfig>,
         IEquatable<VectorConfigList>
 {
-    private List<VectorConfig> _internalList = new();
+    private SortedList<string, VectorConfig> _internalList = new();
 
     public VectorConfigList(params VectorConfig[] vectorConfigs)
     {
-        _internalList = [.. vectorConfigs];
+        _internalList.Clear();
+
+        foreach (var c in vectorConfigs)
+        {
+            _internalList.Add(c.Name, c);
+        }
     }
 
     public IEnumerator<VectorConfig> GetEnumerator()
@@ -34,33 +39,34 @@ public record VectorConfigList
         return new(config);
     }
 
+    public void Add(params VectorConfig[] vectorConfigs)
+    {
+        foreach (var c in vectorConfigs)
+        {
+            _internalList.Add(c.Name, c);
+        }
+    }
+
     // IReadOnlyDictionary<string, VectorConfig> implementation
     public VectorConfig this[string key] =>
-        _internalList.FirstOrDefault(config => config.Name == key)
-        ?? throw new KeyNotFoundException($"The key '{key}' was not found.");
+        _internalList[key] ?? throw new KeyNotFoundException($"The key '{key}' was not found.");
 
-    public IEnumerable<string> Keys => _internalList.Select(config => config.Name);
+    public IEnumerable<string> Keys => _internalList.Keys;
 
-    public IEnumerable<VectorConfig> Values => _internalList;
+    public IEnumerable<VectorConfig> Values => _internalList.Values;
 
     public int Count => _internalList.Count;
 
-    public bool ContainsKey(string key) => _internalList.Any(config => config.Name == key);
+    public bool ContainsKey(string key) => _internalList.ContainsKey(key);
 
     public bool TryGetValue(string key, [NotNullWhen(true)] out VectorConfig? value)
     {
-        value = _internalList.FirstOrDefault(config => config.Name == key);
-        return value != null;
+        return _internalList.TryGetValue(key, out value);
     }
 
     IEnumerator<KeyValuePair<string, VectorConfig>> IEnumerable<
         KeyValuePair<string, VectorConfig>
-    >.GetEnumerator()
-    {
-        return _internalList
-            .Select(config => new KeyValuePair<string, VectorConfig>(config.Name, config))
-            .GetEnumerator();
-    }
+    >.GetEnumerator() => _internalList.GetEnumerator();
 
     public override int GetHashCode()
     {
