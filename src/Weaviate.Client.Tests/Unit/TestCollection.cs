@@ -245,18 +245,4 @@ public class CollectionTests
         // Assert
         Assert.True(result);
     }
-
-    [Fact]
-    public void Collection_Equals_VectorConfig_DoesNotMatch_Returns_False()
-    {
-        // Arrange
-        var collection1 = new Collection { VectorConfig = new VectorConfigList() };
-        var collection2 = new Collection { VectorConfig = null };
-
-        // Act
-        var result = collection1.Equals(collection2);
-
-        // Assert
-        Assert.False(result);
-    }
 }

@@ -63,14 +63,14 @@ public partial class VectorConfigListTests
         // Assert
         Assert.Equal(
             [
+                "contextionary1",
+                "contextionary2",
                 "default",
                 "fromSizes",
                 "location",
                 "nein",
-                "contextionary1",
-                "contextionary2",
-                "weaviate",
                 "neural",
+                "weaviate",
             ],
             ncList.Keys
         );
