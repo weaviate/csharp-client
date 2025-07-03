@@ -90,6 +90,8 @@ public partial class CollectionsTests : IntegrationTests
     {
         var c = DatasetCollectionCreateAndExport.Cases[key];
 
+        c.Name = MakeUniqueCollectionName<dynamic>(c.Name);
+
         var client = await CollectionFactory<dynamic>(c);
 
         var export = await _weaviate.Collections.Export(client.Name);
