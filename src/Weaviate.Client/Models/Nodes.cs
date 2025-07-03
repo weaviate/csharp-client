@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Models;
@@ -21,13 +22,13 @@ public class VerboseNode : MinimalNode
 
 public enum VectorIndexingStatus
 {
-    [JsonPropertyName("READONLY")]
+    [EnumMember(Value = "READONLY")]
     ReadOnly,
 
-    [JsonPropertyName("INDEXING")]
+    [EnumMember(Value = "INDEXING")]
     Indexing,
 
-    [JsonPropertyName("READY")]
+    [EnumMember(Value = "READY")]
     Ready,
 }
 
