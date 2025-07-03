@@ -39,7 +39,7 @@ public static class WeaviateExtensions
                 e => e.Name,
                 e => new Rest.Dto.VectorConfig
                 {
-                    VectorIndexConfig = e.VectorIndexConfig,
+                    VectorIndexConfig = VectorIndexSerialization.ToDto(e.VectorIndexConfig),
                     VectorIndexType = e.VectorIndexType,
                     Vectorizer = e.Vectorizer?.ToDto(),
                 }
@@ -107,7 +107,9 @@ public static class WeaviateExtensions
         var makeVectorConfig = (string name, Rest.Dto.VectorConfig v) =>
         {
             var vectorizer = v.Vectorizer;
-            var vic = VectorIndexConfig.Factory(v.VectorIndexType, v.VectorIndexConfig);
+
+            var vic = VectorIndexSerialization.Factory(v.VectorIndexType, v.VectorIndexConfig);
+
             VectorizerConfig? vc = null;
 
             if (vectorizer is Dictionary<string, object> vecAsDict)
@@ -183,8 +185,8 @@ public static class WeaviateExtensions
 
         return new Collection()
         {
-            Name = collection.Class1 ?? string.Empty,
-            Description = collection.Description ?? string.Empty,
+            Name = collection?.Class1 ?? string.Empty,
+            Description = collection?.Description ?? string.Empty,
             References =
                 collection
                     ?.Properties?.Where(p => p.DataType?.Any(t => char.IsUpper(t.First())) ?? false)
