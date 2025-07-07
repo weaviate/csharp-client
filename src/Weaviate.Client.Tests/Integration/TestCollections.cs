@@ -174,12 +174,12 @@ public partial class CollectionsTests : IntegrationTests
 
         var defaultVectorConfig = export.VectorConfig["default"];
         Assert.Equal("default", defaultVectorConfig.Name);
-        Assert.Equal("hnsw", defaultVectorConfig.VectorIndexType);
+        Assert.Equal(VectorIndex.HNSW.TypeValue, defaultVectorConfig.VectorIndexType);
         Assert.NotNull(defaultVectorConfig.Vectorizer);
 
         // VectorIndexConfig validation
         Assert.NotNull(defaultVectorConfig.VectorIndexConfig);
-        Assert.Equal("hnsw", defaultVectorConfig.VectorIndexConfig.Type);
+        Assert.Equal(VectorIndex.HNSW.TypeValue, defaultVectorConfig.VectorIndexConfig.Type);
         Assert.NotNull(defaultVectorConfig.VectorIndexConfig);
 
         var config = defaultVectorConfig.VectorIndexConfig as VectorIndex.HNSW;
@@ -315,11 +315,14 @@ public partial class CollectionsTests : IntegrationTests
         var defaultVectorConfig = export.VectorConfig["nondefault"];
         Assert.Equal("nondefault", defaultVectorConfig.Name);
         Assert.NotNull(defaultVectorConfig.Vectorizer);
-        Assert.Equal("text2vec-contextionary", defaultVectorConfig.Vectorizer.Identifier);
+        Assert.Equal(
+            Vectorizer.Text2VecContextionary.IdentifierValue,
+            defaultVectorConfig.Vectorizer.Identifier
+        );
 
         // VectorIndexConfig validation
         Assert.NotNull(defaultVectorConfig.VectorIndexConfig);
-        Assert.Equal("hnsw", defaultVectorConfig.VectorIndexConfig.Type);
+        Assert.Equal(VectorIndex.HNSW.TypeValue, defaultVectorConfig.VectorIndexConfig.Type);
         Assert.NotNull(defaultVectorConfig.VectorIndexConfig);
 
         var config = defaultVectorConfig.VectorIndexConfig as VectorIndex.HNSW;
@@ -486,11 +489,14 @@ public partial class CollectionsTests : IntegrationTests
         var defaultVectorConfig = export.VectorConfig["nondefault"];
         Assert.Equal("nondefault", defaultVectorConfig.Name);
         Assert.NotNull(defaultVectorConfig.Vectorizer);
-        Assert.Equal("text2vec-contextionary", defaultVectorConfig.Vectorizer.Identifier);
+        Assert.Equal(
+            Vectorizer.Text2VecContextionary.IdentifierValue,
+            defaultVectorConfig.Vectorizer.Identifier
+        );
 
         // VectorIndexConfig validation
         Assert.NotNull(defaultVectorConfig.VectorIndexConfig);
-        Assert.Equal("hnsw", defaultVectorConfig.VectorIndexConfig.Type);
+        Assert.Equal(VectorIndex.HNSW.TypeValue, defaultVectorConfig.VectorIndexConfig.Type);
         Assert.NotNull(defaultVectorConfig.VectorIndexConfig as VectorIndex.HNSW);
 
         var config = defaultVectorConfig.VectorIndexConfig as VectorIndex.HNSW;
