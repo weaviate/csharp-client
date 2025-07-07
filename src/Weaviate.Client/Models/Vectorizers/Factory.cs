@@ -10,31 +10,37 @@ internal static class VectorizerConfigFactory
 {
     private static readonly Dictionary<string, Type> _configTypes = new()
     {
-        { "none", typeof(Vectorizer.SelfProvided) },
-        { "img2vec-neural", typeof(Vectorizer.Img2VecNeural) },
-        { "multi2vec-clip", typeof(Vectorizer.Multi2VecClip) },
-        { "multi2vec-cohere", typeof(Vectorizer.Multi2VecCohere) },
-        { "multi2vec-bind", typeof(Vectorizer.Multi2VecBind) },
-        { "multi2vec-google", typeof(Vectorizer.Multi2VecGoogle) },
-        { "multi2vec-jinaai", typeof(Vectorizer.Multi2VecJinaAI) },
-        { "multi2vec-voyageai", typeof(Vectorizer.Multi2VecVoyageAI) },
-        { "ref2vec-centroid", typeof(Vectorizer.Ref2VecCentroid) },
-        { "text2vec-aws", typeof(Vectorizer.Text2VecAWS) },
-        { "text2vec-azure-openai", typeof(Vectorizer.Text2VecAzureOpenAI) },
-        { "text2vec-cohere", typeof(Vectorizer.Text2VecCohere) },
-        { "text2vec-contextionary", typeof(Vectorizer.Text2VecContextionary) },
-        { "text2vec-databricks", typeof(Vectorizer.Text2VecDatabricks) },
-        { "text2vec-gpt4all", typeof(Vectorizer.Text2VecGPT4All) },
-        { "text2vec-huggingface", typeof(Vectorizer.Text2VecHuggingFace) },
-        { "text2vec-jinaai", typeof(Vectorizer.Text2VecJinaAI) },
-        { "text2vec-nvidia", typeof(Vectorizer.Text2VecNvidia) },
-        { "text2vec-mistral", typeof(Vectorizer.Text2VecMistral) },
-        { "text2vec-ollama", typeof(Vectorizer.Text2VecOllama) },
-        { "text2vec-openai", typeof(Vectorizer.Text2VecOpenAI) },
-        { "text2vec-google", typeof(Vectorizer.Text2VecGoogle) },
-        { "text2vec-transformers", typeof(Vectorizer.Text2VecTransformers) },
-        { "text2vec-voyageai", typeof(Vectorizer.Text2VecVoyageAI) },
-        { "text2vec-weaviate", typeof(Vectorizer.Text2VecWeaviate) },
+        { Vectorizer.SelfProvided.IdentifierValue, typeof(Vectorizer.SelfProvided) },
+        { Vectorizer.Img2VecNeural.IdentifierValue, typeof(Vectorizer.Img2VecNeural) },
+        { Vectorizer.Multi2VecClip.IdentifierValue, typeof(Vectorizer.Multi2VecClip) },
+        { Vectorizer.Multi2VecCohere.IdentifierValue, typeof(Vectorizer.Multi2VecCohere) },
+        { Vectorizer.Multi2VecBind.IdentifierValue, typeof(Vectorizer.Multi2VecBind) },
+        { Vectorizer.Multi2VecGoogle.IdentifierValue, typeof(Vectorizer.Multi2VecGoogle) },
+        { Vectorizer.Multi2VecJinaAI.IdentifierValue, typeof(Vectorizer.Multi2VecJinaAI) },
+        { Vectorizer.Multi2VecVoyageAI.IdentifierValue, typeof(Vectorizer.Multi2VecVoyageAI) },
+        { Vectorizer.Ref2VecCentroid.IdentifierValue, typeof(Vectorizer.Ref2VecCentroid) },
+        { Vectorizer.Text2VecAWS.IdentifierValue, typeof(Vectorizer.Text2VecAWS) },
+        { Vectorizer.Text2VecAzureOpenAI.IdentifierValue, typeof(Vectorizer.Text2VecAzureOpenAI) },
+        { Vectorizer.Text2VecCohere.IdentifierValue, typeof(Vectorizer.Text2VecCohere) },
+        {
+            Vectorizer.Text2VecContextionary.IdentifierValue,
+            typeof(Vectorizer.Text2VecContextionary)
+        },
+        { Vectorizer.Text2VecDatabricks.IdentifierValue, typeof(Vectorizer.Text2VecDatabricks) },
+        { Vectorizer.Text2VecGPT4All.IdentifierValue, typeof(Vectorizer.Text2VecGPT4All) },
+        { Vectorizer.Text2VecHuggingFace.IdentifierValue, typeof(Vectorizer.Text2VecHuggingFace) },
+        { Vectorizer.Text2VecJinaAI.IdentifierValue, typeof(Vectorizer.Text2VecJinaAI) },
+        { Vectorizer.Text2VecNvidia.IdentifierValue, typeof(Vectorizer.Text2VecNvidia) },
+        { Vectorizer.Text2VecMistral.IdentifierValue, typeof(Vectorizer.Text2VecMistral) },
+        { Vectorizer.Text2VecOllama.IdentifierValue, typeof(Vectorizer.Text2VecOllama) },
+        { Vectorizer.Text2VecOpenAI.IdentifierValue, typeof(Vectorizer.Text2VecOpenAI) },
+        { Vectorizer.Text2VecGoogle.IdentifierValue, typeof(Vectorizer.Text2VecGoogle) },
+        {
+            Vectorizer.Text2VecTransformers.IdentifierValue,
+            typeof(Vectorizer.Text2VecTransformers)
+        },
+        { Vectorizer.Text2VecVoyageAI.IdentifierValue, typeof(Vectorizer.Text2VecVoyageAI) },
+        { Vectorizer.Text2VecWeaviate.IdentifierValue, typeof(Vectorizer.Text2VecWeaviate) },
     };
 
     /// <summary>
@@ -53,7 +59,7 @@ internal static class VectorizerConfigFactory
         if (!_configTypes.TryGetValue(type, out var configType))
             throw new ArgumentException($"Unsupported vectorizer type: {type}", nameof(type));
 
-        if (type == "none")
+        if (type == Vectorizer.SelfProvided.IdentifierValue)
         {
             return new Vectorizer.SelfProvided();
         }
