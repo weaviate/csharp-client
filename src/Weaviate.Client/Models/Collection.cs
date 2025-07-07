@@ -15,6 +15,10 @@ public partial record Collection : IEquatable<Collection>
     // Configuration specific to modules in a collection context.
     public ModuleConfigList? ModuleConfig { get; set; }
 
+    public RerankerConfig? RerankerConfig { get; set; }
+
+    public GenerativeConfig? GenerativeConfig { get; set; }
+
     // multi tenancy config
     public MultiTenancyConfig? MultiTenancyConfig { get; set; }
 
