@@ -1,20 +1,23 @@
+using System.Text.Json.Serialization;
+
 namespace Weaviate.Client.Models;
 
-public abstract record GenerativeConfig
+public interface IGenerativeConfig
 {
-    public abstract string Type { get; }
+    [JsonIgnore]
+    string Type { get; }
 }
 
 public static class Generative
 {
-    public record Custom<T>(string TypeValue) : GenerativeConfig
+    public record Custom : IGenerativeConfig
     {
-        public override string Type => TypeValue;
+        public required string Type { get; set; }
 
-        public T? Config { get; set; }
+        public dynamic? Config { get; set; } = new { };
     }
 
-    public abstract record OpenAIConfigBase : GenerativeConfig
+    public abstract record OpenAIConfigBase : IGenerativeConfig
     {
         public string? BaseURL { get; set; }
         public int? FrequencyPenaltyProperty { get; set; }
@@ -22,12 +25,13 @@ public static class Generative
         public int? PresencePenaltyProperty { get; set; }
         public double? TemperatureProperty { get; set; }
         public double? TopPProperty { get; set; }
+        public abstract string Type { get; }
     }
 
-    public record AWSConfig : GenerativeConfig
+    public record AWSConfig : IGenerativeConfig
     {
         public const string TypeValue = "generative-aws";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string Region { get; set; } = string.Empty;
         public string Service { get; set; } = string.Empty;
@@ -35,10 +39,10 @@ public static class Generative
         public string? Endpoint { get; set; }
     }
 
-    public record AnthropicConfig : GenerativeConfig
+    public record AnthropicConfig : IGenerativeConfig
     {
         public const string TypeValue = "generative-anthropic";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? BaseURL { get; set; }
         public int? MaxTokens { get; set; }
@@ -49,20 +53,20 @@ public static class Generative
         public double? TopP { get; set; }
     }
 
-    public record AnyscaleConfig : GenerativeConfig
+    public record AnyscaleConfig : IGenerativeConfig
     {
         public const string TypeValue = "generative-anyscale";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? BaseURL { get; set; }
         public string? Model { get; set; }
         public double? Temperature { get; set; }
     }
 
-    public record CohereConfig : GenerativeConfig
+    public record CohereConfig : IGenerativeConfig
     {
         public const string TypeValue = "generative-cohere";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public int? KProperty { get; set; }
         public string? Model { get; set; }
@@ -72,10 +76,10 @@ public static class Generative
         public double? TemperatureProperty { get; set; }
     }
 
-    public record DatabricksConfig : GenerativeConfig
+    public record DatabricksConfig : IGenerativeConfig
     {
         public const string TypeValue = "generative-databricks";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string Endpoint { get; set; } = string.Empty;
         public int? MaxTokens { get; set; }
@@ -84,10 +88,10 @@ public static class Generative
         public double? TopP { get; set; }
     }
 
-    public record FriendliAIConfig : GenerativeConfig
+    public record FriendliAIConfig : IGenerativeConfig
     {
         public const string TypeValue = "generative-friendliai";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? BaseURL { get; set; }
         public int? MaxTokens { get; set; }
@@ -95,10 +99,10 @@ public static class Generative
         public double? Temperature { get; set; }
     }
 
-    public record MistralConfig : GenerativeConfig
+    public record MistralConfig : IGenerativeConfig
     {
         public const string TypeValue = "generative-mistral";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? BaseURL { get; set; }
         public int? MaxTokens { get; set; }
@@ -106,10 +110,10 @@ public static class Generative
         public double? Temperature { get; set; }
     }
 
-    public record NvidiaConfig : GenerativeConfig
+    public record NvidiaConfig : IGenerativeConfig
     {
         public const string TypeValue = "generative-nvidia";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? BaseURL { get; set; }
         public int? MaxTokens { get; set; }
@@ -117,10 +121,10 @@ public static class Generative
         public double? Temperature { get; set; }
     }
 
-    public record OllamaConfig : GenerativeConfig
+    public record OllamaConfig : IGenerativeConfig
     {
         public const string TypeValue = "generative-ollama";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? ApiEndpoint { get; set; }
         public string? Model { get; set; }
@@ -143,10 +147,10 @@ public static class Generative
         public string DeploymentId { get; set; } = string.Empty;
     }
 
-    public record GoogleConfig : GenerativeConfig
+    public record GoogleConfig : IGenerativeConfig
     {
         public const string TypeValue = "generative-google";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? ApiEndpoint { get; set; }
         public int? MaxOutputTokens { get; set; }
@@ -157,10 +161,10 @@ public static class Generative
         public double? TopP { get; set; }
     }
 
-    public record XAIConfig : GenerativeConfig
+    public record XAIConfig : IGenerativeConfig
     {
         public const string TypeValue = "generative-xai";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? BaseURL { get; set; }
         public int? MaxTokens { get; set; }

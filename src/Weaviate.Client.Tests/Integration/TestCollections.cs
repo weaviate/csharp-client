@@ -100,6 +100,50 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     [Fact]
+    public async Task Collection_Creates_And_Retrieves_Reranker_Config()
+    {
+        // Arrange
+        var collectionClient = await CollectionFactory(
+            properties: [Property.Text("Name")],
+            rerankerConfig: new Reranker.Custom
+            {
+                Type = "reranker-dummy",
+                Config = new { ConfigOption = "ConfigValue" },
+            }
+        );
+
+        // Act
+        var collection = await _weaviate.Collections.Use<dynamic>(collectionClient.Name).Get();
+
+        // Assert
+        Assert.NotNull(collection);
+        Assert.NotNull(collection.RerankerConfig);
+        Assert.IsType<Reranker.Custom>(collection.RerankerConfig);
+    }
+
+    [Fact]
+    public async Task Collection_Creates_And_Retrieves_Generative_Config()
+    {
+        // Arrange
+        var collectionClient = await CollectionFactory(
+            properties: [Property.Text("Name")],
+            generativeConfig: new Generative.Custom
+            {
+                Type = "generative-dummy",
+                Config = new { ConfigOption = "ConfigValue" },
+            }
+        );
+
+        // Act
+        var collection = await _weaviate.Collections.Use<dynamic>(collectionClient.Name).Get();
+
+        // Assert
+        Assert.NotNull(collection);
+        Assert.NotNull(collection.GenerativeConfig);
+        Assert.IsType<Generative.Custom>(collection.GenerativeConfig);
+    }
+
+    [Fact]
     public async Task Test_Collections_Export()
     {
         var collection = await CollectionFactory(
@@ -341,39 +385,6 @@ public partial class CollectionsTests : IntegrationTests
         Assert.False(config?.Skip);
         Assert.Equal(1000000000000L, config?.VectorCacheMaxObjects);
 
-        // TODO: Binary Quantization (bq) validation
-        // Assert.NotNull(config?.bq);
-        // Assert.False(config?.bq.enabled);
-
-        // TODO: Product Quantization (pq) validation
-        // Assert.NotNull(config?.pq);
-        // Assert.False(config?.pq.enabled);
-        // Assert.False(config?.pq.bitCompression);
-        // Assert.Equal(256, config?.pq.centroids);
-        // Assert.Equal(0, config?.pq.segments);
-        // Assert.Equal(100000, config?.pq.trainingLimit);
-        // Assert.NotNull(config?.pq.encoder);
-        // Assert.Equal("log-normal", config?.pq.encoder.distribution);
-        // Assert.Equal("kmeans", config?.pq.encoder.type);
-
-        // TODO: Scalar Quantization (sq) validation
-        // Assert.NotNull(config?.sq);
-        // Assert.False(config?.sq.enabled);
-        // Assert.Equal(20, config?.sq.rescoreLimit);
-        // Assert.Equal(100000, config?.sq.trainingLimit);
-
-        // TODO: Multivector validation
-        // Assert.NotNull(config?.multivector);
-        // Assert.False(config?.multivector.enabled);
-        // Assert.Equal("maxSim", config?.multivector.aggregation);
-
-        // Available from v1.31
-        // Assert.NotNull(config?.multivector.muvera);
-        // Assert.False(config?.multivector.muvera.enabled);
-        // Assert.Equal(16, config?.multivector.muvera.dprojections);
-        // Assert.Equal(4, config?.multivector.muvera.ksim);
-        // Assert.Equal(10, config?.multivector.muvera.repetitions);
-
         // Obsolete properties should be null/empty for new VectorConfig usage
 #pragma warning disable CS0618 // Type or member is obsolete
         Assert.Null(export.VectorIndexConfig);
@@ -514,39 +525,6 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(300, config?.CleanupIntervalSeconds);
         Assert.False(config?.Skip);
         Assert.Equal(1000000000000L, config?.VectorCacheMaxObjects);
-
-        // TODO: Binary Quantization (bq) validation
-        // Assert.NotNull(config?.bq);
-        // Assert.False(config?.bq.enabled);
-
-        // TODO: Product Quantization (pq) validation
-        // Assert.NotNull(config?.pq);
-        // Assert.False(config?.pq.enabled);
-        // Assert.False(config?.pq.bitCompression);
-        // Assert.Equal(256, config?.pq.centroids);
-        // Assert.Equal(0, config?.pq.segments);
-        // Assert.Equal(100000, config?.pq.trainingLimit);
-        // Assert.NotNull(config?.pq.encoder);
-        // Assert.Equal("log-normal", config?.pq.encoder.distribution);
-        // Assert.Equal("kmeans", config?.pq.encoder.type);
-
-        // TODO: Scalar Quantization (sq) validation
-        // Assert.NotNull(config?.sq);
-        // Assert.False(config?.sq.enabled);
-        // Assert.Equal(20, config?.sq.rescoreLimit);
-        // Assert.Equal(100000, config?.sq.trainingLimit);
-
-        // TODO: Multivector validation
-        // Assert.NotNull(config?.multivector);
-        // Assert.False(config?.multivector.enabled);
-        // Assert.Equal("maxSim", config?.multivector.aggregation);
-
-        // Available from v1.31
-        // Assert.NotNull(config?.multivector.muvera);
-        // Assert.False(config?.multivector.muvera.enabled);
-        // Assert.Equal(16, config?.multivector.muvera.dprojections);
-        // Assert.Equal(4, config?.multivector.muvera.ksim);
-        // Assert.Equal(10, config?.multivector.muvera.repetitions);
 
         // Obsolete properties should be null/empty for new VectorConfig usage
 #pragma warning disable CS0618 // Type or member is obsolete

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests;
@@ -131,7 +132,8 @@ public class CollectionTests
         // Act
 
         // Assert
-        Assert.Equal(collection1, collection2);
+        Assert.Equivalent(collection1, collection2);
+        Assert.NotSame(collection1, collection2);
     }
 
     [Fact]
@@ -244,5 +246,41 @@ public class CollectionTests
 
         // Assert
         Assert.True(result);
+    }
+
+    [Fact]
+    public void Collection_Rerank_Deserializes_Into_IGenerativeConfig()
+    {
+        var key = "generative-dummy";
+        var value = JsonSerializer.Deserialize<object>(
+            "{\"config\":{\"configOption\":\"ConfigValue\"}}",
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        dynamic? config = GenerativeConfigSerialization.Factory(key, value);
+
+        Assert.NotNull(config);
+        Assert.NotNull(config!.Config);
+        Assert.Equal("ConfigValue", config!.Config.configOption);
+        Assert.IsType<Generative.Custom>(config);
+        Assert.IsAssignableFrom<IGenerativeConfig>(config);
+    }
+
+    [Fact]
+    public void Collection_Rerank_Deserializes_Into_IRerankerConfig()
+    {
+        var key = "reranker-dummy";
+        var value = JsonSerializer.Deserialize<object>(
+            "{\"config\":{\"configOption\":\"ConfigValue\"}}",
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        dynamic? config = RerankerConfigSerialization.Factory(key, value);
+
+        Assert.NotNull(config);
+        Assert.NotNull(config!.Config);
+        Assert.Equal("ConfigValue", config!.Config.configOption);
+        Assert.IsType<Reranker.Custom>(config);
+        Assert.IsAssignableFrom<IRerankerConfig>(config);
     }
 }

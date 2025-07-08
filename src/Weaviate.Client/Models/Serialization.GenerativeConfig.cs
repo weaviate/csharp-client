@@ -1,21 +1,18 @@
-using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using static Weaviate.Client.Models.VectorIndexConfig;
 
 namespace Weaviate.Client.Models;
 
 internal static class GenerativeConfigSerialization
 {
-    internal static GenerativeConfig? Factory(string? type, object? vectorIndexConfig)
+    internal static IGenerativeConfig? Factory(string? type, object? config)
     {
         ArgumentException.ThrowIfNullOrEmpty(type);
 
-        if (vectorIndexConfig is JsonElement vic)
+        if (config is JsonElement vic)
         {
             var result = type switch
             {
-                Generative.AnthropicConfig.TypeValue => (GenerativeConfig?)
+                Generative.AnthropicConfig.TypeValue => (IGenerativeConfig?)
                     JsonSerializer.Deserialize<Generative.AnthropicConfig>(
                         vic.GetRawText(),
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
@@ -78,7 +75,19 @@ internal static class GenerativeConfigSerialization
                         vic.GetRawText(),
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
-                _ => new Generative.Custom<dynamic>(type),
+                _ => new Generative.Custom
+                {
+                    Type = type,
+                    Config = ObjectHelper.ConvertJsonElement(
+                        (
+                            (dynamic?)
+                                JsonSerializer.Deserialize<System.Dynamic.ExpandoObject>(
+                                    vic.GetRawText(),
+                                    Rest.WeaviateRestClient.RestJsonSerializerOptions
+                                )
+                        )?.config
+                    ),
+                },
             };
 
             return result;
