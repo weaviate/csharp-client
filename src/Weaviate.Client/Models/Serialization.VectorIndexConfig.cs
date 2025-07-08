@@ -230,7 +230,6 @@ internal static class VectorIndexMappingExtensions
     }
 }
 
-// Usage example
 internal static class VectorIndexSerialization
 {
     internal static VectorIndexConfig? Factory(string? type, object? vectorIndexConfig)

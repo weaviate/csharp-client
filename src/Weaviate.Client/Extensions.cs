@@ -11,6 +11,18 @@ public static class WeaviateExtensions
 {
     internal static Rest.Dto.Class ToDto(this Collection collection)
     {
+        var moduleConfig = new ModuleConfigList();
+
+        if (collection.GenerativeConfig is not null)
+        {
+            moduleConfig[collection.GenerativeConfig.Type] = collection.GenerativeConfig;
+        }
+
+        if (collection.RerankerConfig is not null)
+        {
+            moduleConfig[collection.RerankerConfig.Type] = collection.RerankerConfig;
+        }
+
         var data = new Rest.Dto.Class()
         {
             Class1 = collection.Name,
@@ -45,7 +57,7 @@ public static class WeaviateExtensions
                 }
             ),
             ShardingConfig = collection.ShardingConfig,
-            ModuleConfig = collection.ModuleConfig,
+            ModuleConfig = moduleConfig,
         };
 
         if (collection.ReplicationConfig is ReplicationConfig rc)
@@ -143,6 +155,28 @@ public static class WeaviateExtensions
         ShardingConfig? shardingConfig = (
             collection.ShardingConfig as JsonElement?
         )?.Deserialize<ShardingConfig>(WeaviateRestClient.RestJsonSerializerOptions);
+
+        GenerativeConfig? generative = null;
+        RerankerConfig? reranker = null;
+
+        var moduleConfigJE = collection.ModuleConfig as JsonElement?;
+        if (moduleConfigJE is not null)
+        {
+            var generativeJE = moduleConfigJE
+                .Value.EnumerateObject()
+                .SingleOrDefault(p => p.Name.StartsWith("generative-"));
+
+            generative = GenerativeConfigSerialization.Factory(
+                generativeJE.Name,
+                generativeJE.Value
+            );
+
+            var rerankerJE = moduleConfigJE
+                .Value.EnumerateObject()
+                .SingleOrDefault(p => p.Name.StartsWith("reranker-"));
+
+            reranker = RerankerConfigSerialization.Factory(rerankerJE.Name, rerankerJE.Value);
+        }
 
         var moduleConfig = (collection.ModuleConfig as JsonElement?)?.Deserialize<ModuleConfigList>(
             WeaviateRestClient.RestJsonSerializerOptions
