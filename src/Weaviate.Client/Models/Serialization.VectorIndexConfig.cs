@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static Weaviate.Client.Models.VectorIndexConfig;
@@ -230,7 +229,6 @@ internal static class VectorIndexMappingExtensions
     }
 }
 
-// Usage example
 internal static class VectorIndexSerialization
 {
     internal static VectorIndexConfig? Factory(string? type, object? vectorIndexConfig)
@@ -241,10 +239,14 @@ internal static class VectorIndexSerialization
         {
             var result = type switch
             {
-                "hnsw" => (VectorIndexConfig?)
+                VectorIndex.HNSW.TypeValue => (VectorIndexConfig?)
                     VectorIndexSerialization.DeserializeHnsw(vic.GetRawText()),
-                "flat" => VectorIndexSerialization.DeserializeFlat(vic.GetRawText()),
-                "dynamic" => VectorIndexSerialization.DeserializeDynamic(vic.GetRawText()),
+                VectorIndex.Flat.TypeValue => VectorIndexSerialization.DeserializeFlat(
+                    vic.GetRawText()
+                ),
+                VectorIndex.Dynamic.TypeValue => VectorIndexSerialization.DeserializeDynamic(
+                    vic.GetRawText()
+                ),
                 _ => null,
             };
 

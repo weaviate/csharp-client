@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Weaviate.Client.Grpc;
-using Weaviate.Client.Models;
 using Weaviate.Client.Rest;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Weaviate.Client.Tests")]

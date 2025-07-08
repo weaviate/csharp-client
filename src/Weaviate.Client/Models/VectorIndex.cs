@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using static Weaviate.Client.Models.VectorIndexConfig;
 
@@ -66,24 +65,30 @@ public static class VectorIndex
 
         public record BQ : QuantizerConfig
         {
+            public const string TypeValue = "bq";
+
             public bool Cache { get; set; }
             public int RescoreLimit { get; set; }
 
             [JsonIgnore]
-            public override string Type => "bq";
+            public override string Type => TypeValue;
         }
 
         public record SQ : QuantizerConfig
         {
+            public const string TypeValue = "sq";
+
             public int RescoreLimit { get; set; }
             public int TrainingLimit { get; set; }
 
             [JsonIgnore]
-            public override string Type => "sq";
+            public override string Type => TypeValue;
         }
 
         public record PQ : QuantizerConfig
         {
+            public const string TypeValue = "pq";
+
             public record EncoderConfig
             {
                 public EncoderType Type { get; set; }
@@ -97,12 +102,14 @@ public static class VectorIndex
             public int TrainingLimit { get; set; }
 
             [JsonIgnore]
-            public override string Type => "pq";
+            public override string Type => TypeValue;
         }
     }
 
     public sealed record HNSW : VectorIndexConfig
     {
+        public const string TypeValue = "hnsw";
+
         public int? CleanupIntervalSeconds { get; set; }
         public VectorDistance? Distance { get; set; }
         public int? DynamicEfMin { get; set; }
@@ -118,20 +125,24 @@ public static class VectorIndex
 
         public QuantizerConfig? Quantizer { get; set; }
 
-        public override string Type => "hnsw";
+        public override string Type => TypeValue;
     }
 
     public sealed record Flat : VectorIndexConfig
     {
+        public const string TypeValue = "flat";
+
         public VectorDistance? Distance { get; set; }
         public long? VectorCacheMaxObjects { get; set; }
         public Quantizers.BQ? Quantizer { get; set; }
 
-        public override string Type => "flat";
+        public override string Type => TypeValue;
     }
 
     public sealed record Dynamic : VectorIndexConfig
     {
+        public const string TypeValue = "dynamic";
+
         public VectorDistance? Distance { get; set; }
         public int? Threshold { get; set; }
 
@@ -139,6 +150,6 @@ public static class VectorIndex
         public required Flat? Flat { get; set; }
 
         [JsonIgnore]
-        public override string Type => "dynamic";
+        public override string Type => TypeValue;
     }
 }

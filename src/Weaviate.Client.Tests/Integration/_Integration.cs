@@ -86,6 +86,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         InvertedIndexConfig? invertedIndexConfig = null,
         ReplicationConfig? replicationConfig = null,
         ShardingConfig? shardingConfig = null,
+        IRerankerConfig? rerankerConfig = null,
+        IGenerativeConfig? generativeConfig = null,
         string collectionNamePartSeparator = "_"
     )
     {
@@ -112,6 +114,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable
             InvertedIndexConfig = invertedIndexConfig,
             ReplicationConfig = replicationConfig,
             ShardingConfig = shardingConfig,
+            RerankerConfig = rerankerConfig,
+            GenerativeConfig = generativeConfig,
         };
 
         return await CollectionFactory<TData>(c);
@@ -127,6 +131,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         InvertedIndexConfig? invertedIndexConfig = null,
         ReplicationConfig? replicationConfig = null,
         ShardingConfig? shardingConfig = null,
+        IRerankerConfig? rerankerConfig = null,
+        IGenerativeConfig? generativeConfig = null,
         string collectionNamePartSeparator = "_"
     )
     {
@@ -140,6 +146,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable
             invertedIndexConfig,
             replicationConfig,
             shardingConfig,
+            rerankerConfig,
+            generativeConfig,
             collectionNamePartSeparator
         );
     }
