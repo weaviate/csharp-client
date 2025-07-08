@@ -5,8 +5,10 @@ public static partial class Vectorizer
     // All record constructors for derived types
     public partial record SelfProvided : VectorizerConfig
     {
+        public const string IdentifierValue = "none";
+
         public SelfProvided()
-            : base("none") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -15,8 +17,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Img2VecNeural : VectorizerConfig
     {
+        public const string IdentifierValue = "img2vec-neural";
+
         public Img2VecNeural()
-            : base("img2vec-neural") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -43,8 +47,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Multi2VecClip : VectorizerConfig
     {
+        public const string IdentifierValue = "multi2vec-clip";
+
         public Multi2VecClip()
-            : base("multi2vec-clip") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -61,8 +67,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Multi2VecCohere : VectorizerConfig
     {
+        public const string IdentifierValue = "multi2vec-cohere";
+
         public Multi2VecCohere()
-            : base("multi2vec-cohere") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -79,8 +87,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Multi2VecBind : VectorizerConfig
     {
+        public const string IdentifierValue = "multi2vec-bind";
+
         public Multi2VecBind()
-            : base("multi2vec-bind") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -97,8 +107,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Multi2VecGoogle : VectorizerConfig
     {
+        public const string IdentifierValue = "multi2vec-palm";
+
         public Multi2VecGoogle()
-            : base("multi2vec-palm") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -123,8 +135,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Multi2VecJinaAI : VectorizerConfig
     {
+        public const string IdentifierValue = "multi2vec-jinaai";
+
         public Multi2VecJinaAI()
-            : base("multi2vec-jinaai") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -141,8 +155,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Multi2VecVoyageAI : VectorizerConfig
     {
+        public const string IdentifierValue = "multi2vec-voyageai";
+
         public Multi2VecVoyageAI()
-            : base("multi2vec-voyageai") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -151,8 +167,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Ref2VecCentroid : VectorizerConfig
     {
+        public const string IdentifierValue = "ref2vec-centroid";
+
         public Ref2VecCentroid()
-            : base("ref2vec-centroid") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -161,8 +179,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecAWS : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-aws";
+
         public Text2VecAWS()
-            : base("text2vec-aws") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -171,8 +191,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecAzureOpenAI : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-azure-openai";
+
         public Text2VecAzureOpenAI()
-            : base("text2vec-azure-openai") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -181,8 +203,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecCohere : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-cohere";
+
         public Text2VecCohere()
-            : base("text2vec-cohere") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -191,8 +215,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecContextionary : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-contextionary";
+
         public Text2VecContextionary()
-            : base("text2vec-contextionary") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -201,8 +227,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecDatabricks : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-databricks";
+
         public Text2VecDatabricks()
-            : base("text2vec-databricks") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -211,8 +239,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecGPT4All : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-gpt4all";
+
         public Text2VecGPT4All()
-            : base("text2vec-gpt4all") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -221,8 +251,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecHuggingFace : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-huggingface";
+
         public Text2VecHuggingFace()
-            : base("text2vec-huggingface") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -231,8 +263,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecJinaAI : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-jinaai";
+
         public Text2VecJinaAI()
-            : base("text2vec-jinaai") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -249,8 +283,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecNvidia : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-nvidia";
+
         public Text2VecNvidia()
-            : base("text2vec-nvidia") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -259,8 +295,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecMistral : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-mistral";
+
         public Text2VecMistral()
-            : base("text2vec-mistral") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -269,8 +307,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecOllama : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-ollama";
+
         public Text2VecOllama()
-            : base("text2vec-ollama") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -279,8 +319,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecOpenAI : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-openai";
+
         public Text2VecOpenAI()
-            : base("text2vec-openai") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -297,8 +339,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecGoogle : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-palm";
+
         public Text2VecGoogle()
-            : base("text2vec-palm") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -307,8 +351,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecTransformers : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-transformers";
+
         public Text2VecTransformers()
-            : base("text2vec-transformers") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -317,8 +363,10 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecVoyageAI : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-voyageai";
+
         public Text2VecVoyageAI()
-            : base("text2vec-voyageai") { }
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
@@ -327,7 +375,9 @@ public static partial class Vectorizer
     /// </summary>
     public partial record Text2VecWeaviate : VectorizerConfig
     {
+        public const string IdentifierValue = "text2vec-weaviate";
+
         public Text2VecWeaviate()
-            : base("text2vec-weaviate") { }
+            : base(IdentifierValue) { }
     }
 }
