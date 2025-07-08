@@ -11,7 +11,7 @@ namespace Weaviate.Client;
 
 internal class ObjectHelper
 {
-    public static dynamic? JsonElementToExpandoObject(JsonElement? e)
+    public static object? ConvertJsonElement(JsonElement? e)
     {
         if (e is null)
         {
@@ -27,7 +27,7 @@ internal class ObjectHelper
 
             foreach (var property in element.EnumerateObject())
             {
-                dictionary[property.Name] = JsonElementToExpandoObject(property.Value);
+                dictionary[property.Name] = ConvertJsonElement(property.Value);
             }
 
             return expando;
@@ -37,8 +37,8 @@ internal class ObjectHelper
         {
             return element
                 .EnumerateArray()
-                .Cast<JsonElement?>()
-                .Select(JsonElementToExpandoObject)
+                .OfType<JsonElement?>()
+                .Select(ConvertJsonElement)
                 .ToArray();
         }
 

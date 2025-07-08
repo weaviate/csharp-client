@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Weaviate.Client;
 using Weaviate.Client.Models;
 
 namespace Example;

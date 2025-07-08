@@ -57,7 +57,7 @@ public static class WeaviateExtensions
                 }
             ),
             ShardingConfig = collection.ShardingConfig,
-            ModuleConfig = moduleConfig,
+            ModuleConfig = moduleConfig.Any() ? moduleConfig : null,
         };
 
         if (collection.ReplicationConfig is ReplicationConfig rc)
@@ -156,31 +156,45 @@ public static class WeaviateExtensions
             collection.ShardingConfig as JsonElement?
         )?.Deserialize<ShardingConfig>(WeaviateRestClient.RestJsonSerializerOptions);
 
-        GenerativeConfig? generative = null;
-        RerankerConfig? reranker = null;
+        IGenerativeConfig? generative = null;
+        IRerankerConfig? reranker = null;
 
         var moduleConfigJE = collection.ModuleConfig as JsonElement?;
         if (moduleConfigJE is not null)
         {
-            var generativeJE = moduleConfigJE
+            var objectEnumerator = moduleConfigJE
                 .Value.EnumerateObject()
-                .SingleOrDefault(p => p.Name.StartsWith("generative-"));
+                .Cast<JsonProperty?>()
+                .ToList();
 
-            generative = GenerativeConfigSerialization.Factory(
-                generativeJE.Name,
-                generativeJE.Value
+            var generativeJE = objectEnumerator.SingleOrDefault(p =>
+                p!.Value.Name.StartsWith("generative-")
             );
 
-            var rerankerJE = moduleConfigJE
-                .Value.EnumerateObject()
-                .SingleOrDefault(p => p.Name.StartsWith("reranker-"));
+            if (generativeJE is not null)
+            {
+                generative = GenerativeConfigSerialization.Factory(
+                    generativeJE!.Value.Name,
+                    generativeJE!.Value.Value
+                );
+            }
 
-            reranker = RerankerConfigSerialization.Factory(rerankerJE.Name, rerankerJE.Value);
+            var rerankerJE = objectEnumerator.SingleOrDefault(p =>
+                p!.Value.Name.StartsWith("reranker-")
+            );
+
+            if (rerankerJE is not null)
+            {
+                reranker = RerankerConfigSerialization.Factory(
+                    rerankerJE!.Value.Name,
+                    rerankerJE!.Value.Value
+                );
+            }
         }
 
-        var moduleConfig = (collection.ModuleConfig as JsonElement?)?.Deserialize<ModuleConfigList>(
-            WeaviateRestClient.RestJsonSerializerOptions
-        );
+        var moduleConfig = (
+            collection.ModuleConfig as JsonElement?
+        )?.Deserialize<ModuleConfigList?>(WeaviateRestClient.RestJsonSerializerOptions);
 
         var invertedIndexConfig =
             (collection?.InvertedIndexConfig is Rest.Dto.InvertedIndexConfig iic)
@@ -253,6 +267,8 @@ public static class WeaviateExtensions
                     .ToList() ?? [],
             InvertedIndexConfig = invertedIndexConfig,
             ModuleConfig = moduleConfig,
+            RerankerConfig = reranker,
+            GenerativeConfig = generative,
             MultiTenancyConfig =
                 (collection?.MultiTenancyConfig is Rest.Dto.MultiTenancyConfig mtc)
                     ? new MultiTenancyConfig
