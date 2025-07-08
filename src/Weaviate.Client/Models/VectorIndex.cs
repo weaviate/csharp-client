@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using static Weaviate.Client.Models.VectorIndexConfig;
 

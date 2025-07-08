@@ -1,25 +1,27 @@
+using System.Text.Json.Serialization;
+
 namespace Weaviate.Client.Models;
 
 // TODO Ask: Is it worth using string to allow use of custom models in reranker configs, or if an Enum is enough.
 
-// Base record for all reranker configurations
-public abstract record RerankerConfig
+public interface IRerankerConfig
 {
-    public abstract string Type { get; }
+    [JsonIgnore]
+    string Type { get; }
 }
 
 public static class Reranker
 {
-    public record TransformersConfig : RerankerConfig
+    public record Transformers : IRerankerConfig
     {
         public const string TypeValue = "reranker-transformers";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
     }
 
-    public record CohereConfig : RerankerConfig
+    public record Cohere : IRerankerConfig
     {
         public const string TypeValue = "reranker-cohere";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? Model { get; set; }
 
@@ -31,10 +33,10 @@ public static class Reranker
         }
     }
 
-    public record VoyageAIConfig : RerankerConfig
+    public record VoyageAI : IRerankerConfig
     {
         public const string TypeValue = "reranker-voyageai";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? BaseURL { get; set; }
         public string? Model { get; set; }
@@ -45,10 +47,10 @@ public static class Reranker
         }
     }
 
-    public record JinaAIConfig : RerankerConfig
+    public record JinaAI : IRerankerConfig
     {
         public const string TypeValue = "reranker-jinaai";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? Model { get; set; }
 
@@ -63,10 +65,10 @@ public static class Reranker
         }
     }
 
-    public record NvidiaConfig : RerankerConfig
+    public record Nvidia : IRerankerConfig
     {
         public const string TypeValue = "reranker-nvidia";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
 
         public string? BaseURL { get; set; }
         public string? Model { get; set; }
@@ -77,17 +79,17 @@ public static class Reranker
         }
     }
 
-    public record Custom<T>(string TypeValue) : RerankerConfig
+    public record Custom : IRerankerConfig
     {
-        public override string Type => TypeValue;
+        public required string Type { get; init; }
 
-        public T? Config { get; set; }
+        public dynamic? Config { get; set; }
     }
 
     // Special case for "none" - no configuration needed
-    public record NoneConfig : RerankerConfig
+    public record None : IRerankerConfig
     {
         public const string TypeValue = "none";
-        public override string Type => TypeValue;
+        public string Type => TypeValue;
     }
 }

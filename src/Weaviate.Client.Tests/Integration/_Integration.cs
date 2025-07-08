@@ -86,8 +86,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         InvertedIndexConfig? invertedIndexConfig = null,
         ReplicationConfig? replicationConfig = null,
         ShardingConfig? shardingConfig = null,
-        RerankerConfig? rerankerConfig = null,
-        GenerativeConfig? generativeConfig = null,
+        IRerankerConfig? rerankerConfig = null,
+        IGenerativeConfig? generativeConfig = null,
         string collectionNamePartSeparator = "_"
     )
     {
@@ -131,8 +131,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         InvertedIndexConfig? invertedIndexConfig = null,
         ReplicationConfig? replicationConfig = null,
         ShardingConfig? shardingConfig = null,
-        RerankerConfig? rerankerConfig = null,
-        GenerativeConfig? generativeConfig = null,
+        IRerankerConfig? rerankerConfig = null,
+        IGenerativeConfig? generativeConfig = null,
         string collectionNamePartSeparator = "_"
     )
     {

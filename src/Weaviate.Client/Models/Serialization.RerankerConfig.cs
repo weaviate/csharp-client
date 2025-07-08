@@ -1,12 +1,10 @@
-using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Models;
 
 internal static class RerankerConfigSerialization
 {
-    internal static RerankerConfig? Factory(string? type, object? config)
+    internal static IRerankerConfig? Factory(string? type, object? config)
     {
         ArgumentException.ThrowIfNullOrEmpty(type);
 
@@ -14,36 +12,44 @@ internal static class RerankerConfigSerialization
         {
             var result = type switch
             {
-                Reranker.TransformersConfig.TypeValue => (RerankerConfig?)
-                    JsonSerializer.Deserialize<Reranker.TransformersConfig>(
+                Reranker.Transformers.TypeValue => (IRerankerConfig?)
+                    JsonSerializer.Deserialize<Reranker.Transformers>(
                         vic.GetRawText(),
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
-                Reranker.CohereConfig.TypeValue =>
-                    JsonSerializer.Deserialize<Reranker.CohereConfig>(
-                        vic.GetRawText(),
-                        Rest.WeaviateRestClient.RestJsonSerializerOptions
-                    ),
-                Reranker.VoyageAIConfig.TypeValue =>
-                    JsonSerializer.Deserialize<Reranker.VoyageAIConfig>(
-                        vic.GetRawText(),
-                        Rest.WeaviateRestClient.RestJsonSerializerOptions
-                    ),
-                Reranker.JinaAIConfig.TypeValue =>
-                    JsonSerializer.Deserialize<Reranker.JinaAIConfig>(
-                        vic.GetRawText(),
-                        Rest.WeaviateRestClient.RestJsonSerializerOptions
-                    ),
-                Reranker.NvidiaConfig.TypeValue =>
-                    JsonSerializer.Deserialize<Reranker.NvidiaConfig>(
-                        vic.GetRawText(),
-                        Rest.WeaviateRestClient.RestJsonSerializerOptions
-                    ),
-                Reranker.NoneConfig.TypeValue => JsonSerializer.Deserialize<Reranker.NoneConfig>(
+                Reranker.Cohere.TypeValue => JsonSerializer.Deserialize<Reranker.Cohere>(
                     vic.GetRawText(),
                     Rest.WeaviateRestClient.RestJsonSerializerOptions
                 ),
-                _ => new Reranker.Custom<dynamic>(type),
+                Reranker.VoyageAI.TypeValue => JsonSerializer.Deserialize<Reranker.VoyageAI>(
+                    vic.GetRawText(),
+                    Rest.WeaviateRestClient.RestJsonSerializerOptions
+                ),
+                Reranker.JinaAI.TypeValue => JsonSerializer.Deserialize<Reranker.JinaAI>(
+                    vic.GetRawText(),
+                    Rest.WeaviateRestClient.RestJsonSerializerOptions
+                ),
+                Reranker.Nvidia.TypeValue => JsonSerializer.Deserialize<Reranker.Nvidia>(
+                    vic.GetRawText(),
+                    Rest.WeaviateRestClient.RestJsonSerializerOptions
+                ),
+                Reranker.None.TypeValue => JsonSerializer.Deserialize<Reranker.None>(
+                    vic.GetRawText(),
+                    Rest.WeaviateRestClient.RestJsonSerializerOptions
+                ),
+                _ => new Reranker.Custom
+                {
+                    Type = type,
+                    Config = ObjectHelper.ConvertJsonElement(
+                        (
+                            (dynamic?)
+                                JsonSerializer.Deserialize<System.Dynamic.ExpandoObject>(
+                                    vic.GetRawText(),
+                                    Rest.WeaviateRestClient.RestJsonSerializerOptions
+                                )
+                        )?.config
+                    ),
+                },
             };
 
             return result;
