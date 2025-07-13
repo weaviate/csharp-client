@@ -55,21 +55,14 @@ public class CollectionClient<TData>
         return _backingCollection;
     }
 
+    public CollectionUpdateBuilder<TData> Config =>
+        new CollectionUpdateBuilder<TData>(_client, _collectionName);
+
     public async Task Delete()
     {
         await _client.RestClient.CollectionDelete(_collectionName);
 
         _backingCollection = null;
-    }
-
-    // TODO Move to a Config scope
-    internal async Task AddReference(ReferenceProperty referenceProperty)
-    {
-        var p = (Property)referenceProperty;
-
-        var dto = new Rest.Dto.Property() { Name = p.Name, DataType = [.. p.DataType] };
-
-        await _client.RestClient.CollectionAddProperty(_collectionName, dto);
     }
 
     public async IAsyncEnumerable<WeaviateObject> Iterator(

@@ -188,6 +188,23 @@ public class WeaviateRestClient : IDisposable
         return contents;
     }
 
+    internal async Task<Dto.Class> CollectionUpdate(string collectionName, Dto.Class collection)
+    {
+        var response = await _httpClient.PutAsJsonAsync(
+            WeaviateEndpoints.Collection(collectionName),
+            collection,
+            options: RestJsonSerializerOptions
+        );
+
+        await response.EnsureExpectedStatusCodeAsync([200], "collection update");
+
+        var contents =
+            await response.Content.ReadFromJsonAsync<Dto.Class>(options: RestJsonSerializerOptions)
+            ?? throw new WeaviateRestException();
+
+        return contents;
+    }
+
     internal async Task<Dto.Object> ObjectInsert(string collectionName, Dto.Object data)
     {
         var response = await _httpClient.PostAsJsonAsync(
