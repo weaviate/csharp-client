@@ -27,7 +27,7 @@ public record VectorConfig : IEquatable<VectorConfig>
     /// <summary>
     /// Name of the vector configuration.
     /// </summary>
-    public string Name { get; }
+    public string Name { get; internal set; }
 
     /// <summary>
     /// Configuration of a specific vectorizer used by this vector.
