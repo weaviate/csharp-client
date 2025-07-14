@@ -559,6 +559,56 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(2, c.VectorConfig.Count);
     }
 
+    public static IEnumerable<object?> GenerativeConfigData()
+    {
+        yield return null;
+        yield return new Generative.AnyscaleConfig();
+    }
+
+    public static IEnumerable<object?> VectorizerConfigData()
+    {
+        yield return null;
+        yield return Configure.Vectors.SelfProvided();
+        yield return Configure.Vectors.Text2VecContextionary(vectorizeClassName: false).New("vec");
+        yield return new[]
+        {
+            Configure.Vectors.Text2VecContextionary(vectorizeClassName: false).New(name: "vec"),
+        };
+    }
+
+    public static IEnumerable<object?[]> AddPropertyTestData()
+    {
+        foreach (var generativeConfig in GenerativeConfigData())
+        {
+            foreach (var vectorizerConfig in VectorizerConfigData())
+            {
+                yield return new object?[] { generativeConfig, vectorizerConfig };
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(AddPropertyTestData))]
+    public async Task Test_Config_Add_Property(
+        IGenerativeConfig? generativeConfig,
+        VectorConfigList? vectorizerConfig
+    )
+    {
+        // Arrange
+        var collection = await CollectionFactory(
+            properties: [Property.Text("title")],
+            generativeConfig: generativeConfig,
+            vectorConfig: vectorizerConfig
+        );
+
+        await collection.Config.AddProperty(Property.Text("description"));
+
+        var config = await collection.Get();
+
+        Assert.NotNull(config);
+        Assert.Contains(config.Properties, p => p.Name == "description");
+    }
+
     [Fact]
     public async Task Test_Collection_Config_Update()
     {
