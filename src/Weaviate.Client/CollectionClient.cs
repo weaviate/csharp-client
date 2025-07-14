@@ -47,7 +47,7 @@ public class CollectionClient<TData>
 
         if (response is null)
         {
-            return null;
+            return _backingCollection = null;
         }
 
         _backingCollection = response.ToModel();
