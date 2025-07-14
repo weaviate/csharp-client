@@ -535,6 +535,31 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     [Fact]
+    public async Task Test_Collection_Config_Add_Vector()
+    {
+        // Arrange
+        var collection = await CollectionFactory(
+            name: "Test",
+            vectorConfig: Configure.Vectors.SelfProvided("default"),
+            properties: [Property.Text("name")]
+        );
+
+        if (collection.WeaviateVersion < Version.Parse("1.31.0"))
+        {
+            Assert.Skip("Skipping test for Weaviate versions < 1.31.0");
+        }
+
+        await collection.Config.AddVector(
+            Configure.Vectors.Text2VecContextionary().New("nondefault")
+        );
+
+        var c = await collection.Get();
+
+        Assert.NotNull(c);
+        Assert.Equal(2, c.VectorConfig.Count);
+    }
+
+    [Fact]
     public async Task Test_Collection_Config_Update()
     {
         // Arrange
