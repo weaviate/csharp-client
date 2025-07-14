@@ -85,4 +85,9 @@ public record VectorConfigList
 
         return _internalList.SequenceEqual(other._internalList);
     }
+
+    internal bool Remove(string name)
+    {
+        return _internalList.Remove(name);
+    }
 }

@@ -533,4 +533,390 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal("", export.Vectorizer);
 #pragma warning restore CS0618 // Type or member is obsolete
     }
+
+    [Fact]
+    public async Task Test_Collection_Config_Add_Vector()
+    {
+        // Arrange
+        var collection = await CollectionFactory(
+            name: "Test",
+            vectorConfig: Configure.Vectors.SelfProvided("default"),
+            properties: [Property.Text("name")]
+        );
+
+        if (collection.WeaviateVersion < Version.Parse("1.31.0"))
+        {
+            Assert.Skip("Skipping test for Weaviate versions < 1.31.0");
+        }
+
+        await collection.Config.AddVector(
+            Configure.Vectors.Text2VecContextionary().New("nondefault")
+        );
+
+        var c = await collection.Get();
+
+        Assert.NotNull(c);
+        Assert.Equal(2, c.VectorConfig.Count);
+    }
+
+    public static IEnumerable<object?> GenerativeConfigData()
+    {
+        yield return null;
+        yield return new Generative.AnyscaleConfig();
+    }
+
+    public static IEnumerable<object?> VectorizerConfigData()
+    {
+        yield return null;
+        yield return Configure.Vectors.SelfProvided();
+        yield return Configure.Vectors.Text2VecContextionary(vectorizeClassName: false).New("vec");
+        yield return new[]
+        {
+            Configure.Vectors.Text2VecContextionary(vectorizeClassName: false).New(name: "vec"),
+        };
+    }
+
+    public static IEnumerable<object?[]> AddPropertyTestData()
+    {
+        foreach (var generativeConfig in GenerativeConfigData())
+        {
+            foreach (var vectorizerConfig in VectorizerConfigData())
+            {
+                yield return new object?[] { generativeConfig, vectorizerConfig };
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(AddPropertyTestData))]
+    public async Task Test_Config_Add_Property(
+        IGenerativeConfig? generativeConfig,
+        VectorConfigList? vectorizerConfig
+    )
+    {
+        // Arrange
+        var collection = await CollectionFactory(
+            properties: [Property.Text("title")],
+            generativeConfig: generativeConfig,
+            vectorConfig: vectorizerConfig
+        );
+
+        await collection.Config.AddProperty(Property.Text("description"));
+
+        var config = await collection.Get();
+
+        Assert.NotNull(config);
+        Assert.Contains(config.Properties, p => p.Name == "description");
+    }
+
+    [Fact]
+    public async Task Test_Collection_Config_Update()
+    {
+        // Arrange
+        var collection = await CollectionFactory(
+            name: "TestCollectionUpdate",
+            vectorConfig: Configure.Vectors.SelfProvided(),
+            properties: [Property.Text("name"), Property.Int("age")],
+            multiTenancyConfig: new()
+            {
+                Enabled = true,
+                AutoTenantCreation = false,
+                AutoTenantActivation = false,
+            }
+        );
+
+        // Act & Assert - Initial state
+        Collection config = collection.Collection!;
+
+        Assert.Equal(1, config.ReplicationConfig!.Factor);
+        Assert.False(config.ReplicationConfig.AsyncEnabled);
+        Assert.True(config.MultiTenancyConfig!.Enabled);
+        Assert.False(config.MultiTenancyConfig!.AutoTenantActivation);
+        Assert.False(config.MultiTenancyConfig!.AutoTenantCreation);
+
+        // Vector config assertions
+        Assert.NotNull(config.VectorConfig);
+        Assert.True(config.VectorConfig.ContainsKey("default"));
+        var defaultVectorConfig = config.VectorConfig["default"];
+        Assert.NotNull(defaultVectorConfig.VectorIndexConfig);
+        Assert.IsType<VectorIndex.HNSW>(defaultVectorConfig.VectorIndexConfig);
+        var hnswConfig = defaultVectorConfig.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.Equal(
+            VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
+            hnswConfig?.FilterStrategy
+        );
+
+        // Act - Update configuration
+        await collection.Config.Update(c =>
+        {
+            c.Description = "Test";
+            c.InvertedIndexConfig.Bm25.B = 0.8f;
+            c.InvertedIndexConfig.Bm25.K1 = 1.25f;
+            c.InvertedIndexConfig.CleanupIntervalSeconds = 10;
+            c.InvertedIndexConfig.Stopwords.Preset = StopwordConfig.Presets.EN;
+            c.InvertedIndexConfig.Stopwords.Additions = ["a"];
+            c.InvertedIndexConfig.Stopwords.Removals = ["the"];
+
+            c.ReplicationConfig.Factor = 2;
+            c.ReplicationConfig.AsyncEnabled = true;
+            c.ReplicationConfig.DeletionStrategy = DeletionStrategy.DeleteOnConflict;
+
+            var vc = c.VectorConfig["default"];
+            vc.VectorIndexConfig.UpdateHNSW(vic =>
+            {
+                vic.DynamicEfFactor = 8;
+                vic.DynamicEfMax = 500;
+                vic.DynamicEfMin = 100;
+                vic.Ef = -1;
+                vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Acorn;
+                vic.FlatSearchCutoff = 40000;
+                vic.Quantizer = new VectorIndex.Quantizers.PQ
+                {
+                    Centroids = 128,
+                    Encoder = new VectorIndex.Quantizers.PQ.EncoderConfig
+                    {
+                        Type = VectorIndex.Quantizers.EncoderType.Tile,
+                        Distribution = VectorIndex.Quantizers.DistributionType.Normal,
+                    },
+                    Segments = 4,
+                    TrainingLimit = 100001,
+                };
+                vic.VectorCacheMaxObjects = 2000000;
+            });
+
+            c.MultiTenancyConfig.AutoTenantCreation = true;
+            c.MultiTenancyConfig.AutoTenantActivation = true;
+        });
+
+        // Assert - After first update
+        config = (await collection.Get())!;
+
+        // Description assertion with version check
+        if (
+            collection.WeaviateVersion >= Version.Parse("1.25.2")
+            || collection.WeaviateVersion < Version.Parse("1.25.0")
+        )
+        {
+            Assert.Equal("Test", config.Description);
+        }
+        else
+        {
+            Assert.Null(config.Description);
+        }
+
+        // Inverted index config assertions
+        Assert.NotNull(config.InvertedIndexConfig);
+        Assert.NotNull(config.InvertedIndexConfig.Bm25);
+        Assert.Equal(0.8f, config.InvertedIndexConfig.Bm25.B);
+        Assert.Equal(1.25f, config.InvertedIndexConfig.Bm25.K1);
+        Assert.Equal(10, config.InvertedIndexConfig.CleanupIntervalSeconds);
+
+        // Stopwords assertions
+        Assert.NotNull(config.InvertedIndexConfig.Stopwords);
+        // Assert.Equal(["a"], config.InvertedIndexConfig.Stopwords.Additions); // potential weaviate bug, this returns as None
+        Assert.Equal(["the"], config.InvertedIndexConfig.Stopwords.Removals);
+
+        // Replication config assertions
+        Assert.NotNull(config.ReplicationConfig);
+        Assert.Equal(2, config.ReplicationConfig.Factor);
+
+        if (collection.WeaviateVersion >= Version.Parse("1.26.0"))
+        {
+            Assert.True(config.ReplicationConfig.AsyncEnabled);
+        }
+        else
+        {
+            Assert.False(config.ReplicationConfig.AsyncEnabled);
+        }
+
+        if (collection.WeaviateVersion >= Version.Parse("1.24.25"))
+        {
+            Assert.Equal(
+                DeletionStrategy.DeleteOnConflict,
+                config.ReplicationConfig.DeletionStrategy
+            );
+        }
+        else
+        {
+            // default value if not present in schema
+            Assert.Equal(
+                DeletionStrategy.NoAutomatedResolution,
+                config.ReplicationConfig.DeletionStrategy
+            );
+        }
+
+        // Vector config assertions
+        Assert.NotNull(config.VectorConfig);
+        Assert.True(config.VectorConfig.ContainsKey("default"));
+        defaultVectorConfig = config.VectorConfig["default"];
+        Assert.NotNull(defaultVectorConfig.VectorIndexConfig);
+        Assert.IsType<VectorIndex.HNSW>(defaultVectorConfig.VectorIndexConfig);
+
+        hnswConfig = defaultVectorConfig.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        Assert.IsType<VectorIndex.Quantizers.PQ>(hnswConfig.Quantizer);
+        var pqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.PQ;
+
+        Assert.Equal(300, hnswConfig.CleanupIntervalSeconds);
+        Assert.Equal(VectorIndexConfig.VectorDistance.Cosine, hnswConfig.Distance);
+        Assert.Equal(8, hnswConfig.DynamicEfFactor);
+        Assert.Equal(500, hnswConfig.DynamicEfMax);
+        Assert.Equal(100, hnswConfig.DynamicEfMin);
+        Assert.Equal(-1, hnswConfig.Ef);
+        Assert.Equal(128, hnswConfig.EfConstruction);
+        Assert.Equal(40000, hnswConfig.FlatSearchCutoff);
+
+        if (collection.WeaviateVersion <= Version.Parse("1.26.0"))
+        {
+            Assert.Equal(64, hnswConfig.MaxConnections);
+        }
+        else
+        {
+            Assert.Equal(32, hnswConfig.MaxConnections);
+        }
+
+        // PQ Quantizer assertions
+        Assert.NotNull(pqQuantizer);
+        Assert.False(pqQuantizer.BitCompression);
+        Assert.Equal(128, pqQuantizer.Centroids);
+        Assert.NotNull(pqQuantizer.Encoder);
+        Assert.Equal(VectorIndex.Quantizers.EncoderType.Tile, pqQuantizer.Encoder.Type);
+        Assert.Equal(
+            VectorIndex.Quantizers.DistributionType.Normal,
+            pqQuantizer.Encoder.Distribution
+        );
+        Assert.Equal(4, pqQuantizer.Segments);
+        Assert.Equal(100001, pqQuantizer.TrainingLimit);
+        Assert.False(hnswConfig.Skip);
+        Assert.Equal(2000000, hnswConfig.VectorCacheMaxObjects);
+
+        if (collection.WeaviateVersion >= Version.Parse("1.27.0"))
+        {
+            Assert.Equal(
+                VectorIndexConfig.VectorIndexFilterStrategy.Acorn,
+                hnswConfig.FilterStrategy
+            );
+        }
+        else
+        {
+            // default value if not present in schema
+            Assert.Equal(
+                VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
+                hnswConfig.FilterStrategy
+            );
+        }
+
+        // Multi-tenancy config assertions
+        Assert.NotNull(config.MultiTenancyConfig);
+        Assert.True(config.MultiTenancyConfig.Enabled);
+
+        if (collection.WeaviateVersion >= Version.Parse("1.25.2"))
+        {
+            Assert.True(config.MultiTenancyConfig.AutoTenantActivation);
+        }
+        else
+        {
+            Assert.False(config.MultiTenancyConfig.AutoTenantActivation);
+        }
+
+        if (collection.WeaviateVersion >= Version.Parse("1.25.1"))
+        {
+            Assert.True(config.MultiTenancyConfig.AutoTenantCreation);
+        }
+        else
+        {
+            Assert.False(config.MultiTenancyConfig.AutoTenantCreation);
+        }
+
+        // Act - Second update (disable quantizer and reset filter strategy)
+        await collection.Config.Update(c =>
+        {
+            var vc = c.VectorConfig["default"];
+            vc.VectorIndexConfig.UpdateHNSW(vic =>
+            {
+                vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Sweeping;
+                vic.Quantizer = null; // Disable quantizer
+            });
+
+            c.ReplicationConfig.DeletionStrategy = DeletionStrategy.NoAutomatedResolution;
+        });
+
+        // Assert - After second update
+        config = (await collection.Get())!;
+
+        // Description should persist
+        if (
+            collection.WeaviateVersion >= Version.Parse("1.25.2")
+            || collection.WeaviateVersion < Version.Parse("1.25.0")
+        )
+        {
+            Assert.Equal("Test", config.Description);
+        }
+        else
+        {
+            Assert.Null(config.Description);
+        }
+
+        // Previous inverted index config should persist
+        Assert.NotNull(config.InvertedIndexConfig);
+        Assert.NotNull(config.InvertedIndexConfig.Bm25);
+        Assert.Equal(0.8f, config.InvertedIndexConfig.Bm25.B);
+        Assert.Equal(1.25f, config.InvertedIndexConfig.Bm25.K1);
+        Assert.Equal(10, config.InvertedIndexConfig.CleanupIntervalSeconds);
+        Assert.NotNull(config.InvertedIndexConfig.Stopwords);
+        Assert.Equal(["the"], config.InvertedIndexConfig.Stopwords.Removals);
+
+        // Replication config assertions
+        Assert.NotNull(config.ReplicationConfig);
+        Assert.Equal(2, config.ReplicationConfig.Factor);
+        Assert.Equal(
+            DeletionStrategy.NoAutomatedResolution,
+            config.ReplicationConfig.DeletionStrategy
+        );
+
+        if (collection.WeaviateVersion >= Version.Parse("1.26.0"))
+        {
+            Assert.True(config.ReplicationConfig.AsyncEnabled);
+        }
+        else
+        {
+            Assert.False(config.ReplicationConfig.AsyncEnabled);
+        }
+
+        // Vector index config after quantizer disabled
+        Assert.NotNull(config.VectorConfig);
+        Assert.True(config.VectorConfig.ContainsKey("default"));
+        defaultVectorConfig = config.VectorConfig["default"];
+        Assert.NotNull(defaultVectorConfig.VectorIndexConfig);
+        Assert.IsType<VectorIndex.HNSW>(defaultVectorConfig.VectorIndexConfig);
+
+        hnswConfig = defaultVectorConfig.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+
+        Assert.Equal(300, hnswConfig.CleanupIntervalSeconds);
+        Assert.Equal(VectorIndexConfig.VectorDistance.Cosine, hnswConfig.Distance);
+        Assert.Equal(8, hnswConfig.DynamicEfFactor);
+        Assert.Equal(500, hnswConfig.DynamicEfMax);
+        Assert.Equal(100, hnswConfig.DynamicEfMin);
+        Assert.Equal(-1, hnswConfig.Ef);
+        Assert.Equal(128, hnswConfig.EfConstruction);
+        Assert.Equal(40000, hnswConfig.FlatSearchCutoff);
+
+        if (collection.WeaviateVersion < Version.Parse("1.26.0"))
+        {
+            Assert.Equal(64, hnswConfig.MaxConnections);
+        }
+        else
+        {
+            Assert.Equal(32, hnswConfig.MaxConnections);
+        }
+
+        Assert.Null(hnswConfig.Quantizer); // Quantizer disabled
+        Assert.False(hnswConfig.Skip);
+        Assert.Equal(2000000, hnswConfig.VectorCacheMaxObjects);
+        Assert.Equal(
+            VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
+            hnswConfig.FilterStrategy
+        );
+    }
 }

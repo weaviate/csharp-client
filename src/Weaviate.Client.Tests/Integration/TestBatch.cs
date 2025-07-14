@@ -29,8 +29,8 @@ public partial class BatchTests : IntegrationTests
             ]
         );
 
-        await client.AddReference(Property.Reference("ref", client.Name));
-        await client.AddReference(Property.Reference("ref2", client.Name));
+        await client.Config.AddReference(Property.Reference("ref", client.Name));
+        await client.Config.AddReference(Property.Reference("ref2", client.Name));
 
         var result = await client.Data.InsertMany(batcher);
 
