@@ -30,4 +30,7 @@
     <Protobuf Include="gRPC\proto\v1\properties.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
     <Protobuf Include="gRPC\proto\v1\search_get.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
   </ItemGroup>
+  <PropertyGroup>
+    <MinVerSkip Condition="'$(Configuration)' == 'Debug'">true</MinVerSkip>
+  </PropertyGroup>
 </Project>
