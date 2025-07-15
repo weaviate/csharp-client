@@ -92,7 +92,7 @@
       "templateDirectory": "./Rest/Schema/Templates",
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "./Rest/Dto/Models.cs",
+      "output": "./Rest/Dto/Models.g.cs",
       "newLineBehavior": "Auto"
     }
   }
