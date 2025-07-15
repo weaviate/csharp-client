@@ -1,0 +1,2 @@
+src/Weaviate.Client/Rest/Dto
+**/*.csproj
