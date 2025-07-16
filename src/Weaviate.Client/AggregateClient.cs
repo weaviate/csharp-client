@@ -20,33 +20,65 @@ public partial class AggregateClient<TData>
 
     internal async Task<AggregateResult> OverAll(
         bool totalCount = true,
-        GroupByRequest? groupByRequest = null,
         Filter? filter = null,
-        params Metric[] metrics
+        params MetricRequest[] metrics
     )
     {
-        await Task.CompletedTask;
+        var result = await _client.GrpcClient.AggregateOverAll(
+            _collectionName,
+            totalCount,
+            null, // No GroupByRequest for OverAll
+            filter,
+            metrics
+        );
 
-        // TODO Placeholder
-        return new AggregateResult();
+        return AggregateResult.FromGrpcReply(result);
+    }
+
+    internal async Task<AggregateGroupByResult> OverAll(
+        GroupByRequest? groupByRequest,
+        bool totalCount = true,
+        Filter? filter = null,
+        params MetricRequest[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateOverAll(
+            _collectionName,
+            totalCount,
+            groupByRequest,
+            filter,
+            metrics
+        );
+
+        return AggregateGroupByResult.FromGrpcReply(result);
     }
 
     internal async Task<AggregateGroupByResult> NearVector(
         float[] vector,
+        GroupByRequest? groupByRequest,
         float? certainty = null,
         float? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        GroupByRequest? groupByRequest = null,
         string[]? targetVector = null,
         bool totalCount = true,
-        params Metric[] metrics
+        params MetricRequest[] metrics
     )
     {
-        await Task.CompletedTask;
+        var result = await _client.GrpcClient.AggregateNearVector(
+            _collectionName,
+            vector,
+            certainty,
+            distance,
+            limit,
+            filter,
+            groupByRequest,
+            targetVector,
+            totalCount,
+            metrics
+        );
 
-        // TODO Placeholder
-        return new AggregateGroupByResult();
+        return AggregateGroupByResult.FromGrpcReply(result);
     }
 
     internal async Task<AggregateResult> NearVector(
@@ -57,31 +89,51 @@ public partial class AggregateClient<TData>
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
-        params Metric[] metrics
+        params MetricRequest[] metrics
     )
     {
-        await Task.CompletedTask;
+        var result = await _client.GrpcClient.AggregateNearVector(
+            _collectionName,
+            vector,
+            certainty,
+            distance,
+            limit,
+            filter,
+            null, // No GroupByRequest for NearVector
+            targetVector,
+            totalCount,
+            metrics
+        );
 
-        // TODO Placeholder
-        return new AggregateResult();
+        return AggregateResult.FromGrpcReply(result);
     }
 
     internal async Task<AggregateGroupByResult> NearText(
         string[] query,
+        GroupByRequest? groupByRequest,
         float? certainty = null,
         float? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        GroupByRequest? groupByRequest = null,
         string[]? targetVector = null,
         bool totalCount = true,
-        params Metric[] metrics
+        params MetricRequest[] metrics
     )
     {
-        await Task.CompletedTask;
+        var result = await _client.GrpcClient.AggregateNearText(
+            _collectionName,
+            query,
+            certainty,
+            distance,
+            limit,
+            filter,
+            groupByRequest,
+            targetVector,
+            totalCount,
+            metrics
+        );
 
-        // TODO Placeholder
-        return new AggregateGroupByResult();
+        return AggregateGroupByResult.FromGrpcReply(result);
     }
 
     internal async Task<AggregateResult> NearText(
@@ -92,16 +144,27 @@ public partial class AggregateClient<TData>
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
-        params Metric[] metrics
+        params MetricRequest[] metrics
     )
     {
-        await Task.CompletedTask;
+        var result = await _client.GrpcClient.AggregateNearText(
+            _collectionName,
+            query,
+            certainty,
+            distance,
+            limit,
+            filter,
+            null, // No GroupByRequest for NearText
+            targetVector,
+            totalCount,
+            metrics
+        );
 
-        // TODO Placeholder
-        return new AggregateResult();
+        return AggregateResult.FromGrpcReply(result);
     }
 
     internal async Task<AggregateGroupByResult> Hybrid(
+        GroupByRequest? groupByRequest,
         string? query = null,
         float[]? vector = null,
         double? alpha = 0.7,
@@ -109,16 +172,27 @@ public partial class AggregateClient<TData>
         float? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        GroupByRequest? groupByRequest = null,
         string[]? targetVector = null,
         bool totalCount = true,
-        params Metric[] metrics
+        params MetricRequest[] metrics
     )
     {
-        await Task.CompletedTask;
+        var result = await _client.GrpcClient.AggregateHybrid(
+            _collectionName,
+            query,
+            vector,
+            alpha,
+            certainty,
+            distance,
+            limit,
+            filter,
+            groupByRequest,
+            targetVector,
+            totalCount,
+            metrics
+        );
 
-        // TODO Placeholder
-        return new AggregateGroupByResult();
+        return AggregateGroupByResult.FromGrpcReply(result);
     }
 
     internal async Task<AggregateResult> Hybrid(
@@ -131,12 +205,24 @@ public partial class AggregateClient<TData>
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
-        params Metric[] metrics
+        params MetricRequest[] metrics
     )
     {
-        await Task.CompletedTask;
+        var result = await _client.GrpcClient.AggregateHybrid(
+            _collectionName,
+            query,
+            vector,
+            alpha,
+            certainty,
+            distance,
+            limit,
+            filter,
+            null,
+            targetVector,
+            totalCount,
+            metrics
+        );
 
-        // TODO Placeholder
-        return new AggregateResult();
+        return AggregateResult.FromGrpcReply(result);
     }
 }
