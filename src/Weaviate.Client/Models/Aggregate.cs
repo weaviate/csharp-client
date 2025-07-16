@@ -1,3 +1,5 @@
+using static Weaviate.V1.AggregateReply.Types.Aggregations.Types;
+
 namespace Weaviate.Client.Models;
 
 public partial record AggregateGroupByResult
@@ -29,23 +31,114 @@ public partial record AggregateResult
 
     internal static AggregateResult FromGrpcReply(V1.AggregateReply reply)
     {
-        throw new NotImplementedException();
+        return new AggregateResult
+        {
+            Properties = reply.SingleResult.Aggregations.Aggregations_.ToDictionary(
+                x => x.Property,
+                x =>
+                {
+                    return x.AggregationCase switch
+                    {
+                        Aggregation.AggregationOneofCase.Text => (Aggregate.Property)
+                            new Aggregate.Text
+                            {
+                                Count = x.Text.Count,
+                                TopOccurrences = x
+                                    .Text.TopOccurences.Items.Select(
+                                        o => new Aggregate.TopOccurrence<string>
+                                        {
+                                            Count = o.Occurs,
+                                            Value = o.Value,
+                                        }
+                                    )
+                                    .ToList(),
+                            },
+                        Aggregation.AggregationOneofCase.Int => new Aggregate.Integer
+                        {
+                            Count = x.Int.Count,
+                            Maximum = x.Int.Maximum,
+                            Mean = x.Int.Mean,
+                            Median = x.Int.Median,
+                            Minimum = x.Int.Minimum,
+                            Mode = x.Int.Mode,
+                            Sum = x.Int.Sum,
+                        },
+                        Aggregation.AggregationOneofCase.Number => new Aggregate.Number
+                        {
+                            Count = x.Number.Count,
+                            Maximum = x.Number.Maximum,
+                            Mean = x.Number.Mean,
+                            Median = x.Number.Median,
+                            Minimum = x.Number.Minimum,
+                            Mode = x.Number.Mode,
+                            Sum = x.Number.Sum,
+                        },
+                        Aggregation.AggregationOneofCase.Boolean => new Aggregate.Boolean
+                        {
+                            Count = x.Boolean.Count,
+                            PercentageFalse = x.Boolean.PercentageFalse,
+                            PercentageTrue = x.Boolean.PercentageTrue,
+                            TotalFalse = x.Boolean.TotalFalse,
+                            TotalTrue = x.Boolean.TotalTrue,
+                        },
+                        Aggregation.AggregationOneofCase.Date => new Aggregate.Date
+                        {
+                            Count = x.Date.Count,
+                            Maximum = x.Date.HasMaximum
+                                ? DateTime.Parse(
+                                    x.Date.Maximum,
+                                    null,
+                                    System.Globalization.DateTimeStyles.AdjustToUniversal
+                                )
+                                : null,
+                            Median = x.Date.HasMedian
+                                ? DateTime.Parse(
+                                    x.Date.Median,
+                                    null,
+                                    System.Globalization.DateTimeStyles.AdjustToUniversal
+                                )
+                                : null,
+                            Minimum = x.Date.HasMinimum
+                                ? DateTime.Parse(
+                                    x.Date.Minimum,
+                                    null,
+                                    System.Globalization.DateTimeStyles.AdjustToUniversal
+                                )
+                                : null,
+                            Mode = x.Date.HasMode
+                                ? DateTime.Parse(
+                                    x.Date.Mode,
+                                    null,
+                                    System.Globalization.DateTimeStyles.AdjustToUniversal
+                                )
+                                : null,
+                        },
+                        Aggregation.AggregationOneofCase.Reference =>
+                            throw new NotImplementedException(),
+                        _ => throw new NotImplementedException(
+                            $"Unknown aggregation case: {x.AggregationCase}"
+                        ),
+                    };
+                }
+            ),
+            TotalCount = reply.SingleResult.ObjectsCount,
+        };
     }
 }
 
 public abstract record MetricRequest(string Name)
 {
+    public bool Count { get; init; }
+
     public record Text(string Name) : MetricRequest(Name)
     {
-        public bool Count { get; init; }
         public bool TopOccurrencesCount { get; init; }
         public bool TopOccurrencesValue { get; init; }
-        public int? MinOccurrences { get; init; }
+        public uint? MinOccurrences { get; init; }
     }
 
     public record Integer(string Name) : MetricRequest(Name)
     {
-        public bool Count { get; init; }
         public bool Maximum { get; init; }
         public bool Mean { get; init; }
         public bool Median { get; init; }
@@ -56,7 +149,6 @@ public abstract record MetricRequest(string Name)
 
     public record Number(string Name) : MetricRequest(Name)
     {
-        public bool Count { get; init; }
         public bool Maximum { get; init; }
         public bool Mean { get; init; }
         public bool Median { get; init; }
@@ -67,7 +159,6 @@ public abstract record MetricRequest(string Name)
 
     public record Boolean(string Name) : MetricRequest(Name)
     {
-        public bool Count { get; init; }
         public bool PercentageFalse { get; init; }
         public bool PercentageTrue { get; init; }
         public bool TotalFalse { get; init; }
@@ -76,7 +167,6 @@ public abstract record MetricRequest(string Name)
 
     public record Date(string Name) : MetricRequest(Name)
     {
-        public bool Count { get; init; }
         public bool Maximum { get; init; }
         public bool Median { get; init; }
         public bool Minimum { get; init; }
@@ -84,18 +174,135 @@ public abstract record MetricRequest(string Name)
     }
 }
 
-// TODO Perhaps implement this similar to https://github.com/weaviate/csharp-client/blob/db0be2e08870b5121f4f43d58d8d74025cba7fff/src/Weaviate.Client/Models/Property.cs#L16
 public class PropertyMetricBuilder(string Name)
 {
-    public MetricRequest Text => new MetricRequest.Text(Name);
+    public MetricRequest Text(
+        bool count = false,
+        bool topOccurrencesCount = false,
+        bool topOccurrencesValue = false,
+        uint? minOccurrences = null
+    )
+    {
+        if (!(count || topOccurrencesCount || topOccurrencesValue))
+        {
+            count = topOccurrencesCount = topOccurrencesValue = true;
+        }
 
-    public MetricRequest Integer => new MetricRequest.Integer(Name);
+        return new MetricRequest.Text(Name)
+        {
+            Count = count,
+            TopOccurrencesCount = topOccurrencesCount,
+            TopOccurrencesValue = topOccurrencesValue,
+            MinOccurrences = minOccurrences,
+        };
+    }
 
-    public MetricRequest Number => new MetricRequest.Number(Name);
+    public MetricRequest Integer(
+        bool count = false,
+        bool maximum = false,
+        bool mean = false,
+        bool median = false,
+        bool minimum = false,
+        bool mode = false,
+        bool sum = false
+    )
+    {
+        // If all parameters are false, enable all by default
+        if (!(count || maximum || mean || median || minimum || mode || sum))
+        {
+            count = maximum = mean = median = minimum = mode = sum = true;
+        }
 
-    public MetricRequest Boolean => new MetricRequest.Boolean(Name);
+        return new MetricRequest.Integer(Name)
+        {
+            Count = count,
+            Maximum = maximum,
+            Mean = mean,
+            Median = median,
+            Minimum = minimum,
+            Mode = mode,
+            Sum = sum,
+        };
+    }
 
-    public MetricRequest Date => new MetricRequest.Date(Name);
+    public MetricRequest Number(
+        bool count = false,
+        bool maximum = false,
+        bool mean = false,
+        bool median = false,
+        bool minimum = false,
+        bool mode = false,
+        bool sum = false
+    )
+    {
+        // If all parameters are false, enable all by default
+        if (!(count || maximum || mean || median || minimum || mode || sum))
+        {
+            count = maximum = mean = median = minimum = mode = sum = true;
+        }
+
+        return new MetricRequest.Number(Name)
+        {
+            Count = count,
+            Maximum = maximum,
+            Mean = mean,
+            Median = median,
+            Minimum = minimum,
+            Mode = mode,
+            Sum = sum,
+        };
+    }
+
+    public MetricRequest Boolean(
+        bool count = false,
+        bool percentageFalse = false,
+        bool percentageTrue = false,
+        bool totalFalse = false,
+        bool totalTrue = false
+    )
+    {
+        if (!(count || percentageFalse || percentageTrue || totalFalse || totalTrue))
+        {
+            count = percentageFalse = percentageTrue = totalFalse = totalTrue = true;
+        }
+
+        return new MetricRequest.Boolean(Name)
+        {
+            Count = count,
+            PercentageFalse = percentageFalse,
+            PercentageTrue = percentageTrue,
+            TotalFalse = totalFalse,
+            TotalTrue = totalTrue,
+        };
+    }
+
+    public MetricRequest Date(
+        bool count = false,
+        bool maximum = false,
+        bool median = false,
+        bool minimum = false,
+        bool mode = false
+    )
+    {
+        if (!(count || maximum || median || minimum || mode))
+        {
+            count = maximum = median = minimum = mode = true;
+        }
+
+        return new MetricRequest.Date(Name)
+        {
+            Count = count,
+            Maximum = maximum,
+            Median = median,
+            Minimum = minimum,
+            Mode = mode,
+        };
+    }
+
+    public MetricRequest Reference()
+    {
+        throw new NotImplementedException("Reference metrics are not implemented yet.");
+    }
 }
 
 public static class Metrics
@@ -105,7 +312,7 @@ public static class Metrics
 
 public static class Aggregate
 {
-    public record GroupBy(string Property, int? Limit = null);
+    public record GroupBy(string Property, uint? Limit = null);
 
     public abstract record Property
     {
@@ -147,9 +354,9 @@ public static class Aggregate
 
     public record Date : Property
     {
-        public DateTime Maximum { get; internal set; }
-        public DateTime Median { get; internal set; }
-        public DateTime Minimum { get; internal set; }
-        public DateTime Mode { get; internal set; }
+        public DateTime? Maximum { get; internal set; }
+        public DateTime? Median { get; internal set; }
+        public DateTime? Minimum { get; internal set; }
+        public DateTime? Mode { get; internal set; }
     };
 }

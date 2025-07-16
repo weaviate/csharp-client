@@ -291,8 +291,8 @@ public partial class WeaviateGrpcClient
 
     private static void BuildNearVector(
         float[] vector,
-        float? distance,
-        float? certainty,
+        double? distance,
+        double? certainty,
         SearchRequest request
     )
     {
