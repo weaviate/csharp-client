@@ -4,6 +4,9 @@ namespace Weaviate.Client;
 
 public static partial class Configure
 {
+    // TODO Move multi-vectors to a separate scope class
+    public static class MultiVectors { }
+
     public static class Vectors
     {
         public static VectorConfig SelfProvided(
