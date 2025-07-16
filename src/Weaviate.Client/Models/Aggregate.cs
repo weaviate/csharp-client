@@ -1,18 +1,23 @@
 namespace Weaviate.Client.Models;
 
-public partial record GroupedBy(string Property, Type Type);
-
-public partial record AggregateGroup
-{
-    public required GroupedBy GroupedBy { get; init; }
-    IDictionary<string, Aggregate.Property> Properties { get; init; } =
-        new Dictionary<string, Aggregate.Property>();
-    public long TotalCount { get; init; } = 0;
-}
-
 public partial record AggregateGroupByResult
 {
-    public List<AggregateGroup> Groups { get; init; } = new();
+    public partial record Group
+    {
+        public record By(string Property, Type Type);
+
+        public required By GroupedBy { get; init; }
+        IDictionary<string, Aggregate.Property> Properties { get; init; } =
+            new Dictionary<string, Aggregate.Property>();
+        public long TotalCount { get; init; } = 0;
+    }
+
+    public List<Group> Groups { get; init; } = new();
+
+    internal static AggregateGroupByResult FromGrpcReply(object result)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public partial record AggregateResult
@@ -21,32 +26,76 @@ public partial record AggregateResult
         new Dictionary<string, Aggregate.Property>();
 
     public long TotalCount { get; init; }
+
+    internal static AggregateResult FromGrpcReply(V1.AggregateReply reply)
+    {
+        throw new NotImplementedException();
+    }
 }
 
-public abstract record Metric(string Name)
+public abstract record MetricRequest(string Name)
 {
-    public record Text(string Name) : Metric(Name);
+    public record Text(string Name) : MetricRequest(Name)
+    {
+        public bool Count { get; init; }
+        public bool TopOccurrencesCount { get; init; }
+        public bool TopOccurrencesValue { get; init; }
+        public int? MinOccurrences { get; init; }
+    }
 
-    public record Integer(string Name) : Metric(Name);
+    public record Integer(string Name) : MetricRequest(Name)
+    {
+        public bool Count { get; init; }
+        public bool Maximum { get; init; }
+        public bool Mean { get; init; }
+        public bool Median { get; init; }
+        public bool Minimum { get; init; }
+        public bool Mode { get; init; }
+        public bool Sum { get; init; }
+    }
 
-    public record Number(string Name) : Metric(Name);
+    public record Number(string Name) : MetricRequest(Name)
+    {
+        public bool Count { get; init; }
+        public bool Maximum { get; init; }
+        public bool Mean { get; init; }
+        public bool Median { get; init; }
+        public bool Minimum { get; init; }
+        public bool Mode { get; init; }
+        public bool Sum { get; init; }
+    }
 
-    public record Boolean(string Name) : Metric(Name);
+    public record Boolean(string Name) : MetricRequest(Name)
+    {
+        public bool Count { get; init; }
+        public bool PercentageFalse { get; init; }
+        public bool PercentageTrue { get; init; }
+        public bool TotalFalse { get; init; }
+        public bool TotalTrue { get; init; }
+    }
 
-    public record Date(string Name) : Metric(Name);
+    public record Date(string Name) : MetricRequest(Name)
+    {
+        public bool Count { get; init; }
+        public bool Maximum { get; init; }
+        public bool Median { get; init; }
+        public bool Minimum { get; init; }
+        public bool Mode { get; init; }
+    }
 }
 
+// TODO Perhaps implement this similar to https://github.com/weaviate/csharp-client/blob/db0be2e08870b5121f4f43d58d8d74025cba7fff/src/Weaviate.Client/Models/Property.cs#L16
 public class PropertyMetricBuilder(string Name)
 {
-    public Metric Text => new Metric.Text(Name);
+    public MetricRequest Text => new MetricRequest.Text(Name);
 
-    public Metric Integer => new Metric.Integer(Name);
+    public MetricRequest Integer => new MetricRequest.Integer(Name);
 
-    public Metric Number => new Metric.Number(Name);
+    public MetricRequest Number => new MetricRequest.Number(Name);
 
-    public Metric Boolean => new Metric.Boolean(Name);
+    public MetricRequest Boolean => new MetricRequest.Boolean(Name);
 
-    public Metric Date => new Metric.Date(Name);
+    public MetricRequest Date => new MetricRequest.Date(Name);
 }
 
 public static class Metrics
@@ -56,6 +105,8 @@ public static class Metrics
 
 public static class Aggregate
 {
+    public record GroupBy(string Property, int? Limit = null);
+
     public abstract record Property
     {
         public long? Count { get; internal init; }
