@@ -18,11 +18,11 @@ namespace Weaviate.Client.Tests.Integration
                 {
                     Property.Text("text"),
                     Property.TextArray("texts"),
-                    Property.Int("int"),
+                    Property.Int("int_"),
                     Property.IntArray("ints"),
-                    Property.Number("float"),
+                    Property.Number("float_"),
                     Property.NumberArray("floats"),
-                    Property.Bool("bool"),
+                    Property.Bool("bool_"),
                     Property.BoolArray("bools"),
                     Property.Date("date"),
                     Property.DateArray("dates"),
@@ -46,8 +46,24 @@ namespace Weaviate.Client.Tests.Integration
                     floats = new[] { 1.0, 2.0 },
                     bool_ = true,
                     bools = new[] { true, false },
-                    date = "2021-01-01T00:00:00Z",
-                    dates = new[] { "2021-01-01T00:00:00Z", "2021-01-02T00:00:00Z" },
+                    date = DateTime.Parse(
+                        "2021-01-01T00:00:00Z",
+                        null,
+                        System.Globalization.DateTimeStyles.AdjustToUniversal
+                    ),
+                    dates = new[]
+                    {
+                        DateTime.Parse(
+                            "2021-01-01T00:00:00Z",
+                            null,
+                            System.Globalization.DateTimeStyles.AdjustToUniversal
+                        ),
+                        DateTime.Parse(
+                            "2021-01-02T00:00:00Z",
+                            null,
+                            System.Globalization.DateTimeStyles.AdjustToUniversal
+                        ),
+                    },
                 }
             );
 
@@ -55,16 +71,16 @@ namespace Weaviate.Client.Tests.Integration
             var result = await collectionClient.Aggregate.OverAll(
                 metrics: new[]
                 {
-                    Metrics.ForProperty("text").Text,
-                    Metrics.ForProperty("texts").Text,
-                    Metrics.ForProperty("int_").Integer,
-                    Metrics.ForProperty("ints").Integer,
-                    Metrics.ForProperty("float_").Number,
-                    Metrics.ForProperty("floats").Number,
-                    Metrics.ForProperty("bool_").Boolean,
-                    Metrics.ForProperty("bools").Boolean,
-                    Metrics.ForProperty("date").Date,
-                    Metrics.ForProperty("dates").Date,
+                    Metrics.ForProperty("text").Text(),
+                    Metrics.ForProperty("texts").Text(),
+                    Metrics.ForProperty("int_").Integer(),
+                    Metrics.ForProperty("ints").Integer(),
+                    Metrics.ForProperty("float_").Number(),
+                    Metrics.ForProperty("floats").Number(),
+                    Metrics.ForProperty("bool_").Boolean(),
+                    Metrics.ForProperty("bools").Boolean(),
+                    Metrics.ForProperty("date").Date(),
+                    Metrics.ForProperty("dates").Date(),
                 }
             );
 
