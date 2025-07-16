@@ -3,7 +3,7 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
-public class CollectionClient<TData>
+public partial class CollectionClient<TData>
 {
     public const uint ITERATOR_CACHE_SIZE = 100;
 
