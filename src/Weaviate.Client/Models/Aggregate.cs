@@ -1,24 +1,172 @@
-using static Weaviate.V1.AggregateReply.Types.Aggregations.Types;
-
 namespace Weaviate.Client.Models;
 
 public partial record AggregateGroupByResult
 {
     public partial record Group
     {
-        public record By(string Property, Type Type);
+        public record By(string Property, object Value, Type Type);
 
         public required By GroupedBy { get; init; }
-        IDictionary<string, Aggregate.Property> Properties { get; init; } =
+        public IReadOnlyDictionary<string, Aggregate.Property> Properties { get; init; } =
             new Dictionary<string, Aggregate.Property>();
         public long TotalCount { get; init; } = 0;
     }
 
     public List<Group> Groups { get; init; } = new();
 
-    internal static AggregateGroupByResult FromGrpcReply(object result)
+    internal static Aggregate.Property FromGrpcProperty(
+        Weaviate.V1.AggregateReply.Types.Aggregations.Types.Aggregation x
+    )
     {
-        throw new NotImplementedException();
+        return x.AggregationCase switch
+        {
+            V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Text =>
+                (Aggregate.Property)
+                    new Aggregate.Text
+                    {
+                        Count = x.Text.Count,
+                        TopOccurrences = x
+                            .Text.TopOccurences.Items.Select(
+                                o => new Aggregate.TopOccurrence<string>
+                                {
+                                    Count = o.Occurs,
+                                    Value = o.Value,
+                                }
+                            )
+                            .ToList(),
+                    },
+            V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Int =>
+                new Aggregate.Integer
+                {
+                    Count = x.Int.Count,
+                    Maximum = x.Int.Maximum,
+                    Mean = x.Int.Mean,
+                    Median = x.Int.Median,
+                    Minimum = x.Int.Minimum,
+                    Mode = x.Int.Mode,
+                    Sum = x.Int.Sum,
+                },
+            V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Number =>
+                new Aggregate.Number
+                {
+                    Count = x.Number.Count,
+                    Maximum = x.Number.Maximum,
+                    Mean = x.Number.Mean,
+                    Median = x.Number.Median,
+                    Minimum = x.Number.Minimum,
+                    Mode = x.Number.Mode,
+                    Sum = x.Number.Sum,
+                },
+            V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Boolean =>
+                new Aggregate.Boolean
+                {
+                    Count = x.Boolean.Count,
+                    PercentageFalse = x.Boolean.PercentageFalse,
+                    PercentageTrue = x.Boolean.PercentageTrue,
+                    TotalFalse = x.Boolean.TotalFalse,
+                    TotalTrue = x.Boolean.TotalTrue,
+                },
+            V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Date =>
+                new Aggregate.Date
+                {
+                    Count = x.Date.Count,
+                    Maximum = x.Date.HasMaximum
+                        ? DateTime.Parse(
+                            x.Date.Maximum,
+                            null,
+                            System.Globalization.DateTimeStyles.AdjustToUniversal
+                        )
+                        : null,
+                    Median = x.Date.HasMedian
+                        ? DateTime.Parse(
+                            x.Date.Median,
+                            null,
+                            System.Globalization.DateTimeStyles.AdjustToUniversal
+                        )
+                        : null,
+                    Minimum = x.Date.HasMinimum
+                        ? DateTime.Parse(
+                            x.Date.Minimum,
+                            null,
+                            System.Globalization.DateTimeStyles.AdjustToUniversal
+                        )
+                        : null,
+                    Mode = x.Date.HasMode
+                        ? DateTime.Parse(
+                            x.Date.Mode,
+                            null,
+                            System.Globalization.DateTimeStyles.AdjustToUniversal
+                        )
+                        : null,
+                },
+            V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Reference =>
+                throw new NotImplementedException(),
+            _ => throw new NotImplementedException(
+                $"Unknown aggregation case: {x.AggregationCase}"
+            ),
+        };
+    }
+
+    internal static AggregateGroupByResult FromGrpcReply(V1.AggregateReply result)
+    {
+        var groupByToGrpc = (V1.AggregateReply.Types.Group.Types.GroupedBy gb) =>
+            gb.ValueCase switch
+            {
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Boolean =>
+                    new Group.By(gb.Path[0], gb.Boolean, typeof(bool)),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Booleans =>
+                    new Group.By(gb.Path[0], gb.Booleans.Values.ToArray(), typeof(bool[])),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Int => new Group.By(
+                    gb.Path[0],
+                    gb.Int,
+                    typeof(int)
+                ),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Ints => new Group.By(
+                    gb.Path[0],
+                    gb.Ints.Values.ToArray(),
+                    typeof(int[])
+                ),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Number => new Group.By(
+                    gb.Path[0],
+                    gb.Number,
+                    typeof(double)
+                ),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Numbers =>
+                    new Group.By(gb.Path[0], gb.Numbers.Values.ToArray(), typeof(double[])),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Text => new Group.By(
+                    gb.Path[0],
+                    gb.Text,
+                    typeof(string)
+                ),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Texts => new Group.By(
+                    gb.Path[0],
+                    gb.Texts.Values.ToArray(),
+                    typeof(string[])
+                ),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Geo => new Group.By(
+                    gb.Path[0],
+                    new GeoCoordinate(gb.Geo.Latitude, gb.Geo.Longitude),
+                    typeof(GeoCoordinate)
+                ),
+
+                _ => throw new NotImplementedException($"Unknown group by type: {gb.ValueCase}"),
+            };
+
+        return new AggregateGroupByResult
+        {
+            Groups =
+                result
+                    .GroupedResults?.Groups.Select(g => new Group
+                    {
+                        GroupedBy = groupByToGrpc(g.GroupedBy),
+                        Properties = g.Aggregations.Aggregations_.ToDictionary(
+                            p => p.Property,
+                            AggregateGroupByResult.FromGrpcProperty
+                        ),
+                        TotalCount = g.ObjectsCount,
+                    })
+                    .ToList() ?? [],
+        };
     }
 }
 
@@ -33,94 +181,11 @@ public partial record AggregateResult
     {
         return new AggregateResult
         {
-            Properties = reply.SingleResult.Aggregations.Aggregations_.ToDictionary(
-                x => x.Property,
-                x =>
-                {
-                    return x.AggregationCase switch
-                    {
-                        Aggregation.AggregationOneofCase.Text => (Aggregate.Property)
-                            new Aggregate.Text
-                            {
-                                Count = x.Text.Count,
-                                TopOccurrences = x
-                                    .Text.TopOccurences.Items.Select(
-                                        o => new Aggregate.TopOccurrence<string>
-                                        {
-                                            Count = o.Occurs,
-                                            Value = o.Value,
-                                        }
-                                    )
-                                    .ToList(),
-                            },
-                        Aggregation.AggregationOneofCase.Int => new Aggregate.Integer
-                        {
-                            Count = x.Int.Count,
-                            Maximum = x.Int.Maximum,
-                            Mean = x.Int.Mean,
-                            Median = x.Int.Median,
-                            Minimum = x.Int.Minimum,
-                            Mode = x.Int.Mode,
-                            Sum = x.Int.Sum,
-                        },
-                        Aggregation.AggregationOneofCase.Number => new Aggregate.Number
-                        {
-                            Count = x.Number.Count,
-                            Maximum = x.Number.Maximum,
-                            Mean = x.Number.Mean,
-                            Median = x.Number.Median,
-                            Minimum = x.Number.Minimum,
-                            Mode = x.Number.Mode,
-                            Sum = x.Number.Sum,
-                        },
-                        Aggregation.AggregationOneofCase.Boolean => new Aggregate.Boolean
-                        {
-                            Count = x.Boolean.Count,
-                            PercentageFalse = x.Boolean.PercentageFalse,
-                            PercentageTrue = x.Boolean.PercentageTrue,
-                            TotalFalse = x.Boolean.TotalFalse,
-                            TotalTrue = x.Boolean.TotalTrue,
-                        },
-                        Aggregation.AggregationOneofCase.Date => new Aggregate.Date
-                        {
-                            Count = x.Date.Count,
-                            Maximum = x.Date.HasMaximum
-                                ? DateTime.Parse(
-                                    x.Date.Maximum,
-                                    null,
-                                    System.Globalization.DateTimeStyles.AdjustToUniversal
-                                )
-                                : null,
-                            Median = x.Date.HasMedian
-                                ? DateTime.Parse(
-                                    x.Date.Median,
-                                    null,
-                                    System.Globalization.DateTimeStyles.AdjustToUniversal
-                                )
-                                : null,
-                            Minimum = x.Date.HasMinimum
-                                ? DateTime.Parse(
-                                    x.Date.Minimum,
-                                    null,
-                                    System.Globalization.DateTimeStyles.AdjustToUniversal
-                                )
-                                : null,
-                            Mode = x.Date.HasMode
-                                ? DateTime.Parse(
-                                    x.Date.Mode,
-                                    null,
-                                    System.Globalization.DateTimeStyles.AdjustToUniversal
-                                )
-                                : null,
-                        },
-                        Aggregation.AggregationOneofCase.Reference =>
-                            throw new NotImplementedException(),
-                        _ => throw new NotImplementedException(
-                            $"Unknown aggregation case: {x.AggregationCase}"
-                        ),
-                    };
-                }
-            ),
+            Properties = (
+                reply.SingleResult.Aggregations != null
+                    ? reply.SingleResult.Aggregations
+                    : new V1.AggregateReply.Types.Aggregations()
+            ).Aggregations_.ToDictionary(x => x.Property, AggregateGroupByResult.FromGrpcProperty),
             TotalCount = reply.SingleResult.ObjectsCount,
         };
     }
