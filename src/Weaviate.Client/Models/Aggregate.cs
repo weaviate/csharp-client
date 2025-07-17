@@ -14,6 +14,89 @@ public partial record AggregateGroupByResult
 
     public List<Group> Groups { get; init; } = new();
 
+    internal static AggregateGroupByResult FromGrpcReply(V1.AggregateReply result)
+    {
+        var groupByToGrpc = (V1.AggregateReply.Types.Group.Types.GroupedBy gb) =>
+            gb.ValueCase switch
+            {
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Boolean =>
+                    new Group.By(gb.Path[0], gb.Boolean, typeof(bool)),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Booleans =>
+                    new Group.By(gb.Path[0], gb.Booleans.Values.ToArray(), typeof(bool[])),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Int => new Group.By(
+                    gb.Path[0],
+                    gb.Int,
+                    typeof(int)
+                ),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Ints => new Group.By(
+                    gb.Path[0],
+                    gb.Ints.Values.ToArray(),
+                    typeof(int[])
+                ),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Number => new Group.By(
+                    gb.Path[0],
+                    gb.Number,
+                    typeof(double)
+                ),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Numbers =>
+                    new Group.By(gb.Path[0], gb.Numbers.Values.ToArray(), typeof(double[])),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Text => new Group.By(
+                    gb.Path[0],
+                    gb.Text,
+                    typeof(string)
+                ),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Texts => new Group.By(
+                    gb.Path[0],
+                    gb.Texts.Values.ToArray(),
+                    typeof(string[])
+                ),
+                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Geo => new Group.By(
+                    gb.Path[0],
+                    new GeoCoordinate(gb.Geo.Latitude, gb.Geo.Longitude),
+                    typeof(GeoCoordinate)
+                ),
+
+                _ => throw new NotImplementedException($"Unknown group by type: {gb.ValueCase}"),
+            };
+
+        return new AggregateGroupByResult
+        {
+            Groups =
+                result
+                    .GroupedResults?.Groups.Select(g => new Group
+                    {
+                        GroupedBy = groupByToGrpc(g.GroupedBy),
+                        Properties = g.Aggregations.Aggregations_.ToDictionary(
+                            p => p.Property,
+                            AggregateResult.FromGrpcProperty
+                        ),
+                        TotalCount = g.ObjectsCount,
+                    })
+                    .ToList() ?? [],
+        };
+    }
+}
+
+public partial record AggregateResult
+{
+    public IDictionary<string, Aggregate.Property> Properties { get; init; } =
+        new Dictionary<string, Aggregate.Property>();
+
+    public long TotalCount { get; init; }
+
+    internal static AggregateResult FromGrpcReply(V1.AggregateReply reply)
+    {
+        return new AggregateResult
+        {
+            Properties = (
+                reply.SingleResult.Aggregations != null
+                    ? reply.SingleResult.Aggregations
+                    : new V1.AggregateReply.Types.Aggregations()
+            ).Aggregations_.ToDictionary(x => x.Property, AggregateResult.FromGrpcProperty),
+            TotalCount = reply.SingleResult.ObjectsCount,
+        };
+    }
+
     internal static Aggregate.Property FromGrpcProperty(
         Weaviate.V1.AggregateReply.Types.Aggregations.Types.Aggregation x
     )
@@ -25,15 +108,17 @@ public partial record AggregateGroupByResult
                     new Aggregate.Text
                     {
                         Count = x.Text.Count,
-                        TopOccurrences = x
-                            .Text.TopOccurences.Items.Select(
-                                o => new Aggregate.TopOccurrence<string>
-                                {
-                                    Count = o.Occurs,
-                                    Value = o.Value,
-                                }
-                            )
-                            .ToList(),
+                        TopOccurrences = (
+                            x.Text.TopOccurences is null
+                                ? []
+                                : x.Text.TopOccurences.Items.Select(
+                                    o => new Aggregate.TopOccurrence<string>
+                                    {
+                                        Count = o.Occurs,
+                                        Value = o.Value,
+                                    }
+                                )
+                        ).ToList(),
                     },
             V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Int =>
                 new Aggregate.Integer
@@ -104,89 +189,6 @@ public partial record AggregateGroupByResult
             _ => throw new NotImplementedException(
                 $"Unknown aggregation case: {x.AggregationCase}"
             ),
-        };
-    }
-
-    internal static AggregateGroupByResult FromGrpcReply(V1.AggregateReply result)
-    {
-        var groupByToGrpc = (V1.AggregateReply.Types.Group.Types.GroupedBy gb) =>
-            gb.ValueCase switch
-            {
-                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Boolean =>
-                    new Group.By(gb.Path[0], gb.Boolean, typeof(bool)),
-                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Booleans =>
-                    new Group.By(gb.Path[0], gb.Booleans.Values.ToArray(), typeof(bool[])),
-                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Int => new Group.By(
-                    gb.Path[0],
-                    gb.Int,
-                    typeof(int)
-                ),
-                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Ints => new Group.By(
-                    gb.Path[0],
-                    gb.Ints.Values.ToArray(),
-                    typeof(int[])
-                ),
-                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Number => new Group.By(
-                    gb.Path[0],
-                    gb.Number,
-                    typeof(double)
-                ),
-                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Numbers =>
-                    new Group.By(gb.Path[0], gb.Numbers.Values.ToArray(), typeof(double[])),
-                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Text => new Group.By(
-                    gb.Path[0],
-                    gb.Text,
-                    typeof(string)
-                ),
-                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Texts => new Group.By(
-                    gb.Path[0],
-                    gb.Texts.Values.ToArray(),
-                    typeof(string[])
-                ),
-                V1.AggregateReply.Types.Group.Types.GroupedBy.ValueOneofCase.Geo => new Group.By(
-                    gb.Path[0],
-                    new GeoCoordinate(gb.Geo.Latitude, gb.Geo.Longitude),
-                    typeof(GeoCoordinate)
-                ),
-
-                _ => throw new NotImplementedException($"Unknown group by type: {gb.ValueCase}"),
-            };
-
-        return new AggregateGroupByResult
-        {
-            Groups =
-                result
-                    .GroupedResults?.Groups.Select(g => new Group
-                    {
-                        GroupedBy = groupByToGrpc(g.GroupedBy),
-                        Properties = g.Aggregations.Aggregations_.ToDictionary(
-                            p => p.Property,
-                            AggregateGroupByResult.FromGrpcProperty
-                        ),
-                        TotalCount = g.ObjectsCount,
-                    })
-                    .ToList() ?? [],
-        };
-    }
-}
-
-public partial record AggregateResult
-{
-    public IDictionary<string, Aggregate.Property> Properties { get; init; } =
-        new Dictionary<string, Aggregate.Property>();
-
-    public long TotalCount { get; init; }
-
-    internal static AggregateResult FromGrpcReply(V1.AggregateReply reply)
-    {
-        return new AggregateResult
-        {
-            Properties = (
-                reply.SingleResult.Aggregations != null
-                    ? reply.SingleResult.Aggregations
-                    : new V1.AggregateReply.Types.Aggregations()
-            ).Aggregations_.ToDictionary(x => x.Property, AggregateGroupByResult.FromGrpcProperty),
-            TotalCount = reply.SingleResult.ObjectsCount,
         };
     }
 }
