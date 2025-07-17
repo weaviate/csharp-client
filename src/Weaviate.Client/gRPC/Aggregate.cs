@@ -196,8 +196,8 @@ public partial class WeaviateGrpcClient
     internal async Task<AggregateReply> AggregateNearVector(
         string collection,
         float[] vector,
-        float? certainty,
-        float? distance,
+        double? certainty,
+        double? distance,
         uint? limit,
         Filter? filter,
         Aggregate.GroupBy? groupBy,
@@ -225,11 +225,11 @@ public partial class WeaviateGrpcClient
 
         if (certainty.HasValue)
         {
-            request.NearText.Certainty = certainty.Value;
+            request.NearVector.Certainty = certainty.Value;
         }
         if (distance.HasValue)
         {
-            request.NearText.Distance = distance.Value;
+            request.NearVector.Distance = distance.Value;
         }
 
         return await Aggregate(request);
