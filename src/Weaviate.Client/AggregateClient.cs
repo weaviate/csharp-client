@@ -111,8 +111,8 @@ public partial class AggregateClient<TData>
     internal async Task<AggregateGroupByResult> NearText(
         string[] query,
         Aggregate.GroupBy? groupBy,
-        float? certainty = null,
-        float? distance = null,
+        double? certainty = null,
+        double? distance = null,
         uint? limit = null,
         Move? moveTo = null,
         Move? moveAway = null,
@@ -142,8 +142,8 @@ public partial class AggregateClient<TData>
 
     internal async Task<AggregateResult> NearText(
         string[] query,
-        float? certainty = null,
-        float? distance = null,
+        double? certainty = null,
+        double? distance = null,
         uint? limit = null,
         Move? moveTo = null,
         Move? moveAway = null,

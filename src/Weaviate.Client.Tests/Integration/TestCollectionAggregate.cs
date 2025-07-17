@@ -321,4 +321,183 @@ public partial class AggregatesTests : IntegrationTests
             Assert.DoesNotContain(text2, textAgg.TopOccurrences.Select(o => o.Value));
         }
     }
+
+    public static IEnumerable<object[]> NearTextAggregationOptions()
+    {
+        var uuid1 = Guid.NewGuid();
+        var uuid2 = Guid.NewGuid();
+
+        yield return new object[]
+        {
+            new Dictionary<string, object> { { "object_limit", 1 } },
+            1,
+            uuid1,
+            uuid2,
+        };
+        yield return new object[]
+        {
+            new Dictionary<string, object> { { "certainty", 0.9 } },
+            1,
+            uuid1,
+            uuid2,
+        };
+        yield return new object[]
+        {
+            new Dictionary<string, object> { { "distance", 0.1 } },
+            1,
+            uuid1,
+            uuid2,
+        };
+        yield return new object[]
+        {
+            new Dictionary<string, object> { { "object_limit", 2 } },
+            2,
+            uuid1,
+            uuid2,
+        };
+        yield return new object[]
+        {
+            new Dictionary<string, object> { { "certainty", 0.1 } },
+            2,
+            uuid1,
+            uuid2,
+        };
+        yield return new object[]
+        {
+            new Dictionary<string, object> { { "distance", 0.9 } },
+            2,
+            uuid1,
+            uuid2,
+        };
+        yield return new object[]
+        {
+            new Dictionary<string, object>
+            {
+                { "move_away", new Move(concepts: ["something"], force: 0.000001f) },
+                { "distance", 0.9 },
+            },
+            2,
+            uuid1,
+            uuid2,
+        };
+        yield return new object[]
+        {
+            new Dictionary<string, object>
+            {
+                { "move_away", new Move(objects: [uuid1], force: 0.000001f) },
+                { "distance", 0.9 },
+            },
+            2,
+            uuid1,
+            uuid2,
+        };
+        yield return new object[]
+        {
+            new Dictionary<string, object>
+            {
+                {
+                    "move_away",
+                    new Move(concepts: new[] { "something", "else" }, force: 0.000001f)
+                },
+                { "distance", 0.9 },
+            },
+            2,
+            uuid1,
+            uuid2,
+        };
+        yield return new object[]
+        {
+            new Dictionary<string, object>
+            {
+                { "move_to", new Move(objects: new[] { uuid1, uuid2 }, force: 0.000001f) },
+                { "distance", 0.9 },
+            },
+            2,
+            uuid1,
+            uuid2,
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(NearTextAggregationOptions))]
+    public async Task Test_Near_Text_Aggregation(
+        Dictionary<string, object> option,
+        int expectedLen,
+        Guid uuid1,
+        Guid uuid2
+    )
+    {
+        // Arrange
+        var collectionClient = await CollectionFactory(
+            properties: new[] { Property.Text("text") },
+            vectorConfig: Configure
+                .Vectors.Text2VecContextionary(vectorizeCollectionName: false)
+                .New("default")
+        );
+        var text1 = "some text";
+        var text2 = "nothing like the other one at all, not even a little bit";
+        await collectionClient.Data.Insert(new { text = text1 }, id: uuid1);
+        await collectionClient.Data.Insert(new { text = text2 }, id: uuid2);
+
+        // Act
+        AggregateResult? res = null;
+        var metrics = new[]
+        {
+            Metrics
+                .ForProperty("text")
+                .Text(count: true, topOccurrencesCount: true, topOccurrencesValue: true),
+        };
+
+        if (option.ContainsKey("object_limit"))
+        {
+            res = await collectionClient.Aggregate.NearText(
+                new[] { text1 },
+                metrics: metrics,
+                limit: Convert.ToUInt32(option["object_limit"])
+            );
+        }
+        else if (option.ContainsKey("certainty"))
+        {
+            res = await collectionClient.Aggregate.NearText(
+                new[] { text1 },
+                metrics: metrics,
+                certainty: Convert.ToDouble(option["certainty"])
+            );
+        }
+        else if (option.ContainsKey("distance"))
+        {
+            res = await collectionClient.Aggregate.NearText(
+                new[] { text1 },
+                metrics: metrics,
+                distance: Convert.ToDouble(option["distance"])
+            );
+        }
+        else
+        {
+            // Handle move_to/move_away or other options
+            var moveTo = option.ContainsKey("move_to") ? option["move_to"] as Move : null;
+            var moveAway = option.ContainsKey("move_away") ? option["move_away"] as Move : null;
+            res = await collectionClient.Aggregate.NearText(
+                new[] { text1 },
+                metrics: metrics,
+                moveTo: moveTo,
+                moveAway: moveAway
+            );
+        }
+
+        // Assert
+        Assert.IsType<Aggregate.Text>(res.Properties["text"]);
+        var aggText = (Aggregate.Text)res.Properties["text"];
+        Assert.Equal(expectedLen, aggText.Count);
+        Assert.Equal(expectedLen, aggText.TopOccurrences.Count);
+        Assert.Contains(text1, aggText.TopOccurrences.Select(o => o.Value));
+        if (expectedLen == 2)
+        {
+            Assert.Contains(text2, aggText.TopOccurrences.Select(o => o.Value));
+        }
+        else
+        {
+            Assert.DoesNotContain(text2, aggText.TopOccurrences.Select(o => o.Value));
+        }
+    }
 }
