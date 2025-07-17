@@ -36,7 +36,7 @@ public partial class AggregateClient<TData>
     }
 
     internal async Task<AggregateGroupByResult> OverAll(
-        Aggregate.GroupBy? groupByRequest,
+        Aggregate.GroupBy? groupBy,
         bool totalCount = true,
         Filter? filter = null,
         params MetricRequest[] metrics
@@ -45,7 +45,7 @@ public partial class AggregateClient<TData>
         var result = await _client.GrpcClient.AggregateOverAll(
             _collectionName,
             filter,
-            groupByRequest,
+            groupBy,
             totalCount,
             metrics
         );
