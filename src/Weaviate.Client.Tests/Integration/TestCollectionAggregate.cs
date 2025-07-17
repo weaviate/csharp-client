@@ -500,4 +500,66 @@ public partial class AggregatesTests : IntegrationTests
             Assert.DoesNotContain(text2, aggText.TopOccurrences.Select(o => o.Value));
         }
     }
+
+    [Fact]
+    public async Task Test_GroupBy_Aggregation_Argument()
+    {
+        var collectionClient = await CollectionFactory(
+            properties: new[] { Property.Text("text"), Property.Int("int") }
+        );
+
+        await collectionClient.Data.Insert(new { text = "some text", @int = 1 });
+        await collectionClient.Data.Insert(new { text = "some text", @int = 2 });
+
+        // Group by "text"
+        var resultByText = await collectionClient.Aggregate.OverAll(
+            groupBy: new Aggregate.GroupBy("text"),
+            metrics: new[]
+            {
+                Metrics.ForProperty("text").Text(count: true),
+                Metrics.ForProperty("int").Integer(count: true),
+            }
+        );
+
+        Assert.Single(resultByText.Groups);
+        var groupByText = resultByText.Groups[0];
+        Assert.Equal("text", groupByText.GroupedBy.Property);
+        Assert.Equal("some text", groupByText.GroupedBy.Value);
+        Assert.IsType<Aggregate.Text>(groupByText.Properties["text"]);
+        Assert.Equal(2, ((Aggregate.Text)groupByText.Properties["text"]).Count);
+        Assert.IsType<Aggregate.Integer>(groupByText.Properties["int"]);
+        Assert.Equal(2, ((Aggregate.Integer)groupByText.Properties["int"]).Count);
+
+        // Group by "int"
+        var resultByInt = await collectionClient.Aggregate.OverAll(
+            groupBy: new Aggregate.GroupBy("int"),
+            metrics: new[]
+            {
+                Metrics.ForProperty("text").Text(count: true),
+                Metrics.ForProperty("int").Integer(count: true),
+            }
+        );
+
+        Assert.Equal(2, resultByInt.Groups.Count);
+
+        var group1 = resultByInt.Groups[0];
+        var group2 = resultByInt.Groups[1];
+
+        Assert.Equal("int", group1.GroupedBy.Property);
+        Assert.Equal("int", group2.GroupedBy.Property);
+
+        var values = new[] { group1.GroupedBy.Value, group2.GroupedBy.Value };
+        Assert.Contains(1.0, values);
+        Assert.Contains(2.0, values);
+
+        Assert.IsType<Aggregate.Text>(group1.Properties["text"]);
+        Assert.Equal(1, ((Aggregate.Text)group1.Properties["text"]).Count);
+        Assert.IsType<Aggregate.Integer>(group1.Properties["int"]);
+        Assert.Equal(1, ((Aggregate.Integer)group1.Properties["int"]).Count);
+
+        Assert.IsType<Aggregate.Text>(group2.Properties["text"]);
+        Assert.Equal(1, ((Aggregate.Text)group2.Properties["text"]).Count);
+        Assert.IsType<Aggregate.Integer>(group2.Properties["int"]);
+        Assert.Equal(1, ((Aggregate.Integer)group2.Properties["int"]).Count);
+    }
 }
