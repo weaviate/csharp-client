@@ -193,57 +193,18 @@ public partial record AggregateResult
     }
 }
 
-public abstract record MetricRequest(string Name)
+public class Metrics
 {
-    public bool Count { get; init; }
+    public string PropertyName { get; }
 
-    public record Text(string Name) : MetricRequest(Name)
+    protected Metrics(string name)
     {
-        public bool TopOccurrencesCount { get; init; }
-        public bool TopOccurrencesValue { get; init; }
-        public uint? MinOccurrences { get; init; }
+        PropertyName = name;
     }
 
-    public record Integer(string Name) : MetricRequest(Name)
-    {
-        public bool Maximum { get; init; }
-        public bool Mean { get; init; }
-        public bool Median { get; init; }
-        public bool Minimum { get; init; }
-        public bool Mode { get; init; }
-        public bool Sum { get; init; }
-    }
+    public static Metrics ForProperty(string propertyName) => new(propertyName);
 
-    public record Number(string Name) : MetricRequest(Name)
-    {
-        public bool Maximum { get; init; }
-        public bool Mean { get; init; }
-        public bool Median { get; init; }
-        public bool Minimum { get; init; }
-        public bool Mode { get; init; }
-        public bool Sum { get; init; }
-    }
-
-    public record Boolean(string Name) : MetricRequest(Name)
-    {
-        public bool PercentageFalse { get; init; }
-        public bool PercentageTrue { get; init; }
-        public bool TotalFalse { get; init; }
-        public bool TotalTrue { get; init; }
-    }
-
-    public record Date(string Name) : MetricRequest(Name)
-    {
-        public bool Maximum { get; init; }
-        public bool Median { get; init; }
-        public bool Minimum { get; init; }
-        public bool Mode { get; init; }
-    }
-}
-
-public class PropertyMetricBuilder(string Name)
-{
-    public MetricRequest Text(
+    public Aggregate.Metric Text(
         bool count = false,
         bool topOccurrencesCount = false,
         bool topOccurrencesValue = false,
@@ -255,7 +216,7 @@ public class PropertyMetricBuilder(string Name)
             count = topOccurrencesCount = topOccurrencesValue = true;
         }
 
-        return new MetricRequest.Text(Name)
+        return new Aggregate.Metric.Text(PropertyName)
         {
             Count = count,
             TopOccurrencesCount = topOccurrencesCount,
@@ -264,7 +225,7 @@ public class PropertyMetricBuilder(string Name)
         };
     }
 
-    public MetricRequest Integer(
+    public Aggregate.Metric Integer(
         bool count = false,
         bool maximum = false,
         bool mean = false,
@@ -280,7 +241,7 @@ public class PropertyMetricBuilder(string Name)
             count = maximum = mean = median = minimum = mode = sum = true;
         }
 
-        return new MetricRequest.Integer(Name)
+        return new Aggregate.Metric.Integer(PropertyName)
         {
             Count = count,
             Maximum = maximum,
@@ -292,7 +253,7 @@ public class PropertyMetricBuilder(string Name)
         };
     }
 
-    public MetricRequest Number(
+    public Aggregate.Metric Number(
         bool count = false,
         bool maximum = false,
         bool mean = false,
@@ -308,7 +269,7 @@ public class PropertyMetricBuilder(string Name)
             count = maximum = mean = median = minimum = mode = sum = true;
         }
 
-        return new MetricRequest.Number(Name)
+        return new Aggregate.Metric.Number(PropertyName)
         {
             Count = count,
             Maximum = maximum,
@@ -320,7 +281,7 @@ public class PropertyMetricBuilder(string Name)
         };
     }
 
-    public MetricRequest Boolean(
+    public Aggregate.Metric Boolean(
         bool count = false,
         bool percentageFalse = false,
         bool percentageTrue = false,
@@ -333,7 +294,7 @@ public class PropertyMetricBuilder(string Name)
             count = percentageFalse = percentageTrue = totalFalse = totalTrue = true;
         }
 
-        return new MetricRequest.Boolean(Name)
+        return new Aggregate.Metric.Boolean(PropertyName)
         {
             Count = count,
             PercentageFalse = percentageFalse,
@@ -343,7 +304,7 @@ public class PropertyMetricBuilder(string Name)
         };
     }
 
-    public MetricRequest Date(
+    public Aggregate.Metric Date(
         bool count = false,
         bool maximum = false,
         bool median = false,
@@ -356,7 +317,7 @@ public class PropertyMetricBuilder(string Name)
             count = maximum = median = minimum = mode = true;
         }
 
-        return new MetricRequest.Date(Name)
+        return new Aggregate.Metric.Date(PropertyName)
         {
             Count = count,
             Maximum = maximum,
@@ -366,18 +327,64 @@ public class PropertyMetricBuilder(string Name)
         };
     }
 
-    public MetricRequest Reference()
+    public Aggregate.Metric Reference()
     {
         throw new NotImplementedException("Reference metrics are not implemented yet.");
     }
 }
 
-public static class Metrics
+public static partial class Aggregate
 {
-    public static PropertyMetricBuilder ForProperty(string propertyName) => new(propertyName);
+    public abstract record Metric(string Name)
+    {
+        public bool Count { get; init; }
+
+        public record Text(string Name) : Metric(Name)
+        {
+            public bool TopOccurrencesCount { get; init; }
+            public bool TopOccurrencesValue { get; init; }
+            public uint? MinOccurrences { get; init; }
+        }
+
+        public record Integer(string Name) : Metric(Name)
+        {
+            public bool Maximum { get; init; }
+            public bool Mean { get; init; }
+            public bool Median { get; init; }
+            public bool Minimum { get; init; }
+            public bool Mode { get; init; }
+            public bool Sum { get; init; }
+        }
+
+        public record Number(string Name) : Metric(Name)
+        {
+            public bool Maximum { get; init; }
+            public bool Mean { get; init; }
+            public bool Median { get; init; }
+            public bool Minimum { get; init; }
+            public bool Mode { get; init; }
+            public bool Sum { get; init; }
+        }
+
+        public record Boolean(string Name) : Metric(Name)
+        {
+            public bool PercentageFalse { get; init; }
+            public bool PercentageTrue { get; init; }
+            public bool TotalFalse { get; init; }
+            public bool TotalTrue { get; init; }
+        }
+
+        public record Date(string Name) : Metric(Name)
+        {
+            public bool Maximum { get; init; }
+            public bool Median { get; init; }
+            public bool Minimum { get; init; }
+            public bool Mode { get; init; }
+        }
+    }
 }
 
-public static class Aggregate
+public static partial class Aggregate
 {
     public record GroupBy(string Property, uint? Limit = null);
 

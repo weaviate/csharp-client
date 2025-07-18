@@ -21,7 +21,7 @@ public partial class AggregateClient<TData>
     internal async Task<AggregateResult> OverAll(
         bool totalCount = true,
         Filter? filter = null,
-        params MetricRequest[] metrics
+        params Aggregate.Metric[] metrics
     )
     {
         var result = await _client.GrpcClient.AggregateOverAll(
@@ -39,7 +39,7 @@ public partial class AggregateClient<TData>
         Aggregate.GroupBy? groupBy,
         bool totalCount = true,
         Filter? filter = null,
-        params MetricRequest[] metrics
+        params Aggregate.Metric[] metrics
     )
     {
         var result = await _client.GrpcClient.AggregateOverAll(
@@ -62,7 +62,7 @@ public partial class AggregateClient<TData>
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
-        params MetricRequest[] metrics
+        params Aggregate.Metric[] metrics
     )
     {
         var result = await _client.GrpcClient.AggregateNearVector(
@@ -89,7 +89,7 @@ public partial class AggregateClient<TData>
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
-        params MetricRequest[] metrics
+        params Aggregate.Metric[] metrics
     )
     {
         var result = await _client.GrpcClient.AggregateNearVector(
@@ -119,7 +119,7 @@ public partial class AggregateClient<TData>
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
-        params MetricRequest[] metrics
+        params Aggregate.Metric[] metrics
     )
     {
         var result = await _client.GrpcClient.AggregateNearText(
@@ -150,7 +150,7 @@ public partial class AggregateClient<TData>
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
-        params MetricRequest[] metrics
+        params Aggregate.Metric[] metrics
     )
     {
         var result = await _client.GrpcClient.AggregateNearText(
