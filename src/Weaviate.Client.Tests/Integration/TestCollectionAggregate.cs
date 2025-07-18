@@ -22,11 +22,11 @@ public partial class AggregatesTests : IntegrationTests
             vectorConfig: Configure.Vectors.SelfProvided()
         );
 
-        var items = Enumerable.Range(0, howMany).Select(_ => new { });
-        await collectionClient.Data.InsertMany([.. items]);
+        await collectionClient.Data.InsertMany([.. Enumerable.Repeat(new { }, howMany)]);
 
-        var result = await collectionClient.Aggregate.OverAll();
-        Assert.Equal(howMany, result.TotalCount);
+        var count = await collectionClient.Count();
+
+        Assert.Equal(howMany, Convert.ToInt64(count));
     }
 
     [Fact]
