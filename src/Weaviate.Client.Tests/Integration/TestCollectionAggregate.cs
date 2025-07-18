@@ -562,4 +562,235 @@ public partial class AggregatesTests : IntegrationTests
         Assert.IsType<Aggregate.Integer>(group2.Properties["int"]);
         Assert.Equal(1, ((Aggregate.Integer)group2.Properties["int"]).Count);
     }
+
+    [Theory]
+    [InlineData("text", new object[] { "some text", "another text", "some text" })]
+    [InlineData("int", new object[] { 42, 42, 100 })]
+    [InlineData("float", new object[] { 3.14, 5.67, 3.14 })]
+    [InlineData("bool", new object[] { true, true, false, false, false })]
+    [InlineData(
+        "date",
+        new[] { "2023-01-01T00:00:00Z", "2023-01-02T00:00:00Z", "2023-01-03T00:00:00Z" }
+    )]
+    public async Task Test_Simple_Aggregation_AllTypes(string propertyType, object[] values)
+    {
+        Property property = propertyType switch
+        {
+            "text" => Property.Text("text"),
+            "int" => Property.Int("int"),
+            "float" => Property.Number("float"),
+            "bool" => Property.Bool("bool"),
+            "date" => Property.Date("date"),
+            _ => throw new ArgumentException("Unknown property type"),
+        };
+
+        var collectionClient = await CollectionFactory(properties: new[] { property });
+
+        object[] insertObj = propertyType switch
+        {
+            "text" => values.Select(value => new { text = Convert.ToString(value) }).ToArray(),
+            "int" => values.Select(value => new { @int = Convert.ToInt32(value) }).ToArray(),
+            "float" => values.Select(value => new { @float = Convert.ToSingle(value) }).ToArray(),
+            "bool" => values.Select(value => new { @bool = Convert.ToBoolean(value) }).ToArray(),
+            "date" => values
+                .Select(value => new { date = DateTime.Parse((string)value).ToUniversalTime() })
+                .ToArray(),
+            _ => throw new ArgumentException("Unknown property type"),
+        };
+
+        await collectionClient.Data.InsertMany(insertObj);
+
+        Aggregate.Metric metric = propertyType switch
+        {
+            "text" => Metrics
+                .ForProperty("text")
+                .Text(count: true, topOccurrencesCount: true, topOccurrencesValue: true),
+            "int" => Metrics
+                .ForProperty("int")
+                .Integer(
+                    count: true,
+                    minimum: true,
+                    maximum: true,
+                    mean: true,
+                    sum: true,
+                    median: true
+                ),
+            "float" => Metrics
+                .ForProperty("float")
+                .Number(
+                    count: true,
+                    minimum: true,
+                    maximum: true,
+                    mean: true,
+                    sum: true,
+                    median: true
+                ),
+            "bool" => Metrics
+                .ForProperty("bool")
+                .Boolean(count: true, totalTrue: true, totalFalse: true),
+            "date" => Metrics.ForProperty("date").Date(count: true, minimum: true, maximum: true),
+            _ => throw new ArgumentException("Unknown property type"),
+        };
+
+        var result = await collectionClient.Aggregate.OverAll(metrics: metric);
+
+        switch (propertyType)
+        {
+            case "text":
+                var textAgg = result.Properties["text"] as Aggregate.Text;
+                Assert.NotNull(textAgg);
+                Assert.Equal(3, textAgg.Count);
+                Assert.Equal(2, textAgg.TopOccurrences.Count);
+                Assert.Equal(values[0], textAgg.TopOccurrences[0].Value);
+                break;
+            case "int":
+                var intAgg = result.Properties["int"] as Aggregate.Integer;
+                Assert.NotNull(intAgg);
+                Assert.Equal(3, intAgg.Count);
+                Assert.Equal(Convert.ToInt64(values[0]), intAgg.Minimum);
+                Assert.Equal(Convert.ToInt64(values[2]), intAgg.Maximum);
+                Assert.Equal(Convert.ToInt64(values[1]), intAgg.Median);
+                Assert.Equal(values.Select(Convert.ToDouble).Average(), intAgg.Mean);
+                Assert.Equal(values.Select(Convert.ToInt64).Sum(), intAgg.Sum);
+                break;
+            case "float":
+                var floatAgg = result.Properties["float"] as Aggregate.Number;
+                Assert.NotNull(floatAgg);
+                Assert.Equal(3, floatAgg.Count);
+                Assert.Equal(Convert.ToDouble(values[0]), floatAgg.Minimum!.Value, 4);
+                Assert.Equal(Convert.ToDouble(values[1]), floatAgg.Maximum!.Value, 4);
+                Assert.Equal(Convert.ToDouble(values[2]), floatAgg.Median!.Value, 4);
+                Assert.Equal(values.Select(Convert.ToDouble).Average(), floatAgg.Mean!.Value, 4);
+                Assert.Equal(values.Select(Convert.ToDouble).Sum(), floatAgg.Sum!.Value, 4);
+                break;
+            case "bool":
+                var boolAgg = result.Properties["bool"] as Aggregate.Boolean;
+                Assert.NotNull(boolAgg);
+                Assert.Equal(5, boolAgg.Count);
+                Assert.Equal(2, boolAgg.TotalTrue);
+                Assert.Equal(3, boolAgg.TotalFalse);
+                Assert.Equal(0.40, boolAgg.PercentageTrue);
+                Assert.Equal(0.60, boolAgg.PercentageFalse);
+                break;
+            case "date":
+                var dateAgg = result.Properties["date"] as Aggregate.Date;
+                Assert.NotNull(dateAgg);
+                Assert.Equal(3, dateAgg.Count);
+                var expectedDate1 = DateTime.Parse((string)values[0]).ToUniversalTime();
+                var expectedDate2 = DateTime.Parse((string)values[1]).ToUniversalTime();
+                var expectedDate3 = DateTime.Parse((string)values[2]).ToUniversalTime();
+                Assert.Equal(expectedDate1, dateAgg.Minimum);
+                Assert.Equal(expectedDate3, dateAgg.Maximum);
+                break;
+        }
+    }
+
+    [Theory]
+    [InlineData("texts", new[] { "a", "b", "c" })]
+    [InlineData("ints", new[] { 1, 2, 3 })]
+    [InlineData("floats", new[] { 1.1, 2.2, 3.3 })]
+    [InlineData("bools", new[] { true, false, true })]
+    [InlineData("dates", new[] { "2023-01-01T00:00:00Z", "2023-01-02T00:00:00Z" })]
+    public async Task Test_Simple_Aggregation_ArrayTypes(string propertyType, object value)
+    {
+        Property property = propertyType switch
+        {
+            "texts" => Property.TextArray("texts"),
+            "ints" => Property.IntArray("ints"),
+            "floats" => Property.NumberArray("floats"),
+            "bools" => Property.BoolArray("bools"),
+            "dates" => Property.DateArray("dates"),
+            _ => throw new ArgumentException("Unknown property type"),
+        };
+
+        var collectionClient = await CollectionFactory(properties: new[] { property });
+
+        object insertObj = propertyType switch
+        {
+            "texts" => new { texts = (string[])value },
+            "ints" => new { ints = (int[])value },
+            "floats" => new { floats = ((double[])value) },
+            "bools" => new { bools = (bool[])value },
+            "dates" => new
+            {
+                dates = ((string[])value)
+                    .Select(DateTime.Parse)
+                    .Select(d => d.ToUniversalTime())
+                    .ToArray(),
+            },
+            _ => throw new ArgumentException("Unknown property type"),
+        };
+
+        await collectionClient.Data.Insert(insertObj);
+
+        Aggregate.Metric metric = propertyType switch
+        {
+            "texts" => Metrics
+                .ForProperty("texts")
+                .Text(count: true, topOccurrencesCount: true, topOccurrencesValue: true),
+            "ints" => Metrics
+                .ForProperty("ints")
+                .Integer(count: true, minimum: true, maximum: true, mean: true, sum: true),
+            "floats" => Metrics
+                .ForProperty("floats")
+                .Number(count: true, minimum: true, maximum: true, mean: true, sum: true),
+            "bools" => Metrics
+                .ForProperty("bools")
+                .Boolean(count: true, totalTrue: true, totalFalse: true),
+            "dates" => Metrics.ForProperty("dates").Date(count: true, minimum: true, maximum: true),
+            _ => throw new ArgumentException("Unknown property type"),
+        };
+
+        var result = await collectionClient.Aggregate.OverAll(metrics: new[] { metric });
+
+        switch (propertyType)
+        {
+            case "texts":
+                var textAgg = result.Properties["texts"] as Aggregate.Text;
+                Assert.NotNull(textAgg);
+                Assert.Equal(((string[])value).Length, textAgg.Count);
+                Assert.Equal(((string[])value).Length, textAgg.TopOccurrences.Count);
+                foreach (var v in (string[])value)
+                    Assert.Contains(v, textAgg.TopOccurrences.Select(o => o.Value));
+                break;
+            case "ints":
+                var intAgg = result.Properties["ints"] as Aggregate.Integer;
+                Assert.NotNull(intAgg);
+                Assert.Equal(((int[])value).Length, intAgg.Count);
+                Assert.Equal(((int[])value).Min(), intAgg.Minimum);
+                Assert.Equal(((int[])value).Max(), intAgg.Maximum);
+                Assert.Equal(((int[])value).Average(), intAgg.Mean);
+                Assert.Equal(((int[])value).Sum(), intAgg.Sum);
+                break;
+            case "floats":
+                var floatAgg = result.Properties["floats"] as Aggregate.Number;
+                Assert.NotNull(floatAgg);
+                var floats = (double[])value;
+                Assert.Equal(floats.Length, floatAgg.Count);
+                Assert.Equal(floats.Min(), floatAgg.Minimum);
+                Assert.Equal(floats.Max(), floatAgg.Maximum);
+                Assert.Equal(floats.Average(), floatAgg.Mean);
+                Assert.Equal(floats.Sum(), floatAgg.Sum);
+                break;
+            case "bools":
+                var boolAgg = result.Properties["bools"] as Aggregate.Boolean;
+                Assert.NotNull(boolAgg);
+                var bools = (bool[])value;
+                Assert.Equal(bools.Length, boolAgg.Count);
+                Assert.Equal(bools.Count(b => b), boolAgg.TotalTrue);
+                Assert.Equal(bools.Count(b => !b), boolAgg.TotalFalse);
+                break;
+            case "dates":
+                var dateAgg = result.Properties["dates"] as Aggregate.Date;
+                Assert.NotNull(dateAgg);
+                var dates = ((string[])value)
+                    .Select(DateTime.Parse)
+                    .Select(d => d.ToUniversalTime())
+                    .ToArray();
+                Assert.Equal(dates.Length, dateAgg.Count);
+                Assert.Equal(dates.Min(), dateAgg.Minimum);
+                Assert.Equal(dates.Max(), dateAgg.Maximum);
+                break;
+        }
+    }
 }
