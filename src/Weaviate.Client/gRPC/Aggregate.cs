@@ -11,7 +11,7 @@ public partial class WeaviateGrpcClient
         Aggregate.GroupBy? groupBy = null,
         uint? limit = null,
         bool? totalCount = false,
-        params MetricRequest[] metrics
+        params Aggregate.Metric[] metrics
     )
     {
         var r = new AggregateRequest
@@ -48,7 +48,7 @@ public partial class WeaviateGrpcClient
                     var a = new AggregateRequest.Types.Aggregation { Property = m.Name };
                     switch (m)
                     {
-                        case MetricRequest.Text text:
+                        case Aggregate.Metric.Text text:
                             a.Text = new AggregateRequest.Types.Aggregation.Types.Text
                             {
                                 Count = text.Count,
@@ -60,7 +60,7 @@ public partial class WeaviateGrpcClient
                             a.Text.TopOccurences =
                                 text.TopOccurrencesCount || text.TopOccurrencesValue;
                             break;
-                        case MetricRequest.Integer integer:
+                        case Aggregate.Metric.Integer integer:
                             a.Int = new AggregateRequest.Types.Aggregation.Types.Integer
                             {
                                 Count = integer.Count,
@@ -72,7 +72,7 @@ public partial class WeaviateGrpcClient
                                 Sum = integer.Sum,
                             };
                             break;
-                        case MetricRequest.Number number:
+                        case Aggregate.Metric.Number number:
                             a.Number = new AggregateRequest.Types.Aggregation.Types.Number
                             {
                                 Count = number.Count,
@@ -84,7 +84,7 @@ public partial class WeaviateGrpcClient
                                 Sum = number.Sum,
                             };
                             break;
-                        case MetricRequest.Boolean boolean:
+                        case Aggregate.Metric.Boolean boolean:
                             a.Boolean = new AggregateRequest.Types.Aggregation.Types.Boolean
                             {
                                 Count = boolean.Count,
@@ -94,7 +94,7 @@ public partial class WeaviateGrpcClient
                                 TotalTrue = boolean.TotalTrue,
                             };
                             break;
-                        case MetricRequest.Date date:
+                        case Aggregate.Metric.Date date:
                             a.Date = new AggregateRequest.Types.Aggregation.Types.Date
                             {
                                 Count = date.Count,
@@ -128,7 +128,7 @@ public partial class WeaviateGrpcClient
         Filter? filter,
         Aggregate.GroupBy? groupBy,
         bool totalCount,
-        params MetricRequest[] metrics
+        params Aggregate.Metric[] metrics
     )
     {
         var request = BaseAggregateRequest(collection, filter, groupBy, null, totalCount, metrics);
@@ -148,7 +148,7 @@ public partial class WeaviateGrpcClient
         Aggregate.GroupBy? groupBy,
         string[]? targetVector,
         bool totalCount,
-        MetricRequest[] metrics
+        Aggregate.Metric[] metrics
     )
     {
         var request = BaseAggregateRequest(collection, filter, groupBy, limit, totalCount, metrics);
@@ -199,7 +199,7 @@ public partial class WeaviateGrpcClient
         Aggregate.GroupBy? groupBy,
         string[]? targetVector,
         bool totalCount,
-        MetricRequest[] metrics
+        Aggregate.Metric[] metrics
     )
     {
         var request = BaseAggregateRequest(collection, filter, groupBy, limit, totalCount, metrics);
