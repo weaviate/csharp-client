@@ -101,4 +101,10 @@ public partial class CollectionClient<TData>
             }
         }
     }
+
+    internal async Task<ulong> Count()
+    {
+        var result = await Aggregate.OverAll(totalCount: true);
+        return Convert.ToUInt64(result.TotalCount);
+    }
 }
