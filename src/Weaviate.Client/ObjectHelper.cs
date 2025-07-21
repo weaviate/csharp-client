@@ -293,6 +293,10 @@ internal class ObjectHelper
             {
                 continue;
             }
+            else if (propertyInfo.PropertyType == typeof(DateTime))
+            {
+                propDict[propertyInfo.Name] = ((DateTime)value).ToUniversalTime().ToString("o");
+            }
             else if (propertyInfo.PropertyType.IsNativeType())
             {
                 propDict[propertyInfo.Name] = value;

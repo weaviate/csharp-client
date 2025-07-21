@@ -252,10 +252,8 @@ public partial class WeaviateGrpcClient
 
         if (moveTo is not null)
         {
-            var uuids = moveTo.Objects is null
-                ? []
-                : (new Guid?[] { moveTo.Objects }).Select(x => x.ToString());
-            var concepts = moveTo.Concepts is null ? new string[] { } : [moveTo.Concepts];
+            var uuids = moveTo.Objects is null ? [] : moveTo.Objects.Select(x => x.ToString());
+            var concepts = moveTo.Concepts is null ? new string[] { } : moveTo.Concepts;
             request.NearText.MoveTo = new NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
@@ -266,10 +264,8 @@ public partial class WeaviateGrpcClient
 
         if (moveAway is not null)
         {
-            var uuids = moveAway.Objects is null
-                ? []
-                : (new Guid?[] { moveAway.Objects }).Select(x => x.ToString());
-            var concepts = moveAway.Concepts is null ? new string[] { } : [moveAway.Concepts];
+            var uuids = moveAway.Objects is null ? [] : moveAway.Objects.Select(x => x.ToString());
+            var concepts = moveAway.Concepts is null ? new string[] { } : moveAway.Concepts;
             request.NearText.MoveAway = new NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
@@ -291,8 +287,8 @@ public partial class WeaviateGrpcClient
 
     private static void BuildNearVector(
         float[] vector,
-        float? distance,
-        float? certainty,
+        double? distance,
+        double? certainty,
         SearchRequest request
     )
     {

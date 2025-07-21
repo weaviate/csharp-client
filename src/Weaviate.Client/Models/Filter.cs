@@ -73,13 +73,16 @@ public record TypedGuid(PropertyFilter Parent)
     public Filter NotEqual(Guid value) => InternalNotEqual(value);
 }
 
-public record TypedValue<T>(PropertyFilter Parent)
-    : TypedBase<T>(Parent),
+public record TypedValue<T>
+    : TypedBase<T>,
         IFilterEquality<T>,
         IFilterContains<T>,
         IFilterCompare<T>
     where T : struct
 {
+    internal TypedValue(PropertyFilter parent)
+        : base(parent) { }
+
     public Filter ContainsAll(IEnumerable<T> value) => InternalContainsAll(value);
 
     public Filter ContainsAny(IEnumerable<T> value) => InternalContainsAny(value);
@@ -258,14 +261,18 @@ public record PropertyFilter : Filter
         WithProperty(name);
     }
 
-    public TypedValue<int> Length
+    public TypedValue<int> Length()
     {
-        get
+        if (_target is null)
+        {
+            InternalFilter.Target.Property = $"len({InternalFilter.Target.Property})";
+        }
+        else
         {
             _target!.Property = $"len({_target!.Property})";
-
-            return new TypedValue<int>(this);
         }
+
+        return new TypedValue<int>(this);
     }
 
     public Filter ContainsAll<T>(IEnumerable<T> value) =>
