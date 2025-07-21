@@ -121,7 +121,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         return await CollectionFactory<TData>(c);
     }
 
-    protected async Task<CollectionClient<dynamic>> CollectionFactory(
+    protected async Task<CollectionClient<object>> CollectionFactory(
         string? name = null,
         string? description = null,
         IList<Property>? properties = null,
@@ -136,7 +136,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         string collectionNamePartSeparator = "_"
     )
     {
-        return await CollectionFactory<dynamic>(
+        return await CollectionFactory<object>(
             name,
             description,
             properties,

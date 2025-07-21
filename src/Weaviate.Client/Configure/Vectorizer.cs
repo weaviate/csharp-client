@@ -4,6 +4,9 @@ namespace Weaviate.Client;
 
 public static partial class Configure
 {
+    // TODO Move multi-vectors to a separate scope class
+    public static class MultiVectors { }
+
     public static class Vectors
     {
         public static VectorConfig SelfProvided(
@@ -31,8 +34,15 @@ public static partial class Configure
         public static VectorConfigBuilder Img2VecNeural(string[] imageFields) =>
             new(new Vectorizer.Img2VecNeural { ImageFields = imageFields });
 
-        public static VectorConfigBuilder Text2VecContextionary(bool? vectorizeClassName = null) =>
-            new(new Vectorizer.Text2VecContextionary() { VectorizeClassName = vectorizeClassName });
+        public static VectorConfigBuilder Text2VecContextionary(
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Text2VecContextionary()
+                {
+                    VectorizeClassName = vectorizeCollectionName,
+                }
+            );
 
         public static VectorConfigBuilder Text2VecWeaviate(
             string? baseURL = null,

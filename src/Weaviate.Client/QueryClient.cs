@@ -128,8 +128,8 @@ public class QueryClient<TData>
 
     public async Task<WeaviateResult> NearVector(
         float[] vector,
-        float? distance = null,
         float? certainty = null,
+        float? distance = null,
         uint? limit = null,
         string[]? fields = null,
         IList<QueryReference>? references = null,

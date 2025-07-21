@@ -569,10 +569,14 @@ public partial class CollectionsTests : IntegrationTests
     {
         yield return null;
         yield return Configure.Vectors.SelfProvided();
-        yield return Configure.Vectors.Text2VecContextionary(vectorizeClassName: false).New("vec");
+        yield return Configure
+            .Vectors.Text2VecContextionary(vectorizeCollectionName: false)
+            .New("vec");
         yield return new[]
         {
-            Configure.Vectors.Text2VecContextionary(vectorizeClassName: false).New(name: "vec"),
+            Configure
+                .Vectors.Text2VecContextionary(vectorizeCollectionName: false)
+                .New(name: "vec"),
         };
     }
 
