@@ -24,12 +24,12 @@ public partial class SearchTests : IntegrationTests
             .Select(s => new TestDataValue { Value = s })
             .Select(d => collectionClient.Data.Insert(d));
         Guid[] guids = await Task.WhenAll(tasks);
-        var concepts = "hiking";
+        var concepts = new[] { "hiking" };
 
         // Act
         var retriever = await collectionClient.Query.NearText(
             "cake",
-            moveTo: new Move(1.0f, objects: guids[0]),
+            moveTo: new Move(1.0f, objects: [guids[0]]),
             moveAway: new Move(0.5f, concepts: concepts),
             fields: ["value"],
             metadata: new MetadataQuery("default")

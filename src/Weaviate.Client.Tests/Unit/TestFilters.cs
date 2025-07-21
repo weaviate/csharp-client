@@ -137,4 +137,40 @@ public partial class FilterTests
         // Assert
         Assert.Equal(expected, f.InternalFilter);
     }
+
+    [Fact]
+    public void Filter_Property_Length()
+    {
+        // Arrange
+        var f = Filter.Property("name").Length().Equal(5);
+
+        var expected = new Filters()
+        {
+            Target = new FilterTarget() { Property = "len(name)" },
+            Operator = Filters.Types.Operator.Equal,
+            ValueInt = 5,
+        };
+
+        // Act
+        // Assert
+        Assert.Equal(expected, f.InternalFilter);
+    }
+
+    [Fact]
+    public void Filter_UUIDs_ContainsAny()
+    {
+        var uuid2 = Guid.NewGuid();
+        var f = Filter.Property("uuids").ContainsAny(new[] { uuid2 });
+
+        var expected = new Filters()
+        {
+            Target = new FilterTarget() { Property = "uuids" },
+            Operator = Filters.Types.Operator.ContainsAny,
+            ValueTextArray = new TextArray() { Values = { uuid2.ToString() } },
+        };
+
+        // Act
+        // Assert
+        Assert.Equal(expected, f.InternalFilter);
+    }
 }
