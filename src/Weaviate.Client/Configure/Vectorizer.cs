@@ -249,7 +249,7 @@ public static partial class Configure
         public static VectorConfigBuilder Text2VecCohere(
             string? baseURL = null,
             string? model = null,
-            bool? truncate = null,
+            string? truncate = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
