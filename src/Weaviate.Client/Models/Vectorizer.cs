@@ -173,7 +173,7 @@ public static partial class Vectorizer
     {
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
-        public bool? Truncate { get; set; } = null;
+        public string? Truncate { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
