@@ -122,7 +122,6 @@ public static class VectorIndex
         public int? MaxConnections { get; set; }
         public bool? Skip { get; set; }
         public long? VectorCacheMaxObjects { get; set; }
-
         public QuantizerConfig? Quantizer { get; set; }
 
         public override string Type => TypeValue;
