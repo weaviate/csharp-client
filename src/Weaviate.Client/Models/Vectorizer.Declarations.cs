@@ -289,6 +289,14 @@ public static partial class Vectorizer
             : base(IdentifierValue) { }
     }
 
+    public partial record Multi2VecNvidia : VectorizerConfig
+    {
+        public const string IdentifierValue = "multi2vec-nvidia";
+
+        public Multi2VecNvidia()
+            : base(IdentifierValue) { }
+    }
+
     /// <summary>
     /// The configuration for text vectorization using the Mistral module.
     /// See the documentation for detailed usage.

@@ -180,7 +180,6 @@ public static partial class Configure
             string? baseURL = null,
             string[]? imageFields = null,
             string? model = null,
-            string? outputEncoding = null,
             string[]? textFields = null,
             bool? truncate = null,
             bool? vectorizeCollectionName = null,
@@ -192,7 +191,6 @@ public static partial class Configure
                     BaseURL = baseURL,
                     ImageFields = imageFields,
                     Model = model,
-                    OutputEncoding = outputEncoding,
                     TextFields = textFields,
                     Truncate = truncate,
                     VectorizeCollectionName = vectorizeCollectionName,
@@ -336,6 +334,22 @@ public static partial class Configure
                     Model = model,
                     Truncate = truncate,
                     VectorizeCollectionName = vectorizeCollectionName,
+                }
+            );
+
+        public static VectorConfigBuilder Multi2VecNvidia(
+            string? baseURL = null,
+            string? model = null,
+            string[]? properties = null,
+            bool? truncation = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecNvidia
+                {
+                    BaseURL = baseURL,
+                    Model = model,
+                    Properties = properties,
+                    Truncation = truncation,
                 }
             );
 
