@@ -18,7 +18,7 @@ public partial class AggregateClient<TData>
         _collectionClient = collectionClient;
     }
 
-    internal async Task<AggregateResult> OverAll(
+    public async Task<AggregateResult> OverAll(
         bool totalCount = true,
         Filter? filter = null,
         params Aggregate.Metric[] metrics
@@ -35,7 +35,7 @@ public partial class AggregateClient<TData>
         return AggregateResult.FromGrpcReply(result);
     }
 
-    internal async Task<AggregateGroupByResult> OverAll(
+    public async Task<AggregateGroupByResult> OverAll(
         Aggregate.GroupBy? groupBy,
         bool totalCount = true,
         Filter? filter = null,
@@ -53,7 +53,7 @@ public partial class AggregateClient<TData>
         return AggregateGroupByResult.FromGrpcReply(result);
     }
 
-    internal async Task<AggregateGroupByResult> NearVector(
+    public async Task<AggregateGroupByResult> NearVector(
         float[] vector,
         Aggregate.GroupBy? groupBy,
         double? certainty = null,
@@ -81,7 +81,7 @@ public partial class AggregateClient<TData>
         return AggregateGroupByResult.FromGrpcReply(result);
     }
 
-    internal async Task<AggregateResult> NearVector(
+    public async Task<AggregateResult> NearVector(
         float[] vector,
         double? certainty = null,
         double? distance = null,
@@ -108,7 +108,7 @@ public partial class AggregateClient<TData>
         return AggregateResult.FromGrpcReply(result);
     }
 
-    internal async Task<AggregateGroupByResult> NearText(
+    public async Task<AggregateGroupByResult> NearText(
         string[] query,
         Aggregate.GroupBy? groupBy,
         double? certainty = null,
@@ -140,7 +140,7 @@ public partial class AggregateClient<TData>
         return AggregateGroupByResult.FromGrpcReply(result);
     }
 
-    internal async Task<AggregateResult> NearText(
+    public async Task<AggregateResult> NearText(
         string[] query,
         double? certainty = null,
         double? distance = null,
