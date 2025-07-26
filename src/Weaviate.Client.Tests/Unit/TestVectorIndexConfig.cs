@@ -27,5 +27,6 @@ public partial class VectorIndexConfigTests
         Assert.NotNull(hnsw);
         Assert.NotNull(hnsw?.Quantizer);
         Assert.Equal(expectedQuantizer, hnsw?.Quantizer.Type);
+        Assert.Null(hnsw!.MultiVector);
     }
 }

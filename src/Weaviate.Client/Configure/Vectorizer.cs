@@ -9,7 +9,7 @@ public static partial class Configure
         public static VectorConfig SelfProvided(
             string name = "default",
             VectorIndexConfig? indexConfig = null
-        ) => new(name, new Vectorizer.SelfProvided(), indexConfig);
+        ) => new VectorConfigBuilder(new Vectorizer.SelfProvided()).New(name, indexConfig);
 
         public class VectorConfigBuilder(VectorizerConfig Config)
         {
