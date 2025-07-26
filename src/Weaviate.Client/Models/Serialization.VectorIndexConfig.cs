@@ -5,6 +5,46 @@ using static Weaviate.Client.Models.VectorIndexConfig;
 namespace Weaviate.Client.Models;
 
 // DTOs for serialization
+internal abstract class MultiVectorEncodingDto
+{
+    [JsonPropertyName("enabled")]
+    public bool? Enabled { get; set; } = false;
+}
+
+internal class MuveraDto : MultiVectorEncodingDto
+{
+    [JsonPropertyName("kSim")]
+    public double? KSim { get; set; } = 4;
+
+    [JsonPropertyName("dProjections")]
+    public double? DProjections { get; set; } = 16;
+
+    [JsonPropertyName("repetitions")]
+    public double? Repetitions { get; set; } = 10;
+
+    public MuveraEncoding? ToModel() =>
+        (Enabled ?? false)
+            ? null
+            : new()
+            {
+                KSim = KSim,
+                DProjections = DProjections,
+                Repetitions = Repetitions,
+            };
+}
+
+internal class MultiVectorDto
+{
+    [JsonPropertyName("enabled")]
+    public bool? Enabled { get; set; } = false;
+
+    [JsonPropertyName("aggregation")]
+    public string? Aggregation { get; set; } = "maxSim";
+
+    [JsonPropertyName("muvera")]
+    public MuveraDto? Muvera { get; set; } = new MuveraDto();
+}
+
 internal class HnswDto
 {
     [JsonPropertyName("cleanupIntervalSeconds")]
@@ -52,6 +92,9 @@ internal class HnswDto
 
     [JsonPropertyName("sq")]
     public VectorIndex.Quantizers.SQ? SQ { get; set; }
+
+    [JsonPropertyName("multivector")]
+    public MultiVectorDto? MultiVector { get; set; }
 }
 
 internal class FlatDto
@@ -117,6 +160,14 @@ internal static class VectorIndexMappingExtensions
             Skip = dto.Skip,
             VectorCacheMaxObjects = dto.VectorCacheMaxObjects,
             Quantizer = quantizer,
+            MultiVector =
+                dto.MultiVector != null && dto.MultiVector.Enabled == true
+                    ? new MultiVectorConfig
+                    {
+                        Aggregation = dto.MultiVector.Aggregation,
+                        Encoding = dto.MultiVector.Muvera?.ToModel(),
+                    }
+                    : null,
         };
     }
 
@@ -136,6 +187,15 @@ internal static class VectorIndexMappingExtensions
             MaxConnections = hnsw.MaxConnections,
             Skip = hnsw.Skip,
             VectorCacheMaxObjects = hnsw.VectorCacheMaxObjects,
+            MultiVector =
+                hnsw.MultiVector != null
+                    ? new MultiVectorDto
+                    {
+                        Enabled = true,
+                        Muvera = (hnsw.MultiVector?.Encoding as MuveraEncoding)?.ToDto(),
+                        Aggregation = hnsw.MultiVector?.Aggregation,
+                    }
+                    : null,
         };
 
         // Set the appropriate quantizer property based on type

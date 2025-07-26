@@ -5,6 +5,35 @@ namespace Weaviate.Client.Models;
 
 public abstract record VectorIndexConfig()
 {
+    public static class MultiVectorAggregation
+    {
+        public const string MaxSim = "maxSim";
+    }
+
+    public abstract record EncodingConfig { }
+
+    public record MuveraEncoding : EncodingConfig
+    {
+        public double? KSim { get; init; } = 4;
+        public double? DProjections { get; init; } = 16;
+        public double? Repetitions { get; init; } = 10;
+
+        internal MuveraDto ToDto() =>
+            new MuveraDto()
+            {
+                Enabled = true,
+                KSim = KSim,
+                DProjections = DProjections,
+                Repetitions = Repetitions,
+            };
+    }
+
+    public record MultiVectorConfig
+    {
+        public string? Aggregation { get; init; } = "maxSim";
+        public EncodingConfig? Encoding { get; init; } = new MuveraEncoding();
+    }
+
     [JsonIgnore]
     public abstract string Type { get; }
 
@@ -123,6 +152,7 @@ public static class VectorIndex
         public bool? Skip { get; set; }
         public long? VectorCacheMaxObjects { get; set; }
         public QuantizerConfig? Quantizer { get; set; }
+        public MultiVectorConfig? MultiVector { get; internal set; }
 
         public override string Type => TypeValue;
     }
