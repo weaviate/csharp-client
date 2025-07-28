@@ -158,6 +158,7 @@ public class QueryClient<TData>
         float? certainty = null,
         uint? limit = null,
         string[]? fields = null,
+        string? targetVector = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
     )
@@ -169,6 +170,8 @@ public class QueryClient<TData>
             distance: distance,
             certainty: certainty,
             limit: limit,
+            fields: fields,
+            targetVector: targetVector,
             reference: references,
             metadata: metadata
         );
@@ -191,6 +194,49 @@ public class QueryClient<TData>
             fields: fields,
             reference: references,
             metadata: metadata
+        );
+
+        return results;
+    }
+
+    public async Task<WeaviateResult> Hybrid(
+        string? query,
+        float? alpha = null,
+        VectorContainer? vector = null,
+        string[]? queryProperties = null,
+        string? fusionType = null,
+        float? maxVectorDistance = null,
+        uint? limit = null,
+        uint? offset = null,
+        object? bm25Operator = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        object? rerank = null,
+        string? targetVector = null,
+        bool includeVector = false,
+        MetadataQuery? returnMetadata = null,
+        string[]? returnProperties = null,
+        IList<QueryReference>? returnReferences = null
+    )
+    {
+        var results = await _client.GrpcClient.SearchHybrid(
+            _collectionClient.Name,
+            query: query,
+            alpha: alpha,
+            vector: vector,
+            queryProperties: queryProperties,
+            fusionType: fusionType,
+            maxVectorDistance: maxVectorDistance,
+            limit: limit,
+            offset: offset,
+            bm25Operator: bm25Operator,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            targetVector: targetVector,
+            returnMetadata: returnMetadata,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences
         );
 
         return results;

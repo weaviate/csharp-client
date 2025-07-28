@@ -10,7 +10,9 @@ public partial class WeaviateGrpcClient
         string collection,
         Filters? filter = null,
         IEnumerable<SortBy>? sort = null,
+        uint? autoCut = null,
         uint? limit = null,
+        uint? offset = null,
         GroupByRequest? groupBy = null,
         MetadataQuery? metadata = null,
         IList<QueryReference>? reference = null,
@@ -42,6 +44,8 @@ public partial class WeaviateGrpcClient
             Uses125Api = true,
 #pragma warning restore CS0612 // Type or member is obsolete
             Uses127Api = true,
+            Autocut = autoCut ?? 0,
+            Offset = offset ?? 0,
             Limit = limit ?? 0,
             GroupBy = groupBy is not null
                 ? new GroupBy()
@@ -508,5 +512,132 @@ public partial class WeaviateGrpcClient
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
         return BuildResult(collection, reply);
+    }
+
+    internal async Task<WeaviateResult> SearchHybrid(
+        string collection,
+        string? query,
+        float? alpha,
+        VectorContainer? vector,
+        string[]? queryProperties,
+        string? fusionType,
+        float? maxVectorDistance,
+        uint? limit,
+        uint? offset,
+        object? bm25Operator,
+        uint? autoLimit,
+        Filter? filters,
+        object? rerank,
+        string? targetVector,
+        MetadataQuery? returnMetadata,
+        string[]? returnProperties,
+        IList<QueryReference>? returnReferences
+    )
+    {
+        if (vector is null && string.IsNullOrEmpty(query))
+        {
+            throw new ArgumentException(
+                "Either vector or query must be provided for hybrid search."
+            );
+        }
+
+        var request = BaseSearchRequest(
+            collection,
+            filter: filters?.InternalFilter,
+            autoCut: autoLimit,
+            limit: limit,
+            offset: offset,
+            groupBy: null,
+            fields: returnProperties,
+            metadata: returnMetadata,
+            reference: returnReferences
+        );
+
+        BuildHybrid(
+            request,
+            query,
+            alpha,
+            vector,
+            queryProperties,
+            fusionType,
+            maxVectorDistance,
+            bm25Operator,
+            targetVector
+        );
+
+        SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
+
+        return BuildResult(collection, reply);
+    }
+
+    private void BuildHybrid(
+        SearchRequest request,
+        string? query = null,
+        float? alpha = null,
+        VectorContainer? vector = null,
+        string[]? queryProperties = null,
+        string? fusionType = null,
+        float? maxVectorDistance = null,
+        object? bm25Operator = null,
+        string? targetVector = null
+    )
+    {
+        // TODO HybridVectorType: vector is a Union of either VectorContainer, or HybridNearText, or HybridNearVector
+
+        request.HybridSearch = new Hybrid();
+
+        if (!string.IsNullOrEmpty(query))
+        {
+            request.HybridSearch.Query = query;
+        }
+        else
+        {
+            alpha = 1.0f; // Default alpha if no query is provided
+        }
+
+        if (!string.IsNullOrEmpty(targetVector))
+        {
+            request.HybridSearch.Targets = new()
+            {
+                Combination = CombinationMethod.Unspecified,
+                TargetVectors = { targetVector },
+            };
+        }
+
+        if (alpha.HasValue)
+        {
+            request.HybridSearch.Alpha = alpha.Value;
+        }
+
+        if (vector is not null)
+        {
+            foreach (var v in vector)
+            {
+                request.HybridSearch.Vectors.Add(
+                    new Vectors
+                    {
+                        Name = v.Key,
+                        Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
+                            v.Value.ValueType
+                        )
+                            ? Vectors.Types.VectorType.MultiFp32
+                            : Vectors.Types.VectorType.SingleFp32,
+                        VectorBytes = v.Value.ToByteString(),
+                    }
+                );
+            }
+        }
+        if (queryProperties is not null)
+        {
+            request.HybridSearch.Properties.AddRange(queryProperties);
+        }
+        if (!string.IsNullOrEmpty(fusionType))
+        {
+            request.HybridSearch.FusionType = Enum.Parse<Hybrid.Types.FusionType>(fusionType);
+        }
+        if (maxVectorDistance.HasValue)
+        {
+            request.HybridSearch.VectorDistance = maxVectorDistance.Value;
+        }
     }
 }
