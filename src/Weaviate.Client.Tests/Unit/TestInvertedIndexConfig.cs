@@ -1,7 +1,7 @@
 using Weaviate.Client.Models;
 using Weaviate.Client.Rest;
 
-namespace Weaviate.Client.Tests;
+namespace Weaviate.Client.Tests.Unit;
 
 public class InvertedIndexConfigTests
 {

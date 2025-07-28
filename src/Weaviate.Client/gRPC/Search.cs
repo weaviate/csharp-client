@@ -136,14 +136,14 @@ public partial class WeaviateGrpcClient
         };
     }
 
-    private static NamedVectors BuildVectorsFromResult(RepeatedField<Vectors> vectors)
+    private static VectorContainer BuildVectorsFromResult(RepeatedField<Vectors> vectors)
     {
-        var result = new NamedVectors();
+        var result = new VectorContainer();
 
         foreach (var vector in vectors)
         {
-            var vectorData = new NamedVector(vector.VectorBytes.FromByteString<float>());
-            result.Add(vector.Name, vectorData);
+            var vectorData = vector.VectorBytes.FromByteString<float>();
+            result.Add(vector.Name, [.. vectorData]);
         }
 
         return result;
@@ -286,26 +286,30 @@ public partial class WeaviateGrpcClient
     }
 
     private static void BuildNearVector(
-        float[] vector,
+        VectorContainer vector,
         double? distance,
         double? certainty,
+        string? targetVector,
         SearchRequest request
     )
     {
-        request.NearVector = new NearVector
+        request.NearVector = new() { Vectors = { } };
+
+        foreach (var v in vector)
         {
-            Vectors =
-            {
+            request.NearVector.Vectors.Add(
                 new Vectors
                 {
-                    Name = "default",
-                    Type = Vectors.Types.VectorType.SingleFp32,
-                    VectorBytes = vector.ToByteString(),
-                },
-            },
-            // Targets = null,
-            // VectorForTargets = { },
-        };
+                    Name = v.Key,
+                    Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
+                        v.Value.ValueType
+                    )
+                        ? Vectors.Types.VectorType.MultiFp32
+                        : Vectors.Types.VectorType.SingleFp32,
+                    VectorBytes = v.Value.ToByteString(),
+                }
+            );
+        }
 
         if (distance.HasValue)
         {
@@ -315,6 +319,15 @@ public partial class WeaviateGrpcClient
         if (certainty.HasValue)
         {
             request.NearVector.Certainty = certainty.Value;
+        }
+
+        if (!string.IsNullOrEmpty(targetVector))
+        {
+            request.NearVector.Targets = new()
+            {
+                Combination = CombinationMethod.Unspecified,
+                TargetVectors = { targetVector },
+            };
         }
     }
 
@@ -357,9 +370,10 @@ public partial class WeaviateGrpcClient
 
     public async Task<WeaviateResult> SearchNearVector(
         string collection,
-        float[] vector,
+        VectorContainer vector,
         float? distance = null,
         float? certainty = null,
+        string? targetVector = null,
         uint? limit = null,
         string[]? fields = null,
         IList<QueryReference>? reference = null,
@@ -375,7 +389,7 @@ public partial class WeaviateGrpcClient
             reference: reference
         );
 
-        BuildNearVector(vector, distance, certainty, request);
+        BuildNearVector(vector, distance, certainty, targetVector, request);
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
@@ -413,10 +427,11 @@ public partial class WeaviateGrpcClient
 
     public async Task<Models.GroupByResult> SearchNearVector(
         string collection,
-        float[] vector,
+        VectorContainer vector,
         GroupByRequest groupBy,
         float? distance = null,
         float? certainty = null,
+        string? targetVector = null,
         uint? limit = null,
         string[]? fields = null,
         IList<QueryReference>? reference = null,
@@ -433,7 +448,7 @@ public partial class WeaviateGrpcClient
             reference: reference
         );
 
-        BuildNearVector(vector, distance, certainty, request);
+        BuildNearVector(vector, distance, certainty, targetVector, request);
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 

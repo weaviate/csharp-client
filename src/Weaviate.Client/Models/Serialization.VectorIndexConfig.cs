@@ -13,10 +13,10 @@ internal abstract class MultiVectorEncodingDto
 
 internal class MuveraDto : MultiVectorEncodingDto
 {
-    [JsonPropertyName("kSim")]
+    [JsonPropertyName("ksim")]
     public double? KSim { get; set; } = 4;
 
-    [JsonPropertyName("dProjections")]
+    [JsonPropertyName("dprojections")]
     public double? DProjections { get; set; } = 16;
 
     [JsonPropertyName("repetitions")]
@@ -24,13 +24,13 @@ internal class MuveraDto : MultiVectorEncodingDto
 
     public MuveraEncoding? ToModel() =>
         (Enabled ?? false)
-            ? null
-            : new()
+            ? new()
             {
                 KSim = KSim,
                 DProjections = DProjections,
                 Repetitions = Repetitions,
-            };
+            }
+            : null;
 }
 
 internal class MultiVectorDto
@@ -145,6 +145,17 @@ internal static class VectorIndexMappingExtensions
     {
         var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ);
 
+        var muvera = dto.MultiVector?.Muvera?.ToModel();
+
+        var multivector =
+            dto.MultiVector != null && dto.MultiVector.Enabled == true
+                ? new MultiVectorConfig
+                {
+                    Aggregation = dto.MultiVector.Aggregation,
+                    Encoding = muvera,
+                }
+                : null;
+
         return new VectorIndex.HNSW
         {
             CleanupIntervalSeconds = dto.CleanupIntervalSeconds,
@@ -160,14 +171,7 @@ internal static class VectorIndexMappingExtensions
             Skip = dto.Skip,
             VectorCacheMaxObjects = dto.VectorCacheMaxObjects,
             Quantizer = quantizer,
-            MultiVector =
-                dto.MultiVector != null && dto.MultiVector.Enabled == true
-                    ? new MultiVectorConfig
-                    {
-                        Aggregation = dto.MultiVector.Aggregation,
-                        Encoding = dto.MultiVector.Muvera?.ToModel(),
-                    }
-                    : null,
+            MultiVector = multivector,
         };
     }
 

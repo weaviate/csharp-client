@@ -2,7 +2,7 @@ using System.Reflection;
 using Weaviate.Client.Models;
 using Weaviate.V1;
 
-namespace Weaviate.Client.Tests;
+namespace Weaviate.Client.Tests.Unit;
 
 public partial class FilterTests
 {

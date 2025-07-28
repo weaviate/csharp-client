@@ -480,7 +480,9 @@ internal class ObjectHelper
                             new V1.NumberArrayProperties()
                             {
                                 PropName = propertyInfo.Name,
-                                ValuesBytes = floats.Select(f => (double)f).ToByteString(),
+                                ValuesBytes = floats
+                                    .Select(f => Convert.ToDouble(f))
+                                    .ToByteString(),
                             }
                         );
                         continue;
