@@ -22,9 +22,8 @@ public class QueryClient<TData>
         IEnumerable<Sort>? sort = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
-    )
-    {
-        return await _client.GrpcClient.FetchObjects(
+    ) =>
+        await _client.GrpcClient.FetchObjects(
             _collectionName,
             fields: properties,
             limit: limit,
@@ -33,16 +32,14 @@ public class QueryClient<TData>
             reference: references,
             metadata: metadata
         );
-    }
 
     public async Task<WeaviateObject?> FetchObjectByID(
         Guid id,
         string[]? properties = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
-    )
-    {
-        return (
+    ) =>
+        (
             await _client.GrpcClient.FetchObjects(
                 _collectionName,
                 fields: properties,
@@ -51,7 +48,6 @@ public class QueryClient<TData>
                 metadata: metadata
             )
         ).SingleOrDefault();
-    }
 
     public async Task<WeaviateResult> FetchObjectsByIDs(
         ISet<Guid> ids,
@@ -59,9 +55,8 @@ public class QueryClient<TData>
         uint? limit = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
-    )
-    {
-        return await _client.GrpcClient.FetchObjects(
+    ) =>
+        await _client.GrpcClient.FetchObjects(
             _collectionName,
             fields: properties,
             limit: limit,
@@ -69,7 +64,6 @@ public class QueryClient<TData>
             reference: references,
             metadata: metadata
         );
-    }
     #endregion
 
     #region Search
@@ -84,9 +78,8 @@ public class QueryClient<TData>
         MetadataQuery? metadata = null,
         Move? moveTo = null,
         Move? moveAway = null
-    )
-    {
-        var results = await _client.GrpcClient.SearchNearText(
+    ) =>
+        await _client.GrpcClient.SearchNearText(
             _collectionClient.Name,
             text,
             distance: distance,
@@ -98,9 +91,6 @@ public class QueryClient<TData>
             moveAway: moveAway
         );
 
-        return results;
-    }
-
     public async Task<GroupByResult> NearText(
         string text,
         Models.GroupByRequest groupBy,
@@ -110,21 +100,17 @@ public class QueryClient<TData>
         string[]? fields = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
-    )
-    {
-        var results = await _client.GrpcClient.SearchNearText(
+    ) =>
+        await _client.GrpcClient.SearchNearText(
             _collectionClient.Name,
             text,
-            groupBy,
+            groupBy: groupBy,
             distance: distance,
             certainty: certainty,
             limit: limit,
             reference: references,
             metadata: metadata
         );
-
-        return results;
-    }
 
     public async Task<WeaviateResult> NearVector(
         VectorContainer vector,
@@ -135,9 +121,8 @@ public class QueryClient<TData>
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null,
         string? targetVector = null
-    )
-    {
-        var results = await _client.GrpcClient.SearchNearVector(
+    ) =>
+        await _client.GrpcClient.SearchNearVector(
             _collectionClient.Name,
             vector,
             distance: distance,
@@ -147,9 +132,6 @@ public class QueryClient<TData>
             metadata: metadata,
             targetVector: targetVector
         );
-
-        return results;
-    }
 
     public async Task<GroupByResult> NearVector(
         VectorContainer vector,
@@ -161,9 +143,8 @@ public class QueryClient<TData>
         string? targetVector = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
-    )
-    {
-        var results = await _client.GrpcClient.SearchNearVector(
+    ) =>
+        await _client.GrpcClient.SearchNearVector(
             _collectionClient.Name,
             vector,
             groupBy,
@@ -176,18 +157,14 @@ public class QueryClient<TData>
             metadata: metadata
         );
 
-        return results;
-    }
-
     public async Task<WeaviateResult> BM25(
         string query,
         string[]? searchFields = null,
         string[]? fields = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
-    )
-    {
-        var results = await _client.GrpcClient.SearchBM25(
+    ) =>
+        await _client.GrpcClient.SearchBM25(
             _collectionClient.Name,
             query: query,
             searchFields: searchFields,
@@ -195,9 +172,6 @@ public class QueryClient<TData>
             reference: references,
             metadata: metadata
         );
-
-        return results;
-    }
 
     public async Task<WeaviateResult> Hybrid(
         string? query,
@@ -217,9 +191,8 @@ public class QueryClient<TData>
         MetadataQuery? returnMetadata = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null
-    )
-    {
-        var results = await _client.GrpcClient.SearchHybrid(
+    ) =>
+        await _client.GrpcClient.SearchHybrid(
             _collectionClient.Name,
             query: query,
             alpha: alpha,
@@ -235,12 +208,9 @@ public class QueryClient<TData>
             rerank: rerank,
             targetVector: targetVector,
             returnMetadata: returnMetadata,
-            returnProperties: returnProperties,
+            fields: returnProperties,
             returnReferences: returnReferences
         );
-
-        return results;
-    }
 
     #endregion
 }
