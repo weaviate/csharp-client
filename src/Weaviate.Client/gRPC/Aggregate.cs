@@ -191,7 +191,7 @@ public partial class WeaviateGrpcClient
 
     internal async Task<AggregateReply> AggregateNearVector(
         string collection,
-        float[] vector,
+        VectorContainer vector,
         double? certainty,
         double? distance,
         uint? limit,
@@ -204,20 +204,23 @@ public partial class WeaviateGrpcClient
     {
         var request = BaseAggregateRequest(collection, filter, groupBy, limit, totalCount, metrics);
 
-        request.NearVector = new()
+        request.NearVector = new() { Vectors = { } };
+
+        foreach (var v in vector)
         {
-            Vectors =
-            {
+            request.NearVector.Vectors.Add(
                 new Vectors
                 {
-                    Name = "default",
-                    Type = Vectors.Types.VectorType.SingleFp32,
-                    VectorBytes = vector.ToByteString(),
-                },
-            },
-            // Targets = null,
-            // VectorForTargets = { },
-        };
+                    Name = v.Key,
+                    Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
+                        v.Value.ValueType
+                    )
+                        ? Vectors.Types.VectorType.MultiFp32
+                        : Vectors.Types.VectorType.SingleFp32,
+                    VectorBytes = v.Value.ToByteString(),
+                }
+            );
+        }
 
         if (certainty.HasValue)
         {
@@ -226,6 +229,15 @@ public partial class WeaviateGrpcClient
         if (distance.HasValue)
         {
             request.NearVector.Distance = distance.Value;
+        }
+
+        if (targetVector is { Length: > 0 })
+        {
+            request.NearVector.Targets = new()
+            {
+                Combination = CombinationMethod.Unspecified,
+                TargetVectors = { targetVector },
+            };
         }
 
         return await Aggregate(request);

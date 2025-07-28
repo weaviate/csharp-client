@@ -106,7 +106,7 @@ class Program
             // Normal Insertion Demo
             foreach (var cat in cats)
             {
-                var vectors = new NamedVectors() { { "default", cat.Vector } };
+                var vectors = new VectorContainer() { { "default", cat.Vector } };
 
                 var inserted = await collection.Data.Insert(cat.Data, vectors: vectors);
             }
@@ -154,7 +154,7 @@ class Program
         Console.WriteLine("Querying Neighboring Cats: [20,21,22]");
 
         var queryNearVector = await collection.Query.NearVector(
-            vector: [20f, 21f, 22f],
+            vector: VectorData.Create(20f, 21f, 22f),
             distance: 0.5f,
             limit: 5,
             fields: ["name", "breed", "color", "counter"],

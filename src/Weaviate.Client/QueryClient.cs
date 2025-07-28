@@ -127,13 +127,14 @@ public class QueryClient<TData>
     }
 
     public async Task<WeaviateResult> NearVector(
-        float[] vector,
+        VectorContainer vector,
         float? certainty = null,
         float? distance = null,
         uint? limit = null,
         string[]? fields = null,
         IList<QueryReference>? references = null,
-        MetadataQuery? metadata = null
+        MetadataQuery? metadata = null,
+        string? targetVector = null
     )
     {
         var results = await _client.GrpcClient.SearchNearVector(
@@ -143,14 +144,15 @@ public class QueryClient<TData>
             certainty: certainty,
             limit: limit,
             reference: references,
-            metadata: metadata
+            metadata: metadata,
+            targetVector: targetVector
         );
 
         return results;
     }
 
     public async Task<GroupByResult> NearVector(
-        float[] vector,
+        VectorContainer vector,
         GroupByRequest groupBy,
         float? distance = null,
         float? certainty = null,
