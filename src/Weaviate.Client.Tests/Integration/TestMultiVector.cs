@@ -123,16 +123,6 @@ public class TestMultiVector : IntegrationTests
             colbert.MultiVector.Aggregation
         );
 
-        // var result = await collection.Data.Insert(
-        //     new { },
-        //     null,
-        //     new VectorContainer()
-        //     {
-        //         { "regular", new[] { 1f, 2f } },
-        //         { "colbert", new[] { new[] { 1f, 2f }, new[] { 4f, 5f } } },
-        //     }
-        // );
-
         var result = await collection.Data.InsertMany(ins =>
         {
             ins(
@@ -162,7 +152,7 @@ public class TestMultiVector : IntegrationTests
         );
         Assert.Single(objs);
 
-        // Vector Lists not supported yet
+        // Vector Lists not supported
         // objs = await collection.Query.NearVector(
         //     VectorData.Create("regular", new[] { new[] { 1f, 2f }, new[] { 2f, 1f } }),
         //     targetVector: "regular"
@@ -175,45 +165,33 @@ public class TestMultiVector : IntegrationTests
         );
         Assert.Single(objs);
 
-        // objs = collection
-        //     .Query.Hybrid(query: null, vector: new[] { 1f, 2f }, targetVector: "regular")
-        //     .Objects;
-        // Assert.Single(objs);
+        objs = await collection.Query.Hybrid(
+            query: null,
+            vector: VectorData.Create(new[] { 1f, 2f }),
+            targetVector: "regular"
+        );
+        Assert.Single(objs);
 
-        // objs = collection
-        //     .Query.Hybrid(
-        //         query: null,
-        //         vector: new[] { new[] { 1f, 2f }, new[] { 3f, 4f } },
-        //         targetVector: "colbert"
-        //     )
-        //     .Objects;
-        // Assert.Single(objs);
+        objs = await collection.Query.Hybrid(
+            query: null,
+            vector: VectorData.Create(new[] { new[] { 1f, 2f }, new[] { 3f, 4f } }),
+            targetVector: "colbert"
+        );
+        Assert.Single(objs);
 
-        // objs = collection
-        //     .Query.Hybrid(
-        //         query: null,
-        //         vector: new Dictionary<string, object>
-        //         {
-        //             { "colbert", new[] { new[] { 1f, 2f }, new[] { 3f, 4f } } },
-        //         },
-        //         targetVector: "colbert"
-        //     )
-        //     .Objects;
-        // Assert.Single(objs);
+        objs = await collection.Query.Hybrid(
+            query: null,
+            vector: VectorData.Create("colbert", new[] { new[] { 1f, 2f }, new[] { 3f, 4f } }),
+            targetVector: "colbert"
+        );
+        Assert.Single(objs);
 
-        // objs = collection
-        //     .Query.Hybrid(
-        //         query: null,
-        //         vector: new Dictionary<string, object>
-        //         {
-        //             {
-        //                 "colbert",
-        //                 NearVector.ListOfVectors(new[] { new[] { 1f, 2f }, new[] { 3f, 4f } })
-        //             },
-        //         },
-        //         targetVector: "colbert"
-        //     )
-        //     .Objects;
+        // Vector Lists not supported
+        // objs = await collection.Query.Hybrid(
+        //     query: null,
+        //     vector: VectorData.Create("colbert", new[] { new[] { 1f, 2f }, new[] { 3f, 4f } }),
+        //     targetVector: "colbert"
+        // );
         // Assert.Single(objs);
     }
 }
