@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Weaviate.Client.Models;
 
-namespace Weaviate.Client.Tests;
+namespace Weaviate.Client.Tests.Unit;
 
 public partial class VectorIndexConfigTests
 {
