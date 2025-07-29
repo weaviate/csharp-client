@@ -38,6 +38,13 @@ public static class VectorData
     {
         return new VectorContainer() { { name, values } };
     }
+
+    public static VectorContainer Create(IVectorData values) => Create("default", values);
+
+    public static VectorContainer Create(string name, IVectorData values)
+    {
+        return new VectorContainer() { [name] = values };
+    }
 }
 
 // For simple struct values (int, double, etc.)
