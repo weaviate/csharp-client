@@ -4,15 +4,12 @@ namespace Weaviate.Client;
 
 public static partial class Configure
 {
-    // TODO Move multi-vectors to a separate scope class
-    public static class MultiVectors { }
-
     public static class Vectors
     {
         public static VectorConfig SelfProvided(
             string name = "default",
             VectorIndexConfig? indexConfig = null
-        ) => new(name, new Vectorizer.SelfProvided(), indexConfig);
+        ) => new VectorConfigBuilder(new Vectorizer.SelfProvided()).New(name, indexConfig);
 
         public class VectorConfigBuilder(VectorizerConfig Config)
         {
@@ -154,28 +151,6 @@ public static partial class Configure
                 }
             );
 
-        public static VectorConfigBuilder Multi2VecJinaAI(
-            string? baseURL = null,
-            int? dimensions = null,
-            string[]? imageFields = null,
-            string? model = null,
-            string[]? textFields = null,
-            bool? vectorizeCollectionName = null,
-            Vectorizer.Multi2VecJinaAIWeights? weights = null
-        ) =>
-            new(
-                new Vectorizer.Multi2VecJinaAI
-                {
-                    BaseURL = baseURL,
-                    Dimensions = dimensions,
-                    ImageFields = imageFields,
-                    Model = model,
-                    TextFields = textFields,
-                    VectorizeCollectionName = vectorizeCollectionName,
-                    Weights = weights,
-                }
-            );
-
         public static VectorConfigBuilder Multi2VecVoyageAI(
             string? baseURL = null,
             string[]? imageFields = null,
@@ -302,24 +277,6 @@ public static partial class Configure
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
-
-        public static VectorConfigBuilder Text2VecJinaAI(
-            string? model = null,
-            bool? vectorizeCollectionName = null
-        ) =>
-            new(
-                new Vectorizer.Text2VecJinaAI
-                {
-                    Model = model,
-                    VectorizeCollectionName = vectorizeCollectionName,
-                }
-            );
-
-        [Obsolete("Use Text2VecJinaAI instead.")]
-        public static VectorConfigBuilder Text2VecJinaConfig(
-            string? model = null,
-            bool? vectorizeCollectionName = null
-        ) => new(new Vectorizer.Text2VecJinaConfig());
 
         public static VectorConfigBuilder Text2VecNvidia(
             string? baseURL = null,

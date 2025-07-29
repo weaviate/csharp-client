@@ -3,7 +3,7 @@ using Weaviate.V1;
 
 namespace Weaviate.Client.Grpc;
 
-public partial class WeaviateGrpcClient
+internal partial class WeaviateGrpcClient
 {
     internal async Task<BatchDeleteReply> DeleteMany(
         string collection,
