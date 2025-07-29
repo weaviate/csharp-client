@@ -7,6 +7,12 @@ public class TestMultiVector : IntegrationTests
     [Fact]
     public async Task Test_Should_Create_Collection_With_MultiVectors_And_Have_MuveraEncodingConfig()
     {
+        var dummy = await CollectionFactory();
+        if (dummy.WeaviateVersion < Version.Parse("1.31.0"))
+        {
+            Assert.Skip("Skipping test for Weaviate versions < 1.31.0");
+        }
+
         var collection = await CollectionFactory(
             name: "TestMultiVectorCollection",
             vectorConfig: new[]
