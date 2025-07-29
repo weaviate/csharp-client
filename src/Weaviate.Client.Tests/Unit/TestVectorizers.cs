@@ -3,18 +3,18 @@ using Weaviate.Client.Models;
 using Weaviate.Client.Models.Vectorizers;
 using Quantizers = Weaviate.Client.Models.VectorIndex.Quantizers;
 
-namespace Weaviate.Client.Tests;
+namespace Weaviate.Client.Tests.Unit;
 
 public partial class VectorConfigListTests
 {
     [Fact]
     public void NamedVectorInitialization()
     {
-        var v1 = new NamedVectors();
+        var v1 = new VectorContainer();
         v1.Add("default", new[] { 0.1f, 0.2f, 0.3f });
 
         // Act & Assert
-        Assert.Equal(new[] { 0.1f, 0.2f, 0.3f }, v1["default"]);
+        Assert.Equal(new[] { 0.1f, 0.2f, 0.3f }, v1["default"].Cast<float>());
     }
 
     [Fact]
