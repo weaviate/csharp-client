@@ -236,6 +236,7 @@ public class DataClient<TData>
         await _client.RestClient.ReferenceDelete(_collectionName, from, fromProperty, to);
     }
 
+    // TODO Make public
     internal async Task<DeleteManyResult> DeleteMany(
         Filter where,
         bool dryRun = false,

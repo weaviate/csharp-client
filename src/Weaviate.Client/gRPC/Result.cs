@@ -163,8 +163,21 @@ internal partial class WeaviateGrpcClient
         };
     }
 
+    private static (
+        WeaviateResult result,
+        Models.GroupByResult group,
+        bool isGroups
+    ) BuildCombinedResult(string collectionName, SearchReply? reply)
+    {
+        var groups = BuildGroupByResult(collectionName, reply);
+        return (BuildResult(collectionName, reply), groups, groups != Models.GroupByResult.Empty);
+    }
+
     internal static WeaviateResult BuildResult(string collection, SearchReply? reply)
     {
+        if (reply?.Results == null || reply.Results.Count == 0)
+            return WeaviateResult.Empty;
+
         return new WeaviateResult
         {
             Objects =
