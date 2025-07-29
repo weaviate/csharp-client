@@ -80,14 +80,16 @@ public partial class CollectionClient<TData>
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var page = await _client.GrpcClient.FetchObjects(
-                _collectionName,
-                limit: cacheSize,
-                metadata: metadata,
-                fields: fields,
-                reference: references,
-                after: cursor
-            );
+            var page = (
+                await _client.GrpcClient.FetchObjects(
+                    _collectionName,
+                    limit: cacheSize,
+                    metadata: metadata,
+                    fields: fields,
+                    reference: references,
+                    after: cursor
+                )
+            ).result;
 
             if (!page.Objects.Any())
             {

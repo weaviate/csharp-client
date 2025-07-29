@@ -14,7 +14,7 @@ public static partial class Configure
         public class VectorConfigBuilder(VectorizerConfig Config)
         {
             public VectorConfig New(
-                string name,
+                string name = "default",
                 VectorIndexConfig? indexConfig = null,
                 params string[] properties
             ) =>
@@ -32,7 +32,7 @@ public static partial class Configure
             new(new Vectorizer.Img2VecNeural { ImageFields = imageFields });
 
         public static VectorConfigBuilder Text2VecContextionary(
-            bool? vectorizeCollectionName = null
+            bool? vectorizeCollectionName = false
         ) =>
             new(
                 new Vectorizer.Text2VecContextionary()
