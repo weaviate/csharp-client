@@ -12,26 +12,6 @@ public partial record WeaviateResult : IEnumerable<WeaviateObject>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public partial class NamedVector<T> : List<T>
-{
-    public NamedVector(IEnumerable<T> value)
-        : base(value) { }
-}
-
-public partial class NamedVector : NamedVector<float>
-{
-    public NamedVector(IEnumerable<float> value)
-        : base(value) { }
-}
-
-public partial class NamedVectors : Dictionary<string, NamedVector>
-{
-    public void Add(string name, params float[] values)
-    {
-        Add(name, new NamedVector(values));
-    }
-}
-
 public partial record WeaviateObject
 {
     public Guid? ID { get; set; }
@@ -48,7 +28,7 @@ public partial record WeaviateObject
     public IDictionary<string, IList<WeaviateObject>> References { get; set; } =
         new Dictionary<string, IList<WeaviateObject>>();
 
-    public NamedVectors Vectors { get; set; } = new NamedVectors();
+    public VectorContainer Vectors { get; set; } = new VectorContainer();
 }
 
 public static class WeaviateObjectExtensions

@@ -65,7 +65,7 @@ public partial class SearchTests : IntegrationTests
         // Act
         var retrieved = await collectionClient.Query.NearText(
             "cake",
-            new GroupByRequest
+            groupBy: new GroupByRequest
             {
                 PropertyName = "value",
                 NumberOfGroups = 2,

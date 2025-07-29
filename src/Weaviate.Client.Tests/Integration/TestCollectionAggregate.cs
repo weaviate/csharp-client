@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Weaviate.Client.Models;
-using Xunit;
 
 namespace Weaviate.Client.Tests.Integration;
 
@@ -270,7 +265,7 @@ public partial class AggregatesTests : IntegrationTests
         Assert.True(obj.Vectors.ContainsKey("default"));
         await collectionClient.Data.Insert(new { text = text2 });
 
-        var nearVector = obj.Vectors["default"].ToArray();
+        var nearVector = obj.Vectors["default"].Cast<float>().ToArray();
         var metrics = new[]
         {
             Metrics
@@ -283,7 +278,7 @@ public partial class AggregatesTests : IntegrationTests
         if (option.ContainsKey("objectLimit"))
         {
             result = await collectionClient.Aggregate.NearVector(
-                nearVector,
+                nearVector.ToVectorData(),
                 metrics: metrics,
                 limit: Convert.ToUInt32(option["objectLimit"])
             );
@@ -291,7 +286,7 @@ public partial class AggregatesTests : IntegrationTests
         else if (option.ContainsKey("certainty"))
         {
             result = await collectionClient.Aggregate.NearVector(
-                nearVector,
+                nearVector.ToVectorData(),
                 metrics: metrics,
                 certainty: Convert.ToDouble(option["certainty"])
             );
@@ -299,7 +294,7 @@ public partial class AggregatesTests : IntegrationTests
         else if (option.ContainsKey("distance"))
         {
             result = await collectionClient.Aggregate.NearVector(
-                nearVector,
+                nearVector.ToVectorData(),
                 metrics: metrics,
                 distance: Convert.ToDouble(option["distance"])
             );

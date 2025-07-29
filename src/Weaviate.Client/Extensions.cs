@@ -295,6 +295,18 @@ public static class WeaviateExtensions
         };
     }
 
+    public static VectorData<T> ToVectorData<T>(this IEnumerable<T> values)
+        where T : struct
+    {
+        return new(values);
+    }
+
+    public static MultiVectorData<T> ToVectorData<T>(this IEnumerable<T[]> values)
+        where T : struct
+    {
+        return new(values);
+    }
+
     internal static IEnumerable<T> FromByteString<T>(this Google.Protobuf.ByteString byteString)
         where T : struct
     {
@@ -362,10 +374,95 @@ public static class WeaviateExtensions
         return stream;
     }
 
-    internal static Google.Protobuf.ByteString ToByteString<T>(this IEnumerable<T> items)
+    internal static Stream ToStream<T>(this IEnumerable<T[]> items)
         where T : struct
     {
-        using var stream = items.ToStream();
+        var stream = new MemoryStream();
+
+        using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true))
+        {
+            short dimensions = (short)(items.FirstOrDefault()?.Length ?? 0);
+            writer.Write(dimensions);
+            if (dimensions == 0)
+            {
+                throw new ArgumentException("dimension cannot be zero.");
+            }
+
+            foreach (var value in items.SelectMany(array => array))
+            {
+                switch (value)
+                {
+                    case long v:
+                        writer.Write(v);
+                        break;
+                    case int v:
+                        writer.Write(v);
+                        break;
+                    case double v:
+                        writer.Write(v);
+                        break;
+                    case float v:
+                        writer.Write(v);
+                        break;
+                    case Guid v:
+                        writer.Write(v.ToByteArray());
+                        break;
+                }
+            }
+            writer.Flush();
+        }
+
+        stream.Seek(0, SeekOrigin.Begin); // Reset the stream position to the beginning
+
+        return stream;
+    }
+
+    internal static Google.Protobuf.ByteString ToByteString(this IVectorData vector)
+    {
+        if (vector is null || vector.Count == 0)
+        {
+            return Google.Protobuf.ByteString.Empty;
+        }
+
+        return vector.ValueType switch
+        {
+            Type t when t == typeof(float) => ToByteString(vector as IEnumerable<float>),
+            Type t when t == typeof(double) => ToByteString(vector as IEnumerable<double>),
+            Type t when t == typeof(int) => ToByteString(vector as IEnumerable<int>),
+            Type t when t == typeof(long) => ToByteString(vector as IEnumerable<long>),
+            Type t when t == typeof(float[]) => ToByteString(vector as IEnumerable<float[]>),
+            Type t when t == typeof(double[]) => ToByteString(vector as IEnumerable<double[]>),
+            Type t when t == typeof(int[]) => ToByteString(vector as IEnumerable<int[]>),
+            Type t when t == typeof(long[]) => ToByteString(vector as IEnumerable<long[]>),
+            _ => throw new NotSupportedException(
+                $"The type '{vector.ValueType.FullName}' is not supported by ToByteString."
+            ),
+        };
+    }
+
+    internal static Google.Protobuf.ByteString ToByteString<T>(this IEnumerable<T[]>? items)
+        where T : struct
+    {
+        using var stream = items?.ToStream();
+
+        if (stream is null || stream.Length == 0)
+        {
+            return Google.Protobuf.ByteString.Empty;
+        }
+
+        return Google.Protobuf.ByteString.FromStream(stream);
+    }
+
+    internal static Google.Protobuf.ByteString ToByteString<T>(this IEnumerable<T>? items)
+        where T : struct
+    {
+        using var stream = items?.ToStream();
+
+        if (stream is null || stream.Length == 0)
+        {
+            return Google.Protobuf.ByteString.Empty;
+        }
+
         return Google.Protobuf.ByteString.FromStream(stream);
     }
 

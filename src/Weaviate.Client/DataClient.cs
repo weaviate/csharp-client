@@ -20,7 +20,7 @@ public class DataClient<TData>
     public async Task<Guid> Insert(
         TData data,
         Guid? id = null,
-        NamedVectors? vectors = null,
+        VectorContainer? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         string? tenant = null
     )
@@ -52,7 +52,7 @@ public class DataClient<TData>
     public delegate void InsertDelegate(
         TData data,
         Guid? id = null,
-        NamedVectors? vectors = null,
+        VectorContainer? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         string? tenant = null
     );
@@ -104,6 +104,11 @@ public class DataClient<TData>
                             {
                                 Name = v.Key,
                                 VectorBytes = v.Value.ToByteString(),
+                                Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
+                                    v.Value.ValueType
+                                )
+                                    ? V1.Vectors.Types.VectorType.MultiFp32
+                                    : V1.Vectors.Types.VectorType.SingleFp32,
                             })
                         );
                     }
@@ -150,7 +155,7 @@ public class DataClient<TData>
             InsertDelegate _inserter = (
                 TData data,
                 Guid? id = null,
-                NamedVectors? vectors = null,
+                VectorContainer? vectors = null,
                 IEnumerable<ObjectReference>? references = null,
                 string? tenant = null
             ) =>
