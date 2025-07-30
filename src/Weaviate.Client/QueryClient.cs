@@ -2,6 +2,27 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+public interface IHybridVector
+{
+    // This interface is used to mark hybrid vectors, which can be either near vector or near text.
+    // It allows for polymorphic behavior in the Hybrid methods.
+}
+
+public record HybridNearVector(
+    VectorContainer? Vector,
+    float? Distance = null,
+    float? Certainty = null,
+    string? TargetVector = null
+) : IHybridVector { };
+
+public record HybridNearText(
+    string Query,
+    float? Distance = null,
+    float? Certainty = null,
+    Move? MoveTo = null,
+    Move? MoveAway = null
+) : IHybridVector;
+
 public class QueryClient<TData>
 {
     private readonly CollectionClient<TData> _collectionClient;
@@ -235,7 +256,6 @@ public class QueryClient<TData>
     public async Task<WeaviateResult> Hybrid(
         string? query,
         float? alpha = null,
-        VectorContainer? vector = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
@@ -249,13 +269,13 @@ public class QueryClient<TData>
         MetadataQuery? metadata = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null
-    ) =>
-        (
+    )
+    {
+        return (
             await _client.GrpcClient.SearchHybrid(
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
-                vector: vector,
                 queryProperties: queryProperties,
                 fusionType: fusionType,
                 maxVectorDistance: maxVectorDistance,
@@ -271,12 +291,12 @@ public class QueryClient<TData>
                 returnReferences: returnReferences
             )
         ).result;
+    }
 
-    public async Task<GroupByResult> Hybrid(
+    public async Task<WeaviateResult> Hybrid<TVector>(
         string? query,
-        Models.GroupByRequest groupBy,
+        TVector? vector = null,
         float? alpha = null,
-        VectorContainer? vector = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
@@ -290,13 +310,63 @@ public class QueryClient<TData>
         MetadataQuery? metadata = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null
-    ) =>
-        (
+    )
+        where TVector : class, IHybridVector
+    {
+        return (
             await _client.GrpcClient.SearchHybrid(
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
-                vector: vector,
+                vector: vector as VectorContainer,
+                nearVector: vector as HybridNearVector,
+                nearText: vector as HybridNearText,
+                queryProperties: queryProperties,
+                fusionType: fusionType,
+                maxVectorDistance: maxVectorDistance,
+                limit: limit,
+                offset: offset,
+                bm25Operator: bm25Operator,
+                autoLimit: autoLimit,
+                filters: filters,
+                rerank: rerank,
+                targetVector: targetVector,
+                metadata: metadata,
+                fields: returnProperties,
+                returnReferences: returnReferences
+            )
+        ).result;
+    }
+
+    public async Task<GroupByResult> Hybrid<TVector>(
+        string? query,
+        Models.GroupByRequest groupBy,
+        float? alpha = null,
+        TVector? vector = null,
+        string[]? queryProperties = null,
+        HybridFusion? fusionType = null,
+        float? maxVectorDistance = null,
+        uint? limit = null,
+        uint? offset = null,
+        object? bm25Operator = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        object? rerank = null,
+        string? targetVector = null,
+        MetadataQuery? metadata = null,
+        string[]? returnProperties = null,
+        IList<QueryReference>? returnReferences = null
+    )
+        where TVector : class, IHybridVector
+    {
+        return (
+            await _client.GrpcClient.SearchHybrid(
+                _collectionClient.Name,
+                query: query,
+                alpha: alpha,
+                vector: vector as VectorContainer,
+                nearVector: vector as HybridNearVector,
+                nearText: vector as HybridNearText,
                 queryProperties: queryProperties,
                 fusionType: fusionType,
                 maxVectorDistance: maxVectorDistance,
@@ -313,6 +383,48 @@ public class QueryClient<TData>
                 returnReferences: returnReferences
             )
         ).group;
+    }
 
+    public async Task<GroupByResult> Hybrid(
+        string? query,
+        Models.GroupByRequest groupBy,
+        float? alpha = null,
+        string[]? queryProperties = null,
+        HybridFusion? fusionType = null,
+        float? maxVectorDistance = null,
+        uint? limit = null,
+        uint? offset = null,
+        object? bm25Operator = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        object? rerank = null,
+        string? targetVector = null,
+        MetadataQuery? metadata = null,
+        string[]? returnProperties = null,
+        IList<QueryReference>? returnReferences = null
+    )
+    {
+        return (
+            await _client.GrpcClient.SearchHybrid(
+                _collectionClient.Name,
+                query: query,
+                alpha: alpha,
+                queryProperties: queryProperties,
+                fusionType: fusionType,
+                maxVectorDistance: maxVectorDistance,
+                limit: limit,
+                offset: offset,
+                bm25Operator: bm25Operator,
+                autoLimit: autoLimit,
+                filters: filters,
+                groupBy: groupBy,
+                rerank: rerank,
+                targetVector: targetVector,
+                metadata: metadata,
+                fields: returnProperties,
+                returnReferences: returnReferences
+            )
+        ).group;
+    }
     #endregion
 }

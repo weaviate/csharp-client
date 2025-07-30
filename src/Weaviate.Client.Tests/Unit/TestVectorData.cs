@@ -7,16 +7,18 @@ public class VectorDataTests
     [Fact]
     public void VectorData_Create_SingleValues()
     {
-        var vector = VectorData.Create(1, 2, 3);
+        var vectorc = VectorData.Create(1, 2, 3);
+        var vector = vectorc[string.Empty] as VectorData<int>;
         Assert.IsType<VectorData<int>>(vector);
-        Assert.Equal(new[] { 1, 2, 3 }, vector);
+        Assert.Equal(new[] { 1, 2, 3 }, vector.Cast<int>());
         Assert.Equal(typeof(int), vector.ValueType);
     }
 
     [Fact]
     public void VectorData_Create_ArrayValues()
     {
-        var vector = VectorData.Create(new[] { 1, 2 }, new[] { 3, 4 });
+        var vectorc = VectorData.Create(new[] { 1, 2 }, new[] { 3, 4 });
+        var vector = vectorc[string.Empty] as MultiVectorData<int>;
         Assert.IsType<MultiVectorData<int>>(vector);
         Assert.Equal(2, vector.Count);
         Assert.Equal(new[] { 1, 2 }, vector[0]);

@@ -132,16 +132,15 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    private static void BuildNearText(
+    private static NearTextSearch BuildNearText(
         string query,
         double? distance,
         double? certainty,
-        SearchRequest request,
         Move? moveTo,
         Move? moveAway
     )
     {
-        request.NearText = new NearTextSearch
+        var nearText = new NearTextSearch
         {
             Query = { query },
             // Targets = null,
@@ -152,7 +151,7 @@ internal partial class WeaviateGrpcClient
         {
             var uuids = moveTo.Objects is null ? [] : moveTo.Objects.Select(x => x.ToString());
             var concepts = moveTo.Concepts is null ? new string[] { } : moveTo.Concepts;
-            request.NearText.MoveTo = new NearTextSearch.Types.Move
+            nearText.MoveTo = new NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
                 Concepts = { concepts },
@@ -164,7 +163,7 @@ internal partial class WeaviateGrpcClient
         {
             var uuids = moveAway.Objects is null ? [] : moveAway.Objects.Select(x => x.ToString());
             var concepts = moveAway.Concepts is null ? new string[] { } : moveAway.Concepts;
-            request.NearText.MoveAway = new NearTextSearch.Types.Move
+            nearText.MoveAway = new NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
                 Concepts = { concepts },
@@ -174,28 +173,29 @@ internal partial class WeaviateGrpcClient
 
         if (distance is not null)
         {
-            request.NearText.Distance = distance.Value;
+            nearText.Distance = distance.Value;
         }
 
         if (certainty.HasValue)
         {
-            request.NearText.Certainty = certainty.Value;
+            nearText.Certainty = certainty.Value;
         }
+
+        return nearText;
     }
 
-    private static void BuildNearVector(
+    private static NearVector BuildNearVector(
         VectorContainer vector,
         double? distance,
         double? certainty,
-        string? targetVector,
-        SearchRequest request
+        string? targetVector
     )
     {
-        request.NearVector = new() { Vectors = { } };
+        NearVector nearVector = new() { Vectors = { } };
 
         foreach (var v in vector)
         {
-            request.NearVector.Vectors.Add(
+            nearVector.Vectors.Add(
                 new Vectors
                 {
                     Name = v.Key,
@@ -211,22 +211,24 @@ internal partial class WeaviateGrpcClient
 
         if (distance.HasValue)
         {
-            request.NearVector.Distance = distance.Value;
+            nearVector.Distance = distance.Value;
         }
 
         if (certainty.HasValue)
         {
-            request.NearVector.Certainty = certainty.Value;
+            nearVector.Certainty = certainty.Value;
         }
 
         if (!string.IsNullOrEmpty(targetVector))
         {
-            request.NearVector.Targets = new()
+            nearVector.Targets = new()
             {
                 Combination = CombinationMethod.Unspecified,
                 TargetVectors = { targetVector },
             };
         }
+
+        return nearVector;
     }
 
     private static void BuildBM25(SearchRequest request, string query, string[]? properties = null)
@@ -244,6 +246,8 @@ internal partial class WeaviateGrpcClient
         string? query = null,
         float? alpha = null,
         VectorContainer? vector = null,
+        HybridNearVector? nearVector = null,
+        HybridNearText? nearText = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
@@ -251,8 +255,6 @@ internal partial class WeaviateGrpcClient
         string? targetVector = null
     )
     {
-        // TODO HybridVectorType: vector is a Union of either VectorContainer, or HybridNearText, or HybridNearVector
-
         request.HybridSearch = new Hybrid();
 
         if (!string.IsNullOrEmpty(query))
@@ -278,7 +280,7 @@ internal partial class WeaviateGrpcClient
             request.HybridSearch.Alpha = alpha.Value;
         }
 
-        if (vector is not null)
+        if (vector is not null && nearText is null && nearVector is null)
         {
             foreach (var v in vector)
             {
@@ -296,6 +298,33 @@ internal partial class WeaviateGrpcClient
                 );
             }
         }
+
+        if (vector is null && nearText is not null && nearVector is null)
+        {
+            request.HybridSearch.NearText = BuildNearText(
+                nearText.Query,
+                nearText.Distance,
+                nearText.Certainty,
+                nearText.MoveTo,
+                nearText.MoveAway
+            );
+        }
+
+        if (
+            vector is null
+            && nearText is null
+            && nearVector is not null
+            && nearVector.Vector is not null
+        )
+        {
+            request.HybridSearch.NearVector = BuildNearVector(
+                nearVector.Vector,
+                nearVector.Distance,
+                nearVector.Certainty,
+                nearVector.TargetVector
+            );
+        }
+
         if (queryProperties is not null)
         {
             request.HybridSearch.Properties.AddRange(queryProperties);
@@ -375,7 +404,7 @@ internal partial class WeaviateGrpcClient
             reference: reference
         );
 
-        BuildNearVector(vector, distance, certainty, targetVector, request);
+        request.NearVector = BuildNearVector(vector, distance, certainty, targetVector);
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
@@ -410,7 +439,7 @@ internal partial class WeaviateGrpcClient
             reference: reference
         );
 
-        BuildNearText(query, distance, certainty, request, moveTo, moveAway);
+        request.NearText = BuildNearText(query, distance, certainty, moveTo, moveAway);
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
@@ -457,6 +486,8 @@ internal partial class WeaviateGrpcClient
         string? query = null,
         float? alpha = null,
         VectorContainer? vector = null,
+        HybridNearVector? nearVector = null,
+        HybridNearText? nearText = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
@@ -473,7 +504,10 @@ internal partial class WeaviateGrpcClient
         IList<QueryReference>? returnReferences = null
     )
     {
-        if (vector is null && string.IsNullOrEmpty(query))
+        if (
+            !(vector is not null || nearVector is not null || nearText is not null)
+            && string.IsNullOrEmpty(query)
+        )
         {
             throw new ArgumentException(
                 "Either vector or query must be provided for hybrid search."
@@ -497,6 +531,8 @@ internal partial class WeaviateGrpcClient
             query,
             alpha,
             vector,
+            nearVector,
+            nearText,
             queryProperties,
             fusionType,
             maxVectorDistance,
