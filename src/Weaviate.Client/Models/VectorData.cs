@@ -12,14 +12,14 @@ public interface IVectorData<T> : IVectorData { }
 public static class VectorData
 {
     // Create vector data for simple struct values
-    public static VectorData<T> Create<T>(params T[] values)
+    public static VectorContainer Create<T>(params T[] values)
         where T : struct
     {
         return new VectorData<T>(values);
     }
 
     // Create vector data for array values
-    public static MultiVectorData<T> Create<T>(params T[][] values)
+    public static VectorContainer Create<T>(params T[][] values)
         where T : struct
     {
         return new MultiVectorData<T>(values);
@@ -92,7 +92,7 @@ public class MultiVectorData<T> : List<T[]>, IVectorData<T[]>
     }
 }
 
-public class VectorContainer : Dictionary<string, IVectorData>
+public class VectorContainer : Dictionary<string, IVectorData>, IHybridVector
 {
     public void Add<T>(string name, params T[] values)
         where T : struct
