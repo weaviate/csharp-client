@@ -36,7 +36,7 @@ public partial class SearchTests : IntegrationTests
                 alpha: 1,
                 query: "name",
                 fusionType: fusionType,
-                vector: VectorData.Create(objs.First().Vectors["default"])
+                vectors: VectorData.Create(objs.First().Vectors["default"])
             )
         ).Objects;
 
@@ -97,7 +97,7 @@ public partial class SearchTests : IntegrationTests
         var objs = await collection.Query.Hybrid(
             alpha: 1,
             query: query,
-            vector: VectorData.Create(obj.Vectors["default"])
+            vectors: VectorData.Create(obj.Vectors["default"])
         );
 
         Assert.Equal(2, objs.Count());
@@ -192,7 +192,7 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
-                vector: new HybridNearVector((VectorData<float>)obj.Vectors["default"])
+                vectors: new HybridNearVector((VectorData<float>)obj.Vectors["default"])
             )
         ).Objects;
 
@@ -201,7 +201,7 @@ public partial class SearchTests : IntegrationTests
 
         var nearVec = (
             await collection.Query.NearVector(
-                vector: VectorData.Create(obj.Vectors["default"]),
+                vector: VectorData.Create("default", obj.Vectors["default"]),
                 metadata: MetadataOptions.Distance
             )
         ).Objects;
@@ -210,7 +210,7 @@ public partial class SearchTests : IntegrationTests
 
         var hybridObjs2 = await collection.Query.Hybrid(
             query: null,
-            vector: new HybridNearVector(
+            vectors: new HybridNearVector(
                 (VectorData<float>)obj.Vectors["default"],
                 Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
             ),
@@ -248,8 +248,8 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
-                vector: VectorData.Create(obj.Vectors["text"]),
-                targetVector: "text"
+                vectors: new HybridNearVector(VectorData.Create("text", obj.Vectors["text"])),
+                targetVector: ["text"]
             )
         ).Objects;
 
@@ -258,8 +258,8 @@ public partial class SearchTests : IntegrationTests
 
         var nearVec = (
             await collection.Query.NearVector(
-                vector: VectorData.Create(obj.Vectors["text"]),
-                targetVector: "text",
+                vector: VectorData.Create("text", obj.Vectors["text"]),
+                targetVector: ["text"],
                 metadata: MetadataOptions.Distance
             )
         ).Objects;
@@ -269,11 +269,11 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs2 = (
             await collection.Query.Hybrid(
                 query: null,
-                vector: new HybridNearVector(
-                    (VectorData<float>)obj.Vectors["text"],
+                vectors: new HybridNearVector(
+                    VectorData.Create("text", obj.Vectors["text"]),
                     Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
                 ),
-                targetVector: "text",
+                targetVector: ["text"],
                 metadata: MetadataOptions.Full
             )
         ).Objects;
@@ -296,7 +296,10 @@ public partial class SearchTests : IntegrationTests
         await collection.Data.Insert(new { text = "different concept" });
 
         var hybridObjs = (
-            await collection.Query.Hybrid(query: null, vector: new HybridNearText("banana pudding"))
+            await collection.Query.Hybrid(
+                query: null,
+                vectors: new HybridNearText("banana pudding")
+            )
         ).Objects;
 
         Assert.Equal(uuidBananaPudding, hybridObjs.First().ID);
@@ -305,7 +308,7 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs2 = (
             await collection.Query.Hybrid(
                 query: null,
-                vector: new HybridNearText(
+                vectors: new HybridNearText(
                     "banana",
                     MoveTo: new Move(force: 0.1f, concepts: ["pudding"]),
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
@@ -337,8 +340,8 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
-                vector: new HybridNearText("banana pudding"),
-                targetVector: "text"
+                vectors: new HybridNearText("banana pudding"),
+                targetVector: ["text"]
             )
         ).Objects;
 
@@ -348,16 +351,265 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs2 = (
             await collection.Query.Hybrid(
                 query: null,
-                vector: new HybridNearText(
+                vectors: new HybridNearText(
                     "banana",
                     MoveTo: new Move(force: 0.1f, concepts: ["pudding"]),
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
                 ),
-                targetVector: "text",
+                targetVector: ["text"],
                 metadata: MetadataOptions.Full
             )
         ).Objects;
 
         Assert.Equal(uuidBananaPudding, hybridObjs2.First().ID);
     }
+
+    [Fact]
+    public async Task Test_Vector_Per_Target()
+    {
+        var collection = await CollectionFactory(
+            properties: Array.Empty<Property>(),
+            vectorConfig: new[]
+            {
+                Configure.Vectors.SelfProvided("first"),
+                Configure.Vectors.SelfProvided("second"),
+            }
+        );
+
+        var vector = new VectorContainer
+        {
+            { "first", new float[] { 1, 0 } },
+            { "second", new float[] { 1, 0, 0 } },
+        };
+
+        var uuid1 = await collection.Data.Insert(
+            new { },
+            vectors: new Dictionary<string, float[]>
+            {
+                { "first", new float[] { 1, 0 } },
+                { "second", new float[] { 1, 0, 0 } },
+            }
+        );
+        var uuid2 = await collection.Data.Insert(
+            new { },
+            vectors: new Dictionary<string, float[]>
+            {
+                { "first", new float[] { 0, 1 } },
+                { "second", new float[] { 0, 0, 1 } },
+            }
+        );
+
+        var objs = (
+            await collection.Query.Hybrid(
+                query: null,
+                vectors: new HybridNearVector(vector),
+                targetVector: ["first", "second"]
+            )
+        ).ToList();
+
+        Assert.Equal(2, objs.Count);
+        Assert.Equal(uuid1, objs[0].ID);
+        Assert.Equal(uuid2, objs[1].ID);
+
+        objs = (
+            await collection.Query.Hybrid(
+                query: null,
+                vectors: new HybridNearVector(vector, Distance: 0.1f),
+                targetVector: new[] { "first", "second" }
+            )
+        ).Objects.ToList();
+
+        Assert.Single(objs);
+        Assert.Equal(uuid1, objs[0].ID);
+    }
+
+    // TODO Is Second a list of vectors or a multivector?
+    // TODO Hybrid doesn't like that multiple vectors are passed in. How to handle this?
+    // public static IEnumerable<object[]> SameTargetVectorMultipleInputCombinationsData =>
+    //     new List<object[]>
+    //     {
+    //         new object[]
+    //         {
+    //             new VectorContainer
+    //             {
+    //                 { "first", new float[] { 0, 1 } },
+    //                 { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
+    //             },
+    //             new[] { "first", "second" },
+    //         },
+    //         new object[]
+    //         {
+    //             new VectorContainer
+    //             {
+    //                 { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
+    //                 { "second", new float[] { 1, 0, 0 } },
+    //             },
+    //             new[] { "first", "second" },
+    //         },
+    //         new object[]
+    //         {
+    //             new VectorContainer
+    //             {
+    //                 { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
+    //                 { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
+    //             },
+    //             new[] { "first", "second" },
+    //         },
+    //         new object[]
+    //         {
+    //             new HybridNearVector(
+    //                 new VectorContainer
+    //                 {
+    //                     { "first", new float[] { 0, 1 } },
+    //                     { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
+    //                 }
+    //             ),
+    //             new[] { "first", "second" },
+    //         },
+    //         new object[]
+    //         {
+    //             new HybridNearVector(
+    //                 new VectorContainer
+    //                 {
+    //                     { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
+    //                     { "second", new float[] { 1, 0, 0 } },
+    //                 }
+    //             ),
+    //             new[] { "first", "second" },
+    //         },
+    //         new object[]
+    //         {
+    //             new HybridNearVector(
+    //                 new VectorContainer
+    //                 {
+    //                     { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
+    //                     { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
+    //                 }
+    //             ),
+    //             new[] { "first", "second" },
+    //         },
+    //     };
+
+    // [Theory]
+    // [MemberData(nameof(SameTargetVectorMultipleInputCombinationsData))]
+    // public async Task Test_Same_Target_Vector_Multiple_Input_Combinations(
+    //     IHybridVectorInput nearVector,
+    //     string[] targetVector
+    // )
+    // {
+    //     var collection = await CollectionFactory(
+    //         properties: Array.Empty<Property>(),
+    //         vectorConfig: new[]
+    //         {
+    //             Configure.Vectors.SelfProvided("first"),
+    //             Configure.Vectors.SelfProvided("second"),
+    //         }
+    //     );
+
+    //     var uuid1 = await collection.Data.Insert(
+    //         new { },
+    //         vectors: new()
+    //         {
+    //             { "first", new float[] { 1, 0 } },
+    //             { "second", new float[] { 0, 1, 0 } },
+    //         }
+    //     );
+    //     var uuid2 = await collection.Data.Insert(
+    //         new { },
+    //         vectors: new()
+    //         {
+    //             { "first", new float[] { 0, 1 } },
+    //             { "second", new float[] { 1, 0, 0 } },
+    //         }
+    //     );
+
+    //     var objs = (
+    //         await collection.Query.Hybrid(
+    //             query: null,
+    //             vector: nearVector,
+    //             targetVector: targetVector,
+    //             metadata: MetadataOptions.Full
+    //         )
+    //     ).ToList();
+
+    //     var uuids = objs.Select(o => o.ID).OrderBy(x => x).ToHashSet();
+    //     var expected = new HashSet<Guid?> { uuid1, uuid2 };
+    //     Assert.Equal(expected, uuids);
+    // }
+
+    [Fact]
+    public async Task Test_Vector_Distance()
+    {
+        var collection = await CollectionFactory(
+            properties: new[] { Property.Text("name") },
+            vectorConfig: Configure.Vectors.Text2VecContextionary().New("default")
+        );
+
+        var uuid1 = await collection.Data.Insert(new { }, vectors: new float[] { 1, 0, 0 });
+        await collection.Data.Insert(new { }, vectors: new float[] { 0, 1, 0 });
+        await collection.Data.Insert(new { }, vectors: new float[] { 0, 0, 1 });
+
+        var objs = (
+            await collection.Query.Hybrid(
+                "name",
+                vectors: VectorData.Create("default", 1f, 0f, 0f),
+                alpha: 0.7f
+            )
+        ).ToList();
+        Assert.Equal(3, objs.Count);
+        Assert.Equal(uuid1, objs[0].ID);
+
+        objs = (
+            await collection.Query.Hybrid(
+                "name",
+                vectors: VectorData.Create("default", 1f, 0f, 0f),
+                maxVectorDistance: 0.1f,
+                alpha: 0.7f
+            )
+        ).ToList();
+        Assert.Single(objs);
+        Assert.Equal(uuid1, objs[0].ID);
+    }
+
+    // [Fact]
+    // public async Task Test_Hybrid_BM25_Operators()
+    // {
+    //     var collection = await CollectionFactory(
+    //         properties: new[] { Property.Text("name") },
+    //         vectorConfig: Configure.Vectors.SelfProvided()
+    //     );
+
+    //     var uuid1 = await collection.Data.Insert(
+    //         new { name = "banana one" },
+    //         vectors: new float[] { 1, 0, 0, 0 }
+    //     );
+    //     var uuid2 = await collection.Data.Insert(
+    //         new { name = "banana two" },
+    //         vectors: new float[] { 0, 1, 0, 0 }
+    //     );
+    //     var uuid3 = await collection.Data.Insert(
+    //         new { name = "banana three" },
+    //         vectors: new float[] { 0, 1, 0, 0 }
+    //     );
+    //     var uuid4 = await collection.Data.Insert(
+    //         new { name = "banana four" },
+    //         vectors: new float[] { 1, 0, 0, 0 }
+    //     );
+
+    //     var objs = (
+    //         await collection.Query.Hybrid(
+    //             "banana two",
+    //             vector: null,
+    //             alpha: 0.0f,
+    //             bm25Operator: BM25Operator.Or(minimumMatch: 1)
+    //         )
+    //     ).Objects.ToList();
+
+    //     Assert.Equal(4, objs.Count);
+    //     Assert.Equal(uuid2, objs[0].ID);
+    //     var rest = objs.Skip(1).Select(o => o.ID).OrderBy(x => x).ToList();
+    //     var expected = new List<Guid> { uuid1, uuid3, uuid4 };
+    //     expected.Sort();
+    //     Assert.Equal(expected, rest);
+    // }
 }

@@ -2,7 +2,7 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
-public interface IHybridVector
+public interface IHybridVectorInput
 {
     // This interface is used to mark hybrid vectors, which can be either near vector or near text.
     // It allows for polymorphic behavior in the Hybrid methods.
@@ -12,8 +12,8 @@ public record HybridNearVector(
     VectorContainer? Vector,
     float? Distance = null,
     float? Certainty = null,
-    string? TargetVector = null
-) : IHybridVector { };
+    string[]? TargetVector = null
+) : IHybridVectorInput { };
 
 public record HybridNearText(
     string Query,
@@ -21,7 +21,7 @@ public record HybridNearText(
     float? Certainty = null,
     Move? MoveTo = null,
     Move? MoveAway = null
-) : IHybridVector;
+) : IHybridVectorInput;
 
 public class QueryClient<TData>
 {
@@ -173,7 +173,7 @@ public class QueryClient<TData>
         string[]? fields = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null,
-        string? targetVector = null
+        string[]? targetVector = null
     ) =>
         (
             await _client.GrpcClient.SearchNearVector(
@@ -196,7 +196,7 @@ public class QueryClient<TData>
         float? certainty = null,
         uint? limit = null,
         string[]? fields = null,
-        string? targetVector = null,
+        string[]? targetVector = null,
         IList<QueryReference>? references = null,
         MetadataQuery? metadata = null
     ) =>
@@ -265,7 +265,7 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         object? rerank = null,
-        string? targetVector = null,
+        string[]? targetVector = null,
         MetadataQuery? metadata = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null
@@ -295,7 +295,7 @@ public class QueryClient<TData>
 
     public async Task<WeaviateResult> Hybrid<TVector>(
         string? query,
-        TVector? vector = null,
+        TVector vectors,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -306,21 +306,21 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         object? rerank = null,
-        string? targetVector = null,
+        string[]? targetVector = null,
         MetadataQuery? metadata = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null
     )
-        where TVector : class, IHybridVector
+        where TVector : class, IHybridVectorInput
     {
         return (
             await _client.GrpcClient.SearchHybrid(
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
-                vector: vector as VectorContainer,
-                nearVector: vector as HybridNearVector,
-                nearText: vector as HybridNearText,
+                vector: vectors as VectorContainer,
+                nearVector: vectors as HybridNearVector,
+                nearText: vectors as HybridNearText,
                 queryProperties: queryProperties,
                 fusionType: fusionType,
                 maxVectorDistance: maxVectorDistance,
@@ -342,7 +342,7 @@ public class QueryClient<TData>
         string? query,
         Models.GroupByRequest groupBy,
         float? alpha = null,
-        TVector? vector = null,
+        TVector? vectors = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
@@ -352,21 +352,21 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         object? rerank = null,
-        string? targetVector = null,
+        string[]? targetVector = null,
         MetadataQuery? metadata = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null
     )
-        where TVector : class, IHybridVector
+        where TVector : class, IHybridVectorInput
     {
         return (
             await _client.GrpcClient.SearchHybrid(
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
-                vector: vector as VectorContainer,
-                nearVector: vector as HybridNearVector,
-                nearText: vector as HybridNearText,
+                vector: vectors as VectorContainer,
+                nearVector: vectors as HybridNearVector,
+                nearText: vectors as HybridNearText,
                 queryProperties: queryProperties,
                 fusionType: fusionType,
                 maxVectorDistance: maxVectorDistance,
@@ -398,7 +398,7 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         object? rerank = null,
-        string? targetVector = null,
+        string[]? targetVector = null,
         MetadataQuery? metadata = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null
