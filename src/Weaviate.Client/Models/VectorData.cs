@@ -11,15 +11,37 @@ public interface IVectorData<T> : IVectorData { }
 
 public static class VectorData
 {
+    public static VectorContainer Create<T>(Dictionary<string, T[]> vectors)
+        where T : struct
+    {
+        var container = new VectorContainer();
+        foreach (var kvp in vectors)
+        {
+            container[kvp.Key] = (VectorData<T>)kvp.Value;
+        }
+        return container;
+    }
+
+    public static VectorContainer Create<T>(Dictionary<string, T[][]> vectors)
+        where T : struct
+    {
+        var container = new VectorContainer();
+        foreach (var kvp in vectors)
+        {
+            container[kvp.Key] = (MultiVectorData<T>)kvp.Value;
+        }
+        return container;
+    }
+
     // Create vector data for simple struct values
-    public static VectorContainer Create<T>(params T[] values)
+    public static VectorData<T> Create<T>(params T[] values)
         where T : struct
     {
         return new VectorData<T>(values);
     }
 
     // Create vector data for array values
-    public static VectorContainer Create<T>(params T[][] values)
+    public static MultiVectorData<T> Create<T>(params T[][] values)
         where T : struct
     {
         return new MultiVectorData<T>(values);
@@ -29,14 +51,14 @@ public static class VectorData
     public static VectorContainer Create<T>(string name, params T[] values)
         where T : struct
     {
-        return new VectorContainer() { { name, values } };
+        return new VectorContainer() { [name] = new VectorData<T>(values) };
     }
 
     // Create container with array values
     public static VectorContainer Create<T>(string name, params T[][] values)
         where T : struct
     {
-        return new VectorContainer() { { name, values } };
+        return new VectorContainer() { [name] = new MultiVectorData<T>(values) };
     }
 
     public static VectorContainer Create(IVectorData values) => Create("default", values);
@@ -63,11 +85,12 @@ public class VectorData<T> : List<T>, IVectorData<T>
 
     public static implicit operator VectorContainer(VectorData<T> vectorData)
     {
-        var container = new VectorContainer();
+        return VectorData.Create("default", vectorData);
+    }
 
-        container.Add(string.Empty, [.. vectorData]);
-
-        return container;
+    public static implicit operator VectorData<T>(T[] vectorData)
+    {
+        return new VectorData<T>(vectorData);
     }
 }
 
@@ -86,23 +109,78 @@ public class MultiVectorData<T> : List<T[]>, IVectorData<T[]>
 
     public static implicit operator VectorContainer(MultiVectorData<T> vectorData)
     {
-        var container = new VectorContainer();
-        container.Add(string.Empty, [.. vectorData]);
-        return container;
+        return VectorData.Create(vectorData);
+    }
+
+    public static implicit operator MultiVectorData<T>(T[][] vectorData)
+    {
+        return new MultiVectorData<T>(vectorData);
     }
 }
 
-public class VectorContainer : Dictionary<string, IVectorData>, IHybridVector
+public class VectorContainer : Dictionary<string, IVectorData>, IHybridVectorInput
 {
     public void Add<T>(string name, params T[] values)
         where T : struct
     {
-        base.Add(name, new VectorData<T>(values));
+        Add(name, new VectorData<T>(values));
     }
 
     public void Add<T>(string name, params T[][] values)
         where T : struct
     {
-        base.Add(name, new MultiVectorData<T>(values));
+        Add(name, new MultiVectorData<T>(values));
+    }
+
+    public void Add<T>(string name, VectorData<T> values)
+        where T : struct
+    {
+        base.Add(name, values);
+    }
+
+    public void Add<T>(string name, MultiVectorData<T> values)
+        where T : struct
+    {
+        base.Add(name, values);
+    }
+
+    public static implicit operator VectorContainer(Dictionary<string, float[]> vectorData)
+    {
+        return VectorData.Create(vectorData);
+    }
+
+    public static implicit operator VectorContainer(Dictionary<string, float[][]> vectorData)
+    {
+        return VectorData.Create(vectorData);
+    }
+
+    public static implicit operator VectorContainer(Dictionary<string, double[]> vectorData)
+    {
+        return VectorData.Create(vectorData);
+    }
+
+    public static implicit operator VectorContainer(Dictionary<string, double[][]> vectorData)
+    {
+        return VectorData.Create(vectorData);
+    }
+
+    public static implicit operator VectorContainer(float[] vectorData)
+    {
+        return VectorData.Create(vectorData);
+    }
+
+    public static implicit operator VectorContainer(float[][] vectorData)
+    {
+        return VectorData.Create(vectorData);
+    }
+
+    public static implicit operator VectorContainer(double[] vectorData)
+    {
+        return VectorData.Create(vectorData);
+    }
+
+    public static implicit operator VectorContainer(double[][] vectorData)
+    {
+        return VectorData.Create(vectorData);
     }
 }

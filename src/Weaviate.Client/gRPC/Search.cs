@@ -188,26 +188,21 @@ internal partial class WeaviateGrpcClient
         VectorContainer vector,
         double? distance,
         double? certainty,
-        string? targetVector
+        string[]? targetVector
     )
     {
         NearVector nearVector = new() { Vectors = { } };
 
-        foreach (var v in vector)
-        {
-            nearVector.Vectors.Add(
-                new Vectors
-                {
-                    Name = v.Key,
-                    Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
-                        v.Value.ValueType
-                    )
-                        ? Vectors.Types.VectorType.MultiFp32
-                        : Vectors.Types.VectorType.SingleFp32,
-                    VectorBytes = v.Value.ToByteString(),
-                }
-            );
-        }
+        nearVector.Vectors.Add(
+            vector.Select(v => new Vectors
+            {
+                Name = v.Key,
+                Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(v.Value.ValueType)
+                    ? Vectors.Types.VectorType.MultiFp32
+                    : Vectors.Types.VectorType.SingleFp32,
+                VectorBytes = v.Value.ToByteString(),
+            })
+        );
 
         if (distance.HasValue)
         {
@@ -219,7 +214,7 @@ internal partial class WeaviateGrpcClient
             nearVector.Certainty = certainty.Value;
         }
 
-        if (!string.IsNullOrEmpty(targetVector))
+        if (targetVector is not null && targetVector.Length > 0)
         {
             nearVector.Targets = new()
             {
@@ -252,7 +247,7 @@ internal partial class WeaviateGrpcClient
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
         object? bm25Operator = null,
-        string? targetVector = null
+        string[]? targetVector = null
     )
     {
         request.HybridSearch = new Hybrid();
@@ -266,7 +261,7 @@ internal partial class WeaviateGrpcClient
             alpha = 1.0f; // Default alpha if no query is provided
         }
 
-        if (!string.IsNullOrEmpty(targetVector))
+        if (targetVector is not null && targetVector.Length > 0)
         {
             request.HybridSearch.Targets = new()
             {
@@ -317,12 +312,89 @@ internal partial class WeaviateGrpcClient
             && nearVector.Vector is not null
         )
         {
-            request.HybridSearch.NearVector = BuildNearVector(
-                nearVector.Vector,
-                nearVector.Distance,
-                nearVector.Certainty,
-                nearVector.TargetVector
-            );
+            if (nearVector.Vector.Count == 1 && targetVector is null)
+            {
+                // If only one vector is provided, use it directly
+                var singleVector = nearVector.Vector.First();
+                request.HybridSearch.NearVector = new NearVector
+                {
+                    Vectors =
+                    {
+                        new Vectors
+                        {
+                            Name = singleVector.Key,
+                            Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
+                                singleVector.Value.ValueType
+                            )
+                                ? Vectors.Types.VectorType.MultiFp32
+                                : Vectors.Types.VectorType.SingleFp32,
+                            VectorBytes = singleVector.Value.ToByteString(),
+                        },
+                    },
+                };
+            }
+            else
+            {
+                List<VectorForTarget> vectorForTargetsTmp = new();
+                List<string> targetVectorTmp = new();
+
+                if (targetVector is not null && targetVector.Length > 0)
+                {
+                    targetVectorTmp.AddRange(targetVector);
+                }
+                else
+                {
+                    // If no target vector is specified, use the keys from nearVector
+                    targetVectorTmp.AddRange(
+                        nearVector.Vector.Keys.Where(tv => string.IsNullOrEmpty(tv) is false)
+                    );
+                }
+
+                foreach (var v in nearVector.Vector)
+                {
+                    vectorForTargetsTmp.Add(
+                        new()
+                        {
+                            Name = v.Key,
+                            Vectors =
+                            {
+                                new Vectors
+                                {
+                                    Name = v.Key,
+                                    Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
+                                        v.Value.ValueType
+                                    )
+                                        ? Vectors.Types.VectorType.MultiFp32
+                                        : Vectors.Types.VectorType.SingleFp32,
+                                    VectorBytes = v.Value.ToByteString(),
+                                },
+                            },
+                        }
+                    );
+                }
+
+                NearVector nv = new()
+                {
+                    VectorForTargets = { vectorForTargetsTmp },
+                    Targets = new()
+                    {
+                        Combination = CombinationMethod.Unspecified,
+                        TargetVectors = { targetVectorTmp },
+                    },
+                };
+
+                request.HybridSearch.NearVector = nv;
+            }
+
+            if (nearVector.Distance.HasValue)
+            {
+                request.HybridSearch.NearVector.Distance = nearVector.Distance.Value;
+            }
+
+            if (nearVector.Certainty.HasValue)
+            {
+                request.HybridSearch.NearVector.Certainty = nearVector.Certainty.Value;
+            }
         }
 
         if (queryProperties is not null)
@@ -387,7 +459,7 @@ internal partial class WeaviateGrpcClient
         GroupByRequest? groupBy = null,
         float? distance = null,
         float? certainty = null,
-        string? targetVector = null,
+        string[]? targetVector = null,
         uint? limit = null,
         string[]? fields = null,
         IList<QueryReference>? reference = null,
@@ -498,7 +570,7 @@ internal partial class WeaviateGrpcClient
         Filter? filters = null,
         GroupByRequest? groupBy = null,
         object? rerank = null,
-        string? targetVector = null,
+        string[]? targetVector = null,
         string[]? fields = null,
         MetadataQuery? metadata = null,
         IList<QueryReference>? returnReferences = null
