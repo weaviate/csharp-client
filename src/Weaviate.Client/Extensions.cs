@@ -417,7 +417,7 @@ public static class WeaviateExtensions
         return stream;
     }
 
-    internal static Google.Protobuf.ByteString ToByteString(this IVectorData vector)
+    internal static Google.Protobuf.ByteString ToByteString(this AbstractVectorData vector)
     {
         if (vector is null || vector.Count == 0)
         {

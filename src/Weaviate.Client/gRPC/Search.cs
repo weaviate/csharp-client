@@ -185,7 +185,7 @@ internal partial class WeaviateGrpcClient
     }
 
     private static NearVector BuildNearVector(
-        VectorContainer vector,
+        Models.Vectors vector,
         double? distance,
         double? certainty,
         string[]? targetVector
@@ -194,12 +194,12 @@ internal partial class WeaviateGrpcClient
         NearVector nearVector = new() { Vectors = { } };
 
         nearVector.Vectors.Add(
-            vector.Select(v => new Vectors
+            vector.Select(v => new V1.Vectors
             {
                 Name = v.Key,
                 Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(v.Value.ValueType)
-                    ? Vectors.Types.VectorType.MultiFp32
-                    : Vectors.Types.VectorType.SingleFp32,
+                    ? V1.Vectors.Types.VectorType.MultiFp32
+                    : V1.Vectors.Types.VectorType.SingleFp32,
                 VectorBytes = v.Value.ToByteString(),
             })
         );
@@ -240,7 +240,7 @@ internal partial class WeaviateGrpcClient
         SearchRequest request,
         string? query = null,
         float? alpha = null,
-        VectorContainer? vector = null,
+        Models.Vectors? vector = null,
         HybridNearVector? nearVector = null,
         HybridNearText? nearText = null,
         string[]? queryProperties = null,
@@ -280,14 +280,14 @@ internal partial class WeaviateGrpcClient
             foreach (var v in vector)
             {
                 request.HybridSearch.Vectors.Add(
-                    new Vectors
+                    new V1.Vectors
                     {
                         Name = v.Key,
                         Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
                             v.Value.ValueType
                         )
-                            ? Vectors.Types.VectorType.MultiFp32
-                            : Vectors.Types.VectorType.SingleFp32,
+                            ? V1.Vectors.Types.VectorType.MultiFp32
+                            : V1.Vectors.Types.VectorType.SingleFp32,
                         VectorBytes = v.Value.ToByteString(),
                     }
                 );
@@ -320,14 +320,14 @@ internal partial class WeaviateGrpcClient
                 {
                     Vectors =
                     {
-                        new Vectors
+                        new V1.Vectors
                         {
                             Name = singleVector.Key,
                             Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
                                 singleVector.Value.ValueType
                             )
-                                ? Vectors.Types.VectorType.MultiFp32
-                                : Vectors.Types.VectorType.SingleFp32,
+                                ? V1.Vectors.Types.VectorType.MultiFp32
+                                : V1.Vectors.Types.VectorType.SingleFp32,
                             VectorBytes = singleVector.Value.ToByteString(),
                         },
                     },
@@ -358,14 +358,14 @@ internal partial class WeaviateGrpcClient
                             Name = v.Key,
                             Vectors =
                             {
-                                new Vectors
+                                new V1.Vectors
                                 {
                                     Name = v.Key,
                                     Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
                                         v.Value.ValueType
                                     )
-                                        ? Vectors.Types.VectorType.MultiFp32
-                                        : Vectors.Types.VectorType.SingleFp32,
+                                        ? V1.Vectors.Types.VectorType.MultiFp32
+                                        : V1.Vectors.Types.VectorType.SingleFp32,
                                     VectorBytes = v.Value.ToByteString(),
                                 },
                             },
@@ -455,7 +455,7 @@ internal partial class WeaviateGrpcClient
         bool isGroups
     )> SearchNearVector(
         string collection,
-        VectorContainer vector,
+        Models.Vectors vector,
         GroupByRequest? groupBy = null,
         float? distance = null,
         float? certainty = null,
@@ -557,7 +557,7 @@ internal partial class WeaviateGrpcClient
         string collection,
         string? query = null,
         float? alpha = null,
-        VectorContainer? vector = null,
+        Models.Vectors? vector = null,
         HybridNearVector? nearVector = null,
         HybridNearText? nearText = null,
         string[]? queryProperties = null,

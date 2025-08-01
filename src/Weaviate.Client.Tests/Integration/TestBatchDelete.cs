@@ -107,14 +107,12 @@ public partial class BatchDeleteTests : IntegrationTests
 
         if (dryRun)
         {
-            // TODO Requires aggregate support
-            // Assert.Equal(2, await collection.Count());
+            Assert.Equal(2UL, await collection.Count());
             Assert.NotNull(await collection.Query.FetchObjectByID(uuid1));
         }
         else
         {
-            // TODO Requires aggregate support
-            // Assert.Equal(1, await collection.Count());
+            Assert.Equal(1UL, await collection.Count());
             Assert.Null(await collection.Query.FetchObjectByID(uuid1));
         }
 
@@ -156,8 +154,7 @@ public partial class BatchDeleteTests : IntegrationTests
             Assert.Empty(result.Objects);
         }
 
-        // TODO Requires aggregate support
-        // Assert.Equal(1, await collection.Count());
+        Assert.Equal(1UL, await collection.Count());
         Assert.NotNull(await collection.Query.FetchObjectByID(uuid2));
     }
 }

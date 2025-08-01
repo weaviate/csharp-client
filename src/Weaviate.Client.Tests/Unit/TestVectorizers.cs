@@ -10,7 +10,7 @@ public partial class VectorConfigListTests
     [Fact]
     public void NamedVectorInitialization()
     {
-        var v1 = new VectorContainer();
+        var v1 = new Vectors();
         v1.Add("default", new[] { 0.1f, 0.2f, 0.3f });
 
         // Act & Assert

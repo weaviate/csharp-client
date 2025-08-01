@@ -191,7 +191,7 @@ internal partial class WeaviateGrpcClient
 
     internal async Task<AggregateReply> AggregateNearVector(
         string collection,
-        VectorContainer vector,
+        Models.Vectors vector,
         double? certainty,
         double? distance,
         uint? limit,
@@ -209,14 +209,14 @@ internal partial class WeaviateGrpcClient
         foreach (var v in vector)
         {
             request.NearVector.Vectors.Add(
-                new Vectors
+                new V1.Vectors
                 {
                     Name = v.Key,
                     Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
                         v.Value.ValueType
                     )
-                        ? Vectors.Types.VectorType.MultiFp32
-                        : Vectors.Types.VectorType.SingleFp32,
+                        ? V1.Vectors.Types.VectorType.MultiFp32
+                        : V1.Vectors.Types.VectorType.SingleFp32,
                     VectorBytes = v.Value.ToByteString(),
                 }
             );

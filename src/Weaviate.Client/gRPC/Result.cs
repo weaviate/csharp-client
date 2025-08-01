@@ -26,9 +26,9 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    internal static VectorContainer BuildVectorsFromResult(RepeatedField<Vectors> vectors)
+    internal static Models.Vectors BuildVectorsFromResult(RepeatedField<V1.Vectors> vectors)
     {
-        var result = new VectorContainer();
+        var result = new Models.Vectors();
 
         foreach (var vector in vectors)
         {
