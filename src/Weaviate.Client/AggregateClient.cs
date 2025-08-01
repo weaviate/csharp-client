@@ -54,7 +54,7 @@ public partial class AggregateClient<TData>
     }
 
     public async Task<AggregateGroupByResult> NearVector(
-        VectorContainer vector,
+        Vectors vector,
         Aggregate.GroupBy? groupBy,
         double? certainty = null,
         double? distance = null,
@@ -82,7 +82,7 @@ public partial class AggregateClient<TData>
     }
 
     public async Task<AggregateResult> NearVector(
-        VectorContainer vector,
+        Vectors vector,
         double? certainty = null,
         double? distance = null,
         uint? limit = null,

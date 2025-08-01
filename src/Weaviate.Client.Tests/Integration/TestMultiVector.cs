@@ -134,7 +134,7 @@ public class TestMultiVector : IntegrationTests
             ins(
                 new { },
                 null,
-                new VectorContainer()
+                new Vectors()
                 {
                     { "regular", new[] { 1f, 2f } },
                     { "colbert", new[] { new[] { 1f, 2f }, new[] { 4f, 5f } } },

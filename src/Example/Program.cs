@@ -106,7 +106,7 @@ class Program
             // Normal Insertion Demo
             foreach (var cat in cats)
             {
-                var vectors = new VectorContainer() { { "default", cat.Vector } };
+                var vectors = new Vectors() { { "default", cat.Vector } };
 
                 var inserted = await collection.Data.Insert(cat.Data, vectors: vectors);
             }

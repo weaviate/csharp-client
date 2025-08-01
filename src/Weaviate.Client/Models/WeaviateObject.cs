@@ -31,7 +31,7 @@ public partial record WeaviateObject
     public IDictionary<string, IList<WeaviateObject>> References { get; set; } =
         new Dictionary<string, IList<WeaviateObject>>();
 
-    public VectorContainer Vectors { get; set; } = new VectorContainer();
+    public Vectors Vectors { get; set; } = new Vectors();
 }
 
 public static class WeaviateObjectExtensions

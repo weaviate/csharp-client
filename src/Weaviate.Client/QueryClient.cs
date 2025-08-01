@@ -9,7 +9,7 @@ public interface IHybridVectorInput
 }
 
 public record HybridNearVector(
-    VectorContainer? Vector,
+    Vectors? Vector,
     float? Distance = null,
     float? Certainty = null,
     string[]? TargetVector = null
@@ -166,7 +166,7 @@ public class QueryClient<TData>
         ).group;
 
     public async Task<WeaviateResult> NearVector(
-        VectorContainer vector,
+        Vectors vector,
         float? certainty = null,
         float? distance = null,
         uint? limit = null,
@@ -190,7 +190,7 @@ public class QueryClient<TData>
         ).result;
 
     public async Task<GroupByResult> NearVector(
-        VectorContainer vector,
+        Vectors vector,
         GroupByRequest groupBy,
         float? distance = null,
         float? certainty = null,
@@ -318,7 +318,7 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
-                vector: vectors as VectorContainer,
+                vector: vectors as Vectors,
                 nearVector: vectors as HybridNearVector,
                 nearText: vectors as HybridNearText,
                 queryProperties: queryProperties,
@@ -364,7 +364,7 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
-                vector: vectors as VectorContainer,
+                vector: vectors as Vectors,
                 nearVector: vectors as HybridNearVector,
                 nearText: vectors as HybridNearText,
                 queryProperties: queryProperties,

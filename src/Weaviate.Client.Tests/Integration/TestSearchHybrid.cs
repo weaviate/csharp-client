@@ -376,7 +376,7 @@ public partial class SearchTests : IntegrationTests
             }
         );
 
-        var vector = new VectorContainer
+        var vector = new Vectors
         {
             { "first", new float[] { 1, 0 } },
             { "second", new float[] { 1, 0, 0 } },
