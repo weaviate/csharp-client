@@ -571,45 +571,44 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(uuid1, objs[0].ID);
     }
 
-    // [Fact]
-    // public async Task Test_Hybrid_BM25_Operators()
-    // {
-    //     var collection = await CollectionFactory(
-    //         properties: new[] { Property.Text("name") },
-    //         vectorConfig: Configure.Vectors.SelfProvided()
-    //     );
+    [Fact]
+    public async Task Test_Hybrid_BM25_Operators()
+    {
+        var collection = await CollectionFactory(
+            properties: new[] { Property.Text("name") },
+            vectorConfig: Configure.Vectors.SelfProvided()
+        );
 
-    //     var uuid1 = await collection.Data.Insert(
-    //         new { name = "banana one" },
-    //         vectors: new float[] { 1, 0, 0, 0 }
-    //     );
-    //     var uuid2 = await collection.Data.Insert(
-    //         new { name = "banana two" },
-    //         vectors: new float[] { 0, 1, 0, 0 }
-    //     );
-    //     var uuid3 = await collection.Data.Insert(
-    //         new { name = "banana three" },
-    //         vectors: new float[] { 0, 1, 0, 0 }
-    //     );
-    //     var uuid4 = await collection.Data.Insert(
-    //         new { name = "banana four" },
-    //         vectors: new float[] { 1, 0, 0, 0 }
-    //     );
+        var uuid1 = await collection.Data.Insert(
+            new { name = "banana one" },
+            vectors: new float[] { 1, 0, 0, 0 }
+        );
+        var uuid2 = await collection.Data.Insert(
+            new { name = "banana two" },
+            vectors: new float[] { 0, 1, 0, 0 }
+        );
+        var uuid3 = await collection.Data.Insert(
+            new { name = "banana three" },
+            vectors: new float[] { 0, 1, 0, 0 }
+        );
+        var uuid4 = await collection.Data.Insert(
+            new { name = "banana four" },
+            vectors: new float[] { 1, 0, 0, 0 }
+        );
 
-    //     var objs = (
-    //         await collection.Query.Hybrid(
-    //             "banana two",
-    //             vector: null,
-    //             alpha: 0.0f,
-    //             bm25Operator: BM25Operator.Or(minimumMatch: 1)
-    //         )
-    //     ).Objects.ToList();
+        var objs = (
+            await collection.Query.Hybrid(
+                "banana two",
+                alpha: 0.0f,
+                bm25Operator: new BM25Operator.Or(MinimumMatch: 1)
+            )
+        ).ToList();
 
-    //     Assert.Equal(4, objs.Count);
-    //     Assert.Equal(uuid2, objs[0].ID);
-    //     var rest = objs.Skip(1).Select(o => o.ID).OrderBy(x => x).ToList();
-    //     var expected = new List<Guid> { uuid1, uuid3, uuid4 };
-    //     expected.Sort();
-    //     Assert.Equal(expected, rest);
-    // }
+        Assert.Equal(4, objs.Count);
+        Assert.Equal(uuid2, objs[0].ID);
+        var rest = objs.Skip(1).Select(o => o.ID).OrderBy(x => x).ToList();
+        var expected = new List<Guid?> { uuid1, uuid3, uuid4 };
+        expected.Sort();
+        Assert.Equal(expected, rest);
+    }
 }

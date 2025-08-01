@@ -35,7 +35,7 @@ public class DataClient<TData>
         var dtoVectors =
             vectors?.Count == 0
                 ? null
-                : Rest.Dto.Vectors.FromJson(JsonSerializer.Serialize<Models.Vectors>(vectors));
+                : Rest.Dto.Vectors.FromJson(JsonSerializer.Serialize(vectors ?? []));
 
         var dto = new Rest.Dto.Object()
         {

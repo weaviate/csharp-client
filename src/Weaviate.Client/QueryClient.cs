@@ -23,6 +23,13 @@ public record HybridNearText(
     Move? MoveAway = null
 ) : IHybridVectorInput;
 
+public abstract record BM25Operator(string Operator)
+{
+    public record And() : BM25Operator("And");
+
+    public record Or(int MinimumMatch) : BM25Operator("Or");
+}
+
 public class QueryClient<TData>
 {
     private readonly CollectionClient<TData> _collectionClient;
@@ -261,7 +268,7 @@ public class QueryClient<TData>
         float? maxVectorDistance = null,
         uint? limit = null,
         uint? offset = null,
-        object? bm25Operator = null,
+        BM25Operator? bm25Operator = null,
         uint? autoLimit = null,
         Filter? filters = null,
         object? rerank = null,
@@ -302,7 +309,7 @@ public class QueryClient<TData>
         float? maxVectorDistance = null,
         uint? limit = null,
         uint? offset = null,
-        object? bm25Operator = null,
+        BM25Operator? bm25Operator = null,
         uint? autoLimit = null,
         Filter? filters = null,
         object? rerank = null,
@@ -348,7 +355,7 @@ public class QueryClient<TData>
         float? maxVectorDistance = null,
         uint? limit = null,
         uint? offset = null,
-        object? bm25Operator = null,
+        BM25Operator? bm25Operator = null,
         uint? autoLimit = null,
         Filter? filters = null,
         object? rerank = null,
@@ -394,7 +401,7 @@ public class QueryClient<TData>
         float? maxVectorDistance = null,
         uint? limit = null,
         uint? offset = null,
-        object? bm25Operator = null,
+        BM25Operator? bm25Operator = null,
         uint? autoLimit = null,
         Filter? filters = null,
         object? rerank = null,
