@@ -246,7 +246,7 @@ internal partial class WeaviateGrpcClient
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
-        object? bm25Operator = null,
+        BM25Operator? bm25Operator = null,
         string[]? targetVector = null
     )
     {
@@ -414,6 +414,19 @@ internal partial class WeaviateGrpcClient
         {
             request.HybridSearch.VectorDistance = maxVectorDistance.Value;
         }
+        if (bm25Operator != null)
+        {
+            request.HybridSearch.Bm25SearchOperator = new()
+            {
+                Operator = bm25Operator switch
+                {
+                    BM25Operator.And => V1.SearchOperatorOptions.Types.Operator.And,
+                    BM25Operator.Or => V1.SearchOperatorOptions.Types.Operator.Or,
+                    _ => V1.SearchOperatorOptions.Types.Operator.Unspecified,
+                },
+                MinimumOrTokensMatch = (bm25Operator as BM25Operator.Or)?.MinimumMatch ?? 1,
+            };
+        }
     }
 
     internal async Task<(
@@ -565,7 +578,7 @@ internal partial class WeaviateGrpcClient
         float? maxVectorDistance = null,
         uint? limit = null,
         uint? offset = null,
-        object? bm25Operator = null,
+        BM25Operator? bm25Operator = null,
         uint? autoLimit = null,
         Filter? filters = null,
         GroupByRequest? groupBy = null,
