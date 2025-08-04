@@ -139,13 +139,13 @@ public record VectorData<T> : AbstractVectorData<T>
     where T : struct
 {
     public VectorData()
-        : base([]) { }
+        : this(new T[] { }) { }
 
     public VectorData(params T[] values)
         : base(values) { }
 
     public VectorData(IEnumerable<T> values)
-        : base(values) { }
+        : this(values.ToArray()) { }
 
     public static implicit operator Vectors(VectorData<T> vectorData)
     {
@@ -167,13 +167,13 @@ public record MultiVectorData<T> : AbstractVectorData<T[]>
     where T : struct
 {
     public MultiVectorData()
-        : base([]) { }
+        : this(new T[][] { }) { }
 
     public MultiVectorData(params T[][] values)
         : base(values) { }
 
     public MultiVectorData(IEnumerable<T[]> values)
-        : base(values) { }
+        : this(values.ToArray()) { }
 
     public static implicit operator Vectors(MultiVectorData<T> vectorData)
     {
