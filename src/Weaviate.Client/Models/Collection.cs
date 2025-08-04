@@ -13,7 +13,7 @@ public partial record Collection : IEquatable<Collection>
     public InvertedIndexConfig? InvertedIndexConfig { get; set; }
 
     // Configuration specific to modules in a collection context.
-    // TODO Considering removing this
+    // TODO Considering removing this and keep it managed internally.
     public ModuleConfigList? ModuleConfig { get; set; }
 
     public IRerankerConfig? RerankerConfig { get; set; }
