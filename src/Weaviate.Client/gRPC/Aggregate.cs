@@ -242,4 +242,88 @@ internal partial class WeaviateGrpcClient
 
         return await Aggregate(request);
     }
+
+    internal async Task<AggregateReply> AggregateHybrid(
+        string collection,
+        string? query,
+        float alpha,
+        float[]? vectors,
+        string[]? queryProperties,
+        BM25Operator? bm25Operator,
+        string? targetVector,
+        float? maxVectorDistance,
+        Filter? filter,
+        Aggregate.GroupBy? groupBy,
+        bool totalCount,
+        Aggregate.Metric[] metrics
+    )
+    {
+        var request = BaseAggregateRequest(
+            collection,
+            filter,
+            groupBy,
+            groupBy?.Limit,
+            totalCount,
+            metrics
+        );
+
+        request.Hybrid = new() { Query = query, Alpha = alpha };
+
+        if (queryProperties is not null && queryProperties.Length > 0)
+        {
+            request.Hybrid.Properties.AddRange(queryProperties);
+        }
+
+        if (groupBy is not null)
+        {
+            request.GroupBy = new AggregateRequest.Types.GroupBy { Property = groupBy.Property };
+        }
+
+        if (vectors is not null && targetVector is not null)
+        {
+            request.Hybrid.Vectors.Add(
+                new V1.Vectors
+                {
+                    Name = targetVector,
+                    // Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
+                    //     v.Value.ValueType
+                    // )
+                    //     ? V1.Vectors.Types.VectorType.MultiFp32
+                    //     : V1.Vectors.Types.VectorType.SingleFp32,
+                    Type = V1.Vectors.Types.VectorType.SingleFp32,
+                    VectorBytes = vectors.ToByteString(),
+                }
+            );
+
+            if (targetVector is not null && targetVector.Length > 0)
+            {
+                request.Hybrid.Targets = new()
+                {
+                    Combination = CombinationMethod.Unspecified,
+                    TargetVectors = { targetVector },
+                };
+            }
+        }
+
+        if (maxVectorDistance.HasValue)
+        {
+            request.Hybrid.VectorDistance = maxVectorDistance.Value;
+        }
+
+        if (bm25Operator != null)
+        {
+            request.Hybrid.Bm25SearchOperator = new()
+            {
+                Operator = bm25Operator switch
+                {
+                    BM25Operator.And => V1.SearchOperatorOptions.Types.Operator.And,
+                    BM25Operator.Or => V1.SearchOperatorOptions.Types.Operator.Or,
+                    _ => V1.SearchOperatorOptions.Types.Operator.Unspecified,
+                },
+                MinimumOrTokensMatch = (bm25Operator as BM25Operator.Or)?.MinimumMatch ?? 1,
+            };
+        }
+
+        return await Aggregate(request);
+    }
 }
