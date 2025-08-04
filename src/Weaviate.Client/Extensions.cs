@@ -52,7 +52,7 @@ public static class WeaviateExtensions
                 e => new Rest.Dto.VectorConfig
                 {
                     VectorIndexConfig = VectorIndexSerialization.ToDto(e.VectorIndexConfig),
-                    VectorIndexType = e.VectorIndexType,
+                    VectorIndexType = e.VectorIndexType ?? "hnsw",
                     Vectorizer = e.Vectorizer?.ToDto(),
                 }
             ),
