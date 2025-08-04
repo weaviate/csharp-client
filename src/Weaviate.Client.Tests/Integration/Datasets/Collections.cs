@@ -189,8 +189,8 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 Name = "AllVectorIndexConfigurations",
                 Description = "Vector Index Configurations",
                 Properties = [_nameProperty],
-                VectorConfig =
-                [
+                VectorConfig = new[]
+                {
                     Configure.Vectors.SelfProvided("hnswbase", _vectorIndexConfigHNSW_base),
                     // TODO BQ is only returning Enabled property for HNSW
                     // Configure.Vectors.SelfProvided("hnswbq", _vectorIndexConfigHNSW_BQ),
@@ -200,7 +200,7 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                     Configure.Vectors.SelfProvided("flatbq", _vectorIndexConfigFlat_BQ),
                     // Requires ASYNC_INDEXING: 'true'
                     // Configure.Vectors.SelfProvided("dynamicbase", _vectorIndexConfigDynamic_base),
-                ],
+                },
                 InvertedIndexConfig = InvertedIndexConfig.Default,
                 ReplicationConfig = ReplicationConfig.Default,
                 ShardingConfig = ShardingConfig.Default,
