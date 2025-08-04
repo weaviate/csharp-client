@@ -611,4 +611,47 @@ public partial class SearchTests : IntegrationTests
         expected.Sort();
         Assert.Equal(expected, rest);
     }
+
+    [Fact]
+    public async Task Test_Aggregate_Max_Vector_Distance()
+    {
+        Assert.Skip("Aggregate Hybrid not fully supported yet");
+
+        var collection = await CollectionFactory(
+            properties: new[] { Property.Text("name") },
+            vectorConfig: Configure.Vectors.SelfProvided()
+        );
+
+        if (collection.WeaviateVersion <= Version.Parse("1.26.3"))
+        {
+            Assert.Skip("Hybrid max vector distance only supported in versions > 1.26.3");
+        }
+
+        await collection.Data.Insert(
+            new { name = "banana one" },
+            vectors: new float[] { 1, 0, 0, 0 }
+        );
+        await collection.Data.Insert(
+            new { name = "banana two" },
+            vectors: new float[] { 0, 1, 0, 0 }
+        );
+        await collection.Data.Insert(
+            new { name = "banana three" },
+            vectors: new float[] { 0, 1, 0, 0 }
+        );
+        await collection.Data.Insert(
+            new { name = "banana four" },
+            vectors: new float[] { 1, 0, 0, 0 }
+        );
+
+        var res = await collection.Aggregate.Hybrid(
+            query: "banana",
+            vectors: [1f, 0f, 0f, 0f],
+            maxVectorDistance: 0.5f,
+            metrics: Metrics.ForProperty("name").Text(count: true),
+            targetVector: "default"
+        );
+
+        Assert.Equal(2, res.TotalCount);
+    }
 }
