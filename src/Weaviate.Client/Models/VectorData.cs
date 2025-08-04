@@ -47,6 +47,26 @@ public abstract record AbstractVectorData(Type ValueType) : ICollection
         }
         return ((ICollection<float[]>)vectorData).ToArray();
     }
+
+    public static implicit operator AbstractVectorData(double[] values)
+    {
+        return new VectorData<double>(values);
+    }
+
+    public static implicit operator AbstractVectorData(double[][] values)
+    {
+        return new MultiVectorData<double>(values);
+    }
+
+    public static implicit operator AbstractVectorData(float[] values)
+    {
+        return new VectorData<float>(values);
+    }
+
+    public static implicit operator AbstractVectorData(float[][] values)
+    {
+        return new MultiVectorData<float>(values);
+    }
 }
 
 public record AbstractVectorData<T> : AbstractVectorData, IList<T>

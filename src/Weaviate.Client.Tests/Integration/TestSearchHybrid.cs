@@ -646,10 +646,10 @@ public partial class SearchTests : IntegrationTests
 
         var res = await collection.Aggregate.Hybrid(
             query: "banana",
-            vectors: [1f, 0f, 0f, 0f],
+            vectors: new[] { 1f, 0f, 0f, 0f },
             maxVectorDistance: 0.5f,
-            metrics: Metrics.ForProperty("name").Text(count: true),
-            targetVector: "default"
+            targetVector: "default",
+            metrics: Metrics.ForProperty("name").Text(count: true)
         );
 
         Assert.Equal(2, res.TotalCount);
