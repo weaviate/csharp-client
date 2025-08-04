@@ -170,4 +170,68 @@ public partial class AggregateClient<TData>
 
         return AggregateResult.FromGrpcReply(result);
     }
+
+    public async Task<AggregateResult> Hybrid(
+        string? query = null,
+        float alpha = 0.7f,
+        float[]? vectors = null,
+        string[]? queryProperties = null,
+        BM25Operator? bm25Operator = null,
+        Filter? filter = null,
+        string? targetVector = null,
+        float? maxVectorDistance = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateHybrid(
+            _collectionName,
+            query,
+            alpha,
+            vectors,
+            queryProperties,
+            bm25Operator,
+            targetVector,
+            maxVectorDistance,
+            filter,
+            null, // No GroupBy for AggregateResult
+            totalCount,
+            metrics
+        );
+
+        return AggregateResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateGroupByResult> Hybrid(
+        string? query,
+        Aggregate.GroupBy groupBy,
+        float alpha = 0.7f,
+        float[]? vectors = null,
+        string[]? queryProperties = null,
+        uint? objectLimit = null,
+        BM25Operator? bm25Operator = null,
+        Filter? filter = null,
+        string? targetVector = null,
+        float? maxVectorDistance = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateHybrid(
+            _collectionName,
+            query,
+            alpha,
+            vectors,
+            queryProperties,
+            bm25Operator,
+            targetVector,
+            maxVectorDistance,
+            filter,
+            groupBy,
+            totalCount,
+            metrics
+        );
+
+        return AggregateGroupByResult.FromGrpcReply(result);
+    }
 }
