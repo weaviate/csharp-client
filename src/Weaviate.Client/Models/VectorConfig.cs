@@ -16,7 +16,7 @@ public record VectorConfig : IEquatable<VectorConfig>
     {
         Name = name;
         Vectorizer = vectorizer ?? new Vectorizer.SelfProvided();
-        VectorIndexConfig = vectorIndexConfig ?? new VectorIndex.HNSW();
+        VectorIndexConfig = vectorIndexConfig;
     }
 
     /// <summary>

@@ -176,7 +176,6 @@ public partial record Filter
                 IEnumerable<string> v => f => f.ValueTextArray = new TextArray { Values = { v } },
                 IEnumerable<Guid> v => f =>
                     f.ValueTextArray = new TextArray { Values = { v.Select(g => g.ToString()) } },
-                // TODO Perhaps add a case handling generic IEnumerable
                 _ => throw new WeaviateException(
                     $"Unsupported type '{typeof(T).Name}' for filter value. Check the documentation for supported filter value types."
                 ),

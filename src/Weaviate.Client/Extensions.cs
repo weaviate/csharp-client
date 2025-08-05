@@ -52,7 +52,7 @@ public static class WeaviateExtensions
                 e => new Rest.Dto.VectorConfig
                 {
                     VectorIndexConfig = VectorIndexSerialization.ToDto(e.VectorIndexConfig),
-                    VectorIndexType = e.VectorIndexType,
+                    VectorIndexType = e.VectorIndexType ?? "hnsw",
                     Vectorizer = e.Vectorizer?.ToDto(),
                 }
             ),
@@ -417,7 +417,7 @@ public static class WeaviateExtensions
         return stream;
     }
 
-    internal static Google.Protobuf.ByteString ToByteString(this IVectorData vector)
+    internal static Google.Protobuf.ByteString ToByteString(this AbstractVectorData vector)
     {
         if (vector is null || vector.Count == 0)
         {

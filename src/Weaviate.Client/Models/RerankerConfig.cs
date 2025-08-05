@@ -2,8 +2,6 @@ using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Models;
 
-// TODO Ask: Is it worth using string to allow use of custom models in reranker configs, or if an Enum is enough.
-
 public interface IRerankerConfig
 {
     [JsonIgnore]
