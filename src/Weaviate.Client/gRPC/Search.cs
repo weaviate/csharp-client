@@ -55,7 +55,7 @@ internal partial class WeaviateGrpcClient
             Properties = MakePropsRequest(fields, reference),
         };
 
-        if (after is not null)
+        if (after.HasValue)
         {
             request.After = after.ToString();
         }
@@ -132,16 +132,15 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    private static void BuildNearText(
+    private static NearTextSearch BuildNearText(
         string query,
         double? distance,
         double? certainty,
-        SearchRequest request,
         Move? moveTo,
         Move? moveAway
     )
     {
-        request.NearText = new NearTextSearch
+        var nearText = new NearTextSearch
         {
             Query = { query },
             // Targets = null,
@@ -152,7 +151,7 @@ internal partial class WeaviateGrpcClient
         {
             var uuids = moveTo.Objects is null ? [] : moveTo.Objects.Select(x => x.ToString());
             var concepts = moveTo.Concepts is null ? new string[] { } : moveTo.Concepts;
-            request.NearText.MoveTo = new NearTextSearch.Types.Move
+            nearText.MoveTo = new NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
                 Concepts = { concepts },
@@ -164,7 +163,7 @@ internal partial class WeaviateGrpcClient
         {
             var uuids = moveAway.Objects is null ? [] : moveAway.Objects.Select(x => x.ToString());
             var concepts = moveAway.Concepts is null ? new string[] { } : moveAway.Concepts;
-            request.NearText.MoveAway = new NearTextSearch.Types.Move
+            nearText.MoveAway = new NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
                 Concepts = { concepts },
@@ -174,59 +173,57 @@ internal partial class WeaviateGrpcClient
 
         if (distance is not null)
         {
-            request.NearText.Distance = distance.Value;
+            nearText.Distance = distance.Value;
         }
 
         if (certainty.HasValue)
         {
-            request.NearText.Certainty = certainty.Value;
+            nearText.Certainty = certainty.Value;
         }
+
+        return nearText;
     }
 
-    private static void BuildNearVector(
-        VectorContainer vector,
+    private static NearVector BuildNearVector(
+        Models.Vectors vector,
         double? distance,
         double? certainty,
-        string? targetVector,
-        SearchRequest request
+        string[]? targetVector
     )
     {
-        request.NearVector = new() { Vectors = { } };
+        NearVector nearVector = new() { Vectors = { } };
 
-        foreach (var v in vector)
-        {
-            request.NearVector.Vectors.Add(
-                new Vectors
-                {
-                    Name = v.Key,
-                    Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
-                        v.Value.ValueType
-                    )
-                        ? Vectors.Types.VectorType.MultiFp32
-                        : Vectors.Types.VectorType.SingleFp32,
-                    VectorBytes = v.Value.ToByteString(),
-                }
-            );
-        }
+        nearVector.Vectors.Add(
+            vector.Select(v => new V1.Vectors
+            {
+                Name = v.Key,
+                Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(v.Value.ValueType)
+                    ? V1.Vectors.Types.VectorType.MultiFp32
+                    : V1.Vectors.Types.VectorType.SingleFp32,
+                VectorBytes = v.Value.ToByteString(),
+            })
+        );
 
         if (distance.HasValue)
         {
-            request.NearVector.Distance = distance.Value;
+            nearVector.Distance = distance.Value;
         }
 
         if (certainty.HasValue)
         {
-            request.NearVector.Certainty = certainty.Value;
+            nearVector.Certainty = certainty.Value;
         }
 
-        if (!string.IsNullOrEmpty(targetVector))
+        if (targetVector is not null && targetVector.Length > 0)
         {
-            request.NearVector.Targets = new()
+            nearVector.Targets = new()
             {
                 Combination = CombinationMethod.Unspecified,
                 TargetVectors = { targetVector },
             };
         }
+
+        return nearVector;
     }
 
     private static void BuildBM25(SearchRequest request, string query, string[]? properties = null)
@@ -243,16 +240,16 @@ internal partial class WeaviateGrpcClient
         SearchRequest request,
         string? query = null,
         float? alpha = null,
-        VectorContainer? vector = null,
+        Models.Vectors? vector = null,
+        HybridNearVector? nearVector = null,
+        HybridNearText? nearText = null,
         string[]? queryProperties = null,
-        string? fusionType = null,
+        HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
-        object? bm25Operator = null,
-        string? targetVector = null
+        BM25Operator? bm25Operator = null,
+        string[]? targetVector = null
     )
     {
-        // TODO HybridVectorType: vector is a Union of either VectorContainer, or HybridNearText, or HybridNearVector
-
         request.HybridSearch = new Hybrid();
 
         if (!string.IsNullOrEmpty(query))
@@ -264,7 +261,7 @@ internal partial class WeaviateGrpcClient
             alpha = 1.0f; // Default alpha if no query is provided
         }
 
-        if (!string.IsNullOrEmpty(targetVector))
+        if (targetVector is not null && targetVector.Length > 0)
         {
             request.HybridSearch.Targets = new()
             {
@@ -278,68 +275,171 @@ internal partial class WeaviateGrpcClient
             request.HybridSearch.Alpha = alpha.Value;
         }
 
-        if (vector is not null)
+        if (vector is not null && nearText is null && nearVector is null)
         {
             foreach (var v in vector)
             {
                 request.HybridSearch.Vectors.Add(
-                    new Vectors
+                    new V1.Vectors
                     {
                         Name = v.Key,
                         Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
                             v.Value.ValueType
                         )
-                            ? Vectors.Types.VectorType.MultiFp32
-                            : Vectors.Types.VectorType.SingleFp32,
+                            ? V1.Vectors.Types.VectorType.MultiFp32
+                            : V1.Vectors.Types.VectorType.SingleFp32,
                         VectorBytes = v.Value.ToByteString(),
                     }
                 );
             }
         }
+
+        if (vector is null && nearText is not null && nearVector is null)
+        {
+            request.HybridSearch.NearText = BuildNearText(
+                nearText.Query,
+                nearText.Distance,
+                nearText.Certainty,
+                nearText.MoveTo,
+                nearText.MoveAway
+            );
+        }
+
+        if (
+            vector is null
+            && nearText is null
+            && nearVector is not null
+            && nearVector.Vector is not null
+        )
+        {
+            if (nearVector.Vector.Count == 1 && targetVector is null)
+            {
+                // If only one vector is provided, use it directly
+                var singleVector = nearVector.Vector.First();
+                request.HybridSearch.NearVector = new NearVector
+                {
+                    Vectors =
+                    {
+                        new V1.Vectors
+                        {
+                            Name = singleVector.Key,
+                            Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
+                                singleVector.Value.ValueType
+                            )
+                                ? V1.Vectors.Types.VectorType.MultiFp32
+                                : V1.Vectors.Types.VectorType.SingleFp32,
+                            VectorBytes = singleVector.Value.ToByteString(),
+                        },
+                    },
+                };
+            }
+            else
+            {
+                List<VectorForTarget> vectorForTargetsTmp = new();
+                List<string> targetVectorTmp = new();
+
+                if (targetVector is not null && targetVector.Length > 0)
+                {
+                    targetVectorTmp.AddRange(targetVector);
+                }
+                else
+                {
+                    // If no target vector is specified, use the keys from nearVector
+                    targetVectorTmp.AddRange(
+                        nearVector.Vector.Keys.Where(tv => string.IsNullOrEmpty(tv) is false)
+                    );
+                }
+
+                foreach (var v in nearVector.Vector)
+                {
+                    vectorForTargetsTmp.Add(
+                        new()
+                        {
+                            Name = v.Key,
+                            Vectors =
+                            {
+                                new V1.Vectors
+                                {
+                                    Name = v.Key,
+                                    Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
+                                        v.Value.ValueType
+                                    )
+                                        ? V1.Vectors.Types.VectorType.MultiFp32
+                                        : V1.Vectors.Types.VectorType.SingleFp32,
+                                    VectorBytes = v.Value.ToByteString(),
+                                },
+                            },
+                        }
+                    );
+                }
+
+                NearVector nv = new()
+                {
+                    VectorForTargets = { vectorForTargetsTmp },
+                    Targets = new()
+                    {
+                        Combination = CombinationMethod.Unspecified,
+                        TargetVectors = { targetVectorTmp },
+                    },
+                };
+
+                request.HybridSearch.NearVector = nv;
+            }
+
+            if (nearVector.Distance.HasValue)
+            {
+                request.HybridSearch.NearVector.Distance = nearVector.Distance.Value;
+            }
+
+            if (nearVector.Certainty.HasValue)
+            {
+                request.HybridSearch.NearVector.Certainty = nearVector.Certainty.Value;
+            }
+        }
+
         if (queryProperties is not null)
         {
             request.HybridSearch.Properties.AddRange(queryProperties);
         }
-        if (!string.IsNullOrEmpty(fusionType))
+        if (fusionType.HasValue)
         {
-            request.HybridSearch.FusionType = Enum.Parse<Hybrid.Types.FusionType>(fusionType);
+            request.HybridSearch.FusionType = fusionType switch
+            {
+                HybridFusion.Ranked => Hybrid.Types.FusionType.Ranked,
+                HybridFusion.RelativeScore => Hybrid.Types.FusionType.RelativeScore,
+                _ => Hybrid.Types.FusionType.Unspecified,
+            };
         }
         if (maxVectorDistance.HasValue)
         {
             request.HybridSearch.VectorDistance = maxVectorDistance.Value;
         }
+        if (bm25Operator != null)
+        {
+            request.HybridSearch.Bm25SearchOperator = new()
+            {
+                Operator = bm25Operator switch
+                {
+                    BM25Operator.And => V1.SearchOperatorOptions.Types.Operator.And,
+                    BM25Operator.Or => V1.SearchOperatorOptions.Types.Operator.Or,
+                    _ => V1.SearchOperatorOptions.Types.Operator.Unspecified,
+                },
+                MinimumOrTokensMatch = (bm25Operator as BM25Operator.Or)?.MinimumMatch ?? 1,
+            };
+        }
     }
 
-    internal async Task<WeaviateResult> FetchObjects(
+    internal async Task<(
+        WeaviateResult result,
+        Models.GroupByResult group,
+        bool isGroups
+    )> FetchObjects(
         string collection,
         Filter? filter = null,
         IEnumerable<Sort>? sort = null,
         uint? limit = null,
         string[]? fields = null,
-        IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null,
-        Guid? after = null
-    ) =>
-        BuildResult(
-            collection,
-            await InternalFetchObjects(
-                collection,
-                filter,
-                sort,
-                limit,
-                fields,
-                reference,
-                metadata,
-                after
-            )
-        );
-
-    private async Task<SearchReply> InternalFetchObjects(
-        string collection,
-        Filter? filter = null,
-        IEnumerable<Sort>? sort = null,
-        uint? limit = null,
-        string[]? fields = null,
+        GroupByRequest? groupBy = null,
         IList<QueryReference>? reference = null,
         MetadataQuery? metadata = null,
         Guid? after = null
@@ -351,6 +451,7 @@ internal partial class WeaviateGrpcClient
             sort: sort?.Select(s => s.InternalSort),
             limit: limit,
             fields: fields,
+            groupBy: groupBy,
             metadata: metadata,
             reference: reference,
             after: after
@@ -358,71 +459,55 @@ internal partial class WeaviateGrpcClient
 
         SearchReply? reply = await _grpcClient.SearchAsync(req, headers: _defaultHeaders);
 
-        return reply;
+        return BuildCombinedResult(collection, reply);
     }
 
-    public async Task<WeaviateResult> SearchNearVector(
+    internal async Task<(
+        WeaviateResult result,
+        Models.GroupByResult group,
+        bool isGroups
+    )> SearchNearVector(
         string collection,
-        VectorContainer vector,
+        Models.Vectors vector,
+        GroupByRequest? groupBy = null,
         float? distance = null,
         float? certainty = null,
-        string? targetVector = null,
+        string[]? targetVector = null,
         uint? limit = null,
         string[]? fields = null,
         IList<QueryReference>? reference = null,
         MetadataQuery? metadata = null
-    ) =>
-        BuildResult(
+    )
+    {
+        var request = BaseSearchRequest(
             collection,
-            await InternalSearchNearVector(
-                collection,
-                vector,
-                distance,
-                certainty,
-                targetVector,
-                limit,
-                fields,
-                groupBy: null,
-                reference,
-                metadata
-            )
+            filter: null,
+            limit: limit,
+            groupBy: groupBy,
+            fields: fields,
+            metadata: metadata,
+            reference: reference
         );
 
-    public async Task<Models.GroupByResult> SearchNearVector(
-        string collection,
-        VectorContainer vector,
-        GroupByRequest? groupBy,
-        float? distance = null,
-        float? certainty = null,
-        string? targetVector = null,
-        uint? limit = null,
-        string[]? fields = null,
-        IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null
-    ) =>
-        BuildGroupByResult(
-            collection,
-            await InternalSearchNearVector(
-                collection,
-                vector,
-                distance,
-                certainty,
-                targetVector,
-                limit,
-                fields,
-                groupBy,
-                reference,
-                metadata
-            )
-        );
+        request.NearVector = BuildNearVector(vector, distance, certainty, targetVector);
 
-    private async Task<SearchReply?> InternalSearchNearVector(
+        SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
+
+        return BuildCombinedResult(collection, reply);
+    }
+
+    internal async Task<(
+        WeaviateResult result,
+        Models.GroupByResult group,
+        bool isGroups
+    )> SearchNearText(
         string collection,
-        VectorContainer vector,
+        string query,
         float? distance = null,
         float? certainty = null,
-        string? targetVector = null,
         uint? limit = null,
+        Move? moveTo = null,
+        Move? moveAway = null,
         string[]? fields = null,
         GroupByRequest? groupBy = null,
         IList<QueryReference>? reference = null,
@@ -433,127 +518,29 @@ internal partial class WeaviateGrpcClient
             collection,
             filter: null,
             limit: limit,
-            groupBy: groupBy,
-            fields: fields,
-            metadata: metadata,
-            reference: reference
-        );
-
-        BuildNearVector(vector, distance, certainty, targetVector, request);
-
-        SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
-
-        return reply;
-    }
-
-    public async Task<WeaviateResult> SearchNearText(
-        string collection,
-        string query,
-        float? distance = null,
-        float? certainty = null,
-        uint? limit = null,
-        Move? moveTo = null,
-        Move? moveAway = null,
-        string[]? fields = null,
-        IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null
-    ) =>
-        BuildResult(
-            collection,
-            await InternalSearchNearText(
-                collection,
-                query,
-                distance,
-                certainty,
-                limit,
-                moveTo,
-                moveAway,
-                fields,
-                groupBy: null,
-                reference,
-                metadata
-            )
-        );
-
-    public async Task<Models.GroupByResult> SearchNearText(
-        string collection,
-        string query,
-        Models.GroupByRequest? groupBy,
-        float? distance = null,
-        float? certainty = null,
-        uint? limit = null,
-        Move? moveTo = null,
-        Move? moveAway = null,
-        string[]? fields = null,
-        IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null
-    ) =>
-        BuildGroupByResult(
-            collection,
-            await InternalSearchNearText(
-                collection,
-                query,
-                distance,
-                certainty,
-                limit,
-                moveTo,
-                moveAway,
-                fields,
-                groupBy,
-                reference,
-                metadata
-            )
-        );
-
-    private async Task<SearchReply> InternalSearchNearText(
-        string collection,
-        string query,
-        float? distance,
-        float? certainty,
-        uint? limit,
-        Move? moveTo,
-        Move? moveAway,
-        string[]? fields = null,
-        Models.GroupByRequest? groupBy = null,
-        IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null
-    )
-    {
-        var request = BaseSearchRequest(
-            collection,
-            filter: null,
-            limit: limit,
             fields: fields,
             groupBy: groupBy,
             metadata: metadata,
             reference: reference
         );
 
-        BuildNearText(query, distance, certainty, request, moveTo, moveAway);
+        request.NearText = BuildNearText(query, distance, certainty, moveTo, moveAway);
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
-        return reply;
+        return BuildCombinedResult(collection, reply);
     }
 
-    public async Task<WeaviateResult> SearchBM25(
+    internal async Task<(
+        WeaviateResult result,
+        Models.GroupByResult group,
+        bool isGroups
+    )> SearchBM25(
         string collection,
         string query,
         string[]? searchFields,
         string[]? fields = null,
-        IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null
-    ) =>
-        BuildResult(
-            collection,
-            await InternalSearchBM25(collection, query, searchFields, fields, reference, metadata)
-        );
-
-    private async Task<SearchReply> InternalSearchBM25(
-        string collection,
-        string query,
-        string[]? searchFields,
-        string[]? fields = null,
+        GroupByRequest? groupBy = null,
         IList<QueryReference>? reference = null,
         MetadataQuery? metadata = null
     )
@@ -562,7 +549,7 @@ internal partial class WeaviateGrpcClient
             collection,
             filter: null,
             limit: null,
-            groupBy: null,
+            groupBy: groupBy,
             fields: fields,
             metadata: metadata,
             reference: reference
@@ -572,118 +559,40 @@ internal partial class WeaviateGrpcClient
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
-        return reply;
+        return BuildCombinedResult(collection, reply);
     }
 
-    public async Task<WeaviateResult> SearchHybrid(
+    internal async Task<(
+        WeaviateResult result,
+        Models.GroupByResult group,
+        bool isGroups
+    )> SearchHybrid(
         string collection,
         string? query = null,
         float? alpha = null,
-        VectorContainer? vector = null,
+        Models.Vectors? vector = null,
+        HybridNearVector? nearVector = null,
+        HybridNearText? nearText = null,
         string[]? queryProperties = null,
-        string? fusionType = null,
+        HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
         uint? limit = null,
         uint? offset = null,
-        object? bm25Operator = null,
+        BM25Operator? bm25Operator = null,
         uint? autoLimit = null,
         Filter? filters = null,
-        object? rerank = null,
-        string? targetVector = null,
-        string[]? fields = null,
-        MetadataQuery? returnMetadata = null,
-        IList<QueryReference>? returnReferences = null
-    ) =>
-        BuildResult(
-            collection,
-            await InternalSearchHybrid(
-                collection,
-                query,
-                alpha,
-                vector,
-                queryProperties,
-                fusionType,
-                maxVectorDistance,
-                limit,
-                offset,
-                bm25Operator,
-                autoLimit,
-                filters,
-                rerank,
-                targetVector,
-                fields,
-                groupBy: null,
-                returnMetadata,
-                returnReferences
-            )
-        );
-
-    public async Task<Models.GroupByResult> SearchHybrid(
-        string collection,
-        GroupByRequest groupBy,
-        string? query = null,
-        float? alpha = null,
-        VectorContainer? vector = null,
-        string[]? queryProperties = null,
-        string? fusionType = null,
-        float? maxVectorDistance = null,
-        uint? limit = null,
-        uint? offset = null,
-        object? bm25Operator = null,
-        uint? autoLimit = null,
-        Filter? filters = null,
-        object? rerank = null,
-        string? targetVector = null,
-        string[]? fields = null,
-        MetadataQuery? returnMetadata = null,
-        IList<QueryReference>? returnReferences = null
-    ) =>
-        BuildGroupByResult(
-            collection,
-            await InternalSearchHybrid(
-                collection,
-                query,
-                alpha,
-                vector,
-                queryProperties,
-                fusionType,
-                maxVectorDistance,
-                limit,
-                offset,
-                bm25Operator,
-                autoLimit,
-                filters,
-                rerank,
-                targetVector,
-                fields,
-                groupBy,
-                returnMetadata,
-                returnReferences
-            )
-        );
-
-    private async Task<SearchReply?> InternalSearchHybrid(
-        string collection,
-        string? query,
-        float? alpha,
-        VectorContainer? vector,
-        string[]? queryProperties,
-        string? fusionType,
-        float? maxVectorDistance,
-        uint? limit,
-        uint? offset,
-        object? bm25Operator,
-        uint? autoLimit,
-        Filter? filters,
-        object? rerank,
-        string? targetVector,
-        string[]? fields,
         GroupByRequest? groupBy = null,
-        MetadataQuery? returnMetadata = null,
+        object? rerank = null,
+        string[]? targetVector = null,
+        string[]? fields = null,
+        MetadataQuery? metadata = null,
         IList<QueryReference>? returnReferences = null
     )
     {
-        if (vector is null && string.IsNullOrEmpty(query))
+        if (
+            !(vector is not null || nearVector is not null || nearText is not null)
+            && string.IsNullOrEmpty(query)
+        )
         {
             throw new ArgumentException(
                 "Either vector or query must be provided for hybrid search."
@@ -698,7 +607,7 @@ internal partial class WeaviateGrpcClient
             offset: offset,
             groupBy: groupBy,
             fields: fields,
-            metadata: returnMetadata,
+            metadata: metadata,
             reference: returnReferences
         );
 
@@ -707,6 +616,8 @@ internal partial class WeaviateGrpcClient
             query,
             alpha,
             vector,
+            nearVector,
+            nearText,
             queryProperties,
             fusionType,
             maxVectorDistance,
@@ -716,6 +627,6 @@ internal partial class WeaviateGrpcClient
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
-        return reply;
+        return BuildCombinedResult(collection, reply);
     }
 }
