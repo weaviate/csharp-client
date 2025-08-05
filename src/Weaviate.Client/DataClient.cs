@@ -20,7 +20,7 @@ public class DataClient<TData>
     public async Task<Guid> Insert(
         TData data,
         Guid? id = null,
-        VectorContainer? vectors = null,
+        Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         string? tenant = null
     )
@@ -33,7 +33,9 @@ public class DataClient<TData>
         }
 
         var dtoVectors =
-            vectors?.Count == 0 ? null : Vectors.FromJson(JsonSerializer.Serialize(vectors));
+            vectors?.Count == 0
+                ? null
+                : Rest.Dto.Vectors.FromJson(JsonSerializer.Serialize(vectors ?? []));
 
         var dto = new Rest.Dto.Object()
         {
@@ -52,7 +54,7 @@ public class DataClient<TData>
     public delegate void InsertDelegate(
         TData data,
         Guid? id = null,
-        VectorContainer? vectors = null,
+        Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         string? tenant = null
     );
@@ -155,7 +157,7 @@ public class DataClient<TData>
             InsertDelegate _inserter = (
                 TData data,
                 Guid? id = null,
-                VectorContainer? vectors = null,
+                Models.Vectors? vectors = null,
                 IEnumerable<ObjectReference>? references = null,
                 string? tenant = null
             ) =>
@@ -236,7 +238,7 @@ public class DataClient<TData>
         await _client.RestClient.ReferenceDelete(_collectionName, from, fromProperty, to);
     }
 
-    internal async Task<DeleteManyResult> DeleteMany(
+    public async Task<DeleteManyResult> DeleteMany(
         Filter where,
         bool dryRun = false,
         bool verbose = false

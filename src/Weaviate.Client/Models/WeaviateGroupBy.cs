@@ -19,6 +19,12 @@ public record GroupByResult(
     IDictionary<string, WeaviateGroup> Groups
 )
 {
+    private static readonly GroupByResult _empty = new(
+        Enumerable.Empty<GroupByObject>(),
+        new Dictionary<string, WeaviateGroup>()
+    );
+    public static GroupByResult Empty => _empty;
+
     public static implicit operator (
         IEnumerable<GroupByObject> Objects,
         IDictionary<string, WeaviateGroup> Groups

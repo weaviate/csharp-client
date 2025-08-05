@@ -5,7 +5,10 @@ namespace Weaviate.Client.Models;
 
 public partial record WeaviateResult : IEnumerable<WeaviateObject>
 {
-    public required IEnumerable<WeaviateObject> Objects { get; init; } = [];
+    private static readonly WeaviateResult _empty = new();
+    public static WeaviateResult Empty => _empty;
+
+    public IEnumerable<WeaviateObject> Objects { get; init; } = Array.Empty<WeaviateObject>();
 
     public IEnumerator<WeaviateObject> GetEnumerator() => Objects.GetEnumerator();
 
@@ -28,7 +31,7 @@ public partial record WeaviateObject
     public IDictionary<string, IList<WeaviateObject>> References { get; set; } =
         new Dictionary<string, IList<WeaviateObject>>();
 
-    public VectorContainer Vectors { get; set; } = new VectorContainer();
+    public Vectors Vectors { get; set; } = new Vectors();
 }
 
 public static class WeaviateObjectExtensions

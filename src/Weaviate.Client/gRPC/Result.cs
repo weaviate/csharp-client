@@ -26,9 +26,9 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    internal static VectorContainer BuildVectorsFromResult(RepeatedField<Vectors> vectors)
+    internal static Models.Vectors BuildVectorsFromResult(RepeatedField<V1.Vectors> vectors)
     {
-        var result = new VectorContainer();
+        var result = new Models.Vectors();
 
         foreach (var vector in vectors)
         {
@@ -163,8 +163,21 @@ internal partial class WeaviateGrpcClient
         };
     }
 
+    private static (
+        WeaviateResult result,
+        Models.GroupByResult group,
+        bool isGroups
+    ) BuildCombinedResult(string collectionName, SearchReply? reply)
+    {
+        var groups = BuildGroupByResult(collectionName, reply);
+        return (BuildResult(collectionName, reply), groups, groups != Models.GroupByResult.Empty);
+    }
+
     internal static WeaviateResult BuildResult(string collection, SearchReply? reply)
     {
+        if (reply?.Results == null || reply.Results.Count == 0)
+            return WeaviateResult.Empty;
+
         return new WeaviateResult
         {
             Objects =

@@ -54,7 +54,7 @@ public partial class AggregateClient<TData>
     }
 
     public async Task<AggregateGroupByResult> NearVector(
-        VectorContainer vector,
+        Vectors vector,
         Aggregate.GroupBy? groupBy,
         double? certainty = null,
         double? distance = null,
@@ -82,7 +82,7 @@ public partial class AggregateClient<TData>
     }
 
     public async Task<AggregateResult> NearVector(
-        VectorContainer vector,
+        Vectors vector,
         double? certainty = null,
         double? distance = null,
         uint? limit = null,
@@ -169,5 +169,69 @@ public partial class AggregateClient<TData>
         );
 
         return AggregateResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateResult> Hybrid(
+        string? query = null,
+        float alpha = 0.7f,
+        AbstractVectorData? vectors = null,
+        string[]? queryProperties = null,
+        BM25Operator? bm25Operator = null,
+        Filter? filter = null,
+        string? targetVector = null,
+        float? maxVectorDistance = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateHybrid(
+            _collectionName,
+            query,
+            alpha,
+            vectors,
+            queryProperties,
+            bm25Operator,
+            targetVector,
+            maxVectorDistance,
+            filter,
+            null, // No GroupBy for AggregateResult
+            totalCount,
+            metrics
+        );
+
+        return AggregateResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateGroupByResult> Hybrid(
+        string? query,
+        Aggregate.GroupBy groupBy,
+        float alpha = 0.7f,
+        AbstractVectorData? vectors = null,
+        string[]? queryProperties = null,
+        uint? objectLimit = null,
+        BM25Operator? bm25Operator = null,
+        Filter? filter = null,
+        string? targetVector = null,
+        float? maxVectorDistance = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateHybrid(
+            _collectionName,
+            query,
+            alpha,
+            vectors,
+            queryProperties,
+            bm25Operator,
+            targetVector,
+            maxVectorDistance,
+            filter,
+            groupBy,
+            totalCount,
+            metrics
+        );
+
+        return AggregateGroupByResult.FromGrpcReply(result);
     }
 }
