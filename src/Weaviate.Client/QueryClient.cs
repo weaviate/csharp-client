@@ -405,5 +405,81 @@ public class QueryClient<TData>
             )
         ).group;
     }
+
+    public async Task<WeaviateResult> NearObject(
+        Guid nearObject,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        object? rerank = null,
+        string[]? targetVector = null,
+        MetadataQuery? metadata = null,
+        string[]? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        bool includeVector = false
+    )
+    {
+        var result = await _client.GrpcClient.SearchNearObject(
+            _collectionClient.Name,
+            objectID: nearObject,
+            certainty: certainty,
+            distance: distance,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            groupBy: null,
+            rerank: rerank,
+            targetVector: targetVector,
+            metadata: metadata,
+            fields: returnProperties,
+            returnReferences: returnReferences,
+            includeVector: includeVector
+        );
+
+        return result.result;
+    }
+
+    public async Task<GroupByResult> NearObject(
+        Guid nearObject,
+        GroupByRequest groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        object? rerank = null,
+        string[]? targetVector = null,
+        MetadataQuery? metadata = null,
+        string[]? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        bool includeVector = false
+    )
+    {
+        var result = await _client.GrpcClient.SearchNearObject(
+            _collectionClient.Name,
+            objectID: nearObject,
+            certainty: certainty,
+            distance: distance,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            groupBy: groupBy,
+            rerank: rerank,
+            targetVector: targetVector,
+            metadata: metadata,
+            fields: returnProperties,
+            returnReferences: returnReferences,
+            includeVector: includeVector
+        );
+
+        return result.group;
+    }
+
     #endregion
 }
