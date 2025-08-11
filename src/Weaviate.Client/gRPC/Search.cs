@@ -46,7 +46,7 @@ internal partial class WeaviateGrpcClient
             GroupBy = groupBy is not null
                 ? new GroupBy()
                 {
-                    Path = { groupBy.PropertyName },
+                    Path = { groupBy.PropertyName.ToLowerInvariant() },
                     NumberOfGroups = Convert.ToInt32(groupBy.NumberOfGroups),
                     ObjectsPerGroup = Convert.ToInt32(groupBy.ObjectsPerGroup),
                 }
@@ -628,5 +628,76 @@ internal partial class WeaviateGrpcClient
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
         return BuildCombinedResult(collection, reply);
+    }
+
+    internal async Task<(
+        WeaviateResult result,
+        Models.GroupByResult group,
+        bool isGroups
+    )> SearchNearObject(
+        string collection,
+        Guid objectID,
+        double? certainty,
+        double? distance,
+        uint? limit,
+        uint? offset,
+        uint? autoLimit,
+        Filter? filters,
+        GroupByRequest? groupBy,
+        object? rerank,
+        string[]? targetVector,
+        MetadataQuery? metadata,
+        string[]? fields,
+        IList<QueryReference>? returnReferences,
+        bool includeVector
+    )
+    {
+        var request = BaseSearchRequest(
+            collection,
+            filter: filters?.InternalFilter,
+            autoCut: autoLimit,
+            limit: limit,
+            offset: offset,
+            groupBy: groupBy,
+            fields: fields,
+            metadata: metadata,
+            reference: returnReferences
+        );
+
+        BuildNearObject(request, objectID, certainty, distance, targetVector);
+
+        SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
+
+        return BuildCombinedResult(collection, reply);
+    }
+
+    private void BuildNearObject(
+        SearchRequest request,
+        Guid objectID,
+        double? certainty,
+        double? distance,
+        string[]? targetVector
+    )
+    {
+        request.NearObject = new NearObject { Id = objectID.ToString() };
+
+        if (certainty.HasValue)
+        {
+            request.NearObject.Certainty = certainty.Value;
+        }
+
+        if (distance.HasValue)
+        {
+            request.NearObject.Distance = distance.Value;
+        }
+
+        if (targetVector is not null && targetVector.Length > 0)
+        {
+            request.NearObject.Targets = new()
+            {
+                Combination = CombinationMethod.Unspecified,
+                TargetVectors = { targetVector },
+            };
+        }
     }
 }
