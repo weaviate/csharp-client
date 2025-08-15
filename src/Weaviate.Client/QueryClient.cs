@@ -265,8 +265,8 @@ public class QueryClient<TData>
                 filters: filters,
                 rerank: rerank,
                 targetVector: targetVector,
-                metadata: metadata,
-                fields: returnProperties,
+                returnMetadata: metadata,
+                returnProperties: returnProperties,
                 returnReferences: returnReferences
             )
         ).result;
@@ -310,8 +310,8 @@ public class QueryClient<TData>
                 filters: filters,
                 rerank: rerank,
                 targetVector: targetVector,
-                metadata: metadata,
-                fields: returnProperties,
+                returnMetadata: metadata,
+                returnProperties: returnProperties,
                 returnReferences: returnReferences
             )
         ).result;
@@ -357,8 +357,8 @@ public class QueryClient<TData>
                 groupBy: groupBy,
                 rerank: rerank,
                 targetVector: targetVector,
-                metadata: metadata,
-                fields: returnProperties,
+                returnMetadata: metadata,
+                returnProperties: returnProperties,
                 returnReferences: returnReferences
             )
         ).group;
@@ -399,8 +399,8 @@ public class QueryClient<TData>
                 groupBy: groupBy,
                 rerank: rerank,
                 targetVector: targetVector,
-                metadata: metadata,
-                fields: returnProperties,
+                returnMetadata: metadata,
+                returnProperties: returnProperties,
                 returnReferences: returnReferences
             )
         ).group;
@@ -416,7 +416,7 @@ public class QueryClient<TData>
         Filter? filters = null,
         object? rerank = null,
         string[]? targetVector = null,
-        MetadataQuery? metadata = null,
+        MetadataQuery? returnMetadata = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         bool includeVector = false
@@ -434,10 +434,9 @@ public class QueryClient<TData>
             groupBy: null,
             rerank: rerank,
             targetVector: targetVector,
-            metadata: metadata,
-            fields: returnProperties,
-            returnReferences: returnReferences,
-            includeVector: includeVector
+            returnMetadata: returnMetadata,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences
         );
 
         return result.result;
@@ -456,8 +455,7 @@ public class QueryClient<TData>
         string[]? targetVector = null,
         MetadataQuery? metadata = null,
         string[]? returnProperties = null,
-        IList<QueryReference>? returnReferences = null,
-        bool includeVector = false
+        IList<QueryReference>? returnReferences = null
     )
     {
         var result = await _client.GrpcClient.SearchNearObject(
@@ -472,10 +470,155 @@ public class QueryClient<TData>
             groupBy: groupBy,
             rerank: rerank,
             targetVector: targetVector,
-            metadata: metadata,
-            fields: returnProperties,
-            returnReferences: returnReferences,
-            includeVector: includeVector
+            returnMetadata: metadata,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences
+        );
+
+        return result.group;
+    }
+
+    public async Task<WeaviateResult> NearImage(
+        byte[] nearImage,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        object? rerank = null,
+        string[]? targetVector = null,
+        MetadataQuery? metadata = null,
+        string[]? returnProperties = null,
+        IList<QueryReference>? returnReferences = null
+    )
+    {
+        var result = await NearMedia(
+            media: nearImage,
+            mediaType: NearMediaType.Image,
+            certainty: certainty,
+            distance: distance,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            targetVector: targetVector,
+            returnMetadata: metadata,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences
+        );
+
+        return result;
+    }
+
+    public async Task<GroupByResult> NearImage(
+        byte[] nearImage,
+        GroupByRequest groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        object? rerank = null,
+        string[]? targetVector = null,
+        MetadataQuery? metadata = null,
+        string[]? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        bool includeVector = false
+    )
+    {
+        var result = await NearMedia(
+            media: nearImage,
+            mediaType: NearMediaType.Image,
+            certainty: certainty,
+            distance: distance,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            groupBy: groupBy,
+            rerank: rerank,
+            targetVector: targetVector,
+            returnMetadata: metadata,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences
+        );
+
+        return result;
+    }
+
+    public async Task<WeaviateResult> NearMedia(
+        byte[] media,
+        NearMediaType mediaType,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        MetadataQuery? returnMetadata = null,
+        string[]? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        object? rerank = null,
+        string[]? targetVector = null
+    )
+    {
+        var result = await _client.GrpcClient.SearchNearMedia(
+            _collectionClient.Name,
+            media: media,
+            mediaType: mediaType,
+            certainty: certainty,
+            distance: distance,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            groupBy: null,
+            rerank: rerank,
+            targetVector: targetVector,
+            returnMetadata: returnMetadata,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences
+        );
+
+        return result.result;
+    }
+
+    public async Task<GroupByResult> NearMedia(
+        byte[] media,
+        NearMediaType mediaType,
+        GroupByRequest groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        MetadataQuery? returnMetadata = null,
+        string[]? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        object? rerank = null,
+        string[]? targetVector = null
+    )
+    {
+        var result = await _client.GrpcClient.SearchNearMedia(
+            _collectionClient.Name,
+            media: media,
+            mediaType: mediaType,
+            certainty: certainty,
+            distance: distance,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            groupBy: groupBy,
+            rerank: rerank,
+            targetVector: targetVector,
+            returnMetadata: returnMetadata,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences
         );
 
         return result.group;

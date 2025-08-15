@@ -22,7 +22,9 @@ public class TestNearQueries : IntegrationTests
         var fullObjects = (
             await collectionClient.Query.NearObject(
                 uuidBanana,
-                metadata: new MetadataQuery(MetadataOptions.Distance | MetadataOptions.Certainty)
+                returnMetadata: new MetadataQuery(
+                    MetadataOptions.Distance | MetadataOptions.Certainty
+                )
             )
         ).Objects.ToList();
 
