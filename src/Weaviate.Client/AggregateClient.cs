@@ -234,4 +234,347 @@ public partial class AggregateClient<TData>
 
         return AggregateGroupByResult.FromGrpcReply(result);
     }
+
+    public async Task<AggregateResult> NearImage(
+        byte[] media,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? groupBy = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.Image,
+            certainty,
+            distance,
+            limit,
+            filter,
+            null,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateGroupByResult> NearImage(
+        byte[] media,
+        Aggregate.GroupBy? groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.Image,
+            certainty,
+            distance,
+            limit,
+            filter,
+            groupBy,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateGroupByResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateResult> NearVideo(
+        byte[] media,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.Video,
+            certainty,
+            distance,
+            limit,
+            filter,
+            null,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateGroupByResult> NearVideo(
+        byte[] media,
+        Aggregate.GroupBy? groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.Video,
+            certainty,
+            distance,
+            limit,
+            filter,
+            groupBy,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateGroupByResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateResult> NearAudio(
+        byte[] media,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.Audio,
+            certainty,
+            distance,
+            limit,
+            filter,
+            null,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateGroupByResult> NearAudio(
+        byte[] media,
+        Aggregate.GroupBy? groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.Audio,
+            certainty,
+            distance,
+            limit,
+            filter,
+            groupBy,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateGroupByResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateResult> NearDepth(
+        byte[] media,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.Depth,
+            certainty,
+            distance,
+            limit,
+            filter,
+            null,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateGroupByResult> NearDepth(
+        byte[] media,
+        Aggregate.GroupBy? groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.Depth,
+            certainty,
+            distance,
+            limit,
+            filter,
+            groupBy,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateGroupByResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateResult> NearThermal(
+        byte[] media,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.Thermal,
+            certainty,
+            distance,
+            limit,
+            filter,
+            null,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateGroupByResult> NearThermal(
+        byte[] media,
+        Aggregate.GroupBy? groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.Thermal,
+            certainty,
+            distance,
+            limit,
+            filter,
+            groupBy,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateGroupByResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateResult> NearIMU(
+        byte[] media,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.IMU,
+            certainty,
+            distance,
+            limit,
+            filter,
+            null,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateGroupByResult> NearIMU(
+        byte[] media,
+        Aggregate.GroupBy? groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearMedia(
+            _collectionName,
+            media,
+            NearMediaType.IMU,
+            certainty,
+            distance,
+            limit,
+            filter,
+            groupBy,
+            targetVector,
+            totalCount,
+            metrics
+        );
+
+        return AggregateGroupByResult.FromGrpcReply(result);
+    }
 }
