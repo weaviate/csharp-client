@@ -923,4 +923,30 @@ public partial class CollectionsTests : IntegrationTests
             hnswConfig.FilterStrategy
         );
     }
+
+    [Fact]
+    public async Task Test_Return_Blob_Property()
+    {
+        // Arrange
+        var blobData = Weaviate.Client.Tests.Common.Constants.WeaviateLogoOldEncoded; // Should be a byte[] or base64 string
+        var collection = await CollectionFactory(properties: [Property.Blob("blob")]);
+
+        // Insert single object
+        var uuid = await collection.Data.Insert(new { blob = blobData });
+
+        // Insert many
+        await collection.Data.InsertMany(new[] { new { blob = blobData } });
+
+        // Fetch by id
+        var obj = await collection.Query.FetchObjectByID(uuid, properties: new[] { "blob" });
+
+        // Fetch all
+        var objs = (await collection.Query.List(properties: new[] { "blob" })).Objects.ToList();
+
+        Assert.Equal(2, objs.Count());
+        Assert.NotNull(obj);
+        Assert.Equal(blobData, obj.Properties["blob"]);
+        Assert.Equal(blobData, objs[0].Properties["blob"]);
+        Assert.Equal(blobData, objs[1].Properties["blob"]);
+    }
 }
