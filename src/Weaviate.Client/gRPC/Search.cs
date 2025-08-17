@@ -46,7 +46,7 @@ internal partial class WeaviateGrpcClient
             GroupBy = groupBy is not null
                 ? new GroupBy()
                 {
-                    Path = { groupBy.PropertyName },
+                    Path = { groupBy.PropertyName.ToLowerInvariant() },
                     NumberOfGroups = Convert.ToInt32(groupBy.NumberOfGroups),
                     ObjectsPerGroup = Convert.ToInt32(groupBy.ObjectsPerGroup),
                 }
@@ -584,8 +584,8 @@ internal partial class WeaviateGrpcClient
         GroupByRequest? groupBy = null,
         object? rerank = null,
         string[]? targetVector = null,
-        string[]? fields = null,
-        MetadataQuery? metadata = null,
+        string[]? returnProperties = null,
+        MetadataQuery? returnMetadata = null,
         IList<QueryReference>? returnReferences = null
     )
     {
@@ -606,8 +606,8 @@ internal partial class WeaviateGrpcClient
             limit: limit,
             offset: offset,
             groupBy: groupBy,
-            fields: fields,
-            metadata: metadata,
+            fields: returnProperties,
+            metadata: returnMetadata,
             reference: returnReferences
         );
 
@@ -624,6 +624,216 @@ internal partial class WeaviateGrpcClient
             bm25Operator,
             targetVector
         );
+
+        SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
+
+        return BuildCombinedResult(collection, reply);
+    }
+
+    internal async Task<(
+        WeaviateResult result,
+        Models.GroupByResult group,
+        bool isGroups
+    )> SearchNearObject(
+        string collection,
+        Guid objectID,
+        double? certainty,
+        double? distance,
+        uint? limit,
+        uint? offset,
+        uint? autoLimit,
+        Filter? filters,
+        GroupByRequest? groupBy,
+        object? rerank,
+        string[]? targetVector,
+        MetadataQuery? returnMetadata,
+        string[]? returnProperties,
+        IList<QueryReference>? returnReferences
+    )
+    {
+        var request = BaseSearchRequest(
+            collection,
+            filter: filters?.InternalFilter,
+            autoCut: autoLimit,
+            limit: limit,
+            offset: offset,
+            groupBy: groupBy,
+            fields: returnProperties,
+            metadata: returnMetadata,
+            reference: returnReferences
+        );
+
+        BuildNearObject(request, objectID, certainty, distance, targetVector);
+
+        SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
+
+        return BuildCombinedResult(collection, reply);
+    }
+
+    private void BuildNearObject(
+        SearchRequest request,
+        Guid objectID,
+        double? certainty,
+        double? distance,
+        string[]? targetVector
+    )
+    {
+        request.NearObject = new NearObject { Id = objectID.ToString() };
+
+        if (certainty.HasValue)
+        {
+            request.NearObject.Certainty = certainty.Value;
+        }
+
+        if (distance.HasValue)
+        {
+            request.NearObject.Distance = distance.Value;
+        }
+
+        request.NearObject.Targets = BuildTargetVector(targetVector);
+    }
+
+    private static Targets? BuildTargetVector(string[]? targetVector)
+    {
+        if (targetVector is not null && targetVector.Length > 0)
+        {
+            return new Targets
+            {
+                Combination = CombinationMethod.Unspecified,
+                TargetVectors = { targetVector },
+            };
+        }
+
+        return null;
+    }
+
+    internal async Task<(
+        WeaviateResult result,
+        Models.GroupByResult group,
+        bool isGroups
+    )> SearchNearMedia(
+        string collection,
+        byte[] media,
+        NearMediaType mediaType,
+        double? certainty,
+        double? distance,
+        uint? limit,
+        uint? offset,
+        uint? autoLimit,
+        Filter? filters,
+        GroupByRequest? groupBy,
+        object? rerank,
+        string[]? targetVector,
+        MetadataQuery? returnMetadata,
+        string[]? returnProperties,
+        IList<QueryReference>? returnReferences
+    )
+    {
+        var request = BaseSearchRequest(
+            collection,
+            filter: filters?.InternalFilter,
+            autoCut: autoLimit,
+            limit: limit,
+            offset: offset,
+            groupBy: groupBy,
+            fields: returnProperties,
+            metadata: returnMetadata,
+            reference: returnReferences
+        );
+
+        switch (mediaType)
+        {
+            case NearMediaType.Image:
+                request.NearImage = new NearImageSearch { Image = Convert.ToBase64String(media) };
+                if (certainty.HasValue)
+                {
+                    request.NearImage.Certainty = certainty.Value;
+                }
+
+                if (distance.HasValue)
+                {
+                    request.NearImage.Distance = distance.Value;
+                }
+
+                request.NearImage.Targets = BuildTargetVector(targetVector);
+
+                break;
+            case NearMediaType.Video:
+                request.NearVideo = new NearVideoSearch { Video = Convert.ToBase64String(media) };
+                if (certainty.HasValue)
+                {
+                    request.NearVideo.Certainty = certainty.Value;
+                }
+
+                if (distance.HasValue)
+                {
+                    request.NearVideo.Distance = distance.Value;
+                }
+
+                request.NearVideo.Targets = BuildTargetVector(targetVector);
+                break;
+            case NearMediaType.Audio:
+                request.NearAudio = new NearAudioSearch { Audio = Convert.ToBase64String(media) };
+                if (certainty.HasValue)
+                {
+                    request.NearAudio.Certainty = certainty.Value;
+                }
+
+                if (distance.HasValue)
+                {
+                    request.NearAudio.Distance = distance.Value;
+                }
+
+                request.NearAudio.Targets = BuildTargetVector(targetVector);
+                break;
+            case NearMediaType.Depth:
+                request.NearDepth = new NearDepthSearch { Depth = Convert.ToBase64String(media) };
+                if (certainty.HasValue)
+                {
+                    request.NearDepth.Certainty = certainty.Value;
+                }
+
+                if (distance.HasValue)
+                {
+                    request.NearDepth.Distance = distance.Value;
+                }
+
+                request.NearDepth.Targets = BuildTargetVector(targetVector);
+                break;
+            case NearMediaType.Thermal:
+                request.NearThermal = new NearThermalSearch
+                {
+                    Thermal = Convert.ToBase64String(media),
+                };
+                if (certainty.HasValue)
+                {
+                    request.NearThermal.Certainty = certainty.Value;
+                }
+
+                if (distance.HasValue)
+                {
+                    request.NearThermal.Distance = distance.Value;
+                }
+
+                request.NearThermal.Targets = BuildTargetVector(targetVector);
+                break;
+            case NearMediaType.IMU:
+                request.NearImu = new NearIMUSearch { Imu = Convert.ToBase64String(media) };
+                if (certainty.HasValue)
+                {
+                    request.NearImu.Certainty = certainty.Value;
+                }
+
+                if (distance.HasValue)
+                {
+                    request.NearImu.Distance = distance.Value;
+                }
+
+                request.NearImu.Targets = BuildTargetVector(targetVector);
+                break;
+            default:
+                throw new ArgumentException("Unsupported media type for near media search.");
+        }
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 

@@ -17,7 +17,7 @@ internal partial class WeaviateGrpcClient
         var r = new AggregateRequest
         {
             Collection = collection,
-            Filters = filter?.InternalFilter, // No filter by default
+            Filters = filter?.InternalFilter,
             ObjectsCount = totalCount ?? false,
         };
 
@@ -321,6 +321,106 @@ internal partial class WeaviateGrpcClient
                 },
                 MinimumOrTokensMatch = (bm25Operator as BM25Operator.Or)?.MinimumMatch ?? 1,
             };
+        }
+
+        return await Aggregate(request);
+    }
+
+    internal async Task<AggregateReply> AggregateNearMedia(
+        string collection,
+        byte[] media,
+        NearMediaType mediaType,
+        double? certainty,
+        double? distance,
+        uint? limit,
+        Filter? filter,
+        Aggregate.GroupBy? groupBy,
+        string[]? targetVector,
+        bool totalCount,
+        Aggregate.Metric[] metrics
+    )
+    {
+        var request = BaseAggregateRequest(collection, filter, groupBy, limit, totalCount, metrics);
+
+        switch (mediaType)
+        {
+            case NearMediaType.Image:
+                request.NearImage = new NearImageSearch { Image = Convert.ToBase64String(media) };
+                if (certainty.HasValue)
+                {
+                    request.NearImage.Certainty = certainty.Value;
+                }
+                if (distance.HasValue)
+                {
+                    request.NearImage.Distance = distance.Value;
+                }
+                request.NearImage.Targets = BuildTargetVector(targetVector);
+                break;
+            case NearMediaType.Video:
+                request.NearVideo = new NearVideoSearch { Video = Convert.ToBase64String(media) };
+                if (certainty.HasValue)
+                {
+                    request.NearVideo.Certainty = certainty.Value;
+                }
+                if (distance.HasValue)
+                {
+                    request.NearVideo.Distance = distance.Value;
+                }
+                request.NearVideo.Targets = BuildTargetVector(targetVector);
+                break;
+            case NearMediaType.Audio:
+                request.NearAudio = new NearAudioSearch { Audio = Convert.ToBase64String(media) };
+                if (certainty.HasValue)
+                {
+                    request.NearAudio.Certainty = certainty.Value;
+                }
+                if (distance.HasValue)
+                {
+                    request.NearAudio.Distance = distance.Value;
+                }
+                request.NearAudio.Targets = BuildTargetVector(targetVector);
+                break;
+            case NearMediaType.Depth:
+                request.NearDepth = new NearDepthSearch { Depth = Convert.ToBase64String(media) };
+                if (certainty.HasValue)
+                {
+                    request.NearDepth.Certainty = certainty.Value;
+                }
+                if (distance.HasValue)
+                {
+                    request.NearDepth.Distance = distance.Value;
+                }
+                request.NearDepth.Targets = BuildTargetVector(targetVector);
+                break;
+            case NearMediaType.Thermal:
+                request.NearThermal = new NearThermalSearch
+                {
+                    Thermal = Convert.ToBase64String(media),
+                };
+                if (certainty.HasValue)
+                {
+                    request.NearThermal.Certainty = certainty.Value;
+                }
+                if (distance.HasValue)
+                {
+                    request.NearThermal.Distance = distance.Value;
+                }
+                request.NearThermal.Targets = BuildTargetVector(targetVector);
+                break;
+            case NearMediaType.IMU:
+                request.NearImu = new NearIMUSearch { Imu = Convert.ToBase64String(media) };
+                if (certainty.HasValue)
+                {
+                    request.NearImu.Certainty = certainty.Value;
+                }
+                if (distance.HasValue)
+                {
+                    request.NearImu.Distance = distance.Value;
+                }
+                request.NearImu.Targets = BuildTargetVector(targetVector);
+                break;
+            default:
+                throw new ArgumentException("Unsupported media type for aggregate near media.");
         }
 
         return await Aggregate(request);
