@@ -24,7 +24,7 @@ internal static class WeaviateEndpoints
 
     public static string Objects() => $"objects";
 
-    internal static string? CollectionObject(string collectionName, Guid id) =>
+    internal static string CollectionObject(string collectionName, Guid id) =>
         $"objects/{collectionName}/{id}";
 
     internal static string? Reference(string collectionName, Guid from, string fromProperty) =>
