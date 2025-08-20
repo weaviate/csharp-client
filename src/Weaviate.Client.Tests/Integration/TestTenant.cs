@@ -557,7 +557,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        await Assert.ThrowsAsync<WeaviateException>(async () =>
         {
             if (tenants is Tenant t)
                 await collectionClient.Tenants.Update(t);
