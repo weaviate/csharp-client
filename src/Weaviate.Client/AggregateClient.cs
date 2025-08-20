@@ -2,18 +2,18 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
-public partial class CollectionClient<TData>
+public partial class CollectionClient
 {
-    public AggregateClient<TData> Aggregate => new(this);
+    public AggregateClient Aggregate => new(this);
 }
 
-public partial class AggregateClient<TData>
+public partial class AggregateClient
 {
-    private readonly CollectionClient<TData> _collectionClient;
+    private readonly CollectionClient _collectionClient;
     private WeaviateClient _client => _collectionClient.Client;
     private string _collectionName => _collectionClient.Name;
 
-    internal AggregateClient(CollectionClient<TData> collectionClient)
+    internal AggregateClient(CollectionClient collectionClient)
     {
         _collectionClient = collectionClient;
     }
@@ -29,6 +29,7 @@ public partial class AggregateClient<TData>
             filter,
             null, // No GroupByRequest for OverAll
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -47,6 +48,7 @@ public partial class AggregateClient<TData>
             filter,
             groupBy,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -75,6 +77,7 @@ public partial class AggregateClient<TData>
             groupBy,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -102,6 +105,7 @@ public partial class AggregateClient<TData>
             null, // No GroupByRequest for NearVector
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -134,6 +138,7 @@ public partial class AggregateClient<TData>
             groupBy,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -165,6 +170,7 @@ public partial class AggregateClient<TData>
             null, // No GroupByRequest for NearText
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -196,6 +202,7 @@ public partial class AggregateClient<TData>
             filter,
             null, // No GroupBy for AggregateResult
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -229,6 +236,7 @@ public partial class AggregateClient<TData>
             filter,
             groupBy,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -258,6 +266,7 @@ public partial class AggregateClient<TData>
             null,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -287,6 +296,7 @@ public partial class AggregateClient<TData>
             groupBy,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -315,6 +325,7 @@ public partial class AggregateClient<TData>
             null,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -344,6 +355,7 @@ public partial class AggregateClient<TData>
             groupBy,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -372,6 +384,7 @@ public partial class AggregateClient<TData>
             null,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -401,6 +414,7 @@ public partial class AggregateClient<TData>
             groupBy,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -429,6 +443,7 @@ public partial class AggregateClient<TData>
             null,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -458,6 +473,7 @@ public partial class AggregateClient<TData>
             groupBy,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -486,6 +502,7 @@ public partial class AggregateClient<TData>
             null,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -515,6 +532,7 @@ public partial class AggregateClient<TData>
             groupBy,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -543,6 +561,7 @@ public partial class AggregateClient<TData>
             null,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 
@@ -572,6 +591,7 @@ public partial class AggregateClient<TData>
             groupBy,
             targetVector,
             totalCount,
+            _collectionClient.Tenant,
             metrics
         );
 

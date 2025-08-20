@@ -113,7 +113,7 @@ class Program
         }
 
         // Get all objects and sum up the counter property
-        var result = await collection.Query.List(limit: 250);
+        var result = await collection.Query.FetchObjects(limit: 250);
         var retrieved = result.Objects.ToList();
         Console.WriteLine("Cats retrieved: " + retrieved.Count());
         var sum = retrieved.Sum(c => c.As<Cat>()?.Counter ?? 0);
@@ -125,7 +125,7 @@ class Program
             await collection.Data.Delete(id);
         }
 
-        result = await collection.Query.List(limit: 5);
+        result = await collection.Query.FetchObjects(limit: 5);
         retrieved = result.Objects.ToList();
         Console.WriteLine("Cats retrieved: " + retrieved.Count());
 

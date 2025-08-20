@@ -16,7 +16,8 @@ internal partial class WeaviateGrpcClient
         MetadataQuery? metadata = null,
         IList<QueryReference>? reference = null,
         string[]? fields = null,
-        Guid? after = null
+        Guid? after = null,
+        string? tenant = null
     )
     {
         var metadataRequest = new MetadataRequest()
@@ -53,6 +54,7 @@ internal partial class WeaviateGrpcClient
                 : null,
             Metadata = metadataRequest,
             Properties = MakePropsRequest(fields, reference),
+            Tenant = tenant ?? string.Empty,
         };
 
         if (after.HasValue)
@@ -442,7 +444,8 @@ internal partial class WeaviateGrpcClient
         GroupByRequest? groupBy = null,
         IList<QueryReference>? reference = null,
         MetadataQuery? metadata = null,
-        Guid? after = null
+        Guid? after = null,
+        string? tenant = null
     )
     {
         var req = BaseSearchRequest(
@@ -454,7 +457,8 @@ internal partial class WeaviateGrpcClient
             groupBy: groupBy,
             metadata: metadata,
             reference: reference,
-            after: after
+            after: after,
+            tenant: tenant
         );
 
         SearchReply? reply = await _grpcClient.SearchAsync(req, headers: _defaultHeaders);
@@ -476,7 +480,8 @@ internal partial class WeaviateGrpcClient
         uint? limit = null,
         string[]? fields = null,
         IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null
+        MetadataQuery? metadata = null,
+        string? tenant = null
     )
     {
         var request = BaseSearchRequest(
@@ -486,7 +491,8 @@ internal partial class WeaviateGrpcClient
             groupBy: groupBy,
             fields: fields,
             metadata: metadata,
-            reference: reference
+            reference: reference,
+            tenant: tenant
         );
 
         request.NearVector = BuildNearVector(vector, distance, certainty, targetVector);
@@ -511,7 +517,8 @@ internal partial class WeaviateGrpcClient
         string[]? fields = null,
         GroupByRequest? groupBy = null,
         IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null
+        MetadataQuery? metadata = null,
+        string? tenant = null
     )
     {
         var request = BaseSearchRequest(
@@ -521,7 +528,8 @@ internal partial class WeaviateGrpcClient
             fields: fields,
             groupBy: groupBy,
             metadata: metadata,
-            reference: reference
+            reference: reference,
+            tenant: tenant
         );
 
         request.NearText = BuildNearText(query, distance, certainty, moveTo, moveAway);
@@ -542,7 +550,8 @@ internal partial class WeaviateGrpcClient
         string[]? fields = null,
         GroupByRequest? groupBy = null,
         IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null
+        MetadataQuery? metadata = null,
+        string? tenant = null
     )
     {
         var request = BaseSearchRequest(
@@ -552,7 +561,8 @@ internal partial class WeaviateGrpcClient
             groupBy: groupBy,
             fields: fields,
             metadata: metadata,
-            reference: reference
+            reference: reference,
+            tenant: tenant
         );
 
         BuildBM25(request, query, properties: searchFields);
@@ -586,7 +596,8 @@ internal partial class WeaviateGrpcClient
         string[]? targetVector = null,
         string[]? returnProperties = null,
         MetadataQuery? returnMetadata = null,
-        IList<QueryReference>? returnReferences = null
+        IList<QueryReference>? returnReferences = null,
+        string? tenant = null
     )
     {
         if (
@@ -648,7 +659,8 @@ internal partial class WeaviateGrpcClient
         string[]? targetVector,
         MetadataQuery? returnMetadata,
         string[]? returnProperties,
-        IList<QueryReference>? returnReferences
+        IList<QueryReference>? returnReferences,
+        string? tenant = null
     )
     {
         var request = BaseSearchRequest(
@@ -723,6 +735,7 @@ internal partial class WeaviateGrpcClient
         Filter? filters,
         GroupByRequest? groupBy,
         object? rerank,
+        string? tenant,
         string[]? targetVector,
         MetadataQuery? returnMetadata,
         string[]? returnProperties,
@@ -738,7 +751,8 @@ internal partial class WeaviateGrpcClient
             groupBy: groupBy,
             fields: returnProperties,
             metadata: returnMetadata,
-            reference: returnReferences
+            reference: returnReferences,
+            tenant: tenant
         );
 
         switch (mediaType)

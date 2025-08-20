@@ -3,66 +3,52 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
-public partial class CollectionClient<TData>
+public partial class CollectionClient
 {
     public const uint ITERATOR_CACHE_SIZE = 100;
 
     public System.Version WeaviateVersion => _client.WeaviateVersion;
 
     private readonly WeaviateClient _client;
-    private DataClient<TData> _dataClient;
-    private QueryClient<TData> _queryClient;
+
     private readonly string _collectionName;
 
-    private Collection? _backingCollection;
+    protected readonly string? _fixedTenant;
 
-    public Collection? Collection => _backingCollection;
-
-    public string Name => Collection?.Name ?? _collectionName;
+    internal string? Tenant => _fixedTenant ?? string.Empty;
 
     public WeaviateClient Client => _client;
-    public DataClient<TData> Data => _dataClient;
-    public QueryClient<TData> Query => _queryClient;
+    public TenantsClient Tenants { get; }
 
-    internal CollectionClient(WeaviateClient client, Collection collection)
-        : this(client, collection.Name)
+    public string Name => _collectionName;
+
+    internal CollectionClient(WeaviateClient client, Collection collection, string? tenant = null)
+        : this(client, collection.Name, tenant)
     {
-        _backingCollection = collection;
+        ArgumentNullException.ThrowIfNull(collection);
     }
 
-    internal CollectionClient(WeaviateClient client, string name)
+    internal CollectionClient(WeaviateClient client, string name, string? tenant = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
         _client = client;
-        _collectionName = _backingCollection?.Name ?? name;
-        _backingCollection = _backingCollection ?? new Collection { Name = _collectionName };
-        _dataClient = new DataClient<TData>(this);
-        _queryClient = new QueryClient<TData>(this);
+        _collectionName = name;
+        _fixedTenant = tenant;
+
+        Tenants = new TenantsClient(this);
     }
 
     public async Task<Collection?> Get()
     {
-        var response = await _client.RestClient.CollectionGet(_collectionName);
+        var response = await _client.RestClient.CollectionGet(Name);
 
-        if (response is null)
-        {
-            return _backingCollection = null;
-        }
-
-        _backingCollection = response.ToModel();
-
-        return _backingCollection;
+        return response?.ToModel();
     }
-
-    public CollectionUpdateBuilder<TData> Config =>
-        new CollectionUpdateBuilder<TData>(_client, _collectionName);
 
     public async Task Delete()
     {
-        await _client.RestClient.CollectionDelete(_collectionName);
-
-        _backingCollection = null;
+        await _client.RestClient.CollectionDelete(Name);
     }
 
     public async IAsyncEnumerable<WeaviateObject> Iterator(
@@ -82,7 +68,7 @@ public partial class CollectionClient<TData>
 
             var page = (
                 await _client.GrpcClient.FetchObjects(
-                    _collectionName,
+                    Name,
                     limit: cacheSize,
                     metadata: metadata,
                     fields: fields,
@@ -104,9 +90,58 @@ public partial class CollectionClient<TData>
         }
     }
 
-    internal async Task<ulong> Count()
+    public async Task<ulong> Count()
     {
         var result = await Aggregate.OverAll(totalCount: true);
         return Convert.ToUInt64(result.TotalCount);
+    }
+
+    public CollectionClient WithTenant(string tenant)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(tenant);
+
+        if (_fixedTenant is not null)
+        {
+            throw new InvalidOperationException(
+                "This collection client is already bound to a specific tenant."
+            );
+        }
+
+        return new CollectionClient(_client, _collectionName, tenant);
+    }
+}
+
+public partial class CollectionClient<TData> : CollectionClient
+{
+    private DataClient<TData> _dataClient;
+    private QueryClient<TData> _queryClient;
+    public DataClient<TData> Data => _dataClient;
+    public QueryClient<TData> Query => _queryClient;
+
+    internal CollectionClient(WeaviateClient client, Collection collection, string? tenant = null)
+        : this(client, collection.Name, tenant) { }
+
+    internal CollectionClient(WeaviateClient client, string name, string? tenant = null)
+        : base(client, name, tenant)
+    {
+        _dataClient = new DataClient<TData>(this);
+        _queryClient = new QueryClient<TData>(this);
+    }
+
+    public CollectionUpdateBuilder<TData> Config =>
+        new CollectionUpdateBuilder<TData>(Client, Name);
+
+    public new CollectionClient<TData> WithTenant(string tenant)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(tenant);
+
+        if (_fixedTenant is not null)
+        {
+            throw new InvalidOperationException(
+                "This collection client is already bound to a specific tenant."
+            );
+        }
+
+        return new CollectionClient<TData>(Client, Name, tenant);
     }
 }

@@ -9,7 +9,8 @@ internal partial class WeaviateGrpcClient
         string collection,
         Filter filter,
         bool dryRun,
-        bool verbose
+        bool verbose,
+        string? tenant = null
     )
     {
         var request = new BatchDeleteRequest
@@ -18,6 +19,7 @@ internal partial class WeaviateGrpcClient
             DryRun = dryRun,
             Verbose = verbose,
             Filters = filter.InternalFilter,
+            Tenant = tenant ?? string.Empty,
         };
 
         BatchDeleteReply reply = await _grpcClient.BatchDeleteAsync(

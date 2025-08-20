@@ -15,7 +15,7 @@ public partial class FilterTests : IntegrationTests
         var uuid_A2 = await cA.Data.Insert(new() { Name = "A2", Size = 5 });
 
         // Act
-        var list = await cA.Query.List(filter: Filter.Property("name").Equal("A1"));
+        var list = await cA.Query.FetchObjects(filter: Filter.Property("name").Equal("A1"));
 
         var objs = list.Objects.ToList();
 
@@ -48,7 +48,7 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(DateTimeKind.Utc, objA1.Metadata.CreationTime.Value.Kind);
 
         var filter = Filter.CreationTime.Equal(objA1.Metadata.CreationTime.Value);
-        var list = await cA.Query.List(filter: filter);
+        var list = await cA.Query.FetchObjects(filter: filter);
 
         Assert.NotEmpty(list);
 
@@ -68,7 +68,7 @@ public partial class FilterTests : IntegrationTests
         var uuid_A2 = await cA.Data.Insert(new() { Name = "A2", Size = 5 });
 
         // Act
-        var list = await cA.Query.List(
+        var list = await cA.Query.FetchObjects(
             filter: Filter<TestData>.Property(x => x.Size).GreaterThan(3)
         );
 
@@ -125,7 +125,7 @@ public partial class FilterTests : IntegrationTests
         uuidsFrom.AddRange([third, fourth]);
 
         // Act
-        var objects = await cFrom.Query.List(filter: filter);
+        var objects = await cFrom.Query.FetchObjects(filter: filter);
 
         var objs = objects.ToList();
 
@@ -149,7 +149,7 @@ public partial class FilterTests : IntegrationTests
             await c.Data.Insert(new { Name = "second" }, _reusableUuids[1]),
         };
 
-        var objects = (await c.Query.List(filter: filter)).ToList();
+        var objects = (await c.Query.FetchObjects(filter: filter)).ToList();
 
         Assert.Single(objects);
         Assert.Equal(_reusableUuids[0], objects[0].ID);
@@ -182,7 +182,7 @@ public partial class FilterTests : IntegrationTests
         };
 
         // Act
-        var objects = await collection.Query.List(filter: filter);
+        var objects = await collection.Query.FetchObjects(filter: filter);
         var objs = objects.ToList();
 
         // Assert
@@ -219,7 +219,7 @@ public partial class FilterTests : IntegrationTests
         await two.Data.Insert(new { }, references: [("ref2", uuid13)]);
 
         // Act
-        var objects = await two.Query.List(
+        var objects = await two.Query.FetchObjects(
             filter: Filter.Reference("ref2").Reference("ref1").Count.Equal(1),
             references:
             [
@@ -260,7 +260,7 @@ public partial class FilterTests : IntegrationTests
         );
 
         // Act
-        var objects = await collection.Query.List(
+        var objects = await collection.Query.FetchObjects(
             filter: Filter.CreationTime.ContainsAny(
                 [obj2!.Metadata.CreationTime!.Value, obj3!.Metadata.CreationTime!.Value]
             )
@@ -291,7 +291,7 @@ public partial class FilterTests : IntegrationTests
         await Task.Delay(10, TestContext.Current.CancellationToken);
         await collection.Data.Insert(new { });
 
-        var allObjects = await collection.Query.List(
+        var allObjects = await collection.Query.FetchObjects(
             sort: [Sort.ByCreationTime()],
             metadata: MetadataOptions.CreationTime
         );
@@ -302,7 +302,7 @@ public partial class FilterTests : IntegrationTests
         var weaviateFilter = filterFunc(referenceTime);
 
         // Act
-        var objects = await collection.Query.List(filter: weaviateFilter);
+        var objects = await collection.Query.FetchObjects(filter: weaviateFilter);
         var objs = objects.ToList();
 
         // Assert
@@ -360,7 +360,7 @@ public partial class FilterTests : IntegrationTests
         };
 
         // Act
-        var objects = await collection.Query.List(filter: filter);
+        var objects = await collection.Query.FetchObjects(filter: filter);
 
         // Assert
         Assert.Equal(results.Length, objects.Count());
@@ -468,7 +468,7 @@ public partial class FilterTests : IntegrationTests
         };
 
         // Act
-        var objects = await collection.Query.List(filter: filter);
+        var objects = await collection.Query.FetchObjects(filter: filter);
 
         // Assert
         Assert.Equal(results.Length, objects.Count());

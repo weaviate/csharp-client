@@ -630,7 +630,7 @@ public partial class CollectionsTests : IntegrationTests
         );
 
         // Act & Assert - Initial state
-        Collection config = collection.Collection!;
+        Collection config = (await collection.Get())!;
 
         Assert.Equal(1, config.ReplicationConfig!.Factor);
         Assert.False(config.ReplicationConfig.AsyncEnabled);
@@ -941,7 +941,9 @@ public partial class CollectionsTests : IntegrationTests
         var obj = await collection.Query.FetchObjectByID(uuid, properties: new[] { "blob" });
 
         // Fetch all
-        var objs = (await collection.Query.List(properties: new[] { "blob" })).Objects.ToList();
+        var objs = (
+            await collection.Query.FetchObjects(properties: new[] { "blob" })
+        ).Objects.ToList();
 
         Assert.Equal(2, objs.Count());
         Assert.NotNull(obj);

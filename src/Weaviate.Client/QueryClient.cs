@@ -15,7 +15,7 @@ public class QueryClient<TData>
     }
 
     #region Objects
-    public async Task<GroupByResult> List(
+    public async Task<GroupByResult> FetchObjects(
         Models.GroupByRequest groupBy,
         string[]? properties = null,
         uint? limit = null,
@@ -37,7 +37,7 @@ public class QueryClient<TData>
             )
         ).group;
 
-    public async Task<WeaviateResult> List(
+    public async Task<WeaviateResult> FetchObjects(
         string[]? properties = null,
         uint? limit = null,
         Filter? filter = null,
@@ -53,7 +53,8 @@ public class QueryClient<TData>
                 sort: sort,
                 filter: filter,
                 reference: references,
-                metadata: metadata
+                metadata: metadata,
+                tenant: _collectionClient.Tenant
             )
         ).result;
 
@@ -61,7 +62,8 @@ public class QueryClient<TData>
         Guid id,
         string[]? properties = null,
         IList<QueryReference>? references = null,
-        MetadataQuery? metadata = null
+        MetadataQuery? metadata = null,
+        string? tenant = null
     ) =>
         (
             await _client.GrpcClient.FetchObjects(
@@ -69,7 +71,8 @@ public class QueryClient<TData>
                 fields: properties,
                 filter: Filter.WithID(id),
                 reference: references,
-                metadata: metadata
+                metadata: metadata,
+                tenant: tenant ?? _collectionClient.Tenant
             )
         ).result.SingleOrDefault();
 
@@ -200,7 +203,8 @@ public class QueryClient<TData>
         string[]? searchFields = null,
         string[]? fields = null,
         IList<QueryReference>? references = null,
-        MetadataQuery? metadata = null
+        MetadataQuery? metadata = null,
+        string? tenant = null
     ) =>
         (
             await _client.GrpcClient.SearchBM25(
@@ -210,7 +214,8 @@ public class QueryClient<TData>
                 fields: fields,
                 groupBy: groupBy,
                 reference: references,
-                metadata: metadata
+                metadata: metadata,
+                tenant: tenant ?? _collectionClient.Tenant
             )
         ).group;
 
@@ -219,7 +224,8 @@ public class QueryClient<TData>
         string[]? searchFields = null,
         string[]? fields = null,
         IList<QueryReference>? references = null,
-        MetadataQuery? metadata = null
+        MetadataQuery? metadata = null,
+        string? tenant = null
     ) =>
         (
             await _client.GrpcClient.SearchBM25(
@@ -228,7 +234,8 @@ public class QueryClient<TData>
                 searchFields: searchFields,
                 fields: fields,
                 reference: references,
-                metadata: metadata
+                metadata: metadata,
+                tenant: tenant ?? _collectionClient.Tenant
             )
         ).result;
 
@@ -562,6 +569,7 @@ public class QueryClient<TData>
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         object? rerank = null,
+        string? tenant = null,
         string[]? targetVector = null
     )
     {
@@ -577,6 +585,7 @@ public class QueryClient<TData>
             filters: filters,
             groupBy: null,
             rerank: rerank,
+            tenant: tenant,
             targetVector: targetVector,
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,
@@ -600,7 +609,8 @@ public class QueryClient<TData>
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         object? rerank = null,
-        string[]? targetVector = null
+        string[]? targetVector = null,
+        string? tenant = null
     )
     {
         var result = await _client.GrpcClient.SearchNearMedia(
@@ -615,6 +625,7 @@ public class QueryClient<TData>
             filters: filters,
             groupBy: groupBy,
             rerank: rerank,
+            tenant: tenant,
             targetVector: targetVector,
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,

@@ -34,7 +34,7 @@ public partial class BatchTests : IntegrationTests
 
         var result = await client.Data.InsertMany(batcher);
 
-        var data = await client.Query.List(references: [new("ref"), new("ref2")]);
+        var data = await client.Query.FetchObjects(references: [new("ref"), new("ref2")]);
 
         Assert.Equal(expectedObjects, data.Count());
         Assert.Equal(expectedErrors, result.Count(r => r.Error != null));
@@ -97,7 +97,7 @@ public partial class BatchTests : IntegrationTests
         Assert.False(batchReturn2.HasErrors);
 
         // Fetch objects with references
-        var objects = await collection.Query.List(
+        var objects = await collection.Query.FetchObjects(
             properties: ["num"],
             references: [new QueryReference(linkOn: "ref")]
         );

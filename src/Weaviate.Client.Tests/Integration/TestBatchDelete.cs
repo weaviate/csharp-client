@@ -43,14 +43,14 @@ public partial class BatchDeleteTests : IntegrationTests
             batcher(new { age = 30, name = "Timothy" }, Guid.NewGuid());
         });
 
-        var objects = await collection.Query.List();
+        var objects = await collection.Query.FetchObjects();
         Assert.Equal(3, objects.Objects.Count());
 
         await collection.Data.DeleteMany(
             where: Filter.Property("age").Equal(10) | Filter.Property("age").Equal(30)
         );
 
-        objects = await collection.Query.List();
+        objects = await collection.Query.FetchObjects();
         Assert.Single(objects.Objects);
         Assert.Equal(20, (long)objects.Objects.First().Properties["age"]!);
         Assert.Equal("Tim", objects.Objects.First().Properties["name"]!);
@@ -70,14 +70,14 @@ public partial class BatchDeleteTests : IntegrationTests
             batcher(new { age = 10, name = "Tommy" }, Guid.NewGuid());
         });
 
-        var objects = await collection.Query.List();
+        var objects = await collection.Query.FetchObjects();
         Assert.Equal(2, objects.Objects.Count());
 
         await collection.Data.DeleteMany(
             where: Filter.Property("age").Equal(10) & Filter.Property("name").Equal("Timmy")
         );
 
-        objects = await collection.Query.List();
+        objects = await collection.Query.FetchObjects();
         Assert.Single(objects.Objects);
         Assert.Equal(10, (long)objects.Objects.First().Properties["age"]!);
         Assert.Equal("Tommy", (string)objects.Objects.First().Properties["name"]!);
