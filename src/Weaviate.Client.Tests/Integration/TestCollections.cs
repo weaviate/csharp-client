@@ -938,11 +938,11 @@ public partial class CollectionsTests : IntegrationTests
         await collection.Data.InsertMany(new[] { new { blob = blobData } });
 
         // Fetch by id
-        var obj = await collection.Query.FetchObjectByID(uuid, properties: new[] { "blob" });
+        var obj = await collection.Query.FetchObjectByID(uuid, returnProperties: new[] { "blob" });
 
         // Fetch all
         var objs = (
-            await collection.Query.FetchObjects(properties: new[] { "blob" })
+            await collection.Query.FetchObjects(returnProperties: new[] { "blob" })
         ).Objects.ToList();
 
         Assert.Equal(2, objs.Count());

@@ -21,6 +21,7 @@ public partial class AggregateClient
     public async Task<AggregateResult> OverAll(
         bool totalCount = true,
         Filter? filter = null,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -29,7 +30,7 @@ public partial class AggregateClient
             filter,
             null, // No GroupByRequest for OverAll
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -40,6 +41,7 @@ public partial class AggregateClient
         Aggregate.GroupBy? groupBy,
         bool totalCount = true,
         Filter? filter = null,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -48,7 +50,7 @@ public partial class AggregateClient
             filter,
             groupBy,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -64,6 +66,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -77,7 +80,7 @@ public partial class AggregateClient
             groupBy,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -92,6 +95,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -105,7 +109,7 @@ public partial class AggregateClient
             null, // No GroupByRequest for NearVector
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -123,6 +127,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -138,7 +143,7 @@ public partial class AggregateClient
             groupBy,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -155,6 +160,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -170,7 +176,7 @@ public partial class AggregateClient
             null, // No GroupByRequest for NearText
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -182,11 +188,13 @@ public partial class AggregateClient
         float alpha = 0.7f,
         AbstractVectorData? vectors = null,
         string[]? queryProperties = null,
+        uint? objectLimit = null,
         BM25Operator? bm25Operator = null,
         Filter? filter = null,
         string? targetVector = null,
         float? maxVectorDistance = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -200,9 +208,10 @@ public partial class AggregateClient
             targetVector,
             maxVectorDistance,
             filter,
-            null, // No GroupBy for AggregateResult
+            null,
+            objectLimit,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -221,6 +230,7 @@ public partial class AggregateClient
         string? targetVector = null,
         float? maxVectorDistance = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -235,9 +245,69 @@ public partial class AggregateClient
             maxVectorDistance,
             filter,
             groupBy,
+            objectLimit,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
+        );
+
+        return AggregateGroupByResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateResult> NearObject(
+        Guid nearObject,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        string? tenant = null,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearObject(
+            _collectionClient.Name,
+            objectID: nearObject,
+            certainty: certainty,
+            distance: distance,
+            limit: limit,
+            filter: filter,
+            groupBy: null,
+            targetVector: targetVector,
+            totalCount: totalCount,
+            tenant ?? _collectionClient.Tenant,
+            metrics: metrics
+        );
+
+        return AggregateResult.FromGrpcReply(result);
+    }
+
+    public async Task<AggregateGroupByResult> NearObject(
+        Guid nearObject,
+        Aggregate.GroupBy? groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filter = null,
+        string[]? targetVector = null,
+        bool totalCount = true,
+        string? tenant = null,
+        params Aggregate.Metric[] metrics
+    )
+    {
+        var result = await _client.GrpcClient.AggregateNearObject(
+            _collectionClient.Name,
+            objectID: nearObject,
+            certainty: certainty,
+            distance: distance,
+            limit: limit,
+            filter: filter,
+            groupBy: groupBy,
+            targetVector: targetVector,
+            totalCount: totalCount,
+            tenant ?? _collectionClient.Tenant,
+            metrics: metrics
         );
 
         return AggregateGroupByResult.FromGrpcReply(result);
@@ -249,9 +319,9 @@ public partial class AggregateClient
         double? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        string[]? groupBy = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -266,7 +336,7 @@ public partial class AggregateClient
             null,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -282,6 +352,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -296,7 +367,7 @@ public partial class AggregateClient
             groupBy,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -311,6 +382,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -325,7 +397,7 @@ public partial class AggregateClient
             null,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -341,6 +413,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -355,7 +428,7 @@ public partial class AggregateClient
             groupBy,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -370,6 +443,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -384,7 +458,7 @@ public partial class AggregateClient
             null,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -400,6 +474,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -414,7 +489,7 @@ public partial class AggregateClient
             groupBy,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -429,6 +504,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -443,7 +519,7 @@ public partial class AggregateClient
             null,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -459,6 +535,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -473,7 +550,7 @@ public partial class AggregateClient
             groupBy,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -488,6 +565,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -502,7 +580,7 @@ public partial class AggregateClient
             null,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -518,6 +596,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -532,7 +611,7 @@ public partial class AggregateClient
             groupBy,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -547,6 +626,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -561,7 +641,7 @@ public partial class AggregateClient
             null,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
@@ -577,6 +657,7 @@ public partial class AggregateClient
         Filter? filter = null,
         string[]? targetVector = null,
         bool totalCount = true,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -591,7 +672,7 @@ public partial class AggregateClient
             groupBy,
             targetVector,
             totalCount,
-            _collectionClient.Tenant,
+            tenant ?? _collectionClient.Tenant,
             metrics
         );
 
