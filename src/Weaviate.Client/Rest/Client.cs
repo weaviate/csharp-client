@@ -208,7 +208,7 @@ public class WeaviateRestClient : IDisposable
         return contents;
     }
 
-    internal async Task<Dto.Object> ObjectInsert(string collectionName, Dto.Object data)
+    internal async Task<Dto.Object> ObjectInsert(Dto.Object data)
     {
         var response = await _httpClient.PostAsJsonAsync(
             WeaviateEndpoints.Objects(),
@@ -240,17 +240,21 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task DeleteObject(string collectionName, Guid id, string? tenant = null)
     {
-        var url = WeaviateEndpoints.CollectionObject(collectionName, id);
-        var response = await _httpClient.DeleteAsync(
-            url + (tenant is not null ? $"?tenant={tenant}" : "")
-        );
+        var url = WeaviateEndpoints.CollectionObject(collectionName, id, tenant);
+        var response = await _httpClient.DeleteAsync(url);
 
         await response.EnsureExpectedStatusCodeAsync([204, 404], "delete object");
     }
 
-    internal async Task ReferenceAdd(string collectionName, Guid from, string fromProperty, Guid to)
+    internal async Task ReferenceAdd(
+        string collectionName,
+        Guid from,
+        string fromProperty,
+        Guid to,
+        string? tenant = null
+    )
     {
-        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
+        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
 
         var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons.First();
@@ -268,10 +272,11 @@ public class WeaviateRestClient : IDisposable
         string collectionName,
         Guid from,
         string fromProperty,
-        Guid[] to
+        Guid[] to,
+        string? tenant = null
     )
     {
-        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
+        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
 
         var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons;
@@ -289,10 +294,11 @@ public class WeaviateRestClient : IDisposable
         string collectionName,
         Guid from,
         string fromProperty,
-        Guid to
+        Guid to,
+        string? tenant = null
     )
     {
-        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
+        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
 
         var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons.First();
@@ -388,14 +394,7 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<NodeStatus[]> Nodes(string? collection, string verbosity)
     {
-        var path = WeaviateEndpoints.Nodes();
-        if (collection is not null)
-        {
-            path += $"/{collection}";
-        }
-        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
-        query["output"] = verbosity.ToLowerInvariant();
-        path += $"?{query}";
+        var path = WeaviateEndpoints.Nodes(collection, verbosity);
         var response = await _httpClient.GetAsync(path);
         var responseContent = await response.Content.ReadAsStringAsync();
         // Print the response content
