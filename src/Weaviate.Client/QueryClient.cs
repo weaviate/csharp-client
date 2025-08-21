@@ -35,7 +35,8 @@ public class QueryClient<TData>
                 groupBy: groupBy,
                 reference: returnReferences,
                 metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).group;
 
@@ -126,7 +127,8 @@ public class QueryClient<TData>
                 fields: returnProperties,
                 reference: returnReferences,
                 metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).result;
 
@@ -152,7 +154,8 @@ public class QueryClient<TData>
                 fields: returnProperties,
                 reference: returnReferences,
                 metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).group;
 
@@ -178,7 +181,8 @@ public class QueryClient<TData>
                 fields: returnProperties,
                 reference: returnReferences,
                 metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).result;
 
@@ -206,7 +210,8 @@ public class QueryClient<TData>
                 fields: returnProperties,
                 reference: returnReferences,
                 metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).group;
 
@@ -228,7 +233,8 @@ public class QueryClient<TData>
                 groupBy: groupBy,
                 reference: returnReferences,
                 metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).group;
 
@@ -248,7 +254,8 @@ public class QueryClient<TData>
                 fields: returnProperties,
                 reference: returnReferences,
                 metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).result;
 
@@ -289,7 +296,8 @@ public class QueryClient<TData>
                 returnMetadata: returnMetadata,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).result;
     }
@@ -336,7 +344,8 @@ public class QueryClient<TData>
                 returnMetadata: returnMetadata,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).result;
     }
@@ -385,7 +394,8 @@ public class QueryClient<TData>
                 returnMetadata: returnMetadata,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).group;
     }
@@ -429,7 +439,8 @@ public class QueryClient<TData>
                 returnMetadata: returnMetadata,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).group;
     }
@@ -465,7 +476,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            tenant: tenant ?? _collectionClient.Tenant
+            tenant: tenant ?? _collectionClient.Tenant,
+            consistencyLevel: _collectionClient.ConsistencyLevel
         );
 
         return result.result;
@@ -503,7 +515,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            tenant: tenant ?? _collectionClient.Tenant
+            tenant: tenant ?? _collectionClient.Tenant,
+            consistencyLevel: _collectionClient.ConsistencyLevel
         );
 
         return result.group;
@@ -616,7 +629,8 @@ public class QueryClient<TData>
             targetVector: targetVector,
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            consistencyLevel: _collectionClient.ConsistencyLevel
         );
 
         return result.result;
@@ -656,7 +670,8 @@ public class QueryClient<TData>
             targetVector: targetVector,
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            consistencyLevel: _collectionClient.ConsistencyLevel
         );
 
         return result.group;
