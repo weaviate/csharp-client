@@ -80,5 +80,22 @@ internal static class WeaviateEndpoints
         return path;
     }
 
-    internal static string? ReferencesAdd() => "batch/references";
+    internal static string? ReferencesAdd(ConsistencyLevel? consistencyLevel = null)
+    {
+        var path = $"batch/references";
+
+        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+        if (consistencyLevel is not null)
+        {
+            query["consistency_level"] = consistencyLevel.Value.ToString().ToLower();
+        }
+
+        if (query.Count > 0)
+        {
+            path += $"?{query}";
+        }
+
+        return path;
+    }
 }
