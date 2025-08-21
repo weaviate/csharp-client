@@ -374,8 +374,9 @@ public partial class AggregateClient
         return AggregateGroupByResult.FromGrpcReply(result);
     }
 
-    public async Task<AggregateResult> NearVideo(
+    public async Task<AggregateResult> NearMedia(
         byte[] media,
+        NearMediaType mediaType,
         double? certainty = null,
         double? distance = null,
         uint? limit = null,
@@ -389,7 +390,7 @@ public partial class AggregateClient
         var result = await _client.GrpcClient.AggregateNearMedia(
             _collectionName,
             media,
-            NearMediaType.Video,
+            mediaType,
             certainty,
             distance,
             limit,
@@ -404,8 +405,9 @@ public partial class AggregateClient
         return AggregateResult.FromGrpcReply(result);
     }
 
-    public async Task<AggregateGroupByResult> NearVideo(
+    public async Task<AggregateGroupByResult> NearMedia(
         byte[] media,
+        NearMediaType mediaType,
         Aggregate.GroupBy? groupBy,
         double? certainty = null,
         double? distance = null,
@@ -420,251 +422,7 @@ public partial class AggregateClient
         var result = await _client.GrpcClient.AggregateNearMedia(
             _collectionName,
             media,
-            NearMediaType.Video,
-            certainty,
-            distance,
-            limit,
-            filter,
-            groupBy,
-            targetVector,
-            totalCount,
-            tenant ?? _collectionClient.Tenant,
-            metrics
-        );
-
-        return AggregateGroupByResult.FromGrpcReply(result);
-    }
-
-    public async Task<AggregateResult> NearAudio(
-        byte[] media,
-        double? certainty = null,
-        double? distance = null,
-        uint? limit = null,
-        Filter? filter = null,
-        string[]? targetVector = null,
-        bool totalCount = true,
-        string? tenant = null,
-        params Aggregate.Metric[] metrics
-    )
-    {
-        var result = await _client.GrpcClient.AggregateNearMedia(
-            _collectionName,
-            media,
-            NearMediaType.Audio,
-            certainty,
-            distance,
-            limit,
-            filter,
-            null,
-            targetVector,
-            totalCount,
-            tenant ?? _collectionClient.Tenant,
-            metrics
-        );
-
-        return AggregateResult.FromGrpcReply(result);
-    }
-
-    public async Task<AggregateGroupByResult> NearAudio(
-        byte[] media,
-        Aggregate.GroupBy? groupBy,
-        double? certainty = null,
-        double? distance = null,
-        uint? limit = null,
-        Filter? filter = null,
-        string[]? targetVector = null,
-        bool totalCount = true,
-        string? tenant = null,
-        params Aggregate.Metric[] metrics
-    )
-    {
-        var result = await _client.GrpcClient.AggregateNearMedia(
-            _collectionName,
-            media,
-            NearMediaType.Audio,
-            certainty,
-            distance,
-            limit,
-            filter,
-            groupBy,
-            targetVector,
-            totalCount,
-            tenant ?? _collectionClient.Tenant,
-            metrics
-        );
-
-        return AggregateGroupByResult.FromGrpcReply(result);
-    }
-
-    public async Task<AggregateResult> NearDepth(
-        byte[] media,
-        double? certainty = null,
-        double? distance = null,
-        uint? limit = null,
-        Filter? filter = null,
-        string[]? targetVector = null,
-        bool totalCount = true,
-        string? tenant = null,
-        params Aggregate.Metric[] metrics
-    )
-    {
-        var result = await _client.GrpcClient.AggregateNearMedia(
-            _collectionName,
-            media,
-            NearMediaType.Depth,
-            certainty,
-            distance,
-            limit,
-            filter,
-            null,
-            targetVector,
-            totalCount,
-            tenant ?? _collectionClient.Tenant,
-            metrics
-        );
-
-        return AggregateResult.FromGrpcReply(result);
-    }
-
-    public async Task<AggregateGroupByResult> NearDepth(
-        byte[] media,
-        Aggregate.GroupBy? groupBy,
-        double? certainty = null,
-        double? distance = null,
-        uint? limit = null,
-        Filter? filter = null,
-        string[]? targetVector = null,
-        bool totalCount = true,
-        string? tenant = null,
-        params Aggregate.Metric[] metrics
-    )
-    {
-        var result = await _client.GrpcClient.AggregateNearMedia(
-            _collectionName,
-            media,
-            NearMediaType.Depth,
-            certainty,
-            distance,
-            limit,
-            filter,
-            groupBy,
-            targetVector,
-            totalCount,
-            tenant ?? _collectionClient.Tenant,
-            metrics
-        );
-
-        return AggregateGroupByResult.FromGrpcReply(result);
-    }
-
-    public async Task<AggregateResult> NearThermal(
-        byte[] media,
-        double? certainty = null,
-        double? distance = null,
-        uint? limit = null,
-        Filter? filter = null,
-        string[]? targetVector = null,
-        bool totalCount = true,
-        string? tenant = null,
-        params Aggregate.Metric[] metrics
-    )
-    {
-        var result = await _client.GrpcClient.AggregateNearMedia(
-            _collectionName,
-            media,
-            NearMediaType.Thermal,
-            certainty,
-            distance,
-            limit,
-            filter,
-            null,
-            targetVector,
-            totalCount,
-            tenant ?? _collectionClient.Tenant,
-            metrics
-        );
-
-        return AggregateResult.FromGrpcReply(result);
-    }
-
-    public async Task<AggregateGroupByResult> NearThermal(
-        byte[] media,
-        Aggregate.GroupBy? groupBy,
-        double? certainty = null,
-        double? distance = null,
-        uint? limit = null,
-        Filter? filter = null,
-        string[]? targetVector = null,
-        bool totalCount = true,
-        string? tenant = null,
-        params Aggregate.Metric[] metrics
-    )
-    {
-        var result = await _client.GrpcClient.AggregateNearMedia(
-            _collectionName,
-            media,
-            NearMediaType.Thermal,
-            certainty,
-            distance,
-            limit,
-            filter,
-            groupBy,
-            targetVector,
-            totalCount,
-            tenant ?? _collectionClient.Tenant,
-            metrics
-        );
-
-        return AggregateGroupByResult.FromGrpcReply(result);
-    }
-
-    public async Task<AggregateResult> NearIMU(
-        byte[] media,
-        double? certainty = null,
-        double? distance = null,
-        uint? limit = null,
-        Filter? filter = null,
-        string[]? targetVector = null,
-        bool totalCount = true,
-        string? tenant = null,
-        params Aggregate.Metric[] metrics
-    )
-    {
-        var result = await _client.GrpcClient.AggregateNearMedia(
-            _collectionName,
-            media,
-            NearMediaType.IMU,
-            certainty,
-            distance,
-            limit,
-            filter,
-            null,
-            targetVector,
-            totalCount,
-            tenant ?? _collectionClient.Tenant,
-            metrics
-        );
-
-        return AggregateResult.FromGrpcReply(result);
-    }
-
-    public async Task<AggregateGroupByResult> NearIMU(
-        byte[] media,
-        Aggregate.GroupBy? groupBy,
-        double? certainty = null,
-        double? distance = null,
-        uint? limit = null,
-        Filter? filter = null,
-        string[]? targetVector = null,
-        bool totalCount = true,
-        string? tenant = null,
-        params Aggregate.Metric[] metrics
-    )
-    {
-        var result = await _client.GrpcClient.AggregateNearMedia(
-            _collectionName,
-            media,
-            NearMediaType.IMU,
+            mediaType,
             certainty,
             distance,
             limit,
