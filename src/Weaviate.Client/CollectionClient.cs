@@ -13,30 +13,40 @@ public partial class CollectionClient
 
     private readonly string _collectionName;
 
-    protected readonly string? _fixedTenant;
+    private readonly string? _fixedTenant = null;
+    private readonly ConsistencyLevel? _fixedConsistencyLevel = null;
 
     internal string? Tenant => _fixedTenant ?? string.Empty;
+    internal ConsistencyLevel? ConsistencyLevel => _fixedConsistencyLevel;
 
     public WeaviateClient Client => _client;
-    public TenantsClient Tenants { get; }
 
     public string Name => _collectionName;
 
-    internal CollectionClient(WeaviateClient client, Collection collection, string? tenant = null)
-        : this(client, collection.Name, tenant)
+    internal CollectionClient(
+        WeaviateClient client,
+        Collection collection,
+        string? tenant = null,
+        ConsistencyLevel? consistencyLevel = null
+    )
+        : this(client, collection.Name, tenant, consistencyLevel)
     {
         ArgumentNullException.ThrowIfNull(collection);
     }
 
-    internal CollectionClient(WeaviateClient client, string name, string? tenant = null)
+    internal CollectionClient(
+        WeaviateClient client,
+        string name,
+        string? tenant = null,
+        ConsistencyLevel? consistencyLevel = null
+    )
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
         _client = client;
         _collectionName = name;
         _fixedTenant = tenant;
-
-        Tenants = new TenantsClient(this);
+        _fixedConsistencyLevel = consistencyLevel;
     }
 
     public async Task<Collection?> Get()
@@ -107,7 +117,19 @@ public partial class CollectionClient
             );
         }
 
-        return new CollectionClient(_client, _collectionName, tenant);
+        return new CollectionClient(_client, _collectionName, tenant, ConsistencyLevel);
+    }
+
+    public CollectionClient WithConsistencyLevel(ConsistencyLevel consistencyLevel)
+    {
+        if (_fixedConsistencyLevel is not null)
+        {
+            throw new InvalidOperationException(
+                "This collection client is already bound to a specific consistency level."
+            );
+        }
+
+        return new CollectionClient(_client, _collectionName, Tenant, consistencyLevel);
     }
 }
 
@@ -118,30 +140,39 @@ public partial class CollectionClient<TData> : CollectionClient
     public DataClient<TData> Data => _dataClient;
     public QueryClient<TData> Query => _queryClient;
 
-    internal CollectionClient(WeaviateClient client, Collection collection, string? tenant = null)
-        : this(client, collection.Name, tenant) { }
+    internal CollectionClient(
+        WeaviateClient client,
+        Collection collection,
+        string? tenant = null,
+        ConsistencyLevel? consistencyLevel = null
+    )
+        : this(client, collection.Name, tenant, consistencyLevel) { }
 
-    internal CollectionClient(WeaviateClient client, string name, string? tenant = null)
-        : base(client, name, tenant)
+    internal CollectionClient(
+        WeaviateClient client,
+        string name,
+        string? tenant = null,
+        ConsistencyLevel? consistencyLevel = null
+    )
+        : base(client, name, tenant, consistencyLevel)
     {
         _dataClient = new DataClient<TData>(this);
         _queryClient = new QueryClient<TData>(this);
     }
 
-    public CollectionUpdateBuilder<TData> Config =>
-        new CollectionUpdateBuilder<TData>(Client, Name);
+    public CollectionUpdateBuilder<TData> Config => new(Client, Name);
 
     public new CollectionClient<TData> WithTenant(string tenant)
     {
         ArgumentException.ThrowIfNullOrEmpty(tenant);
 
-        if (_fixedTenant is not null)
+        if (Tenant is not null)
         {
             throw new InvalidOperationException(
                 "This collection client is already bound to a specific tenant."
             );
         }
 
-        return new CollectionClient<TData>(Client, Name, tenant);
+        return new CollectionClient<TData>(Client, Name, tenant, ConsistencyLevel);
     }
 }

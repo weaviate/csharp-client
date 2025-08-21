@@ -2,6 +2,11 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+public partial class CollectionClient
+{
+    public TenantsClient Tenants => new(this);
+}
+
 public class TenantsClient
 {
     private CollectionClient _collectionClient;

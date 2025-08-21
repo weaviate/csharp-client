@@ -330,7 +330,8 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<BatchReferenceResponse[]> ReferenceAddMany(
         string collectionName,
-        Models.DataReference[] references
+        Models.DataReference[] references,
+        ConsistencyLevel? consistencyLevel = null
     )
     {
         var batchRefs = references.SelectMany(r =>
@@ -346,7 +347,7 @@ public class WeaviateRestClient : IDisposable
                 })
         );
 
-        var path = WeaviateEndpoints.ReferencesAdd();
+        var path = WeaviateEndpoints.ReferencesAdd(consistencyLevel);
 
         var response = await _httpClient.PostAsJsonAsync(
             path,
