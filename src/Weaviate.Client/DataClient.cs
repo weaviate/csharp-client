@@ -47,7 +47,7 @@ public class DataClient<TData>
             Tenant = tenant ?? _collectionClient.Tenant,
         };
 
-        var response = await _client.RestClient.ObjectInsert(_collectionName, dto);
+        var response = await _client.RestClient.ObjectInsert(dto);
 
         return response.Id!.Value;
     }
@@ -236,13 +236,20 @@ public class DataClient<TData>
             _collectionName,
             reference.From,
             reference.FromProperty,
-            reference.To.Single()
+            reference.To.Single(),
+            _collectionClient.Tenant
         );
     }
 
     public async Task ReferenceAdd(Guid from, string fromProperty, Guid to)
     {
-        await _client.RestClient.ReferenceAdd(_collectionName, from, fromProperty, to);
+        await _client.RestClient.ReferenceAdd(
+            _collectionName,
+            from,
+            fromProperty,
+            to,
+            _collectionClient.Tenant
+        );
     }
 
     public async Task<BatchReferenceReturn> ReferenceAddMany(params DataReference[] references)
@@ -272,12 +279,24 @@ public class DataClient<TData>
 
     public async Task ReferenceReplace(Guid from, string fromProperty, Guid[] to)
     {
-        await _client.RestClient.ReferenceReplace(_collectionName, from, fromProperty, to);
+        await _client.RestClient.ReferenceReplace(
+            _collectionName,
+            from,
+            fromProperty,
+            to,
+            _collectionClient.Tenant
+        );
     }
 
     public async Task ReferenceDelete(Guid from, string fromProperty, Guid to)
     {
-        await _client.RestClient.ReferenceDelete(_collectionName, from, fromProperty, to);
+        await _client.RestClient.ReferenceDelete(
+            _collectionName,
+            from,
+            fromProperty,
+            to,
+            _collectionClient.Tenant
+        );
     }
 
     public async Task<DeleteManyResult> DeleteMany(
