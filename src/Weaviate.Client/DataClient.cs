@@ -256,7 +256,11 @@ public class DataClient<TData>
     {
         var stopwatch = Stopwatch.StartNew();
 
-        var result = await _client.RestClient.ReferenceAddMany(_collectionName, references);
+        var result = await _client.RestClient.ReferenceAddMany(
+            _collectionName,
+            references,
+            _collectionClient.ConsistencyLevel
+        );
 
         stopwatch.Stop();
         var elapsedSeconds = (float)stopwatch.Elapsed.TotalSeconds;
