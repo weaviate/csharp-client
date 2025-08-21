@@ -25,7 +25,7 @@ public partial class SearchTests : IntegrationTests
                 alpha: 0,
                 query: "name",
                 fusionType: fusionType,
-                metadata: MetadataOptions.Vector
+                returnMetadata: MetadataOptions.Vector
             )
         ).Objects;
 
@@ -67,7 +67,7 @@ public partial class SearchTests : IntegrationTests
                     ObjectsPerGroup = 1,
                     NumberOfGroups = 2,
                 },
-                metadata: MetadataOptions.Vector
+                returnMetadata: MetadataOptions.Vector
             )
         ).Objects;
 
@@ -88,7 +88,10 @@ public partial class SearchTests : IntegrationTests
         var uuid = Guid.NewGuid();
         await collection.Data.Insert(new { Name = "some name" }, id: uuid);
 
-        var obj = await collection.Query.FetchObjectByID(uuid, metadata: MetadataOptions.Vector);
+        var obj = await collection.Query.FetchObjectByID(
+            uuid,
+            returnMetadata: MetadataOptions.Vector
+        );
         Assert.NotNull(obj);
         Assert.NotEmpty(obj.Vectors);
 
@@ -182,7 +185,7 @@ public partial class SearchTests : IntegrationTests
         await collection.Data.Insert(new { text = "banana" }, id: uuidBanana);
         var obj = await collection.Query.FetchObjectByID(
             uuidBanana,
-            metadata: MetadataOptions.Vector
+            returnMetadata: MetadataOptions.Vector
         );
         Assert.NotNull(obj);
 
@@ -202,7 +205,7 @@ public partial class SearchTests : IntegrationTests
         var nearVec = (
             await collection.Query.NearVector(
                 vector: VectorData.Create("default", obj.Vectors["default"]),
-                metadata: MetadataOptions.Distance
+                returnMetadata: MetadataOptions.Distance
             )
         ).Objects;
 
@@ -214,7 +217,7 @@ public partial class SearchTests : IntegrationTests
                 (VectorData<float>)obj.Vectors["default"],
                 Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
             ),
-            metadata: MetadataOptions.Full
+            returnMetadata: MetadataOptions.Full
         );
 
         Assert.Equal(uuidBanana, hybridObjs2.First().ID);
@@ -240,7 +243,7 @@ public partial class SearchTests : IntegrationTests
 
         var obj = await collection.Query.FetchObjectByID(
             uuidBanana,
-            metadata: MetadataOptions.Vector
+            returnMetadata: MetadataOptions.Vector
         );
 
         Assert.NotNull(obj);
@@ -260,7 +263,7 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.NearVector(
                 vector: VectorData.Create("text", obj.Vectors["text"]),
                 targetVector: ["text"],
-                metadata: MetadataOptions.Distance
+                returnMetadata: MetadataOptions.Distance
             )
         ).Objects;
 
@@ -274,7 +277,7 @@ public partial class SearchTests : IntegrationTests
                     Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
                 ),
                 targetVector: ["text"],
-                metadata: MetadataOptions.Full
+                returnMetadata: MetadataOptions.Full
             )
         ).Objects;
 
@@ -313,7 +316,7 @@ public partial class SearchTests : IntegrationTests
                     MoveTo: new Move(force: 0.1f, concepts: ["pudding"]),
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
                 ),
-                metadata: MetadataOptions.Full
+                returnMetadata: MetadataOptions.Full
             )
         ).Objects;
 
@@ -357,7 +360,7 @@ public partial class SearchTests : IntegrationTests
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
                 ),
                 targetVector: ["text"],
-                metadata: MetadataOptions.Full
+                returnMetadata: MetadataOptions.Full
             )
         ).Objects;
 

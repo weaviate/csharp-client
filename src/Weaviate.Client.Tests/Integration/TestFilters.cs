@@ -39,7 +39,7 @@ public partial class FilterTests : IntegrationTests
 
         var objsA1 = await cA.Query.FetchObjectByID(
             uuid_A1,
-            metadata: MetadataOptions.CreationTime
+            returnMetadata: MetadataOptions.CreationTime
         );
 
         // Act
@@ -221,7 +221,7 @@ public partial class FilterTests : IntegrationTests
         // Act
         var objects = await two.Query.FetchObjects(
             filter: Filter.Reference("ref2").Reference("ref1").Count.Equal(1),
-            references:
+            returnReferences:
             [
                 new QueryReference("ref2", [], references: [new QueryReference("ref1", [])]),
             ]
@@ -252,11 +252,11 @@ public partial class FilterTests : IntegrationTests
 
         var obj2 = await collection.Query.FetchObjectByID(
             uuid2,
-            metadata: MetadataOptions.CreationTime
+            returnMetadata: MetadataOptions.CreationTime
         );
         var obj3 = await collection.Query.FetchObjectByID(
             uuid3,
-            metadata: MetadataOptions.CreationTime
+            returnMetadata: MetadataOptions.CreationTime
         );
 
         // Act
@@ -293,7 +293,7 @@ public partial class FilterTests : IntegrationTests
 
         var allObjects = await collection.Query.FetchObjects(
             sort: [Sort.ByCreationTime()],
-            metadata: MetadataOptions.CreationTime
+            returnMetadata: MetadataOptions.CreationTime
         );
         var allObjectsList = allObjects.ToList();
 

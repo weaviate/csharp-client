@@ -125,7 +125,7 @@ public class TestNearQueries : IntegrationTests
                 NumberOfGroups = 4,
                 ObjectsPerGroup = 10,
             },
-            metadata: new MetadataQuery(MetadataOptions.Distance | MetadataOptions.Certainty)
+            returnMetadata: new MetadataQuery(MetadataOptions.Distance | MetadataOptions.Certainty)
         );
 
         var objects = ret.Objects.ToList();

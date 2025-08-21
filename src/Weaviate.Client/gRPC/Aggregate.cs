@@ -283,6 +283,7 @@ internal partial class WeaviateGrpcClient
         float? maxVectorDistance,
         Filter? filter,
         Aggregate.GroupBy? groupBy,
+        uint? objectLimit,
         bool totalCount,
         string? tenant,
         Aggregate.Metric[] metrics
@@ -292,7 +293,7 @@ internal partial class WeaviateGrpcClient
             collection,
             filter,
             groupBy,
-            groupBy?.Limit,
+            objectLimit,
             totalCount,
             tenant,
             metrics
@@ -352,6 +353,48 @@ internal partial class WeaviateGrpcClient
                 },
                 MinimumOrTokensMatch = (bm25Operator as BM25Operator.Or)?.MinimumMatch ?? 1,
             };
+        }
+
+        return await Aggregate(request);
+    }
+
+    internal async Task<AggregateReply> AggregateNearObject(
+        string collection,
+        Guid objectID,
+        double? certainty,
+        double? distance,
+        uint? limit,
+        Filter? filter,
+        Aggregate.GroupBy? groupBy,
+        string[]? targetVector,
+        bool totalCount,
+        string? tenant,
+        Aggregate.Metric[] metrics
+    )
+    {
+        var request = BaseAggregateRequest(
+            collection,
+            filter,
+            groupBy,
+            limit,
+            totalCount,
+            tenant,
+            metrics
+        );
+
+        request.NearObject = new()
+        {
+            Id = objectID.ToString(),
+            Targets = BuildTargetVector(targetVector),
+        };
+
+        if (certainty.HasValue)
+        {
+            request.NearObject.Certainty = certainty.Value;
+        }
+        if (distance.HasValue)
+        {
+            request.NearObject.Distance = distance.Value;
         }
 
         return await Aggregate(request);

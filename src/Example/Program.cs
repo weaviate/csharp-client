@@ -157,8 +157,8 @@ class Program
             vector: VectorData.Create(20f, 21f, 22f),
             distance: 0.5f,
             limit: 5,
-            fields: ["name", "breed", "color", "counter"],
-            metadata: MetadataOptions.Score | MetadataOptions.Distance
+            returnProperties: ["name", "breed", "color", "counter"],
+            returnMetadata: MetadataOptions.Score | MetadataOptions.Distance
         );
 
         foreach (var cat in queryNearVector.Objects.Select(o => o.As<Cat>()))
@@ -187,7 +187,7 @@ class Program
 
         var sphynxQuery = await collection.Query.BM25(
             query: "Sphynx",
-            metadata: MetadataOptions.Score
+            returnMetadata: MetadataOptions.Score
         );
 
         Console.WriteLine();
