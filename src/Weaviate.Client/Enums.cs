@@ -3,7 +3,7 @@ namespace Weaviate.Client;
 /// <summary>
 /// The consistency levels when writing to Weaviate with replication enabled.
 /// </summary>
-public enum ConsistencyLevel
+public enum ConsistencyLevels
 {
     /// <summary>
     /// Wait for confirmation of write success from all, `N`, replicas.
