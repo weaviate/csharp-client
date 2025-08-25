@@ -5,14 +5,14 @@ namespace Weaviate.Client.Grpc;
 
 internal partial class WeaviateGrpcClient
 {
-    private static V1.ConsistencyLevel MapConsistencyLevel(ConsistencyLevel value)
+    private static V1.ConsistencyLevel MapConsistencyLevel(ConsistencyLevels value)
     {
         return value switch
         {
-            ConsistencyLevel.Unspecified => V1.ConsistencyLevel.Unspecified,
-            ConsistencyLevel.All => V1.ConsistencyLevel.All,
-            ConsistencyLevel.One => V1.ConsistencyLevel.One,
-            ConsistencyLevel.Quorum => V1.ConsistencyLevel.Quorum,
+            ConsistencyLevels.Unspecified => V1.ConsistencyLevel.Unspecified,
+            ConsistencyLevels.All => V1.ConsistencyLevel.All,
+            ConsistencyLevels.One => V1.ConsistencyLevel.One,
+            ConsistencyLevels.Quorum => V1.ConsistencyLevel.Quorum,
             _ => throw new NotSupportedException($"Consistency level {value} is not supported."),
         };
     }
@@ -30,7 +30,7 @@ internal partial class WeaviateGrpcClient
         string[]? fields = null,
         Guid? after = null,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         var metadataRequest = new MetadataRequest()
@@ -464,7 +464,7 @@ internal partial class WeaviateGrpcClient
         MetadataQuery? metadata = null,
         Guid? after = null,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         var req = BaseSearchRequest(
@@ -502,7 +502,7 @@ internal partial class WeaviateGrpcClient
         IList<QueryReference>? reference = null,
         MetadataQuery? metadata = null,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         var request = BaseSearchRequest(
@@ -541,7 +541,7 @@ internal partial class WeaviateGrpcClient
         IList<QueryReference>? reference = null,
         MetadataQuery? metadata = null,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         var request = BaseSearchRequest(
@@ -576,7 +576,7 @@ internal partial class WeaviateGrpcClient
         IList<QueryReference>? reference = null,
         MetadataQuery? metadata = null,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         var request = BaseSearchRequest(
@@ -624,7 +624,7 @@ internal partial class WeaviateGrpcClient
         MetadataQuery? returnMetadata = null,
         IList<QueryReference>? returnReferences = null,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         if (
@@ -690,7 +690,7 @@ internal partial class WeaviateGrpcClient
         string[]? returnProperties,
         IList<QueryReference>? returnReferences,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         var request = BaseSearchRequest(
@@ -772,7 +772,7 @@ internal partial class WeaviateGrpcClient
         MetadataQuery? returnMetadata,
         string[]? returnProperties,
         IList<QueryReference>? returnReferences,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         var request = BaseSearchRequest(

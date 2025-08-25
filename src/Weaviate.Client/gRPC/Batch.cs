@@ -11,7 +11,7 @@ internal partial class WeaviateGrpcClient
         bool dryRun,
         bool verbose,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         var request = new BatchDeleteRequest

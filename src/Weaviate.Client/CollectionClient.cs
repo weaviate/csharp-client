@@ -13,11 +13,12 @@ public partial class CollectionClient
 
     private readonly string _collectionName;
 
-    private readonly string? _fixedTenant = null;
-    private readonly ConsistencyLevel? _fixedConsistencyLevel = null;
+    private readonly string? _pinnedTenant = null;
+    private readonly ConsistencyLevels? _pinnedConsistencyLevel = null;
 
-    internal string? Tenant => _fixedTenant ?? string.Empty;
-    internal ConsistencyLevel? ConsistencyLevel => _fixedConsistencyLevel;
+    public string? Tenant => _pinnedTenant ?? string.Empty;
+    public ConsistencyLevels? ConsistencyLevel =>
+        _pinnedConsistencyLevel ?? ConsistencyLevels.Unspecified;
 
     public WeaviateClient Client => _client;
 
@@ -27,7 +28,7 @@ public partial class CollectionClient
         WeaviateClient client,
         Collection collection,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
         : this(client, collection.Name, tenant, consistencyLevel)
     {
@@ -38,15 +39,15 @@ public partial class CollectionClient
         WeaviateClient client,
         string name,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
         _client = client;
         _collectionName = name;
-        _fixedTenant = tenant;
-        _fixedConsistencyLevel = consistencyLevel;
+        _pinnedTenant = tenant;
+        _pinnedConsistencyLevel = consistencyLevel;
     }
 
     public async Task<Collection?> Get()
@@ -113,10 +114,10 @@ public partial class CollectionClient
         return new CollectionClient(_client, _collectionName, tenant, ConsistencyLevel);
     }
 
-    public CollectionClient WithConsistencyLevel(ConsistencyLevel consistencyLevel)
+    public CollectionClient WithConsistencyLevel(ConsistencyLevels consistencyLevel)
     {
         ArgumentException.ThrowIfNullOrEmpty(
-            consistencyLevel == Weaviate.Client.ConsistencyLevel.Unspecified
+            consistencyLevel == Weaviate.Client.ConsistencyLevels.Unspecified
                 ? null
                 : consistencyLevel.ToString()
         );
@@ -136,7 +137,7 @@ public partial class CollectionClient<TData> : CollectionClient
         WeaviateClient client,
         Collection collection,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
         : this(client, collection.Name, tenant, consistencyLevel) { }
 
@@ -144,7 +145,7 @@ public partial class CollectionClient<TData> : CollectionClient
         WeaviateClient client,
         string name,
         string? tenant = null,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
         : base(client, name, tenant, consistencyLevel)
     {
@@ -161,10 +162,10 @@ public partial class CollectionClient<TData> : CollectionClient
         return new CollectionClient<TData>(Client, Name, tenant, ConsistencyLevel);
     }
 
-    public new CollectionClient WithConsistencyLevel(ConsistencyLevel consistencyLevel)
+    public new CollectionClient WithConsistencyLevel(ConsistencyLevels consistencyLevel)
     {
         ArgumentException.ThrowIfNullOrEmpty(
-            consistencyLevel == Weaviate.Client.ConsistencyLevel.Unspecified
+            consistencyLevel == Weaviate.Client.ConsistencyLevels.Unspecified
                 ? null
                 : consistencyLevel.ToString()
         );

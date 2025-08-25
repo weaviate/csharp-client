@@ -674,4 +674,34 @@ public partial class TenantTests : IntegrationTests
         Assert.Single(objects);
         Assert.Equal("some name", objects[0].Properties["name"]);
     }
+
+    [Fact]
+    public async Task WithTenantOnDifferentClients()
+    {
+        // Arrange
+        var collectionClient = await CollectionFactory(
+            null,
+            "Test collection with tenants",
+            [],
+            vectorConfig: Configure.Vectors.SelfProvided(),
+            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+        );
+
+        await collectionClient.Tenants.Add(
+            new Tenant { Name = "TenantA" },
+            new Tenant { Name = "TenantB" }
+        );
+
+        // Act
+        var tenantAClient = collectionClient.WithTenant("TenantA");
+        var tenantBClient = tenantAClient.WithTenant("TenantB");
+
+        // Assert
+        Assert.NotNull(tenantAClient);
+        Assert.NotNull(tenantBClient);
+        Assert.NotSame(tenantAClient, tenantBClient);
+
+        Assert.Equal("TenantA", tenantAClient.Tenant);
+        Assert.Equal("TenantB", tenantBClient.Tenant);
+    }
 }

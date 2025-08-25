@@ -80,7 +80,7 @@ internal static class WeaviateEndpoints
         return path;
     }
 
-    internal static string? ReferencesAdd(ConsistencyLevel? consistencyLevel = null)
+    internal static string? ReferencesAdd(ConsistencyLevels? consistencyLevel = null)
     {
         var path = $"batch/references";
 
