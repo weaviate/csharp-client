@@ -331,7 +331,7 @@ public class WeaviateRestClient : IDisposable
     internal async Task<BatchReferenceResponse[]> ReferenceAddMany(
         string collectionName,
         Models.DataReference[] references,
-        ConsistencyLevel? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         var batchRefs = references.SelectMany(r =>
