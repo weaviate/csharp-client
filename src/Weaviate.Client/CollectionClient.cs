@@ -110,24 +110,16 @@ public partial class CollectionClient
     {
         ArgumentException.ThrowIfNullOrEmpty(tenant);
 
-        if (_fixedTenant is not null)
-        {
-            throw new InvalidOperationException(
-                "This collection client is already bound to a specific tenant."
-            );
-        }
-
         return new CollectionClient(_client, _collectionName, tenant, ConsistencyLevel);
     }
 
     public CollectionClient WithConsistencyLevel(ConsistencyLevel consistencyLevel)
     {
-        if (_fixedConsistencyLevel is not null)
-        {
-            throw new InvalidOperationException(
-                "This collection client is already bound to a specific consistency level."
-            );
-        }
+        ArgumentException.ThrowIfNullOrEmpty(
+            consistencyLevel == Weaviate.Client.ConsistencyLevel.Unspecified
+                ? null
+                : consistencyLevel.ToString()
+        );
 
         return new CollectionClient(_client, _collectionName, Tenant, consistencyLevel);
     }
@@ -166,13 +158,17 @@ public partial class CollectionClient<TData> : CollectionClient
     {
         ArgumentException.ThrowIfNullOrEmpty(tenant);
 
-        if (Tenant is not null)
-        {
-            throw new InvalidOperationException(
-                "This collection client is already bound to a specific tenant."
-            );
-        }
-
         return new CollectionClient<TData>(Client, Name, tenant, ConsistencyLevel);
+    }
+
+    public new CollectionClient WithConsistencyLevel(ConsistencyLevel consistencyLevel)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(
+            consistencyLevel == Weaviate.Client.ConsistencyLevel.Unspecified
+                ? null
+                : consistencyLevel.ToString()
+        );
+
+        return new CollectionClient(Client, Name, Tenant, consistencyLevel);
     }
 }
