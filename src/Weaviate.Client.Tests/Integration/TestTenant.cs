@@ -682,7 +682,7 @@ public partial class TenantTests : IntegrationTests
         var collectionClient = await CollectionFactory(
             null,
             "Test collection with tenants",
-            [],
+            [Property.Text("name")],
             vectorConfig: Configure.Vectors.SelfProvided(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
@@ -694,7 +694,18 @@ public partial class TenantTests : IntegrationTests
 
         // Act
         var tenantAClient = collectionClient.WithTenant("TenantA");
+        await tenantAClient.Data.Insert(new { name = "some A name" });
+        await tenantAClient.Data.Insert(new { name = "another A name" });
+
         var tenantBClient = tenantAClient.WithTenant("TenantB");
+        await tenantBClient.Data.Insert(new { name = "some B name" });
+
+        var objectsA = (await tenantAClient.Query.FetchObjects()).ToList();
+        Assert.Equal(2, objectsA.Count);
+
+        var objectsB = (await tenantBClient.Query.FetchObjects()).ToList();
+        Assert.Single(objectsB);
+        Assert.Equal("some B name", objectsB[0].Properties["name"]);
 
         // Assert
         Assert.NotNull(tenantAClient);
