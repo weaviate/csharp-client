@@ -259,6 +259,7 @@ public class DataClient<TData>
         var result = await _client.RestClient.ReferenceAddMany(
             _collectionName,
             references,
+            _collectionClient.Tenant,
             _collectionClient.ConsistencyLevel
         );
 

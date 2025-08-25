@@ -331,6 +331,7 @@ public class WeaviateRestClient : IDisposable
     internal async Task<BatchReferenceResponse[]> ReferenceAddMany(
         string collectionName,
         Models.DataReference[] references,
+        string? tenant = null,
         ConsistencyLevels? consistencyLevel = null
     )
     {
@@ -344,6 +345,7 @@ public class WeaviateRestClient : IDisposable
                         ObjectHelper.MakeBeaconSource(collectionName, r.From, r.FromProperty)
                     ),
                     To = new Uri(beacon),
+                    Tenant = tenant ?? default!,
                 })
         );
 
