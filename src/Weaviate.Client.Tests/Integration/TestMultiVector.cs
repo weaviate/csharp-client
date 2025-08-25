@@ -33,7 +33,7 @@ public class TestMultiVector : IntegrationTests
         );
 
         var vic =
-            collection.Collection?.VectorConfig["colbert"].VectorIndexConfig as VectorIndex.HNSW;
+            (await collection.Get())?.VectorConfig["colbert"].VectorIndexConfig as VectorIndex.HNSW;
 
         Assert.NotNull(vic);
         Assert.NotNull(vic.MultiVector);
@@ -43,7 +43,7 @@ public class TestMultiVector : IntegrationTests
     [Fact]
     public async Task Test_Should_Create_Collection_With_MultiVectors()
     {
-        var collection = await CollectionFactory(
+        var client = await CollectionFactory(
             name: "TestMultiVectorCollection",
             vectorConfig: new[]
             {
@@ -52,10 +52,13 @@ public class TestMultiVector : IntegrationTests
             }
         );
 
+        Assert.NotNull(client);
+
+        var collection = await client.Get();
+
         Assert.NotNull(collection);
-        Assert.NotNull(collection.Collection);
-        Assert.Contains(collection.Collection.VectorConfig.Keys, k => k == "regular");
-        Assert.Contains(collection.Collection.VectorConfig.Keys, k => k == "colbert");
+        Assert.Contains(collection.VectorConfig.Keys, k => k == "regular");
+        Assert.Contains(collection.VectorConfig.Keys, k => k == "colbert");
     }
 
     [Fact]
