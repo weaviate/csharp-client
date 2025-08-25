@@ -3,66 +3,62 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
-public partial class CollectionClient<TData>
+public partial class CollectionClient
 {
     public const uint ITERATOR_CACHE_SIZE = 100;
 
     public System.Version WeaviateVersion => _client.WeaviateVersion;
 
     private readonly WeaviateClient _client;
-    private DataClient<TData> _dataClient;
-    private QueryClient<TData> _queryClient;
+
     private readonly string _collectionName;
 
-    private Collection? _backingCollection;
+    private readonly string? _pinnedTenant = null;
+    private readonly ConsistencyLevels? _pinnedConsistencyLevel = null;
 
-    public Collection? Collection => _backingCollection;
-
-    public string Name => Collection?.Name ?? _collectionName;
+    public string? Tenant => _pinnedTenant ?? string.Empty;
+    public ConsistencyLevels? ConsistencyLevel => _pinnedConsistencyLevel;
 
     public WeaviateClient Client => _client;
-    public DataClient<TData> Data => _dataClient;
-    public QueryClient<TData> Query => _queryClient;
 
-    internal CollectionClient(WeaviateClient client, Collection collection)
-        : this(client, collection.Name)
+    public string Name => _collectionName;
+
+    internal CollectionClient(
+        WeaviateClient client,
+        Collection collection,
+        string? tenant = null,
+        ConsistencyLevels? consistencyLevel = null
+    )
+        : this(client, collection.Name, tenant, consistencyLevel)
     {
-        _backingCollection = collection;
+        ArgumentNullException.ThrowIfNull(collection);
     }
 
-    internal CollectionClient(WeaviateClient client, string name)
+    internal CollectionClient(
+        WeaviateClient client,
+        string name,
+        string? tenant = null,
+        ConsistencyLevels? consistencyLevel = null
+    )
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
         _client = client;
-        _collectionName = _backingCollection?.Name ?? name;
-        _backingCollection = _backingCollection ?? new Collection { Name = _collectionName };
-        _dataClient = new DataClient<TData>(this);
-        _queryClient = new QueryClient<TData>(this);
+        _collectionName = name;
+        _pinnedTenant = tenant;
+        _pinnedConsistencyLevel = consistencyLevel;
     }
 
     public async Task<Collection?> Get()
     {
-        var response = await _client.RestClient.CollectionGet(_collectionName);
+        var response = await _client.RestClient.CollectionGet(Name);
 
-        if (response is null)
-        {
-            return _backingCollection = null;
-        }
-
-        _backingCollection = response.ToModel();
-
-        return _backingCollection;
+        return response?.ToModel();
     }
-
-    public CollectionUpdateBuilder<TData> Config =>
-        new CollectionUpdateBuilder<TData>(_client, _collectionName);
 
     public async Task Delete()
     {
-        await _client.RestClient.CollectionDelete(_collectionName);
-
-        _backingCollection = null;
+        await _client.RestClient.CollectionDelete(Name);
     }
 
     public async IAsyncEnumerable<WeaviateObject> Iterator(
@@ -82,7 +78,7 @@ public partial class CollectionClient<TData>
 
             var page = (
                 await _client.GrpcClient.FetchObjects(
-                    _collectionName,
+                    Name,
                     limit: cacheSize,
                     metadata: metadata,
                     fields: fields,
@@ -104,9 +100,75 @@ public partial class CollectionClient<TData>
         }
     }
 
-    internal async Task<ulong> Count()
+    public async Task<ulong> Count()
     {
         var result = await Aggregate.OverAll(totalCount: true);
         return Convert.ToUInt64(result.TotalCount);
+    }
+
+    public CollectionClient WithTenant(string tenant)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(tenant);
+
+        return new CollectionClient(_client, _collectionName, tenant, ConsistencyLevel);
+    }
+
+    public CollectionClient WithConsistencyLevel(ConsistencyLevels consistencyLevel)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(
+            consistencyLevel == Weaviate.Client.ConsistencyLevels.Unspecified
+                ? null
+                : consistencyLevel.ToString()
+        );
+
+        return new CollectionClient(_client, _collectionName, Tenant, consistencyLevel);
+    }
+}
+
+public partial class CollectionClient<TData> : CollectionClient
+{
+    private DataClient<TData> _dataClient;
+    private QueryClient<TData> _queryClient;
+    public DataClient<TData> Data => _dataClient;
+    public QueryClient<TData> Query => _queryClient;
+
+    internal CollectionClient(
+        WeaviateClient client,
+        Collection collection,
+        string? tenant = null,
+        ConsistencyLevels? consistencyLevel = null
+    )
+        : this(client, collection.Name, tenant, consistencyLevel) { }
+
+    internal CollectionClient(
+        WeaviateClient client,
+        string name,
+        string? tenant = null,
+        ConsistencyLevels? consistencyLevel = null
+    )
+        : base(client, name, tenant, consistencyLevel)
+    {
+        _dataClient = new DataClient<TData>(this);
+        _queryClient = new QueryClient<TData>(this);
+    }
+
+    public CollectionUpdateBuilder<TData> Config => new(Client, Name);
+
+    public new CollectionClient<TData> WithTenant(string tenant)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(tenant);
+
+        return new CollectionClient<TData>(Client, Name, tenant, ConsistencyLevel);
+    }
+
+    public new CollectionClient WithConsistencyLevel(ConsistencyLevels consistencyLevel)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(
+            consistencyLevel == Weaviate.Client.ConsistencyLevels.Unspecified
+                ? null
+                : consistencyLevel.ToString()
+        );
+
+        return new CollectionClient(Client, Name, Tenant, consistencyLevel);
     }
 }

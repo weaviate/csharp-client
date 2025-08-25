@@ -44,13 +44,13 @@ public partial class ReferenceTests : IntegrationTests
 
         var bObjs = await cB.Query.BM25(
             query: "B",
-            references: [new QueryReference(linkOn: "a", fields: ["name"])]
+            returnReferences: [new QueryReference(linkOn: "a", fields: ["name"])]
         );
 
         var cObjs = await cC.Query.BM25(
             query: "find",
-            fields: ["name"],
-            references:
+            returnProperties: ["name"],
+            returnReferences:
             [
                 new QueryReference(
                     linkOn: "b",
@@ -296,7 +296,7 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
         var disappointed = await reviews.Query.NearText(
             "Disapointed by this movie",
             limit: 2,
-            references: [new QueryReference("forMovie", ["title"])]
+            returnReferences: [new QueryReference("forMovie", ["title"])]
         );
 
         // Assert

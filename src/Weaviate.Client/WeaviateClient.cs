@@ -82,6 +82,7 @@ public class WeaviateClient : IDisposable
     public ClientConfiguration Configuration { get; }
 
     public CollectionsClient Collections { get; }
+
     public NodesClient Nodes { get; }
 
     static bool IsWeaviateDomain(string url)

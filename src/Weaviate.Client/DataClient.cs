@@ -9,6 +9,7 @@ namespace Weaviate.Client;
 public class DataClient<TData>
 {
     private readonly CollectionClient<TData> _collectionClient;
+
     private WeaviateClient _client => _collectionClient.Client;
     private string _collectionName => _collectionClient.Name;
 
@@ -43,12 +44,44 @@ public class DataClient<TData>
             Class = _collectionName,
             Properties = propDict,
             Vectors = dtoVectors,
-            Tenant = tenant,
+            Tenant = tenant ?? _collectionClient.Tenant,
         };
 
-        var response = await _client.RestClient.ObjectInsert(_collectionName, dto);
+        var response = await _client.RestClient.ObjectInsert(dto);
 
         return response.Id!.Value;
+    }
+
+    public async Task Replace(
+        Guid id,
+        TData data,
+        Models.Vectors? vectors = null,
+        IEnumerable<ObjectReference>? references = null,
+        string? tenant = null
+    )
+    {
+        var propDict = ObjectHelper.BuildDataTransferObject(data);
+
+        foreach (var kvp in references ?? [])
+        {
+            propDict[kvp.Name] = ObjectHelper.MakeBeacons(kvp.TargetID);
+        }
+
+        var dtoVectors =
+            vectors?.Count == 0
+                ? null
+                : Rest.Dto.Vectors.FromJson(JsonSerializer.Serialize(vectors ?? []));
+
+        var dto = new Rest.Dto.Object()
+        {
+            Id = id,
+            Class = _collectionName,
+            Properties = propDict,
+            Vectors = dtoVectors,
+            Tenant = tenant ?? _collectionClient.Tenant,
+        };
+
+        var response = await _client.RestClient.ObjectReplace(_collectionName, dto);
     }
 
     public delegate void InsertDelegate(
@@ -83,6 +116,7 @@ public class DataClient<TData>
                         Collection = _collectionName,
                         Uuid = (r.ID ?? Guid.NewGuid()).ToString(),
                         Properties = ObjectHelper.BuildBatchProperties(r.Data),
+                        Tenant = r.Tenant ?? _collectionClient.Tenant,
                     };
 
                     if (r.References?.Any() ?? false)
@@ -162,7 +196,15 @@ public class DataClient<TData>
                 string? tenant = null
             ) =>
             {
-                requests.Add(new BatchInsertRequest<TData>(data, id, vectors, references, tenant));
+                requests.Add(
+                    new BatchInsertRequest<TData>(
+                        data,
+                        id,
+                        vectors,
+                        references,
+                        tenant ?? _collectionClient.Tenant
+                    )
+                );
             };
 
             inserter(_inserter);
@@ -185,7 +227,7 @@ public class DataClient<TData>
 
     public async Task Delete(Guid id)
     {
-        await _client.RestClient.DeleteObject(_collectionName, id);
+        await _client.RestClient.DeleteObject(_collectionName, id, _collectionClient.Tenant);
     }
 
     public async Task ReferenceAdd(DataReference reference)
@@ -194,20 +236,32 @@ public class DataClient<TData>
             _collectionName,
             reference.From,
             reference.FromProperty,
-            reference.To.Single()
+            reference.To.Single(),
+            _collectionClient.Tenant
         );
     }
 
     public async Task ReferenceAdd(Guid from, string fromProperty, Guid to)
     {
-        await _client.RestClient.ReferenceAdd(_collectionName, from, fromProperty, to);
+        await _client.RestClient.ReferenceAdd(
+            _collectionName,
+            from,
+            fromProperty,
+            to,
+            _collectionClient.Tenant
+        );
     }
 
     public async Task<BatchReferenceReturn> ReferenceAddMany(params DataReference[] references)
     {
         var stopwatch = Stopwatch.StartNew();
 
-        var result = await _client.RestClient.ReferenceAddMany(_collectionName, references);
+        var result = await _client.RestClient.ReferenceAddMany(
+            _collectionName,
+            references,
+            _collectionClient.Tenant,
+            _collectionClient.ConsistencyLevel
+        );
 
         stopwatch.Stop();
         var elapsedSeconds = (float)stopwatch.Elapsed.TotalSeconds;
@@ -230,21 +284,40 @@ public class DataClient<TData>
 
     public async Task ReferenceReplace(Guid from, string fromProperty, Guid[] to)
     {
-        await _client.RestClient.ReferenceReplace(_collectionName, from, fromProperty, to);
+        await _client.RestClient.ReferenceReplace(
+            _collectionName,
+            from,
+            fromProperty,
+            to,
+            _collectionClient.Tenant
+        );
     }
 
     public async Task ReferenceDelete(Guid from, string fromProperty, Guid to)
     {
-        await _client.RestClient.ReferenceDelete(_collectionName, from, fromProperty, to);
+        await _client.RestClient.ReferenceDelete(
+            _collectionName,
+            from,
+            fromProperty,
+            to,
+            _collectionClient.Tenant
+        );
     }
 
     public async Task<DeleteManyResult> DeleteMany(
         Filter where,
         bool dryRun = false,
-        bool verbose = false
+        bool verbose = false,
+        string? tenant = null
     )
     {
-        var reply = await _client.GrpcClient.DeleteMany(_collectionName, where, dryRun, verbose);
+        var reply = await _client.GrpcClient.DeleteMany(
+            _collectionName,
+            where,
+            dryRun,
+            verbose,
+            tenant
+        );
 
         var result = new DeleteManyResult
         {
