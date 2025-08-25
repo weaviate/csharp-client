@@ -17,8 +17,7 @@ public partial class CollectionClient
     private readonly ConsistencyLevels? _pinnedConsistencyLevel = null;
 
     public string? Tenant => _pinnedTenant ?? string.Empty;
-    public ConsistencyLevels? ConsistencyLevel =>
-        _pinnedConsistencyLevel ?? ConsistencyLevels.Unspecified;
+    public ConsistencyLevels? ConsistencyLevel => _pinnedConsistencyLevel;
 
     public WeaviateClient Client => _client;
 
