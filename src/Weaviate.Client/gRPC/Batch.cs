@@ -9,7 +9,9 @@ internal partial class WeaviateGrpcClient
         string collection,
         Filter filter,
         bool dryRun,
-        bool verbose
+        bool verbose,
+        string? tenant = null,
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         var request = new BatchDeleteRequest
@@ -18,7 +20,13 @@ internal partial class WeaviateGrpcClient
             DryRun = dryRun,
             Verbose = verbose,
             Filters = filter.InternalFilter,
+            Tenant = tenant ?? string.Empty,
         };
+
+        if (consistencyLevel.HasValue)
+        {
+            request.ConsistencyLevel = MapConsistencyLevel(consistencyLevel.Value);
+        }
 
         BatchDeleteReply reply = await _grpcClient.BatchDeleteAsync(
             request,

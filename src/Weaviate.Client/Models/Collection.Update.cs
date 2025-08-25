@@ -377,7 +377,7 @@ public class CollectionUpdateBuilder<T>
 
     // Proxied property updates
 
-    public async Task Update(Action<CollectionUpdate> c)
+    public async Task<Collection> Update(Action<CollectionUpdate> c)
     {
         // 1. Fetch the collection config
         var collection =
@@ -390,8 +390,8 @@ public class CollectionUpdateBuilder<T>
         c(new CollectionUpdate(collection));
 
         // 3. PUT to /schema
-        await _client.RestClient.CollectionUpdate(_collectionName, collection.ToDto());
+        var result = await _client.RestClient.CollectionUpdate(_collectionName, collection.ToDto());
 
-        await Task.CompletedTask;
+        return result.ToModel();
     }
 }

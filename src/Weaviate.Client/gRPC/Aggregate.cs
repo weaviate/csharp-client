@@ -11,6 +11,7 @@ internal partial class WeaviateGrpcClient
         Aggregate.GroupBy? groupBy = null,
         uint? limit = null,
         bool? totalCount = false,
+        string? tenant = null,
         params Aggregate.Metric[] metrics
     )
     {
@@ -19,6 +20,7 @@ internal partial class WeaviateGrpcClient
             Collection = collection,
             Filters = filter?.InternalFilter,
             ObjectsCount = totalCount ?? false,
+            Tenant = tenant ?? string.Empty,
         };
 
         if (groupBy != null)
@@ -128,10 +130,19 @@ internal partial class WeaviateGrpcClient
         Filter? filter,
         Aggregate.GroupBy? groupBy,
         bool totalCount,
+        string? tenant,
         params Aggregate.Metric[] metrics
     )
     {
-        var request = BaseAggregateRequest(collection, filter, groupBy, null, totalCount, metrics);
+        var request = BaseAggregateRequest(
+            collection,
+            filter,
+            groupBy,
+            null,
+            totalCount,
+            tenant,
+            metrics
+        );
 
         return await Aggregate(request);
     }
@@ -148,10 +159,19 @@ internal partial class WeaviateGrpcClient
         Aggregate.GroupBy? groupBy,
         string[]? targetVector,
         bool totalCount,
+        string? tenant,
         Aggregate.Metric[] metrics
     )
     {
-        var request = BaseAggregateRequest(collection, filter, groupBy, limit, totalCount, metrics);
+        var request = BaseAggregateRequest(
+            collection,
+            filter,
+            groupBy,
+            limit,
+            totalCount,
+            tenant,
+            metrics
+        );
 
         request.NearText = new() { Query = { query } };
 
@@ -199,10 +219,19 @@ internal partial class WeaviateGrpcClient
         Aggregate.GroupBy? groupBy,
         string[]? targetVector,
         bool totalCount,
+        string? tenant,
         Aggregate.Metric[] metrics
     )
     {
-        var request = BaseAggregateRequest(collection, filter, groupBy, limit, totalCount, metrics);
+        var request = BaseAggregateRequest(
+            collection,
+            filter,
+            groupBy,
+            limit,
+            totalCount,
+            tenant,
+            metrics
+        );
 
         request.NearVector = new() { Vectors = { } };
 
@@ -254,7 +283,9 @@ internal partial class WeaviateGrpcClient
         float? maxVectorDistance,
         Filter? filter,
         Aggregate.GroupBy? groupBy,
+        uint? objectLimit,
         bool totalCount,
+        string? tenant,
         Aggregate.Metric[] metrics
     )
     {
@@ -262,8 +293,9 @@ internal partial class WeaviateGrpcClient
             collection,
             filter,
             groupBy,
-            groupBy?.Limit,
+            objectLimit,
             totalCount,
+            tenant,
             metrics
         );
 
@@ -326,6 +358,48 @@ internal partial class WeaviateGrpcClient
         return await Aggregate(request);
     }
 
+    internal async Task<AggregateReply> AggregateNearObject(
+        string collection,
+        Guid objectID,
+        double? certainty,
+        double? distance,
+        uint? limit,
+        Filter? filter,
+        Aggregate.GroupBy? groupBy,
+        string[]? targetVector,
+        bool totalCount,
+        string? tenant,
+        Aggregate.Metric[] metrics
+    )
+    {
+        var request = BaseAggregateRequest(
+            collection,
+            filter,
+            groupBy,
+            limit,
+            totalCount,
+            tenant,
+            metrics
+        );
+
+        request.NearObject = new()
+        {
+            Id = objectID.ToString(),
+            Targets = BuildTargetVector(targetVector),
+        };
+
+        if (certainty.HasValue)
+        {
+            request.NearObject.Certainty = certainty.Value;
+        }
+        if (distance.HasValue)
+        {
+            request.NearObject.Distance = distance.Value;
+        }
+
+        return await Aggregate(request);
+    }
+
     internal async Task<AggregateReply> AggregateNearMedia(
         string collection,
         byte[] media,
@@ -337,10 +411,19 @@ internal partial class WeaviateGrpcClient
         Aggregate.GroupBy? groupBy,
         string[]? targetVector,
         bool totalCount,
+        string? tenant,
         Aggregate.Metric[] metrics
     )
     {
-        var request = BaseAggregateRequest(collection, filter, groupBy, limit, totalCount, metrics);
+        var request = BaseAggregateRequest(
+            collection,
+            filter,
+            groupBy,
+            limit,
+            totalCount,
+            tenant,
+            metrics
+        );
 
         switch (mediaType)
         {

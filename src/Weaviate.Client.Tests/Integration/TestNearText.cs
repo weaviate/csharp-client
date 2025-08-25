@@ -31,8 +31,8 @@ public partial class SearchTests : IntegrationTests
             "cake",
             moveTo: new Move(1.0f, objects: [guids[0]]),
             moveAway: new Move(0.5f, concepts: concepts),
-            fields: ["value"],
-            metadata: new MetadataQuery("default")
+            returnProperties: ["value"],
+            returnMetadata: new MetadataQuery("default")
         );
         var retrieved = retriever.Objects.ToList();
 
@@ -71,7 +71,7 @@ public partial class SearchTests : IntegrationTests
                 NumberOfGroups = 2,
                 ObjectsPerGroup = 100,
             },
-            metadata: new MetadataQuery("default")
+            returnMetadata: new MetadataQuery("default")
         );
 
         // Assert
@@ -85,7 +85,7 @@ public partial class SearchTests : IntegrationTests
 
         var obj = await collectionClient.Query.FetchObjectByID(
             guids[3],
-            metadata: new MetadataQuery("default")
+            returnMetadata: new MetadataQuery("default")
         );
 
         Assert.NotNull(obj);

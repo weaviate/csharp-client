@@ -27,7 +27,9 @@ public static class HttpResponseMessageExtensions
         content =
             $"Unexpected status code {response.StatusCode}. Expected: {string.Join(", ", codes)}. {error}. Server replied: {content}";
 
-        throw new SimpleHttpResponseException(response.StatusCode, codes, content);
+        throw new WeaviateException(
+            new SimpleHttpResponseException(response.StatusCode, codes, content)
+        );
     }
 
     public static async Task EnsureExpectedStatusCodeAsync(
@@ -67,7 +69,7 @@ public static class HttpResponseMessageExtensions
     }
 }
 
-public class SimpleHttpResponseException : Exception
+internal class SimpleHttpResponseException : Exception
 {
     public HttpStatusCode StatusCode { get; private set; }
     public ISet<HttpStatusCode> ExpectedStatusCodes { get; private set; } =
@@ -88,6 +90,7 @@ public class SimpleHttpResponseException : Exception
 public class WeaviateRestClient : IDisposable
 {
     private readonly bool _ownershipClient;
+
     private readonly HttpClient _httpClient;
 
     internal static readonly JsonSerializerOptions RestJsonSerializerOptions = new()
@@ -205,7 +208,7 @@ public class WeaviateRestClient : IDisposable
         return contents;
     }
 
-    internal async Task<Dto.Object> ObjectInsert(string collectionName, Dto.Object data)
+    internal async Task<Dto.Object> ObjectInsert(Dto.Object data)
     {
         var response = await _httpClient.PostAsJsonAsync(
             WeaviateEndpoints.Objects(),
@@ -219,18 +222,39 @@ public class WeaviateRestClient : IDisposable
             ?? throw new WeaviateRestException();
     }
 
-    internal async Task DeleteObject(string collectionName, Guid id)
+    internal async Task<Dto.Object> ObjectReplace(string collectionName, Dto.Object data)
     {
-        var response = await _httpClient.DeleteAsync(
-            WeaviateEndpoints.CollectionObject(collectionName, id)
+        ArgumentNullException.ThrowIfNull(data.Id, nameof(data.Id));
+
+        var response = await _httpClient.PutAsJsonAsync(
+            WeaviateEndpoints.CollectionObject(collectionName, data.Id!.Value),
+            data,
+            options: RestJsonSerializerOptions
         );
+
+        await response.EnsureExpectedStatusCodeAsync([200], "replace object");
+
+        return await response.Content.ReadFromJsonAsync<Dto.Object>()
+            ?? throw new WeaviateRestException();
+    }
+
+    internal async Task DeleteObject(string collectionName, Guid id, string? tenant = null)
+    {
+        var url = WeaviateEndpoints.CollectionObject(collectionName, id, tenant);
+        var response = await _httpClient.DeleteAsync(url);
 
         await response.EnsureExpectedStatusCodeAsync([204, 404], "delete object");
     }
 
-    internal async Task ReferenceAdd(string collectionName, Guid from, string fromProperty, Guid to)
+    internal async Task ReferenceAdd(
+        string collectionName,
+        Guid from,
+        string fromProperty,
+        Guid to,
+        string? tenant = null
+    )
     {
-        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
+        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
 
         var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons.First();
@@ -248,10 +272,11 @@ public class WeaviateRestClient : IDisposable
         string collectionName,
         Guid from,
         string fromProperty,
-        Guid[] to
+        Guid[] to,
+        string? tenant = null
     )
     {
-        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
+        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
 
         var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons;
@@ -269,10 +294,11 @@ public class WeaviateRestClient : IDisposable
         string collectionName,
         Guid from,
         string fromProperty,
-        Guid to
+        Guid to,
+        string? tenant = null
     )
     {
-        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty);
+        var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
 
         var beacons = ObjectHelper.MakeBeacons(to);
         var reference = beacons.First();
@@ -304,7 +330,9 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<BatchReferenceResponse[]> ReferenceAddMany(
         string collectionName,
-        Models.DataReference[] references
+        Models.DataReference[] references,
+        string? tenant = null,
+        ConsistencyLevels? consistencyLevel = null
     )
     {
         var batchRefs = references.SelectMany(r =>
@@ -317,10 +345,11 @@ public class WeaviateRestClient : IDisposable
                         ObjectHelper.MakeBeaconSource(collectionName, r.From, r.FromProperty)
                     ),
                     To = new Uri(beacon),
+                    Tenant = tenant ?? default!,
                 })
         );
 
-        var path = WeaviateEndpoints.ReferencesAdd();
+        var path = WeaviateEndpoints.ReferencesAdd(consistencyLevel);
 
         var response = await _httpClient.PostAsJsonAsync(
             path,
@@ -368,26 +397,79 @@ public class WeaviateRestClient : IDisposable
 
     internal async Task<NodeStatus[]> Nodes(string? collection, string verbosity)
     {
-        var path = WeaviateEndpoints.Nodes();
-
-        if (collection is not null)
-        {
-            path += $"/{collection}";
-        }
-
-        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
-        query["output"] = verbosity.ToLowerInvariant();
-        path += $"?{query}";
+        var path = WeaviateEndpoints.Nodes(collection, verbosity);
         var response = await _httpClient.GetAsync(path);
         var responseContent = await response.Content.ReadAsStringAsync();
-
         // Print the response content
         Console.WriteLine(responseContent);
         await response.EnsureExpectedStatusCodeAsync([200], "get nodes");
         var nodes = await response.Content.ReadFromJsonAsync<NodesStatusResponse>(
             options: RestJsonSerializerOptions
         );
-
         return nodes?.Nodes?.ToArray() ?? Array.Empty<NodeStatus>();
+    }
+
+    // Tenants API
+    internal async Task<IEnumerable<Rest.Dto.Tenant>> TenantsAdd(
+        string collectionName,
+        params Rest.Dto.Tenant[] tenants
+    )
+    {
+        var path = WeaviateEndpoints.CollectionTenants(collectionName);
+
+        var response = await _httpClient.PostAsJsonAsync(
+            path,
+            tenants,
+            options: RestJsonSerializerOptions
+        );
+        await response.EnsureExpectedStatusCodeAsync([200], "tenants add");
+        var result = await response.Content.ReadFromJsonAsync<IEnumerable<Rest.Dto.Tenant>>(
+            options: RestJsonSerializerOptions
+        );
+        return result ?? Enumerable.Empty<Rest.Dto.Tenant>();
+    }
+
+    internal async Task<IEnumerable<Rest.Dto.Tenant>> TenantUpdate(
+        string collectionName,
+        params Rest.Dto.Tenant[] tenants
+    )
+    {
+        if (tenants.Any(t => t.Name is null))
+        {
+            throw new ArgumentNullException(nameof(tenants), "Tenant names cannot be null.");
+        }
+
+        var path = WeaviateEndpoints.CollectionTenants(collectionName);
+        var response = await _httpClient.PutAsJsonAsync(
+            path,
+            tenants,
+            options: RestJsonSerializerOptions
+        );
+        await response.EnsureExpectedStatusCodeAsync([200], "tenant update");
+
+        var result = await response.Content.ReadFromJsonAsync<Rest.Dto.Tenant[]>(
+            options: RestJsonSerializerOptions
+        );
+
+        return result ?? Enumerable.Empty<Rest.Dto.Tenant>();
+    }
+
+    internal async Task TenantsDelete(string collectionName, IEnumerable<string> tenantNames)
+    {
+        if (tenantNames.Any(name => string.IsNullOrWhiteSpace(name)))
+        {
+            throw new ArgumentException(
+                "Tenant names cannot be null or empty.",
+                nameof(tenantNames)
+            );
+        }
+
+        var path = WeaviateEndpoints.CollectionTenants(collectionName);
+        var request = new HttpRequestMessage(HttpMethod.Delete, path)
+        {
+            Content = JsonContent.Create(tenantNames, options: RestJsonSerializerOptions),
+        };
+        var response = await _httpClient.SendAsync(request);
+        await response.EnsureExpectedStatusCodeAsync([200], "tenants delete");
     }
 }

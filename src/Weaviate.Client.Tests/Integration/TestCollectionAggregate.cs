@@ -259,7 +259,7 @@ public partial class AggregatesTests : IntegrationTests
         var uuid = await collectionClient.Data.Insert(new { text = text1 });
         var obj = await collectionClient.Query.FetchObjectByID(
             uuid,
-            metadata: MetadataOptions.Vector
+            returnMetadata: MetadataOptions.Vector
         );
         Assert.NotNull(obj);
         Assert.True(obj.Vectors.ContainsKey("default"));
