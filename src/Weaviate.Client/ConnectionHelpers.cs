@@ -32,7 +32,7 @@ public static class Connect
             443,
             443,
             true,
-            string.IsNullOrEmpty(apiKey) ? null : new AuthApiKey(apiKey),
+            string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey),
             addEmbeddingHeader ?? true
         );
 
@@ -71,7 +71,7 @@ public static class Connect
             restPort,
             grpcPort,
             useSsl,
-            string.IsNullOrEmpty(apiKey) ? null : new AuthApiKey(apiKey)
+            string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey)
         );
     }
 
