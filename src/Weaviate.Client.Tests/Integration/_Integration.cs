@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using dotenv.net;
 using Weaviate.Client.Models;
 
 [assembly: CaptureConsole]
@@ -8,11 +9,12 @@ namespace Weaviate.Client.Tests.Integration;
 
 public abstract partial class IntegrationTests : IAsyncDisposable
 {
+    private const string ENV_FILE = "development.env";
     const bool _deleteCollectionsAfterTest = true;
     List<string> _collections = new();
 
     protected WeaviateClient _weaviate;
-    HttpClient _httpClient;
+    protected HttpMessageHandler? _httpMessageHandler;
 
     protected static readonly Guid[] _reusableUuids =
     [
@@ -24,17 +26,20 @@ public abstract partial class IntegrationTests : IAsyncDisposable
 
     public IntegrationTests()
     {
-        _httpClient = new HttpClient(
-            new LoggingHandler(str =>
-            {
-                Debug.WriteLine(str);
-            })
-            {
-                InnerHandler = new HttpClientHandler(),
-            }
-        );
+        if (File.Exists(ENV_FILE))
+        {
+            DotEnv.Load(options: new DotEnvOptions(envFilePaths: [ENV_FILE]));
+        }
 
-        _weaviate = Connect.Local(httpClient: _httpClient);
+        _httpMessageHandler = new LoggingHandler(str =>
+        {
+            Debug.WriteLine(str);
+        })
+        {
+            InnerHandler = new HttpClientHandler(),
+        };
+
+        _weaviate = Connect.Local(httpMessageHandler: _httpMessageHandler);
     }
 
     public async ValueTask DisposeAsync()

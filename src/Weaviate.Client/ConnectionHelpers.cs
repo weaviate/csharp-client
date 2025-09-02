@@ -3,19 +3,23 @@ namespace Weaviate.Client;
 public static class Connect
 {
     public static ClientConfiguration LocalConfig(
+        string hostname,
         ushort restPort,
         ushort grpcPort,
         bool useSsl,
-        string? apiKey
-    ) => new("localhost", "localhost", restPort, grpcPort, useSsl, apiKey);
+        ICredentials? credentials
+    ) => new(hostname, hostname, restPort, grpcPort, useSsl, credentials);
 
     public static WeaviateClient Local(
+        string hostname = "localhost",
         ushort restPort = 8080,
         ushort grpcPort = 50051,
         bool useSsl = false,
-        string? apiKey = null,
-        HttpClient? httpClient = null
-    ) => LocalConfig(restPort, grpcPort, useSsl, apiKey).Client(httpClient);
+        ICredentials? credentials = null,
+        HttpMessageHandler? httpMessageHandler = null
+    ) =>
+        LocalConfig(hostname, restPort, grpcPort, useSsl, credentials: credentials)
+            .Client(httpMessageHandler);
 
     public static ClientConfiguration CloudConfig(
         string restEndpoint,
@@ -28,7 +32,7 @@ public static class Connect
             443,
             443,
             true,
-            apiKey,
+            string.IsNullOrEmpty(apiKey) ? null : new AuthApiKey(apiKey),
             addEmbeddingHeader ?? true
         );
 
@@ -36,8 +40,8 @@ public static class Connect
         string restEndpoint,
         string? apiKey = null,
         bool? addEmbeddingHeader = true,
-        HttpClient? httpClient = null
-    ) => CloudConfig(restEndpoint, apiKey, addEmbeddingHeader).Client(httpClient);
+        HttpMessageHandler? httpMessageHandler = null
+    ) => CloudConfig(restEndpoint, apiKey, addEmbeddingHeader).Client(httpMessageHandler);
 
     public static WeaviateClient FromEnvironment(string prefix = "WEAVIATE_")
     {
@@ -61,16 +65,23 @@ public static class Connect
             restEndpoint = grpcEndpoint;
         }
 
-        return Custom(restEndpoint!, grpcEndpoint!, restPort, grpcPort, useSsl, apiKey);
+        return Custom(
+            restEndpoint!,
+            grpcEndpoint!,
+            restPort,
+            grpcPort,
+            useSsl,
+            string.IsNullOrEmpty(apiKey) ? null : new AuthApiKey(apiKey)
+        );
     }
 
-    private static WeaviateClient Custom(
+    public static WeaviateClient Custom(
         string restEndpoint,
         string grpcEndpoint,
         string restPort,
         string grpcPort,
         bool useSsl,
-        string? apiKey
+        ICredentials? credentials
     )
     {
         return new(
@@ -80,7 +91,7 @@ public static class Connect
                 Convert.ToUInt16(restPort),
                 Convert.ToUInt16(grpcPort),
                 useSsl,
-                apiKey
+                credentials
             )
         );
     }
