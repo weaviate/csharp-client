@@ -389,10 +389,23 @@ internal class OAuthTokenService : ITokenService
 public class AuthenticatedHttpHandler : DelegatingHandler
 {
     private readonly ITokenService _tokenService;
+    private readonly int? _refreshIntervalMinutes;
+    private readonly Timer? _refreshTimer;
 
-    public AuthenticatedHttpHandler(ITokenService tokenService)
+    public AuthenticatedHttpHandler(ITokenService tokenService, int? refreshIntervalMinutes = 5)
     {
         _tokenService = tokenService;
+        _refreshIntervalMinutes = refreshIntervalMinutes;
+
+        if (_refreshIntervalMinutes.HasValue)
+        {
+            _refreshTimer = new Timer(
+                async _ => await PeriodicRefreshToken(),
+                null,
+                TimeSpan.FromMinutes(_refreshIntervalMinutes.Value),
+                TimeSpan.FromMinutes(_refreshIntervalMinutes.Value)
+            );
+        }
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(
@@ -417,5 +430,19 @@ public class AuthenticatedHttpHandler : DelegatingHandler
         }
 
         return response;
+    }
+
+    private async Task PeriodicRefreshToken()
+    {
+        await _tokenService.RefreshTokenAsync();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _refreshTimer?.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }
