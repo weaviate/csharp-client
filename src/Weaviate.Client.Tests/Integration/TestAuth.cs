@@ -11,7 +11,6 @@ using Xunit;
 public class TestAuth : IntegrationTests
 {
     const int ANON_PORT = 8080;
-    const int AZURE_PORT = 8081;
     const int OKTA_PORT_CC = 8082;
     const int OKTA_PORT_USERS = 8083;
 
@@ -75,9 +74,9 @@ public class TestAuth : IntegrationTests
     [Fact]
     public async Task TestNoAuthProvided()
     {
-        Assert.True(await IsAuthEnabled($"localhost:{AZURE_PORT}"));
+        Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_CC}"));
 
-        var client = Connect.Local(hostname: "localhost", restPort: AZURE_PORT);
+        var client = Connect.Local(hostname: "localhost", restPort: OKTA_PORT_CC);
 
         await Assert.ThrowsAsync<WeaviateException>(async () =>
         {
@@ -99,7 +98,7 @@ public class TestAuth : IntegrationTests
         var client = Connect.Local(
             hostname: "localhost",
             restPort: OKTA_PORT_CC,
-            credentials: new AuthClientCredentials(ClientSecret: clientSecret, Scope: "some_scope"),
+            credentials: Auth.ClientCredentials(clientSecret, "some_scope"),
             httpMessageHandler: _httpMessageHandler
         );
 
@@ -120,10 +119,10 @@ public class TestAuth : IntegrationTests
         var client = Connect.Local(
             hostname: "localhost",
             restPort: OKTA_PORT_USERS,
-            credentials: new AuthClientPassword(
-                Username: "test@test.de",
-                Password: pw,
-                Scope: "some_scope offline_access"
+            credentials: Auth.ClientPassword(
+                username: "test@test.de",
+                password: pw,
+                scope: "some_scope offline_access"
             ),
             httpMessageHandler: _httpMessageHandler
         );
@@ -139,10 +138,10 @@ public class TestAuth : IntegrationTests
         var client = Connect.Local(
             hostname: "localhost",
             restPort: ANON_PORT,
-            credentials: new AuthClientPassword(
-                Username: "someUser",
-                Password: "SomePw",
-                Scope: "some_scope"
+            credentials: Auth.ClientPassword(
+                username: "someUser",
+                password: "SomePw",
+                scope: "some_scope"
             ),
             httpMessageHandler: _httpMessageHandler
         );
@@ -162,10 +161,10 @@ public class TestAuth : IntegrationTests
         }
 
         var token = await GetAccessToken(url, "test@test.de", pw);
-        var auth = new AuthBearerToken(
-            token.AccessToken ?? "",
-            token.ExpiresIn ?? 0,
-            token.RefreshToken ?? ""
+        var auth = Auth.BearerToken(
+            accessToken: token.AccessToken ?? "",
+            expiresIn: token.ExpiresIn ?? 0,
+            refreshToken: token.RefreshToken ?? ""
         );
 
         var client = Connect.Local(
@@ -190,10 +189,10 @@ public class TestAuth : IntegrationTests
         }
 
         var token = await GetAccessToken(url, "test@test.de", pw);
-        var auth = new AuthBearerToken(
-            token.AccessToken ?? "",
-            token.ExpiresIn ?? 0,
-            "" // No refresh token provided
+        var auth = Auth.BearerToken(
+            accessToken: token.AccessToken ?? "",
+            expiresIn: token.ExpiresIn ?? 0,
+            refreshToken: "" // No refresh token provided
         );
 
         var client = Connect.Local(

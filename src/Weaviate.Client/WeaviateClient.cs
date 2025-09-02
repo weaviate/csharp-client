@@ -10,19 +10,44 @@ namespace Weaviate.Client;
 
 public interface ICredentials { }
 
-public sealed record AuthApiKey(string Value) : ICredentials;
+public static class Auth
+{
+    public sealed record ApiKeyCredentials(string Value) : ICredentials;
 
-public sealed record AuthBearerToken(
-    string AccessToken,
-    int ExpiresIn = 60,
-    string RefreshToken = ""
-) : ICredentials;
+    public sealed record BearerTokenCredentials(
+        string AccessToken,
+        int ExpiresIn = 60,
+        string RefreshToken = ""
+    ) : ICredentials;
 
-public sealed record AuthClientCredentials(string ClientSecret, params string?[] Scope)
-    : ICredentials;
+    public sealed record ClientCredentialsFlow(string ClientSecret, params string?[] Scope)
+        : ICredentials;
 
-public sealed record AuthClientPassword(string Username, string Password, params string?[] Scope)
-    : ICredentials;
+    public sealed record ClientPasswordFlow(
+        string Username,
+        string Password,
+        params string?[] Scope
+    ) : ICredentials;
+
+    public static ApiKeyCredentials ApiKey(string value) => new(value);
+
+    public static BearerTokenCredentials BearerToken(
+        string accessToken,
+        int expiresIn = 60,
+        string refreshToken = ""
+    ) => new(accessToken, expiresIn, refreshToken);
+
+    public static ClientCredentialsFlow ClientCredentials(
+        string clientSecret,
+        params string?[] scope
+    ) => new(clientSecret, scope);
+
+    public static ClientPasswordFlow ClientPassword(
+        string username,
+        string password,
+        params string?[] scope
+    ) => new(username, password, scope);
+}
 
 public sealed record ClientConfiguration(
     string RestAddress = "localhost",
@@ -149,11 +174,11 @@ public class WeaviateClient : IDisposable
 
         Configuration = configuration ?? DefaultOptions;
 
-        if (Configuration.Credentials is AuthApiKey apiKey)
+        if (Configuration.Credentials is Auth.ApiKeyCredentials apiKey)
         {
             _tokenService = new ApiKeyTokenService(apiKey);
         }
-        else if (Configuration.Credentials is AuthClientCredentials clientCreds)
+        else if (Configuration.Credentials is Auth.ClientCredentialsFlow clientCreds)
         {
             var openIdConfig = OAuthTokenService
                 .GetOpenIdConfig(Configuration.RestUri.ToString())
@@ -184,7 +209,7 @@ public class WeaviateClient : IDisposable
                 );
             }
         }
-        else if (Configuration.Credentials is AuthClientPassword clientPass)
+        else if (Configuration.Credentials is Auth.ClientPasswordFlow clientPass)
         {
             var openIdConfig = OAuthTokenService
                 .GetOpenIdConfig(Configuration.RestUri.ToString())
@@ -217,7 +242,7 @@ public class WeaviateClient : IDisposable
                 );
             }
         }
-        else if (Configuration.Credentials is AuthBearerToken bearerToken)
+        else if (Configuration.Credentials is Auth.BearerTokenCredentials bearerToken)
         {
             var openIdConfig = OAuthTokenService
                 .GetOpenIdConfig(Configuration.RestUri.ToString())

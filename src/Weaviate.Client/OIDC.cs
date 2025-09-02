@@ -30,9 +30,9 @@ public record OAuthConfig
 
 internal class ApiKeyTokenService : ITokenService
 {
-    private AuthApiKey? credentialsAPIKey;
+    private Auth.ApiKeyCredentials credentialsAPIKey;
 
-    public ApiKeyTokenService(AuthApiKey? credentialsAPIKey)
+    public ApiKeyTokenService(Auth.ApiKeyCredentials credentialsAPIKey)
     {
         ArgumentException.ThrowIfNullOrEmpty(credentialsAPIKey?.Value, nameof(credentialsAPIKey));
         this.credentialsAPIKey = credentialsAPIKey;
@@ -50,13 +50,13 @@ internal class ApiKeyTokenService : ITokenService
 
     public Task<bool> RefreshTokenAsync()
     {
-        throw new NotImplementedException();
+        return Task.FromResult(true);
     }
 }
 
 internal class BearerTokenService : ITokenService
 {
-    private readonly AuthBearerToken _credentialsBearerToken;
+    private readonly Auth.BearerTokenCredentials _credentialsBearerToken;
     private readonly HttpClient _httpClient;
     private readonly string _tokenEndpoint;
     private readonly ILogger<BearerTokenService> _logger;
@@ -64,7 +64,7 @@ internal class BearerTokenService : ITokenService
     private readonly SemaphoreSlim _refreshSemaphore = new(1, 1);
 
     public BearerTokenService(
-        AuthBearerToken credentialsBearerToken,
+        Auth.BearerTokenCredentials credentialsBearerToken,
         string tokenEndpoint,
         ILogger<BearerTokenService>? logger = null
     )
@@ -295,7 +295,6 @@ internal class OAuthTokenService : ITokenService
                 ClientId = _config.ClientId,
                 ClientSecret = _config.ClientSecret,
                 Scope = _config.Scope,
-                Method = HttpMethod.Get,
             }
         );
     }
@@ -327,10 +326,10 @@ internal class OAuthTokenService : ITokenService
         if (_currentTokenResponse?.ExpiresIn == null)
             return true;
 
-        // Add a 5-minute buffer
+        // Add a 1-minute buffer
         var expirationTime = DateTimeOffset
             .UtcNow.AddSeconds(_currentTokenResponse.ExpiresIn)
-            .AddMinutes(-5);
+            .AddMinutes(-1);
         var isExpired = DateTimeOffset.UtcNow >= expirationTime;
 
         if (isExpired)
