@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
 
@@ -7,13 +8,29 @@ using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
 
+public interface ICredentials { }
+
+public sealed record AuthApiKey(string Value) : ICredentials;
+
+public sealed record AuthBearerToken(
+    string AccessToken,
+    int ExpiresIn = 60,
+    string RefreshToken = ""
+) : ICredentials;
+
+public sealed record AuthClientCredentials(string ClientSecret, params string?[] Scope)
+    : ICredentials;
+
+public sealed record AuthClientPassword(string Username, string Password, params string?[] Scope)
+    : ICredentials;
+
 public sealed record ClientConfiguration(
     string RestAddress = "localhost",
     string GrpcAddress = "localhost",
     ushort RestPort = 8080,
     ushort GrpcPort = 50051,
     bool UseSsl = false,
-    string? ApiKey = null,
+    ICredentials? Credentials = null,
     bool AddEmbeddingHeader = false
 )
 {
@@ -35,7 +52,8 @@ public sealed record ClientConfiguration(
             Path = "",
         }.Uri;
 
-    public WeaviateClient Client(HttpClient? baseClient = null) => new(this, baseClient);
+    public WeaviateClient Client(HttpMessageHandler? messageHandler = null) =>
+        new(this, httpMessageHandler: messageHandler);
 };
 
 public class WeaviateClient : IDisposable
@@ -43,11 +61,12 @@ public class WeaviateClient : IDisposable
     private static readonly Lazy<ClientConfiguration> _defaultOptions = new(() =>
         new()
         {
-            ApiKey = null,
+            Credentials = null,
             RestPort = 8080,
             GrpcPort = 50051,
         }
     );
+    private readonly ITokenService? _tokenService;
 
     public async Task<Models.MetaInfo> GetMeta()
     {
@@ -67,11 +86,39 @@ public class WeaviateClient : IDisposable
         };
     }
 
-    public System.Version WeaviateVersion { get; set; }
+    private System.Version? _weaviateVersion;
+    private readonly SemaphoreSlim _versionSemaphore = new(1, 1);
+
+    public async Task<System.Version> GetWeaviateVersionAsync()
+    {
+        if (_weaviateVersion != null)
+            return _weaviateVersion;
+
+        await _versionSemaphore.WaitAsync();
+        try
+        {
+            if (_weaviateVersion == null)
+            {
+                var meta = await GetMeta();
+                _weaviateVersion = meta.Version;
+            }
+        }
+        finally
+        {
+            _versionSemaphore.Release();
+        }
+
+        return _weaviateVersion;
+    }
+
+    public System.Version WeaviateVersion => GetWeaviateVersionAsync().GetAwaiter().GetResult();
 
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
 
     private bool _isDisposed = false;
+    private readonly ILogger<WeaviateClient> _logger = LoggerFactory
+        .Create(builder => builder.AddConsole())
+        .CreateLogger<WeaviateClient>();
 
     [NotNull]
     internal WeaviateRestClient RestClient { get; init; }
@@ -92,20 +139,115 @@ public class WeaviateClient : IDisposable
             || url.ToLower().Contains("weaviate.cloud");
     }
 
-    public WeaviateClient(ClientConfiguration? configuration = null, HttpClient? httpClient = null)
+    public WeaviateClient(
+        ClientConfiguration? configuration = null,
+        HttpMessageHandler? httpMessageHandler = null,
+        ILogger<WeaviateClient>? logger = null
+    )
     {
+        _logger = logger ?? _logger;
+
         Configuration = configuration ?? DefaultOptions;
 
-        httpClient ??= new HttpClient();
-
-        if (!string.IsNullOrEmpty(Configuration.ApiKey))
+        if (Configuration.Credentials is AuthApiKey apiKey)
         {
-            httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue(
-                    "Bearer",
-                    Configuration.ApiKey
-                );
+            _tokenService = new ApiKeyTokenService(apiKey);
         }
+        else if (Configuration.Credentials is AuthClientCredentials clientCreds)
+        {
+            var openIdConfig = OAuthTokenService
+                .GetOpenIdConfig(Configuration.RestUri.ToString())
+                .GetAwaiter()
+                .GetResult();
+
+            if (!openIdConfig.IsSuccessStatusCode)
+            {
+                _logger?.LogWarning("Failed to retrieve OpenID configuration");
+            }
+            else
+            {
+                var tokenEndpoint = openIdConfig.TokenEndpoint!;
+                var clientId = openIdConfig.ClientID!;
+                _tokenService = new OAuthTokenService(
+                    new HttpClient(),
+                    new OAuthConfig
+                    {
+                        TokenEndpoint = tokenEndpoint,
+                        ClientId = clientId,
+                        ClientSecret = clientCreds.ClientSecret,
+                        GrantType = "client_credentials",
+                        Scope = string.Join(
+                            " ",
+                            clientCreds.Scope.Where(s => !string.IsNullOrEmpty(s))
+                        ),
+                    }
+                );
+            }
+        }
+        else if (Configuration.Credentials is AuthClientPassword clientPass)
+        {
+            var openIdConfig = OAuthTokenService
+                .GetOpenIdConfig(Configuration.RestUri.ToString())
+                .GetAwaiter()
+                .GetResult();
+
+            if (!openIdConfig.IsSuccessStatusCode)
+            {
+                _logger?.LogWarning("Failed to retrieve OpenID configuration");
+            }
+            else
+            {
+                var tokenEndpoint = openIdConfig.TokenEndpoint!;
+                var clientId = openIdConfig.ClientID!;
+
+                _tokenService = new OAuthTokenService(
+                    new HttpClient(),
+                    new OAuthConfig
+                    {
+                        TokenEndpoint = tokenEndpoint,
+                        ClientId = clientId,
+                        GrantType = "password",
+                        Username = clientPass.Username,
+                        Password = clientPass.Password,
+                        Scope = string.Join(
+                            " ",
+                            clientPass.Scope.Where(s => !string.IsNullOrEmpty(s))
+                        ),
+                    }
+                );
+            }
+        }
+        else if (Configuration.Credentials is AuthBearerToken bearerToken)
+        {
+            var openIdConfig = OAuthTokenService
+                .GetOpenIdConfig(Configuration.RestUri.ToString())
+                .GetAwaiter()
+                .GetResult();
+
+            if (!openIdConfig.IsSuccessStatusCode)
+            {
+                _logger?.LogWarning("Failed to retrieve OpenID configuration");
+            }
+            else
+            {
+                var tokenEndpoint = openIdConfig.TokenEndpoint!;
+
+                _tokenService = new BearerTokenService(bearerToken, tokenEndpoint);
+            }
+        }
+
+        httpMessageHandler ??= new HttpClientHandler();
+
+        if (_tokenService != null)
+        {
+            // Add a delegating handler to inject the access token into each request
+            httpMessageHandler = new AuthenticatedHttpHandler(_tokenService)
+            {
+                InnerHandler = httpMessageHandler,
+            };
+        }
+
+        var httpClient = new HttpClient(httpMessageHandler);
 
         var wcdHost =
             (Configuration.AddEmbeddingHeader && IsWeaviateDomain(Configuration.RestAddress))
@@ -121,10 +263,7 @@ public class WeaviateClient : IDisposable
         }
 
         RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
-        GrpcClient = new WeaviateGrpcClient(Configuration.GrpcUri, Configuration.ApiKey, wcdHost);
-
-        var meta = GetMeta().Result;
-        WeaviateVersion = meta.Version;
+        GrpcClient = new WeaviateGrpcClient(Configuration.GrpcUri, wcdHost, _tokenService);
 
         Nodes = new NodesClient(RestClient);
         Collections = new CollectionsClient(this);
