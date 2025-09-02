@@ -1,3 +1,4 @@
+using System.Security.Authentication;
 using Grpc.Core;
 using Grpc.Health.V1;
 using Grpc.Net.Client;
@@ -16,11 +17,19 @@ internal partial class WeaviateGrpcClient : IDisposable
     {
         return async (context, metadata) =>
         {
-            var token = await tokenService.GetAccessTokenAsync();
-
-            if (tokenService.IsAuthenticated())
+            try
             {
-                metadata.Add("Authorization", $"Bearer {token}");
+                var token = await tokenService.GetAccessTokenAsync();
+
+                if (tokenService.IsAuthenticated())
+                {
+                    metadata.Add("Authorization", $"Bearer {token}");
+                }
+            }
+            catch (AuthenticationException ex)
+            {
+                _logger.LogError(ex, "Failed to retrieve access token");
+                return;
             }
         };
     }
