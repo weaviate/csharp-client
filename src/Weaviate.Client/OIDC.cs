@@ -64,6 +64,7 @@ internal class BearerTokenService : ITokenService
     private readonly SemaphoreSlim _refreshSemaphore = new(1, 1);
 
     public BearerTokenService(
+        HttpClient httpClient,
         Auth.BearerTokenCredentials credentialsBearerToken,
         string tokenEndpoint,
         ILogger<BearerTokenService>? logger = null
@@ -78,7 +79,7 @@ internal class BearerTokenService : ITokenService
 
         _credentialsBearerToken = credentialsBearerToken;
 
-        _httpClient = new HttpClient();
+        _httpClient = httpClient;
     }
 
     public async Task<string?> GetAccessTokenAsync()
