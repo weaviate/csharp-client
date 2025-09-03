@@ -51,7 +51,9 @@ public static class Auth
 
 public sealed record ClientConfiguration(
     string RestAddress = "localhost",
+    string RestPath = "v1/",
     string GrpcAddress = "localhost",
+    string GrpcPath = "",
     ushort RestPort = 8080,
     ushort GrpcPort = 50051,
     bool UseSsl = false,
@@ -65,7 +67,7 @@ public sealed record ClientConfiguration(
             Host = RestAddress,
             Scheme = UseSsl ? "https" : "http",
             Port = RestPort,
-            Path = "v1/",
+            Path = RestPath,
         }.Uri;
 
     public Uri GrpcUri =>
@@ -74,7 +76,7 @@ public sealed record ClientConfiguration(
             Host = GrpcAddress,
             Scheme = UseSsl ? "https" : "http",
             Port = GrpcPort,
-            Path = "",
+            Path = GrpcPath,
         }.Uri;
 
     public WeaviateClient Client(HttpMessageHandler? messageHandler = null) =>
