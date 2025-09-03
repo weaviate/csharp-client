@@ -3,11 +3,23 @@ namespace Weaviate.Client;
 public static class Connect
 {
     public static WeaviateClient Local(
+        Auth.ApiKeyCredentials apiKey, // ApiKeyCredentials is constructed implicitly from a string.
         string hostname = "localhost",
         ushort restPort = 8080,
         ushort grpcPort = 50051,
         bool useSsl = false,
+        HttpMessageHandler? httpMessageHandler = null
+    )
+    {
+        return Local(apiKey, hostname, restPort, grpcPort, useSsl, httpMessageHandler);
+    }
+
+    public static WeaviateClient Local(
         ICredentials? credentials = null,
+        string hostname = "localhost",
+        ushort restPort = 8080,
+        ushort grpcPort = 50051,
+        bool useSsl = false,
         HttpMessageHandler? httpMessageHandler = null
     ) =>
         new ClientConfiguration(

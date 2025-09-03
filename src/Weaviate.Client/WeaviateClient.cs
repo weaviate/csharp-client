@@ -12,7 +12,10 @@ public interface ICredentials { }
 
 public static class Auth
 {
-    public sealed record ApiKeyCredentials(string Value) : ICredentials;
+    public sealed record ApiKeyCredentials(string Value) : ICredentials
+    {
+        public static implicit operator ApiKeyCredentials(string value) => new(value);
+    }
 
     public sealed record BearerTokenCredentials(
         string AccessToken,
