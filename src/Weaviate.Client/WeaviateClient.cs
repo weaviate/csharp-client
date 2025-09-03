@@ -8,12 +8,17 @@ using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
 
-public interface ICredentials { }
+public interface ICredentials
+{
+    internal string GetScopes();
+}
 
 public static class Auth
 {
     public sealed record ApiKeyCredentials(string Value) : ICredentials
     {
+        string ICredentials.GetScopes() => "";
+
         public static implicit operator ApiKeyCredentials(string value) => new(value);
     }
 
@@ -21,16 +26,25 @@ public static class Auth
         string AccessToken,
         int ExpiresIn = 60,
         string RefreshToken = ""
-    ) : ICredentials;
+    ) : ICredentials
+    {
+        string ICredentials.GetScopes() => "";
+    }
 
     public sealed record ClientCredentialsFlow(string ClientSecret, params string?[] Scope)
-        : ICredentials;
+        : ICredentials
+    {
+        public string GetScopes() => string.Join(" ", Scope.Where(s => !string.IsNullOrEmpty(s)));
+    }
 
     public sealed record ClientPasswordFlow(
         string Username,
         string Password,
         params string?[] Scope
-    ) : ICredentials;
+    ) : ICredentials
+    {
+        public string GetScopes() => string.Join(" ", Scope.Where(s => !string.IsNullOrEmpty(s)));
+    }
 
     public static ApiKeyCredentials ApiKey(string value) => new(value);
 
@@ -179,92 +193,7 @@ public class WeaviateClient : IDisposable
 
         Configuration = configuration ?? DefaultOptions;
 
-        if (Configuration.Credentials is Auth.ApiKeyCredentials apiKey)
-        {
-            _tokenService = new ApiKeyTokenService(apiKey);
-        }
-        else if (Configuration.Credentials is Auth.ClientCredentialsFlow clientCreds)
-        {
-            var openIdConfig = OAuthTokenService
-                .GetOpenIdConfig(Configuration.RestUri.ToString())
-                .GetAwaiter()
-                .GetResult();
-
-            if (!openIdConfig.IsSuccessStatusCode)
-            {
-                _logger?.LogWarning("Failed to retrieve OpenID configuration");
-            }
-            else
-            {
-                var tokenEndpoint = openIdConfig.TokenEndpoint!;
-                var clientId = openIdConfig.ClientID!;
-                _tokenService = new OAuthTokenService(
-                    new HttpClient(),
-                    new OAuthConfig
-                    {
-                        TokenEndpoint = tokenEndpoint,
-                        ClientId = clientId,
-                        ClientSecret = clientCreds.ClientSecret,
-                        GrantType = "client_credentials",
-                        Scope = string.Join(
-                            " ",
-                            clientCreds.Scope.Where(s => !string.IsNullOrEmpty(s))
-                        ),
-                    }
-                );
-            }
-        }
-        else if (Configuration.Credentials is Auth.ClientPasswordFlow clientPass)
-        {
-            var openIdConfig = OAuthTokenService
-                .GetOpenIdConfig(Configuration.RestUri.ToString())
-                .GetAwaiter()
-                .GetResult();
-
-            if (!openIdConfig.IsSuccessStatusCode)
-            {
-                _logger?.LogWarning("Failed to retrieve OpenID configuration");
-            }
-            else
-            {
-                var tokenEndpoint = openIdConfig.TokenEndpoint!;
-                var clientId = openIdConfig.ClientID!;
-
-                _tokenService = new OAuthTokenService(
-                    new HttpClient(),
-                    new OAuthConfig
-                    {
-                        TokenEndpoint = tokenEndpoint,
-                        ClientId = clientId,
-                        GrantType = "password",
-                        Username = clientPass.Username,
-                        Password = clientPass.Password,
-                        Scope = string.Join(
-                            " ",
-                            clientPass.Scope.Where(s => !string.IsNullOrEmpty(s))
-                        ),
-                    }
-                );
-            }
-        }
-        else if (Configuration.Credentials is Auth.BearerTokenCredentials bearerToken)
-        {
-            var openIdConfig = OAuthTokenService
-                .GetOpenIdConfig(Configuration.RestUri.ToString())
-                .GetAwaiter()
-                .GetResult();
-
-            if (!openIdConfig.IsSuccessStatusCode)
-            {
-                _logger?.LogWarning("Failed to retrieve OpenID configuration");
-            }
-            else
-            {
-                var tokenEndpoint = openIdConfig.TokenEndpoint!;
-
-                _tokenService = new BearerTokenService(bearerToken, tokenEndpoint);
-            }
-        }
+        _tokenService = InitializeTokenService().GetAwaiter().GetResult();
 
         httpMessageHandler ??= new HttpClientHandler();
 
@@ -297,6 +226,68 @@ public class WeaviateClient : IDisposable
 
         Nodes = new NodesClient(RestClient);
         Collections = new CollectionsClient(this);
+    }
+
+    private async Task<ITokenService?> InitializeTokenService()
+    {
+        if (Configuration.Credentials is null)
+        {
+            return null;
+        }
+
+        if (Configuration.Credentials is Auth.ApiKeyCredentials apiKey)
+        {
+            return new ApiKeyTokenService(apiKey);
+        }
+
+        var openIdConfig = await OAuthTokenService.GetOpenIdConfig(
+            Configuration.RestUri.ToString()
+        );
+
+        if (!openIdConfig.IsSuccessStatusCode)
+        {
+            _logger?.LogWarning("Failed to retrieve OpenID configuration");
+            return null;
+        }
+
+        var tokenEndpoint = openIdConfig.TokenEndpoint!;
+        var clientId = openIdConfig.ClientID!;
+
+        var httpClient = new HttpClient();
+
+        if (Configuration.Credentials is Auth.BearerTokenCredentials bearerToken)
+        {
+            return new BearerTokenService(httpClient, bearerToken, tokenEndpoint);
+        }
+
+        OAuthConfig oauthConfig = new()
+        {
+            TokenEndpoint = tokenEndpoint,
+            ClientId = clientId,
+            GrantType = Configuration.Credentials switch
+            {
+                Auth.ClientCredentialsFlow => "client_credentials",
+                Auth.ClientPasswordFlow => "password",
+                Auth.BearerTokenCredentials => "bearer",
+                _ => throw new NotSupportedException("Unsupported credentials type"),
+            },
+            Scope = Configuration.Credentials?.GetScopes() ?? "",
+        };
+
+        if (Configuration.Credentials is Auth.ClientCredentialsFlow clientCreds)
+        {
+            oauthConfig = oauthConfig with { ClientSecret = clientCreds.ClientSecret };
+        }
+        else if (Configuration.Credentials is Auth.ClientPasswordFlow clientPass)
+        {
+            oauthConfig = oauthConfig with
+            {
+                Username = clientPass.Username,
+                Password = clientPass.Password,
+            };
+        }
+
+        return new OAuthTokenService(httpClient, oauthConfig);
     }
 
     public void Dispose()
