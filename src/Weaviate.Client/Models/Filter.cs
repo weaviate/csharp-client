@@ -337,7 +337,7 @@ public record ReferenceFilter : Filter
         return new PropertyFilter(_target.SingleTarget.Target, InternalFilter);
     }
 
-    internal TypedValue<int> Count
+    public TypedValue<int> Count
     {
         get
         {
