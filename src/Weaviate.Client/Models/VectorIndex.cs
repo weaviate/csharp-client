@@ -152,7 +152,7 @@ public static class VectorIndex
         public bool? Skip { get; set; }
         public long? VectorCacheMaxObjects { get; set; }
         public QuantizerConfig? Quantizer { get; set; }
-        public MultiVectorConfig? MultiVector { get; internal set; }
+        public MultiVectorConfig? MultiVector { get; set; }
 
         public override string Type => TypeValue;
     }

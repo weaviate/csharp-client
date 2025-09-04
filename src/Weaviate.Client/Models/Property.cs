@@ -235,12 +235,12 @@ public record Property : IEquatable<Property>
     }
     public IList<string> DataType { get; set; } = new List<string>();
     public string? Description { get; set; }
-    public bool? IndexFilterable { get; set; }
+    public bool? IndexFilterable { get; internal set; }
 
     [Obsolete]
     public bool? IndexInverted { get; internal set; }
-    public bool? IndexRangeFilters { get; set; }
-    public bool? IndexSearchable { get; set; }
+    public bool? IndexRangeFilters { get; internal set; }
+    public bool? IndexSearchable { get; internal set; }
     public PropertyTokenization? PropertyTokenization { get; internal set; }
 
     public static PropertyFactory Text => PropertyHelper.Factory(Models.DataType.Text);
