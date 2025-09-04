@@ -253,13 +253,6 @@ public class WeaviateClient : IDisposable
         var tokenEndpoint = openIdConfig.TokenEndpoint!;
         var clientId = openIdConfig.ClientID!;
 
-        var httpClient = new HttpClient();
-
-        if (Configuration.Credentials is Auth.BearerTokenCredentials bearerToken)
-        {
-            return new BearerTokenService(httpClient, bearerToken, tokenEndpoint);
-        }
-
         OAuthConfig oauthConfig = new()
         {
             TokenEndpoint = tokenEndpoint,
@@ -273,6 +266,20 @@ public class WeaviateClient : IDisposable
             },
             Scope = Configuration.Credentials?.GetScopes() ?? "",
         };
+
+        var httpClient = new HttpClient();
+
+        if (Configuration.Credentials is Auth.BearerTokenCredentials bearerToken)
+        {
+            return new OAuthTokenService(httpClient, oauthConfig)
+            {
+                CurrentToken = new(
+                    bearerToken.AccessToken,
+                    bearerToken.ExpiresIn,
+                    bearerToken.RefreshToken
+                ),
+            };
+        }
 
         if (Configuration.Credentials is Auth.ClientCredentialsFlow clientCreds)
         {

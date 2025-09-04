@@ -54,126 +54,19 @@ internal class ApiKeyTokenService : ITokenService
     }
 }
 
-internal class BearerTokenService : ITokenService
-{
-    private readonly Auth.BearerTokenCredentials _credentialsBearerToken;
-    private readonly HttpClient _httpClient;
-    private readonly string _tokenEndpoint;
-    private readonly ILogger<BearerTokenService> _logger;
-    private TokenResponse? _currentTokenResponse = null;
-    private readonly SemaphoreSlim _refreshSemaphore = new(1, 1);
-
-    public BearerTokenService(
-        HttpClient httpClient,
-        Auth.BearerTokenCredentials credentialsBearerToken,
-        string tokenEndpoint,
-        ILogger<BearerTokenService>? logger = null
-    )
-    {
-        _tokenEndpoint = tokenEndpoint;
-        _logger =
-            logger
-            ?? LoggerFactory
-                .Create(builder => builder.AddConsole())
-                .CreateLogger<BearerTokenService>();
-
-        _credentialsBearerToken = credentialsBearerToken;
-
-        _httpClient = httpClient;
-    }
-
-    public async Task<string?> GetAccessTokenAsync()
-    {
-        if (IsTokenExpired())
-        {
-            await RefreshTokenAsync();
-        }
-
-        if (_currentTokenResponse is not null)
-        {
-            return _currentTokenResponse?.AccessToken;
-        }
-
-        return _credentialsBearerToken?.AccessToken;
-    }
-
-    public async Task<bool> RefreshTokenAsync()
-    {
-        await _refreshSemaphore.WaitAsync();
-        try
-        {
-            string token =
-                _currentTokenResponse?.RefreshToken ?? _credentialsBearerToken.RefreshToken;
-
-            if (!string.IsNullOrEmpty(token))
-            {
-                _logger.LogDebug("Attempting to refresh access token");
-                var refreshTokenResponse = await _httpClient.RequestRefreshTokenAsync(
-                    new RefreshTokenRequest { Address = _tokenEndpoint, RefreshToken = token }
-                );
-
-                if (!refreshTokenResponse.IsError)
-                {
-                    _logger.LogDebug("Token refresh successful");
-                    _currentTokenResponse = refreshTokenResponse;
-                    return true;
-                }
-                else
-                {
-                    _logger.LogWarning(
-                        "Token refresh failed: {Error} - {ErrorDescription}",
-                        refreshTokenResponse.Error,
-                        refreshTokenResponse.ErrorDescription
-                    );
-                }
-            }
-
-            return !(_currentTokenResponse?.IsError ?? true);
-        }
-        finally
-        {
-            _refreshSemaphore.Release();
-        }
-    }
-
-    private bool IsTokenExpired()
-    {
-        var expiresIn = _currentTokenResponse?.ExpiresIn ?? _credentialsBearerToken.ExpiresIn;
-
-        // Add a 5-minute buffer
-        var expirationTime = DateTimeOffset.UtcNow.AddSeconds(expiresIn).AddMinutes(-5);
-        var isExpired = DateTimeOffset.UtcNow >= expirationTime;
-
-        if (isExpired)
-        {
-            _logger.LogDebug("Access token is expired or expiring soon");
-        }
-
-        return isExpired;
-    }
-
-    public bool IsAuthenticated()
-    {
-        return !string.IsNullOrEmpty(
-                _currentTokenResponse?.AccessToken ?? _credentialsBearerToken.AccessToken
-            ) && !IsTokenExpired();
-    }
-}
-
 internal class OAuthTokenService : ITokenService
 {
+    internal record OAuthTokenResponse(string? AccessToken, int? ExpiresIn, string? RefreshToken)
+    {
+        public bool IsError { get; internal set; }
+    }
+
     private readonly HttpClient _httpClient;
     private readonly OAuthConfig _config;
     private readonly ILogger<OAuthTokenService> _logger;
-    private TokenResponse? _currentTokenResponse = null;
     private readonly SemaphoreSlim _refreshSemaphore = new(1, 1);
 
-    public (string? AccessToken, int? ExpiresIn, string? RefreshToken)? CurrentToken =>
-        (
-            _currentTokenResponse?.AccessToken,
-            _currentTokenResponse?.ExpiresIn,
-            _currentTokenResponse?.RefreshToken
-        );
+    internal OAuthTokenResponse? CurrentToken { get; set; }
 
     public OAuthTokenService(
         HttpClient httpClient,
@@ -192,12 +85,12 @@ internal class OAuthTokenService : ITokenService
 
     public async Task<string?> GetAccessTokenAsync()
     {
-        if (_currentTokenResponse?.AccessToken == null || IsTokenExpired())
+        if (CurrentToken?.AccessToken == null || IsTokenExpired())
         {
             await AuthenticateAsync();
         }
 
-        return _currentTokenResponse?.AccessToken;
+        return CurrentToken?.AccessToken;
     }
 
     public async Task<bool> RefreshTokenAsync()
@@ -210,11 +103,11 @@ internal class OAuthTokenService : ITokenService
             {
                 await AuthenticateAsync();
 
-                return !(_currentTokenResponse?.IsError ?? true);
+                return !(CurrentToken?.IsError ?? true);
             }
 
             // For password flow, try refresh token if available
-            if (!string.IsNullOrEmpty(_currentTokenResponse?.RefreshToken))
+            if (!string.IsNullOrEmpty(CurrentToken?.RefreshToken))
             {
                 _logger.LogDebug("Attempting to refresh access token");
                 var refreshTokenResponse = await _httpClient.RequestRefreshTokenAsync(
@@ -223,7 +116,7 @@ internal class OAuthTokenService : ITokenService
                         Address = _config.TokenEndpoint,
                         ClientId = _config.ClientId,
                         ClientSecret = _config.ClientSecret,
-                        RefreshToken = _currentTokenResponse.RefreshToken,
+                        RefreshToken = CurrentToken.RefreshToken,
                         Scope = _config.Scope,
                     }
                 );
@@ -231,7 +124,11 @@ internal class OAuthTokenService : ITokenService
                 if (!refreshTokenResponse.IsError)
                 {
                     _logger.LogDebug("Token refresh successful");
-                    _currentTokenResponse = refreshTokenResponse;
+                    CurrentToken = new OAuthTokenResponse(
+                        refreshTokenResponse.AccessToken,
+                        refreshTokenResponse.ExpiresIn,
+                        refreshTokenResponse.RefreshToken
+                    );
                     return true;
                 }
                 else
@@ -246,7 +143,7 @@ internal class OAuthTokenService : ITokenService
 
             // Fallback to full authentication
             await AuthenticateAsync();
-            return !(_currentTokenResponse?.IsError ?? true);
+            return !(CurrentToken?.IsError ?? true);
         }
         finally
         {
@@ -256,14 +153,14 @@ internal class OAuthTokenService : ITokenService
 
     public bool IsAuthenticated()
     {
-        return _currentTokenResponse?.AccessToken != null && !IsTokenExpired();
+        return CurrentToken?.AccessToken != null && !IsTokenExpired();
     }
 
     private async Task AuthenticateAsync()
     {
         _logger.LogDebug("Starting OAuth authentication with {GrantType}", _config.GrantType);
 
-        _currentTokenResponse = _config.GrantType switch
+        var tokenResponse = _config.GrantType switch
         {
             "client_credentials" => await RequestClientCredentialsTokenAsync(),
             "password" => await RequestPasswordTokenAsync(),
@@ -272,17 +169,26 @@ internal class OAuthTokenService : ITokenService
             ),
         };
 
-        if (_currentTokenResponse.IsError)
+        if (tokenResponse.IsError)
         {
             _logger.LogError(
                 "OAuth authentication failed: {Error} - {ErrorDescription}",
-                _currentTokenResponse.Error,
-                _currentTokenResponse.ErrorDescription
+                tokenResponse.Error,
+                tokenResponse.ErrorDescription
             );
             throw new AuthenticationException(
-                $"OAuth authentication failed: {_currentTokenResponse.Error}"
+                $"OAuth authentication failed: {tokenResponse.Error}"
             );
         }
+
+        CurrentToken = new OAuthTokenResponse(
+            tokenResponse.AccessToken,
+            tokenResponse.ExpiresIn,
+            tokenResponse.RefreshToken
+        )
+        {
+            IsError = tokenResponse.IsError,
+        };
 
         _logger.LogDebug("OAuth authentication successful");
     }
@@ -324,12 +230,14 @@ internal class OAuthTokenService : ITokenService
 
     private bool IsTokenExpired()
     {
-        if (_currentTokenResponse?.ExpiresIn == null)
+        if (CurrentToken?.ExpiresIn == null)
+        {
             return true;
+        }
 
         // Add a 1-minute buffer
         var expirationTime = DateTimeOffset
-            .UtcNow.AddSeconds(_currentTokenResponse.ExpiresIn)
+            .UtcNow.AddSeconds(CurrentToken?.ExpiresIn ?? 60)
             .AddMinutes(-1);
         var isExpired = DateTimeOffset.UtcNow >= expirationTime;
 

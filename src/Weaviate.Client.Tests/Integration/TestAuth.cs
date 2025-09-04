@@ -55,13 +55,13 @@ public class TestAuth : IntegrationTests
             throw new InvalidOperationException("Failed to retrieve access token");
         }
 
-        var currentTokenResponse = tokenSvc.CurrentToken!.Value;
+        var currentTokenResponse = tokenSvc.CurrentToken;
 
         return (
             response.IsSuccessStatusCode,
-            currentTokenResponse.AccessToken ?? "",
-            currentTokenResponse.ExpiresIn ?? 0,
-            currentTokenResponse.RefreshToken ?? "",
+            currentTokenResponse?.AccessToken ?? "",
+            currentTokenResponse?.ExpiresIn ?? 0,
+            currentTokenResponse?.RefreshToken ?? "",
             response.ClientID
         );
     }
