@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
 
@@ -7,13 +8,73 @@ using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
 
+public interface ICredentials
+{
+    internal string GetScopes();
+}
+
+public static class Auth
+{
+    public sealed record ApiKeyCredentials(string Value) : ICredentials
+    {
+        string ICredentials.GetScopes() => "";
+
+        public static implicit operator ApiKeyCredentials(string value) => new(value);
+    }
+
+    public sealed record BearerTokenCredentials(
+        string AccessToken,
+        int ExpiresIn = 60,
+        string RefreshToken = ""
+    ) : ICredentials
+    {
+        string ICredentials.GetScopes() => "";
+    }
+
+    public sealed record ClientCredentialsFlow(string ClientSecret, params string?[] Scope)
+        : ICredentials
+    {
+        public string GetScopes() => string.Join(" ", Scope.Where(s => !string.IsNullOrEmpty(s)));
+    }
+
+    public sealed record ClientPasswordFlow(
+        string Username,
+        string Password,
+        params string?[] Scope
+    ) : ICredentials
+    {
+        public string GetScopes() => string.Join(" ", Scope.Where(s => !string.IsNullOrEmpty(s)));
+    }
+
+    public static ApiKeyCredentials ApiKey(string value) => new(value);
+
+    public static BearerTokenCredentials BearerToken(
+        string accessToken,
+        int expiresIn = 60,
+        string refreshToken = ""
+    ) => new(accessToken, expiresIn, refreshToken);
+
+    public static ClientCredentialsFlow ClientCredentials(
+        string clientSecret,
+        params string?[] scope
+    ) => new(clientSecret, scope);
+
+    public static ClientPasswordFlow ClientPassword(
+        string username,
+        string password,
+        params string?[] scope
+    ) => new(username, password, scope);
+}
+
 public sealed record ClientConfiguration(
     string RestAddress = "localhost",
+    string RestPath = "v1/",
     string GrpcAddress = "localhost",
+    string GrpcPath = "",
     ushort RestPort = 8080,
     ushort GrpcPort = 50051,
     bool UseSsl = false,
-    string? ApiKey = null,
+    ICredentials? Credentials = null,
     bool AddEmbeddingHeader = false
 )
 {
@@ -23,7 +84,7 @@ public sealed record ClientConfiguration(
             Host = RestAddress,
             Scheme = UseSsl ? "https" : "http",
             Port = RestPort,
-            Path = "v1/",
+            Path = RestPath,
         }.Uri;
 
     public Uri GrpcUri =>
@@ -32,10 +93,11 @@ public sealed record ClientConfiguration(
             Host = GrpcAddress,
             Scheme = UseSsl ? "https" : "http",
             Port = GrpcPort,
-            Path = "",
+            Path = GrpcPath,
         }.Uri;
 
-    public WeaviateClient Client(HttpClient? baseClient = null) => new(this, baseClient);
+    public WeaviateClient Client(HttpMessageHandler? messageHandler = null) =>
+        new(this, httpMessageHandler: messageHandler);
 };
 
 public class WeaviateClient : IDisposable
@@ -43,11 +105,12 @@ public class WeaviateClient : IDisposable
     private static readonly Lazy<ClientConfiguration> _defaultOptions = new(() =>
         new()
         {
-            ApiKey = null,
+            Credentials = null,
             RestPort = 8080,
             GrpcPort = 50051,
         }
     );
+    private readonly ITokenService? _tokenService;
 
     public async Task<Models.MetaInfo> GetMeta()
     {
@@ -67,11 +130,39 @@ public class WeaviateClient : IDisposable
         };
     }
 
-    public System.Version WeaviateVersion { get; set; }
+    private System.Version? _weaviateVersion;
+    private readonly SemaphoreSlim _versionSemaphore = new(1, 1);
+
+    public async Task<System.Version> GetWeaviateVersionAsync()
+    {
+        if (_weaviateVersion != null)
+            return _weaviateVersion;
+
+        await _versionSemaphore.WaitAsync();
+        try
+        {
+            if (_weaviateVersion == null)
+            {
+                var meta = await GetMeta();
+                _weaviateVersion = meta.Version;
+            }
+        }
+        finally
+        {
+            _versionSemaphore.Release();
+        }
+
+        return _weaviateVersion;
+    }
+
+    public System.Version WeaviateVersion => GetWeaviateVersionAsync().GetAwaiter().GetResult();
 
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
 
     private bool _isDisposed = false;
+    private readonly ILogger<WeaviateClient> _logger = LoggerFactory
+        .Create(builder => builder.AddConsole())
+        .CreateLogger<WeaviateClient>();
 
     [NotNull]
     internal WeaviateRestClient RestClient { get; init; }
@@ -92,20 +183,30 @@ public class WeaviateClient : IDisposable
             || url.ToLower().Contains("weaviate.cloud");
     }
 
-    public WeaviateClient(ClientConfiguration? configuration = null, HttpClient? httpClient = null)
+    public WeaviateClient(
+        ClientConfiguration? configuration = null,
+        HttpMessageHandler? httpMessageHandler = null,
+        ILogger<WeaviateClient>? logger = null
+    )
     {
+        _logger = logger ?? _logger;
+
         Configuration = configuration ?? DefaultOptions;
 
-        httpClient ??= new HttpClient();
+        _tokenService = InitializeTokenService().GetAwaiter().GetResult();
 
-        if (!string.IsNullOrEmpty(Configuration.ApiKey))
+        httpMessageHandler ??= new HttpClientHandler();
+
+        if (_tokenService != null)
         {
-            httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue(
-                    "Bearer",
-                    Configuration.ApiKey
-                );
+            // Add a delegating handler to inject the access token into each request
+            httpMessageHandler = new AuthenticatedHttpHandler(_tokenService)
+            {
+                InnerHandler = httpMessageHandler,
+            };
         }
+
+        var httpClient = new HttpClient(httpMessageHandler);
 
         var wcdHost =
             (Configuration.AddEmbeddingHeader && IsWeaviateDomain(Configuration.RestAddress))
@@ -121,13 +222,79 @@ public class WeaviateClient : IDisposable
         }
 
         RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
-        GrpcClient = new WeaviateGrpcClient(Configuration.GrpcUri, Configuration.ApiKey, wcdHost);
-
-        var meta = GetMeta().Result;
-        WeaviateVersion = meta.Version;
+        GrpcClient = new WeaviateGrpcClient(Configuration.GrpcUri, wcdHost, _tokenService);
 
         Nodes = new NodesClient(RestClient);
         Collections = new CollectionsClient(this);
+    }
+
+    private async Task<ITokenService?> InitializeTokenService()
+    {
+        if (Configuration.Credentials is null)
+        {
+            return null;
+        }
+
+        if (Configuration.Credentials is Auth.ApiKeyCredentials apiKey)
+        {
+            return new ApiKeyTokenService(apiKey);
+        }
+
+        var openIdConfig = await OAuthTokenService.GetOpenIdConfig(
+            Configuration.RestUri.ToString()
+        );
+
+        if (!openIdConfig.IsSuccessStatusCode)
+        {
+            _logger?.LogWarning("Failed to retrieve OpenID configuration");
+            return null;
+        }
+
+        var tokenEndpoint = openIdConfig.TokenEndpoint!;
+        var clientId = openIdConfig.ClientID!;
+
+        OAuthConfig oauthConfig = new()
+        {
+            TokenEndpoint = tokenEndpoint,
+            ClientId = clientId,
+            GrantType = Configuration.Credentials switch
+            {
+                Auth.ClientCredentialsFlow => "client_credentials",
+                Auth.ClientPasswordFlow => "password",
+                Auth.BearerTokenCredentials => "bearer",
+                _ => throw new NotSupportedException("Unsupported credentials type"),
+            },
+            Scope = Configuration.Credentials?.GetScopes() ?? "",
+        };
+
+        var httpClient = new HttpClient();
+
+        if (Configuration.Credentials is Auth.BearerTokenCredentials bearerToken)
+        {
+            return new OAuthTokenService(httpClient, oauthConfig)
+            {
+                CurrentToken = new(
+                    bearerToken.AccessToken,
+                    bearerToken.ExpiresIn,
+                    bearerToken.RefreshToken
+                ),
+            };
+        }
+
+        if (Configuration.Credentials is Auth.ClientCredentialsFlow clientCreds)
+        {
+            oauthConfig = oauthConfig with { ClientSecret = clientCreds.ClientSecret };
+        }
+        else if (Configuration.Credentials is Auth.ClientPasswordFlow clientPass)
+        {
+            oauthConfig = oauthConfig with
+            {
+                Username = clientPass.Username,
+                Password = clientPass.Password,
+            };
+        }
+
+        return new OAuthTokenService(httpClient, oauthConfig);
     }
 
     public void Dispose()
