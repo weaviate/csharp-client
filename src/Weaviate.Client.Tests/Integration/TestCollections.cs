@@ -951,4 +951,87 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(blobData, objs[0].Properties["blob"]);
         Assert.Equal(blobData, objs[1].Properties["blob"]);
     }
+
+    [Fact]
+    public async Task Test_Collection_Query_Rerank()
+    {
+        // Arrange
+        var collection = await CollectionFactory(
+            name: "QueryTestCollection",
+            properties: [Property.Text("firstName"), Property.Int("age"), Property.Text("bio")],
+            rerankerConfig: new Reranker.Custom { Type = "reranker-dummy", Config = new { } },
+            vectorConfig: Configure.Vectors.SelfProvided()
+        );
+
+        // Sample data. The reranker-dummy module will use the length of the "bio" property to
+        // rerank the results. Longer bios should get higher scores.
+        // In order to make the assertions later work, the age property reflects the length of the bio in characters.
+        // This way we can assert that the reranked results are ordered by the length of "bio" and "age" descending.
+        var data = new[]
+        {
+            new
+            {
+                firstName = "Bob",
+                age = 38,
+                bio = "This person enjoys painting and music.",
+            },
+            new
+            {
+                firstName = "Alice",
+                age = 41,
+                bio = "This person loves programming and hiking.",
+            },
+            new
+            {
+                firstName = "Charlie",
+                age = 43,
+                bio = "This person is an avid reader and traveler.",
+            },
+        };
+
+        // Insert data
+        var id1 = await collection.Data.Insert(data[0], id: _reusableUuids[0]);
+        var id2 = await collection.Data.Insert(data[1], id: _reusableUuids[1]);
+        var id3 = await collection.Data.Insert(data[2], id: _reusableUuids[2]);
+
+        // Act
+        var results = (await collection.Query.FetchObjects(returnMetadata: MetadataOptions.Score))
+            .Objects.Select(r => new
+            {
+                r.ID,
+                Age = r.Properties["age"],
+                r.Metadata.RerankScore,
+            })
+            .ToList();
+
+        var resultsReranked = (
+            await collection.Query.FetchObjects(
+                rerank: new Rerank { Property = "bio" },
+                returnMetadata: MetadataOptions.Score
+            )
+        )
+            .Objects.Select(r => new
+            {
+                r.ID,
+                Age = r.Properties["age"],
+                r.Metadata.RerankScore,
+            })
+            .ToList();
+
+        // Assert
+        Assert.Equal(3, results.Count);
+        Assert.Equal(3, resultsReranked.Count);
+
+        Assert.True(results.All(r => r.RerankScore == null));
+        Assert.True(resultsReranked.All(r => r.RerankScore != null));
+
+        var resultsIDs = results.Select(x => x.ID).ToList();
+        var resultsRerankedIDs = resultsReranked.Select(x => x.ID).ToList();
+
+        Assert.NotEqual(resultsIDs, resultsRerankedIDs);
+
+        resultsIDs = results.OrderByDescending(x => x.Age).Select(x => x.ID).ToList();
+
+        Assert.Equal(resultsIDs, resultsRerankedIDs);
+    }
 }
