@@ -20,6 +20,7 @@ public class QueryClient<TData>
         uint? limit = null,
         Filter? filter = null,
         IEnumerable<Sort>? sort = null,
+        Rerank? rerank = null,
         string? tenant = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -31,6 +32,7 @@ public class QueryClient<TData>
                 fields: returnProperties,
                 limit: limit,
                 sort: sort,
+                rerank: rerank,
                 filter: filter,
                 groupBy: groupBy,
                 reference: returnReferences,
@@ -44,6 +46,7 @@ public class QueryClient<TData>
         uint? limit = null,
         Filter? filter = null,
         IEnumerable<Sort>? sort = null,
+        Rerank? rerank = null,
         string? tenant = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -55,6 +58,7 @@ public class QueryClient<TData>
                 fields: returnProperties,
                 limit: limit,
                 sort: sort,
+                rerank: rerank,
                 filter: filter,
                 reference: returnReferences,
                 metadata: returnMetadata,
@@ -84,6 +88,7 @@ public class QueryClient<TData>
         ISet<Guid> ids,
         uint? limit = null,
         string? tenant = null,
+        Rerank? rerank = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -96,7 +101,8 @@ public class QueryClient<TData>
                 filter: Filter.WithIDs(ids),
                 reference: returnReferences,
                 metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                rerank: rerank
             )
         ).result;
     #endregion
@@ -111,6 +117,7 @@ public class QueryClient<TData>
         Move? moveTo = null,
         Move? moveAway = null,
         string? tenant = null,
+        Rerank? rerank = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -128,6 +135,7 @@ public class QueryClient<TData>
                 reference: returnReferences,
                 metadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant,
+                rerank: rerank,
                 consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).result;
@@ -139,6 +147,7 @@ public class QueryClient<TData>
         float? certainty = null,
         uint? limit = null,
         string? tenant = null,
+        Rerank? rerank = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -155,6 +164,7 @@ public class QueryClient<TData>
                 reference: returnReferences,
                 metadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant,
+                rerank: rerank,
                 consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).group;
@@ -166,6 +176,7 @@ public class QueryClient<TData>
         uint? limit = null,
         string[]? targetVector = null,
         string? tenant = null,
+        Rerank? rerank = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -182,6 +193,7 @@ public class QueryClient<TData>
                 reference: returnReferences,
                 metadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant,
+                rerank: rerank,
                 consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).result;
@@ -194,6 +206,7 @@ public class QueryClient<TData>
         uint? limit = null,
         string[]? targetVector = null,
         string? tenant = null,
+        Rerank? rerank = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -211,6 +224,7 @@ public class QueryClient<TData>
                 reference: returnReferences,
                 metadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant,
+                rerank: rerank,
                 consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).group;
@@ -220,6 +234,7 @@ public class QueryClient<TData>
         GroupByRequest groupBy,
         string[]? searchFields = null,
         string? tenant = null,
+        Rerank? rerank = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -234,6 +249,7 @@ public class QueryClient<TData>
                 reference: returnReferences,
                 metadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant,
+                rerank: rerank,
                 consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).group;
@@ -242,6 +258,7 @@ public class QueryClient<TData>
         string query,
         string[]? searchFields = null,
         string? tenant = null,
+        Rerank? rerank = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -255,6 +272,7 @@ public class QueryClient<TData>
                 reference: returnReferences,
                 metadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant,
+                rerank: rerank,
                 consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).result;

@@ -23,6 +23,7 @@ internal partial class WeaviateGrpcClient
             Score = metadata.ScorePresent ? metadata.Score : null,
             ExplainScore = metadata.ExplainScorePresent ? metadata.ExplainScore : null,
             IsConsistent = metadata.IsConsistentPresent ? metadata.IsConsistent : null,
+            RerankScore = metadata.RerankScorePresent ? metadata.RerankScore : null,
         };
     }
 
