@@ -963,6 +963,10 @@ public partial class CollectionsTests : IntegrationTests
             vectorConfig: Configure.Vectors.SelfProvided()
         );
 
+        // Sample data. The reranker-dummy module will use the length of the "bio" property to
+        // rerank the results. Longer bios should get higher scores.
+        // In order to make the assertions later work, the age property reflects the length of the bio in characters.
+        // This way we can assert that the reranked results are ordered by the length of "bio" and "age" descending.
         var data = new[]
         {
             new
