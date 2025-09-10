@@ -298,6 +298,10 @@ public record PropertyFilter : Filter
     public Filter LessThanEqual<T>(T value) =>
         WithOperator(Filters.Types.Operator.LessThanEqual).WithValue(value);
 
+    public Filter WithinGeoRange(GeoCoordinate coord, float radius) =>
+        WithOperator(Filters.Types.Operator.WithinGeoRange)
+            .WithValue(new GeoCoordinateConstraint(coord.Latitude, coord.Longitude, radius));
+
     public Filter WithinGeoRange(GeoCoordinateConstraint value) =>
         WithOperator(Filters.Types.Operator.WithinGeoRange).WithValue(value);
 
