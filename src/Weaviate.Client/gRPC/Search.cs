@@ -70,11 +70,13 @@ internal partial class WeaviateGrpcClient
             Metadata = metadataRequest,
             Properties = MakePropsRequest(fields, reference),
             Tenant = tenant ?? string.Empty,
-            Rerank = new V1.Rerank
-            {
-                Property = rerank?.Property ?? string.Empty,
-                Query = rerank?.Query ?? string.Empty,
-            },
+            Rerank = rerank is not null
+                ? new()
+                {
+                    Property = rerank?.Property ?? string.Empty,
+                    Query = rerank?.Query ?? string.Empty,
+                }
+                : null,
         };
 
         if (consistencyLevel.HasValue)
