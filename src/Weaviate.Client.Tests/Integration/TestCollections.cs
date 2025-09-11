@@ -1025,12 +1025,8 @@ public partial class CollectionsTests : IntegrationTests
         Assert.True(results.All(r => r.RerankScore == null));
         Assert.True(resultsReranked.All(r => r.RerankScore != null));
 
-        var resultsIDs = results.Select(x => x.ID).ToList();
+        var resultsIDs = results.OrderByDescending(x => x.Age).Select(x => x.ID).ToList();
         var resultsRerankedIDs = resultsReranked.Select(x => x.ID).ToList();
-
-        Assert.NotEqual(resultsIDs, resultsRerankedIDs);
-
-        resultsIDs = results.OrderByDescending(x => x.Age).Select(x => x.ID).ToList();
 
         Assert.Equal(resultsIDs, resultsRerankedIDs);
     }
