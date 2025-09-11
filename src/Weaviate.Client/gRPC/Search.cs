@@ -162,18 +162,18 @@ internal partial class WeaviateGrpcClient
     }
 
     private static NearTextSearch BuildNearText(
-        string query,
+        OneOrManyOf<string> query,
         double? distance,
         double? certainty,
         Move? moveTo,
-        Move? moveAway
+        Move? moveAway,
+        string[]? targetVector = null
     )
     {
         var nearText = new NearTextSearch
         {
             Query = { query },
-            // Targets = null,
-            // VectorForTargets = { },
+            Targets = BuildTargetVector(targetVector),
         };
 
         if (moveTo is not null)
@@ -543,10 +543,13 @@ internal partial class WeaviateGrpcClient
         bool isGroups
     )> SearchNearText(
         string collection,
-        string query,
+        OneOrManyOf<string> query,
         float? distance = null,
         float? certainty = null,
         uint? limit = null,
+        uint? offset = null,
+        uint? autoCut = null,
+        Filter? filters = null,
         Move? moveTo = null,
         Move? moveAway = null,
         string[]? fields = null,
@@ -555,13 +558,16 @@ internal partial class WeaviateGrpcClient
         MetadataQuery? metadata = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
-        Rerank? rerank = null
+        Rerank? rerank = null,
+        string[]? targetVector = null
     )
     {
         var request = BaseSearchRequest(
             collection,
-            filter: null,
+            filter: filters?.InternalFilter,
             limit: limit,
+            offset: offset,
+            autoCut: autoCut,
             fields: fields,
             groupBy: groupBy,
             metadata: metadata,
@@ -571,7 +577,14 @@ internal partial class WeaviateGrpcClient
             rerank: rerank
         );
 
-        request.NearText = BuildNearText(query, distance, certainty, moveTo, moveAway);
+        request.NearText = BuildNearText(
+            query,
+            distance,
+            certainty,
+            moveTo,
+            moveAway,
+            targetVector
+        );
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
