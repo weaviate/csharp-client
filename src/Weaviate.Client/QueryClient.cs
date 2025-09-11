@@ -110,7 +110,7 @@ public class QueryClient<TData>
     #region Search
 
     public async Task<WeaviateResult> NearText(
-        string text,
+        OneOrManyOf<string> text,
         float? distance = null,
         float? certainty = null,
         uint? limit = null,
@@ -141,13 +141,18 @@ public class QueryClient<TData>
         ).result;
 
     public async Task<GroupByResult> NearText(
-        string text,
-        Models.GroupByRequest groupBy,
-        float? distance = null,
+        OneOrManyOf<string> nearText,
+        GroupByRequest groupBy,
         float? certainty = null,
+        float? distance = null,
+        Move? moveTo = null,
+        Move? moveAway = null,
         uint? limit = null,
-        string? tenant = null,
+        uint? offset = null,
+        uint? autoCut = null,
+        Filter? filters = null,
         Rerank? rerank = null,
+        string[]? targetVector = null,
         string[]? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -155,16 +160,22 @@ public class QueryClient<TData>
         (
             await _client.GrpcClient.SearchNearText(
                 _collectionClient.Name,
-                text,
+                nearText,
                 groupBy: groupBy,
                 distance: distance,
                 certainty: certainty,
+                moveTo: moveTo,
+                moveAway: moveAway,
                 limit: limit,
+                offset: offset,
+                autoCut: autoCut,
+                filters: filters,
                 fields: returnProperties,
                 reference: returnReferences,
                 metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant,
+                tenant: _collectionClient.Tenant,
                 rerank: rerank,
+                targetVector: targetVector,
                 consistencyLevel: _collectionClient.ConsistencyLevel
             )
         ).group;
