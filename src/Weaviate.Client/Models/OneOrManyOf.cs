@@ -18,7 +18,8 @@ public class OneOrManyOf<T> : IEnumerable<T>
 
     public static implicit operator OneOrManyOf<T>(T item) => new OneOrManyOf<T>(item);
 
-    public static implicit operator OneOrManyOf<T>(T[] items) => new OneOrManyOf<T>(items);
+    public static implicit operator OneOrManyOf<T>(T[]? items) =>
+        new OneOrManyOf<T>(items ?? Array.Empty<T>());
 
     public static implicit operator OneOrManyOf<T>(List<T> items) => new OneOrManyOf<T>(items);
 
