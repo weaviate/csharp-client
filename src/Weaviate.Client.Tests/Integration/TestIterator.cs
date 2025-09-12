@@ -93,8 +93,8 @@ public partial class BasicTests
         }
 
         var iter = collection.Iterator(
-            metadata: metadata,
-            fields: fields,
+            returnMetadata: metadata,
+            returnProperties: fields,
             cacheSize: cacheSize ?? CollectionClient<object>.ITERATOR_CACHE_SIZE,
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -188,7 +188,7 @@ public partial class BasicTests
 
         // Test with specific properties
         var specificPropsIter = collection.Iterator(
-            fields: ["this"],
+            returnProperties: "this",
             cancellationToken: TestContext.Current.CancellationToken
         );
 
