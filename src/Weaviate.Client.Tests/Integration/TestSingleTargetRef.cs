@@ -21,7 +21,7 @@ public partial class ReferenceTests : IntegrationTests
         var cB = await CollectionFactory<TestData>(
             name: "B",
             description: "Collection B",
-            references: [Property.Reference("a", cA.Name)]
+            references: new Reference("a", cA.Name)
         );
 
         var uuid_B = await cB.Data.Insert(new() { Name = "B" }, references: [("a", uuid_A1)]);
@@ -31,7 +31,7 @@ public partial class ReferenceTests : IntegrationTests
         var cC = await CollectionFactory<TestData>(
             "C",
             "Collection C",
-            references: [Property.Reference("b", cB.Name)]
+            references: new Reference("b", cB.Name)
         );
 
         var uuid_C = await cC.Data.Insert(
@@ -123,7 +123,7 @@ public partial class ReferenceTests : IntegrationTests
                 Property.Int("review_id"),
                 Property.Int("movie_id"),
             ],
-            references: [Property.Reference("forMovie", targetCollection: movies.Name)],
+            references: new Reference("forMovie", TargetCollection: movies.Name),
             vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecContextionary())
         );
 

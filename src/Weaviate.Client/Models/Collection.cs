@@ -7,7 +7,7 @@ public partial record Collection : IEquatable<Collection>
 
     // Define properties of the collection.
     public List<Property> Properties { get; set; } = [];
-    public List<ReferenceProperty> References { get; set; } = [];
+    public List<Reference> References { get; set; } = [];
 
     // inverted index config
     public InvertedIndexConfig? InvertedIndexConfig { get; set; }
