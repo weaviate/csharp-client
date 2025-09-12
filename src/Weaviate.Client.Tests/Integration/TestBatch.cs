@@ -29,8 +29,8 @@ public partial class BatchTests : IntegrationTests
             ]
         );
 
-        await client.Config.AddReference(Property.Reference("ref", client.Name));
-        await client.Config.AddReference(Property.Reference("ref2", client.Name));
+        await client.Config.AddReference(new Reference("ref", client.Name));
+        await client.Config.AddReference(new Reference("ref2", client.Name));
 
         var result = await client.Data.InsertMany(batcher);
 
@@ -66,8 +66,8 @@ public partial class BatchTests : IntegrationTests
         // Setup main collection ("From") with a reference property
         var collection = await CollectionFactory(
             name: "From",
-            properties: [Property.Int("num")],
-            references: [Property.Reference("ref", refCollection.Name)],
+            properties: Property.Int("num"),
+            references: new Reference("ref", refCollection.Name),
             vectorConfig: new VectorConfig("default")
         );
 

@@ -239,7 +239,7 @@ public static class WeaviateExtensions
                 collection
                     ?.Properties?.Where(p => p.DataType?.Any(t => char.IsUpper(t.First())) ?? false)
                     .Select(p =>
-                        (ReferenceProperty)
+                        (Reference)
                             new Property()
                             {
                                 Name = p.Name ?? string.Empty,
