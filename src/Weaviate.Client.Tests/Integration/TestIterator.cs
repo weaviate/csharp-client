@@ -74,7 +74,7 @@ public partial class BasicTests
         MetadataQuery? metadata = null;
         if (includeVector && returnFullMetadata == true)
         {
-            metadata = new MetadataQuery(MetadataOptions.Full | MetadataOptions.Vector);
+            metadata = new MetadataQuery(MetadataOptions.All | MetadataOptions.Vector);
         }
         else if (includeVector)
         {
@@ -82,7 +82,7 @@ public partial class BasicTests
         }
         else if (returnFullMetadata == true)
         {
-            metadata = new MetadataQuery(MetadataOptions.Full);
+            metadata = new MetadataQuery(MetadataOptions.All);
         }
 
         // Build fields array
