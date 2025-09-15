@@ -15,7 +15,7 @@ public partial class SearchTests : IntegrationTests
             [Property.Text("value")],
             vectorConfig: new VectorConfig(
                 "default",
-                new Vectorizer.Text2VecContextionary() { Properties = ["value"] }
+                new Vectorizer.Text2VecContextionary() { SourceProperties = ["value"] }
             )
         );
 

@@ -16,13 +16,13 @@ public static partial class Configure
             public VectorConfig New(
                 string name = "default",
                 VectorIndexConfig? indexConfig = null,
-                params string[] properties
+                params string[] sourceProperties
             ) =>
                 new(
                     name,
                     vectorizer: Config with
                     {
-                        Properties = properties,
+                        SourceProperties = sourceProperties,
                     },
                     vectorIndexConfig: indexConfig
                 );
@@ -305,7 +305,7 @@ public static partial class Configure
                 {
                     BaseURL = baseURL,
                     Model = model,
-                    Properties = properties,
+                    SourceProperties = properties,
                     Truncation = truncation,
                 }
             );
