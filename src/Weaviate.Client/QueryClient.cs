@@ -22,23 +22,23 @@ public class QueryClient<TData>
         IEnumerable<Sort>? sort = null,
         Rerank? rerank = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     ) =>
         (
             await _client.GrpcClient.FetchObjects(
                 _collectionName,
-                fields: returnProperties,
                 limit: limit,
                 sort: sort,
                 rerank: rerank,
                 filter: filter,
                 groupBy: groupBy,
-                reference: returnReferences,
-                metadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant,
-                consistencyLevel: _collectionClient.ConsistencyLevel
+                consistencyLevel: _collectionClient.ConsistencyLevel,
+                returnProperties: returnProperties,
+                returnReferences: returnReferences,
+                returnMetadata: returnMetadata
             )
         ).group;
 
@@ -48,38 +48,38 @@ public class QueryClient<TData>
         IEnumerable<Sort>? sort = null,
         Rerank? rerank = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     ) =>
         (
             await _client.GrpcClient.FetchObjects(
                 _collectionName,
-                fields: returnProperties,
                 limit: limit,
                 sort: sort,
                 rerank: rerank,
                 filter: filter,
-                reference: returnReferences,
-                metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant
+                tenant: tenant ?? _collectionClient.Tenant,
+                returnProperties: returnProperties,
+                returnReferences: returnReferences,
+                returnMetadata: returnMetadata
             )
         ).result;
 
     public async Task<WeaviateObject?> FetchObjectByID(
         Guid id,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     ) =>
         (
             await _client.GrpcClient.FetchObjects(
                 _collectionName,
-                fields: returnProperties,
+                returnProperties: returnProperties,
                 filter: Filter.WithID(id),
-                reference: returnReferences,
-                metadata: returnMetadata,
+                returnReferences: returnReferences,
+                returnMetadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant
             )
         ).result.SingleOrDefault();
@@ -89,20 +89,20 @@ public class QueryClient<TData>
         uint? limit = null,
         string? tenant = null,
         Rerank? rerank = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     ) =>
         (
             await _client.GrpcClient.FetchObjects(
                 _collectionName,
-                fields: returnProperties,
                 limit: limit,
                 filter: Filter.WithIDs(ids),
-                reference: returnReferences,
-                metadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant,
-                rerank: rerank
+                rerank: rerank,
+                returnProperties: returnProperties,
+                returnReferences: returnReferences,
+                returnMetadata: returnMetadata
             )
         ).result;
     #endregion
@@ -110,7 +110,7 @@ public class QueryClient<TData>
     #region Search
 
     public async Task<WeaviateResult> NearText(
-        string text,
+        OneOrManyOf<string> text,
         float? distance = null,
         float? certainty = null,
         uint? limit = null,
@@ -118,7 +118,7 @@ public class QueryClient<TData>
         Move? moveAway = null,
         string? tenant = null,
         Rerank? rerank = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     ) =>
@@ -131,41 +131,52 @@ public class QueryClient<TData>
                 limit: limit,
                 moveTo: moveTo,
                 moveAway: moveAway,
-                fields: returnProperties,
-                reference: returnReferences,
-                metadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant,
                 rerank: rerank,
-                consistencyLevel: _collectionClient.ConsistencyLevel
+                consistencyLevel: _collectionClient.ConsistencyLevel,
+                returnProperties: returnProperties,
+                returnReferences: returnReferences,
+                returnMetadata: returnMetadata
             )
         ).result;
 
     public async Task<GroupByResult> NearText(
-        string text,
-        Models.GroupByRequest groupBy,
-        float? distance = null,
+        OneOrManyOf<string> nearText,
+        GroupByRequest groupBy,
         float? certainty = null,
+        float? distance = null,
+        Move? moveTo = null,
+        Move? moveAway = null,
         uint? limit = null,
-        string? tenant = null,
+        uint? offset = null,
+        uint? autoCut = null,
+        Filter? filters = null,
         Rerank? rerank = null,
-        string[]? returnProperties = null,
+        string[]? targetVector = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     ) =>
         (
             await _client.GrpcClient.SearchNearText(
                 _collectionClient.Name,
-                text,
+                nearText,
                 groupBy: groupBy,
                 distance: distance,
                 certainty: certainty,
+                moveTo: moveTo,
+                moveAway: moveAway,
                 limit: limit,
-                fields: returnProperties,
-                reference: returnReferences,
-                metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant,
+                offset: offset,
+                autoCut: autoCut,
+                filters: filters,
+                tenant: _collectionClient.Tenant,
                 rerank: rerank,
-                consistencyLevel: _collectionClient.ConsistencyLevel
+                targetVector: targetVector,
+                consistencyLevel: _collectionClient.ConsistencyLevel,
+                returnProperties: returnProperties,
+                returnReferences: returnReferences,
+                returnMetadata: returnMetadata
             )
         ).group;
 
@@ -177,7 +188,7 @@ public class QueryClient<TData>
         string[]? targetVector = null,
         string? tenant = null,
         Rerank? rerank = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     ) =>
@@ -189,12 +200,12 @@ public class QueryClient<TData>
                 certainty: certainty,
                 limit: limit,
                 targetVector: targetVector,
-                fields: returnProperties,
-                reference: returnReferences,
-                metadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant,
                 rerank: rerank,
-                consistencyLevel: _collectionClient.ConsistencyLevel
+                consistencyLevel: _collectionClient.ConsistencyLevel,
+                returnProperties: returnProperties,
+                returnReferences: returnReferences,
+                returnMetadata: returnMetadata
             )
         ).result;
 
@@ -207,7 +218,7 @@ public class QueryClient<TData>
         string[]? targetVector = null,
         string? tenant = null,
         Rerank? rerank = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     ) =>
@@ -220,12 +231,12 @@ public class QueryClient<TData>
                 certainty: certainty,
                 limit: limit,
                 targetVector: targetVector,
-                fields: returnProperties,
-                reference: returnReferences,
-                metadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant,
                 rerank: rerank,
-                consistencyLevel: _collectionClient.ConsistencyLevel
+                consistencyLevel: _collectionClient.ConsistencyLevel,
+                returnProperties: returnProperties,
+                returnReferences: returnReferences,
+                returnMetadata: returnMetadata
             )
         ).group;
 
@@ -233,49 +244,84 @@ public class QueryClient<TData>
         string query,
         GroupByRequest groupBy,
         string[]? searchFields = null,
-        string? tenant = null,
+        Filter? filter = null,
+        IEnumerable<Sort>? sort = null,
+        uint? autoCut = null,
+        uint? limit = null,
+        uint? offset = null,
         Rerank? rerank = null,
-        string[]? returnProperties = null,
-        IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
-    ) =>
-        (
+        Guid? after = null,
+        string? tenant = null,
+        ConsistencyLevels? consistencyLevel = null,
+        OneOrManyOf<string>? returnProperties = null,
+        MetadataQuery? returnMetadata = null,
+        IList<QueryReference>? returnReferences = null
+    )
+    {
+        var sortBy = sort?.Select(s => s.InternalSort);
+        var grpcFilter = filter?.InternalFilter;
+        return (
             await _client.GrpcClient.SearchBM25(
                 _collectionClient.Name,
                 query: query,
                 searchFields: searchFields,
-                fields: returnProperties,
+                filter: grpcFilter,
+                sort: sortBy,
+                autoCut: autoCut,
+                limit: limit,
+                offset: offset,
                 groupBy: groupBy,
-                reference: returnReferences,
-                metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant,
                 rerank: rerank,
-                consistencyLevel: _collectionClient.ConsistencyLevel
+                after: after,
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
+                returnMetadata: returnMetadata,
+                returnReferences: returnReferences,
+                returnProperties: returnProperties
             )
         ).group;
+    }
 
     public async Task<WeaviateResult> BM25(
         string query,
         string[]? searchFields = null,
-        string? tenant = null,
+        Filter? filter = null,
+        IEnumerable<Sort>? sort = null,
+        uint? autoCut = null,
+        uint? limit = null,
+        uint? offset = null,
         Rerank? rerank = null,
-        string[]? returnProperties = null,
-        IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
-    ) =>
-        (
+        Guid? after = null,
+        string? tenant = null,
+        ConsistencyLevels? consistencyLevel = null,
+        OneOrManyOf<string>? returnProperties = null,
+        MetadataQuery? returnMetadata = null,
+        IList<QueryReference>? returnReferences = null
+    )
+    {
+        var sortBy = sort?.Select(s => s.InternalSort);
+        var grpcFilter = filter?.InternalFilter;
+        return (
             await _client.GrpcClient.SearchBM25(
                 _collectionClient.Name,
                 query: query,
                 searchFields: searchFields,
-                fields: returnProperties,
-                reference: returnReferences,
-                metadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant,
+                filter: grpcFilter,
+                sort: sortBy,
+                autoCut: autoCut,
+                limit: limit,
+                offset: offset,
+                groupBy: null,
                 rerank: rerank,
-                consistencyLevel: _collectionClient.ConsistencyLevel
+                after: after,
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
+                returnMetadata: returnMetadata,
+                returnReferences: returnReferences,
+                returnProperties: returnProperties
             )
         ).result;
+    }
 
     public async Task<WeaviateResult> Hybrid(
         string? query,
@@ -291,7 +337,7 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         string[]? targetVector = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     )
@@ -311,11 +357,11 @@ public class QueryClient<TData>
                 filters: filters,
                 rerank: rerank,
                 targetVector: targetVector,
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel,
                 returnMetadata: returnMetadata,
                 returnProperties: returnProperties,
-                returnReferences: returnReferences,
-                tenant: tenant ?? _collectionClient.Tenant,
-                consistencyLevel: _collectionClient.ConsistencyLevel
+                returnReferences: returnReferences
             )
         ).result;
     }
@@ -335,7 +381,7 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         string[]? targetVector = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     )
@@ -359,11 +405,11 @@ public class QueryClient<TData>
                 filters: filters,
                 rerank: rerank,
                 targetVector: targetVector,
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel,
                 returnMetadata: returnMetadata,
                 returnProperties: returnProperties,
-                returnReferences: returnReferences,
-                tenant: tenant ?? _collectionClient.Tenant,
-                consistencyLevel: _collectionClient.ConsistencyLevel
+                returnReferences: returnReferences
             )
         ).result;
     }
@@ -384,7 +430,7 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         string[]? targetVector = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     )
@@ -409,11 +455,11 @@ public class QueryClient<TData>
                 groupBy: groupBy,
                 rerank: rerank,
                 targetVector: targetVector,
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel,
                 returnMetadata: returnMetadata,
                 returnProperties: returnProperties,
-                returnReferences: returnReferences,
-                tenant: tenant ?? _collectionClient.Tenant,
-                consistencyLevel: _collectionClient.ConsistencyLevel
+                returnReferences: returnReferences
             )
         ).group;
     }
@@ -433,7 +479,7 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         string[]? targetVector = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     )
@@ -454,11 +500,11 @@ public class QueryClient<TData>
                 groupBy: groupBy,
                 rerank: rerank,
                 targetVector: targetVector,
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel,
                 returnMetadata: returnMetadata,
                 returnProperties: returnProperties,
-                returnReferences: returnReferences,
-                tenant: tenant ?? _collectionClient.Tenant,
-                consistencyLevel: _collectionClient.ConsistencyLevel
+                returnReferences: returnReferences
             )
         ).group;
     }
@@ -474,7 +520,7 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         string[]? targetVector = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     )
@@ -491,11 +537,11 @@ public class QueryClient<TData>
             groupBy: null,
             rerank: rerank,
             targetVector: targetVector,
+            tenant: tenant ?? _collectionClient.Tenant,
+            consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,
-            returnReferences: returnReferences,
-            tenant: tenant ?? _collectionClient.Tenant,
-            consistencyLevel: _collectionClient.ConsistencyLevel
+            returnReferences: returnReferences
         );
 
         return result.result;
@@ -513,7 +559,7 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         string[]? targetVector = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     )
@@ -530,11 +576,11 @@ public class QueryClient<TData>
             groupBy: groupBy,
             rerank: rerank,
             targetVector: targetVector,
+            tenant: tenant ?? _collectionClient.Tenant,
+            consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,
-            returnReferences: returnReferences,
-            tenant: tenant ?? _collectionClient.Tenant,
-            consistencyLevel: _collectionClient.ConsistencyLevel
+            returnReferences: returnReferences
         );
 
         return result.group;
@@ -551,7 +597,7 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         string[]? targetVector = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     )
@@ -567,10 +613,10 @@ public class QueryClient<TData>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
+            tenant: tenant ?? _collectionClient.Tenant,
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,
-            returnReferences: returnReferences,
-            tenant: tenant ?? _collectionClient.Tenant
+            returnReferences: returnReferences
         );
 
         return result;
@@ -588,7 +634,7 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         string[]? targetVector = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     )
@@ -605,10 +651,10 @@ public class QueryClient<TData>
             groupBy: groupBy,
             rerank: rerank,
             targetVector: targetVector,
+            tenant: tenant ?? _collectionClient.Tenant,
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,
-            returnReferences: returnReferences,
-            tenant: tenant ?? _collectionClient.Tenant
+            returnReferences: returnReferences
         );
 
         return result;
@@ -626,7 +672,7 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         string[]? targetVector = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     )
@@ -645,10 +691,10 @@ public class QueryClient<TData>
             rerank: rerank,
             tenant: tenant ?? _collectionClient.Tenant,
             targetVector: targetVector,
+            consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,
-            returnReferences: returnReferences,
-            consistencyLevel: _collectionClient.ConsistencyLevel
+            returnReferences: returnReferences
         );
 
         return result.result;
@@ -667,7 +713,7 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         string[]? targetVector = null,
         string? tenant = null,
-        string[]? returnProperties = null,
+        OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
     )
@@ -686,10 +732,10 @@ public class QueryClient<TData>
             rerank: rerank,
             tenant: tenant ?? _collectionClient.Tenant,
             targetVector: targetVector,
+            consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
             returnProperties: returnProperties,
-            returnReferences: returnReferences,
-            consistencyLevel: _collectionClient.ConsistencyLevel
+            returnReferences: returnReferences
         );
 
         return result.group;
