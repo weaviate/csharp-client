@@ -68,7 +68,7 @@ public partial class TenantTests : IntegrationTests
         var fetched = await tenant1Collection.Query.FetchObjectByID(uuid);
         Assert.NotNull(fetched);
 
-        var ex = await Record.ExceptionAsync(() => tenant1Collection.Data.Delete(uuid));
+        var ex = await Record.ExceptionAsync(() => tenant1Collection.Data.DeleteByID(uuid));
         Assert.Null(ex);
 
         var fetchedAfterDelete = await tenant1Collection.Query.FetchObjectByID(uuid);
