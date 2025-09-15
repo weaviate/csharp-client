@@ -122,7 +122,7 @@ class Program
         var firstObj = retrieved.First();
         if (firstObj.ID is Guid id)
         {
-            await collection.Data.Delete(id);
+            await collection.Data.DeleteByID(id);
         }
 
         result = await collection.Query.FetchObjects(limit: 5);

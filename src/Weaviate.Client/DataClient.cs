@@ -225,7 +225,7 @@ public class DataClient<TData>
         return responses;
     }
 
-    public async Task Delete(Guid id)
+    public async Task DeleteByID(Guid id)
     {
         await _client.RestClient.DeleteObject(_collectionName, id, _collectionClient.Tenant);
     }
