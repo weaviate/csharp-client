@@ -197,13 +197,9 @@ public static class DataType
     public static string ObjectArray => "object[]";
 }
 
-public record ReferenceProperty
+public record Reference(string Name, string TargetCollection, string? Description = null)
 {
-    public required string Name { get; set; }
-    public required string? Description { get; set; }
-    public required string TargetCollection { get; set; }
-
-    public static implicit operator Property(ReferenceProperty p)
+    public static implicit operator Property(Reference p)
     {
         return new Property
         {
@@ -213,14 +209,13 @@ public record ReferenceProperty
         };
     }
 
-    public static implicit operator ReferenceProperty(Property p)
+    public static implicit operator Reference(Property p)
     {
-        return new ReferenceProperty
-        {
-            Name = p.Name,
-            Description = p.Description,
-            TargetCollection = p.DataType.First(t => char.IsUpper(t.First())).Decapitalize(),
-        };
+        return new Reference(
+            p.Name,
+            p.DataType.First(t => char.IsUpper(t.First())).Decapitalize(),
+            p.Description
+        );
     }
 }
 
@@ -270,17 +265,11 @@ public record Property : IEquatable<Property>
     public static PropertyFactory ObjectArray =>
         PropertyHelper.Factory(Models.DataType.ObjectArray);
 
-    public static ReferenceProperty Reference(
+    public static Reference Reference(
         string name,
         string targetCollection,
         string? description = null
-    ) =>
-        new()
-        {
-            Name = name,
-            TargetCollection = targetCollection,
-            Description = description,
-        };
+    ) => new(name, targetCollection, description);
 
     // Extract collection properties from type specified by TData.
     public static IEnumerable<Property> FromCollection<TData>()
