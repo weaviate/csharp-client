@@ -84,8 +84,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable
     public async Task<CollectionClient<TData>> CollectionFactory<TData>(
         string? name = null,
         string? description = null,
-        IList<Property>? properties = null,
-        IList<ReferenceProperty>? references = null,
+        OneOrManyOf<Property>? properties = null,
+        OneOrManyOf<Reference>? references = null,
         VectorConfigList? vectorConfig = null,
         MultiTenancyConfig? multiTenancyConfig = null,
         InvertedIndexConfig? invertedIndexConfig = null,
@@ -129,8 +129,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable
     protected async Task<CollectionClient<object>> CollectionFactory(
         string? name = null,
         string? description = null,
-        IList<Property>? properties = null,
-        IList<ReferenceProperty>? references = null,
+        OneOrManyOf<Property>? properties = null,
+        OneOrManyOf<Reference>? references = null,
         VectorConfigList? vectorConfig = null,
         MultiTenancyConfig? multiTenancyConfig = null,
         InvertedIndexConfig? invertedIndexConfig = null,

@@ -100,11 +100,11 @@ public partial class FilterTests : IntegrationTests
 
         var cFrom = await CollectionFactory(
             "From",
-            properties: [Property.Text("name")],
-            references: [Property.Reference("ref", cTarget.Name)]
+            properties: Property.Text("name"),
+            references: new Reference("ref", cTarget.Name)
         );
 
-        await cFrom.Config.AddReference(Property.Reference("ref2", cFrom.Name));
+        await cFrom.Config.AddReference(new Reference("ref2", cFrom.Name));
 
         var uuidsFrom = new List<Guid>
         {
@@ -164,7 +164,7 @@ public partial class FilterTests : IntegrationTests
         // Arrange
         var collection = await CollectionFactory();
 
-        await collection.Config.AddReference(Property.Reference("ref", collection.Name));
+        await collection.Config.AddReference(new Reference("ref", collection.Name));
 
         var uuids = new List<Guid>
         {
@@ -200,12 +200,9 @@ public partial class FilterTests : IntegrationTests
     {
         // Arrange
         var one = await CollectionFactory("one");
-        var two = await CollectionFactory(
-            "two",
-            references: [Property.Reference("ref2", one.Name)]
-        );
+        var two = await CollectionFactory("two", references: new Reference("ref2", one.Name));
 
-        await one.Config.AddReference(Property.Reference("ref1", one.Name));
+        await one.Config.AddReference(new Reference("ref1", one.Name));
 
         var uuid11 = await one.Data.Insert(new { });
         var uuid12 = await one.Data.Insert(new { }, references: [("ref1", uuid11)]);
