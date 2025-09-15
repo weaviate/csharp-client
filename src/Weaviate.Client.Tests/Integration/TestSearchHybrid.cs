@@ -217,7 +217,7 @@ public partial class SearchTests : IntegrationTests
                 (VectorData<float>)obj.Vectors["default"],
                 Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
             ),
-            returnMetadata: MetadataOptions.Full
+            returnMetadata: MetadataOptions.All
         );
 
         Assert.Equal(uuidBanana, hybridObjs2.First().ID);
@@ -277,7 +277,7 @@ public partial class SearchTests : IntegrationTests
                     Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
                 ),
                 targetVector: ["text"],
-                returnMetadata: MetadataOptions.Full
+                returnMetadata: MetadataOptions.All
             )
         ).Objects;
 
@@ -316,7 +316,7 @@ public partial class SearchTests : IntegrationTests
                     MoveTo: new Move(force: 0.1f, concepts: ["pudding"]),
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
                 ),
-                returnMetadata: MetadataOptions.Full
+                returnMetadata: MetadataOptions.All
             )
         ).Objects;
 
@@ -360,7 +360,7 @@ public partial class SearchTests : IntegrationTests
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
                 ),
                 targetVector: ["text"],
-                returnMetadata: MetadataOptions.Full
+                returnMetadata: MetadataOptions.All
             )
         ).Objects;
 
