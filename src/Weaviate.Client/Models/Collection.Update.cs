@@ -329,7 +329,7 @@ public class CollectionUpdateBuilder<T>
         _collectionName = collectionName;
     }
 
-    internal async Task AddReference(ReferenceProperty referenceProperty)
+    internal async Task AddReference(Reference referenceProperty)
     {
         var p = (Property)referenceProperty;
 
