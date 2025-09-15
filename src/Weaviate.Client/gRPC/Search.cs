@@ -27,28 +27,28 @@ internal partial class WeaviateGrpcClient
         uint? offset = null,
         GroupByRequest? groupBy = null,
         Rerank? rerank = null,
-        MetadataQuery? metadata = null,
-        IList<QueryReference>? reference = null,
-        string[]? fields = null,
         Guid? after = null,
         string? tenant = null,
-        ConsistencyLevels? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null,
+        OneOrManyOf<string>? returnProperties = null,
+        MetadataQuery? returnMetadata = null,
+        IList<QueryReference>? returnReferences = null
     )
     {
         var metadataRequest = new MetadataRequest()
         {
             Uuid = true,
-            Vector = metadata?.Vector ?? false,
-            LastUpdateTimeUnix = metadata?.LastUpdateTime ?? false,
-            CreationTimeUnix = metadata?.CreationTime ?? false,
-            Certainty = metadata?.Certainty ?? false,
-            Distance = metadata?.Distance ?? false,
-            Score = metadata?.Score ?? false,
-            ExplainScore = metadata?.ExplainScore ?? false,
-            IsConsistent = metadata?.IsConsistent ?? false,
+            Vector = returnMetadata?.Vector ?? false,
+            LastUpdateTimeUnix = returnMetadata?.LastUpdateTime ?? false,
+            CreationTimeUnix = returnMetadata?.CreationTime ?? false,
+            Certainty = returnMetadata?.Certainty ?? false,
+            Distance = returnMetadata?.Distance ?? false,
+            Score = returnMetadata?.Score ?? false,
+            ExplainScore = returnMetadata?.ExplainScore ?? false,
+            IsConsistent = returnMetadata?.IsConsistent ?? false,
         };
 
-        metadataRequest.Vectors.AddRange(metadata?.Vectors.ToArray() ?? []);
+        metadataRequest.Vectors.AddRange(returnMetadata?.Vectors.ToArray() ?? []);
 
         var request = new SearchRequest()
         {
@@ -68,7 +68,7 @@ internal partial class WeaviateGrpcClient
                 }
                 : null,
             Metadata = metadataRequest,
-            Properties = MakePropsRequest(fields, reference),
+            Properties = MakePropsRequest(returnProperties, returnReferences),
             Tenant = tenant ?? string.Empty,
             Rerank = rerank is not null
                 ? new()
@@ -109,7 +109,7 @@ internal partial class WeaviateGrpcClient
     }
 
     private static PropertiesRequest? MakePropsRequest(
-        string[]? fields,
+        OneOrManyOf<string>? fields,
         IList<QueryReference>? reference
     )
     {
@@ -156,24 +156,24 @@ internal partial class WeaviateGrpcClient
                 ExplainScore = reference.Metadata?.ExplainScore ?? false,
                 IsConsistent = reference.Metadata?.IsConsistent ?? false,
             },
-            Properties = MakePropsRequest(reference.Fields, reference.References),
-            ReferenceProperty = reference.LinkOn,
+            Properties = MakePropsRequest(reference?.Fields, reference?.References),
+            ReferenceProperty = reference?.LinkOn ?? string.Empty,
         };
     }
 
     private static NearTextSearch BuildNearText(
-        string query,
+        OneOrManyOf<string> query,
         double? distance,
         double? certainty,
         Move? moveTo,
-        Move? moveAway
+        Move? moveAway,
+        string[]? targetVector = null
     )
     {
         var nearText = new NearTextSearch
         {
             Query = { query },
-            // Targets = null,
-            // VectorForTargets = { },
+            Targets = BuildTargetVector(targetVector),
         };
 
         if (moveTo is not null)
@@ -467,14 +467,14 @@ internal partial class WeaviateGrpcClient
         Filter? filter = null,
         IEnumerable<Sort>? sort = null,
         uint? limit = null,
-        string[]? fields = null,
         GroupByRequest? groupBy = null,
-        IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null,
         Guid? after = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
-        Rerank? rerank = null
+        Rerank? rerank = null,
+        OneOrManyOf<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null
     )
     {
         var req = BaseSearchRequest(
@@ -482,14 +482,14 @@ internal partial class WeaviateGrpcClient
             filter: filter?.InternalFilter,
             sort: sort?.Select(s => s.InternalSort),
             limit: limit,
-            fields: fields,
             groupBy: groupBy,
-            metadata: metadata,
-            reference: reference,
             after: after,
             tenant: tenant,
             consistencyLevel: consistencyLevel,
-            rerank: rerank
+            rerank: rerank,
+            returnProperties: returnProperties,
+            returnMetadata: returnMetadata,
+            returnReferences: returnReferences
         );
 
         SearchReply? reply = await _grpcClient.SearchAsync(req, headers: _defaultHeaders);
@@ -509,25 +509,26 @@ internal partial class WeaviateGrpcClient
         float? certainty = null,
         string[]? targetVector = null,
         uint? limit = null,
-        string[]? fields = null,
-        IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null,
+        Filter? filters = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
-        Rerank? rerank = null
+        Rerank? rerank = null,
+        MetadataQuery? returnMetadata = null,
+        OneOrManyOf<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null
     )
     {
         var request = BaseSearchRequest(
             collection,
-            filter: null,
+            filter: filters?.InternalFilter,
             limit: limit,
             groupBy: groupBy,
-            fields: fields,
-            metadata: metadata,
-            reference: reference,
             tenant: tenant,
             consistencyLevel: consistencyLevel,
-            rerank: rerank
+            rerank: rerank,
+            returnProperties: returnProperties,
+            returnMetadata: returnMetadata,
+            returnReferences: returnReferences
         );
 
         request.NearVector = BuildNearVector(vector, distance, certainty, targetVector);
@@ -543,35 +544,48 @@ internal partial class WeaviateGrpcClient
         bool isGroups
     )> SearchNearText(
         string collection,
-        string query,
+        OneOrManyOf<string> query,
         float? distance = null,
         float? certainty = null,
         uint? limit = null,
+        uint? offset = null,
+        uint? autoCut = null,
+        Filter? filters = null,
         Move? moveTo = null,
         Move? moveAway = null,
-        string[]? fields = null,
         GroupByRequest? groupBy = null,
-        IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
-        Rerank? rerank = null
+        Rerank? rerank = null,
+        string[]? targetVector = null,
+        OneOrManyOf<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null
     )
     {
         var request = BaseSearchRequest(
             collection,
-            filter: null,
+            filter: filters?.InternalFilter,
             limit: limit,
-            fields: fields,
+            offset: offset,
+            autoCut: autoCut,
             groupBy: groupBy,
-            metadata: metadata,
-            reference: reference,
             tenant: tenant,
             consistencyLevel: consistencyLevel,
-            rerank: rerank
+            rerank: rerank,
+            returnProperties: returnProperties,
+            returnMetadata: returnMetadata,
+            returnReferences: returnReferences
         );
 
-        request.NearText = BuildNearText(query, distance, certainty, moveTo, moveAway);
+        request.NearText = BuildNearText(
+            query,
+            distance,
+            certainty,
+            moveTo,
+            moveAway,
+            targetVector
+        );
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
@@ -586,26 +600,36 @@ internal partial class WeaviateGrpcClient
         string collection,
         string query,
         string[]? searchFields,
-        string[]? fields = null,
+        Filters? filter = null,
+        IEnumerable<SortBy>? sort = null,
+        uint? autoCut = null,
+        uint? limit = null,
+        uint? offset = null,
         GroupByRequest? groupBy = null,
-        IList<QueryReference>? reference = null,
-        MetadataQuery? metadata = null,
+        Rerank? rerank = null,
+        Guid? after = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
-        Rerank? rerank = null
+        OneOrManyOf<string>? returnProperties = null,
+        MetadataQuery? returnMetadata = null,
+        IList<QueryReference>? returnReferences = null
     )
     {
         var request = BaseSearchRequest(
             collection,
-            filter: null,
-            limit: null,
+            filter: filter,
+            sort: sort,
+            autoCut: autoCut,
+            limit: limit,
+            offset: offset,
             groupBy: groupBy,
-            fields: fields,
-            metadata: metadata,
-            reference: reference,
+            rerank: rerank,
+            after: after,
             tenant: tenant,
             consistencyLevel: consistencyLevel,
-            rerank: rerank
+            returnMetadata: returnMetadata,
+            returnReferences: returnReferences,
+            returnProperties: returnProperties
         );
 
         BuildBM25(request, query, properties: searchFields);
@@ -637,11 +661,11 @@ internal partial class WeaviateGrpcClient
         GroupByRequest? groupBy = null,
         Rerank? rerank = null,
         string[]? targetVector = null,
-        string[]? returnProperties = null,
-        MetadataQuery? returnMetadata = null,
-        IList<QueryReference>? returnReferences = null,
         string? tenant = null,
-        ConsistencyLevels? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null,
+        OneOrManyOf<string>? returnProperties = null,
+        MetadataQuery? returnMetadata = null,
+        IList<QueryReference>? returnReferences = null
     )
     {
         if (
@@ -662,11 +686,11 @@ internal partial class WeaviateGrpcClient
             offset: offset,
             groupBy: groupBy,
             rerank: rerank,
-            fields: returnProperties,
-            metadata: returnMetadata,
-            reference: returnReferences,
             tenant: tenant,
-            consistencyLevel: consistencyLevel
+            consistencyLevel: consistencyLevel,
+            returnProperties: returnProperties,
+            returnMetadata: returnMetadata,
+            returnReferences: returnReferences
         );
 
         BuildHybrid(
@@ -705,7 +729,7 @@ internal partial class WeaviateGrpcClient
         Rerank? rerank,
         string[]? targetVector,
         MetadataQuery? returnMetadata,
-        string[]? returnProperties,
+        OneOrManyOf<string>? returnProperties,
         IList<QueryReference>? returnReferences,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null
@@ -718,12 +742,12 @@ internal partial class WeaviateGrpcClient
             limit: limit,
             offset: offset,
             groupBy: groupBy,
-            fields: returnProperties,
-            metadata: returnMetadata,
-            reference: returnReferences,
             tenant: tenant,
             consistencyLevel: consistencyLevel,
-            rerank: rerank
+            rerank: rerank,
+            returnProperties: returnProperties,
+            returnMetadata: returnMetadata,
+            returnReferences: returnReferences
         );
 
         BuildNearObject(request, objectID, certainty, distance, targetVector);
@@ -788,10 +812,10 @@ internal partial class WeaviateGrpcClient
         Rerank? rerank,
         string? tenant,
         string[]? targetVector,
+        ConsistencyLevels? consistencyLevel,
+        OneOrManyOf<string>? returnProperties,
         MetadataQuery? returnMetadata,
-        string[]? returnProperties,
-        IList<QueryReference>? returnReferences,
-        ConsistencyLevels? consistencyLevel = null
+        IList<QueryReference>? returnReferences
     )
     {
         var request = BaseSearchRequest(
@@ -801,12 +825,12 @@ internal partial class WeaviateGrpcClient
             limit: limit,
             offset: offset,
             groupBy: groupBy,
-            fields: returnProperties,
-            metadata: returnMetadata,
-            reference: returnReferences,
             tenant: tenant,
             consistencyLevel: consistencyLevel,
-            rerank: rerank
+            rerank: rerank,
+            returnProperties: returnProperties,
+            returnMetadata: returnMetadata,
+            returnReferences: returnReferences
         );
 
         switch (mediaType)

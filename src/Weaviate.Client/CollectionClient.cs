@@ -64,9 +64,9 @@ public partial class CollectionClient
     public async IAsyncEnumerable<WeaviateObject> Iterator(
         Guid? after = null,
         uint cacheSize = ITERATOR_CACHE_SIZE,
-        MetadataQuery? metadata = null,
-        string[]? fields = null,
-        IList<QueryReference>? references = null,
+        MetadataQuery? returnMetadata = null,
+        OneOrManyOf<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default
     )
     {
@@ -80,10 +80,10 @@ public partial class CollectionClient
                 await _client.GrpcClient.FetchObjects(
                     Name,
                     limit: cacheSize,
-                    metadata: metadata,
-                    fields: fields,
-                    reference: references,
-                    after: cursor
+                    after: cursor,
+                    returnMetadata: returnMetadata,
+                    returnProperties: returnProperties,
+                    returnReferences: returnReferences
                 )
             ).result;
 
