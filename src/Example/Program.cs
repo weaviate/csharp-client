@@ -82,7 +82,7 @@ class Program
         {
             Name = "Cat",
             Description = "Lots of Cats of multiple breeds",
-            Properties = [.. Property.FromCollection<Cat>()],
+            Properties = [.. Property.FromClass<Cat>()],
             VectorConfig = new VectorConfig("default", new Vectorizer.Text2VecWeaviate()),
         };
 
