@@ -28,7 +28,7 @@ public partial class BasicTests : IntegrationTests
         Assert.Equal("TestObject", retrieved.As<TestData>()?.Name);
 
         // Delete after usage
-        await collectionClient.Data.Delete(id);
+        await collectionClient.Data.DeleteByID(id);
         retrieved = await collectionClient.Query.FetchObjectByID(id);
         Assert.Null(retrieved);
     }

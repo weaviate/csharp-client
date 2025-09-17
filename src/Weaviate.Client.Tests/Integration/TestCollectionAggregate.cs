@@ -27,7 +27,7 @@ public partial class AggregatesTests : IntegrationTests
     [Fact]
     public async Task Test_Empty_Aggregation()
     {
-        var collectionClient = await CollectionFactory(properties: new[] { Property.Text("text") });
+        var collectionClient = await CollectionFactory(properties: Property.Text("text"));
 
         var result = await collectionClient.Aggregate.OverAll();
         Assert.Equal(0, result.TotalCount);
@@ -36,7 +36,7 @@ public partial class AggregatesTests : IntegrationTests
     [Fact]
     public async Task Test_Simple_Aggregation()
     {
-        var collectionClient = await CollectionFactory(properties: new[] { Property.Text("text") });
+        var collectionClient = await CollectionFactory(properties: Property.Text("text"));
 
         await collectionClient.Data.Insert(new { text = "some text" });
 
@@ -52,7 +52,7 @@ public partial class AggregatesTests : IntegrationTests
     [Fact]
     public async Task Test_Aggregation_Top_Occurrence_With_Limit()
     {
-        var collectionClient = await CollectionFactory(properties: new[] { Property.Text("text") });
+        var collectionClient = await CollectionFactory(properties: Property.Text("text"));
 
         await collectionClient.Data.Insert(new { text = "one" });
         await collectionClient.Data.Insert(new { text = "one" });
@@ -71,7 +71,7 @@ public partial class AggregatesTests : IntegrationTests
     [Fact]
     public async Task Test_Aggregation_GroupBy_With_Limit()
     {
-        var collectionClient = await CollectionFactory(properties: new[] { Property.Text("text") });
+        var collectionClient = await CollectionFactory(properties: Property.Text("text"));
 
         await collectionClient.Data.Insert(new { text = "one" });
         await collectionClient.Data.Insert(new { text = "two" });
@@ -94,7 +94,7 @@ public partial class AggregatesTests : IntegrationTests
     [Fact]
     public async Task Test_Aggregation_GroupBy_No_Results()
     {
-        var collectionClient = await CollectionFactory(properties: new[] { Property.Text("text") });
+        var collectionClient = await CollectionFactory(properties: Property.Text("text"));
 
         var result = await collectionClient.Aggregate.OverAll(
             groupBy: new Aggregate.GroupBy("text", 2),

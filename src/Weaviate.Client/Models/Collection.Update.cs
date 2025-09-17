@@ -67,8 +67,10 @@ public partial record CollectionUpdate(Collection WrappedCollection)
     }
 
     // Define properties of the collection.
-    public ReadOnlyCollection<PropertyUpdate> Properties { get; } =
-        WrappedCollection.Properties.Select(p => new PropertyUpdate(p)).ToList().AsReadOnly();
+    public ReadOnlyDictionary<string, PropertyUpdate> Properties { get; } =
+        WrappedCollection
+            .Properties.ToDictionary(p => p.Name, p => new PropertyUpdate(p))
+            .AsReadOnly();
     public ReadOnlyCollection<PropertyUpdate> References { get; } =
         WrappedCollection.References.Select(r => new PropertyUpdate(r)).ToList().AsReadOnly();
 
@@ -338,7 +340,7 @@ public class CollectionUpdateBuilder<T>
         await _client.RestClient.CollectionAddProperty(_collectionName, dto);
     }
 
-    internal async Task AddProperty(Property p)
+    public async Task AddProperty(Property p)
     {
         await _client.RestClient.CollectionAddProperty(
             _collectionName,
@@ -371,8 +373,10 @@ public class CollectionUpdateBuilder<T>
         // 2. Add the named vector
         collection.VectorConfig.Add(vector);
 
+        var dto = collection.ToDto();
+
         // 3. PUT to /schema
-        await _client.RestClient.CollectionUpdate(_collectionName, collection.ToDto());
+        await _client.RestClient.CollectionUpdate(_collectionName, dto);
     }
 
     // Proxied property updates
