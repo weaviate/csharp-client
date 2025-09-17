@@ -2,7 +2,7 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
-public struct CollectionsClient
+public record CollectionsClient
 {
     private readonly WeaviateClient _client;
 
