@@ -173,4 +173,23 @@ public partial class FilterTests
         // Assert
         Assert.Equal(expected, f.InternalFilter);
     }
+
+    [Fact]
+    public void Filter_AllOf_And_AnyOf()
+    {
+        var uuid2 = Guid.NewGuid();
+        var f1 = Filter.Property("uuids").ContainsAny(new[] { uuid2 });
+        var f2 = Filter.Property("name").Length().Equal(5);
+
+        var expectedAllOf = f1 & f2;
+        var expectedAnyOf = f1 | f2;
+
+        // Act
+        var fAllOf = Filter.AllOf(f1, f2);
+        var fAnyOf = Filter.AnyOf(f1, f2);
+
+        // Assert
+        Assert.Equal(expectedAllOf.InternalFilter, fAllOf.InternalFilter);
+        Assert.Equal(expectedAnyOf.InternalFilter, fAnyOf.InternalFilter);
+    }
 }
