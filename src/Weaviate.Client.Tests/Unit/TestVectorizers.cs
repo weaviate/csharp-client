@@ -27,7 +27,7 @@ public partial class VectorConfigListTests
         {
             new VectorConfig(
                 "default",
-                new Vectorizer.Text2VecContextionary { Properties = ["breed", "color"] },
+                new Vectorizer.Text2VecContextionary { SourceProperties = ["breed", "color"] },
                 new VectorIndex.HNSW()
                 {
                     Distance = VectorIndexConfig.VectorDistance.Cosine,
@@ -43,19 +43,19 @@ public partial class VectorConfigListTests
             ),
             new VectorConfig(
                 "fromSizes",
-                new Vectorizer.Text2VecContextionary { Properties = ["size"] }
+                new Vectorizer.Text2VecContextionary { SourceProperties = ["size"] }
             ),
             new VectorConfig(
                 "location",
-                new Vectorizer.Text2VecContextionary { Properties = ["location"] }
+                new Vectorizer.Text2VecContextionary { SourceProperties = ["location"] }
             ),
             new VectorConfig("nein", new Vectorizer.SelfProvided()),
-            contextionaryVectorizer.New("contextionary1", properties: ["breed"]),
-            contextionaryVectorizer.New("contextionary2", properties: ["color"]),
+            contextionaryVectorizer.New("contextionary1", sourceProperties: ["breed"]),
+            contextionaryVectorizer.New("contextionary2", sourceProperties: ["color"]),
             Configure
                 .Vectors.Text2VecWeaviate(vectorizeCollectionName: true)
-                .New("weaviate", properties: ["color"]),
-            Configure.Vectors.Img2VecNeural([]).New("neural", properties: ["color"]),
+                .New("weaviate", sourceProperties: ["color"]),
+            Configure.Vectors.Img2VecNeural([]).New("neural", sourceProperties: ["color"]),
         };
 
         // Act
@@ -100,7 +100,7 @@ public partial class VectorConfigListTests
         var config = VectorizerConfigFactory.Create("none", null);
 
         // Assert
-        Assert.Null(config.Properties);
+        Assert.Null(config.SourceProperties);
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public partial class VectorConfigListTests
         // Arrange
         var defaultVec = new VectorConfig(
             "default",
-            new Vectorizer.Text2VecContextionary() { Properties = ["name"] }
+            new Vectorizer.Text2VecContextionary() { SourceProperties = ["name"] }
         );
 
         // Build explicitely, when typing as VectorConfig is needed,

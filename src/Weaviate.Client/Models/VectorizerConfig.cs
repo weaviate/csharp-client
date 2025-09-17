@@ -5,7 +5,7 @@ namespace Weaviate.Client.Models;
 public abstract record VectorizerConfig : IEquatable<VectorizerConfig>
 {
     private readonly string _identifier;
-    protected HashSet<string> _properties = new();
+    protected HashSet<string> _sourceProperties = new();
 
     protected VectorizerConfig(string identifier)
     {
@@ -15,18 +15,19 @@ public abstract record VectorizerConfig : IEquatable<VectorizerConfig>
 
     [JsonConverter(typeof(JsonConverterEmptyCollectionAsNull))]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public ICollection<string>? Properties
+    [JsonPropertyName("properties")]
+    public ICollection<string>? SourceProperties
     {
-        get { return _properties.Count == 0 ? null : _properties; }
+        get { return _sourceProperties.Count == 0 ? null : _sourceProperties; }
         set
         {
             if (value == null)
             {
-                _properties.Clear();
+                _sourceProperties.Clear();
                 return;
             }
 
-            _properties = [.. value];
+            _sourceProperties = [.. value];
         }
     }
 
@@ -37,7 +38,7 @@ public abstract record VectorizerConfig : IEquatable<VectorizerConfig>
     {
         var hash = new HashCode();
         hash.Add(_identifier);
-        foreach (var property in _properties)
+        foreach (var property in _sourceProperties)
         {
             hash.Add(property);
         }
@@ -52,7 +53,8 @@ public abstract record VectorizerConfig : IEquatable<VectorizerConfig>
         if (ReferenceEquals(this, other))
             return true;
 
-        return _identifier == other._identifier && _properties.SetEquals(other._properties);
+        return _identifier == other._identifier
+            && _sourceProperties.SetEquals(other._sourceProperties);
     }
 
     public virtual Dictionary<string, object?> ToDto()

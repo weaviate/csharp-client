@@ -19,7 +19,7 @@ public static partial class Configure
             public VectorConfig New(
                 string name,
                 VectorIndex.HNSW? indexConfig = null,
-                params string[] properties
+                params string[] sourceProperties
             )
             {
                 indexConfig ??= new VectorIndex.HNSW()
@@ -33,7 +33,7 @@ public static partial class Configure
                     name,
                     vectorizer: Config with
                     {
-                        Properties = properties,
+                        SourceProperties = sourceProperties,
                     },
                     vectorIndexConfig: indexConfig
                 );
