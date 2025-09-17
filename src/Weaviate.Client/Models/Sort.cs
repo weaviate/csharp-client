@@ -8,14 +8,13 @@ public record Sort
 
     public static Sort ByCreationTime(bool ascending = true)
     {
-        var s = new Sort().ByProperty("_creationTimeUnix");
+        var s = ByProperty("_creationTimeUnix");
         return ascending ? s.Ascending() : s.Descending();
     }
 
-    public Sort ByProperty(string name)
+    public static Sort ByProperty(string name)
     {
-        InternalSort.Path.Add(name);
-        return this;
+        return new Sort().ByProperty(name);
     }
 
     public Sort Ascending()
@@ -28,5 +27,14 @@ public record Sort
     {
         InternalSort.Ascending = false;
         return this;
+    }
+}
+
+public static partial class SortExtensions
+{
+    public static Sort ByProperty(this Sort sort, string name)
+    {
+        sort.InternalSort.Path.Add(name);
+        return sort;
     }
 }
