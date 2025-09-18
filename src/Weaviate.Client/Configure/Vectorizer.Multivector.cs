@@ -1,4 +1,5 @@
 using Weaviate.Client.Models;
+using static Weaviate.Client.Models.VectorIndexConfig;
 
 namespace Weaviate.Client;
 
@@ -8,10 +9,15 @@ public static partial class Configure
     {
         public static VectorConfig SelfProvided(
             string name = "default",
-            VectorIndex.HNSW? indexConfig = null
+            VectorIndex.HNSW? indexConfig = null,
+            QuantizerConfig? quantizerConfig = null
         )
         {
-            return new VectorConfigBuilder(new Vectorizer.SelfProvided()).New(name, indexConfig);
+            return new VectorConfigBuilder(new Vectorizer.SelfProvided()).New(
+                name,
+                indexConfig,
+                quantizerConfig
+            );
         }
 
         public class VectorConfigBuilder(VectorizerConfig Config)
@@ -19,6 +25,7 @@ public static partial class Configure
             public VectorConfig New(
                 string name,
                 VectorIndex.HNSW? indexConfig = null,
+                QuantizerConfig? quantizerConfig = null,
                 params string[] sourceProperties
             )
             {
@@ -35,7 +42,12 @@ public static partial class Configure
                     {
                         SourceProperties = sourceProperties,
                     },
-                    vectorIndexConfig: indexConfig
+                    vectorIndexConfig: quantizerConfig is null
+                        ? indexConfig
+                        : indexConfig with
+                        {
+                            Quantizer = quantizerConfig,
+                        }
                 );
             }
         }

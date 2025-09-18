@@ -8,14 +8,21 @@ public static partial class Configure
     {
         public static VectorConfig SelfProvided(
             string name = "default",
-            VectorIndexConfig? indexConfig = null
-        ) => new VectorConfigBuilder(new Vectorizer.SelfProvided()).New(name, indexConfig);
+            VectorIndexConfig? indexConfig = null,
+            VectorIndexConfig.QuantizerConfig? quantizerConfig = null
+        ) =>
+            new VectorConfigBuilder(new Vectorizer.SelfProvided()).New(
+                name,
+                indexConfig,
+                quantizerConfig
+            );
 
         public class VectorConfigBuilder(VectorizerConfig Config)
         {
             public VectorConfig New(
                 string name = "default",
                 VectorIndexConfig? indexConfig = null,
+                VectorIndexConfig.QuantizerConfig? quantizerConfig = null,
                 params string[] sourceProperties
             ) =>
                 new(
@@ -24,8 +31,75 @@ public static partial class Configure
                     {
                         SourceProperties = sourceProperties,
                     },
-                    vectorIndexConfig: indexConfig
+                    vectorIndexConfig: EnrichVectorIndexConfig(indexConfig, quantizerConfig)
                 );
+
+            /// <summary>
+            /// Enriches the provided <see cref="VectorIndexConfig"/> instance with the specified quantizer configuration,
+            /// if applicable. The method updates the quantizer property of the index configuration based on its concrete type.
+            /// </summary>
+            /// <param name="indexConfig">
+            /// The vector index configuration to enrich. If <c>null</c>, the method returns <c>null</c>.
+            /// </param>
+            /// <param name="quantizerConfig">
+            /// The quantizer configuration to apply. If <c>null</c>, the original <paramref name="indexConfig"/> is returned unchanged.
+            /// </param>
+            /// <returns>
+            /// The enriched <see cref="VectorIndexConfig"/> instance with the quantizer configuration applied, or the original
+            /// <paramref name="indexConfig"/> if no enrichment was possible.
+            /// </returns>
+            private static VectorIndexConfig? EnrichVectorIndexConfig(
+                VectorIndexConfig? indexConfig,
+                VectorIndexConfig.QuantizerConfig? quantizerConfig
+            )
+            {
+                if (indexConfig is null)
+                    return null;
+
+                if (quantizerConfig is null)
+                    return indexConfig;
+
+                if (indexConfig is VectorIndex.HNSW hnsw)
+                {
+                    return hnsw with { Quantizer = quantizerConfig };
+                }
+
+                if (indexConfig is VectorIndex.Flat flat)
+                {
+                    // Only set the Quantizer if it's of type BQ, as Flat supports only BQ quantization.
+                    if (quantizerConfig is VectorIndex.Quantizers.BQ bq)
+                    {
+                        flat.Quantizer = bq;
+                    }
+                    else
+                    {
+                        throw new WeaviateClientException(
+                            "Flat index supports only BQ quantization. Provided quantizer is of type: "
+                                + quantizerConfig.GetType().Name
+                        );
+                    }
+                    return flat;
+                }
+
+                // Handle the case where the index configuration is of type Dynamic,
+                // which may contain both HNSW and Flat sub-configurations.
+                if (indexConfig is VectorIndex.Dynamic dynamic)
+                {
+                    // If the Dynamic config has an HNSW sub-config, set its Quantizer directly.
+                    if (dynamic.Hnsw is not null)
+                        dynamic.Hnsw.Quantizer = quantizerConfig;
+
+                    // If the Dynamic config has a Flat sub-config and the quantizer is of type BQ,
+                    // set the Flat's Quantizer property.
+                    if (dynamic.Flat is not null && quantizerConfig is VectorIndex.Quantizers.BQ)
+                        dynamic.Flat.Quantizer = quantizerConfig as VectorIndex.Quantizers.BQ;
+
+                    // Return the enriched Dynamic config.
+                    return dynamic;
+                }
+
+                return indexConfig;
+            }
         }
 
         public static VectorConfigBuilder Img2VecNeural(string[] imageFields) =>
