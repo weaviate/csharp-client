@@ -93,6 +93,6 @@ internal static class GenerativeConfigSerialization
             return result;
         }
 
-        throw new WeaviateException("Unable to create GenerativeConfig");
+        throw new WeaviateClientException("Unable to create GenerativeConfig");
     }
 }

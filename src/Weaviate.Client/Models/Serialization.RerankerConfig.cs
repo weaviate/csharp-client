@@ -55,6 +55,6 @@ internal static class RerankerConfigSerialization
             return result;
         }
 
-        throw new WeaviateException("Unable to create RerankerConfig");
+        throw new WeaviateClientException("Unable to create RerankerConfig");
     }
 }
