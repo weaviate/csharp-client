@@ -187,6 +187,10 @@ public partial record Filter
         return this;
     }
 
+    internal static Filter AllOf(params Filter[] filters) => And(filters);
+
+    internal static Filter AnyOf(params Filter[] filters) => Or(filters);
+
     #region Operators
     public static Filter operator &(Filter left, Filter right)
     {
