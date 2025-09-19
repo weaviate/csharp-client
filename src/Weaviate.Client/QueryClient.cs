@@ -19,7 +19,7 @@ public class QueryClient<TData>
         Models.GroupByRequest groupBy,
         uint? limit = null,
         Filter? filter = null,
-        IEnumerable<Sort>? sort = null,
+        OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -30,9 +30,9 @@ public class QueryClient<TData>
             await _client.GrpcClient.FetchObjects(
                 _collectionName,
                 limit: limit,
-                sort: sort,
                 rerank: rerank,
                 filter: filter,
+                sort: sort,
                 groupBy: groupBy,
                 tenant: tenant ?? _collectionClient.Tenant,
                 consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -45,7 +45,7 @@ public class QueryClient<TData>
     public async Task<WeaviateResult> FetchObjects(
         uint? limit = null,
         Filter? filter = null,
-        IEnumerable<Sort>? sort = null,
+        OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -56,9 +56,9 @@ public class QueryClient<TData>
             await _client.GrpcClient.FetchObjects(
                 _collectionName,
                 limit: limit,
-                sort: sort,
                 rerank: rerank,
                 filter: filter,
+                sort: sort,
                 tenant: tenant ?? _collectionClient.Tenant,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
@@ -89,6 +89,8 @@ public class QueryClient<TData>
         uint? limit = null,
         string? tenant = null,
         Rerank? rerank = null,
+        Filter? filter = null,
+        OneOrManyOf<Sort>? sort = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -97,7 +99,8 @@ public class QueryClient<TData>
             await _client.GrpcClient.FetchObjects(
                 _collectionName,
                 limit: limit,
-                filter: Filter.WithIDs(ids),
+                filter: filter != null ? Filter.WithIDs(ids) & filter : Filter.WithIDs(ids),
+                sort: sort,
                 tenant: tenant ?? _collectionClient.Tenant,
                 rerank: rerank,
                 returnProperties: returnProperties,
@@ -117,6 +120,7 @@ public class QueryClient<TData>
         Move? moveTo = null,
         Move? moveAway = null,
         string? tenant = null,
+        Filter? filter = null,
         Rerank? rerank = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -131,6 +135,7 @@ public class QueryClient<TData>
                 limit: limit,
                 moveTo: moveTo,
                 moveAway: moveAway,
+                filters: filter,
                 tenant: tenant ?? _collectionClient.Tenant,
                 rerank: rerank,
                 consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -150,7 +155,7 @@ public class QueryClient<TData>
         uint? limit = null,
         uint? offset = null,
         uint? autoCut = null,
-        Filter? filters = null,
+        Filter? filter = null,
         Rerank? rerank = null,
         string[]? targetVector = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -169,7 +174,7 @@ public class QueryClient<TData>
                 limit: limit,
                 offset: offset,
                 autoCut: autoCut,
-                filters: filters,
+                filters: filter,
                 tenant: _collectionClient.Tenant,
                 rerank: rerank,
                 targetVector: targetVector,
@@ -182,6 +187,7 @@ public class QueryClient<TData>
 
     public async Task<WeaviateResult> NearVector(
         Vectors vector,
+        Filter? filter = null,
         float? certainty = null,
         float? distance = null,
         uint? limit = null,
@@ -200,6 +206,7 @@ public class QueryClient<TData>
                 certainty: certainty,
                 limit: limit,
                 targetVector: targetVector,
+                filters: filter,
                 tenant: tenant ?? _collectionClient.Tenant,
                 rerank: rerank,
                 consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -212,6 +219,7 @@ public class QueryClient<TData>
     public async Task<GroupByResult> NearVector(
         Vectors vector,
         GroupByRequest groupBy,
+        Filter? filter = null,
         float? distance = null,
         float? certainty = null,
         uint? limit = null,
@@ -227,6 +235,7 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 vector,
                 groupBy,
+                filters: filter,
                 distance: distance,
                 certainty: certainty,
                 limit: limit,
@@ -245,7 +254,6 @@ public class QueryClient<TData>
         GroupByRequest groupBy,
         string[]? searchFields = null,
         Filter? filter = null,
-        IEnumerable<Sort>? sort = null,
         uint? autoCut = null,
         uint? limit = null,
         uint? offset = null,
@@ -258,15 +266,12 @@ public class QueryClient<TData>
         IList<QueryReference>? returnReferences = null
     )
     {
-        var sortBy = sort?.Select(s => s.InternalSort);
-        var grpcFilter = filter?.InternalFilter;
         return (
             await _client.GrpcClient.SearchBM25(
                 _collectionClient.Name,
                 query: query,
                 searchFields: searchFields,
-                filter: grpcFilter,
-                sort: sortBy,
+                filter: filter,
                 autoCut: autoCut,
                 limit: limit,
                 offset: offset,
@@ -286,7 +291,6 @@ public class QueryClient<TData>
         string query,
         string[]? searchFields = null,
         Filter? filter = null,
-        IEnumerable<Sort>? sort = null,
         uint? autoCut = null,
         uint? limit = null,
         uint? offset = null,
@@ -299,15 +303,12 @@ public class QueryClient<TData>
         IList<QueryReference>? returnReferences = null
     )
     {
-        var sortBy = sort?.Select(s => s.InternalSort);
-        var grpcFilter = filter?.InternalFilter;
         return (
             await _client.GrpcClient.SearchBM25(
                 _collectionClient.Name,
                 query: query,
                 searchFields: searchFields,
-                filter: grpcFilter,
-                sort: sortBy,
+                filter: filter,
                 autoCut: autoCut,
                 limit: limit,
                 offset: offset,

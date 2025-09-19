@@ -21,7 +21,7 @@ internal partial class WeaviateGrpcClient
     private static SearchRequest BaseSearchRequest(
         string collection,
         Filters? filter = null,
-        IEnumerable<SortBy>? sort = null,
+        IEnumerable<Sort>? sort = null,
         uint? autoCut = null,
         uint? limit = null,
         uint? offset = null,
@@ -90,7 +90,7 @@ internal partial class WeaviateGrpcClient
         }
         if (sort is not null)
         {
-            request.SortBy.AddRange(sort);
+            request.SortBy.AddRange(sort.Select(s => s.InternalSort));
         }
         if (autoCut.HasValue)
         {
@@ -480,7 +480,7 @@ internal partial class WeaviateGrpcClient
         var req = BaseSearchRequest(
             collection,
             filter: filter?.InternalFilter,
-            sort: sort?.Select(s => s.InternalSort),
+            sort: sort,
             limit: limit,
             groupBy: groupBy,
             after: after,
@@ -521,6 +521,7 @@ internal partial class WeaviateGrpcClient
         var request = BaseSearchRequest(
             collection,
             filter: filters?.InternalFilter,
+            sort: null,
             limit: limit,
             groupBy: groupBy,
             tenant: tenant,
@@ -566,6 +567,7 @@ internal partial class WeaviateGrpcClient
         var request = BaseSearchRequest(
             collection,
             filter: filters?.InternalFilter,
+            sort: null,
             limit: limit,
             offset: offset,
             autoCut: autoCut,
@@ -600,8 +602,7 @@ internal partial class WeaviateGrpcClient
         string collection,
         string query,
         string[]? searchFields,
-        Filters? filter = null,
-        IEnumerable<SortBy>? sort = null,
+        Filter? filter = null,
         uint? autoCut = null,
         uint? limit = null,
         uint? offset = null,
@@ -617,8 +618,8 @@ internal partial class WeaviateGrpcClient
     {
         var request = BaseSearchRequest(
             collection,
-            filter: filter,
-            sort: sort,
+            filter: filter?.InternalFilter,
+            sort: null,
             autoCut: autoCut,
             limit: limit,
             offset: offset,
@@ -681,6 +682,7 @@ internal partial class WeaviateGrpcClient
         var request = BaseSearchRequest(
             collection,
             filter: filters?.InternalFilter,
+            sort: null,
             autoCut: autoLimit,
             limit: limit,
             offset: offset,
@@ -738,6 +740,7 @@ internal partial class WeaviateGrpcClient
         var request = BaseSearchRequest(
             collection,
             filter: filters?.InternalFilter,
+            sort: null,
             autoCut: autoLimit,
             limit: limit,
             offset: offset,
@@ -821,6 +824,7 @@ internal partial class WeaviateGrpcClient
         var request = BaseSearchRequest(
             collection,
             filter: filters?.InternalFilter,
+            sort: null,
             autoCut: autoLimit,
             limit: limit,
             offset: offset,

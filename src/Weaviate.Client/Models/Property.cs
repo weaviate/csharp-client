@@ -192,7 +192,7 @@ public static class DataType
     public static string UuidArray => "uuid[]";
     public static string GeoCoordinate => "geoCoordinates";
     public static string Blob => "blob";
-    public static string PhoneNumber => "phone";
+    public static string PhoneNumber => "phoneNumber";
     public static string Object => "object";
     public static string ObjectArray => "object[]";
 }
@@ -272,11 +272,12 @@ public record Property : IEquatable<Property>
     ) => new(name, targetCollection, description);
 
     // Extract collection properties from type specified by TData.
-    public static IEnumerable<Property> FromCollection<TData>()
+    public static Property[] FromClass<TData>()
     {
         return typeof(TData)
             .GetProperties()
-            .Select(x => PropertyHelper.ForType(x.PropertyType)(x.Name));
+            .Select(x => PropertyHelper.ForType(x.PropertyType)(x.Name))
+            .ToArray();
     }
 
     public override int GetHashCode()

@@ -100,7 +100,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable
 
         description ??= TestContext.Current.TestMethod?.MethodName ?? string.Empty;
 
-        properties ??= [.. Property.FromCollection<TData>()];
+        properties ??= Property.FromClass<TData>();
 
         ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -113,7 +113,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         {
             Name = name,
             Description = description,
-            Properties = properties.Concat(references!.Select(p => (Property)p)).ToList(),
+            Properties = properties?.Concat(references!.Select(p => (Property)p)).ToList() ?? [],
             VectorConfig = vectorConfig,
             MultiTenancyConfig = multiTenancyConfig,
             InvertedIndexConfig = invertedIndexConfig,
