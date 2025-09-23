@@ -12,61 +12,109 @@ public abstract record AbstractVectorData(Type ValueType) : ICollection
 
     public abstract IEnumerator GetEnumerator();
 
-    public static implicit operator double[](AbstractVectorData vectorData)
+    private static T[] Convert<T>(AbstractVectorData vectorData)
     {
-        if (vectorData.ValueType != typeof(double))
+        if (vectorData.ValueType != typeof(T))
         {
-            throw new ArgumentException($"vectorData is not of type {typeof(double)}");
+            throw new ArgumentException($"vectorData is not of type {typeof(T)}");
         }
-        return ((ICollection<double>)vectorData).ToArray();
+        return ((ICollection<T>)vectorData).ToArray();
     }
 
-    public static implicit operator double[][](AbstractVectorData vectorData)
-    {
-        if (vectorData.ValueType != typeof(double[]))
-        {
-            throw new ArgumentException($"vectorData is not of type {typeof(double[])}");
-        }
-        return ((ICollection<double[]>)vectorData).ToArray();
-    }
+    public static implicit operator double[](AbstractVectorData vectorData) =>
+        Convert<double>(vectorData);
 
-    public static implicit operator float[](AbstractVectorData vectorData)
-    {
-        if (vectorData.ValueType != typeof(float))
-        {
-            throw new ArgumentException($"vectorData is not of type {typeof(float)}");
-        }
-        return ((ICollection<float>)vectorData).ToArray();
-    }
+    public static implicit operator double[][](AbstractVectorData vectorData) =>
+        Convert<double[]>(vectorData);
 
-    public static implicit operator float[][](AbstractVectorData vectorData)
-    {
-        if (vectorData.ValueType != typeof(float[]))
-        {
-            throw new ArgumentException($"vectorData is not of type {typeof(float[])}");
-        }
-        return ((ICollection<float[]>)vectorData).ToArray();
-    }
+    public static implicit operator float[](AbstractVectorData vectorData) =>
+        Convert<float>(vectorData);
 
-    public static implicit operator AbstractVectorData(double[] values)
-    {
-        return new VectorData<double>(values);
-    }
+    public static implicit operator float[][](AbstractVectorData vectorData) =>
+        Convert<float[]>(vectorData);
 
-    public static implicit operator AbstractVectorData(double[][] values)
-    {
-        return new MultiVectorData<double>(values);
-    }
+    public static implicit operator int[](AbstractVectorData vectorData) =>
+        Convert<int>(vectorData);
 
-    public static implicit operator AbstractVectorData(float[] values)
-    {
-        return new VectorData<float>(values);
-    }
+    public static implicit operator int[][](AbstractVectorData vectorData) =>
+        Convert<int[]>(vectorData);
 
-    public static implicit operator AbstractVectorData(float[][] values)
-    {
-        return new MultiVectorData<float>(values);
-    }
+    public static implicit operator long[](AbstractVectorData vectorData) =>
+        Convert<long>(vectorData);
+
+    public static implicit operator long[][](AbstractVectorData vectorData) =>
+        Convert<long[]>(vectorData);
+
+    public static implicit operator short[](AbstractVectorData vectorData) =>
+        Convert<short>(vectorData);
+
+    public static implicit operator short[][](AbstractVectorData vectorData) =>
+        Convert<short[]>(vectorData);
+
+    public static implicit operator byte[](AbstractVectorData vectorData) =>
+        Convert<byte>(vectorData);
+
+    public static implicit operator byte[][](AbstractVectorData vectorData) =>
+        Convert<byte[]>(vectorData);
+
+    public static implicit operator bool[](AbstractVectorData vectorData) =>
+        Convert<bool>(vectorData);
+
+    public static implicit operator bool[][](AbstractVectorData vectorData) =>
+        Convert<bool[]>(vectorData);
+
+    public static implicit operator decimal[](AbstractVectorData vectorData) =>
+        Convert<decimal>(vectorData);
+
+    public static implicit operator decimal[][](AbstractVectorData vectorData) =>
+        Convert<decimal[]>(vectorData);
+
+    public static implicit operator AbstractVectorData(double[] values) =>
+        new VectorData<double>(values);
+
+    public static implicit operator AbstractVectorData(double[][] values) =>
+        new MultiVectorData<double>(values);
+
+    public static implicit operator AbstractVectorData(float[] values) =>
+        new VectorData<float>(values);
+
+    public static implicit operator AbstractVectorData(float[][] values) =>
+        new MultiVectorData<float>(values);
+
+    public static implicit operator AbstractVectorData(int[] values) => new VectorData<int>(values);
+
+    public static implicit operator AbstractVectorData(int[][] values) =>
+        new MultiVectorData<int>(values);
+
+    public static implicit operator AbstractVectorData(long[] values) =>
+        new VectorData<long>(values);
+
+    public static implicit operator AbstractVectorData(long[][] values) =>
+        new MultiVectorData<long>(values);
+
+    public static implicit operator AbstractVectorData(short[] values) =>
+        new VectorData<short>(values);
+
+    public static implicit operator AbstractVectorData(short[][] values) =>
+        new MultiVectorData<short>(values);
+
+    public static implicit operator AbstractVectorData(byte[] values) =>
+        new VectorData<byte>(values);
+
+    public static implicit operator AbstractVectorData(byte[][] values) =>
+        new MultiVectorData<byte>(values);
+
+    public static implicit operator AbstractVectorData(bool[] values) =>
+        new VectorData<bool>(values);
+
+    public static implicit operator AbstractVectorData(bool[][] values) =>
+        new MultiVectorData<bool>(values);
+
+    public static implicit operator AbstractVectorData(decimal[] values) =>
+        new VectorData<decimal>(values);
+
+    public static implicit operator AbstractVectorData(decimal[][] values) =>
+        new MultiVectorData<decimal>(values);
 }
 
 public record AbstractVectorData<T> : AbstractVectorData, IList<T>
@@ -303,17 +351,17 @@ public static class VectorData
     }
 
     // Create vector data for simple struct values
-    public static VectorData<T> Create<T>(params T[] values)
+    public static Vectors Create<T>(params T[] values)
         where T : struct
     {
-        return new(values);
+        return new VectorData<T>(values);
     }
 
     // Create vector data for array values
-    public static MultiVectorData<T> Create<T>(params T[][] values)
+    public static Vectors Create<T>(params T[][] values)
         where T : struct
     {
-        return new(values);
+        return new MultiVectorData<T>(values);
     }
 
     // Create container with simple struct values

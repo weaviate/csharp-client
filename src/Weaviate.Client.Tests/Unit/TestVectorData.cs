@@ -1,3 +1,4 @@
+using System.Collections;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
@@ -8,20 +9,23 @@ public class VectorDataTests
     public void VectorData_Create_SingleValues()
     {
         var vector = VectorData.Create(1, 2, 3);
-        Assert.IsType<VectorData<int>>(vector);
-        Assert.Equal(new[] { 1, 2, 3 }, vector.Cast<int>());
-        Assert.Equal(typeof(int), vector.ValueType);
+        Assert.IsType<Vectors>(vector);
+        Assert.IsType<VectorData<int>>(vector["default"]);
+        Assert.Equal(new[] { 1, 2, 3 }, vector["default"]);
+        Assert.Equal(typeof(int), vector["default"].ValueType);
     }
 
     [Fact]
     public void VectorData_Create_ArrayValues()
     {
-        var vector = VectorData.Create(new[] { 1, 2 }, new[] { 3, 4 });
-        Assert.IsType<MultiVectorData<int>>(vector);
-        Assert.Equal(2, vector.Count);
-        Assert.Equal(new[] { 1, 2 }, vector[0]);
-        Assert.Equal(new[] { 3, 4 }, vector[1]);
-        Assert.Equal(typeof(int[]), vector.ValueType);
+        var vector = VectorData.Create([1, 2], [3, 4], [5, 6]);
+        Assert.IsType<Vectors>(vector);
+        Assert.IsType<MultiVectorData<int>>(vector["default"]);
+        Assert.Single(vector);
+        Assert.Equal(3, vector["default"].Count);
+        Assert.Equal(new[] { 1, 2 }, ((MultiVectorData<int>)vector["default"])[0]);
+        Assert.Equal(new[] { 3, 4 }, ((MultiVectorData<int>)vector["default"])[1]);
+        Assert.Equal(typeof(int[]), vector["default"].ValueType);
     }
 
     [Fact]
