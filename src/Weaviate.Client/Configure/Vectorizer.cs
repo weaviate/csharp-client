@@ -10,28 +10,92 @@ public static partial class Configure
             string name = "default",
             VectorIndexConfig? indexConfig = null,
             VectorIndexConfig.QuantizerConfig? quantizerConfig = null
-        ) =>
-            new VectorConfigBuilder(new Vectorizer.SelfProvided()).New(
-                name,
-                indexConfig,
-                quantizerConfig
-            );
+        )
+        {
+            var builder = new VectorConfigBuilder(new Vectorizer.SelfProvided());
+            return indexConfig switch
+            {
+                VectorIndex.HNSW hnsw => builder.New(name, hnsw, quantizerConfig),
+                VectorIndex.Flat flat => builder.New(
+                    name,
+                    flat,
+                    quantizerConfig is not null
+                        ? quantizerConfig as VectorIndex.Quantizers.BQ
+                            ?? throw new WeaviateClientException(
+                                "Flat index supports only BQ quantization."
+                            )
+                        : null
+                ),
+                VectorIndex.Dynamic dynamic => quantizerConfig is null
+                    ? builder.New(name, dynamic)
+                    : throw new WeaviateClientException(
+                        "Dynamic Index must specify quantizers in their respective Vector Index Configurations."
+                    ),
+                null => builder.New(
+                    name,
+                    (VectorIndex.HNSW?)null,
+                    (VectorIndexConfig.QuantizerConfig?)null
+                ),
+                _ => throw new WeaviateClientException(
+                    $"Unsupported VectorIndexConfig type: {indexConfig.GetType().Name}"
+                ),
+            };
+        }
 
         public class VectorConfigBuilder(VectorizerConfig Config)
         {
-            public VectorConfig New(
-                string name = "default",
-                VectorIndexConfig? indexConfig = null,
-                VectorIndexConfig.QuantizerConfig? quantizerConfig = null,
-                params string[] sourceProperties
-            ) =>
+            public VectorConfig New(string name = "default", params string[] sourceProperties) =>
                 new(
                     name,
                     vectorizer: Config with
                     {
                         SourceProperties = sourceProperties,
                     },
+                    vectorIndexConfig: null
+                );
+
+            public VectorConfig New(
+                string name,
+                VectorIndex.HNSW? indexConfig,
+                VectorIndexConfig.QuantizerConfig? quantizerConfig = null,
+                params string[] sourceProperties
+            ) =>
+                new(
+                    name: string.IsNullOrEmpty(name) ? "default" : name,
+                    vectorizer: Config with
+                    {
+                        SourceProperties = sourceProperties,
+                    },
                     vectorIndexConfig: EnrichVectorIndexConfig(indexConfig, quantizerConfig)
+                );
+
+            public VectorConfig New(
+                string name,
+                VectorIndex.Flat? indexConfig,
+                VectorIndex.Quantizers.BQ? quantizerConfig = null,
+                params string[] sourceProperties
+            ) =>
+                new(
+                    name: string.IsNullOrEmpty(name) ? "default" : name,
+                    vectorizer: Config with
+                    {
+                        SourceProperties = sourceProperties,
+                    },
+                    vectorIndexConfig: EnrichVectorIndexConfig(indexConfig, quantizerConfig)
+                );
+
+            public VectorConfig New(
+                string name,
+                VectorIndex.Dynamic? indexConfig,
+                params string[] sourceProperties
+            ) =>
+                new(
+                    name: string.IsNullOrEmpty(name) ? "default" : name,
+                    vectorizer: Config with
+                    {
+                        SourceProperties = sourceProperties,
+                    },
+                    vectorIndexConfig: indexConfig
                 );
 
             /// <summary>
@@ -61,11 +125,28 @@ public static partial class Configure
 
                 if (indexConfig is VectorIndex.HNSW hnsw)
                 {
-                    return hnsw with { Quantizer = quantizerConfig };
+                    if (hnsw.Quantizer != null)
+                    {
+                        throw new WeaviateClientException(
+                            "HNSW index already has a quantizer configured. Overwriting is not allowed."
+                        );
+                    }
+
+                    return hnsw with
+                    {
+                        Quantizer = quantizerConfig,
+                    };
                 }
 
                 if (indexConfig is VectorIndex.Flat flat)
                 {
+                    if (flat.Quantizer != null)
+                    {
+                        throw new WeaviateClientException(
+                            "Flat index already has a quantizer configured. Overwriting is not allowed."
+                        );
+                    }
+
                     // Only set the Quantizer if it's of type BQ, as Flat supports only BQ quantization.
                     if (quantizerConfig is VectorIndex.Quantizers.BQ bq)
                     {
@@ -83,19 +164,11 @@ public static partial class Configure
 
                 // Handle the case where the index configuration is of type Dynamic,
                 // which may contain both HNSW and Flat sub-configurations.
-                if (indexConfig is VectorIndex.Dynamic dynamic)
+                if (indexConfig is VectorIndex.Dynamic)
                 {
-                    // If the Dynamic config has an HNSW sub-config, set its Quantizer directly.
-                    if (dynamic.Hnsw is not null)
-                        dynamic.Hnsw.Quantizer = quantizerConfig;
-
-                    // If the Dynamic config has a Flat sub-config and the quantizer is of type BQ,
-                    // set the Flat's Quantizer property.
-                    if (dynamic.Flat is not null && quantizerConfig is VectorIndex.Quantizers.BQ)
-                        dynamic.Flat.Quantizer = quantizerConfig as VectorIndex.Quantizers.BQ;
-
-                    // Return the enriched Dynamic config.
-                    return dynamic;
+                    throw new WeaviateClientException(
+                        "Dynamic Index must specify quantizers in their respective Vector Index Configurations."
+                    );
                 }
 
                 return indexConfig;

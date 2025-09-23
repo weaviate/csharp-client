@@ -36,6 +36,16 @@ public static partial class Configure
 
                 indexConfig.MultiVector ??= new VectorIndexConfig.MultiVectorConfig();
 
+                if (quantizerConfig is not null && indexConfig.Quantizer is not null)
+                {
+                    throw new WeaviateClientException(
+                        null,
+                        new InvalidOperationException(
+                            "Quantizer is already set on the indexConfig. Please provide either the quantizerConfig or set it on the indexConfig, not both."
+                        )
+                    );
+                }
+
                 return new(
                     name,
                     vectorizer: Config with
