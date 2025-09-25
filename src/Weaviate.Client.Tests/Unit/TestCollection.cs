@@ -262,7 +262,7 @@ public class CollectionTests
         Assert.NotNull(config);
         Assert.NotNull(config!.Config);
         Assert.Equal("ConfigValue", config!.Config.configOption);
-        Assert.IsType<Generative.Custom>(config);
+        Assert.IsType<GenerativeConfig.Custom>(config);
         Assert.IsAssignableFrom<IGenerativeConfig>(config);
     }
 

@@ -127,7 +127,7 @@ public partial class CollectionsTests : IntegrationTests
         // Arrange
         var collectionClient = await CollectionFactory(
             properties: [Property.Text("Name")],
-            generativeConfig: new Generative.Custom
+            generativeConfig: new GenerativeConfig.Custom
             {
                 Type = "generative-dummy",
                 Config = new { ConfigOption = "ConfigValue" },
@@ -140,7 +140,7 @@ public partial class CollectionsTests : IntegrationTests
         // Assert
         Assert.NotNull(collection);
         Assert.NotNull(collection.GenerativeConfig);
-        Assert.IsType<Generative.Custom>(collection.GenerativeConfig);
+        Assert.IsType<GenerativeConfig.Custom>(collection.GenerativeConfig);
     }
 
     [Fact]
@@ -562,7 +562,7 @@ public partial class CollectionsTests : IntegrationTests
     public static IEnumerable<object?> GenerativeConfigData()
     {
         yield return null;
-        yield return new Generative.AnyscaleConfig();
+        yield return new GenerativeConfig.Anyscale();
     }
 
     public static IEnumerable<object?> VectorizerConfigData()

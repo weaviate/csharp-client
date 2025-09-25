@@ -77,11 +77,6 @@ internal partial class WeaviateGrpcClient
                 case Value.KindOneofCase.NumberValue:
                     eo[r.Key] = r.Value.NumberValue;
                     break;
-                case Value.KindOneofCase.StringValue:
-#pragma warning disable CS0612 // Type or member is obsolete
-                    eo[r.Key] = r.Value.StringValue;
-#pragma warning restore CS0612 // Type or member is obsolete
-                    break;
                 case Value.KindOneofCase.BoolValue:
                     eo[r.Key] = r.Value.BoolValue;
                     break;
