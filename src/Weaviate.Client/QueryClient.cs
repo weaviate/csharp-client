@@ -341,6 +341,7 @@ public class QueryClient<TData>
 
     public async Task<WeaviateResult> Hybrid(
         string? query,
+        IHybridVectorInput? vectors = null,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -363,52 +364,7 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
-                queryProperties: queryProperties,
-                fusionType: fusionType,
-                maxVectorDistance: maxVectorDistance,
-                limit: limit,
-                offset: offset,
-                bm25Operator: bm25Operator,
-                autoLimit: autoLimit,
-                filters: filters,
-                rerank: rerank,
-                targetVector: targetVector,
-                tenant: tenant ?? _collectionClient.Tenant,
-                consistencyLevel: _collectionClient.ConsistencyLevel,
-                returnMetadata: returnMetadata,
-                returnProperties: returnProperties,
-                returnReferences: returnReferences
-            )
-        ).result;
-    }
-
-    public async Task<WeaviateResult> Hybrid<TVector>(
-        string? query,
-        TVector vectors,
-        float? alpha = null,
-        string[]? queryProperties = null,
-        HybridFusion? fusionType = null,
-        float? maxVectorDistance = null,
-        uint? limit = null,
-        uint? offset = null,
-        BM25Operator? bm25Operator = null,
-        uint? autoLimit = null,
-        Filter? filters = null,
-        Rerank? rerank = null,
-        string[]? targetVector = null,
-        string? tenant = null,
-        OneOrManyOf<string>? returnProperties = null,
-        IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
-    )
-        where TVector : class, IHybridVectorInput
-    {
-        return (
-            await _client.GrpcClient.SearchHybrid(
-                _collectionClient.Name,
-                query: query,
-                alpha: alpha,
-                vector: vectors as Vectors,
+                vector: vectors is Vector v ? Vectors.Create(v) : vectors as Vectors,
                 nearVector: vectors as HybridNearVector,
                 nearText: vectors as HybridNearText,
                 queryProperties: queryProperties,
@@ -428,61 +384,12 @@ public class QueryClient<TData>
                 returnReferences: returnReferences
             )
         ).result;
-    }
-
-    public async Task<GroupByResult> Hybrid<TVector>(
-        string? query,
-        Models.GroupByRequest groupBy,
-        float? alpha = null,
-        TVector? vectors = null,
-        string[]? queryProperties = null,
-        HybridFusion? fusionType = null,
-        float? maxVectorDistance = null,
-        uint? limit = null,
-        uint? offset = null,
-        BM25Operator? bm25Operator = null,
-        uint? autoLimit = null,
-        Filter? filters = null,
-        Rerank? rerank = null,
-        string[]? targetVector = null,
-        string? tenant = null,
-        OneOrManyOf<string>? returnProperties = null,
-        IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
-    )
-        where TVector : class, IHybridVectorInput
-    {
-        return (
-            await _client.GrpcClient.SearchHybrid(
-                _collectionClient.Name,
-                query: query,
-                alpha: alpha,
-                vector: vectors as Vectors,
-                nearVector: vectors as HybridNearVector,
-                nearText: vectors as HybridNearText,
-                queryProperties: queryProperties,
-                fusionType: fusionType,
-                maxVectorDistance: maxVectorDistance,
-                limit: limit,
-                offset: offset,
-                bm25Operator: bm25Operator,
-                autoLimit: autoLimit,
-                filters: filters,
-                groupBy: groupBy,
-                rerank: rerank,
-                targetVector: targetVector,
-                tenant: tenant ?? _collectionClient.Tenant,
-                consistencyLevel: _collectionClient.ConsistencyLevel,
-                returnMetadata: returnMetadata,
-                returnProperties: returnProperties,
-                returnReferences: returnReferences
-            )
-        ).group;
     }
 
     public async Task<GroupByResult> Hybrid(
         string? query,
         Models.GroupByRequest groupBy,
+        IHybridVectorInput? vectors = null,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -505,6 +412,9 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
+                vector: vectors as Vectors,
+                nearVector: vectors as HybridNearVector,
+                nearText: vectors as HybridNearText,
                 queryProperties: queryProperties,
                 fusionType: fusionType,
                 maxVectorDistance: maxVectorDistance,
