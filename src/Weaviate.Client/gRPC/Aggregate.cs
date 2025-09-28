@@ -276,7 +276,7 @@ internal partial class WeaviateGrpcClient
         string collection,
         string? query,
         float alpha,
-        AbstractVectorData? vectors,
+        Models.Vectors? vectors,
         string[]? queryProperties,
         BM25Operator? bm25Operator,
         string? targetVector,
@@ -313,17 +313,15 @@ internal partial class WeaviateGrpcClient
 
         if (vectors is not null && targetVector is not null)
         {
-            request.Hybrid.Vectors.Add(
-                new V1.Vectors
+            request.Hybrid.Vectors.AddRange(
+                vectors.Select(v => new V1.Vectors
                 {
-                    Name = targetVector,
-                    Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
-                        vectors.ValueType
-                    )
+                    Name = v.Key,
+                    Type = v.Value.IsMultiVector
                         ? V1.Vectors.Types.VectorType.MultiFp32
                         : V1.Vectors.Types.VectorType.SingleFp32,
-                    VectorBytes = vectors.ToByteString(),
-                }
+                    VectorBytes = v.Value.ToByteString(),
+                })
             );
 
             if (targetVector is not null && targetVector.Length > 0)

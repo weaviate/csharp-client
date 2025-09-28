@@ -278,7 +278,7 @@ public partial class AggregatesTests : IntegrationTests
         if (option.ContainsKey("objectLimit"))
         {
             result = await collectionClient.Aggregate.NearVector(
-                nearVector.ToVectorData(),
+                nearVector,
                 metrics: metrics,
                 limit: Convert.ToUInt32(option["objectLimit"])
             );
@@ -286,7 +286,7 @@ public partial class AggregatesTests : IntegrationTests
         else if (option.ContainsKey("certainty"))
         {
             result = await collectionClient.Aggregate.NearVector(
-                nearVector.ToVectorData(),
+                nearVector,
                 metrics: metrics,
                 certainty: Convert.ToDouble(option["certainty"])
             );
@@ -294,7 +294,7 @@ public partial class AggregatesTests : IntegrationTests
         else if (option.ContainsKey("distance"))
         {
             result = await collectionClient.Aggregate.NearVector(
-                nearVector.ToVectorData(),
+                nearVector,
                 metrics: metrics,
                 distance: Convert.ToDouble(option["distance"])
             );
