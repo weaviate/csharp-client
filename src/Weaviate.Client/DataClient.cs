@@ -170,7 +170,9 @@ public class DataClient<TData>
                 new BatchInsertResponse(
                     Index: r,
                     dictUuid.TryGetValue(r, out Guid uuid) ? uuid : (Guid?)null,
-                    dictErr.TryGetValue(r, out string? error) ? new WeaviateException(error) : null
+                    dictErr.TryGetValue(r, out string? error)
+                        ? new WeaviateClientException(error)
+                        : null
                 )
             );
         }
@@ -275,7 +277,9 @@ public class DataClient<TData>
                 {
                     var errors = entry.Result?.Errors?.Error ?? Enumerable.Empty<Error>();
 
-                    return errors.Select(e => new WeaviateException(e.Message)).ToArray();
+                    return errors
+                        .Select(e => new WeaviateClientException(e.Message) as WeaviateException)
+                        .ToArray();
                 }
             );
 

@@ -1,4 +1,5 @@
 using Weaviate.Client.Models;
+using static Weaviate.Client.Models.VectorIndexConfig;
 
 namespace Weaviate.Client;
 
@@ -8,10 +9,15 @@ public static partial class Configure
     {
         public static VectorConfig SelfProvided(
             string name = "default",
-            VectorIndex.HNSW? indexConfig = null
+            VectorIndex.HNSW? indexConfig = null,
+            QuantizerConfig? quantizerConfig = null
         )
         {
-            return new VectorConfigBuilder(new Vectorizer.SelfProvided()).New(name, indexConfig);
+            return new VectorConfigBuilder(new Vectorizer.SelfProvided()).New(
+                name,
+                indexConfig,
+                quantizerConfig
+            );
         }
 
         public class VectorConfigBuilder(VectorizerConfig Config)
@@ -19,6 +25,7 @@ public static partial class Configure
             public VectorConfig New(
                 string name,
                 VectorIndex.HNSW? indexConfig = null,
+                QuantizerConfig? quantizerConfig = null,
                 params string[] sourceProperties
             )
             {
@@ -29,13 +36,28 @@ public static partial class Configure
 
                 indexConfig.MultiVector ??= new VectorIndexConfig.MultiVectorConfig();
 
+                if (quantizerConfig is not null && indexConfig.Quantizer is not null)
+                {
+                    throw new WeaviateClientException(
+                        null,
+                        new InvalidOperationException(
+                            "Quantizer is already set on the indexConfig. Please provide either the quantizerConfig or set it on the indexConfig, not both."
+                        )
+                    );
+                }
+
                 return new(
                     name,
                     vectorizer: Config with
                     {
                         SourceProperties = sourceProperties,
                     },
-                    vectorIndexConfig: indexConfig
+                    vectorIndexConfig: quantizerConfig is null
+                        ? indexConfig
+                        : indexConfig with
+                        {
+                            Quantizer = quantizerConfig,
+                        }
                 );
             }
         }

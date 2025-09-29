@@ -87,7 +87,7 @@ internal partial class WeaviateGrpcClient : IDisposable
             // Check if service is serving
             if (response.Status != HealthCheckResponse.Types.ServingStatus.Serving)
             {
-                throw new WeaviateException(
+                throw new WeaviateClientException(
                     "GRPC health check failed and "
                         + grpcUri.AbsoluteUri
                         + " is not reachable. Please check if the Weaviate instance is running and accessible. Details: "
@@ -98,7 +98,7 @@ internal partial class WeaviateGrpcClient : IDisposable
         catch (RpcException ex)
         {
             // Handle gRPC specific exceptions
-            throw new WeaviateException(
+            throw new WeaviateClientException(
                 "GRPC health check failed and "
                     + grpcUri.AbsoluteUri
                     + " is not reachable. Please check if the Weaviate instance is running and accessible. Details:"

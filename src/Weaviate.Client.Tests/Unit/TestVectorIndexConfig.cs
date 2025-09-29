@@ -29,4 +29,30 @@ public partial class VectorIndexConfigTests
         Assert.Equal(expectedQuantizer, hnsw?.Quantizer.Type);
         Assert.Null(hnsw!.MultiVector);
     }
+
+    [Fact]
+    public void VectorIndexConfig_Sets_Quantizer_When_Provided()
+    {
+        // Arrange
+        var quantizer = new VectorIndex.Quantizers.BQ();
+
+        var config = new VectorIndex.HNSW { Ef = 100, MaxConnections = 16 };
+
+        // Act & Assert
+        var vectorConfig = Configure.Vectors.SelfProvided(
+            name: "regular",
+            indexConfig: config,
+            quantizerConfig: quantizer
+        );
+
+        Assert.Null(config.Quantizer);
+
+        Assert.NotNull(vectorConfig);
+        Assert.Equal("regular", vectorConfig.Name);
+        Assert.IsType<VectorIndex.HNSW>(vectorConfig.VectorIndexConfig);
+        Assert.NotNull((vectorConfig.VectorIndexConfig as VectorIndex.HNSW)?.Quantizer);
+        Assert.IsType<VectorIndex.Quantizers.BQ>(
+            (vectorConfig.VectorIndexConfig as VectorIndex.HNSW)?.Quantizer
+        );
+    }
 }
