@@ -176,7 +176,7 @@ public partial record Filter
                 IEnumerable<string> v => f => f.ValueTextArray = new TextArray { Values = { v } },
                 IEnumerable<Guid> v => f =>
                     f.ValueTextArray = new TextArray { Values = { v.Select(g => g.ToString()) } },
-                _ => throw new WeaviateException(
+                _ => throw new WeaviateClientException(
                     $"Unsupported type '{typeof(T).Name}' for filter value. Check the documentation for supported filter value types."
                 ),
             }
@@ -381,7 +381,7 @@ public record TimeFilter : TypedValue<DateTime>
             {
                 "_creationTimeUnix" => Filter.Property(timeField),
                 "_lastUpdateTimeUnix" => Filter.Property(timeField),
-                _ => throw new WeaviateException("Unsupported time field for filter"),
+                _ => throw new WeaviateClientException("Unsupported time field for filter"),
             }
         ) { }
 }
