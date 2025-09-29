@@ -30,6 +30,8 @@ internal partial class WeaviateGrpcClient
         Guid? after = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedPrompt? groupedPrompt = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
         IList<QueryReference>? returnReferences = null
@@ -79,6 +81,32 @@ internal partial class WeaviateGrpcClient
                     Query = rerank?.Query ?? string.Empty,
                 }
                 : null,
+            Generative =
+                (singlePrompt is null && groupedPrompt is null)
+                    ? null
+                    : new Weaviate.V1.GenerativeSearch()
+                    {
+                        Single = singlePrompt is not null
+                            ? new Weaviate.V1.GenerativeSearch.Types.Single()
+                            {
+                                Prompt = singlePrompt.Prompt,
+                                Debug = singlePrompt.Debug,
+                                // Queries = TODO
+                            }
+                            : null,
+                        Grouped = groupedPrompt is not null
+                            ? new Weaviate.V1.GenerativeSearch.Types.Grouped()
+                            {
+                                Task = groupedPrompt.Task,
+                                Properties = new TextArray
+                                {
+                                    Values = { groupedPrompt.Properties },
+                                },
+                                Debug = groupedPrompt.Debug,
+                                // Queries = TODO
+                            }
+                            : null,
+                    },
         };
 
         if (consistencyLevel.HasValue)
@@ -461,11 +489,7 @@ internal partial class WeaviateGrpcClient
         }
     }
 
-    internal async Task<(
-        WeaviateResult result,
-        Models.GroupByResult group,
-        bool isGroups
-    )> FetchObjects(
+    internal async Task<CombinedSearchResult> FetchObjects(
         string collection,
         Filter? filters = null,
         IEnumerable<Sort>? sort = null,
@@ -475,6 +499,8 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedPrompt? groupedPrompt = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -490,6 +516,8 @@ internal partial class WeaviateGrpcClient
             tenant: tenant,
             consistencyLevel: consistencyLevel,
             rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
             returnReferences: returnReferences
@@ -497,14 +525,10 @@ internal partial class WeaviateGrpcClient
 
         SearchReply? reply = await _grpcClient.SearchAsync(req, headers: _defaultHeaders);
 
-        return BuildCombinedResult(collection, reply);
+        return CombinedSearchResult.Build(collection, reply);
     }
 
-    internal async Task<(
-        WeaviateResult result,
-        Models.GroupByResult group,
-        bool isGroups
-    )> SearchNearVector(
+    internal async Task<CombinedSearchResult> SearchNearVector(
         string collection,
         Models.Vectors vector,
         GroupByRequest? groupBy = null,
@@ -518,6 +542,8 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedPrompt? groupedPrompt = null,
         MetadataQuery? returnMetadata = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null
@@ -534,6 +560,8 @@ internal partial class WeaviateGrpcClient
             tenant: tenant,
             consistencyLevel: consistencyLevel,
             rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
             returnReferences: returnReferences
@@ -543,14 +571,10 @@ internal partial class WeaviateGrpcClient
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
-        return BuildCombinedResult(collection, reply);
+        return CombinedSearchResult.Build(collection, reply);
     }
 
-    internal async Task<(
-        WeaviateResult result,
-        Models.GroupByResult group,
-        bool isGroups
-    )> SearchNearText(
+    internal async Task<CombinedSearchResult> SearchNearText(
         string collection,
         OneOrManyOf<string> query,
         float? distance = null,
@@ -565,6 +589,8 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedPrompt? groupedPrompt = null,
         TargetVectors? targetVector = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -582,6 +608,8 @@ internal partial class WeaviateGrpcClient
             tenant: tenant,
             consistencyLevel: consistencyLevel,
             rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
             returnReferences: returnReferences
@@ -598,14 +626,10 @@ internal partial class WeaviateGrpcClient
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
-        return BuildCombinedResult(collection, reply);
+        return CombinedSearchResult.Build(collection, reply);
     }
 
-    internal async Task<(
-        WeaviateResult result,
-        Models.GroupByResult group,
-        bool isGroups
-    )> SearchBM25(
+    internal async Task<CombinedSearchResult> SearchBM25(
         string collection,
         string query,
         string[]? searchFields,
@@ -615,6 +639,8 @@ internal partial class WeaviateGrpcClient
         uint? offset = null,
         GroupByRequest? groupBy = null,
         Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedPrompt? groupedPrompt = null,
         Guid? after = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
@@ -632,6 +658,8 @@ internal partial class WeaviateGrpcClient
             offset: offset,
             groupBy: groupBy,
             rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedPrompt: groupedPrompt,
             after: after,
             tenant: tenant,
             consistencyLevel: consistencyLevel,
@@ -644,14 +672,10 @@ internal partial class WeaviateGrpcClient
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
-        return BuildCombinedResult(collection, reply);
+        return CombinedSearchResult.Build(collection, reply);
     }
 
-    internal async Task<(
-        WeaviateResult result,
-        Models.GroupByResult group,
-        bool isGroups
-    )> SearchHybrid(
+    internal async Task<CombinedSearchResult> SearchHybrid(
         string collection,
         string? query = null,
         float? alpha = null,
@@ -668,6 +692,8 @@ internal partial class WeaviateGrpcClient
         Filter? filters = null,
         GroupByRequest? groupBy = null,
         Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedPrompt? groupedPrompt = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
@@ -695,6 +721,8 @@ internal partial class WeaviateGrpcClient
             offset: offset,
             groupBy: groupBy,
             rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedPrompt: groupedPrompt,
             tenant: tenant,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
@@ -718,14 +746,10 @@ internal partial class WeaviateGrpcClient
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
-        return BuildCombinedResult(collection, reply);
+        return CombinedSearchResult.Build(collection, reply);
     }
 
-    internal async Task<(
-        WeaviateResult result,
-        Models.GroupByResult group,
-        bool isGroups
-    )> SearchNearObject(
+    internal async Task<CombinedSearchResult> SearchNearObject(
         string collection,
         Guid objectID,
         double? certainty,
@@ -736,6 +760,8 @@ internal partial class WeaviateGrpcClient
         Filter? filters,
         GroupByRequest? groupBy,
         Rerank? rerank,
+        SinglePrompt? singlePrompt,
+        GroupedPrompt? groupedPrompt,
         TargetVectors? targetVector,
         MetadataQuery? returnMetadata,
         OneOrManyOf<string>? returnProperties,
@@ -755,6 +781,8 @@ internal partial class WeaviateGrpcClient
             tenant: tenant,
             consistencyLevel: consistencyLevel,
             rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
             returnReferences: returnReferences
@@ -764,7 +792,7 @@ internal partial class WeaviateGrpcClient
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
-        return BuildCombinedResult(collection, reply);
+        return CombinedSearchResult.Build(collection, reply);
     }
 
     private void BuildNearObject(
@@ -792,11 +820,7 @@ internal partial class WeaviateGrpcClient
         request.NearObject.Targets = targets;
     }
 
-    internal async Task<(
-        WeaviateResult result,
-        Models.GroupByResult group,
-        bool isGroups
-    )> SearchNearMedia(
+    internal async Task<CombinedSearchResult> SearchNearMedia(
         string collection,
         byte[] media,
         NearMediaType mediaType,
@@ -808,6 +832,8 @@ internal partial class WeaviateGrpcClient
         Filter? filters,
         GroupByRequest? groupBy,
         Rerank? rerank,
+        SinglePrompt? singlePrompt,
+        GroupedPrompt? groupedPrompt,
         string? tenant,
         TargetVectors? targetVector,
         ConsistencyLevels? consistencyLevel,
@@ -827,6 +853,8 @@ internal partial class WeaviateGrpcClient
             tenant: tenant,
             consistencyLevel: consistencyLevel,
             rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
             returnReferences: returnReferences
@@ -928,6 +956,6 @@ internal partial class WeaviateGrpcClient
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
-        return BuildCombinedResult(collection, reply);
+        return CombinedSearchResult.Build(collection, reply);
     }
 }

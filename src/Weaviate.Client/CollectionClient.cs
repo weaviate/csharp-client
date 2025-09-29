@@ -85,7 +85,7 @@ public partial class CollectionClient
                     returnProperties: returnProperties,
                     returnReferences: returnReferences
                 )
-            ).result;
+            ).Result;
 
             if (!page.Objects.Any())
             {
