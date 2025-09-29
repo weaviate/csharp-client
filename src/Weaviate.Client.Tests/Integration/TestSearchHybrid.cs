@@ -36,7 +36,7 @@ public partial class SearchTests : IntegrationTests
                 alpha: 1,
                 query: "name",
                 fusionType: fusionType,
-                vectors: VectorData.Create(objs.First().Vectors["default"])
+                vectors: objs.First().Vectors["default"]
             )
         ).Objects;
 
@@ -100,7 +100,7 @@ public partial class SearchTests : IntegrationTests
         var objs = await collection.Query.Hybrid(
             alpha: 1,
             query: query,
-            vectors: VectorData.Create(obj.Vectors["default"])
+            vectors: obj.Vectors["default"]
         );
 
         Assert.Equal(2, objs.Count());
@@ -195,7 +195,7 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearVector((VectorData<float>)obj.Vectors["default"])
+                vectors: new HybridNearVector(obj.Vectors["default"])
             )
         ).Objects;
 
@@ -204,7 +204,7 @@ public partial class SearchTests : IntegrationTests
 
         var nearVec = (
             await collection.Query.NearVector(
-                vector: VectorData.Create("default", obj.Vectors["default"]),
+                vector: obj.Vectors["default"],
                 returnMetadata: MetadataOptions.Distance
             )
         ).Objects;
@@ -214,7 +214,7 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs2 = await collection.Query.Hybrid(
             query: null,
             vectors: new HybridNearVector(
-                (VectorData<float>)obj.Vectors["default"],
+                obj.Vectors["default"],
                 Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
             ),
             returnMetadata: MetadataOptions.All
@@ -251,7 +251,7 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearVector(VectorData.Create("text", obj.Vectors["text"])),
+                vectors: new HybridNearVector(obj.Vectors["text"]),
                 targetVector: ["text"]
             )
         ).Objects;
@@ -261,7 +261,7 @@ public partial class SearchTests : IntegrationTests
 
         var nearVec = (
             await collection.Query.NearVector(
-                vector: VectorData.Create("text", obj.Vectors["text"]),
+                vector: obj.Vectors["text"],
                 targetVector: ["text"],
                 returnMetadata: MetadataOptions.Distance
             )
@@ -273,7 +273,7 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 query: null,
                 vectors: new HybridNearVector(
-                    VectorData.Create("text", obj.Vectors["text"]),
+                    obj.Vectors["text"],
                     Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
                 ),
                 targetVector: ["text"],
@@ -387,7 +387,7 @@ public partial class SearchTests : IntegrationTests
 
         var uuid1 = await collection.Data.Insert(
             new { },
-            vectors: new Dictionary<string, float[]>
+            vectors: new Vectors
             {
                 { "first", new float[] { 1, 0 } },
                 { "second", new float[] { 1, 0, 0 } },
@@ -395,7 +395,7 @@ public partial class SearchTests : IntegrationTests
         );
         var uuid2 = await collection.Data.Insert(
             new { },
-            vectors: new Dictionary<string, float[]>
+            vectors: new Vectors
             {
                 { "first", new float[] { 0, 1 } },
                 { "second", new float[] { 0, 0, 1 } },
@@ -553,11 +553,7 @@ public partial class SearchTests : IntegrationTests
         await collection.Data.Insert(new { }, vectors: new float[] { 0, 0, 1 });
 
         var objs = (
-            await collection.Query.Hybrid(
-                "name",
-                vectors: VectorData.Create("default", 1f, 0f, 0f),
-                alpha: 0.7f
-            )
+            await collection.Query.Hybrid("name", vectors: Vector.Create(1f, 0f, 0f), alpha: 0.7f)
         ).ToList();
         Assert.Equal(3, objs.Count);
         Assert.Equal(uuid1, objs[0].ID);
@@ -565,7 +561,7 @@ public partial class SearchTests : IntegrationTests
         objs = (
             await collection.Query.Hybrid(
                 "name",
-                vectors: VectorData.Create("default", 1f, 0f, 0f),
+                vectors: Vectors.Create(1f, 0f, 0f),
                 maxVectorDistance: 0.1f,
                 alpha: 0.7f
             )

@@ -295,18 +295,6 @@ public static class WeaviateExtensions
         };
     }
 
-    public static VectorData<T> ToVectorData<T>(this IEnumerable<T> values)
-        where T : struct
-    {
-        return new(values);
-    }
-
-    public static MultiVectorData<T> ToVectorData<T>(this IEnumerable<T[]> values)
-        where T : struct
-    {
-        return new(values);
-    }
-
     internal static IEnumerable<T> FromByteString<T>(this Google.Protobuf.ByteString byteString)
         where T : struct
     {
@@ -417,7 +405,7 @@ public static class WeaviateExtensions
         return stream;
     }
 
-    internal static Google.Protobuf.ByteString ToByteString(this AbstractVectorData vector)
+    internal static Google.Protobuf.ByteString ToByteString(this Vector vector)
     {
         if (vector is null || vector.Count == 0)
         {
@@ -430,10 +418,18 @@ public static class WeaviateExtensions
             Type t when t == typeof(double) => ToByteString(vector as IEnumerable<double>),
             Type t when t == typeof(int) => ToByteString(vector as IEnumerable<int>),
             Type t when t == typeof(long) => ToByteString(vector as IEnumerable<long>),
+            Type t when t == typeof(short) => ToByteString(vector as IEnumerable<short>),
+            Type t when t == typeof(byte) => ToByteString(vector as IEnumerable<byte>),
+            Type t when t == typeof(bool) => ToByteString(vector as IEnumerable<bool>),
+            Type t when t == typeof(decimal) => ToByteString(vector as IEnumerable<decimal>),
             Type t when t == typeof(float[]) => ToByteString(vector as IEnumerable<float[]>),
             Type t when t == typeof(double[]) => ToByteString(vector as IEnumerable<double[]>),
             Type t when t == typeof(int[]) => ToByteString(vector as IEnumerable<int[]>),
             Type t when t == typeof(long[]) => ToByteString(vector as IEnumerable<long[]>),
+            Type t when t == typeof(short[]) => ToByteString(vector as IEnumerable<short[]>),
+            Type t when t == typeof(byte[]) => ToByteString(vector as IEnumerable<byte[]>),
+            Type t when t == typeof(bool[]) => ToByteString(vector as IEnumerable<bool[]>),
+            Type t when t == typeof(decimal[]) => ToByteString(vector as IEnumerable<decimal[]>),
             _ => throw new NotSupportedException(
                 $"The type '{vector.ValueType.FullName}' is not supported by ToByteString."
             ),

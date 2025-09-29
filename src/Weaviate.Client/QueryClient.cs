@@ -18,7 +18,7 @@ public class QueryClient<TData>
     public async Task<GroupByResult> FetchObjects(
         Models.GroupByRequest groupBy,
         uint? limit = null,
-        Filter? filter = null,
+        Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
         string? tenant = null,
@@ -31,7 +31,7 @@ public class QueryClient<TData>
                 _collectionName,
                 limit: limit,
                 rerank: rerank,
-                filter: filter,
+                filters: filters,
                 sort: sort,
                 groupBy: groupBy,
                 tenant: tenant ?? _collectionClient.Tenant,
@@ -44,7 +44,7 @@ public class QueryClient<TData>
 
     public async Task<WeaviateResult> FetchObjects(
         uint? limit = null,
-        Filter? filter = null,
+        Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
         string? tenant = null,
@@ -57,7 +57,7 @@ public class QueryClient<TData>
                 _collectionName,
                 limit: limit,
                 rerank: rerank,
-                filter: filter,
+                filters: filters,
                 sort: sort,
                 tenant: tenant ?? _collectionClient.Tenant,
                 returnProperties: returnProperties,
@@ -77,7 +77,7 @@ public class QueryClient<TData>
             await _client.GrpcClient.FetchObjects(
                 _collectionName,
                 returnProperties: returnProperties,
-                filter: Filter.WithID(id),
+                filters: Filter.WithID(id),
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata,
                 tenant: tenant ?? _collectionClient.Tenant
@@ -89,7 +89,7 @@ public class QueryClient<TData>
         uint? limit = null,
         string? tenant = null,
         Rerank? rerank = null,
-        Filter? filter = null,
+        Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -99,7 +99,7 @@ public class QueryClient<TData>
             await _client.GrpcClient.FetchObjects(
                 _collectionName,
                 limit: limit,
-                filter: filter != null ? Filter.WithIDs(ids) & filter : Filter.WithIDs(ids),
+                filters: filters != null ? Filter.WithIDs(ids) & filters : Filter.WithIDs(ids),
                 sort: sort,
                 tenant: tenant ?? _collectionClient.Tenant,
                 rerank: rerank,
@@ -121,10 +121,10 @@ public class QueryClient<TData>
         uint? limit = null,
         uint? offset = null,
         uint? autoCut = null,
-        Filter? filter = null,
+        Filter? filters = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
         string? tenant = null,
+        string[]? targetVector = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -141,7 +141,7 @@ public class QueryClient<TData>
                 offset: offset,
                 autoCut: autoCut,
                 targetVector: targetVector,
-                filters: filter,
+                filters: filters,
                 tenant: tenant ?? _collectionClient.Tenant,
                 rerank: rerank,
                 consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -161,7 +161,7 @@ public class QueryClient<TData>
         uint? limit = null,
         uint? offset = null,
         uint? autoCut = null,
-        Filter? filter = null,
+        Filter? filters = null,
         Rerank? rerank = null,
         string[]? targetVector = null,
         string? tenant = null,
@@ -181,10 +181,10 @@ public class QueryClient<TData>
                 limit: limit,
                 offset: offset,
                 autoCut: autoCut,
-                filters: filter,
-                tenant: _collectionClient.Tenant,
+                filters: filters,
                 rerank: rerank,
                 targetVector: targetVector,
+                tenant: tenant ?? _collectionClient.Tenant,
                 consistencyLevel: _collectionClient.ConsistencyLevel,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
@@ -194,7 +194,7 @@ public class QueryClient<TData>
 
     public async Task<WeaviateResult> NearVector(
         Vectors vector,
-        Filter? filter = null,
+        Filter? filters = null,
         float? certainty = null,
         float? distance = null,
         uint? autoCut = null,
@@ -217,7 +217,7 @@ public class QueryClient<TData>
                 autoCut: autoCut,
                 limit: limit,
                 targetVector: targetVector,
-                filters: filter,
+                filters: filters,
                 tenant: tenant ?? _collectionClient.Tenant,
                 rerank: rerank,
                 consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -230,7 +230,7 @@ public class QueryClient<TData>
     public async Task<GroupByResult> NearVector(
         Vectors vector,
         GroupByRequest groupBy,
-        Filter? filter = null,
+        Filter? filters = null,
         float? distance = null,
         float? certainty = null,
         uint? autoCut = null,
@@ -248,7 +248,7 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 vector,
                 groupBy,
-                filters: filter,
+                filters: filters,
                 distance: distance,
                 certainty: certainty,
                 offset: offset,
@@ -268,7 +268,7 @@ public class QueryClient<TData>
         string query,
         GroupByRequest groupBy,
         string[]? searchFields = null,
-        Filter? filter = null,
+        Filter? filters = null,
         uint? autoCut = null,
         uint? limit = null,
         uint? offset = null,
@@ -286,7 +286,7 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 query: query,
                 searchFields: searchFields,
-                filter: filter,
+                filters: filters,
                 autoCut: autoCut,
                 limit: limit,
                 offset: offset,
@@ -305,7 +305,7 @@ public class QueryClient<TData>
     public async Task<WeaviateResult> BM25(
         string query,
         string[]? searchFields = null,
-        Filter? filter = null,
+        Filter? filters = null,
         uint? autoCut = null,
         uint? limit = null,
         uint? offset = null,
@@ -323,7 +323,7 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 query: query,
                 searchFields: searchFields,
-                filter: filter,
+                filters: filters,
                 autoCut: autoCut,
                 limit: limit,
                 offset: offset,
@@ -341,6 +341,7 @@ public class QueryClient<TData>
 
     public async Task<WeaviateResult> Hybrid(
         string? query,
+        IHybridVectorInput? vectors = null,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -363,52 +364,7 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
-                queryProperties: queryProperties,
-                fusionType: fusionType,
-                maxVectorDistance: maxVectorDistance,
-                limit: limit,
-                offset: offset,
-                bm25Operator: bm25Operator,
-                autoLimit: autoLimit,
-                filters: filters,
-                rerank: rerank,
-                targetVector: targetVector,
-                tenant: tenant ?? _collectionClient.Tenant,
-                consistencyLevel: _collectionClient.ConsistencyLevel,
-                returnMetadata: returnMetadata,
-                returnProperties: returnProperties,
-                returnReferences: returnReferences
-            )
-        ).result;
-    }
-
-    public async Task<WeaviateResult> Hybrid<TVector>(
-        string? query,
-        TVector vectors,
-        float? alpha = null,
-        string[]? queryProperties = null,
-        HybridFusion? fusionType = null,
-        float? maxVectorDistance = null,
-        uint? limit = null,
-        uint? offset = null,
-        BM25Operator? bm25Operator = null,
-        uint? autoLimit = null,
-        Filter? filters = null,
-        Rerank? rerank = null,
-        string[]? targetVector = null,
-        string? tenant = null,
-        OneOrManyOf<string>? returnProperties = null,
-        IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
-    )
-        where TVector : class, IHybridVectorInput
-    {
-        return (
-            await _client.GrpcClient.SearchHybrid(
-                _collectionClient.Name,
-                query: query,
-                alpha: alpha,
-                vector: vectors as Vectors,
+                vector: vectors is Vector v ? Vectors.Create(v) : vectors as Vectors,
                 nearVector: vectors as HybridNearVector,
                 nearText: vectors as HybridNearText,
                 queryProperties: queryProperties,
@@ -428,61 +384,12 @@ public class QueryClient<TData>
                 returnReferences: returnReferences
             )
         ).result;
-    }
-
-    public async Task<GroupByResult> Hybrid<TVector>(
-        string? query,
-        Models.GroupByRequest groupBy,
-        float? alpha = null,
-        TVector? vectors = null,
-        string[]? queryProperties = null,
-        HybridFusion? fusionType = null,
-        float? maxVectorDistance = null,
-        uint? limit = null,
-        uint? offset = null,
-        BM25Operator? bm25Operator = null,
-        uint? autoLimit = null,
-        Filter? filters = null,
-        Rerank? rerank = null,
-        string[]? targetVector = null,
-        string? tenant = null,
-        OneOrManyOf<string>? returnProperties = null,
-        IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
-    )
-        where TVector : class, IHybridVectorInput
-    {
-        return (
-            await _client.GrpcClient.SearchHybrid(
-                _collectionClient.Name,
-                query: query,
-                alpha: alpha,
-                vector: vectors as Vectors,
-                nearVector: vectors as HybridNearVector,
-                nearText: vectors as HybridNearText,
-                queryProperties: queryProperties,
-                fusionType: fusionType,
-                maxVectorDistance: maxVectorDistance,
-                limit: limit,
-                offset: offset,
-                bm25Operator: bm25Operator,
-                autoLimit: autoLimit,
-                filters: filters,
-                groupBy: groupBy,
-                rerank: rerank,
-                targetVector: targetVector,
-                tenant: tenant ?? _collectionClient.Tenant,
-                consistencyLevel: _collectionClient.ConsistencyLevel,
-                returnMetadata: returnMetadata,
-                returnProperties: returnProperties,
-                returnReferences: returnReferences
-            )
-        ).group;
     }
 
     public async Task<GroupByResult> Hybrid(
         string? query,
         Models.GroupByRequest groupBy,
+        IHybridVectorInput? vectors = null,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -505,6 +412,9 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
+                vector: vectors as Vectors,
+                nearVector: vectors as HybridNearVector,
+                nearText: vectors as HybridNearText,
                 queryProperties: queryProperties,
                 fusionType: fusionType,
                 maxVectorDistance: maxVectorDistance,

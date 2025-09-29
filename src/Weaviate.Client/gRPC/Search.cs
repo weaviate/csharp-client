@@ -464,7 +464,7 @@ internal partial class WeaviateGrpcClient
         bool isGroups
     )> FetchObjects(
         string collection,
-        Filter? filter = null,
+        Filter? filters = null,
         IEnumerable<Sort>? sort = null,
         uint? limit = null,
         GroupByRequest? groupBy = null,
@@ -479,7 +479,7 @@ internal partial class WeaviateGrpcClient
     {
         var req = BaseSearchRequest(
             collection,
-            filter: filter?.InternalFilter,
+            filter: filters?.InternalFilter,
             sort: sort,
             limit: limit,
             groupBy: groupBy,
@@ -606,7 +606,7 @@ internal partial class WeaviateGrpcClient
         string collection,
         string query,
         string[]? searchFields,
-        Filter? filter = null,
+        Filter? filters = null,
         uint? autoCut = null,
         uint? limit = null,
         uint? offset = null,
@@ -622,7 +622,7 @@ internal partial class WeaviateGrpcClient
     {
         var request = BaseSearchRequest(
             collection,
-            filter: filter?.InternalFilter,
+            filter: filters?.InternalFilter,
             sort: null,
             autoCut: autoCut,
             limit: limit,
