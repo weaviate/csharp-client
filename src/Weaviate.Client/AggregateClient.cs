@@ -186,7 +186,7 @@ public partial class AggregateClient
     public async Task<AggregateResult> Hybrid(
         string? query = null,
         float alpha = 0.7f,
-        AbstractVectorData? vectors = null,
+        Vectors? vectors = null,
         string[]? queryProperties = null,
         uint? objectLimit = null,
         BM25Operator? bm25Operator = null,
@@ -222,7 +222,7 @@ public partial class AggregateClient
         string? query,
         Aggregate.GroupBy groupBy,
         float alpha = 0.7f,
-        AbstractVectorData? vectors = null,
+        Vectors? vectors = null,
         string[]? queryProperties = null,
         uint? objectLimit = null,
         BM25Operator? bm25Operator = null,

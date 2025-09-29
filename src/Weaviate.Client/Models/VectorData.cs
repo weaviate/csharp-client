@@ -2,338 +2,401 @@ using System.Collections;
 
 namespace Weaviate.Client.Models;
 
-public abstract record AbstractVectorData(Type ValueType) : ICollection
+public abstract record Vector : IEnumerable, IHybridVectorInput
 {
+    public string Name { get; init; } = "default";
+    public abstract int Dimensions { get; }
     public abstract int Count { get; }
-    public abstract bool IsSynchronized { get; }
-    public abstract object SyncRoot { get; }
+    public abstract Type ValueType { get; }
+    public bool IsMultiVector => Count > 1;
 
-    public abstract void CopyTo(Array array, int index);
-
-    public abstract IEnumerator GetEnumerator();
-
-    public static implicit operator double[](AbstractVectorData vectorData)
+    public object this[Index index]
     {
-        if (vectorData.ValueType != typeof(double))
+        get
         {
-            throw new ArgumentException($"vectorData is not of type {typeof(double)}");
+            return this switch
+            {
+                VectorSingle<double> v => v.Values[index.GetOffset(v.Values.Length)],
+                VectorSingle<float> v => v.Values[index.GetOffset(v.Values.Length)],
+                VectorSingle<int> v => v.Values[index.GetOffset(v.Values.Length)],
+                VectorSingle<long> v => v.Values[index.GetOffset(v.Values.Length)],
+                VectorSingle<short> v => v.Values[index.GetOffset(v.Values.Length)],
+                VectorSingle<byte> v => v.Values[index.GetOffset(v.Values.Length)],
+                VectorSingle<bool> v => v.Values[index.GetOffset(v.Values.Length)],
+                VectorSingle<decimal> v => v.Values[index.GetOffset(v.Values.Length)],
+                VectorMulti<double> v => v[index.GetOffset(v.Dimensions)],
+                VectorMulti<float> v => v[index.GetOffset(v.Dimensions)],
+                VectorMulti<int> v => v[index.GetOffset(v.Dimensions)],
+                VectorMulti<long> v => v[index.GetOffset(v.Dimensions)],
+                VectorMulti<short> v => v[index.GetOffset(v.Dimensions)],
+                VectorMulti<byte> v => v[index.GetOffset(v.Dimensions)],
+                VectorMulti<bool> v => v[index.GetOffset(v.Dimensions)],
+                VectorMulti<decimal> v => v[index.GetOffset(v.Dimensions)],
+                _ => throw new NotImplementedException(
+                    "Indexing not supported for this vector type."
+                ),
+            };
         }
-        return ((ICollection<double>)vectorData).ToArray();
     }
 
-    public static implicit operator double[][](AbstractVectorData vectorData)
+    public static Vector Create<T>(params T[] values) => new VectorSingle<T>(values);
+
+    public static Vector Create<T>(T[,] values) => new VectorMulti<T>(values);
+
+    public static Vector Create<T>(string name, params T[] values)
+        where T : struct => new VectorSingle<T>(values) { Name = name };
+
+    public static Vector Create<T>(string name, T[,] values)
+        where T : struct => new VectorMulti<T>(values) { Name = name };
+
+    public IEnumerator GetEnumerator()
     {
-        if (vectorData.ValueType != typeof(double[]))
+        return this switch
         {
-            throw new ArgumentException($"vectorData is not of type {typeof(double[])}");
-        }
-        return ((ICollection<double[]>)vectorData).ToArray();
+            VectorSingle<double> v => v.Values.GetEnumerator(),
+            VectorSingle<float> v => v.Values.GetEnumerator(),
+            VectorSingle<int> v => v.Values.GetEnumerator(),
+            VectorSingle<long> v => v.Values.GetEnumerator(),
+            VectorSingle<short> v => v.Values.GetEnumerator(),
+            VectorSingle<byte> v => v.Values.GetEnumerator(),
+            VectorSingle<bool> v => v.Values.GetEnumerator(),
+            VectorSingle<decimal> v => v.Values.GetEnumerator(),
+            VectorMulti<double> v => v.Values.GetEnumerator(),
+            VectorMulti<float> v => v.Values.GetEnumerator(),
+            VectorMulti<int> v => v.Values.GetEnumerator(),
+            VectorMulti<long> v => v.Values.GetEnumerator(),
+            VectorMulti<short> v => v.Values.GetEnumerator(),
+            VectorMulti<byte> v => v.Values.GetEnumerator(),
+            VectorMulti<bool> v => v.Values.GetEnumerator(),
+            VectorMulti<decimal> v => v.Values.GetEnumerator(),
+            _ => throw new NotImplementedException("Use a derived type to enumerate values."),
+        };
     }
 
-    public static implicit operator float[](AbstractVectorData vectorData)
-    {
-        if (vectorData.ValueType != typeof(float))
-        {
-            throw new ArgumentException($"vectorData is not of type {typeof(float)}");
-        }
-        return ((ICollection<float>)vectorData).ToArray();
-    }
+    #region Implicit Operators to Native Arrays
+    // SingleVector implicit operators (inverted)
+    public static implicit operator double[](Vector vector) =>
+        vector is VectorSingle<double> v ? v.Values : throw new InvalidCastException();
 
-    public static implicit operator float[][](AbstractVectorData vectorData)
-    {
-        if (vectorData.ValueType != typeof(float[]))
-        {
-            throw new ArgumentException($"vectorData is not of type {typeof(float[])}");
-        }
-        return ((ICollection<float[]>)vectorData).ToArray();
-    }
+    public static implicit operator float[](Vector vector) =>
+        vector is VectorSingle<float> v ? v.Values : throw new InvalidCastException();
 
-    public static implicit operator AbstractVectorData(double[] values)
-    {
-        return new VectorData<double>(values);
-    }
+    public static implicit operator int[](Vector vector) =>
+        vector is VectorSingle<int> v ? v.Values : throw new InvalidCastException();
 
-    public static implicit operator AbstractVectorData(double[][] values)
-    {
-        return new MultiVectorData<double>(values);
-    }
+    public static implicit operator long[](Vector vector) =>
+        vector is VectorSingle<long> v ? v.Values : throw new InvalidCastException();
 
-    public static implicit operator AbstractVectorData(float[] values)
-    {
-        return new VectorData<float>(values);
-    }
+    public static implicit operator short[](Vector vector) =>
+        vector is VectorSingle<short> v ? v.Values : throw new InvalidCastException();
 
-    public static implicit operator AbstractVectorData(float[][] values)
+    public static implicit operator byte[](Vector vector) =>
+        vector is VectorSingle<byte> v ? v.Values : throw new InvalidCastException();
+
+    public static implicit operator bool[](Vector vector) =>
+        vector is VectorSingle<bool> v ? v.Values : throw new InvalidCastException();
+
+    public static implicit operator decimal[](Vector vector) =>
+        vector is VectorSingle<decimal> v ? v.Values : throw new InvalidCastException();
+
+    // MultiVector implicit operators (inverted)
+    public static implicit operator double[,](Vector vector) =>
+        vector is VectorMulti<double> v ? v.Values : throw new InvalidCastException();
+
+    public static implicit operator float[,](Vector vector) =>
+        vector is VectorMulti<float> v ? v.Values : throw new InvalidCastException();
+
+    public static implicit operator int[,](Vector vector) =>
+        vector is VectorMulti<int> v ? v.Values : throw new InvalidCastException();
+
+    public static implicit operator long[,](Vector vector) =>
+        vector is VectorMulti<long> v ? v.Values : throw new InvalidCastException();
+
+    public static implicit operator short[,](Vector vector) =>
+        vector is VectorMulti<short> v ? v.Values : throw new InvalidCastException();
+
+    public static implicit operator byte[,](Vector vector) =>
+        vector is VectorMulti<byte> v ? v.Values : throw new InvalidCastException();
+
+    public static implicit operator bool[,](Vector vector) =>
+        vector is VectorMulti<bool> v ? v.Values : throw new InvalidCastException();
+
+    public static implicit operator decimal[,](Vector vector) =>
+        vector is VectorMulti<decimal> v ? v.Values : throw new InvalidCastException();
+    #endregion
+
+    #region Implicit Operators to Vector
+    // SingleVector implicit operators
+    public static implicit operator Vector(double[] values) => new VectorSingle<double>(values);
+
+    public static implicit operator Vector(float[] values) => new VectorSingle<float>(values);
+
+    public static implicit operator Vector(int[] values) => new VectorSingle<int>(values);
+
+    public static implicit operator Vector(long[] values) => new VectorSingle<long>(values);
+
+    public static implicit operator Vector(short[] values) => new VectorSingle<short>(values);
+
+    public static implicit operator Vector(byte[] values) => new VectorSingle<byte>(values);
+
+    public static implicit operator Vector(bool[] values) => new VectorSingle<bool>(values);
+
+    public static implicit operator Vector(decimal[] values) => new VectorSingle<decimal>(values);
+
+    // MultiVector implicit operators
+    public static implicit operator Vector(double[,] values) => new VectorMulti<double>(values);
+
+    public static implicit operator Vector(float[,] values) => new VectorMulti<float>(values);
+
+    public static implicit operator Vector(int[,] values) => new VectorMulti<int>(values);
+
+    public static implicit operator Vector(long[,] values) => new VectorMulti<long>(values);
+
+    public static implicit operator Vector(short[,] values) => new VectorMulti<short>(values);
+
+    public static implicit operator Vector(byte[,] values) => new VectorMulti<byte>(values);
+
+    public static implicit operator Vector(bool[,] values) => new VectorMulti<bool>(values);
+
+    public static implicit operator Vector(decimal[,] values) => new VectorMulti<decimal>(values);
+    #endregion
+}
+
+public sealed record VectorSingle<T> : Vector, IEnumerable<T>
+{
+    public override int Dimensions => Values.Length;
+    public override int Count => 1;
+    public override Type ValueType => typeof(T);
+
+    public new IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)Values).GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public T[] Values { get; init; }
+
+    public VectorSingle(params T[] values)
     {
-        return new MultiVectorData<float>(values);
+        Values = values;
     }
 }
 
-public record AbstractVectorData<T> : AbstractVectorData, IList<T>
+public sealed record VectorMulti<T> : Vector, IEnumerable<T[]>
 {
-    private List<T> _data;
+    public override int Dimensions => _rows;
+    public override Type ValueType => typeof(T[]);
+    public override int Count => _cols;
 
-    protected AbstractVectorData(IEnumerable<T> values)
-        : base(typeof(T))
+    public new IEnumerator<T[]> GetEnumerator()
     {
-        _data = new(values);
+        for (int i = 0; i < _rows; i++)
+        {
+            yield return this[i];
+        }
     }
 
-    public bool IsReadOnly => ((ICollection<T>)_data).IsReadOnly;
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public override int Count => ((ICollection<T>)_data).Count;
+    private readonly T[,] _values;
+    private readonly int _rows;
+    private readonly int _cols;
 
-    public override bool IsSynchronized => ((ICollection)_data).IsSynchronized;
-
-    public override object SyncRoot => ((ICollection)_data).SyncRoot;
-
-    public T this[int index]
+    public VectorMulti(T[,] values)
     {
-        get => ((IList<T>)_data)[index];
-        set => ((IList<T>)_data)[index] = value;
+        _values = values ?? throw new ArgumentNullException(nameof(values));
+        _rows = values.GetLength(0);
+        _cols = values.GetLength(1);
     }
 
-    public int IndexOf(T item)
-    {
-        return ((IList<T>)_data).IndexOf(item);
-    }
+    // Expose the underlying array as a property if needed
+    public T[,] Values => _values;
 
-    public void Insert(int index, T item)
-    {
-        ((IList<T>)_data).Insert(index, item);
-    }
+    // Optionally, provide an indexer for row/col access
+    public T this[int dimension, int index] => _values[dimension, index];
 
-    public void RemoveAt(int index)
+    public T[] this[int dimension]
     {
-        ((IList<T>)_data).RemoveAt(index);
-    }
-
-    public void Add(T item)
-    {
-        ((ICollection<T>)_data).Add(item);
-    }
-
-    public void Clear()
-    {
-        ((ICollection<T>)_data).Clear();
-    }
-
-    public bool Contains(T item)
-    {
-        return ((ICollection<T>)_data).Contains(item);
-    }
-
-    public override void CopyTo(Array array, int arrayIndex)
-    {
-        ((ICollection)_data).CopyTo(array, arrayIndex);
-    }
-
-    public void CopyTo(T[] array, int arrayIndex)
-    {
-        ((ICollection<T>)_data).CopyTo(array, arrayIndex);
-    }
-
-    public bool Remove(T item)
-    {
-        return ((ICollection<T>)_data).Remove(item);
-    }
-
-    IEnumerator<T> IEnumerable<T>.GetEnumerator()
-    {
-        return ((IEnumerable<T>)_data).GetEnumerator();
-    }
-
-    public override IEnumerator GetEnumerator()
-    {
-        return ((IEnumerable)_data).GetEnumerator();
-    }
-
-    public static implicit operator T[](AbstractVectorData<T> vectorData)
-    {
-        return vectorData.ToArray();
+        get
+        {
+            if (dimension < 0 || dimension >= _rows)
+                throw new IndexOutOfRangeException(nameof(dimension));
+            var result = new T[_cols];
+            for (int i = 0; i < _cols; i++)
+            {
+                result[i] = _values[dimension, i];
+            }
+            return result;
+        }
     }
 }
 
-// For simple struct values (int, double, etc.)
-public record VectorData<T> : AbstractVectorData<T>
-    where T : struct
+public class Vectors : Dictionary<string, Vector>, IHybridVectorInput
 {
-    public VectorData()
-        : this(new T[] { }) { }
-
-    public VectorData(params T[] values)
-        : base(values) { }
-
-    public VectorData(IEnumerable<T> values)
-        : this(values.ToArray()) { }
-
-    public static implicit operator Vectors(VectorData<T> vectorData)
+    public void Add<T>(T[] value)
+        where T : struct
     {
-        return VectorData.Create("default", vectorData);
+        Add("default", value);
     }
 
-    public static implicit operator VectorData<T>(T[] vectorData)
+    public void Add<T>(T[,] value)
+        where T : struct
     {
-        return new VectorData<T>(vectorData);
+        Add("default", value);
     }
 
-    public static implicit operator T[](VectorData<T> vectorData)
-    {
-        return vectorData.ToArray();
-    }
-}
-
-public record MultiVectorData<T> : AbstractVectorData<T[]>
-    where T : struct
-{
-    public MultiVectorData()
-        : this(new T[][] { }) { }
-
-    public MultiVectorData(params T[][] values)
-        : base(values) { }
-
-    public MultiVectorData(IEnumerable<T[]> values)
-        : this(values.ToArray()) { }
-
-    public static implicit operator Vectors(MultiVectorData<T> vectorData)
-    {
-        return VectorData.Create(vectorData);
-    }
-
-    public static implicit operator MultiVectorData<T>(T[][] vectorData)
-    {
-        return new MultiVectorData<T>(vectorData);
-    }
-
-    public static implicit operator T[][](MultiVectorData<T> vectorData)
-    {
-        return vectorData.ToArray();
-    }
-}
-
-public class Vectors : Dictionary<string, AbstractVectorData>, IHybridVectorInput
-{
     public void Add<T>(string name, params T[] values)
         where T : struct
     {
-        Add(name, new VectorData<T>(values));
+        Add(new VectorSingle<T>(values) { Name = name });
     }
 
-    public void Add<T>(string name, params T[][] values)
+    public void Add<T>(string name, T[,] values)
         where T : struct
     {
-        Add(name, new MultiVectorData<T>(values));
+        Add(new VectorMulti<T>(values) { Name = name });
     }
 
-    public void Add<T>(string name, VectorData<T> values)
-        where T : struct
+    public void Add(Vector vector)
     {
-        base.Add(name, values);
-    }
-
-    public void Add<T>(string name, MultiVectorData<T> values)
-        where T : struct
-    {
-        base.Add(name, values);
-    }
-
-    public static implicit operator Vectors(Dictionary<string, float[]> vectorData)
-    {
-        return VectorData.Create(vectorData);
-    }
-
-    public static implicit operator Vectors(Dictionary<string, float[][]> vectorData)
-    {
-        return VectorData.Create(vectorData);
-    }
-
-    public static implicit operator Vectors(Dictionary<string, double[]> vectorData)
-    {
-        return VectorData.Create(vectorData);
-    }
-
-    public static implicit operator Vectors(Dictionary<string, double[][]> vectorData)
-    {
-        return VectorData.Create(vectorData);
-    }
-
-    public static implicit operator Vectors(float[] vectorData)
-    {
-        return VectorData.Create(vectorData);
-    }
-
-    public static implicit operator Vectors(float[][] vectorData)
-    {
-        return VectorData.Create(vectorData);
-    }
-
-    public static implicit operator Vectors(double[] vectorData)
-    {
-        return VectorData.Create(vectorData);
-    }
-
-    public static implicit operator Vectors(double[][] vectorData)
-    {
-        return VectorData.Create(vectorData);
-    }
-}
-
-public static class VectorData
-{
-    public static Vectors Create<T>(Dictionary<string, T[]> vectors)
-        where T : struct
-    {
-        var container = new Vectors();
-        foreach (var kvp in vectors)
-        {
-            container[kvp.Key] = new VectorData<T>(kvp.Value);
-        }
-        return container;
-    }
-
-    public static Vectors Create<T>(Dictionary<string, T[][]> vectors)
-        where T : struct
-    {
-        var container = new Vectors();
-        foreach (var kvp in vectors)
-        {
-            container[kvp.Key] = new MultiVectorData<T>(kvp.Value);
-        }
-        return container;
+        base.Add(vector.Name, vector);
     }
 
     // Create vector data for simple struct values
-    public static VectorData<T> Create<T>(params T[] values)
+    public static Vectors Create<T>(params T[] values)
         where T : struct
     {
-        return new(values);
+        return new Vectors { new VectorSingle<T>(values) };
     }
 
-    // Create vector data for array values
-    public static MultiVectorData<T> Create<T>(params T[][] values)
+    public static Vectors Create<T>(T[,] values)
         where T : struct
     {
-        return new(values);
+        return new Vectors { new VectorMulti<T>(values) };
     }
 
-    // Create container with simple struct values
+    public static Vectors Create(Vector vector) => new Vectors { vector };
+
     public static Vectors Create<T>(string name, params T[] values)
         where T : struct
     {
-        return new Vectors() { [name] = new VectorData<T>(values) };
+        return new Vectors { new VectorSingle<T>(values) { Name = name } };
     }
 
-    // Create container with array values
-    public static Vectors Create<T>(string name, params T[][] values)
+    public static Vectors Create<T>(string name, T[,] values)
         where T : struct
     {
-        return new Vectors() { [name] = new MultiVectorData<T>(values) };
+        return new Vectors { new VectorMulti<T>(values) { Name = name } };
     }
 
-    public static Vectors Create(AbstractVectorData values) => Create("default", values);
-
-    public static Vectors Create(string name, AbstractVectorData values)
+    public static implicit operator Vectors(Vector vector)
     {
-        return new Vectors() { [name] = values };
+        return Vectors.Create(vector);
     }
+
+    #region Implicit Operators: Vectors from Native Arrays
+    public static implicit operator Vectors(double[] values) => Create(values);
+
+    public static implicit operator Vectors(float[] values) => Create(values);
+
+    public static implicit operator Vectors(int[] values) => Create(values);
+
+    public static implicit operator Vectors(long[] values) => Create(values);
+
+    public static implicit operator Vectors(short[] values) => Create(values);
+
+    public static implicit operator Vectors(byte[] values) => Create(values);
+
+    public static implicit operator Vectors(bool[] values) => Create(values);
+
+    public static implicit operator Vectors(decimal[] values) => Create(values);
+
+    public static implicit operator Vectors(double[,] values) => Create(values);
+
+    public static implicit operator Vectors(float[,] values) => Create(values);
+
+    public static implicit operator Vectors(int[,] values) => Create(values);
+
+    public static implicit operator Vectors(long[,] values) => Create(values);
+
+    public static implicit operator Vectors(short[,] values) => Create(values);
+
+    public static implicit operator Vectors(byte[,] values) => Create(values);
+
+    public static implicit operator Vectors(bool[,] values) => Create(values);
+
+    public static implicit operator Vectors(decimal[,] values) => Create(values);
+    #endregion
+
+    #region Implicit Operators: Vectors from Dictionary<string, T[]>
+    public static implicit operator Vectors(Dictionary<string, double[]> vectors) =>
+        CreateVectorsFromDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, float[]> vectors) =>
+        CreateVectorsFromDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, int[]> vectors) =>
+        CreateVectorsFromDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, long[]> vectors) =>
+        CreateVectorsFromDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, short[]> vectors) =>
+        CreateVectorsFromDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, byte[]> vectors) =>
+        CreateVectorsFromDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, bool[]> vectors) =>
+        CreateVectorsFromDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, decimal[]> vectors) =>
+        CreateVectorsFromDictionary(vectors);
+
+    private static Vectors CreateVectorsFromDictionary<T>(Dictionary<string, T[]> vectors)
+        where T : struct
+    {
+        var container = new Vectors();
+        foreach (var kvp in vectors)
+        {
+            container.Add(new VectorSingle<T>(kvp.Value) { Name = kvp.Key });
+        }
+        return container;
+    }
+    #endregion
+
+    #region Implicit Operators: Vectors from Dictionary<string, T[,]>
+    public static implicit operator Vectors(Dictionary<string, double[,]> vectors) =>
+        CreateVectorsFromMultiDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, float[,]> vectors) =>
+        CreateVectorsFromMultiDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, int[,]> vectors) =>
+        CreateVectorsFromMultiDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, long[,]> vectors) =>
+        CreateVectorsFromMultiDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, short[,]> vectors) =>
+        CreateVectorsFromMultiDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, byte[,]> vectors) =>
+        CreateVectorsFromMultiDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, bool[,]> vectors) =>
+        CreateVectorsFromMultiDictionary(vectors);
+
+    public static implicit operator Vectors(Dictionary<string, decimal[,]> vectors) =>
+        CreateVectorsFromMultiDictionary(vectors);
+
+    private static Vectors CreateVectorsFromMultiDictionary<T>(Dictionary<string, T[,]> vectors)
+        where T : struct
+    {
+        var container = new Vectors();
+        foreach (var kvp in vectors)
+        {
+            container.Add(new VectorMulti<T>(kvp.Value) { Name = kvp.Key });
+        }
+        return container;
+    }
+    #endregion
 }

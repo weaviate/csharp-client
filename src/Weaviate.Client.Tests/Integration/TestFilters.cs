@@ -15,7 +15,7 @@ public partial class FilterTests : IntegrationTests
         var uuid_A2 = await cA.Data.Insert(new() { Name = "A2", Size = 5 });
 
         // Act
-        var list = await cA.Query.FetchObjects(filter: Filter.Property("name").Equal("A1"));
+        var list = await cA.Query.FetchObjects(filters: Filter.Property("name").Equal("A1"));
 
         var objs = list.Objects.ToList();
 
@@ -48,7 +48,7 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(DateTimeKind.Utc, objA1.Metadata.CreationTime.Value.Kind);
 
         var filter = Filter.CreationTime.Equal(objA1.Metadata.CreationTime.Value);
-        var list = await cA.Query.FetchObjects(filter: filter);
+        var list = await cA.Query.FetchObjects(filters: filter);
 
         Assert.NotEmpty(list);
 
@@ -69,7 +69,7 @@ public partial class FilterTests : IntegrationTests
 
         // Act
         var list = await cA.Query.FetchObjects(
-            filter: Filter<TestData>.Property(x => x.Size).GreaterThan(3)
+            filters: Filter<TestData>.Property(x => x.Size).GreaterThan(3)
         );
 
         var objs = list.ToList();
@@ -125,7 +125,7 @@ public partial class FilterTests : IntegrationTests
         uuidsFrom.AddRange([third, fourth]);
 
         // Act
-        var objects = await cFrom.Query.FetchObjects(filter: filter);
+        var objects = await cFrom.Query.FetchObjects(filters: filter);
 
         var objs = objects.ToList();
 
@@ -149,7 +149,7 @@ public partial class FilterTests : IntegrationTests
             await c.Data.Insert(new { Name = "second" }, _reusableUuids[1]),
         };
 
-        var objects = (await c.Query.FetchObjects(filter: filter)).ToList();
+        var objects = (await c.Query.FetchObjects(filters: filter)).ToList();
 
         Assert.Single(objects);
         Assert.Equal(_reusableUuids[0], objects[0].ID);
@@ -182,7 +182,7 @@ public partial class FilterTests : IntegrationTests
         };
 
         // Act
-        var objects = await collection.Query.FetchObjects(filter: filter);
+        var objects = await collection.Query.FetchObjects(filters: filter);
         var objs = objects.ToList();
 
         // Assert
@@ -217,7 +217,7 @@ public partial class FilterTests : IntegrationTests
 
         // Act
         var objects = await two.Query.FetchObjects(
-            filter: Filter.Reference("ref2").Reference("ref1").Count.Equal(1),
+            filters: Filter.Reference("ref2").Reference("ref1").Count.Equal(1),
             returnReferences:
             [
                 new QueryReference("ref2", [], references: [new QueryReference("ref1", [])]),
@@ -258,7 +258,7 @@ public partial class FilterTests : IntegrationTests
 
         // Act
         var objects = await collection.Query.FetchObjects(
-            filter: Filter.CreationTime.ContainsAny(
+            filters: Filter.CreationTime.ContainsAny(
                 [obj2!.Metadata.CreationTime!.Value, obj3!.Metadata.CreationTime!.Value]
             )
         );
@@ -299,7 +299,7 @@ public partial class FilterTests : IntegrationTests
         var weaviateFilter = filterFunc(referenceTime);
 
         // Act
-        var objects = await collection.Query.FetchObjects(filter: weaviateFilter);
+        var objects = await collection.Query.FetchObjects(filters: weaviateFilter);
         var objs = objects.ToList();
 
         // Assert
@@ -357,7 +357,7 @@ public partial class FilterTests : IntegrationTests
         };
 
         // Act
-        var objects = await collection.Query.FetchObjects(filter: filter);
+        var objects = await collection.Query.FetchObjects(filters: filter);
 
         // Assert
         Assert.Equal(results.Length, objects.Count());
@@ -465,7 +465,7 @@ public partial class FilterTests : IntegrationTests
         };
 
         // Act
-        var objects = await collection.Query.FetchObjects(filter: filter);
+        var objects = await collection.Query.FetchObjects(filters: filter);
 
         // Assert
         Assert.Equal(results.Length, objects.Count());

@@ -154,7 +154,7 @@ class Program
         Console.WriteLine("Querying Neighboring Cats: [20,21,22]");
 
         var queryNearVector = await collection.Query.NearVector(
-            vector: VectorData.Create(20f, 21f, 22f),
+            vector: new[] { 20f, 21f, 22f },
             distance: 0.5f,
             limit: 5,
             returnProperties: ["name", "breed", "color", "counter"],
