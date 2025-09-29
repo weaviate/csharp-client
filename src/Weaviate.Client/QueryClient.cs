@@ -40,7 +40,7 @@ public class QueryClient<TData>
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata
             )
-        ).group;
+        ).Group;
 
     public async Task<WeaviateResult> FetchObjects(
         uint? limit = null,
@@ -64,7 +64,7 @@ public class QueryClient<TData>
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
             )
-        ).result;
+        ).Result;
 
     public async Task<WeaviateObject?> FetchObjectByID(
         Guid id,
@@ -82,7 +82,7 @@ public class QueryClient<TData>
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
             )
-        ).result.SingleOrDefault();
+        ).Result.SingleOrDefault();
 
     public async Task<WeaviateResult> FetchObjectsByIDs(
         ISet<Guid> ids,
@@ -107,7 +107,7 @@ public class QueryClient<TData>
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
             )
-        ).result;
+        ).Result;
     #endregion
 
     #region Search
@@ -149,7 +149,7 @@ public class QueryClient<TData>
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata
             )
-        ).result;
+        ).Result;
 
     public async Task<GroupByResult> NearText(
         OneOrManyOf<string> text,
@@ -190,7 +190,7 @@ public class QueryClient<TData>
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata
             )
-        ).group;
+        ).Group;
 
     public async Task<WeaviateResult> NearVector(
         Vectors vector,
@@ -225,7 +225,7 @@ public class QueryClient<TData>
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata
             )
-        ).result;
+        ).Result;
 
     public async Task<GroupByResult> NearVector(
         Vectors vector,
@@ -262,7 +262,7 @@ public class QueryClient<TData>
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata
             )
-        ).group;
+        ).Group;
 
     public async Task<GroupByResult> BM25(
         string query,
@@ -299,7 +299,7 @@ public class QueryClient<TData>
                 returnReferences: returnReferences,
                 returnProperties: returnProperties
             )
-        ).group;
+        ).Group;
     }
 
     public async Task<WeaviateResult> BM25(
@@ -336,7 +336,7 @@ public class QueryClient<TData>
                 returnReferences: returnReferences,
                 returnProperties: returnProperties
             )
-        ).result;
+        ).Result;
     }
 
     public async Task<WeaviateResult> Hybrid(
@@ -364,6 +364,52 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
+                queryProperties: queryProperties,
+                fusionType: fusionType,
+                maxVectorDistance: maxVectorDistance,
+                limit: limit,
+                offset: offset,
+                bm25Operator: bm25Operator,
+                autoLimit: autoLimit,
+                filters: filters,
+                rerank: rerank,
+                targetVector: targetVector,
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel,
+                returnMetadata: returnMetadata,
+                returnProperties: returnProperties,
+                returnReferences: returnReferences
+            )
+        ).Result;
+    }
+
+    public async Task<WeaviateResult> Hybrid<TVector>(
+        string? query,
+        TVector vectors,
+        float? alpha = null,
+        string[]? queryProperties = null,
+        HybridFusion? fusionType = null,
+        float? maxVectorDistance = null,
+        uint? limit = null,
+        uint? offset = null,
+        BM25Operator? bm25Operator = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        string[]? targetVector = null,
+        string? tenant = null,
+        OneOrManyOf<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null
+    )
+        where TVector : class, IHybridVectorInput
+    {
+        return (
+            await _client.GrpcClient.SearchHybrid(
+                _collectionClient.Name,
+                query: query,
+                alpha: alpha,
+                vector: vectors as Vectors,
                 vector: vectors is Vector v ? Vectors.Create(v) : vectors as Vectors,
                 nearVector: vectors as HybridNearVector,
                 nearText: vectors as HybridNearText,
@@ -383,13 +429,61 @@ public class QueryClient<TData>
                 returnProperties: returnProperties,
                 returnReferences: returnReferences
             )
-        ).result;
+        ).Result;
     }
 
     public async Task<GroupByResult> Hybrid(
         string? query,
         Models.GroupByRequest groupBy,
         IHybridVectorInput? vectors = null,
+        float? alpha = null,
+        string[]? queryProperties = null,
+        HybridFusion? fusionType = null,
+        float? maxVectorDistance = null,
+        uint? limit = null,
+        uint? offset = null,
+        BM25Operator? bm25Operator = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        string[]? targetVector = null,
+        string? tenant = null,
+        OneOrManyOf<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null
+    )
+    {
+        return (
+            await _client.GrpcClient.SearchHybrid(
+                _collectionClient.Name,
+                query: query,
+                alpha: alpha,
+                vector: vectors is Vector v ? Vectors.Create(v) : vectors as Vectors,
+                nearVector: vectors as HybridNearVector,
+                nearText: vectors as HybridNearText,
+                queryProperties: queryProperties,
+                fusionType: fusionType,
+                maxVectorDistance: maxVectorDistance,
+                limit: limit,
+                offset: offset,
+                bm25Operator: bm25Operator,
+                autoLimit: autoLimit,
+                filters: filters,
+                groupBy: groupBy,
+                rerank: rerank,
+                targetVector: targetVector,
+                tenant: tenant ?? _collectionClient.Tenant,
+                consistencyLevel: _collectionClient.ConsistencyLevel,
+                returnMetadata: returnMetadata,
+                returnProperties: returnProperties,
+                returnReferences: returnReferences
+            )
+        ).Group;
+    }
+
+    public async Task<GroupByResult> Hybrid(
+        string? query,
+        Models.GroupByRequest groupBy,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -412,9 +506,6 @@ public class QueryClient<TData>
                 _collectionClient.Name,
                 query: query,
                 alpha: alpha,
-                vector: vectors as Vectors,
-                nearVector: vectors as HybridNearVector,
-                nearText: vectors as HybridNearText,
                 queryProperties: queryProperties,
                 fusionType: fusionType,
                 maxVectorDistance: maxVectorDistance,
@@ -432,7 +523,7 @@ public class QueryClient<TData>
                 returnProperties: returnProperties,
                 returnReferences: returnReferences
             )
-        ).group;
+        ).Group;
     }
 
     public async Task<WeaviateResult> NearObject(
@@ -462,6 +553,8 @@ public class QueryClient<TData>
             filters: filters,
             groupBy: null,
             rerank: rerank,
+            singlePrompt: null,
+            groupedPrompt: null,
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -470,7 +563,7 @@ public class QueryClient<TData>
             returnReferences: returnReferences
         );
 
-        return result.result;
+        return result.Result;
     }
 
     public async Task<GroupByResult> NearObject(
@@ -501,6 +594,8 @@ public class QueryClient<TData>
             filters: filters,
             groupBy: groupBy,
             rerank: rerank,
+            singlePrompt: null,
+            groupedPrompt: null,
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -509,7 +604,7 @@ public class QueryClient<TData>
             returnReferences: returnReferences
         );
 
-        return result.group;
+        return result.Group;
     }
 
     public async Task<WeaviateResult> NearImage(
@@ -615,6 +710,8 @@ public class QueryClient<TData>
             filters: filters,
             groupBy: null,
             rerank: rerank,
+            singlePrompt: null,
+            groupedPrompt: null,
             tenant: tenant ?? _collectionClient.Tenant,
             targetVector: targetVector,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -623,7 +720,7 @@ public class QueryClient<TData>
             returnReferences: returnReferences
         );
 
-        return result.result;
+        return result.Result;
     }
 
     public async Task<GroupByResult> NearMedia(
@@ -656,6 +753,8 @@ public class QueryClient<TData>
             filters: filters,
             groupBy: groupBy,
             rerank: rerank,
+            singlePrompt: null,
+            groupedPrompt: null,
             tenant: tenant ?? _collectionClient.Tenant,
             targetVector: targetVector,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -664,7 +763,7 @@ public class QueryClient<TData>
             returnReferences: returnReferences
         );
 
-        return result.group;
+        return result.Group;
     }
 
     #endregion
