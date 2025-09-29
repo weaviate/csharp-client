@@ -317,7 +317,7 @@ internal static class VectorIndexSerialization
             return result;
         }
 
-        throw new WeaviateException("Unable to create VectorIndexConfig");
+        throw new WeaviateClientException("Unable to create VectorIndexConfig");
     }
 
     public static object? ToDto(VectorIndexConfig? config) =>

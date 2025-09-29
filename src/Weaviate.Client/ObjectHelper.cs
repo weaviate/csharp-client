@@ -535,7 +535,7 @@ internal class ObjectHelper
                         );
                         continue;
                     default:
-                        throw new WeaviateException(
+                        throw new WeaviateClientException(
                             $"Unsupported array type '{value.GetType().GetElementType()?.Name ?? value.GetType().Name}' for property '{propertyInfo.Name}'. Check the documentation for supported array value types."
                         );
                 }

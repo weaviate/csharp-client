@@ -8,6 +8,67 @@ namespace Weaviate.Client.Tests.Unit;
 public partial class VectorConfigListTests
 {
     [Fact]
+    public void Throws_When_FlatIndex_With_NonBQ_Quantizer()
+    {
+        var flat = new VectorIndex.Flat();
+        var pq = new Quantizers.PQ
+        {
+            Encoder = new Quantizers.PQ.EncoderConfig
+            {
+                Distribution = Quantizers.DistributionType.Normal,
+                Type = Quantizers.EncoderType.Kmeans,
+            },
+            BitCompression = false,
+            Centroids = 256,
+            Segments = 8,
+            TrainingLimit = 1000,
+        };
+        Assert.Throws<WeaviateClientException>(() =>
+            Configure.Vectors.SelfProvided("flat-pq", flat, pq)
+        );
+    }
+
+    [Fact]
+    public void Throws_When_FlatIndex_Already_Has_Quantizer()
+    {
+        var flat = new VectorIndex.Flat
+        {
+            Quantizer = new Quantizers.BQ { Cache = true, RescoreLimit = 10 },
+        };
+        var bq = new Quantizers.BQ { Cache = false, RescoreLimit = 5 };
+        Assert.Throws<WeaviateClientException>(() =>
+            Configure.Vectors.SelfProvided("flat-bq", flat, bq)
+        );
+    }
+
+    [Fact]
+    public void Throws_When_HNSW_Already_Has_Quantizer()
+    {
+        var hnsw = new VectorIndex.HNSW
+        {
+            Quantizer = new Quantizers.BQ { Cache = true, RescoreLimit = 10 },
+        };
+        var bq = new Quantizers.BQ { Cache = false, RescoreLimit = 5 };
+        Assert.Throws<WeaviateClientException>(() =>
+            Configure.Vectors.SelfProvided("hnsw-bq", hnsw, bq)
+        );
+    }
+
+    [Fact]
+    public void Throws_When_DynamicIndex_With_Quantizer()
+    {
+        var dynamic = new VectorIndex.Dynamic
+        {
+            Hnsw = new VectorIndex.HNSW(),
+            Flat = new VectorIndex.Flat(),
+        };
+        var bq = new Quantizers.BQ { Cache = false, RescoreLimit = 5 };
+        Assert.Throws<WeaviateClientException>(() =>
+            Configure.Vectors.SelfProvided("dynamic-bq", dynamic, bq)
+        );
+    }
+
+    [Fact]
     public void NamedVectorInitialization()
     {
         var v1 = new Vectors();
