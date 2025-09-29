@@ -34,14 +34,19 @@ public record GenerativeWeaviateResult : WeaviateResult
     public GenerativeResult Generative { get; init; }
 }
 
-public class GenerateClient<TData>
+public partial class CollectionClient
 {
-    private readonly CollectionClient<TData> _collectionClient;
+    public GenerateClient Generate => new(this);
+}
+
+public class GenerateClient
+{
+    private readonly CollectionClient _collectionClient;
     private string _collectionName => _collectionClient.Name;
 
     private WeaviateClient _client => _collectionClient.Client;
 
-    public GenerateClient(CollectionClient<TData> collectionClient)
+    public GenerateClient(CollectionClient collectionClient)
     {
         _collectionClient = collectionClient;
     }
