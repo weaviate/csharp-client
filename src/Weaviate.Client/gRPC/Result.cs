@@ -6,6 +6,27 @@ using Weaviate.V1;
 
 namespace Weaviate.Client.Grpc;
 
+internal record CombinedSearchResult(
+    WeaviateResult Result,
+    Models.GroupByResult Group,
+    GenerativeResult? Generative
+)
+{
+    public bool HasGroupBy => Group != Models.GroupByResult.Empty;
+    public bool HasGenerative => Generative != null;
+    public static CombinedSearchResult Empty =>
+        new(WeaviateResult.Empty, Models.GroupByResult.Empty, null);
+
+    public static CombinedSearchResult Build(string collectionName, SearchReply? reply)
+    {
+        return new CombinedSearchResult(
+            WeaviateGrpcClient.BuildResult(collectionName, reply),
+            WeaviateGrpcClient.BuildGroupByResult(collectionName, reply),
+            WeaviateGrpcClient.BuildGenerativeResult(collectionName, reply)
+        );
+    }
+}
+
 internal partial class WeaviateGrpcClient
 {
     internal static Metadata BuildMetadataFromResult(MetadataResult metadata)
@@ -159,16 +180,6 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    private static (
-        WeaviateResult result,
-        Models.GroupByResult group,
-        bool isGroups
-    ) BuildCombinedResult(string collectionName, SearchReply? reply)
-    {
-        var groups = BuildGroupByResult(collectionName, reply);
-        return (BuildResult(collectionName, reply), groups, groups != Models.GroupByResult.Empty);
-    }
-
     internal static WeaviateResult BuildResult(string collection, SearchReply? reply)
     {
         if (reply?.Results == null || reply.Results.Count == 0)
@@ -218,5 +229,13 @@ internal partial class WeaviateGrpcClient
         var objects = groups.Values.SelectMany(g => g.Objects).ToArray();
 
         return (objects, groups);
+    }
+
+    internal static GenerativeResult? BuildGenerativeResult(
+        string collectionName,
+        SearchReply? reply
+    )
+    {
+        return null;
     }
 }
