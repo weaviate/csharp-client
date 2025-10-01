@@ -131,7 +131,7 @@ internal partial class WeaviateGrpcClient
         }
         catch (global::Grpc.Core.RpcException ex)
         {
-            throw new WeaviateException("Aggregate request failed", ex);
+            throw new WeaviateServerException("Aggregate request failed", ex);
         }
     }
 

@@ -357,103 +357,10 @@ public class QueryClient<TData>
             returnReferences: returnReferences
         );
 
-    public async Task<WeaviateResult> Hybrid<TVector>(
-        string? query,
-        TVector vectors,
-        float? alpha = null,
-        string[]? queryProperties = null,
-        HybridFusion? fusionType = null,
-        float? maxVectorDistance = null,
-        uint? limit = null,
-        uint? offset = null,
-        BM25Operator? bm25Operator = null,
-        uint? autoLimit = null,
-        Filter? filters = null,
-        Rerank? rerank = null,
-        string[]? targetVector = null,
-        string? tenant = null,
-        OneOrManyOf<string>? returnProperties = null,
-        IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
-    )
-        where TVector : class, IHybridVectorInput =>
-        await _grpc.SearchHybrid(
-            _collectionClient.Name,
-            query: query,
-            alpha: alpha,
-            vector: vectors as Vectors,
-            vector: vectors is Vector v ? Vectors.Create(v) : vectors as Vectors,
-            nearVector: vectors as HybridNearVector,
-            nearText: vectors as HybridNearText,
-            queryProperties: queryProperties,
-            fusionType: fusionType,
-            maxVectorDistance: maxVectorDistance,
-            limit: limit,
-            offset: offset,
-            bm25Operator: bm25Operator,
-            autoLimit: autoLimit,
-            filters: filters,
-            rerank: rerank,
-            targetVector: targetVector,
-            tenant: tenant ?? _collectionClient.Tenant,
-            consistencyLevel: _collectionClient.ConsistencyLevel,
-            returnMetadata: returnMetadata,
-            returnProperties: returnProperties,
-            returnReferences: returnReferences
-        );
-
     public async Task<GroupByResult> Hybrid(
         string? query,
         Models.GroupByRequest groupBy,
         IHybridVectorInput? vectors = null,
-        float? alpha = null,
-        string[]? queryProperties = null,
-        HybridFusion? fusionType = null,
-        float? maxVectorDistance = null,
-        uint? limit = null,
-        uint? offset = null,
-        BM25Operator? bm25Operator = null,
-        uint? autoLimit = null,
-        Filter? filters = null,
-        Rerank? rerank = null,
-        string[]? targetVector = null,
-        string? tenant = null,
-        OneOrManyOf<string>? returnProperties = null,
-        IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
-    )
-    {
-        return (
-            await _grpc.SearchHybrid(
-                _collectionClient.Name,
-                query: query,
-                alpha: alpha,
-                vector: vectors is Vector v ? Vectors.Create(v) : vectors as Vectors,
-                nearVector: vectors as HybridNearVector,
-                nearText: vectors as HybridNearText,
-                queryProperties: queryProperties,
-                fusionType: fusionType,
-                maxVectorDistance: maxVectorDistance,
-                limit: limit,
-                offset: offset,
-                bm25Operator: bm25Operator,
-                autoLimit: autoLimit,
-                filters: filters,
-                groupBy: groupBy,
-                rerank: rerank,
-                targetVector: targetVector,
-                tenant: tenant ?? _collectionClient.Tenant,
-                consistencyLevel: _collectionClient.ConsistencyLevel,
-                returnMetadata: returnMetadata,
-                returnProperties: returnProperties,
-                returnReferences: returnReferences
-            )
-        ).Group;
-    }
-
-    public async Task<GroupByResult> Hybrid(
-        string? query,
-        Models.GroupByRequest groupBy,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -469,11 +376,15 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
-    ) =>
-        await _grpc.SearchHybrid(
+    )
+    {
+        return await _grpc.SearchHybrid(
             _collectionClient.Name,
             query: query,
             alpha: alpha,
+            vector: vectors is Vector v ? Vectors.Create(v) : vectors as Vectors,
+            nearVector: vectors as HybridNearVector,
+            nearText: vectors as HybridNearText,
             queryProperties: queryProperties,
             fusionType: fusionType,
             maxVectorDistance: maxVectorDistance,
@@ -491,6 +402,7 @@ public class QueryClient<TData>
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
+    }
 
     public async Task<WeaviateResult> NearObject(
         Guid nearObject,
