@@ -40,7 +40,7 @@ internal partial class WeaviateGrpcClient
     {
         var req = BaseSearchRequest(
             collection,
-            filter: filters,
+            filters: filters,
             sort: sort,
             limit: limit,
             groupBy: groupBy,
@@ -81,7 +81,7 @@ internal partial class WeaviateGrpcClient
     {
         var request = BaseSearchRequest(
             collection,
-            filter: filters,
+            filters: filters,
             sort: null,
             autoCut: autoCut,
             offset: offset,
@@ -127,7 +127,7 @@ internal partial class WeaviateGrpcClient
     {
         var request = BaseSearchRequest(
             collection,
-            filter: filters,
+            filters: filters,
             sort: null,
             limit: limit,
             offset: offset,
@@ -177,7 +177,7 @@ internal partial class WeaviateGrpcClient
     {
         var request = BaseSearchRequest(
             collection,
-            filter: filters,
+            filters: filters,
             sort: null,
             autoCut: autoCut,
             limit: limit,
@@ -238,7 +238,7 @@ internal partial class WeaviateGrpcClient
 
         var request = BaseSearchRequest(
             collection,
-            filter: filters,
+            filters: filters,
             sort: null,
             autoCut: autoLimit,
             limit: limit,
@@ -294,7 +294,7 @@ internal partial class WeaviateGrpcClient
     {
         var request = BaseSearchRequest(
             collection,
-            filter: filters,
+            filters: filters,
             sort: null,
             autoCut: autoLimit,
             limit: limit,
@@ -339,7 +339,7 @@ internal partial class WeaviateGrpcClient
     {
         var request = BaseSearchRequest(
             collection,
-            filter: filters,
+            filters: filters,
             sort: null,
             autoCut: autoLimit,
             limit: limit,
