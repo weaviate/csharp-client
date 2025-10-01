@@ -84,27 +84,69 @@ public class DataClient<TData>
         var response = await _client.RestClient.ObjectReplace(_collectionName, dto);
     }
 
-    public delegate void InsertDelegate(
-        TData data,
-        Guid? id = null,
-        Models.Vectors? vectors = null,
-        IEnumerable<ObjectReference>? references = null,
-        string? tenant = null
-    );
-
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(params TData[] data)
+    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(IEnumerable<TData> data)
     {
-        return await InsertMany(add =>
-        {
-            foreach (var o in data)
-            {
-                add(o);
-            }
-        });
+        var requests = data.Select(d => BatchInsertRequest.Create(d));
+        return await InsertMany(requests);
     }
 
     public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+        IEnumerable<(TData, Guid id)> requests
+    ) => await InsertMany(requests.ToArray());
+
+    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+        IEnumerable<(TData, Models.Vectors vectors)> requests
+    ) => await InsertMany(requests.ToArray());
+
+    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+        IEnumerable<(TData data, IEnumerable<ObjectReference>? references)> requests
+    ) => await InsertMany(requests.ToArray());
+
+    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(params TData[] data)
+    {
+        if (data is BatchInsertRequest<TData>[] bir)
+        {
+            return await InsertMany(bir.AsEnumerable());
+        }
+
+        var requests = data.Select(d => BatchInsertRequest.Create(d)).ToArray();
+
+        return await InsertMany(requests);
+    }
+
+    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+        params (TData, Guid id)[] requests
+    ) => await InsertMany(BatchInsertRequest.Create(requests));
+
+    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+        params (TData, Models.Vectors vectors)[] requests
+    ) => await InsertMany(BatchInsertRequest.Create(requests));
+
+    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+        params (TData data, IEnumerable<ObjectReference>? references)[] requests
+    ) => await InsertMany(BatchInsertRequest.Create(requests));
+
+    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
         params BatchInsertRequest<TData>[] requests
+    ) => await InsertMany(requests.AsEnumerable());
+
+    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+        IEnumerable<BatchInsertRequest<TData>[]> requestBatches
+    )
+    {
+        var results = new List<BatchInsertResponse>();
+
+        foreach (var batch in requestBatches)
+        {
+            var batchResults = await InsertMany(batch);
+            results.AddRange(batchResults);
+        }
+
+        return results;
+    }
+
+    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+        IEnumerable<BatchInsertRequest<TData>> requests
     )
     {
         var objects = requests
@@ -178,53 +220,6 @@ public class DataClient<TData>
         }
 
         return results;
-    }
-
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
-        params Action<InsertDelegate>[] inserterList
-    )
-    {
-        var responses = new List<BatchInsertResponse>();
-
-        foreach (var inserter in inserterList)
-        {
-            IList<BatchInsertRequest<TData>> requests = [];
-
-            InsertDelegate _inserter = (
-                TData data,
-                Guid? id = null,
-                Models.Vectors? vectors = null,
-                IEnumerable<ObjectReference>? references = null,
-                string? tenant = null
-            ) =>
-            {
-                requests.Add(
-                    new BatchInsertRequest<TData>(
-                        data,
-                        id,
-                        vectors,
-                        references,
-                        tenant ?? _collectionClient.Tenant
-                    )
-                );
-            };
-
-            inserter(_inserter);
-
-            var response = await InsertMany([.. requests]);
-
-            responses.AddRange(
-                [
-                    .. response.Select(r => new BatchInsertResponse(
-                        r.Index + responses.Count,
-                        r.ID,
-                        r.Error
-                    )),
-                ]
-            );
-        }
-
-        return responses;
     }
 
     public async Task DeleteByID(Guid id)
