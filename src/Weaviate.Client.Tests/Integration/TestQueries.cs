@@ -44,7 +44,7 @@ public class TestQueries : IntegrationTests
             },
         };
 
-        await collection.Data.InsertMany(testData);
+        await collection.Data.InsertMany(BatchInsertRequest.Create(testData));
 
         // Act
         var dataDesc = await collection.Query.FetchObjects(

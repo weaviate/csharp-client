@@ -33,7 +33,9 @@ public partial class TenantTests : IntegrationTests
 
         var tenant2Collection = collectionClient.WithTenant("tenant2");
         var items = Enumerable.Range(0, (int)(howMany * 2)).Select(x => new { }).ToArray();
-        var result = await tenant2Collection.Data.InsertMany(items);
+        var result = await tenant2Collection.Data.InsertMany(
+            BatchInsertRequest.Create<object>(items)
+        );
 
         Assert.Equal(0, result.Count(r => r.Error != null));
 
@@ -93,11 +95,17 @@ public partial class TenantTests : IntegrationTests
         var tenant2Collection = collectionClient.WithTenant("tenant2");
 
         var result = (
-            await tenant1Collection.Data.InsertMany(add =>
-            {
-                add(new { Name = "some name" }, null, new float[] { 1, 2, 3 });
-                add(new { Name = "some other name" }, _reusableUuids[0]);
-            })
+            await tenant1Collection.Data.InsertMany(
+                BatchInsertRequest.Create<object>(
+                    new { Name = "some name" },
+                    null,
+                    new float[] { 1, 2, 3 }
+                ),
+                BatchInsertRequest.Create<object>(
+                    new { Name = "some other name" },
+                    _reusableUuids[0]
+                )
+            )
         ).ToList();
 
         Assert.Equal(0, result.Count(r => r.Error != null));
@@ -625,18 +633,23 @@ public partial class TenantTests : IntegrationTests
 
         // Insert 101 objects for tenant "tenant"
         var tenantCollection = collectionClient.WithTenant("tenant");
-        var objects = Enumerable.Range(0, 101).Select(_ => new { name = "some name" }).ToArray();
+        var objects = Enumerable
+            .Range(0, 101)
+            .Select(_ => BatchInsertRequest.Create<object>(new { name = "some name" }));
         var result = await tenantCollection.Data.InsertMany(objects);
         Assert.Equal(0, result.Count(r => r.Error != null));
 
         // Batch insert 101 objects for tenants "tenant-0" to "tenant-100"
-        var batchResult = await collectionClient.Data.InsertMany(add =>
-        {
-            for (int i = 0; i < 101; i++)
-            {
-                add(new { Name = "some name" }, tenant: $"tenant-{i}");
-            }
-        });
+        var batchResult = await collectionClient.Data.InsertMany(
+            Enumerable
+                .Range(0, 101)
+                .Select(i =>
+                    BatchInsertRequest.Create<object>(
+                        new { name = "some name" },
+                        tenant: $"tenant-{i}"
+                    )
+                )
+        );
 
         Assert.Equal(0, batchResult.Count(r => r.Error != null));
     }
