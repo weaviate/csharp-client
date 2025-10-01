@@ -83,17 +83,5 @@ public static partial class Configure
                     Weights = weights,
                 }
             );
-
-        public static VectorConfigBuilder Text2VecJinaAI(
-            string? model = null,
-            bool? vectorizeCollectionName = null
-        ) =>
-            new(
-                new Vectorizer.Text2VecJinaAI
-                {
-                    Model = model,
-                    VectorizeCollectionName = vectorizeCollectionName,
-                }
-            );
     }
 }
