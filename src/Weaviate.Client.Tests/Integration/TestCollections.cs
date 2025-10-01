@@ -6,6 +6,127 @@ namespace Weaviate.Client.Tests.Integration;
 public partial class CollectionsTests : IntegrationTests
 {
     [Fact]
+    public async Task Test_Collection_Generative_FetchObjects()
+    {
+        // Arrange: create collection with no vectorizer
+        var collection = await CollectionFactory(
+            properties: [Property.Text("text")],
+            vectorConfig: Configure.Vectors.SelfProvided(),
+            generativeConfig: new GenerativeConfig.Custom
+            {
+                Type = "generative-dummy",
+                Config = new { ConfigOption = "ConfigValue" },
+            }
+        );
+
+        // Insert data
+        await collection.Data.InsertMany(
+            BatchInsertRequest.Create<object>(
+                new[] { new { text = "John Doe" }, new { text = "Jane Doe" } }
+            )
+        );
+
+        // Act: generative fetch
+        var res = await collection.Generate.FetchObjects(
+            prompt: new SinglePrompt { Prompt = "Who is this? {text}" },
+            groupedPrompt: new GroupedPrompt
+            {
+                Task = "Who are these people?",
+                Properties = new List<string> { "text" },
+            }
+        );
+
+        // Assert
+        Assert.NotNull(res);
+        Assert.NotNull(res.Generative);
+        Assert.NotNull(res.Objects);
+        Assert.Equal(2, res.Objects.Count());
+
+        foreach (var obj in res.Objects)
+        {
+            Assert.NotNull(obj.Generative);
+            Assert.Contains(
+                "I'm sorry, I'm just a dummy and can't generate anything.",
+                obj.Generative.Values.First().Result
+            );
+        }
+    }
+
+    public static IEnumerable<object?[]> GenerateByIdsTestData()
+    {
+        var uuid1 = _reusableUuids[0];
+        var uuid2 = _reusableUuids[1];
+        var uuid3 = _reusableUuids[2];
+
+        yield return new object?[] { Array.Empty<Guid>(), 0, new HashSet<Guid>() };
+        yield return new object?[] { new Guid[] { }, 0, new HashSet<Guid>() };
+        yield return new object?[]
+        {
+            new Guid[] { uuid3 },
+            1,
+            new HashSet<Guid> { uuid3 },
+        };
+        yield return new object?[]
+        {
+            new Guid[] { uuid1, uuid2 },
+            2,
+            new HashSet<Guid> { uuid1, uuid2 },
+        };
+        yield return new object?[]
+        {
+            new Guid[] { uuid1, uuid3 },
+            2,
+            new HashSet<Guid> { uuid1, uuid3 },
+        };
+        yield return new object?[]
+        {
+            new Guid[] { uuid1, uuid3, uuid3 },
+            2,
+            new HashSet<Guid> { uuid1, uuid3 },
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateByIdsTestData))]
+    public async Task Test_Generate_By_Ids(Guid[] ids, int expectedLen, HashSet<Guid> expected)
+    {
+        var collection = await CollectionFactory(
+            vectorConfig: Configure.Vectors.SelfProvided(),
+            properties: [Property.Text("text")],
+            generativeConfig: new GenerativeConfig.Custom
+            {
+                Type = "generative-dummy",
+                Config = new { ConfigOption = "ConfigValue" },
+            }
+        );
+
+        var result = await collection.Data.InsertMany(
+            (new { text = "John Doe" }, id: _reusableUuids[0]),
+            (new { text = "Jane Doe" }, id: _reusableUuids[1]),
+            (new { text = "J. Doe" }, id: _reusableUuids[2])
+        );
+
+        var res = await collection.Generate.FetchObjectsByIDs(
+            [.. ids],
+            prompt: new SinglePrompt { Prompt = "Who is this? {text}" },
+            groupedPrompt: new GroupedPrompt
+            {
+                Task = "Who are these people?",
+                Properties = new List<string> { "text" },
+            }
+        );
+
+        Assert.NotNull(res);
+        Assert.NotNull(res.Generative);
+        Assert.Equal(expectedLen, res.Objects.Count());
+        Assert.Equal(expected, res.Objects.Select(o => o.ID!.Value).ToHashSet());
+        foreach (var obj in res.Objects)
+        {
+            Assert.NotNull(obj.Generative);
+        }
+    }
+
+    [Fact]
     public async Task CollectionClient_Creates_And_Retrieves_Collection()
     {
         // Arrange
