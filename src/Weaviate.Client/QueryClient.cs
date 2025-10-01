@@ -340,6 +340,9 @@ public class QueryClient<TData>
             _collectionClient.Name,
             query: query,
             alpha: alpha,
+            vector: vectors is Vector v ? Vectors.Create(v) : vectors as Vectors,
+            nearVector: vectors as HybridNearVector,
+            nearText: vectors as HybridNearText,
             queryProperties: queryProperties,
             fusionType: fusionType,
             maxVectorDistance: maxVectorDistance,
@@ -376,15 +379,14 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
-    )
-    {
-        return await _grpc.SearchHybrid(
+    ) =>
+        await _grpc.SearchHybrid(
             _collectionClient.Name,
             query: query,
-            alpha: alpha,
             vector: vectors is Vector v ? Vectors.Create(v) : vectors as Vectors,
             nearVector: vectors as HybridNearVector,
             nearText: vectors as HybridNearText,
+            alpha: alpha,
             queryProperties: queryProperties,
             fusionType: fusionType,
             maxVectorDistance: maxVectorDistance,
@@ -402,7 +404,6 @@ public class QueryClient<TData>
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
-    }
 
     public async Task<WeaviateResult> NearObject(
         Guid nearObject,

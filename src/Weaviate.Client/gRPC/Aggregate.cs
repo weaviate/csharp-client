@@ -323,7 +323,7 @@ internal partial class WeaviateGrpcClient
         double? certainty,
         double? distance,
         uint? limit,
-        Filter? filter,
+        Filter? filters,
         Aggregate.GroupBy? groupBy,
         TargetVectors? targetVector,
         bool totalCount,
@@ -333,7 +333,7 @@ internal partial class WeaviateGrpcClient
     {
         var request = BaseAggregateRequest(
             collection,
-            filter,
+            filters,
             groupBy,
             limit,
             totalCount,

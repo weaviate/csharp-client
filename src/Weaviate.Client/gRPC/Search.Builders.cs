@@ -8,7 +8,7 @@ internal partial class WeaviateGrpcClient
 {
     private static V1.SearchRequest BaseSearchRequest(
         string collection,
-        Filter? filter = null,
+        Filter? filters = null,
         IEnumerable<Sort>? sort = null,
         uint? autoCut = null,
         uint? limit = null,
@@ -45,7 +45,7 @@ internal partial class WeaviateGrpcClient
         var request = new V1.SearchRequest()
         {
             Collection = collection,
-            Filters = filter?.InternalFilter,
+            Filters = filters?.InternalFilter,
 #pragma warning disable CS0612 // Type or member is obsolete
             Uses123Api = true,
             Uses125Api = true,
