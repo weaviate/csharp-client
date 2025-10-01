@@ -2,34 +2,65 @@ using System.Collections;
 using System.Dynamic;
 using Google.Protobuf.Collections;
 using Weaviate.Client.Models;
-using Weaviate.V1;
 
 namespace Weaviate.Client.Grpc;
 
-internal record CombinedSearchResult(
-    WeaviateResult Result,
-    Models.GroupByResult Group,
-    GenerativeResult? Generative
-)
-{
-    public bool HasGroupBy => Group != Models.GroupByResult.Empty;
-    public bool HasGenerative => Generative != null;
-    public static CombinedSearchResult Empty =>
-        new(WeaviateResult.Empty, Models.GroupByResult.Empty, null);
-
-    public static CombinedSearchResult Build(string collectionName, SearchReply? reply)
-    {
-        return new CombinedSearchResult(
-            WeaviateGrpcClient.BuildResult(collectionName, reply),
-            WeaviateGrpcClient.BuildGroupByResult(collectionName, reply),
-            WeaviateGrpcClient.BuildGenerativeResult(collectionName, reply)
-        );
-    }
-}
-
 internal partial class WeaviateGrpcClient
 {
-    internal static Metadata BuildMetadataFromResult(MetadataResult metadata)
+    private static V1.PropertiesRequest? MakePropsRequest(
+        string[]? fields,
+        IList<QueryReference>? reference
+    )
+    {
+        if (fields is null && reference is null)
+            return null;
+
+        var req = new V1.PropertiesRequest();
+
+        if (fields is not null)
+        {
+            req.NonRefProperties.AddRange(fields);
+        }
+        else
+        {
+            req.ReturnAllNonrefProperties = true;
+        }
+
+        foreach (var r in reference ?? [])
+        {
+            if (reference is not null)
+            {
+                req.RefProperties.Add(MakeRefPropsRequest(r));
+            }
+        }
+
+        return req;
+    }
+
+    private static V1.RefPropertiesRequest? MakeRefPropsRequest(QueryReference? reference)
+    {
+        if (reference is null)
+            return null;
+
+        return new V1.RefPropertiesRequest()
+        {
+            Metadata = new V1.MetadataRequest()
+            {
+                Uuid = true,
+                LastUpdateTimeUnix = reference.Metadata?.LastUpdateTime ?? false,
+                CreationTimeUnix = reference.Metadata?.CreationTime ?? false,
+                Certainty = reference.Metadata?.Certainty ?? false,
+                Distance = reference.Metadata?.Distance ?? false,
+                Score = reference.Metadata?.Score ?? false,
+                ExplainScore = reference.Metadata?.ExplainScore ?? false,
+                IsConsistent = reference.Metadata?.IsConsistent ?? false,
+            },
+            Properties = MakePropsRequest(reference?.Fields, reference?.References),
+            ReferenceProperty = reference?.LinkOn ?? string.Empty,
+        };
+    }
+
+    internal static Metadata BuildMetadataFromResult(V1.MetadataResult metadata)
     {
         return new Metadata
         {
@@ -48,12 +79,13 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    internal static Models.Vectors BuildVectorsFromResult(RepeatedField<V1.Vectors> vectors)
+    internal static Vectors BuildVectorsFromResult(RepeatedField<V1.Vectors> vectors)
     {
-        var result = new Models.Vectors();
+        var result = new Vectors();
 
         foreach (var vector in vectors)
         {
+            // TODO Handle multi-vectors and other types
             var vectorData = vector.VectorBytes.FromByteString<float>();
             result.Add(vector.Name, [.. vectorData]);
         }
@@ -64,7 +96,7 @@ internal partial class WeaviateGrpcClient
     internal static GroupByObject BuildGroupByObjectFromResult(
         string collection,
         string groupName,
-        SearchResult obj
+        V1.SearchResult obj
     )
     {
         var metadata = obj.Metadata;
@@ -76,7 +108,7 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    private static ExpandoObject MakeNonRefs(Properties result)
+    private static ExpandoObject MakeNonRefs(V1.Properties result)
     {
         var eoBase = new ExpandoObject();
 
@@ -89,46 +121,46 @@ internal partial class WeaviateGrpcClient
 
         foreach (var r in result.Fields)
         {
-            Value.KindOneofCase kind = r.Value.KindCase;
+            V1.Value.KindOneofCase kind = r.Value.KindCase;
             switch (kind)
             {
-                case Value.KindOneofCase.None:
-                case Value.KindOneofCase.NullValue:
+                case V1.Value.KindOneofCase.None:
+                case V1.Value.KindOneofCase.NullValue:
                     continue;
-                case Value.KindOneofCase.NumberValue:
+                case V1.Value.KindOneofCase.NumberValue:
                     eo[r.Key] = r.Value.NumberValue;
                     break;
-                case Value.KindOneofCase.BoolValue:
+                case V1.Value.KindOneofCase.BoolValue:
                     eo[r.Key] = r.Value.BoolValue;
                     break;
-                case Value.KindOneofCase.ObjectValue:
+                case V1.Value.KindOneofCase.ObjectValue:
                     eo[r.Key] = MakeNonRefs(r.Value.ObjectValue) ?? new object { };
                     break;
-                case Value.KindOneofCase.ListValue:
+                case V1.Value.KindOneofCase.ListValue:
                     eo[r.Key] = MakeListValue(r.Value.ListValue);
                     break;
-                case Value.KindOneofCase.DateValue:
+                case V1.Value.KindOneofCase.DateValue:
                     eo[r.Key] = r.Value.DateValue; // TODO Parse date here?
                     break;
-                case Value.KindOneofCase.UuidValue:
+                case V1.Value.KindOneofCase.UuidValue:
                     eo[r.Key] = Guid.Parse(r.Value.UuidValue);
                     break;
-                case Value.KindOneofCase.IntValue:
+                case V1.Value.KindOneofCase.IntValue:
                     eo[r.Key] = r.Value.IntValue;
                     break;
-                case Value.KindOneofCase.GeoValue:
+                case V1.Value.KindOneofCase.GeoValue:
                     eo[r.Key] = new Models.GeoCoordinate(
                         r.Value.GeoValue.Latitude,
                         r.Value.GeoValue.Longitude
                     );
                     break;
-                case Value.KindOneofCase.BlobValue:
+                case V1.Value.KindOneofCase.BlobValue:
                     eo[r.Key] = r.Value.BlobValue;
                     break;
-                case Value.KindOneofCase.PhoneValue:
+                case V1.Value.KindOneofCase.PhoneValue:
                     eo[r.Key] = r.Value.PhoneValue;
                     break;
-                case Value.KindOneofCase.TextValue:
+                case V1.Value.KindOneofCase.TextValue:
                     eo[r.Key] = r.Value.TextValue;
                     break;
             }
@@ -137,25 +169,25 @@ internal partial class WeaviateGrpcClient
         return eoBase;
     }
 
-    private static IList MakeListValue(ListValue list)
+    private static IList MakeListValue(V1.ListValue list)
     {
         switch (list.KindCase)
         {
-            case ListValue.KindOneofCase.BoolValues:
+            case V1.ListValue.KindOneofCase.BoolValues:
                 return list.BoolValues.Values.ToArray();
-            case ListValue.KindOneofCase.ObjectValues:
+            case V1.ListValue.KindOneofCase.ObjectValues:
                 return list.ObjectValues.Values.Select(v => MakeNonRefs(v)).ToArray();
-            case ListValue.KindOneofCase.DateValues:
+            case V1.ListValue.KindOneofCase.DateValues:
                 return list.DateValues.Values.Select(v => DateTime.Parse(v)).ToArray();
-            case ListValue.KindOneofCase.UuidValues:
+            case V1.ListValue.KindOneofCase.UuidValues:
                 return list.UuidValues.Values.Select(v => Guid.Parse(v)).ToArray();
-            case ListValue.KindOneofCase.TextValues:
+            case V1.ListValue.KindOneofCase.TextValues:
                 return list.TextValues.Values;
-            case ListValue.KindOneofCase.IntValues:
+            case V1.ListValue.KindOneofCase.IntValues:
                 return list.IntValues.Values.FromByteString<long>().ToArray();
-            case ListValue.KindOneofCase.NumberValues:
+            case V1.ListValue.KindOneofCase.NumberValues:
                 return list.NumberValues.Values.FromByteString<double>().ToArray();
-            case ListValue.KindOneofCase.None:
+            case V1.ListValue.KindOneofCase.None:
             default:
                 return new List<object> { };
         }
@@ -163,8 +195,8 @@ internal partial class WeaviateGrpcClient
 
     internal static WeaviateObject BuildObjectFromResult(
         string collection,
-        MetadataResult metadata,
-        PropertiesResult properties
+        V1.MetadataResult metadata,
+        V1.PropertiesResult properties
     )
     {
         return new WeaviateObject
@@ -180,22 +212,47 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    internal static WeaviateResult BuildResult(string collection, SearchReply? reply)
+    internal static ICollection<GenerativeReply> BuildGenerativeReplyFromResult(
+        IEnumerable<V1.GenerativeReply> generative
+    )
     {
-        if (reply?.Results == null || reply.Results.Count == 0)
-            return WeaviateResult.Empty;
+        return generative
+            .Select(g => new GenerativeReply(
+                Result: g.Result,
+                Debug: g.Debug is null ? null : new GenerativeDebug(g.Debug.FullPrompt),
+                Metadata: g.Metadata
+            ))
+            .ToList();
+    }
 
-        return new WeaviateResult
+    internal static GenerativeWeaviateObject BuildGenerativeObjectFromResult(
+        string collection,
+        V1.MetadataResult metadata,
+        V1.PropertiesResult properties,
+        V1.GenerativeResult generative
+    )
+    {
+        var obj = BuildObjectFromResult(collection, metadata, properties);
+
+        return new GenerativeWeaviateObject
         {
-            Objects =
-                reply?.Results?.Select(r =>
-                    BuildObjectFromResult(collection, r.Metadata, r.Properties)
-                ) ?? [],
+            ID = obj.ID,
+            Collection = obj.Collection,
+            Vectors = obj.Vectors,
+            Properties = obj.Properties,
+            References = obj.References,
+            Metadata = obj.Metadata,
+            Generative = BuildGenerativeResult(generative),
         };
     }
 
+    private static GenerativeResult BuildGenerativeResult(V1.GenerativeResult generative)
+    {
+        return new GenerativeResult(BuildGenerativeReplyFromResult(generative.Values));
+    }
+
     internal static IDictionary<string, IList<WeaviateObject>> MakeRefs(
-        RepeatedField<RefPropertiesResult> refProps
+        RepeatedField<V1.RefPropertiesResult> refProps
     )
     {
         var result = new Dictionary<string, IList<WeaviateObject>>();
@@ -210,10 +267,26 @@ internal partial class WeaviateGrpcClient
         return result;
     }
 
-    internal static Models.GroupByResult BuildGroupByResult(string collection, SearchReply? reply)
+    internal static WeaviateResult BuildResult(V1.SearchReply? reply)
+    {
+        if (reply?.Results == null || reply.Results.Count == 0)
+            return WeaviateResult.Empty;
+
+        return new WeaviateResult
+        {
+            Objects =
+                reply
+                    ?.Results?.Select(r =>
+                        BuildObjectFromResult(reply.Collection, r.Metadata, r.Properties)
+                    )
+                    .ToList() ?? [],
+        };
+    }
+
+    internal static Models.GroupByResult BuildGroupByResult(V1.SearchReply? reply)
     {
         if (reply?.GroupByResults == null || reply.GroupByResults.Count == 0)
-            return (Array.Empty<GroupByObject>(), new Dictionary<string, WeaviateGroup>());
+            return Models.GroupByResult.Empty;
 
         var groups = reply.GroupByResults.ToDictionary(
             g => g.Name,
@@ -221,21 +294,94 @@ internal partial class WeaviateGrpcClient
             {
                 Name = g.Name,
                 Objects = g
-                    .Objects.Select(obj => BuildGroupByObjectFromResult(collection, g.Name, obj))
+                    .Objects.Select(obj =>
+                        BuildGroupByObjectFromResult(reply.Collection, g.Name, obj)
+                    )
                     .ToArray(),
             }
         );
 
         var objects = groups.Values.SelectMany(g => g.Objects).ToArray();
 
-        return (objects, groups);
+        return new Models.GroupByResult(objects, groups);
     }
 
-    internal static GenerativeResult? BuildGenerativeResult(
-        string collectionName,
-        SearchReply? reply
+    internal static GenerativeWeaviateResult BuildGenerativeResult(V1.SearchReply? reply)
+    {
+        if (reply == null || reply?.Results == null || reply.Results.Count == 0)
+            return GenerativeWeaviateResult.Empty;
+
+        return new GenerativeWeaviateResult
+        {
+            Objects =
+                reply
+                    .Results?.Select(r =>
+                        BuildGenerativeObjectFromResult(
+                            reply.Collection,
+                            r.Metadata,
+                            r.Properties,
+                            r.Generative
+                        )
+                    )
+                    .ToList() ?? [],
+            Generative = BuildGenerativeResult(reply.GenerativeGroupedResults),
+        };
+    }
+
+    internal static GenerativeGroupByObject BuildGenerativeGroupByObjectFromResult(
+        string collection,
+        string groupName,
+        V1.SearchResult obj
     )
     {
-        return null;
+        var result = BuildGenerativeObjectFromResult(
+            collection,
+            obj.Metadata,
+            obj.Properties,
+            obj.Generative
+        );
+
+        return new GenerativeGroupByObject()
+        {
+            ID = result.ID,
+            Collection = result.Collection,
+            Vectors = result.Vectors,
+            Properties = result.Properties,
+            References = result.References,
+            Metadata = result.Metadata,
+            Generative = result.Generative,
+            BelongsToGroup = groupName,
+        };
+    }
+
+    internal static Models.GenerativeGroupByResult BuildGenerativeGroupByResult(
+        V1.SearchReply? reply
+    )
+    {
+        if (reply?.GroupByResults == null || reply.GroupByResults.Count == 0)
+            return Models.GenerativeGroupByResult.Empty;
+
+        var groups = reply.GroupByResults.ToDictionary(
+            g => g.Name,
+            g => new GenerativeWeaviateGroup
+            {
+                Name = g.Name,
+                Objects = g
+                    .Objects.Select(obj =>
+                        BuildGenerativeGroupByObjectFromResult(reply.Collection, g.Name, obj)
+                    )
+                    .ToArray(),
+            }
+        );
+
+        var objects = groups.Values.SelectMany(g => g.Objects).ToArray();
+
+        var result = new Models.GenerativeGroupByResult(
+            objects,
+            groups,
+            BuildGenerativeResult(reply.GenerativeGroupedResults)
+        );
+
+        return result;
     }
 }

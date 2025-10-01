@@ -3,37 +3,6 @@ using System.Dynamic;
 
 namespace Weaviate.Client.Models;
 
-public partial record WeaviateResult : IEnumerable<WeaviateObject>
-{
-    private static readonly WeaviateResult _empty = new();
-    public static WeaviateResult Empty => _empty;
-
-    public IEnumerable<WeaviateObject> Objects { get; init; } = Array.Empty<WeaviateObject>();
-
-    public IEnumerator<WeaviateObject> GetEnumerator() => Objects.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-}
-
-public partial record WeaviateObject
-{
-    public Guid? ID { get; set; }
-
-    public string? Collection { get; init; }
-
-    public Metadata Metadata { get; set; } = new Metadata();
-
-    public string? Tenant { get; set; }
-
-    public IDictionary<string, object?> Properties { get; set; } =
-        new Dictionary<string, object?>();
-
-    public IDictionary<string, IList<WeaviateObject>> References { get; set; } =
-        new Dictionary<string, IList<WeaviateObject>>();
-
-    public Vectors Vectors { get; set; } = new Vectors();
-}
-
 public static class WeaviateObjectExtensions
 {
     public static T? As<T>(this WeaviateObject obj)

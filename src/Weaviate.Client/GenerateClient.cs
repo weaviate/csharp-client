@@ -2,38 +2,6 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
-public record GenerativeDebug(string? FullPrompt);
-
-public record GenerativeReply(
-    string Result,
-    GenerativeDebug? Debug = null,
-    object? Metadata = null // TODO: GenerativeMetadata?
-);
-
-public record GenerativeResult(IReadOnlyList<GenerativeReply> Values);
-
-public record GenerativeGroupByResult : GroupByResult
-{
-    internal GenerativeGroupByResult(GroupByResult result, GenerativeResult generative)
-        : base(result.Objects, result.Groups)
-    {
-        Generative = generative;
-    }
-
-    public GenerativeResult Generative { get; init; }
-};
-
-public record GenerativeWeaviateResult : WeaviateResult
-{
-    internal GenerativeWeaviateResult(WeaviateResult result, GenerativeResult generative)
-    {
-        base.Objects = result.Objects;
-        Generative = generative;
-    }
-
-    public GenerativeResult Generative { get; init; }
-}
-
 public partial class CollectionClient
 {
     public GenerateClient Generate => new(this);
@@ -64,9 +32,8 @@ public class GenerateClient
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
-    )
-    {
-        var result = await _client.GrpcClient.FetchObjects(
+    ) =>
+        await _client.GrpcClient.FetchObjects(
             _collectionName,
             limit: limit,
             rerank: rerank,
@@ -81,10 +48,8 @@ public class GenerateClient
             returnReferences: returnReferences,
             returnMetadata: returnMetadata
         );
-        return new GenerativeGroupByResult(result.Group, result.Generative!);
-    }
 
-    public async Task<GenerativeWeaviateResult> FetchObjects(
+    public async Task<GenerativeWeaviateResult?> FetchObjects(
         uint? limit = null,
         Filter? filter = null,
         OneOrManyOf<Sort>? sort = null,
@@ -95,9 +60,8 @@ public class GenerateClient
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
-    )
-    {
-        var result = await _client.GrpcClient.FetchObjects(
+    ) =>
+        await _client.GrpcClient.FetchObjects(
             _collectionName,
             limit: limit,
             rerank: rerank,
@@ -110,8 +74,6 @@ public class GenerateClient
             returnReferences: returnReferences,
             returnMetadata: returnMetadata
         );
-        return new GenerativeWeaviateResult(result.Result, result.Generative!);
-    }
 
     public async Task<GenerativeWeaviateResult?> FetchObjectByID(
         Guid id,
@@ -133,11 +95,11 @@ public class GenerateClient
             singlePrompt: prompt,
             groupedPrompt: groupedPrompt
         );
-        return new GenerativeWeaviateResult(result.Result, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeWeaviateResult> FetchObjectsByIDs(
-        ISet<Guid> ids,
+        HashSet<Guid> ids,
         uint? limit = null,
         string? tenant = null,
         Rerank? rerank = null,
@@ -150,10 +112,21 @@ public class GenerateClient
         MetadataQuery? returnMetadata = null
     )
     {
-        var result = await _client.GrpcClient.FetchObjects(
+        if (ids == null)
+            throw new ArgumentNullException(nameof(ids));
+
+        if (ids.Count == 0)
+            return GenerativeWeaviateResult.Empty;
+
+        Filter idFilter = ids.Count == 1 ? Filter.WithID(ids.First()) : Filter.WithIDs(ids);
+
+        if (filter is not null)
+            idFilter = filter & idFilter;
+
+        return await _client.GrpcClient.FetchObjects(
             _collectionName,
             limit: limit,
-            filter: filter != null ? Filter.WithIDs(ids) & filter : Filter.WithIDs(ids),
+            filter: idFilter,
             sort: sort,
             tenant: tenant ?? _collectionClient.Tenant,
             rerank: rerank,
@@ -163,7 +136,6 @@ public class GenerateClient
             returnReferences: returnReferences,
             returnMetadata: returnMetadata
         );
-        return new GenerativeWeaviateResult(result.Result, result.Generative!);
     }
     #endregion
 
@@ -210,7 +182,7 @@ public class GenerateClient
             returnReferences: returnReferences,
             returnMetadata: returnMetadata
         );
-        return new GenerativeWeaviateResult(result.Result, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeGroupByResult> NearText(
@@ -256,7 +228,7 @@ public class GenerateClient
             returnReferences: returnReferences,
             returnMetadata: returnMetadata
         );
-        return new GenerativeGroupByResult(result.Group, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeWeaviateResult> NearVector(
@@ -296,7 +268,7 @@ public class GenerateClient
             returnReferences: returnReferences,
             returnMetadata: returnMetadata
         );
-        return new GenerativeWeaviateResult(result.Result, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeGroupByResult> NearVector(
@@ -338,7 +310,7 @@ public class GenerateClient
             returnReferences: returnReferences,
             returnMetadata: returnMetadata
         );
-        return new GenerativeGroupByResult(result.Group, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeGroupByResult> BM25(
@@ -379,7 +351,7 @@ public class GenerateClient
             returnReferences: returnReferences,
             returnProperties: returnProperties
         );
-        return new GenerativeGroupByResult(result.Group, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeWeaviateResult> BM25(
@@ -420,7 +392,7 @@ public class GenerateClient
             returnProperties: returnProperties
         );
 
-        return new GenerativeWeaviateResult(result.Result, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeWeaviateResult> Hybrid(
@@ -467,7 +439,7 @@ public class GenerateClient
             returnReferences: returnReferences
         );
 
-        return new GenerativeWeaviateResult(result.Result, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeWeaviateResult> Hybrid<TVector>(
@@ -519,7 +491,7 @@ public class GenerateClient
             returnReferences: returnReferences
         );
 
-        return new GenerativeWeaviateResult(result.Result, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeGroupByResult> Hybrid<TVector>(
@@ -573,7 +545,7 @@ public class GenerateClient
             returnReferences: returnReferences
         );
 
-        return new GenerativeGroupByResult(result.Group, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeGroupByResult> Hybrid(
@@ -622,7 +594,7 @@ public class GenerateClient
             returnReferences: returnReferences
         );
 
-        return new GenerativeGroupByResult(result.Group, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeWeaviateResult> NearObject(
@@ -664,7 +636,7 @@ public class GenerateClient
             returnReferences: returnReferences
         );
 
-        return new GenerativeWeaviateResult(result.Result, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeGroupByResult> NearObject(
@@ -707,7 +679,7 @@ public class GenerateClient
             returnReferences: returnReferences
         );
 
-        return new GenerativeGroupByResult(result.Group, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeWeaviateResult> NearImage(
@@ -833,7 +805,7 @@ public class GenerateClient
             returnReferences: returnReferences
         );
 
-        return new GenerativeWeaviateResult(result.Result, result.Generative!);
+        return result;
     }
 
     public async Task<GenerativeGroupByResult> NearMedia(
@@ -878,7 +850,7 @@ public class GenerateClient
             returnReferences: returnReferences
         );
 
-        return new GenerativeGroupByResult(result.Group, result.Generative!);
+        return result;
     }
 
     #endregion
