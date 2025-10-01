@@ -249,7 +249,7 @@ public class CollectionTests
     }
 
     [Fact]
-    public void Collection_Rerank_Deserializes_Into_IGenerativeConfig()
+    public void Collection_Generative_Deserializes_Into_IGenerativeConfig()
     {
         var key = "generative-dummy";
         var value = JsonSerializer.Deserialize<object>(
