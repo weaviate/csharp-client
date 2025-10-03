@@ -233,41 +233,7 @@ internal partial class WeaviateGrpcClient
             metrics
         );
 
-        request.NearVector = new() { Vectors = { } };
-
-        foreach (var v in vector)
-        {
-            request.NearVector.Vectors.Add(
-                new V1.Vectors
-                {
-                    Name = v.Key,
-                    Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
-                        v.Value.ValueType
-                    )
-                        ? V1.Vectors.Types.VectorType.MultiFp32
-                        : V1.Vectors.Types.VectorType.SingleFp32,
-                    VectorBytes = v.Value.ToByteString(),
-                }
-            );
-        }
-
-        if (certainty.HasValue)
-        {
-            request.NearVector.Certainty = certainty.Value;
-        }
-        if (distance.HasValue)
-        {
-            request.NearVector.Distance = distance.Value;
-        }
-
-        if (targetVector is { Length: > 0 })
-        {
-            request.NearVector.Targets = new()
-            {
-                Combination = CombinationMethod.Unspecified,
-                TargetVectors = { targetVector },
-            };
-        }
+        request.NearVector = BuildNearVector(vector, certainty, distance, targetVector);
 
         return await Aggregate(request);
     }
@@ -311,28 +277,13 @@ internal partial class WeaviateGrpcClient
             request.GroupBy = new AggregateRequest.Types.GroupBy { Property = groupBy.Property };
         }
 
-        if (vectors is not null && targetVector is not null)
-        {
-            request.Hybrid.Vectors.AddRange(
-                vectors.Select(v => new V1.Vectors
-                {
-                    Name = v.Key,
-                    Type = v.Value.IsMultiVector
-                        ? V1.Vectors.Types.VectorType.MultiFp32
-                        : V1.Vectors.Types.VectorType.SingleFp32,
-                    VectorBytes = v.Value.ToByteString(),
-                })
-            );
+        var (targets, _, vector) = BuildTargetVector(
+            targetVector is null ? null : [targetVector],
+            vectors
+        );
 
-            if (targetVector is not null && targetVector.Length > 0)
-            {
-                request.Hybrid.Targets = new()
-                {
-                    Combination = CombinationMethod.Unspecified,
-                    TargetVectors = { targetVector },
-                };
-            }
-        }
+        request.Hybrid.Vectors.AddRange(vector ?? []);
+        request.Hybrid.Targets = targets;
 
         if (maxVectorDistance.HasValue)
         {
@@ -383,7 +334,7 @@ internal partial class WeaviateGrpcClient
         request.NearObject = new()
         {
             Id = objectID.ToString(),
-            Targets = BuildTargetVector(targetVector),
+            Targets = BuildTargetVector(targetVector).targets,
         };
 
         if (certainty.HasValue)
@@ -435,7 +386,7 @@ internal partial class WeaviateGrpcClient
                 {
                     request.NearImage.Distance = distance.Value;
                 }
-                request.NearImage.Targets = BuildTargetVector(targetVector);
+                request.NearImage.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.Video:
                 request.NearVideo = new NearVideoSearch { Video = Convert.ToBase64String(media) };
@@ -447,7 +398,7 @@ internal partial class WeaviateGrpcClient
                 {
                     request.NearVideo.Distance = distance.Value;
                 }
-                request.NearVideo.Targets = BuildTargetVector(targetVector);
+                request.NearVideo.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.Audio:
                 request.NearAudio = new NearAudioSearch { Audio = Convert.ToBase64String(media) };
@@ -459,7 +410,7 @@ internal partial class WeaviateGrpcClient
                 {
                     request.NearAudio.Distance = distance.Value;
                 }
-                request.NearAudio.Targets = BuildTargetVector(targetVector);
+                request.NearAudio.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.Depth:
                 request.NearDepth = new NearDepthSearch { Depth = Convert.ToBase64String(media) };
@@ -471,7 +422,7 @@ internal partial class WeaviateGrpcClient
                 {
                     request.NearDepth.Distance = distance.Value;
                 }
-                request.NearDepth.Targets = BuildTargetVector(targetVector);
+                request.NearDepth.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.Thermal:
                 request.NearThermal = new NearThermalSearch
@@ -486,7 +437,7 @@ internal partial class WeaviateGrpcClient
                 {
                     request.NearThermal.Distance = distance.Value;
                 }
-                request.NearThermal.Targets = BuildTargetVector(targetVector);
+                request.NearThermal.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.IMU:
                 request.NearImu = new NearIMUSearch { Imu = Convert.ToBase64String(media) };
@@ -498,7 +449,7 @@ internal partial class WeaviateGrpcClient
                 {
                     request.NearImu.Distance = distance.Value;
                 }
-                request.NearImu.Targets = BuildTargetVector(targetVector);
+                request.NearImu.Targets = BuildTargetVector(targetVector).targets;
                 break;
             default:
                 throw new ArgumentException("Unsupported media type for aggregate near media.");

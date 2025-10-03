@@ -155,20 +155,15 @@ public class TestMultiVector : IntegrationTests
 
         Assert.Equal(1UL, await collection.Count());
 
-        var objs = await collection.Query.NearVector(
-            Vectors.Create(1f, 2f),
-            targetVector: ["regular"]
-        );
+        var objs = await collection.Query.NearVector(new[] { 1f, 2f }, targetVector: ["regular"]);
         Assert.Single(objs);
 
         objs = await collection.Query.NearVector(
-            Vectors.Create(
-                new[,]
-                {
-                    { 1f, 2f },
-                    { 3f, 4f },
-                }
-            ),
+            new[,]
+            {
+                { 1f, 2f },
+                { 3f, 4f },
+            },
             targetVector: ["colbert"]
         );
         Assert.Single(objs);
@@ -181,7 +176,7 @@ public class TestMultiVector : IntegrationTests
         // Assert.Single(objs);
 
         objs = await collection.Query.NearVector(
-            Vectors.Create(
+            Vector.Create(
                 "colbert",
                 new[,]
                 {
