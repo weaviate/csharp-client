@@ -20,12 +20,12 @@ public abstract record GenerativePrompt
 public record SinglePrompt : GenerativePrompt
 {
     public required string Prompt { get; set; }
-    public IEnumerable<GenerativeProvider> Queries { get; set; } = [];
+    public GenerativeProvider? Provider { get; set; }
 }
 
 public record GroupedPrompt : GenerativePrompt
 {
     public required string Task { get; set; }
     public List<string> Properties { get; set; } = [];
-    public IEnumerable<GenerativeProvider> Queries { get; set; } = [];
+    public GenerativeProvider? Provider { get; set; }
 }

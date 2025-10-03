@@ -79,7 +79,12 @@ internal partial class WeaviateGrpcClient
                             {
                                 Prompt = singlePrompt.Prompt,
                                 Debug = singlePrompt.Debug,
-                                // Queries = TODO
+                                Queries =
+                                {
+                                    singlePrompt.Provider is null
+                                        ? []
+                                        : [GetGenerativeProvider(singlePrompt.Provider)],
+                                },
                             }
                             : null,
                         Grouped = groupedPrompt is not null
@@ -91,7 +96,12 @@ internal partial class WeaviateGrpcClient
                                     Values = { groupedPrompt.Properties },
                                 },
                                 Debug = groupedPrompt.Debug,
-                                // Queries = TODO
+                                Queries =
+                                {
+                                    groupedPrompt.Provider is null
+                                        ? []
+                                        : [GetGenerativeProvider(groupedPrompt.Provider)],
+                                },
                             }
                             : null,
                     },
@@ -124,6 +134,221 @@ internal partial class WeaviateGrpcClient
         }
 
         return request;
+    }
+
+    private static V1.GenerativeProvider GetGenerativeProvider(Models.GenerativeProvider provider)
+    {
+        var result = new V1.GenerativeProvider { ReturnMetadata = provider.ReturnMetadata };
+
+        switch (provider)
+        {
+            case Models.Generative.Providers.Anthropic a:
+                result.Anthropic = new V1.GenerativeAnthropic
+                {
+                    BaseUrl = a.BaseUrl ?? string.Empty,
+                    MaxTokens = a.MaxTokens ?? 0,
+                    Model = a.Model ?? string.Empty,
+                    Temperature = a.Temperature ?? 0,
+                    TopK = a.TopK ?? 0,
+                    TopP = a.TopP ?? 0,
+                    StopSequences =
+                        a.StopSequences != null
+                            ? new V1.TextArray { Values = { a.StopSequences } }
+                            : null,
+                    Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
+                    ImageProperties =
+                        a.ImageProperties != null
+                            ? new V1.TextArray { Values = { a.ImageProperties } }
+                            : null,
+                };
+                break;
+            case Models.Generative.Providers.Anyscale a:
+                result.Anyscale = new V1.GenerativeAnyscale
+                {
+                    BaseUrl = a.BaseUrl ?? string.Empty,
+                    Model = a.Model ?? string.Empty,
+                    Temperature = a.Temperature ?? 0,
+                };
+                break;
+            case Models.Generative.Providers.AWS a:
+                result.Aws = new V1.GenerativeAWS
+                {
+                    Model = a.Model ?? string.Empty,
+                    Temperature = a.Temperature ?? 0,
+                    Service = a.Service ?? string.Empty,
+                    Region = a.Region ?? string.Empty,
+                    Endpoint = a.Endpoint ?? string.Empty,
+                    TargetModel = a.TargetModel ?? string.Empty,
+                    TargetVariant = a.TargetVariant ?? string.Empty,
+                    Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
+                    ImageProperties =
+                        a.ImageProperties != null
+                            ? new V1.TextArray { Values = { a.ImageProperties } }
+                            : null,
+                    MaxTokens = a.MaxTokens ?? 0,
+                };
+                break;
+            case Models.Generative.Providers.Cohere a:
+                result.Cohere = new V1.GenerativeCohere
+                {
+                    BaseUrl = a.BaseUrl ?? string.Empty,
+                    FrequencyPenalty = a.FrequencyPenalty ?? 0,
+                    MaxTokens = a.MaxTokens ?? 0,
+                    Model = a.Model ?? string.Empty,
+                    K = a.K ?? 0,
+                    P = a.P ?? 0,
+                    PresencePenalty = a.PresencePenalty ?? 0,
+                    StopSequences =
+                        a.StopSequences != null
+                            ? new V1.TextArray { Values = { a.StopSequences } }
+                            : null,
+                    Temperature = a.Temperature ?? 0,
+                    Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
+                    ImageProperties =
+                        a.ImageProperties != null
+                            ? new V1.TextArray { Values = { a.ImageProperties } }
+                            : null,
+                };
+                break;
+            case Models.Generative.Providers.Dummy:
+                result.Dummy = new V1.GenerativeDummy();
+                break;
+            case Models.Generative.Providers.Mistral a:
+                result.Mistral = new V1.GenerativeMistral
+                {
+                    BaseUrl = a.BaseUrl ?? string.Empty,
+                    MaxTokens = a.MaxTokens ?? 0,
+                    Model = a.Model ?? string.Empty,
+                    Temperature = a.Temperature ?? 0,
+                    TopP = a.TopP ?? 0,
+                };
+                break;
+            case Models.Generative.Providers.Ollama a:
+                result.Ollama = new V1.GenerativeOllama
+                {
+                    ApiEndpoint = a.ApiEndpoint ?? string.Empty,
+                    Model = a.Model ?? string.Empty,
+                    Temperature = a.Temperature ?? 0,
+                    Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
+                    ImageProperties =
+                        a.ImageProperties != null
+                            ? new V1.TextArray { Values = { a.ImageProperties } }
+                            : null,
+                };
+                break;
+            case Models.Generative.Providers.OpenAI a:
+                result.Openai = new V1.GenerativeOpenAI
+                {
+                    FrequencyPenalty = a.FrequencyPenalty ?? 0,
+                    MaxTokens = a.MaxTokens ?? 0,
+                    Model = a.Model ?? string.Empty,
+                    N = a.N ?? 0,
+                    PresencePenalty = a.PresencePenalty ?? 0,
+                    Stop = a.Stop != null ? new V1.TextArray { Values = { a.Stop } } : null,
+                    Temperature = a.Temperature ?? 0,
+                    TopP = a.TopP ?? 0,
+                    BaseUrl = a.BaseUrl ?? string.Empty,
+                    ApiVersion = a.ApiVersion ?? string.Empty,
+                    ResourceName = a.ResourceName ?? string.Empty,
+                    DeploymentId = a.DeploymentId ?? string.Empty,
+                    IsAzure = a.IsAzure ?? false,
+                    Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
+                    ImageProperties =
+                        a.ImageProperties != null
+                            ? new V1.TextArray { Values = { a.ImageProperties } }
+                            : null,
+                    ReasoningEffort = a.ReasoningEffort.HasValue
+                        ? (V1.GenerativeOpenAI.Types.ReasoningEffort)a.ReasoningEffort.Value
+                        : V1.GenerativeOpenAI.Types.ReasoningEffort.Unspecified,
+                    Verbosity = a.Verbosity.HasValue
+                        ? (V1.GenerativeOpenAI.Types.Verbosity)a.Verbosity.Value
+                        : V1.GenerativeOpenAI.Types.Verbosity.Unspecified,
+                };
+                break;
+            case Models.Generative.Providers.Google a:
+                result.Google = new V1.GenerativeGoogle
+                {
+                    FrequencyPenalty = a.FrequencyPenalty ?? 0,
+                    MaxTokens = a.MaxTokens ?? 0,
+                    Model = a.Model ?? string.Empty,
+                    PresencePenalty = a.PresencePenalty ?? 0,
+                    Temperature = a.Temperature ?? 0,
+                    TopK = a.TopK ?? 0,
+                    TopP = a.TopP ?? 0,
+                    StopSequences =
+                        a.StopSequences != null
+                            ? new V1.TextArray { Values = { a.StopSequences } }
+                            : null,
+                    ApiEndpoint = a.ApiEndpoint ?? string.Empty,
+                    ProjectId = a.ProjectId ?? string.Empty,
+                    EndpointId = a.EndpointId ?? string.Empty,
+                    Region = a.Region ?? string.Empty,
+                    Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
+                    ImageProperties =
+                        a.ImageProperties != null
+                            ? new V1.TextArray { Values = { a.ImageProperties } }
+                            : null,
+                };
+                break;
+            case Models.Generative.Providers.Databricks a:
+                result.Databricks = new V1.GenerativeDatabricks
+                {
+                    Endpoint = a.Endpoint ?? string.Empty,
+                    Model = a.Model ?? string.Empty,
+                    FrequencyPenalty = a.FrequencyPenalty ?? 0,
+                    LogProbs = a.LogProbs ?? false,
+                    TopLogProbs = a.TopLogProbs ?? 0,
+                    MaxTokens = a.MaxTokens ?? 0,
+                    N = a.N ?? 0,
+                    PresencePenalty = a.PresencePenalty ?? 0,
+                    Stop = a.Stop != null ? new V1.TextArray { Values = { a.Stop } } : null,
+                    Temperature = a.Temperature ?? 0,
+                    TopP = a.TopP ?? 0,
+                };
+                break;
+            case Models.Generative.Providers.FriendliAI a:
+                result.Friendliai = new V1.GenerativeFriendliAI
+                {
+                    BaseUrl = a.BaseUrl ?? string.Empty,
+                    Model = a.Model ?? string.Empty,
+                    MaxTokens = a.MaxTokens ?? 0,
+                    Temperature = a.Temperature ?? 0,
+                    N = a.N ?? 0,
+                    TopP = a.TopP ?? 0,
+                };
+                break;
+            case Models.Generative.Providers.Nvidia a:
+                result.Nvidia = new V1.GenerativeNvidia
+                {
+                    BaseUrl = a.BaseUrl ?? string.Empty,
+                    Model = a.Model ?? string.Empty,
+                    Temperature = a.Temperature ?? 0,
+                    TopP = a.TopP ?? 0,
+                    MaxTokens = a.MaxTokens ?? 0,
+                };
+                break;
+            case Models.Generative.Providers.XAI a:
+                result.Xai = new V1.GenerativeXAI
+                {
+                    BaseUrl = a.BaseUrl ?? string.Empty,
+                    Model = a.Model ?? string.Empty,
+                    Temperature = a.Temperature ?? 0,
+                    TopP = a.TopP ?? 0,
+                    MaxTokens = a.MaxTokens ?? 0,
+                    Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
+                    ImageProperties =
+                        a.ImageProperties != null
+                            ? new V1.TextArray { Values = { a.ImageProperties } }
+                            : null,
+                };
+                break;
+            default:
+                throw new NotSupportedException(
+                    $"Unknown generative provider type: {provider.GetType().Name}"
+                );
+        }
+
+        return result;
     }
 
     private static V1.ConsistencyLevel MapConsistencyLevel(ConsistencyLevels value)
