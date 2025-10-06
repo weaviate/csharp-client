@@ -132,9 +132,8 @@ public class TestMultiVector : IntegrationTests
             colbert.MultiVector.Aggregation
         );
 
-        var result = await collection.Data.InsertMany(ins =>
-        {
-            ins(
+        var result = await collection.Data.InsertMany(
+            BatchInsertRequest.Create<object>(
                 new { },
                 null,
                 new Vectors()
@@ -149,8 +148,8 @@ public class TestMultiVector : IntegrationTests
                         }
                     },
                 }
-            );
-        });
+            )
+        );
 
         Assert.Equal(0, result.Count(r => r.Error != null));
 

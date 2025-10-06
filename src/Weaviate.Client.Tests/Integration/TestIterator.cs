@@ -12,7 +12,9 @@ public partial class BasicTests
             vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
-        await collection.Data.InsertMany(new { Name = "Name 1" }, new { Name = "Name 2" });
+        await collection.Data.InsertMany(
+            BatchInsertRequest.Create<object>(new { Name = "Name 1" }, new { Name = "Name 2" })
+        );
 
         var names = new List<string>();
         await foreach (
@@ -66,8 +68,7 @@ public partial class BasicTests
         // Insert test data
         var insertData = Enumerable
             .Range(0, 10)
-            .Select(i => new { data = i, text = "hi" })
-            .ToArray();
+            .Select(i => BatchInsertRequest.Create<object>(new { data = i, text = "hi" }));
         await collection.Data.InsertMany(insertData);
 
         // Build metadata query
@@ -171,7 +172,7 @@ public partial class BasicTests
 
         var insertData = Enumerable
             .Range(0, 10)
-            .Select(_ => new { @this = "this", that = "that" })
+            .Select(_ => BatchInsertRequest.Create<object>(new { @this = "this", that = "that" }))
             .ToArray();
         await collection.Data.InsertMany(insertData);
 
@@ -221,7 +222,7 @@ public partial class BasicTests
         {
             var insertData = Enumerable
                 .Range(0, (int)count)
-                .Select(i => new { data = i })
+                .Select(i => BatchInsertRequest.Create<object>(new { data = i }))
                 .ToArray();
             await collection.Data.InsertMany(insertData);
         }
@@ -263,7 +264,10 @@ public partial class BasicTests
             vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
-        var insertData = Enumerable.Range(0, 10).Select(i => new { data = i }).ToArray();
+        var insertData = Enumerable
+            .Range(0, 10)
+            .Select(i => BatchInsertRequest.Create<object>(new { data = i }))
+            .ToArray();
         await collection.Data.InsertMany(insertData);
 
         // Get all UUIDs first

@@ -13,10 +13,7 @@ public partial class BatchDeleteTests : IntegrationTests
             vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
-        await collection.Data.InsertMany(batcher =>
-        {
-            batcher(new { name = "delet me" }, Guid.NewGuid());
-        });
+        await collection.Data.InsertMany((new { name = "delet me" }, Guid.NewGuid()));
 
         var result = await collection.Data.DeleteMany(
             where: Filter.Property("name").Equal("delet me")
@@ -36,12 +33,11 @@ public partial class BatchDeleteTests : IntegrationTests
             vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
-        await collection.Data.InsertMany(batcher =>
-        {
-            batcher(new { age = 10, name = "Timmy" }, Guid.NewGuid());
-            batcher(new { age = 20, name = "Tim" }, Guid.NewGuid());
-            batcher(new { age = 30, name = "Timothy" }, Guid.NewGuid());
-        });
+        await collection.Data.InsertMany(
+            (new { age = 10, name = "Timmy" }, Guid.NewGuid()),
+            (new { age = 20, name = "Tim" }, Guid.NewGuid()),
+            (new { age = 30, name = "Timothy" }, Guid.NewGuid())
+        );
 
         var objects = await collection.Query.FetchObjects();
         Assert.Equal(3, objects.Objects.Count());
@@ -64,11 +60,10 @@ public partial class BatchDeleteTests : IntegrationTests
             vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
-        await collection.Data.InsertMany(batcher =>
-        {
-            batcher(new { age = 10, name = "Timmy" }, Guid.NewGuid());
-            batcher(new { age = 10, name = "Tommy" }, Guid.NewGuid());
-        });
+        await collection.Data.InsertMany(
+            (new { age = 10, name = "Timmy" }, Guid.NewGuid()),
+            (new { age = 10, name = "Tommy" }, Guid.NewGuid())
+        );
 
         var objects = await collection.Query.FetchObjects();
         Assert.Equal(2, objects.Objects.Count());
