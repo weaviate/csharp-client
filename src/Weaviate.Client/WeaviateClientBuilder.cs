@@ -13,6 +13,41 @@ public partial class WeaviateClientBuilder
     private ICredentials? _credentials = null;
     private HttpMessageHandler? _httpMessageHandler = null;
 
+    public static WeaviateClientBuilder Local(
+        ICredentials? credentials = null,
+        string hostname = "localhost",
+        ushort restPort = 8080,
+        ushort grpcPort = 50051,
+        bool useSsl = false,
+        Dictionary<string, string>? headers = null,
+        HttpMessageHandler? httpMessageHandler = null
+    ) =>
+        new WeaviateClientBuilder()
+            .WithRestEndpoint(hostname)
+            .WithGrpcEndpoint(hostname)
+            .WithRestPort(restPort)
+            .WithGrpcPort(grpcPort)
+            .UseSsl(useSsl)
+            .WithCredentials(credentials ?? null)
+            .WithHttpMessageHandler(httpMessageHandler)
+            .WithHeaders(headers);
+
+    public static WeaviateClient Cloud(
+        string restEndpoint,
+        string? apiKey = null,
+        Dictionary<string, string>? headers = null,
+        HttpMessageHandler? httpMessageHandler = null
+    ) =>
+        new WeaviateClientBuilder()
+            .WithRestEndpoint(restEndpoint)
+            .WithGrpcEndpoint($"grpc-{restEndpoint}")
+            .WithRestPort(443)
+            .WithGrpcPort(443)
+            .UseSsl(true)
+            .WithCredentials(string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey))
+            .WithHeaders(headers)
+            .WithHttpMessageHandler(httpMessageHandler);
+
     public WeaviateClientBuilder WithRestEndpoint(string endpoint)
     {
         _restEndpoint = endpoint;

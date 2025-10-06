@@ -2,7 +2,7 @@ namespace Weaviate.Client;
 
 public static class Connect
 {
-    public static WeaviateClientBuilder Local(
+    public static WeaviateClient Local(
         Auth.ApiKeyCredentials credentials, // ApiKeyCredentials is constructed implicitly from a string.
         string hostname = "localhost",
         ushort restPort = 8080,
@@ -23,7 +23,7 @@ public static class Connect
         );
     }
 
-    public static WeaviateClientBuilder Local(
+    public static WeaviateClient Local(
         ICredentials? credentials = null,
         string hostname = "localhost",
         ushort restPort = 8080,
@@ -32,31 +32,22 @@ public static class Connect
         Dictionary<string, string>? headers = null,
         HttpMessageHandler? httpMessageHandler = null
     ) =>
-        new WeaviateClientBuilder()
-            .WithRestEndpoint(hostname)
-            .WithGrpcEndpoint(hostname)
-            .WithRestPort(restPort)
-            .WithGrpcPort(grpcPort)
-            .UseSsl(useSsl)
-            .WithCredentials(credentials ?? null)
-            .WithHttpMessageHandler(httpMessageHandler)
-            .WithHeaders(headers);
+        WeaviateClientBuilder.Local(
+            credentials,
+            hostname,
+            restPort,
+            grpcPort,
+            useSsl,
+            headers,
+            httpMessageHandler
+        );
 
-    public static WeaviateClientBuilder Cloud(
+    public static WeaviateClient Cloud(
         string restEndpoint,
         string? apiKey = null,
         Dictionary<string, string>? headers = null,
         HttpMessageHandler? httpMessageHandler = null
-    ) =>
-        new WeaviateClientBuilder()
-            .WithRestEndpoint(restEndpoint)
-            .WithGrpcEndpoint($"grpc-{restEndpoint}")
-            .WithRestPort(443)
-            .WithGrpcPort(443)
-            .UseSsl(true)
-            .WithCredentials(string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey))
-            .WithHeaders(headers)
-            .WithHttpMessageHandler(httpMessageHandler);
+    ) => WeaviateClientBuilder.Cloud(restEndpoint, apiKey, headers, httpMessageHandler);
 
     public static WeaviateClient FromEnvironment(string prefix = "WEAVIATE_")
     {
@@ -90,7 +81,7 @@ public static class Connect
         );
     }
 
-    public static WeaviateClientBuilder Custom(
+    public static WeaviateClient Custom(
         string restEndpoint = "localhost",
         string restPath = "v1/",
         string grpcEndpoint = "localhost",
