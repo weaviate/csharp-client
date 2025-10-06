@@ -74,8 +74,8 @@ public sealed record ClientConfiguration(
     ushort RestPort = 8080,
     ushort GrpcPort = 50051,
     bool UseSsl = false,
-    ICredentials? Credentials = null,
-    bool AddEmbeddingHeader = false
+    Dictionary<string, string>? Headers = null,
+    ICredentials? Credentials = null
 )
 {
     public Uri RestUri =>
@@ -208,10 +208,9 @@ public class WeaviateClient : IDisposable
 
         var httpClient = new HttpClient(httpMessageHandler);
 
-        var wcdHost =
-            (Configuration.AddEmbeddingHeader && IsWeaviateDomain(Configuration.RestAddress))
-                ? Configuration.RestAddress
-                : null;
+        var wcdHost = IsWeaviateDomain(Configuration.RestAddress)
+            ? Configuration.RestAddress
+            : null;
 
         if (wcdHost != null)
         {
@@ -219,6 +218,14 @@ public class WeaviateClient : IDisposable
                 "X-Weaviate-Cluster-URL",
                 Configuration.RestUri.ToString()
             );
+        }
+
+        if (Configuration.Headers != null)
+        {
+            foreach (var header in Configuration.Headers)
+            {
+                httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+            }
         }
 
         RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
