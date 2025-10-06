@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Weaviate.Client;
 using Weaviate.Client.Models;
 
 namespace Example;
@@ -53,7 +54,7 @@ class Program
         // Use the C# client to store all cats with a cat class
         Console.WriteLine("Cats to store: " + cats.Count);
 
-        var weaviate = Weaviate.Client.Connect.Local();
+        WeaviateClient weaviate = Connect.Local();
 
         var collection = weaviate.Collections.Use<Cat>("Cat");
 

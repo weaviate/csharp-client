@@ -76,7 +76,7 @@ public class TestAuth : IntegrationTests
     {
         Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_CC}"));
 
-        var client = Connect.Local(hostname: "localhost", restPort: OKTA_PORT_CC);
+        var client = Connect.Local(hostname: "localhost", restPort: OKTA_PORT_CC).Build();
 
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
         {
@@ -95,12 +95,14 @@ public class TestAuth : IntegrationTests
 
         Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_CC}"));
 
-        var client = Connect.Local(
-            hostname: "localhost",
-            restPort: OKTA_PORT_CC,
-            credentials: Auth.ClientCredentials(clientSecret, "some_scope"),
-            httpMessageHandler: _httpMessageHandler
-        );
+        var client = Connect
+            .Local(
+                hostname: "localhost",
+                restPort: OKTA_PORT_CC,
+                credentials: Auth.ClientCredentials(clientSecret, "some_scope"),
+                httpMessageHandler: _httpMessageHandler
+            )
+            .Build();
 
         await client.Collections.List().ToListAsync(TestContext.Current.CancellationToken);
     }
@@ -116,16 +118,18 @@ public class TestAuth : IntegrationTests
 
         Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_USERS}"));
 
-        var client = Connect.Local(
-            hostname: "localhost",
-            restPort: OKTA_PORT_USERS,
-            credentials: Auth.ClientPassword(
-                username: "test@test.de",
-                password: pw,
-                scope: "some_scope offline_access"
-            ),
-            httpMessageHandler: _httpMessageHandler
-        );
+        var client = Connect
+            .Local(
+                hostname: "localhost",
+                restPort: OKTA_PORT_USERS,
+                credentials: Auth.ClientPassword(
+                    username: "test@test.de",
+                    password: pw,
+                    scope: "some_scope offline_access"
+                ),
+                httpMessageHandler: _httpMessageHandler
+            )
+            .Build();
 
         await client.Collections.List().ToListAsync(TestContext.Current.CancellationToken);
     }
@@ -167,12 +171,14 @@ public class TestAuth : IntegrationTests
             refreshToken: token.RefreshToken ?? ""
         );
 
-        var client = Connect.Local(
-            hostname: "localhost",
-            restPort: OKTA_PORT_USERS,
-            credentials: auth,
-            httpMessageHandler: _httpMessageHandler
-        );
+        var client = Connect
+            .Local(
+                hostname: "localhost",
+                restPort: OKTA_PORT_USERS,
+                credentials: auth,
+                httpMessageHandler: _httpMessageHandler
+            )
+            .Build();
 
         await client.Collections.Exists("something");
     }
@@ -195,12 +201,14 @@ public class TestAuth : IntegrationTests
             refreshToken: "" // No refresh token provided
         );
 
-        var client = Connect.Local(
-            hostname: "localhost",
-            restPort: OKTA_PORT_USERS,
-            credentials: auth,
-            httpMessageHandler: _httpMessageHandler
-        );
+        var client = Connect
+            .Local(
+                hostname: "localhost",
+                restPort: OKTA_PORT_USERS,
+                credentials: auth,
+                httpMessageHandler: _httpMessageHandler
+            )
+            .Build();
 
         await client.Collections.List().ToListAsync(TestContext.Current.CancellationToken);
 
