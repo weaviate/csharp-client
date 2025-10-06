@@ -27,6 +27,18 @@ public record MetadataQuery
         Options = options;
     }
 
+    public MetadataQuery Enable(MetadataOptions enableOptions)
+    {
+        Options |= enableOptions;
+        return this;
+    }
+
+    public MetadataQuery Disable(MetadataOptions disableOptions)
+    {
+        Options &= ~disableOptions;
+        return this;
+    }
+
     // Implicit conversion from MetadataOptions to MetadataQuery
     public static implicit operator MetadataQuery(MetadataOptions options) => new(options);
 
@@ -51,5 +63,5 @@ public record MetadataQuery
     readonly HashSet<string> _vectors = new HashSet<string>();
     public HashSet<string> Vectors => _vectors;
 
-    public MetadataOptions Options { get; }
+    public MetadataOptions Options { get; private set; } = MetadataOptions.None;
 }

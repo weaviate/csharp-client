@@ -195,7 +195,7 @@ public partial record AggregateResult
 
 public class Metrics
 {
-    public string PropertyName { get; }
+    private string PropertyName { get; }
 
     protected Metrics(string name)
     {

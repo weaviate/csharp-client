@@ -267,7 +267,7 @@ public partial class AggregatesTests : IntegrationTests
         Assert.True(obj.Vectors.ContainsKey("default"));
         await collectionClient.Data.Insert(new { text = text2 });
 
-        var nearVector = obj.Vectors["default"].Cast<float>().ToArray();
+        var nearVector = obj.Vectors["default"];
         var metrics = new[]
         {
             Metrics

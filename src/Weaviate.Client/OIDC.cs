@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Text.Json;
-using Duende.IdentityModel;
 using Duende.IdentityModel.Client;
 using Microsoft.Extensions.Logging;
 

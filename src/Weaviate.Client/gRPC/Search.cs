@@ -38,7 +38,6 @@ internal partial class WeaviateGrpcClient
         var metadataRequest = new MetadataRequest()
         {
             Uuid = true,
-            Vector = returnMetadata?.Vector ?? false,
             LastUpdateTimeUnix = returnMetadata?.LastUpdateTime ?? false,
             CreationTimeUnix = returnMetadata?.CreationTime ?? false,
             Certainty = returnMetadata?.Certainty ?? false,
@@ -46,9 +45,12 @@ internal partial class WeaviateGrpcClient
             Score = returnMetadata?.Score ?? false,
             ExplainScore = returnMetadata?.ExplainScore ?? false,
             IsConsistent = returnMetadata?.IsConsistent ?? false,
+            Vector =
+                (returnMetadata?.Vectors != null && returnMetadata?.Vectors.Count > 0)
+                    ? false
+                    : (returnMetadata?.Vector ?? false),
+            Vectors = { returnMetadata?.Vectors ?? [] },
         };
-
-        metadataRequest.Vectors.AddRange(returnMetadata?.Vectors.ToArray() ?? []);
 
         var request = new SearchRequest()
         {
@@ -167,14 +169,11 @@ internal partial class WeaviateGrpcClient
         double? certainty,
         Move? moveTo,
         Move? moveAway,
-        string[]? targetVector = null
+        TargetVectors? targetVector = null
     )
     {
-        var nearText = new NearTextSearch
-        {
-            Query = { query },
-            Targets = BuildTargetVector(targetVector),
-        };
+        var (targets, _, _) = BuildTargetVector(targetVector, null);
+        var nearText = new NearTextSearch { Query = { query }, Targets = targets };
 
         if (moveTo is not null)
         {
@@ -213,25 +212,89 @@ internal partial class WeaviateGrpcClient
         return nearText;
     }
 
+    private static (
+        Targets? targets,
+        ICollection<VectorForTarget>? vectorForTargets,
+        ICollection<V1.Vectors>? vectors
+    ) BuildTargetVector(TargetVectors? targetVector, Models.Vectors? vector = null)
+    {
+        Targets? targets = null;
+        ICollection<VectorForTarget>? vectorForTarget = null;
+        ICollection<V1.Vectors>? vectors = null;
+
+        vector ??= new Models.Vectors();
+
+        if (targetVector is null && vector.Count > 0)
+        {
+            targetVector = vector.Keys.Where(tv => string.IsNullOrEmpty(tv) is false).ToArray();
+        }
+
+        if (targetVector is not null && targetVector.Count() > 0)
+        {
+            targets = targetVector;
+
+            if (
+                targetVector.Count() > 1
+                && vector.Count == targetVector.Count()
+                && targetVector.All(tv => vector.ContainsKey(tv)) // TODO Throw an exception if the TargetVector does not match the provided vectors?
+            )
+            {
+                // If multiple target vectors are specified, use VectorForTargets
+                vectorForTarget = targetVector
+                    .Select(
+                        (v, idx) =>
+                            new
+                            {
+                                Name = v,
+                                Index = idx,
+                                Vector = vector.ContainsKey(v)
+                                    ? vector[v]
+                                    : vector.Values.ElementAt(idx),
+                            }
+                    )
+                    .Select(v => new VectorForTarget()
+                    {
+                        Name = v.Name,
+                        Vectors =
+                        {
+                            new V1.Vectors
+                            {
+                                Name = v.Name,
+                                Type = v.Vector.IsMultiVector
+                                    ? V1.Vectors.Types.VectorType.MultiFp32
+                                    : V1.Vectors.Types.VectorType.SingleFp32,
+                                VectorBytes = v.Vector.ToByteString(),
+                            },
+                        },
+                    })
+                    .ToList();
+            }
+            else
+            {
+                vectors = vector
+                    .Select(v => new V1.Vectors
+                    {
+                        Name = v.Key,
+                        Type = v.Value.IsMultiVector
+                            ? V1.Vectors.Types.VectorType.MultiFp32
+                            : V1.Vectors.Types.VectorType.SingleFp32,
+                        VectorBytes = v.Value.ToByteString(),
+                    })
+                    .ToList();
+            }
+        }
+
+        return (targets, vectorForTarget, vectors);
+    }
+
     private static NearVector BuildNearVector(
         Models.Vectors vector,
-        double? distance,
         double? certainty,
-        string[]? targetVector
+        double? distance,
+        TargetVectors? targetVector
     )
     {
-        NearVector nearVector = new() { Vectors = { } };
-
-        nearVector.Vectors.Add(
-            vector.Select(v => new V1.Vectors
-            {
-                Name = v.Key,
-                Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(v.Value.ValueType)
-                    ? V1.Vectors.Types.VectorType.MultiFp32
-                    : V1.Vectors.Types.VectorType.SingleFp32,
-                VectorBytes = v.Value.ToByteString(),
-            })
-        );
+        NearVector nearVector = new();
 
         if (distance.HasValue)
         {
@@ -243,13 +306,19 @@ internal partial class WeaviateGrpcClient
             nearVector.Certainty = certainty.Value;
         }
 
-        if (targetVector is not null && targetVector.Length > 0)
+        var (targets, vectorForTarget, vectors) = BuildTargetVector(targetVector, vector);
+
+        if (targets is not null)
         {
-            nearVector.Targets = new()
-            {
-                Combination = CombinationMethod.Unspecified,
-                TargetVectors = { targetVector },
-            };
+            nearVector.Targets = targets;
+        }
+        if (vectorForTarget is not null)
+        {
+            nearVector.VectorForTargets.Add(vectorForTarget);
+        }
+        else if (vectors is not null)
+        {
+            nearVector.Vectors.Add(vectors);
         }
 
         return nearVector;
@@ -276,7 +345,7 @@ internal partial class WeaviateGrpcClient
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
         BM25Operator? bm25Operator = null,
-        string[]? targetVector = null
+        TargetVectors? targetVector = null
     )
     {
         request.HybridSearch = new Hybrid();
@@ -290,15 +359,6 @@ internal partial class WeaviateGrpcClient
             alpha = 1.0f; // Default alpha if no query is provided
         }
 
-        if (targetVector is not null && targetVector.Length > 0)
-        {
-            request.HybridSearch.Targets = new()
-            {
-                Combination = CombinationMethod.Unspecified,
-                TargetVectors = { targetVector },
-            };
-        }
-
         if (alpha.HasValue)
         {
             request.HybridSearch.Alpha = alpha.Value;
@@ -306,21 +366,9 @@ internal partial class WeaviateGrpcClient
 
         if (vector is not null && nearText is null && nearVector is null)
         {
-            foreach (var v in vector)
-            {
-                request.HybridSearch.Vectors.Add(
-                    new V1.Vectors
-                    {
-                        Name = v.Key,
-                        Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
-                            v.Value.ValueType
-                        )
-                            ? V1.Vectors.Types.VectorType.MultiFp32
-                            : V1.Vectors.Types.VectorType.SingleFp32,
-                        VectorBytes = v.Value.ToByteString(),
-                    }
-                );
-            }
+            var (targets, _, vectors) = BuildTargetVector(targetVector, vector);
+            request.HybridSearch.Vectors.AddRange(vectors);
+            request.HybridSearch.Targets = targets;
         }
 
         if (vector is null && nearText is not null && nearVector is null)
@@ -332,6 +380,7 @@ internal partial class WeaviateGrpcClient
                 nearText.MoveTo,
                 nearText.MoveAway
             );
+            request.HybridSearch.Targets = BuildTargetVector(targetVector).targets;
         }
 
         if (
@@ -341,89 +390,13 @@ internal partial class WeaviateGrpcClient
             && nearVector.Vector is not null
         )
         {
-            if (nearVector.Vector.Count == 1 && targetVector is null)
-            {
-                // If only one vector is provided, use it directly
-                var singleVector = nearVector.Vector.First();
-                request.HybridSearch.NearVector = new NearVector
-                {
-                    Vectors =
-                    {
-                        new V1.Vectors
-                        {
-                            Name = singleVector.Key,
-                            Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
-                                singleVector.Value.ValueType
-                            )
-                                ? V1.Vectors.Types.VectorType.MultiFp32
-                                : V1.Vectors.Types.VectorType.SingleFp32,
-                            VectorBytes = singleVector.Value.ToByteString(),
-                        },
-                    },
-                };
-            }
-            else
-            {
-                List<VectorForTarget> vectorForTargetsTmp = new();
-                List<string> targetVectorTmp = new();
-
-                if (targetVector is not null && targetVector.Length > 0)
-                {
-                    targetVectorTmp.AddRange(targetVector);
-                }
-                else
-                {
-                    // If no target vector is specified, use the keys from nearVector
-                    targetVectorTmp.AddRange(
-                        nearVector.Vector.Keys.Where(tv => string.IsNullOrEmpty(tv) is false)
-                    );
-                }
-
-                foreach (var v in nearVector.Vector)
-                {
-                    vectorForTargetsTmp.Add(
-                        new()
-                        {
-                            Name = v.Key,
-                            Vectors =
-                            {
-                                new V1.Vectors
-                                {
-                                    Name = v.Key,
-                                    Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
-                                        v.Value.ValueType
-                                    )
-                                        ? V1.Vectors.Types.VectorType.MultiFp32
-                                        : V1.Vectors.Types.VectorType.SingleFp32,
-                                    VectorBytes = v.Value.ToByteString(),
-                                },
-                            },
-                        }
-                    );
-                }
-
-                NearVector nv = new()
-                {
-                    VectorForTargets = { vectorForTargetsTmp },
-                    Targets = new()
-                    {
-                        Combination = CombinationMethod.Unspecified,
-                        TargetVectors = { targetVectorTmp },
-                    },
-                };
-
-                request.HybridSearch.NearVector = nv;
-            }
-
-            if (nearVector.Distance.HasValue)
-            {
-                request.HybridSearch.NearVector.Distance = nearVector.Distance.Value;
-            }
-
-            if (nearVector.Certainty.HasValue)
-            {
-                request.HybridSearch.NearVector.Certainty = nearVector.Certainty.Value;
-            }
+            request.HybridSearch.NearVector = BuildNearVector(
+                nearVector.Vector,
+                nearVector.Certainty,
+                nearVector.Distance,
+                targetVector
+            );
+            request.HybridSearch.Targets = request.HybridSearch.NearVector.Targets;
         }
 
         if (queryProperties is not null)
@@ -507,7 +480,7 @@ internal partial class WeaviateGrpcClient
         GroupByRequest? groupBy = null,
         float? distance = null,
         float? certainty = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         uint? limit = null,
         uint? autoCut = null,
         uint? offset = null,
@@ -536,7 +509,7 @@ internal partial class WeaviateGrpcClient
             returnReferences: returnReferences
         );
 
-        request.NearVector = BuildNearVector(vector, distance, certainty, targetVector);
+        request.NearVector = BuildNearVector(vector, certainty, distance, targetVector);
 
         SearchReply? reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
 
@@ -562,7 +535,7 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -665,7 +638,7 @@ internal partial class WeaviateGrpcClient
         Filter? filters = null,
         GroupByRequest? groupBy = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -733,7 +706,7 @@ internal partial class WeaviateGrpcClient
         Filter? filters,
         GroupByRequest? groupBy,
         Rerank? rerank,
-        string[]? targetVector,
+        TargetVectors? targetVector,
         MetadataQuery? returnMetadata,
         OneOrManyOf<string>? returnProperties,
         IList<QueryReference>? returnReferences,
@@ -769,7 +742,7 @@ internal partial class WeaviateGrpcClient
         Guid objectID,
         double? certainty,
         double? distance,
-        string[]? targetVector
+        TargetVectors? targetVector
     )
     {
         request.NearObject = new NearObject { Id = objectID.ToString() };
@@ -784,21 +757,9 @@ internal partial class WeaviateGrpcClient
             request.NearObject.Distance = distance.Value;
         }
 
-        request.NearObject.Targets = BuildTargetVector(targetVector);
-    }
+        var (targets, _, _) = BuildTargetVector(targetVector);
 
-    private static Targets? BuildTargetVector(string[]? targetVector)
-    {
-        if (targetVector is not null && targetVector.Length > 0)
-        {
-            return new Targets
-            {
-                Combination = CombinationMethod.Unspecified,
-                TargetVectors = { targetVector },
-            };
-        }
-
-        return null;
+        request.NearObject.Targets = targets;
     }
 
     internal async Task<(
@@ -818,7 +779,7 @@ internal partial class WeaviateGrpcClient
         GroupByRequest? groupBy,
         Rerank? rerank,
         string? tenant,
-        string[]? targetVector,
+        TargetVectors? targetVector,
         ConsistencyLevels? consistencyLevel,
         OneOrManyOf<string>? returnProperties,
         MetadataQuery? returnMetadata,
@@ -855,7 +816,7 @@ internal partial class WeaviateGrpcClient
                     request.NearImage.Distance = distance.Value;
                 }
 
-                request.NearImage.Targets = BuildTargetVector(targetVector);
+                request.NearImage.Targets = BuildTargetVector(targetVector).targets;
 
                 break;
             case NearMediaType.Video:
@@ -870,7 +831,7 @@ internal partial class WeaviateGrpcClient
                     request.NearVideo.Distance = distance.Value;
                 }
 
-                request.NearVideo.Targets = BuildTargetVector(targetVector);
+                request.NearVideo.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.Audio:
                 request.NearAudio = new NearAudioSearch { Audio = Convert.ToBase64String(media) };
@@ -884,7 +845,7 @@ internal partial class WeaviateGrpcClient
                     request.NearAudio.Distance = distance.Value;
                 }
 
-                request.NearAudio.Targets = BuildTargetVector(targetVector);
+                request.NearAudio.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.Depth:
                 request.NearDepth = new NearDepthSearch { Depth = Convert.ToBase64String(media) };
@@ -898,7 +859,7 @@ internal partial class WeaviateGrpcClient
                     request.NearDepth.Distance = distance.Value;
                 }
 
-                request.NearDepth.Targets = BuildTargetVector(targetVector);
+                request.NearDepth.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.Thermal:
                 request.NearThermal = new NearThermalSearch
@@ -915,7 +876,7 @@ internal partial class WeaviateGrpcClient
                     request.NearThermal.Distance = distance.Value;
                 }
 
-                request.NearThermal.Targets = BuildTargetVector(targetVector);
+                request.NearThermal.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.IMU:
                 request.NearImu = new NearIMUSearch { Imu = Convert.ToBase64String(media) };
@@ -929,7 +890,7 @@ internal partial class WeaviateGrpcClient
                     request.NearImu.Distance = distance.Value;
                 }
 
-                request.NearImu.Targets = BuildTargetVector(targetVector);
+                request.NearImu.Targets = BuildTargetVector(targetVector).targets;
                 break;
             default:
                 throw new ArgumentException("Unsupported media type for near media search.");
