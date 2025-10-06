@@ -10,7 +10,7 @@ public record HybridNearVector(
     Models.Vectors? Vector,
     float? Distance = null,
     float? Certainty = null,
-    string[]? TargetVector = null
+    TargetVectors? targetVector = null
 ) : IHybridVectorInput { };
 
 public record HybridNearText(
