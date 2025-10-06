@@ -190,40 +190,122 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         Assert.Equal(expected, ids);
     }
 
-    // public static IEnumerable<object[]> MultiTargetVectorsWithDistances =>
-    //     new List<object[]>
-    //     {
-    //         new object[] { TargetVectors.Sum(["first", "second"]), new float[] { 1.0f, 3.0f } },
-    //         new object[]
-    //         {
-    //             TargetVectors.ManualWeights(("first", 1.0f), ("second", [1.0f, 1.0f])),
-    //             new float[] { 1.0f, 3.0f },
-    //         },
-    //         new object[]
-    //         {
-    //             TargetVectors.ManualWeights(("first", 1.0f), ("second", [1.0f, 2.0f])),
-    //             new float[] { 2.0f, 4.0f },
-    //         },
-    //         new object[]
-    //         {
-    //             TargetVectors.ManualWeights(("second", [1.0f, 2.0f]), ("first", 1.0f)),
-    //             new float[] { 2.0f, 4.0f },
-    //         },
-    //     };
+    public static IEnumerable<object[]> MultiTargetVectorsWithDistances =>
+        new List<object[]>
+        {
+            //new object[] { TargetVectors.Sum(["first", "second"]), new float[] { 1.0f, 3.0f } },
+            new object[]
+            {
+                TargetVectors.ManualWeights(("first", 1.0f), ("second", [1.0f, 1.0f])),
+                new float[] { 1.0f, 3.0f },
+            },
+            new object[]
+            {
+                TargetVectors.ManualWeights(("first", 1.0f), ("second", [1.0f, 2.0f])),
+                new float[] { 2.0f, 4.0f },
+            },
+            new object[]
+            {
+                TargetVectors.ManualWeights(("second", [1.0f, 2.0f]), ("first", 1.0f)),
+                new float[] { 2.0f, 4.0f },
+            },
+        };
 
-    // [Theory]
-    // [MemberData(nameof(MultiTargetVectorsWithDistances))]
-    // public async Task Test_SameTargetVector_MultipleInput(
-    //     TargetVector targetVector,
-    //     float[] expectedDistances
-    // )
-    // {
-    //     // Skipped: advanced target vector joins/weights are not supported in the C# client as of now.
-    //     Assert.Skip("Advanced target vector joins/weights are not supported in the C# client");
-    // }
+    [Theory]
+    [MemberData(nameof(MultiTargetVectorsWithDistances))]
+    public async Task Test_SameTargetVector_MultipleInput(
+        TargetVectors targetVector,
+        float[] expectedDistances
+    )
+    {
+        var dummy = await CollectionFactory();
+        if (dummy.WeaviateVersion < Version.Parse("1.26.0"))
+        {
+            Assert.Skip("Named vectors are not supported in versions lower than 1.26.0");
+        }
+
+        var collection = await CollectionFactory(
+            properties: Array.Empty<Property>(),
+            vectorConfig: new[]
+            {
+                Configure.Vectors.SelfProvided(name: "first"),
+                Configure.Vectors.SelfProvided(name: "second"),
+            }
+        );
+
+        // var collection = _weaviate.Collections.Use(
+        //     "Test_vectorspy_test_same_target_vector_multiple_inputtarget_vector0distances0_2"
+        // );
+
+        // var results = await collection
+        //     .Iterator(
+        //         returnMetadata: (MetadataOptions.All, ["first", "second"]),
+        //         cancellationToken: TestContext.Current.CancellationToken
+        //     )
+        //     .ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
+
+        var inserts = (
+            await collection.Data.InsertMany(
+                new BatchInsertRequest<object>(
+                    Data: new { },
+                    Vectors: new Vectors
+                    {
+                        { "first", new[] { 1f, 0f, 0f } },
+                        { "second", new[] { 0f, 1f, 0f } },
+                    }
+                ),
+                new BatchInsertRequest<object>(
+                    Data: new { },
+                    Vectors: new Vectors
+                    {
+                        { "first", new[] { 0f, 1f, 0f } },
+                        { "second", new[] { 1f, 0f, 0f } },
+                    }
+                )
+            )
+        ).ToList();
+
+        var results = (
+            await collection.Query.FetchObjects(returnMetadata: MetadataOptions.All)
+        ).ToList();
+
+        var uuid1 = results[0].ID!.Value;
+        var uuid2 = results[1].ID!.Value;
+
+        var objs = await collection.Query.NearVector(
+            new Vectors
+            {
+                { "first", new[] { 0f, 1f } },
+                {
+                    "second",
+                    new[,]
+                    {
+                        { 1f, 0f, 0f },
+                        { 0f, 0f, 1f },
+                    }
+                },
+            },
+            targetVector: targetVector,
+            returnMetadata: MetadataOptions.All
+        );
+        var ids = objs.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
+        var expected = new[] { uuid1, uuid2 }.OrderBy(x => x).ToList();
+        Assert.Equal(expected, ids);
+        Assert.Equal(expectedDistances.Length, objs.Count());
+        Assert.Equal(expectedDistances[0], objs.ElementAt(0).Metadata.Distance);
+        Assert.Equal(expectedDistances[1], objs.ElementAt(1).Metadata.Distance);
+    }
 
     public static IEnumerable<object[]> MultiTargetVectors =>
-        new List<object[]> { new object[] { new[] { "first", "second" } } };
+        new List<object[]>
+        {
+            new object[] { (TargetVectors)new[] { "first", "second" } },
+            new object[] { TargetVectors.Sum(new[] { "first", "second" }) },
+            new object[] { TargetVectors.Minimum(new[] { "first", "second" }) },
+            new object[] { TargetVectors.Average(new[] { "first", "second" }) },
+            new object[] { TargetVectors.ManualWeights(("first", 1.2), ("second", 0.7)) },
+            new object[] { TargetVectors.RelativeScore(("first", 1.2), ("second", 0.7)) },
+        };
 
     [Theory]
     [MemberData(nameof(MultiTargetVectors))]

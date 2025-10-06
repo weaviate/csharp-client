@@ -157,7 +157,7 @@ internal partial class WeaviateGrpcClient
         Move? moveAway,
         Filter? filter,
         Aggregate.GroupBy? groupBy,
-        string[]? targetVector,
+        TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
         Aggregate.Metric[] metrics
@@ -217,7 +217,7 @@ internal partial class WeaviateGrpcClient
         uint? limit,
         Filter? filter,
         Aggregate.GroupBy? groupBy,
-        string[]? targetVector,
+        TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
         Aggregate.Metric[] metrics
@@ -315,7 +315,7 @@ internal partial class WeaviateGrpcClient
         uint? limit,
         Filter? filter,
         Aggregate.GroupBy? groupBy,
-        string[]? targetVector,
+        TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
         Aggregate.Metric[] metrics
@@ -358,7 +358,7 @@ internal partial class WeaviateGrpcClient
         uint? limit,
         Filter? filter,
         Aggregate.GroupBy? groupBy,
-        string[]? targetVector,
+        TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
         Aggregate.Metric[] metrics

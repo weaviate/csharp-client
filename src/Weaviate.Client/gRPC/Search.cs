@@ -38,7 +38,6 @@ internal partial class WeaviateGrpcClient
         var metadataRequest = new MetadataRequest()
         {
             Uuid = true,
-            Vector = returnMetadata?.Vector ?? false,
             LastUpdateTimeUnix = returnMetadata?.LastUpdateTime ?? false,
             CreationTimeUnix = returnMetadata?.CreationTime ?? false,
             Certainty = returnMetadata?.Certainty ?? false,
@@ -46,9 +45,12 @@ internal partial class WeaviateGrpcClient
             Score = returnMetadata?.Score ?? false,
             ExplainScore = returnMetadata?.ExplainScore ?? false,
             IsConsistent = returnMetadata?.IsConsistent ?? false,
+            Vector =
+                (returnMetadata?.Vectors != null && returnMetadata?.Vectors.Count > 0)
+                    ? false
+                    : (returnMetadata?.Vector ?? false),
+            Vectors = { returnMetadata?.Vectors ?? [] },
         };
-
-        metadataRequest.Vectors.AddRange(returnMetadata?.Vectors.ToArray() ?? []);
 
         var request = new SearchRequest()
         {
@@ -167,7 +169,7 @@ internal partial class WeaviateGrpcClient
         double? certainty,
         Move? moveTo,
         Move? moveAway,
-        string[]? targetVector = null
+        TargetVectors? targetVector = null
     )
     {
         var (targets, _, _) = BuildTargetVector(targetVector, null);
@@ -214,7 +216,7 @@ internal partial class WeaviateGrpcClient
         Targets? targets,
         ICollection<VectorForTarget>? vectorForTargets,
         ICollection<V1.Vectors>? vectors
-    ) BuildTargetVector(string[]? targetVector, Models.Vectors? vector = null)
+    ) BuildTargetVector(TargetVectors? targetVector, Models.Vectors? vector = null)
     {
         Targets? targets = null;
         ICollection<VectorForTarget>? vectorForTarget = null;
@@ -227,17 +229,13 @@ internal partial class WeaviateGrpcClient
             targetVector = vector.Keys.Where(tv => string.IsNullOrEmpty(tv) is false).ToArray();
         }
 
-        if (targetVector is not null && targetVector.Length > 0)
+        if (targetVector is not null && targetVector.Count() > 0)
         {
-            targets = new()
-            {
-                Combination = CombinationMethod.Unspecified,
-                TargetVectors = { targetVector },
-            };
+            targets = targetVector;
 
             if (
-                targetVector.Length > 1
-                && vector.Count == targetVector.Length
+                targetVector.Count() > 1
+                && vector.Count == targetVector.Count()
                 && targetVector.All(tv => vector.ContainsKey(tv)) // TODO Throw an exception if the TargetVector does not match the provided vectors?
             )
             {
@@ -293,7 +291,7 @@ internal partial class WeaviateGrpcClient
         Models.Vectors vector,
         double? certainty,
         double? distance,
-        string[]? targetVector
+        TargetVectors? targetVector
     )
     {
         NearVector nearVector = new();
@@ -347,7 +345,7 @@ internal partial class WeaviateGrpcClient
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
         BM25Operator? bm25Operator = null,
-        string[]? targetVector = null
+        TargetVectors? targetVector = null
     )
     {
         request.HybridSearch = new Hybrid();
@@ -482,7 +480,7 @@ internal partial class WeaviateGrpcClient
         GroupByRequest? groupBy = null,
         float? distance = null,
         float? certainty = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         uint? limit = null,
         uint? autoCut = null,
         uint? offset = null,
@@ -537,7 +535,7 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -640,7 +638,7 @@ internal partial class WeaviateGrpcClient
         Filter? filters = null,
         GroupByRequest? groupBy = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -708,7 +706,7 @@ internal partial class WeaviateGrpcClient
         Filter? filters,
         GroupByRequest? groupBy,
         Rerank? rerank,
-        string[]? targetVector,
+        TargetVectors? targetVector,
         MetadataQuery? returnMetadata,
         OneOrManyOf<string>? returnProperties,
         IList<QueryReference>? returnReferences,
@@ -744,7 +742,7 @@ internal partial class WeaviateGrpcClient
         Guid objectID,
         double? certainty,
         double? distance,
-        string[]? targetVector
+        TargetVectors? targetVector
     )
     {
         request.NearObject = new NearObject { Id = objectID.ToString() };
@@ -781,7 +779,7 @@ internal partial class WeaviateGrpcClient
         GroupByRequest? groupBy,
         Rerank? rerank,
         string? tenant,
-        string[]? targetVector,
+        TargetVectors? targetVector,
         ConsistencyLevels? consistencyLevel,
         OneOrManyOf<string>? returnProperties,
         MetadataQuery? returnMetadata,
