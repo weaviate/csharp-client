@@ -1,0 +1,114 @@
+namespace Weaviate.Client;
+
+public partial class WeaviateClientBuilder
+{
+    private string _restEndpoint = "localhost";
+    private string _restPath = "v1/";
+    private string _grpcEndpoint = "localhost";
+    private string _grpcPath = "";
+    private ushort _restPort = 8080;
+    private ushort _grpcPort = 50051;
+    private bool _useSsl = false;
+    private Dictionary<string, string> _headers = new();
+    private ICredentials? _credentials = null;
+    private HttpMessageHandler? _httpMessageHandler = null;
+
+    public WeaviateClientBuilder WithRestEndpoint(string endpoint)
+    {
+        _restEndpoint = endpoint;
+        return this;
+    }
+
+    public WeaviateClientBuilder WithRestPath(string path)
+    {
+        _restPath = path;
+        return this;
+    }
+
+    public WeaviateClientBuilder WithGrpcEndpoint(string endpoint)
+    {
+        _grpcEndpoint = endpoint;
+        return this;
+    }
+
+    public WeaviateClientBuilder WithGrpcPath(string path)
+    {
+        _grpcPath = path;
+        return this;
+    }
+
+    public WeaviateClientBuilder WithRestPort(ushort port)
+    {
+        _restPort = port;
+        return this;
+    }
+
+    public WeaviateClientBuilder WithGrpcPort(ushort port)
+    {
+        _grpcPort = port;
+        return this;
+    }
+
+    public WeaviateClientBuilder UseSsl(bool useSsl = true)
+    {
+        _useSsl = useSsl;
+        return this;
+    }
+
+    public WeaviateClientBuilder WithHeaders(Dictionary<string, string>? headers)
+    {
+        if (headers != null)
+        {
+            foreach (var header in headers)
+            {
+                _headers[header.Key] = header.Value;
+            }
+        }
+
+        return this;
+    }
+
+    public WeaviateClientBuilder WithHeader(string key, string value)
+    {
+        _headers[key] = value;
+        return this;
+    }
+
+    public WeaviateClientBuilder WithCredentials(ICredentials? credentials)
+    {
+        if (credentials == null)
+            return this;
+
+        _credentials = credentials;
+        return this;
+    }
+
+    public WeaviateClientBuilder WithHttpMessageHandler(HttpMessageHandler? handler)
+    {
+        if (handler == null)
+            return this;
+
+        _httpMessageHandler = handler;
+        return this;
+    }
+
+    // ...existing code...
+
+    public WeaviateClient Build()
+    {
+        return new ClientConfiguration(
+            _restEndpoint,
+            _restPath,
+            _grpcEndpoint,
+            _grpcPath,
+            _restPort,
+            _grpcPort,
+            _useSsl,
+            _headers.Count > 0 ? new Dictionary<string, string>(_headers) : null,
+            _credentials
+        ).Client(_httpMessageHandler);
+    }
+
+    public static implicit operator WeaviateClient(WeaviateClientBuilder builder) =>
+        builder.Build();
+}
