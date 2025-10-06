@@ -62,7 +62,7 @@ public class QueryClient<TData>
                 tenant: tenant ?? _collectionClient.Tenant,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
-                returnMetadata: returnMetadata
+                returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
             )
         ).result;
 
@@ -78,9 +78,9 @@ public class QueryClient<TData>
                 _collectionName,
                 returnProperties: returnProperties,
                 filters: Filter.WithID(id),
+                tenant: tenant ?? _collectionClient.Tenant,
                 returnReferences: returnReferences,
-                returnMetadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant
+                returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
             )
         ).result.SingleOrDefault();
 
@@ -105,7 +105,7 @@ public class QueryClient<TData>
                 rerank: rerank,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
-                returnMetadata: returnMetadata
+                returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
             )
         ).result;
     #endregion
