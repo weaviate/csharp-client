@@ -8,6 +8,48 @@ public record BatchInsertRequest<TData>(
     string? Tenant = null
 );
 
+public static class BatchInsertRequest
+{
+    public static BatchInsertRequest<TData> Create<TData>(
+        TData data,
+        Guid? id = null,
+        Vectors? vectors = null,
+        IEnumerable<ObjectReference>? references = null,
+        string? tenant = null
+    )
+    {
+        return new BatchInsertRequest<TData>(data, id, vectors, references, tenant);
+    }
+
+    public static BatchInsertRequest<TData>[] Create<TData>(params TData[] data)
+    {
+        return data.Select(d => new BatchInsertRequest<TData>(d)).ToArray();
+    }
+
+    public static BatchInsertRequest<TData>[] Create<TData>(params (TData data, Guid id)[] requests)
+    {
+        return requests.Select(r => new BatchInsertRequest<TData>(r.data, r.id)).ToArray();
+    }
+
+    public static BatchInsertRequest<TData>[] Create<TData>(
+        params (TData data, IEnumerable<ObjectReference>? references)[] requests
+    )
+    {
+        return requests
+            .Select(r => new BatchInsertRequest<TData>(r.data, References: r.references))
+            .ToArray();
+    }
+
+    public static BatchInsertRequest<TData>[] Create<TData>(
+        params (TData data, Vectors vectors)[] requests
+    )
+    {
+        return requests
+            .Select(r => new BatchInsertRequest<TData>(r.data, Vectors: r.vectors))
+            .ToArray();
+    }
+}
+
 public record BatchInsertResponse(int Index, Guid? ID = null, WeaviateException? Error = null);
 
 public class DeleteManyResult

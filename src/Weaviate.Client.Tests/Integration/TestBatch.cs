@@ -14,7 +14,7 @@ public partial class BatchTests : IntegrationTests
             int expectedErrors,
             int expectedReferences,
             int expectedReferencedObjects,
-            Action<DataClient<dynamic>.InsertDelegate>[] batcher
+            IEnumerable<BatchInsertRequest<object>[]> requests
         ) = DatasetBatchInsertMany.Cases[key];
 
         var client = await CollectionFactory(
@@ -32,7 +32,7 @@ public partial class BatchTests : IntegrationTests
         await client.Config.AddReference(new Reference("ref", client.Name));
         await client.Config.AddReference(new Reference("ref2", client.Name));
 
-        var result = await client.Data.InsertMany(batcher);
+        var result = await client.Data.InsertMany(requests);
 
         var data = await client.Query.FetchObjects(returnReferences: [new("ref"), new("ref2")]);
 
@@ -57,8 +57,8 @@ public partial class BatchTests : IntegrationTests
         int numObjects = 10;
 
         // Insert objects into the referenced collection and get their UUIDs
-        var refInsertResult = await refCollection.Data.InsertMany(add =>
-            Enumerable.Range(0, numObjects).ToList().ForEach(i => add(new { Number = i }))
+        var refInsertResult = await refCollection.Data.InsertMany(
+            Enumerable.Range(0, numObjects).Select(i => new { Number = i })
         );
 
         Guid[] uuidsTo = [.. refInsertResult.Select(r => r.ID!.Value)];
@@ -72,8 +72,8 @@ public partial class BatchTests : IntegrationTests
         );
 
         // Insert objects into the main collection and get their UUIDs
-        var fromInsertResult = await collection.Data.InsertMany(add =>
-            Enumerable.Range(0, numObjects).ToList().ForEach(i => add(new { Num = i }))
+        var fromInsertResult = await collection.Data.InsertMany(
+            Enumerable.Range(0, numObjects).Select(i => new { Num = i })
         );
 
         Guid[] uuidsFrom = [.. fromInsertResult.Select(r => r.ID!.Value)];

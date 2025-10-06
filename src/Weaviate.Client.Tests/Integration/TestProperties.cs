@@ -147,10 +147,7 @@ public partial class PropertyTests : IntegrationTests
             },
         };
 
-        var response = await c.Data.InsertMany(batcher =>
-        {
-            testData.ToList().ForEach(d => batcher(d));
-        });
+        var response = await c.Data.InsertMany(BatchInsertRequest.Create<object>(testData));
 
         // 3. Retrieve the object and confirm all properties match
         foreach (var r in response)

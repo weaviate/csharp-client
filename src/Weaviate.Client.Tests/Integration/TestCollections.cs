@@ -19,7 +19,7 @@ public partial class CollectionsTests : IntegrationTests
         );
 
         // Assert
-        var collection = await _weaviate.Collections.Use<dynamic>(collectionClient.Name).Get();
+        var collection = await _weaviate.Collections.Use(collectionClient.Name).Get();
         Assert.NotNull(collection);
         Assert.Equal(
             $"CollectionClient_Creates_And_Retrieves_Collection_{TestContext.Current.Test?.UniqueID}_Object_RandomCollectionName",
@@ -935,7 +935,9 @@ public partial class CollectionsTests : IntegrationTests
         var uuid = await collection.Data.Insert(new { blob = blobData });
 
         // Insert many
-        await collection.Data.InsertMany(new[] { new { blob = blobData } });
+        await collection.Data.InsertMany(
+            BatchInsertRequest.Create<object>(new { blob = blobData })
+        );
 
         // Fetch by id
         var obj = await collection.Query.FetchObjectByID(uuid, returnProperties: new[] { "blob" });

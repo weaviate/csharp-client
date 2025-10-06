@@ -265,7 +265,7 @@ public partial class BatchTests
                 int expectedErrors,
                 int expectedReferences,
                 int expectedReferencedObjects,
-                Action<DataClient<dynamic>.InsertDelegate>[] batcher
+                IEnumerable<BatchInsertRequest<object>[]> data
             )
         > Cases =>
             new()
@@ -276,14 +276,16 @@ public partial class BatchTests
                     0,
                     0,
                     [
-                        add =>
-                        {
-                            add(
+                        [
+                            BatchInsertRequest.Create<object>(
                                 new { Name = "some name" },
-                                vectors: new() { { "default", 1, 2, 3 } }
-                            );
-                            add(new { Name = "some other name" }, id: _reusableUuids[0]);
-                        },
+                                vectors: Vector.Create(1, 2, 3)
+                            ),
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "some other name" },
+                                id: _reusableUuids[0]
+                            ),
+                        ],
                     ]
                 ),
                 ["all data types"] = (
@@ -292,9 +294,8 @@ public partial class BatchTests
                     0,
                     0,
                     [
-                        add =>
-                        {
-                            add(
+                        [
+                            BatchInsertRequest.Create<object>(
                                 new
                                 {
                                     Name = "some name",
@@ -303,8 +304,8 @@ public partial class BatchTests
                                     IsAvailable = true,
                                     AvailableSince = new DateTime(2023, 1, 1),
                                 }
-                            );
-                        },
+                            ),
+                        ],
                     ]
                 ),
                 ["wrong type for property"] = (
@@ -313,10 +314,7 @@ public partial class BatchTests
                     0,
                     0,
                     [
-                        add =>
-                        {
-                            add(new { Name = 1 });
-                        },
+                        [BatchInsertRequest.Create<object>(new { Name = 1 })],
                     ]
                 ),
                 ["batch with self-reference"] = (
@@ -325,20 +323,30 @@ public partial class BatchTests
                     1,
                     1,
                     [
-                        add =>
-                        {
-                            add(new { Name = "Name 1" }, id: _reusableUuids[0]);
-                            add(new { Name = "Name 2" }, id: _reusableUuids[1]);
-                            add(new { Name = "Name 3" }, id: _reusableUuids[2]);
-                            add(new { Name = "Name 4" }, id: _reusableUuids[3]);
-                        },
-                        add =>
-                        {
-                            add(
+                        [
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 1" },
+                                id: _reusableUuids[0]
+                            ),
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 2" },
+                                id: _reusableUuids[1]
+                            ),
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 3" },
+                                id: _reusableUuids[2]
+                            ),
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 4" },
+                                id: _reusableUuids[3]
+                            ),
+                        ],
+                        [
+                            BatchInsertRequest.Create<object>(
                                 new { Name = "Name 5" },
-                                references: [new ObjectReference("ref", _reusableUuids[1])]
-                            );
-                        },
+                                references: [new("ref", _reusableUuids[1])]
+                            ),
+                        ],
                     ]
                 ),
                 ["batch with multiple self-references"] = (
@@ -347,27 +355,30 @@ public partial class BatchTests
                     1,
                     2,
                     [
-                        add =>
-                        {
-                            add(new { Name = "Name 1" }, id: _reusableUuids[0]);
-                            add(new { Name = "Name 2" }, id: _reusableUuids[1]);
-                            add(new { Name = "Name 3" }, id: _reusableUuids[2]);
-                            add(new { Name = "Name 4" }, id: _reusableUuids[3]);
-                        },
-                        add =>
-                        {
-                            add(
+                        [
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 1" },
+                                id: _reusableUuids[0]
+                            ),
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 2" },
+                                id: _reusableUuids[1]
+                            ),
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 3" },
+                                id: _reusableUuids[2]
+                            ),
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 4" },
+                                id: _reusableUuids[3]
+                            ),
+                        ],
+                        [
+                            BatchInsertRequest.Create<object>(
                                 new { Name = "Name 5" },
-                                references:
-                                [
-                                    new ObjectReference(
-                                        "ref",
-                                        _reusableUuids[1],
-                                        _reusableUuids[2]
-                                    ),
-                                ]
-                            );
-                        },
+                                references: [new("ref", _reusableUuids[1], _reusableUuids[2])]
+                            ),
+                        ],
                     ]
                 ),
                 ["batch with multiple self-reference properties"] = (
@@ -376,32 +387,42 @@ public partial class BatchTests
                     3,
                     4,
                     [
-                        add =>
-                        {
-                            add(new { Name = "Name 1" }, id: _reusableUuids[0]);
-                            add(new { Name = "Name 2" }, id: _reusableUuids[1]);
-                            add(new { Name = "Name 3" }, id: _reusableUuids[2]);
-                            add(new { Name = "Name 4" }, id: _reusableUuids[3]);
-                        },
-                        add =>
-                        {
-                            add(
+                        [
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 1" },
+                                id: _reusableUuids[0]
+                            ),
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 2" },
+                                id: _reusableUuids[1]
+                            ),
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 3" },
+                                id: _reusableUuids[2]
+                            ),
+                            BatchInsertRequest.Create<object>(
+                                new { Name = "Name 4" },
+                                id: _reusableUuids[3]
+                            ),
+                        ],
+                        [
+                            BatchInsertRequest.Create<object>(
                                 new { Name = "Name 5" },
                                 references: [new("ref", _reusableUuids[1])]
-                            );
-                            add(
+                            ),
+                            BatchInsertRequest.Create<object>(
                                 new { Name = "Name 6" },
                                 references: [new("ref2", _reusableUuids[2])]
-                            );
-                            add(
+                            ),
+                            BatchInsertRequest.Create<object>(
                                 new { Name = "Name 7" },
                                 references:
                                 [
                                     new("ref", _reusableUuids[1]),
                                     new("ref2", _reusableUuids[2]),
                                 ]
-                            );
-                        },
+                            ),
+                        ],
                     ]
                 ),
             };
