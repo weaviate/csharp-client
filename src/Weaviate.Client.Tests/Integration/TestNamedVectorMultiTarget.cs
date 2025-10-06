@@ -193,7 +193,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
     public static IEnumerable<object[]> MultiTargetVectorsWithDistances =>
         new List<object[]>
         {
-            //new object[] { TargetVectors.Sum(["first", "second"]), new float[] { 1.0f, 3.0f } },
+            new object[] { TargetVectors.Sum(["first", "second"]), new float[] { 1.0f, 3.0f } },
             new object[]
             {
                 TargetVectors.ManualWeights(("first", 1.0f), ("second", [1.0f, 1.0f])),
@@ -250,7 +250,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
                     Data: new { },
                     Vectors: new Vectors
                     {
-                        { "first", new[] { 1f, 0f, 0f } },
+                        { "first", new[] { 1f, 0f } },
                         { "second", new[] { 0f, 1f, 0f } },
                     }
                 ),
@@ -258,7 +258,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
                     Data: new { },
                     Vectors: new Vectors
                     {
-                        { "first", new[] { 0f, 1f, 0f } },
+                        { "first", new[] { 0f, 1f } },
                         { "second", new[] { 1f, 0f, 0f } },
                     }
                 )
