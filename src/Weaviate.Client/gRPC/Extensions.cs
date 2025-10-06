@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Weaviate.V1;
 
 internal partial class Targets
@@ -26,19 +24,7 @@ internal partial class Targets
         {
             TargetVectors = { targets },
             WeightsForTargets = { weightsForTargets },
-            Combination = targetVectors.Combination switch
-            {
-                Client.Models.CombinationMethod.Unspecified => CombinationMethod.Unspecified,
-                Client.Models.CombinationMethod.Sum => CombinationMethod.TypeSum,
-                Client.Models.CombinationMethod.Minimum => CombinationMethod.TypeMin,
-                Client.Models.CombinationMethod.Average => CombinationMethod.TypeAverage,
-                Client.Models.CombinationMethod.ManualWeights => CombinationMethod.TypeManual,
-                Client.Models.CombinationMethod.RelativeScore =>
-                    CombinationMethod.TypeRelativeScore,
-                _ => throw new NotSupportedException(
-                    $"Combination method {targetVectors.Combination} is not supported."
-                ),
-            },
+            Combination = targetVectors.Combination,
         };
 
         return grpcTargets;
