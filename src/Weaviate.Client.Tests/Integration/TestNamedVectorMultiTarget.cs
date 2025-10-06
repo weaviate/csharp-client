@@ -233,17 +233,6 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             }
         );
 
-        // var collection = _weaviate.Collections.Use(
-        //     "Test_vectorspy_test_same_target_vector_multiple_inputtarget_vector0distances0_2"
-        // );
-
-        // var results = await collection
-        //     .Iterator(
-        //         returnMetadata: (MetadataOptions.All, ["first", "second"]),
-        //         cancellationToken: TestContext.Current.CancellationToken
-        //     )
-        //     .ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
-
         var inserts = (
             await collection.Data.InsertMany(
                 new BatchInsertRequest<object>(
