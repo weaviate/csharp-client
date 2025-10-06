@@ -64,7 +64,7 @@ public partial class AggregateClient
         double? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         bool totalCount = true,
         string? tenant = null,
         params Aggregate.Metric[] metrics
@@ -93,7 +93,7 @@ public partial class AggregateClient
         double? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         bool totalCount = true,
         string? tenant = null,
         params Aggregate.Metric[] metrics
@@ -125,7 +125,7 @@ public partial class AggregateClient
         Move? moveTo = null,
         Move? moveAway = null,
         Filter? filter = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         bool totalCount = true,
         string? tenant = null,
         params Aggregate.Metric[] metrics
@@ -158,7 +158,7 @@ public partial class AggregateClient
         Move? moveTo = null,
         Move? moveAway = null,
         Filter? filter = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         bool totalCount = true,
         string? tenant = null,
         params Aggregate.Metric[] metrics
@@ -260,7 +260,7 @@ public partial class AggregateClient
         double? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         bool totalCount = true,
         string? tenant = null,
         params Aggregate.Metric[] metrics
@@ -290,7 +290,7 @@ public partial class AggregateClient
         double? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         bool totalCount = true,
         string? tenant = null,
         params Aggregate.Metric[] metrics
@@ -319,7 +319,7 @@ public partial class AggregateClient
         double? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         bool totalCount = true,
         string? tenant = null,
         params Aggregate.Metric[] metrics
@@ -350,7 +350,7 @@ public partial class AggregateClient
         double? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         bool totalCount = true,
         string? tenant = null,
         params Aggregate.Metric[] metrics
@@ -381,7 +381,7 @@ public partial class AggregateClient
         double? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         bool totalCount = true,
         string? tenant = null,
         params Aggregate.Metric[] metrics
@@ -413,7 +413,7 @@ public partial class AggregateClient
         double? distance = null,
         uint? limit = null,
         Filter? filter = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         bool totalCount = true,
         string? tenant = null,
         params Aggregate.Metric[] metrics

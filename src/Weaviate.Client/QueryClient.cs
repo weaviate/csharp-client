@@ -62,7 +62,7 @@ public class QueryClient<TData>
                 tenant: tenant ?? _collectionClient.Tenant,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
-                returnMetadata: returnMetadata
+                returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
             )
         ).result;
 
@@ -78,9 +78,9 @@ public class QueryClient<TData>
                 _collectionName,
                 returnProperties: returnProperties,
                 filters: Filter.WithID(id),
+                tenant: tenant ?? _collectionClient.Tenant,
                 returnReferences: returnReferences,
-                returnMetadata: returnMetadata,
-                tenant: tenant ?? _collectionClient.Tenant
+                returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
             )
         ).result.SingleOrDefault();
 
@@ -105,7 +105,7 @@ public class QueryClient<TData>
                 rerank: rerank,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
-                returnMetadata: returnMetadata
+                returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
             )
         ).result;
     #endregion
@@ -124,7 +124,7 @@ public class QueryClient<TData>
         Filter? filters = null,
         Rerank? rerank = null,
         string? tenant = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null
@@ -163,7 +163,7 @@ public class QueryClient<TData>
         uint? autoCut = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -200,7 +200,7 @@ public class QueryClient<TData>
         uint? autoCut = null,
         uint? limit = null,
         uint? offset = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         Rerank? rerank = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -236,7 +236,7 @@ public class QueryClient<TData>
         uint? autoCut = null,
         uint? limit = null,
         uint? offset = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         Rerank? rerank = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -352,7 +352,7 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -400,7 +400,7 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -444,7 +444,7 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -483,7 +483,7 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -521,7 +521,7 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -558,7 +558,7 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -596,7 +596,7 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -637,7 +637,7 @@ public class QueryClient<TData>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        string[]? targetVector = null,
+        TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
