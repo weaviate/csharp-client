@@ -227,6 +227,7 @@ public partial class SearchTests : IntegrationTests
             query: null,
             vectors: new HybridNearVector(
                 obj.Vectors["default"],
+                Certainty: null,
                 Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
             ),
             returnMetadata: MetadataOptions.All
@@ -286,6 +287,7 @@ public partial class SearchTests : IntegrationTests
                 query: null,
                 vectors: new HybridNearVector(
                     obj.Vectors["text"],
+                    Certainty: null,
                     Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
                 ),
                 targetVector: ["text"],
@@ -325,6 +327,8 @@ public partial class SearchTests : IntegrationTests
                 query: null,
                 vectors: new HybridNearText(
                     "banana",
+                    Certainty: null,
+                    Distance: null,
                     MoveTo: new Move(force: 0.1f, concepts: ["pudding"]),
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
                 ),
@@ -368,6 +372,8 @@ public partial class SearchTests : IntegrationTests
                 query: null,
                 vectors: new HybridNearText(
                     "banana",
+                    Certainty: null,
+                    Distance: null,
                     MoveTo: new Move(force: 0.1f, concepts: ["pudding"]),
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
                 ),
@@ -429,7 +435,7 @@ public partial class SearchTests : IntegrationTests
         objs = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearVector(vector, Distance: 0.1f),
+                vectors: new HybridNearVector(vector, Certainty: null, Distance: 0.1f),
                 targetVector: new[] { "first", "second" }
             )
         ).Objects.ToList();
