@@ -190,6 +190,180 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         Assert.Equal(expected, ids);
     }
 
+    public static IEnumerable<object[]> HybridMultiInputCombinations =>
+        new List<object[]>
+        {
+            new object[]
+            {
+                new Vectors
+                {
+                    { "first", new[] { 0f, 1f } },
+                    {
+                        "second",
+                        new float[,]
+                        {
+                            { 1f, 0f, 0f },
+                            { 0f, 0f, 1f },
+                        }
+                    },
+                },
+                new[] { "first", "second" },
+            },
+            new object[]
+            {
+                new Vectors
+                {
+                    {
+                        "first",
+                        new float[,]
+                        {
+                            { 0f, 1f },
+                            { 0f, 1f },
+                        }
+                    },
+                    { "second", new[] { 1f, 0f, 0f } },
+                },
+                new[] { "first", "second" },
+            },
+            new object[]
+            {
+                new Vectors
+                {
+                    {
+                        "first",
+                        new float[,]
+                        {
+                            { 0f, 1f },
+                            { 0f, 1f },
+                        }
+                    },
+                    {
+                        "second",
+                        new float[,]
+                        {
+                            { 1f, 0f, 0f },
+                            { 0f, 0f, 1f },
+                        }
+                    },
+                },
+                new[] { "first", "second" },
+            },
+            // The following are equivalent to above, but mimic the Python HybridVector.near_vector usage
+            new object[]
+            {
+                new HybridNearVector(
+                    new Vectors
+                    {
+                        { "first", new[] { 0f, 1f } },
+                        {
+                            "second",
+                            new float[,]
+                            {
+                                { 1f, 0f, 0f },
+                                { 0f, 0f, 1f },
+                            }
+                        },
+                    },
+                    Certainty: null,
+                    Distance: null
+                ),
+                new[] { "first", "second" },
+            },
+            new object[]
+            {
+                new HybridNearVector(
+                    new Vectors
+                    {
+                        {
+                            "first",
+                            new float[,]
+                            {
+                                { 0f, 1f },
+                                { 0f, 1f },
+                            }
+                        },
+                        { "second", new[] { 1f, 0f, 0f } },
+                    }
+                ),
+                new[] { "first", "second" },
+            },
+            new object[]
+            {
+                new HybridNearVector(
+                    new Vectors
+                    {
+                        {
+                            "first",
+                            new float[,]
+                            {
+                                { 0f, 1f },
+                                { 0f, 1f },
+                            }
+                        },
+                        {
+                            "second",
+                            new float[,]
+                            {
+                                { 1f, 0f, 0f },
+                                { 0f, 0f, 1f },
+                            }
+                        },
+                    }
+                ),
+                new[] { "first", "second" },
+            },
+        };
+
+    [Theory]
+    [MemberData(nameof(HybridMultiInputCombinations))]
+    public async Task Test_SameTargetVector_MultipleInputCombinations_Hybrid(
+        IHybridVectorInput nearVector,
+        string[] targetVector
+    )
+    {
+        var dummy = await CollectionFactory();
+        if (dummy.WeaviateVersion < Version.Parse("1.27.0"))
+        {
+            Assert.Skip("Multi vector per target is not supported in versions lower than 1.27.0");
+        }
+
+        var collection = await CollectionFactory(
+            properties: Array.Empty<Property>(),
+            vectorConfig: new[]
+            {
+                Configure.Vectors.SelfProvided(name: "first"),
+                Configure.Vectors.SelfProvided(name: "second"),
+            }
+        );
+
+        var uuid1 = await collection.Data.Insert(
+            new { },
+            vectors: new Vectors
+            {
+                { "first", new[] { 1f, 0f } },
+                { "second", new[] { 0f, 1f, 0f } },
+            }
+        );
+        var uuid2 = await collection.Data.Insert(
+            new { },
+            vectors: new Vectors
+            {
+                { "first", new[] { 0f, 1f } },
+                { "second", new[] { 1f, 0f, 0f } },
+            }
+        );
+
+        var objs = await collection.Query.Hybrid(
+            query: null,
+            vectors: nearVector,
+            targetVector: targetVector,
+            returnMetadata: MetadataOptions.All
+        );
+        var ids = objs.Objects.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
+        var expected = new[] { uuid2, uuid1 }.OrderBy(x => x).ToList();
+        Assert.Equal(expected, ids);
+    }
+
     public static IEnumerable<object[]> MultiTargetVectorsWithDistances =>
         new List<object[]>
         {
