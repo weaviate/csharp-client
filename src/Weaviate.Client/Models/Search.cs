@@ -8,15 +8,15 @@ public interface IHybridVectorInput
 
 public record HybridNearVector(
     Models.Vectors? Vector,
-    float? Distance = null,
     float? Certainty = null,
+    float? Distance = null,
     TargetVectors? targetVector = null
 ) : IHybridVectorInput { };
 
 public record HybridNearText(
     string Query,
-    float? Distance = null,
     float? Certainty = null,
+    float? Distance = null,
     Move? MoveTo = null,
     Move? MoveAway = null
 ) : IHybridVectorInput;

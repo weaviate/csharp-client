@@ -224,64 +224,78 @@ internal partial class WeaviateGrpcClient
 
         vector ??= new Models.Vectors();
 
-        if (targetVector is null && vector.Count > 0)
+        targetVector ??= vector.Keys.Where(tv => string.IsNullOrEmpty(tv) is false).ToArray();
+
+        targets = targetVector;
+
+        if (
+            targetVector.Count() == 1
+            && vector.Count == 1
+            && targetVector.All(k => k == "default")
+            && vector.Keys.All(k => k == "default")
+        )
         {
-            targetVector = vector.Keys.Where(tv => string.IsNullOrEmpty(tv) is false).ToArray();
+            vectors = vector
+                .Select(v => new V1.Vectors
+                {
+                    Name = v.Key,
+                    Type = v.Value.IsMultiVector
+                        ? V1.Vectors.Types.VectorType.MultiFp32
+                        : V1.Vectors.Types.VectorType.SingleFp32,
+                    VectorBytes = v.Value.ToByteString(),
+                })
+                .ToList();
+            return (targets, vectorForTarget, vectors);
         }
 
-        if (targetVector is not null && targetVector.Count() > 0)
+        if (
+            targetVector.Count() > 1
+            && vector.Count == targetVector.Count()
+            && targetVector.All(tv => vector.ContainsKey(tv)) // TODO Throw an exception if the TargetVector does not match the provided vectors?
+        )
         {
-            targets = targetVector;
-
-            if (
-                targetVector.Count() > 1
-                && vector.Count == targetVector.Count()
-                && targetVector.All(tv => vector.ContainsKey(tv)) // TODO Throw an exception if the TargetVector does not match the provided vectors?
-            )
-            {
-                // If multiple target vectors are specified, use VectorForTargets
-                vectorForTarget = targetVector
-                    .Select(
-                        (v, idx) =>
-                            new
-                            {
-                                Name = v,
-                                Index = idx,
-                                Vector = vector.ContainsKey(v)
-                                    ? vector[v]
-                                    : vector.Values.ElementAt(idx),
-                            }
-                    )
-                    .Select(v => new VectorForTarget()
-                    {
-                        Name = v.Name,
-                        Vectors =
+            // If multiple target vectors are specified, use VectorForTargets
+            vectorForTarget = targetVector
+                .Select(
+                    (v, idx) =>
+                        new
                         {
-                            new V1.Vectors
-                            {
-                                Name = v.Name,
-                                Type = v.Vector.IsMultiVector
-                                    ? V1.Vectors.Types.VectorType.MultiFp32
-                                    : V1.Vectors.Types.VectorType.SingleFp32,
-                                VectorBytes = v.Vector.ToByteString(),
-                            },
-                        },
-                    })
-                    .ToList();
-            }
-            else
-            {
-                vectors = vector
-                    .Select(v => new V1.Vectors
+                            Name = v,
+                            Index = idx,
+                            Vector = vector.ContainsKey(v)
+                                ? vector[v]
+                                : vector.Values.ElementAt(idx),
+                        }
+                )
+                .Select(v => new VectorForTarget()
+                {
+                    Name = v.Name,
+                    Vectors =
                     {
-                        Name = v.Key,
-                        Type = v.Value.IsMultiVector
-                            ? V1.Vectors.Types.VectorType.MultiFp32
-                            : V1.Vectors.Types.VectorType.SingleFp32,
-                        VectorBytes = v.Value.ToByteString(),
-                    })
-                    .ToList();
-            }
+                        new V1.Vectors
+                        {
+                            Name = v.Name,
+                            Type = v.Vector.IsMultiVector
+                                ? V1.Vectors.Types.VectorType.MultiFp32
+                                : V1.Vectors.Types.VectorType.SingleFp32,
+                            VectorBytes = v.Vector.ToByteString(),
+                        },
+                    },
+                })
+                .ToList();
+        }
+        else
+        {
+            vectors = vector
+                .Select(v => new V1.Vectors
+                {
+                    Name = v.Key,
+                    Type = v.Value.IsMultiVector
+                        ? V1.Vectors.Types.VectorType.MultiFp32
+                        : V1.Vectors.Types.VectorType.SingleFp32,
+                    VectorBytes = v.Value.ToByteString(),
+                })
+                .ToList();
         }
 
         return (targets, vectorForTarget, vectors);
@@ -366,9 +380,23 @@ internal partial class WeaviateGrpcClient
 
         if (vector is not null && nearText is null && nearVector is null)
         {
-            var (targets, _, vectors) = BuildTargetVector(targetVector, vector);
-            request.HybridSearch.Vectors.AddRange(vectors);
-            request.HybridSearch.Targets = targets;
+            var (targets, vfts, vectors) = BuildTargetVector(targetVector, vector);
+
+            if (vfts is not null)
+            {
+                nearVector = new HybridNearVector(
+                    vector,
+                    Certainty: null,
+                    Distance: null,
+                    targetVector: targetVector
+                );
+                vector = null; // Clear vector to avoid duplication
+            }
+            else if (vectors is not null)
+            {
+                request.HybridSearch.Vectors.Add(vectors);
+                request.HybridSearch.Targets = targets;
+            }
         }
 
         if (vector is null && nearText is not null && nearVector is null)
@@ -378,9 +406,11 @@ internal partial class WeaviateGrpcClient
                 nearText.Distance,
                 nearText.Certainty,
                 nearText.MoveTo,
-                nearText.MoveAway
+                nearText.MoveAway,
+                targetVector
             );
-            request.HybridSearch.Targets = BuildTargetVector(targetVector).targets;
+
+            request.HybridSearch.Targets = request.HybridSearch.NearText.Targets;
         }
 
         if (
