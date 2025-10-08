@@ -229,7 +229,12 @@ public class WeaviateClient : IDisposable
         }
 
         RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
-        GrpcClient = new WeaviateGrpcClient(Configuration.GrpcUri, wcdHost, _tokenService);
+        GrpcClient = new WeaviateGrpcClient(
+            Configuration.GrpcUri,
+            wcdHost,
+            _tokenService,
+            Configuration.Headers
+        );
 
         Nodes = new NodesClient(RestClient);
         Collections = new CollectionsClient(this);
