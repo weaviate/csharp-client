@@ -38,6 +38,7 @@ internal partial class WeaviateGrpcClient : IDisposable
         Uri grpcUri,
         string? wcdHost,
         ITokenService? tokenService,
+        Dictionary<string, string>? headers = null,
         ILogger<WeaviateGrpcClient>? logger = null
     )
     {
@@ -112,6 +113,19 @@ internal partial class WeaviateGrpcClient : IDisposable
         {
             _defaultHeaders = new Metadata { { "X-Weaviate-Cluster-URL", wcdHost } };
         }
+        if (headers != null)
+        {
+            if (_defaultHeaders == null)
+            {
+                _defaultHeaders = new Metadata();
+            }
+
+            foreach (var header in headers)
+            {
+                _defaultHeaders.Add(header.Key, header.Value);
+            }
+        }
+
         _grpcClient = new V1.Weaviate.WeaviateClient(_channel);
     }
 
