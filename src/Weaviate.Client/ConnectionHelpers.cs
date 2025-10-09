@@ -57,6 +57,7 @@ public static class Connect
         var grpcPort = Environment.GetEnvironmentVariable($"{prefix}GRPC_PORT") ?? "50051";
         var useSsl = Environment.GetEnvironmentVariable($"{prefix}USE_SSL")?.ToLower() == "true";
         var apiKey = Environment.GetEnvironmentVariable($"{prefix}API_KEY");
+        var openaiKey = Environment.GetEnvironmentVariable($"{prefix}OPENAI_API_KEY");
 
         if (restEndpoint is null && grpcEndpoint is null)
         {
@@ -71,7 +72,7 @@ public static class Connect
             restEndpoint = grpcEndpoint;
         }
 
-        return Custom(
+        var builder = WeaviateClientBuilder.Custom(
             restEndpoint: restEndpoint!,
             grpcEndpoint: grpcEndpoint!,
             restPort: restPort,
@@ -79,31 +80,12 @@ public static class Connect
             useSsl: useSsl,
             credentials: string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey)
         );
-    }
 
-    public static WeaviateClient Custom(
-        string restEndpoint = "localhost",
-        string restPath = "v1/",
-        string grpcEndpoint = "localhost",
-        string grpcPath = "",
-        string restPort = "8080",
-        string grpcPort = "50051",
-        bool useSsl = false,
-        Dictionary<string, string>? headers = null,
-        ICredentials? credentials = null,
-        HttpMessageHandler? httpMessageHandler = null
-    )
-    {
-        return new WeaviateClientBuilder()
-            .WithRestEndpoint(restEndpoint)
-            .WithRestPath(restPath)
-            .WithGrpcEndpoint(grpcEndpoint)
-            .WithGrpcPath(grpcPath)
-            .WithRestPort(Convert.ToUInt16(restPort))
-            .WithGrpcPort(Convert.ToUInt16(grpcPort))
-            .UseSsl(useSsl)
-            .WithHeaders(headers)
-            .WithCredentials(credentials)
-            .WithHttpMessageHandler(httpMessageHandler);
+        if (openaiKey is not null && !string.IsNullOrEmpty(openaiKey))
+        {
+            builder.WithOpenAI(openaiKey);
+        }
+
+        return builder.Build();
     }
 }

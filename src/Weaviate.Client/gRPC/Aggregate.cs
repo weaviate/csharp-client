@@ -122,7 +122,17 @@ internal partial class WeaviateGrpcClient
 
     private async Task<AggregateReply> Aggregate(AggregateRequest request)
     {
-        return await _grpcClient.AggregateAsync(request);
+        try
+        {
+            var reply = await _grpcClient.AggregateAsync(request, headers: _defaultHeaders);
+            reply.Collection = request.Collection;
+
+            return reply;
+        }
+        catch (global::Grpc.Core.RpcException ex)
+        {
+            throw new WeaviateServerException("Aggregate request failed", ex);
+        }
     }
 
     internal async Task<AggregateReply> AggregateOverAll(
@@ -313,7 +323,7 @@ internal partial class WeaviateGrpcClient
         double? certainty,
         double? distance,
         uint? limit,
-        Filter? filter,
+        Filter? filters,
         Aggregate.GroupBy? groupBy,
         TargetVectors? targetVector,
         bool totalCount,
@@ -323,7 +333,7 @@ internal partial class WeaviateGrpcClient
     {
         var request = BaseAggregateRequest(
             collection,
-            filter,
+            filters,
             groupBy,
             limit,
             totalCount,

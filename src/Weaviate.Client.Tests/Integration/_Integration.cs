@@ -39,7 +39,17 @@ public abstract partial class IntegrationTests : IAsyncDisposable
             InnerHandler = new HttpClientHandler(),
         };
 
-        _weaviate = Connect.Local(httpMessageHandler: _httpMessageHandler);
+        var builder = WeaviateClientBuilder.Local(httpMessageHandler: _httpMessageHandler);
+
+        if (
+            Environment.GetEnvironmentVariable("WEAVIATE_OPENAI_API_KEY") is { } openaiKey
+            && !string.IsNullOrEmpty(openaiKey)
+        )
+        {
+            builder.WithOpenAI(openaiKey);
+        }
+
+        _weaviate = builder.Build();
     }
 
     public async ValueTask DisposeAsync()

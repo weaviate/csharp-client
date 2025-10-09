@@ -249,7 +249,7 @@ public class CollectionTests
     }
 
     [Fact]
-    public void Collection_Rerank_Deserializes_Into_IGenerativeConfig()
+    public void Collection_Generative_Deserializes_Into_IGenerativeConfig()
     {
         var key = "generative-dummy";
         var value = JsonSerializer.Deserialize<object>(
@@ -262,7 +262,7 @@ public class CollectionTests
         Assert.NotNull(config);
         Assert.NotNull(config!.Config);
         Assert.Equal("ConfigValue", config!.Config.configOption);
-        Assert.IsType<Generative.Custom>(config);
+        Assert.IsType<GenerativeConfig.Custom>(config);
         Assert.IsAssignableFrom<IGenerativeConfig>(config);
     }
 
