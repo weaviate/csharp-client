@@ -212,7 +212,7 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    internal static ICollection<GenerativeReply> BuildGenerativeReplyFromResult(
+    internal static IList<GenerativeReply> BuildGenerativeReplyFromResult(
         IEnumerable<V1.GenerativeReply> generative
     )
     {

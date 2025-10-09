@@ -121,12 +121,86 @@ public record GenerativeDebug(string? FullPrompt = null);
 public record GenerativeReply(
     string Result,
     GenerativeDebug? Debug = null,
-    object? Metadata = null // TODO: GenerativeMetadata?
+    object? Metadata = null // TODO: GenerativeMetadata? Dictionary?
 );
 
-public record GenerativeResult(ICollection<GenerativeReply> Values)
+public record GenerativeResult(IList<GenerativeReply> Values) : IList<string>
 {
     private static readonly GenerativeResult _empty = new(Array.Empty<GenerativeReply>());
     public static readonly GenerativeResult Empty = _empty;
+
+    public string this[int index]
+    {
+        get => Values[index].Result;
+        set => Values[index] = Values[index] with { Result = value };
+    }
+
+    public int Count => Values.Count;
+
+    public bool IsReadOnly => Values.IsReadOnly;
+
+    public void Add(string item)
+    {
+        Values.Add(new GenerativeReply(item));
+    }
+
+    public void Clear()
+    {
+        Values.Clear();
+    }
+
+    public bool Contains(string item)
+    {
+        return Values.Any(v => v.Result == item);
+    }
+
+    public void CopyTo(string[] array, int arrayIndex)
+    {
+        for (int i = 0; i < Values.Count; i++)
+        {
+            array[arrayIndex + i] = Values[i].Result;
+        }
+    }
+
+    public IEnumerator<string> GetEnumerator()
+    {
+        return Values.Select(v => v.Result).GetEnumerator();
+    }
+
+    public int IndexOf(string item)
+    {
+        for (int i = 0; i < Values.Count; i++)
+        {
+            if (Values[i].Result == item)
+                return i;
+        }
+        return -1;
+    }
+
+    public void Insert(int index, string item)
+    {
+        Values.Insert(index, new GenerativeReply(item));
+    }
+
+    public bool Remove(string item)
+    {
+        int idx = IndexOf(item);
+        if (idx >= 0)
+        {
+            Values.RemoveAt(idx);
+            return true;
+        }
+        return false;
+    }
+
+    public void RemoveAt(int index)
+    {
+        Values.RemoveAt(index);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 #endregion
