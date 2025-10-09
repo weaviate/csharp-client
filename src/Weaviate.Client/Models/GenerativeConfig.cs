@@ -8,7 +8,7 @@ public interface IGenerativeConfig
     string Type { get; }
 }
 
-public static class Generative
+public static class GenerativeConfig
 {
     public record Custom : IGenerativeConfig
     {
@@ -17,7 +17,7 @@ public static class Generative
         public dynamic? Config { get; set; } = new { };
     }
 
-    public abstract record OpenAIConfigBase : IGenerativeConfig
+    public abstract record OpenAIBase : IGenerativeConfig
     {
         public string? BaseURL { get; set; }
         public int? FrequencyPenaltyProperty { get; set; }
@@ -28,7 +28,7 @@ public static class Generative
         public abstract string Type { get; }
     }
 
-    public record AWSConfig : IGenerativeConfig
+    public record AWS : IGenerativeConfig
     {
         public const string TypeValue = "generative-aws";
         public string Type => TypeValue;
@@ -39,7 +39,7 @@ public static class Generative
         public string? Endpoint { get; set; }
     }
 
-    public record AnthropicConfig : IGenerativeConfig
+    public record Anthropic : IGenerativeConfig
     {
         public const string TypeValue = "generative-anthropic";
         public string Type => TypeValue;
@@ -53,7 +53,7 @@ public static class Generative
         public double? TopP { get; set; }
     }
 
-    public record AnyscaleConfig : IGenerativeConfig
+    public record Anyscale : IGenerativeConfig
     {
         public const string TypeValue = "generative-anyscale";
         public string Type => TypeValue;
@@ -63,7 +63,7 @@ public static class Generative
         public double? Temperature { get; set; }
     }
 
-    public record CohereConfig : IGenerativeConfig
+    public record Cohere : IGenerativeConfig
     {
         public const string TypeValue = "generative-cohere";
         public string Type => TypeValue;
@@ -76,7 +76,7 @@ public static class Generative
         public double? TemperatureProperty { get; set; }
     }
 
-    public record DatabricksConfig : IGenerativeConfig
+    public record Databricks : IGenerativeConfig
     {
         public const string TypeValue = "generative-databricks";
         public string Type => TypeValue;
@@ -88,7 +88,7 @@ public static class Generative
         public double? TopP { get; set; }
     }
 
-    public record FriendliAIConfig : IGenerativeConfig
+    public record FriendliAI : IGenerativeConfig
     {
         public const string TypeValue = "generative-friendliai";
         public string Type => TypeValue;
@@ -99,7 +99,7 @@ public static class Generative
         public double? Temperature { get; set; }
     }
 
-    public record MistralConfig : IGenerativeConfig
+    public record Mistral : IGenerativeConfig
     {
         public const string TypeValue = "generative-mistral";
         public string Type => TypeValue;
@@ -110,7 +110,7 @@ public static class Generative
         public double? Temperature { get; set; }
     }
 
-    public record NvidiaConfig : IGenerativeConfig
+    public record Nvidia : IGenerativeConfig
     {
         public const string TypeValue = "generative-nvidia";
         public string Type => TypeValue;
@@ -121,7 +121,7 @@ public static class Generative
         public double? Temperature { get; set; }
     }
 
-    public record OllamaConfig : IGenerativeConfig
+    public record Ollama : IGenerativeConfig
     {
         public const string TypeValue = "generative-ollama";
         public string Type => TypeValue;
@@ -130,7 +130,7 @@ public static class Generative
         public string? Model { get; set; }
     }
 
-    public record OpenAIConfig : OpenAIConfigBase
+    public record OpenAI : OpenAIBase
     {
         public const string TypeValue = "generative-openai";
         public override string Type => TypeValue;
@@ -138,7 +138,7 @@ public static class Generative
         public string? Model { get; set; }
     }
 
-    public record AzureOpenAIConfig : OpenAIConfigBase
+    public record AzureOpenAI : OpenAIBase
     {
         public const string TypeValue = "generative-azure-openai";
         public override string Type => TypeValue;
@@ -147,7 +147,7 @@ public static class Generative
         public string DeploymentId { get; set; } = string.Empty;
     }
 
-    public record GoogleConfig : IGenerativeConfig
+    public record Google : IGenerativeConfig
     {
         public const string TypeValue = "generative-google";
         public string Type => TypeValue;
@@ -161,7 +161,7 @@ public static class Generative
         public double? TopP { get; set; }
     }
 
-    public record XAIConfig : IGenerativeConfig
+    public record XAI : IGenerativeConfig
     {
         public const string TypeValue = "generative-xai";
         public string Type => TypeValue;
