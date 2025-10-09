@@ -1,0 +1,141 @@
+syntax = "proto3";
+
+package weaviate.v1;
+
+import "google/protobuf/struct.proto";
+import "v1/base.proto";
+
+option go_package = "github.com/weaviate/weaviate/grpc/generated;protocol";
+option java_package = "io.weaviate.client.grpc.protocol.v1";
+option java_outer_classname = "WeaviateProtoBatch";
+
+message BatchObjectsRequest {
+  repeated BatchObject objects = 1;
+  optional ConsistencyLevel consistency_level = 2;
+}
+
+message BatchReferencesRequest {
+  repeated BatchReference references = 1;
+  optional ConsistencyLevel consistency_level = 2;
+}
+
+message BatchSendRequest {
+  message Stop {
+  }
+  message Objects {
+    repeated BatchObject values = 1;
+  }
+  message References {
+    repeated BatchReference values = 1;
+  }
+  string stream_id = 1;
+  oneof message {
+    Objects objects = 2;
+    References references = 3;
+    Stop stop = 4;
+  }
+}
+
+message BatchSendReply {
+  int32 next_batch_size = 1;
+  float backoff_seconds = 2;
+}
+
+message BatchStreamRequest {
+  optional ConsistencyLevel consistency_level = 1;
+  optional int32 object_index = 2;
+  optional int32 reference_index = 3;
+}
+
+message BatchStreamMessage {
+  message Start {
+  }
+  message Stop {
+  }
+  message Shutdown {
+  }
+  message ShuttingDown {
+  }
+  message Error {
+    string error = 1;
+    int32 index = 2;
+    bool is_retriable = 3;
+    bool is_object = 4;
+    bool is_reference = 5;
+  }
+  string stream_id = 1;
+  oneof message {
+    Error error = 2;
+    Start start = 3;
+    Stop stop = 4;
+    Shutdown shutdown = 5;
+    ShuttingDown shutting_down = 6;
+  }
+}
+
+message BatchObject {
+  message Properties {
+    google.protobuf.Struct non_ref_properties = 1;
+    repeated SingleTargetRefProps single_target_ref_props = 2;
+    repeated MultiTargetRefProps multi_target_ref_props = 3;
+    repeated NumberArrayProperties number_array_properties = 4;
+    repeated IntArrayProperties int_array_properties = 5;
+    repeated TextArrayProperties text_array_properties = 6;
+    repeated BooleanArrayProperties boolean_array_properties = 7;
+    repeated ObjectProperties object_properties = 8;
+    repeated ObjectArrayProperties object_array_properties = 9;
+    // empty lists do not have a type in many languages and clients do not know which datatype the property has.
+    // Weaviate can get the datatype from its schema
+    repeated string empty_list_props = 10;
+  }
+
+  message SingleTargetRefProps {
+    repeated string uuids = 1;
+    string prop_name = 2;
+  }
+
+  message MultiTargetRefProps {
+    repeated string uuids = 1;
+    string prop_name = 2;
+    string target_collection = 3;
+  }
+
+  string uuid = 1;
+  // protolint:disable:next REPEATED_FIELD_NAMES_PLURALIZED
+  repeated float vector = 2 [deprecated = true]; // deprecated, will be removed
+  Properties properties = 3;
+  string collection = 4;
+  string tenant = 5;
+  bytes vector_bytes = 6;
+  // protolint:disable:next REPEATED_FIELD_NAMES_PLURALIZED
+  repeated Vectors vectors = 23;
+}
+
+message BatchReference {
+  string name = 1;
+  string from_collection = 2;
+  string from_uuid = 3;
+  optional string to_collection = 4;
+  string to_uuid = 5;
+  string tenant = 6;
+}
+
+message BatchObjectsReply {
+  message BatchError {
+    int32 index = 1;
+    string error = 2;
+  }
+
+  float took = 1;
+  repeated BatchError errors = 2;
+}
+
+message BatchReferencesReply {
+  message BatchError {
+    int32 index = 1;
+    string error = 2;
+  }
+
+  float took = 1;
+  repeated BatchError errors = 2;
+}
