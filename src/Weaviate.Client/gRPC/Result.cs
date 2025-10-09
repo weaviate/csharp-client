@@ -213,16 +213,16 @@ internal partial class WeaviateGrpcClient
     }
 
     internal static IList<GenerativeReply> BuildGenerativeReplyFromResult(
-        IEnumerable<V1.GenerativeReply> generative
+        IEnumerable<V1.GenerativeReply>? generative
     )
     {
         return generative
-            .Select(g => new GenerativeReply(
-                Result: g.Result,
-                Debug: g.Debug is null ? null : new GenerativeDebug(g.Debug.FullPrompt),
-                Metadata: g.Metadata
-            ))
-            .ToList();
+                ?.Select(g => new GenerativeReply(
+                    Result: g.Result,
+                    Debug: g.Debug is null ? null : new GenerativeDebug(g.Debug.FullPrompt),
+                    Metadata: g.Metadata
+                ))
+                .ToList() ?? [];
     }
 
     internal static GenerativeWeaviateObject BuildGenerativeObjectFromResult(
@@ -246,9 +246,9 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    private static GenerativeResult BuildGenerativeResult(V1.GenerativeResult generative)
+    private static GenerativeResult BuildGenerativeResult(V1.GenerativeResult? generative)
     {
-        return new GenerativeResult(BuildGenerativeReplyFromResult(generative.Values));
+        return new GenerativeResult(BuildGenerativeReplyFromResult(generative?.Values));
     }
 
     internal static IDictionary<string, IList<WeaviateObject>> MakeRefs(
@@ -298,6 +298,8 @@ internal partial class WeaviateGrpcClient
                         BuildGroupByObjectFromResult(reply.Collection, g.Name, obj)
                     )
                     .ToArray(),
+                MinDistance = g.MinDistance,
+                MaxDistance = g.MaxDistance,
             }
         );
 
@@ -361,26 +363,61 @@ internal partial class WeaviateGrpcClient
         if (reply?.GroupByResults == null || reply.GroupByResults.Count == 0)
             return Models.GenerativeGroupByResult.Empty;
 
-        var groups = reply.GroupByResults.ToDictionary(
-            g => g.Name,
-            g => new GenerativeWeaviateGroup
+        var groups = new Dictionary<string, GenerativeWeaviateGroup>();
+        foreach (var g in reply.GroupByResults)
+        {
+            var generative = BuildGenerativeResult(g.GenerativeResult);
+
+#pragma warning disable CS0612 // Member Generative is obsolete
+            // Fallback for Weaviate versions that still populate deprecated fields and leave the new fields empty.
+            if (generative is { Values.Count: 0 } && g.Generative?.Result is not null)
+            {
+                generative = new GenerativeResult(BuildGenerativeReplyFromResult([g.Generative]));
+            }
+#pragma warning restore CS0612 // Type or member is obsolete
+
+            var groupObjects = g
+                .Objects.Select(obj =>
+                    BuildGenerativeGroupByObjectFromResult(reply.Collection, g.Name, obj)
+                )
+                .ToArray();
+
+            var group = new GenerativeWeaviateGroup
             {
                 Name = g.Name,
-                Objects = g
-                    .Objects.Select(obj =>
-                        BuildGenerativeGroupByObjectFromResult(reply.Collection, g.Name, obj)
-                    )
-                    .ToArray(),
-            }
-        );
+                Objects = groupObjects,
+                Generative = generative,
+                MinDistance = g.MinDistance,
+                MaxDistance = g.MaxDistance,
+            };
+            // You can add a breakpoint or debug here for each group 'g' or 'group'
+            groups[g.Name] = group;
+        }
 
         var objects = groups.Values.SelectMany(g => g.Objects).ToArray();
 
-        var result = new Models.GenerativeGroupByResult(
-            objects,
-            groups,
-            BuildGenerativeResult(reply.GenerativeGroupedResults)
-        );
+        GenerativeResult gs = BuildGenerativeResult(reply.GenerativeGroupedResults);
+
+#pragma warning disable CS0612 // Members HasGenerativeGroupedResult and GenerativeGroupedResult are obsolete
+        // Fallback for Weaviate versions that still populate deprecated fields and leave the new fields empty.
+        if (
+            gs is { Values.Count: 0 }
+            && reply is { HasGenerativeGroupedResult: true, GenerativeGroupedResult: not null }
+        )
+        {
+            gs = new GenerativeResult(
+                [
+                    new GenerativeReply(
+                        Result: reply.GenerativeGroupedResult,
+                        Debug: null,
+                        Metadata: null
+                    ),
+                ]
+            );
+        }
+#pragma warning restore CS0612 // Type or member is obsolete
+
+        var result = new Models.GenerativeGroupByResult(objects, groups, gs);
 
         return result;
     }

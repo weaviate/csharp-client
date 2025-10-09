@@ -19,13 +19,28 @@ public abstract record GenerativePrompt
 
 public record SinglePrompt : GenerativePrompt
 {
+    public SinglePrompt() { }
+
+    public SinglePrompt(string prompt)
+    {
+        Prompt = prompt;
+    }
+
     public required string Prompt { get; set; }
     public GenerativeProvider? Provider { get; set; }
 }
 
 public record GroupedPrompt : GenerativePrompt
 {
+    public GroupedPrompt() { }
+
+    public GroupedPrompt(string task, params string[] properties)
+    {
+        Task = task;
+        Properties = [.. properties];
+    }
+
     public required string Task { get; set; }
-    public List<string> Properties { get; set; } = [];
+    public OneOrManyOf<string> Properties { get; set; } = [];
     public GenerativeProvider? Provider { get; set; }
 }
