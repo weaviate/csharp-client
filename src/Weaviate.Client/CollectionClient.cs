@@ -76,16 +76,14 @@ public partial class CollectionClient
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var page = (
-                await _client.GrpcClient.FetchObjects(
-                    Name,
-                    limit: cacheSize,
-                    after: cursor,
-                    returnMetadata: returnMetadata,
-                    returnProperties: returnProperties,
-                    returnReferences: returnReferences
-                )
-            ).result;
+            WeaviateResult page = await _client.GrpcClient.FetchObjects(
+                Name,
+                limit: cacheSize,
+                after: cursor,
+                returnMetadata: returnMetadata,
+                returnProperties: returnProperties,
+                returnReferences: returnReferences
+            );
 
             if (!page.Objects.Any())
             {

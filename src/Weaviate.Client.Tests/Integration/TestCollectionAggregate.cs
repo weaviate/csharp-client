@@ -195,7 +195,7 @@ public partial class AggregatesTests : IntegrationTests
         );
 
         var result = await collectionClient.Aggregate.OverAll(
-            filter: filter,
+            filters: filter,
             metrics: new[]
             {
                 Metrics.ForProperty("text").Text(count: true, topOccurrencesValue: true),

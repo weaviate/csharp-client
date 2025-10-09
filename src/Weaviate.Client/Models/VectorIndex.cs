@@ -126,7 +126,7 @@ public static class VectorIndex
 
             public bool BitCompression { get; set; }
             public int Centroids { get; set; }
-            public required EncoderConfig Encoder { get; set; }
+            public EncoderConfig? Encoder { get; set; }
             public int Segments { get; set; }
             public int TrainingLimit { get; set; }
 
