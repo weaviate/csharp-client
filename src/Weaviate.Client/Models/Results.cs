@@ -6,13 +6,16 @@ namespace Weaviate.Client.Models;
 public record WeaviateGroup<TGroup>
 {
     public required string Name { get; init; }
-    public required ICollection<TGroup> Objects { get; init; } = [];
+    public required IList<TGroup> Objects { get; init; } = [];
+    public float MinDistance { get; init; } = 0;
+    public float MaxDistance { get; init; } = 0;
+    public int NumberOfObjects => Objects.Count;
 }
 
 public record GroupByResult<TObject, TGroup>(
-    ICollection<TObject> Objects,
+    IList<TObject> Objects,
     IDictionary<string, TGroup> Groups
-);
+) { };
 
 public record WeaviateResult<TObject> : IEnumerable<TObject>
 {
@@ -25,10 +28,8 @@ public record WeaviateResult<TObject> : IEnumerable<TObject>
 #endregion
 
 #region Direct Query Results
-public record GroupByResult(
-    ICollection<GroupByObject> Objects,
-    IDictionary<string, WeaviateGroup> Groups
-) : GroupByResult<GroupByObject, WeaviateGroup>(Objects, Groups)
+public record GroupByResult(IList<GroupByObject> Objects, IDictionary<string, WeaviateGroup> Groups)
+    : GroupByResult<GroupByObject, WeaviateGroup>(Objects, Groups)
 {
     private static readonly GroupByResult _empty = new(
         Array.Empty<GroupByObject>(),
@@ -78,7 +79,7 @@ public record WeaviateResult : WeaviateResult<WeaviateObject>
 // Each WeaviateGroup has a Generative property that can hold generative AI related data.
 // Each ResultSet has a Generative property that can hold generative AI related data.
 public record GenerativeGroupByResult(
-    ICollection<GenerativeGroupByObject> Objects,
+    IList<GenerativeGroupByObject> Objects,
     IDictionary<string, GenerativeWeaviateGroup> Groups,
     GenerativeResult Generative
 ) : GroupByResult<GenerativeGroupByObject, GenerativeWeaviateGroup>(Objects, Groups)
@@ -91,7 +92,10 @@ public record GenerativeGroupByResult(
     public static GenerativeGroupByResult Empty => _empty;
 }
 
-public record GenerativeWeaviateGroup : WeaviateGroup<GenerativeGroupByObject>;
+public record GenerativeWeaviateGroup : WeaviateGroup<GenerativeGroupByObject>
+{
+    public GenerativeResult? Generative { get; set; }
+};
 
 public record GenerativeGroupByObject : GenerativeWeaviateObject
 {

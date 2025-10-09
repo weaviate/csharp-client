@@ -13,6 +13,32 @@ public partial class WeaviateClientBuilder
     private ICredentials? _credentials = null;
     private HttpMessageHandler? _httpMessageHandler = null;
 
+    public static WeaviateClientBuilder Custom(
+        string restEndpoint = "localhost",
+        string restPath = "v1/",
+        string grpcEndpoint = "localhost",
+        string grpcPath = "",
+        string restPort = "8080",
+        string grpcPort = "50051",
+        bool useSsl = false,
+        Dictionary<string, string>? headers = null,
+        ICredentials? credentials = null,
+        HttpMessageHandler? httpMessageHandler = null
+    )
+    {
+        return new WeaviateClientBuilder()
+            .WithRestEndpoint(restEndpoint)
+            .WithRestPath(restPath)
+            .WithGrpcEndpoint(grpcEndpoint)
+            .WithGrpcPath(grpcPath)
+            .WithRestPort(Convert.ToUInt16(restPort))
+            .WithGrpcPort(Convert.ToUInt16(grpcPort))
+            .UseSsl(useSsl)
+            .WithHeaders(headers)
+            .WithCredentials(credentials)
+            .WithHttpMessageHandler(httpMessageHandler);
+    }
+
     public static WeaviateClientBuilder Local(
         ICredentials? credentials = null,
         string hostname = "localhost",

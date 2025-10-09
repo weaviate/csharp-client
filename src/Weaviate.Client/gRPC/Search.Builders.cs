@@ -91,10 +91,9 @@ internal partial class WeaviateGrpcClient
                             ? new V1.GenerativeSearch.Types.Grouped()
                             {
                                 Task = groupedPrompt.Task,
-                                Properties = new V1.TextArray
-                                {
-                                    Values = { groupedPrompt.Properties },
-                                },
+                                Properties = groupedPrompt.Properties.Any()
+                                    ? new V1.TextArray { Values = { groupedPrompt.Properties } }
+                                    : null,
                                 Debug = groupedPrompt.Debug,
                                 Queries =
                                 {
