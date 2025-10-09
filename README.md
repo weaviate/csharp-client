@@ -31,7 +31,7 @@ Alternatively, you can add the `PackageReference` to your `.csproj` file:
 
 The best way to get started is by following our quickstart guide. It will walk you through setting up the client, connecting to Weaviate, creating a collection, and performing your first vector search.
 
-- **[➡️ Quickstart Guide](https://java-client-v6--docs-weaviate-io.netlify.app/weaviate/quickstart)**
+- **[➡️ Quickstart Guide](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/quickstart)**
 
 ---
 
@@ -39,11 +39,11 @@ The best way to get started is by following our quickstart guide. It will walk y
 
 For more detailed information on specific features, please refer to the official documentation and the how-to guides.
 
-- **[Client library overview](https://java-client-v6--docs-weaviate-io.netlify.app/weaviate/client-libraries/csharp)**
-- **[How-to: Configure the client](https://java-client-v6--docs-weaviate-io.netlify.app/weaviate/configuration)**
-- **[How-to: Manage collections](https://java-client-v6--docs-weaviate-io.netlify.app/weaviate/manage-collections)**
-- **[How-to: Manage data objects](https://java-client-v6--docs-weaviate-io.netlify.app/weaviate/manage-objects)**
-- **[How-to: Query & search data](https://java-client-v6--docs-weaviate-io.netlify.app/weaviate/search)**
+- **[Client library overview](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/client-libraries/csharp)**
+- **[How-to: Configure the client](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/configuration)**
+- **[How-to: Manage collections](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/manage-collections)**
+- **[How-to: Manage data objects](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/manage-objects)**
+- **[How-to: Query & search data](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/search)**
 
 ---
 
