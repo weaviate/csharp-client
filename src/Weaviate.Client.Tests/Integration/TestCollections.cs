@@ -47,8 +47,15 @@ public partial class CollectionsTests : IntegrationTests
             Assert.NotNull(obj.Generative);
             Assert.Contains(
                 "I'm sorry, I'm just a dummy and can't generate anything.",
-                obj.Generative.Values.First().Result
+                obj.Generative.Values[0].Result
             );
+
+            // The value of the Result property can be
+            // accessed by index of Generative,
+            // or via Generative.Values[] indexer.
+            // They return the same value.
+            // The entries in the Values list contain additional properties.
+            Assert.Same(obj.Generative.Values[0].Result, obj.Generative[0]);
         }
     }
 
