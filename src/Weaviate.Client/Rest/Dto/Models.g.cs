@@ -29,7 +29,7 @@ namespace Weaviate.Client.Rest.Dto
     
 
     /// <summary>
-    /// the type of user
+    /// The type of the user. `db` users are managed by Weaviate, `oidc` users are managed by an external OIDC provider.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public enum UserTypeInput
@@ -44,7 +44,19 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// the type of user
+    /// If the group contains OIDC or database users.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum GroupType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"oidc")]
+        Oidc = 0,
+
+    }
+
+    /// <summary>
+    /// The type of the user. `db_user` users are created through the `users` API, `db_env_user` users are created through environment variables, and `oidc` users are managed by an external OIDC provider.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public enum UserTypeOutput
@@ -65,7 +77,7 @@ namespace Weaviate.Client.Rest.Dto
     public partial class UserOwnInfo
     {
         /// <summary>
-        /// The groups associated to the user
+        /// The groups associated with the user.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("groups")]
@@ -75,7 +87,7 @@ namespace Weaviate.Client.Rest.Dto
         public System.Collections.Generic.ICollection<Role>? Roles { get; set; } = default!;
 
         /// <summary>
-        /// The username associated with the provided key
+        /// The name (ID) of the user.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
@@ -105,7 +117,7 @@ namespace Weaviate.Client.Rest.Dto
     public partial class DBUserInfo
     {
         /// <summary>
-        /// The role names associated to the user
+        /// The roles associated with the user.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("roles")]
@@ -113,7 +125,7 @@ namespace Weaviate.Client.Rest.Dto
         public System.Collections.Generic.ICollection<string> Roles { get; set; } = new System.Collections.ObjectModel.Collection<string>();
 
         /// <summary>
-        /// The user id of the given user
+        /// The name (ID) of the user.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("userId")]
@@ -121,7 +133,7 @@ namespace Weaviate.Client.Rest.Dto
         public string UserId { get; set; } = default!;
 
         /// <summary>
-        /// type of the returned user
+        /// Type of the returned user.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("dbUserType")]
@@ -130,21 +142,21 @@ namespace Weaviate.Client.Rest.Dto
         public DBUserInfoDbUserType DbUserType { get; set; } = default!;
 
         /// <summary>
-        /// activity status of the returned user
+        /// Activity status of the returned user.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("active")]
         public bool Active { get; set; } = default!;
 
         /// <summary>
-        /// Date and time in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
+        /// Date and time in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
         public System.DateTimeOffset? CreatedAt { get; set; } = default!;
 
         /// <summary>
-        /// First 3 letters of the associated API-key
+        /// First 3 letters of the associated API key.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("apiKeyFirstLetters")]
@@ -152,7 +164,7 @@ namespace Weaviate.Client.Rest.Dto
         public string? ApiKeyFirstLetters { get; set; } = default!;
 
         /// <summary>
-        /// Date and time in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
+        /// Date and time in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("lastUsedAt")]
@@ -181,7 +193,7 @@ namespace Weaviate.Client.Rest.Dto
     public partial class UserApiKey
     {
         /// <summary>
-        /// The apikey
+        /// The API key associated with the user.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("apikey")]
@@ -211,7 +223,7 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Role
     {
         /// <summary>
-        /// role name
+        /// The name (ID) of the role.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -242,62 +254,83 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// permissions attached to a role.
+    /// Permissions attached to a role.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class Permission
     {
         /// <summary>
-        /// resources applicable for backup actions
+        /// Resources applicable for backup actions.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("backups")]
         public Backups? Backups { get; set; } = default!;
 
         /// <summary>
-        /// resources applicable for data actions
+        /// Resources applicable for data actions.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
         public Data? Data { get; set; } = default!;
 
         /// <summary>
-        /// resources applicable for cluster actions
+        /// Resources applicable for cluster actions.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("nodes")]
         public Nodes? Nodes { get; set; } = default!;
 
         /// <summary>
-        /// resources applicable for user actions
+        /// Resources applicable for user actions.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("users")]
         public Users? Users { get; set; } = default!;
 
         /// <summary>
-        /// resources applicable for tenant actions
+        /// Resources applicable for group actions.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("groups")]
+        public Groups? Groups { get; set; } = default!;
+
+        /// <summary>
+        /// Resources applicable for tenant actions.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("tenants")]
         public Tenants? Tenants { get; set; } = default!;
 
         /// <summary>
-        /// resources applicable for role actions
+        /// Resources applicable for role actions.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("roles")]
         public Roles? Roles { get; set; } = default!;
 
         /// <summary>
-        /// resources applicable for collection and/or tenant actions
+        /// Resources applicable for collection and/or tenant actions.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("collections")]
         public Collections? Collections { get; set; } = default!;
 
         /// <summary>
-        /// allowed actions in weaviate.
+        /// resources applicable for replicate actions
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("replicate")]
+        public Replicate? Replicate { get; set; } = default!;
+
+        /// <summary>
+        /// Resource definition for alias-related actions and permissions. Used to specify which aliases and collections can be accessed or modified.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("aliases")]
+        public Aliases? Aliases { get; set; } = default!;
+
+        /// <summary>
+        /// Allowed actions in weaviate.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("action")]
@@ -325,7 +358,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// list of roles
+    /// List of roles.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class RolesListResponse : System.Collections.ObjectModel.Collection<Role>
@@ -525,7 +558,7 @@ namespace Weaviate.Client.Rest.Dto
     /// C11y function to show the nearest neighbors to a word.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class C11yNearestNeighbors : System.Collections.ObjectModel.Collection<Anonymous3>
+    public partial class C11yNearestNeighbors : System.Collections.ObjectModel.Collection<Anonymous4>
     {
 
         public string ToJson()
@@ -603,7 +636,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Receive question based on array of classes, properties and values.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class C11yVectorBasedQuestion : System.Collections.ObjectModel.Collection<Anonymous4>
+    public partial class C11yVectorBasedQuestion : System.Collections.ObjectModel.Collection<Anonymous5>
     {
 
         public string ToJson()
@@ -1367,42 +1400,50 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// Request body to add a replica of given shard of a given collection
+    /// Specifies the parameters required to initiate a shard replica movement operation between two nodes for a given collection and shard. This request defines the source and target node, the collection and type of transfer.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class ReplicationReplicateReplicaRequest
     {
         /// <summary>
-        /// The node containing the replica
+        /// The name of the Weaviate node currently hosting the shard replica that needs to be moved or copied.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("sourceNodeName")]
+        [System.Text.Json.Serialization.JsonPropertyName("sourceNode")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string SourceNodeName { get; set; } = default!;
+        public string SourceNode { get; set; } = default!;
 
         /// <summary>
-        /// The node to add a copy of the replica on
+        /// The name of the Weaviate node where the new shard replica will be created as part of the movement or copy operation.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("destinationNodeName")]
+        [System.Text.Json.Serialization.JsonPropertyName("targetNode")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string DestinationNodeName { get; set; } = default!;
+        public string TargetNode { get; set; } = default!;
 
         /// <summary>
-        /// The collection name holding the shard
+        /// The name of the collection to which the target shard belongs.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("collectionId")]
+        [System.Text.Json.Serialization.JsonPropertyName("collection")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string CollectionId { get; set; } = default!;
+        public string Collection { get; set; } = default!;
 
         /// <summary>
-        /// The shard id holding the replica to be copied
+        /// The name of the shard whose replica is to be moved or copied.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("shardId")]
+        [System.Text.Json.Serialization.JsonPropertyName("shard")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string ShardId { get; set; } = default!;
+        public string Shard { get; set; } = default!;
+
+        /// <summary>
+        /// Specifies the type of replication operation to perform. 'COPY' creates a new replica on the target node while keeping the source replica. 'MOVE' creates a new replica on the target node and then removes the source replica upon successful completion. Defaults to 'COPY' if omitted.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("type")]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public ReplicationReplicateReplicaRequestType? Type { get; set; } = Weaviate.Client.Rest.Dto.ReplicationReplicateReplicaRequestType.COPY;
 
         public string ToJson()
         {
@@ -1424,13 +1465,13 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// The OK response of POST /replication/replicate
+    /// Contains the unique identifier for a successfully initiated asynchronous replica movement operation. This ID can be used to track the progress of the operation.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class ReplicationReplicateReplicaResponse
     {
         /// <summary>
-        /// The unique id of the replication operation.
+        /// The unique identifier (ID) assigned to the registered replication operation.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -1457,34 +1498,63 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// Request body to disable (soft-delete) a replica of given shard of a given collection
+    /// Provides the detailed sharding state for one or more collections, including the distribution of shards and their replicas across the cluster nodes.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ReplicationShardingStateResponse
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("shardingState")]
+        public ReplicationShardingState? ShardingState { get; set; } = default!;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static ReplicationShardingStateResponse FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<ReplicationShardingStateResponse>(data, options);
+
+        }
+
+    }
+
+    /// <summary>
+    /// Specifies the parameters required to mark a specific shard replica as inactive (soft-delete) on a particular node. This action typically prevents the replica from serving requests but does not immediately remove its data.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class ReplicationDisableReplicaRequest
     {
         /// <summary>
-        /// The node containing the replica to be disabled
+        /// The name of the Weaviate node hosting the shard replica that is to be disabled.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("nodeName")]
+        [System.Text.Json.Serialization.JsonPropertyName("node")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string NodeName { get; set; } = default!;
+        public string Node { get; set; } = default!;
 
         /// <summary>
-        /// The collection name holding the replica to be disabled
+        /// The name of the collection to which the shard replica belongs.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("collectionId")]
+        [System.Text.Json.Serialization.JsonPropertyName("collection")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string CollectionId { get; set; } = default!;
+        public string Collection { get; set; } = default!;
 
         /// <summary>
-        /// The shard id holding the replica to be disabled
+        /// The ID of the shard whose replica is to be disabled.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("shardId")]
+        [System.Text.Json.Serialization.JsonPropertyName("shard")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string ShardId { get; set; } = default!;
+        public string Shard { get; set; } = default!;
 
         public string ToJson()
         {
@@ -1506,34 +1576,34 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// Request body to delete a replica of given shard of a given collection
+    /// Specifies the parameters required to permanently delete a specific shard replica from a particular node. This action will remove the replica's data from the node.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class ReplicationDeleteReplicaRequest
     {
         /// <summary>
-        /// The node containing the replica to be deleted
+        /// The name of the Weaviate node from which the shard replica will be deleted.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("nodeName")]
+        [System.Text.Json.Serialization.JsonPropertyName("node")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string NodeName { get; set; } = default!;
+        public string Node { get; set; } = default!;
 
         /// <summary>
-        /// The collection name holding the replica to be delete
+        /// The name of the collection to which the shard replica belongs.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("collectionId")]
+        [System.Text.Json.Serialization.JsonPropertyName("collection")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string CollectionId { get; set; } = default!;
+        public string Collection { get; set; } = default!;
 
         /// <summary>
-        /// The shard id holding the replica to be deleted
+        /// The ID of the shard whose replica is to be deleted.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("shardId")]
+        [System.Text.Json.Serialization.JsonPropertyName("shard")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string ShardId { get; set; } = default!;
+        public string Shard { get; set; } = default!;
 
         public string ToJson()
         {
@@ -1555,18 +1625,142 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// The status of a replication operation
+    /// Represents a shard and lists the nodes that currently host its replicas.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ReplicationShardReplicas
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("shard")]
+        public string? Shard { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("replicas")]
+        public System.Collections.Generic.ICollection<string>? Replicas { get; set; } = default!;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static ReplicationShardReplicas FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<ReplicationShardReplicas>(data, options);
+
+        }
+
+    }
+
+    /// <summary>
+    /// Details the sharding layout for a specific collection, mapping each shard to its set of replicas across the cluster.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ReplicationShardingState
+    {
+        /// <summary>
+        /// The name of the collection.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("collection")]
+        public string? Collection { get; set; } = default!;
+
+        /// <summary>
+        /// An array detailing each shard within the collection and the nodes hosting its replicas.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("shards")]
+        public System.Collections.Generic.ICollection<ReplicationShardReplicas>? Shards { get; set; } = default!;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static ReplicationShardingState FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<ReplicationShardingState>(data, options);
+
+        }
+
+    }
+
+    /// <summary>
+    /// Represents an error encountered during a replication operation, including its timestamp and a human-readable message.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ReplicationReplicateDetailsReplicaStatusError
+    {
+        /// <summary>
+        /// The unix timestamp in ms when the error occurred. This is an approximate time and so should not be used for precise timing.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("whenErroredUnixMs")]
+        public long? WhenErroredUnixMs { get; set; } = default!;
+
+        /// <summary>
+        /// A human-readable message describing the error.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("message")]
+        public string? Message { get; set; } = default!;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static ReplicationReplicateDetailsReplicaStatusError FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<ReplicationReplicateDetailsReplicaStatusError>(data, options);
+
+        }
+
+    }
+
+    /// <summary>
+    /// Represents the current or historical status of a shard replica involved in a replication operation, including its operational state and any associated errors.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class ReplicationReplicateDetailsReplicaStatus
     {
+        /// <summary>
+        /// The current operational state of the replica during the replication process.
+        /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("state")]
      //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public ReplicationReplicateDetailsReplicaStatusState? State { get; set; } = default!;
 
+        /// <summary>
+        /// The UNIX timestamp in ms when this state was first entered. This is an approximate time and so should not be used for precise timing.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("whenStartedUnixMs")]
+        public long? WhenStartedUnixMs { get; set; } = default!;
+
+        /// <summary>
+        /// A list of error messages encountered by this replica during the replication operation, if any.
+        /// </summary>
+
         [System.Text.Json.Serialization.JsonPropertyName("errors")]
-        public System.Collections.Generic.ICollection<string>? Errors { get; set; } = default!;
+        public System.Collections.Generic.ICollection<ReplicationReplicateDetailsReplicaStatusError>? Errors { get; set; } = default!;
 
         public string ToJson()
         {
@@ -1588,13 +1782,13 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// The current status and details of a replication operation, including information about the resources involved in the replication process.
+    /// Provides a comprehensive overview of a specific replication operation, detailing its unique ID, the involved collection, shard, source and target nodes, transfer type, current status, and optionally, its status history.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class ReplicationReplicateDetailsReplicaResponse
     {
         /// <summary>
-        /// The unique id of the replication operation.
+        /// The unique identifier (ID) of this specific replication operation.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -1602,15 +1796,15 @@ namespace Weaviate.Client.Rest.Dto
         public System.Guid Id { get; set; } = default!;
 
         /// <summary>
-        /// The id of the shard to collect replication details for.
+        /// The name of the shard involved in this replication operation.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("shardId")]
+        [System.Text.Json.Serialization.JsonPropertyName("shard")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string ShardId { get; set; } = default!;
+        public string Shard { get; set; } = default!;
 
         /// <summary>
-        /// The name of the collection holding data being replicated.
+        /// The name of the collection to which the shard being replicated belongs.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("collection")]
@@ -1618,23 +1812,53 @@ namespace Weaviate.Client.Rest.Dto
         public string Collection { get; set; } = default!;
 
         /// <summary>
-        /// The id of the node where the source replica is allocated.
+        /// The identifier of the node from which the replica is being moved or copied (the source node).
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("sourceNodeId")]
+        [System.Text.Json.Serialization.JsonPropertyName("sourceNode")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string SourceNodeId { get; set; } = default!;
+        public string SourceNode { get; set; } = default!;
 
         /// <summary>
-        /// The id of the node where the target replica is allocated.
+        /// The identifier of the node to which the replica is being moved or copied (the target node).
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("targetNodeId")]
+        [System.Text.Json.Serialization.JsonPropertyName("targetNode")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string TargetNodeId { get; set; } = default!;
+        public string TargetNode { get; set; } = default!;
 
         /// <summary>
-        /// The current status of the replication operation
+        /// Indicates whether the operation is a 'COPY' (source replica remains) or a 'MOVE' (source replica is removed after successful transfer).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("type")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public ReplicationReplicateDetailsReplicaResponseType Type { get; set; } = default!;
+
+        /// <summary>
+        /// Whether the replica operation is uncancelable.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("uncancelable")]
+        public bool? Uncancelable { get; set; } = default!;
+
+        /// <summary>
+        /// Whether the replica operation is scheduled for cancellation.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("scheduledForCancel")]
+        public bool? ScheduledForCancel { get; set; } = default!;
+
+        /// <summary>
+        /// Whether the replica operation is scheduled for deletion.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("scheduledForDelete")]
+        public bool? ScheduledForDelete { get; set; } = default!;
+
+        /// <summary>
+        /// An object detailing the current operational state of the replica movement and any errors encountered.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
@@ -1642,11 +1866,18 @@ namespace Weaviate.Client.Rest.Dto
         public ReplicationReplicateDetailsReplicaStatus Status { get; set; } = new ReplicationReplicateDetailsReplicaStatus();
 
         /// <summary>
-        /// The history of the replication operation
+        /// An array detailing the historical sequence of statuses the replication operation has transitioned through, if requested and available.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("statusHistory")]
         public System.Collections.Generic.ICollection<ReplicationReplicateDetailsReplicaStatus>? StatusHistory { get; set; } = default!;
+
+        /// <summary>
+        /// The UNIX timestamp in ms when the replication operation was initiated. This is an approximate time and so should not be used for precise timing.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("whenStartedUnixMs")]
+        public long? WhenStartedUnixMs { get; set; } = default!;
 
         public string ToJson()
         {
@@ -1662,6 +1893,105 @@ namespace Weaviate.Client.Rest.Dto
             var options = new System.Text.Json.JsonSerializerOptions();
 
             return System.Text.Json.JsonSerializer.Deserialize<ReplicationReplicateDetailsReplicaResponse>(data, options);
+
+        }
+
+    }
+
+    /// <summary>
+    /// Specifies the parameters available when force deleting replication operations.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ReplicationReplicateForceDeleteRequest
+    {
+        /// <summary>
+        /// The unique identifier (ID) of the replication operation to be forcefully deleted.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        public System.Guid? Id { get; set; } = default!;
+
+        /// <summary>
+        /// The name of the collection to which the shard being replicated belongs.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("collection")]
+        public string? Collection { get; set; } = default!;
+
+        /// <summary>
+        /// The identifier of the shard involved in the replication operations.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("shard")]
+        public string? Shard { get; set; } = default!;
+
+        /// <summary>
+        /// The name of the target node where the replication operations are registered.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("node")]
+        public string? Node { get; set; } = default!;
+
+        /// <summary>
+        /// If true, the operation will not actually delete anything but will return the expected outcome of the deletion.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("dryRun")]
+        public bool? DryRun { get; set; } = false;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static ReplicationReplicateForceDeleteRequest FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<ReplicationReplicateForceDeleteRequest>(data, options);
+
+        }
+
+    }
+
+    /// <summary>
+    /// Provides the UUIDs that were successfully force deleted as part of the replication operation. If dryRun is true, this will return the expected outcome without actually deleting anything.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ReplicationReplicateForceDeleteResponse
+    {
+        /// <summary>
+        /// The unique identifiers (IDs) of the replication operations that were forcefully deleted.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("deleted")]
+        public System.Collections.Generic.ICollection<System.Guid>? Deleted { get; set; } = default!;
+
+        /// <summary>
+        /// Indicates whether the operation was a dry run (true) or an actual deletion (false).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("dryRun")]
+        public bool? DryRun { get; set; } = default!;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static ReplicationReplicateForceDeleteResponse FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<ReplicationReplicateForceDeleteResponse>(data, options);
 
         }
 
@@ -2280,6 +2610,20 @@ namespace Weaviate.Client.Rest.Dto
      //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public BackupCreateStatusResponseStatus? Status { get; set; } = Weaviate.Client.Rest.Dto.BackupCreateStatusResponseStatus.STARTED;
 
+        /// <summary>
+        /// Timestamp when the backup process started
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("startedAt")]
+        public System.DateTimeOffset? StartedAt { get; set; } = default!;
+
+        /// <summary>
+        /// Timestamp when the backup process completed (successfully or with failure)
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("completedAt")]
+        public System.DateTimeOffset? CompletedAt { get; set; } = default!;
+
         public string ToJson()
         {
 
@@ -2465,6 +2809,22 @@ namespace Weaviate.Client.Rest.Dto
         [System.ComponentModel.DataAnnotations.Range(1, 80)]
         public int? CPUPercentage { get; set; } = 50;
 
+        /// <summary>
+        /// How roles should be restored
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("rolesOptions")]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public RestoreConfigRolesOptions? RolesOptions { get; set; } = Weaviate.Client.Rest.Dto.RestoreConfigRolesOptions.NoRestore;
+
+        /// <summary>
+        /// How users should be restored
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("usersOptions")]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public RestoreConfigUsersOptions? UsersOptions { get; set; } = Weaviate.Client.Rest.Dto.RestoreConfigUsersOptions.NoRestore;
+
         public string ToJson()
         {
 
@@ -2616,7 +2976,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The definition of a backup create response body
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BackupListResponse : System.Collections.ObjectModel.Collection<Anonymous2>
+    public partial class BackupListResponse : System.Collections.ObjectModel.Collection<Anonymous3>
     {
 
         public string ToJson()
@@ -2671,6 +3031,13 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonPropertyName("node_mapping")]
         public System.Collections.Generic.IDictionary<string, string>? Node_mapping { get; set; } = default!;
+
+        /// <summary>
+        /// Allows ovewriting the collection alias if there is a conflict
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("overwriteAlias")]
+        public bool? OverwriteAlias { get; set; } = default!;
 
         public string ToJson()
         {
@@ -2898,6 +3265,20 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonPropertyName("asyncReplicationStatus")]
         public System.Collections.Generic.ICollection<AsyncReplicationStatus>? AsyncReplicationStatus { get; set; } = default!;
+
+        /// <summary>
+        /// Number of replicas for the shard.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("numberOfReplicas")]
+        public long? NumberOfReplicas { get; set; } = default!;
+
+        /// <summary>
+        /// Minimum number of replicas for the shard.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("replicationFactor")]
+        public long? ReplicationFactor { get; set; } = default!;
 
         public string ToJson()
         {
@@ -4352,17 +4733,24 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// attributes representing a single tenant response within weaviate
+    /// Represents the mapping between an alias name and a collection. An alias provides an alternative name for accessing a collection.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class TenantResponse : Tenant
+    public partial class Alias
     {
         /// <summary>
-        /// The list of nodes that owns that tenant data.
+        /// The unique name of the alias that serves as an alternative identifier for the collection.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("belongsToNodes")]
-        public System.Collections.Generic.ICollection<string>? BelongsToNodes { get; set; } = default!;
+        [System.Text.Json.Serialization.JsonPropertyName("alias")]
+        public string? Alias1 { get; set; } = default!;
+
+        /// <summary>
+        /// The name of the collection (class) to which this alias is mapped.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("class")]
+        public string? Class { get; set; } = default!;
 
         public string ToJson()
         {
@@ -4372,12 +4760,44 @@ namespace Weaviate.Client.Rest.Dto
             return System.Text.Json.JsonSerializer.Serialize(this, options);
 
         }
-        public static TenantResponse FromJson(string data)
+        public static Alias FromJson(string data)
         {
 
             var options = new System.Text.Json.JsonSerializerOptions();
 
-            return System.Text.Json.JsonSerializer.Deserialize<TenantResponse>(data, options);
+            return System.Text.Json.JsonSerializer.Deserialize<Alias>(data, options);
+
+        }
+
+    }
+
+    /// <summary>
+    /// Response object containing a list of alias mappings.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class AliasResponse
+    {
+        /// <summary>
+        /// Array of alias objects, each containing an alias-to-collection mapping.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("aliases")]
+        public System.Collections.Generic.ICollection<Alias>? Aliases { get; set; } = default!;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static AliasResponse FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<AliasResponse>(data, options);
 
         }
 
@@ -4387,11 +4807,18 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Body
     {
         /// <summary>
-        /// if the key should be revoked when deactivating the user
+        /// EXPERIMENTAL, DONT USE. THIS WILL BE REMOVED AGAIN. - import api key from static user
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("revoke_key")]
-        public bool? Revoke_key { get; set; } = false;
+        [System.Text.Json.Serialization.JsonPropertyName("import")]
+        public bool? Import { get; set; } = false;
+
+        /// <summary>
+        /// EXPERIMENTAL, DONT USE. THIS WILL BE REMOVED AGAIN. - set the given time as creation time
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("createTime")]
+        public System.DateTimeOffset? CreateTime { get; set; } = default!;
 
         public string ToJson()
         {
@@ -4416,12 +4843,11 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Body2
     {
         /// <summary>
-        /// permissions to be added to the role
+        /// Whether the API key should be revoked when deactivating the user.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("permissions")]
-        [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.ICollection<Permission> Permissions { get; set; } = new System.Collections.ObjectModel.Collection<Permission>();
+        [System.Text.Json.Serialization.JsonPropertyName("revoke_key")]
+        public bool? Revoke_key { get; set; } = false;
 
         public string ToJson()
         {
@@ -4446,7 +4872,7 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Body3
     {
         /// <summary>
-        /// permissions to remove from the role
+        /// Permissions to be added to the role.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("permissions")]
@@ -4472,34 +4898,16 @@ namespace Weaviate.Client.Rest.Dto
 
     }
 
-    /// <summary>
-    /// The type of user
-    /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum UserType
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"oidc")]
-        Oidc = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"db")]
-        Db = 1,
-
-    }
-
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class Body4
     {
         /// <summary>
-        /// the roles that assigned to user
+        /// Permissions to remove from the role.
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("roles")]
-        public System.Collections.Generic.ICollection<string>? Roles { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("userType")]
-     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
-        public UserTypeInput? UserType { get; set; } = default!;
+        [System.Text.Json.Serialization.JsonPropertyName("permissions")]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<Permission> Permissions { get; set; } = new System.Collections.ObjectModel.Collection<Permission>();
 
         public string ToJson()
         {
@@ -4520,11 +4928,26 @@ namespace Weaviate.Client.Rest.Dto
 
     }
 
+    /// <summary>
+    /// The type of the user.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum UserType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"oidc")]
+        Oidc = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"db")]
+        Db = 1,
+
+    }
+
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class Body5
     {
         /// <summary>
-        /// the roles that revoked from the key or user
+        /// The roles that are assigned to the specified user.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("roles")]
@@ -4557,11 +4980,15 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Body6
     {
         /// <summary>
-        /// the roles that assigned to group
+        /// The roles to revoke from the specified user.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("roles")]
         public System.Collections.Generic.ICollection<string>? Roles { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("userType")]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public UserTypeInput? UserType { get; set; } = default!;
 
         public string ToJson()
         {
@@ -4586,11 +5013,15 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Body7
     {
         /// <summary>
-        /// the roles that revoked from group
+        /// The roles to assign to the specified group.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("roles")]
         public System.Collections.Generic.ICollection<string>? Roles { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("groupType")]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public GroupType? GroupType { get; set; } = default!;
 
         public string ToJson()
         {
@@ -4615,6 +5046,63 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Body8
     {
         /// <summary>
+        /// The roles to revoke from the specified group.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("roles")]
+        public System.Collections.Generic.ICollection<string>? Roles { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("groupType")]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public GroupType? GroupType { get; set; } = default!;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static Body8 FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<Body8>(data, options);
+
+        }
+
+    }
+
+    /// <summary>
+    /// The type of the group.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum GroupType2
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"oidc")]
+        Oidc = 0,
+
+    }
+
+    /// <summary>
+    /// The type of group to retrieve.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum GroupType3
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"oidc")]
+        Oidc = 0,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Body9
+    {
+        /// <summary>
         /// Define which fields need to be returned. Default value is ALL
         /// </summary>
 
@@ -4634,12 +5122,41 @@ namespace Weaviate.Client.Rest.Dto
             return System.Text.Json.JsonSerializer.Serialize(this, options);
 
         }
-        public static Body8 FromJson(string data)
+        public static Body9 FromJson(string data)
         {
 
             var options = new System.Text.Json.JsonSerializerOptions();
 
-            return System.Text.Json.JsonSerializer.Deserialize<Body8>(data, options);
+            return System.Text.Json.JsonSerializer.Deserialize<Body9>(data, options);
+
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Body10
+    {
+        /// <summary>
+        /// The new collection (class) that the alias should point to.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("class")]
+        public string? Class { get; set; } = default!;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static Body10 FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<Body10>(data, options);
 
         }
 
@@ -4748,34 +5265,14 @@ namespace Weaviate.Client.Rest.Dto
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class Anonymous2
     {
-        /// <summary>
-        /// The ID of the backup. Must be URL-safe and work as a filesystem path, only lowercase, numbers, underscore, minus characters allowed.
-        /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public string? Id { get; set; } = default!;
+        [System.Text.Json.Serialization.JsonPropertyName("groupId")]
+        public string? GroupId { get; set; } = default!;
 
-        /// <summary>
-        /// destination path of backup files proper to selected backend
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("path")]
-        public string? Path { get; set; } = default!;
-
-        /// <summary>
-        /// The list of classes for which the existed backup process
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("classes")]
-        public System.Collections.Generic.ICollection<string>? Classes { get; set; } = default!;
-
-        /// <summary>
-        /// status of backup process
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [System.Text.Json.Serialization.JsonPropertyName("groupType")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
      //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
-        public Status? Status { get; set; } = default!;
+        public GroupType GroupType { get; set; } = default!;
 
         public string ToJson()
         {
@@ -4797,6 +5294,64 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Anonymous3
+    {
+        /// <summary>
+        /// The ID of the backup. Must be URL-safe and work as a filesystem path, only lowercase, numbers, underscore, minus characters allowed.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        public string? Id { get; set; } = default!;
+
+        /// <summary>
+        /// The list of classes for which the existed backup process
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("classes")]
+        public System.Collections.Generic.ICollection<string>? Classes { get; set; } = default!;
+
+        /// <summary>
+        /// status of backup process
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("status")]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public Status? Status { get; set; } = default!;
+
+        /// <summary>
+        /// Timestamp when the backup process started
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("startedAt")]
+        public System.DateTimeOffset? StartedAt { get; set; } = default!;
+
+        /// <summary>
+        /// Timestamp when the backup process completed (successfully or with failure)
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("completedAt")]
+        public System.DateTimeOffset? CompletedAt { get; set; } = default!;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static Anonymous3 FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<Anonymous3>(data, options);
+
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public enum DBUserInfoDbUserType
     {
 
@@ -4812,7 +5367,7 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Backups
     {
         /// <summary>
-        /// string or regex. if a specific collection name, if left empty it will be ALL or *
+        /// A string that specifies which collections this permission applies to. Can be an exact collection name or a regex pattern. The default value `*` applies the permission to all collections.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("collection")]
@@ -4841,21 +5396,21 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Data
     {
         /// <summary>
-        /// string or regex. if a specific collection name, if left empty it will be ALL or *
+        /// A string that specifies which collections this permission applies to. Can be an exact collection name or a regex pattern. The default value `*` applies the permission to all collections.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("collection")]
         public string? Collection { get; set; } = "*";
 
         /// <summary>
-        /// string or regex. if a specific tenant name, if left empty it will be ALL or *
+        /// A string that specifies which tenants this permission applies to. Can be an exact tenant name or a regex pattern. The default value `*` applies the permission to all tenants.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("tenant")]
         public string? Tenant { get; set; } = "*";
 
         /// <summary>
-        /// string or regex. if a specific object ID, if left empty it will be ALL or *
+        /// A string that specifies which objects this permission applies to. Can be an exact object ID or a regex pattern. The default value `*` applies the permission to all objects.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("object")]
@@ -4884,7 +5439,7 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Nodes
     {
         /// <summary>
-        /// whether to allow (verbose) returning shards and stats data in the response
+        /// Whether to allow (verbose) returning shards and stats data in the response.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("verbosity")]
@@ -4892,7 +5447,7 @@ namespace Weaviate.Client.Rest.Dto
         public NodesVerbosity? Verbosity { get; set; } = Weaviate.Client.Rest.Dto.NodesVerbosity.Minimal;
 
         /// <summary>
-        /// string or regex. if a specific collection name, if left empty it will be ALL or *
+        /// A string that specifies which collections this permission applies to. Can be an exact collection name or a regex pattern. The default value `*` applies the permission to all collections.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("collection")]
@@ -4921,7 +5476,7 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Users
     {
         /// <summary>
-        /// string or regex. if a specific name, if left empty it will be ALL or *
+        /// A string that specifies which users this permission applies to. Can be an exact user name or a regex pattern. The default value `*` applies the permission to all users.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("users")]
@@ -4947,17 +5502,50 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Groups
+    {
+        /// <summary>
+        /// A string that specifies which groups this permission applies to. Can be an exact group name or a regex pattern. The default value `*` applies the permission to all groups.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("group")]
+        public string? Group { get; set; } = "*";
+
+        [System.Text.Json.Serialization.JsonPropertyName("groupType")]
+     //   [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public GroupType? GroupType { get; set; } = default!;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static Groups FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<Groups>(data, options);
+
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class Tenants
     {
         /// <summary>
-        /// string or regex. if a specific collection name, if left empty it will be ALL or *
+        /// A string that specifies which collections this permission applies to. Can be an exact collection name or a regex pattern. The default value `*` applies the permission to all collections.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("collection")]
         public string? Collection { get; set; } = "*";
 
         /// <summary>
-        /// string or regex. if a specific tenant name, if left empty it will be ALL or *
+        /// A string that specifies which tenants this permission applies to. Can be an exact tenant name or a regex pattern. The default value `*` applies the permission to all tenants.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("tenant")]
@@ -4986,14 +5574,14 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Roles
     {
         /// <summary>
-        /// string or regex. if a specific role name, if left empty it will be ALL or *
+        /// A string that specifies which roles this permission applies to. Can be an exact role name or a regex pattern. The default value `*` applies the permission to all roles.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("role")]
         public string? Role { get; set; } = "*";
 
         /// <summary>
-        /// set the scope for the manage role permission
+        /// Set the scope for the manage role permission.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("scope")]
@@ -5023,7 +5611,7 @@ namespace Weaviate.Client.Rest.Dto
     public partial class Collections
     {
         /// <summary>
-        /// string or regex. if a specific collection name, if left empty it will be ALL or *
+        /// A string that specifies which collections this permission applies to. Can be an exact collection name or a regex pattern. The default value `*` applies the permission to all collections.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("collection")]
@@ -5043,6 +5631,78 @@ namespace Weaviate.Client.Rest.Dto
             var options = new System.Text.Json.JsonSerializerOptions();
 
             return System.Text.Json.JsonSerializer.Deserialize<Collections>(data, options);
+
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Replicate
+    {
+        /// <summary>
+        /// string or regex. if a specific collection name, if left empty it will be ALL or *
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("collection")]
+        public string? Collection { get; set; } = "*";
+
+        /// <summary>
+        /// string or regex. if a specific shard name, if left empty it will be ALL or *
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("shard")]
+        public string? Shard { get; set; } = "*";
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static Replicate FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<Replicate>(data, options);
+
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Aliases
+    {
+        /// <summary>
+        /// A string that specifies which collections this permission applies to. Can be an exact collection name or a regex pattern. The default value `*` applies the permission to all collections.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("collection")]
+        public string? Collection { get; set; } = "*";
+
+        /// <summary>
+        /// A string that specifies which aliases this permission applies to. Can be an exact alias name or a regex pattern. The default value `*` applies the permission to all aliases.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("alias")]
+        public string? Alias { get; set; } = "*";
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static Aliases FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<Aliases>(data, options);
 
         }
 
@@ -5124,6 +5784,36 @@ namespace Weaviate.Client.Rest.Dto
         [System.Runtime.Serialization.EnumMember(Value = @"delete_tenants")]
         Delete_tenants = 23,
 
+        [System.Runtime.Serialization.EnumMember(Value = @"create_replicate")]
+        Create_replicate = 24,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"read_replicate")]
+        Read_replicate = 25,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"update_replicate")]
+        Update_replicate = 26,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"delete_replicate")]
+        Delete_replicate = 27,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"create_aliases")]
+        Create_aliases = 28,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"read_aliases")]
+        Read_aliases = 29,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"update_aliases")]
+        Update_aliases = 30,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"delete_aliases")]
+        Delete_aliases = 31,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"assign_and_revoke_groups")]
+        Assign_and_revoke_groups = 32,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"read_groups")]
+        Read_groups = 33,
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -5194,7 +5884,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Anonymous3
+    public partial class Anonymous4
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("word")]
@@ -5211,19 +5901,19 @@ namespace Weaviate.Client.Rest.Dto
             return System.Text.Json.JsonSerializer.Serialize(this, options);
 
         }
-        public static Anonymous3 FromJson(string data)
+        public static Anonymous4 FromJson(string data)
         {
 
             var options = new System.Text.Json.JsonSerializerOptions();
 
-            return System.Text.Json.JsonSerializer.Deserialize<Anonymous3>(data, options);
+            return System.Text.Json.JsonSerializer.Deserialize<Anonymous4>(data, options);
 
         }
 
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Anonymous4
+    public partial class Anonymous5
     {
         /// <summary>
         /// Vectorized classname.
@@ -5251,12 +5941,12 @@ namespace Weaviate.Client.Rest.Dto
             return System.Text.Json.JsonSerializer.Serialize(this, options);
 
         }
-        public static Anonymous4 FromJson(string data)
+        public static Anonymous5 FromJson(string data)
         {
 
             var options = new System.Text.Json.JsonSerializerOptions();
 
-            return System.Text.Json.JsonSerializer.Deserialize<Anonymous4>(data, options);
+            return System.Text.Json.JsonSerializer.Deserialize<Anonymous5>(data, options);
 
         }
 
@@ -5381,23 +6071,50 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum ReplicationReplicateReplicaRequestType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"COPY")]
+        COPY = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MOVE")]
+        MOVE = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public enum ReplicationReplicateDetailsReplicaStatusState
     {
 
+        [System.Runtime.Serialization.EnumMember(Value = @"REGISTERED")]
+        REGISTERED = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"HYDRATING")]
+        HYDRATING = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"FINALIZING")]
+        FINALIZING = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DEHYDRATING")]
+        DEHYDRATING = 3,
+
         [System.Runtime.Serialization.EnumMember(Value = @"READY")]
-        READY = 0,
+        READY = 4,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"INDEXING")]
-        INDEXING = 1,
+        [System.Runtime.Serialization.EnumMember(Value = @"CANCELLED")]
+        CANCELLED = 5,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"REPLICATION_FINALIZING")]
-        REPLICATION_FINALIZING = 2,
+    }
 
-        [System.Runtime.Serialization.EnumMember(Value = @"REPLICATION_HYDRATING")]
-        REPLICATION_HYDRATING = 3,
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum ReplicationReplicateDetailsReplicaResponseType
+    {
 
-        [System.Runtime.Serialization.EnumMember(Value = @"REPLICATION_DEHYDRATING")]
-        REPLICATION_DEHYDRATING = 4,
+        [System.Runtime.Serialization.EnumMember(Value = @"COPY")]
+        COPY = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MOVE")]
+        MOVE = 1,
 
     }
 
@@ -5527,6 +6244,30 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Runtime.Serialization.EnumMember(Value = @"BestCompression")]
         BestCompression = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum RestoreConfigRolesOptions
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"noRestore")]
+        NoRestore = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"all")]
+        All = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum RestoreConfigUsersOptions
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"noRestore")]
+        NoRestore = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"all")]
+        All = 1,
 
     }
 
@@ -5903,6 +6644,12 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Runtime.Serialization.EnumMember(Value = @"ContainsAll")]
         ContainsAll = 12,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ContainsNone")]
+        ContainsNone = 13,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Not")]
+        Not = 14,
 
     }
 
