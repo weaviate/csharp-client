@@ -107,4 +107,63 @@ internal static partial class WeaviateEndpoints
     internal static string WellKnownLive() => ".well-known/live";
 
     internal static string WellKnownReady() => ".well-known/ready";
+
+    // Backups endpoints
+    internal static string Backups(string backend) => $"backups/{backend}";
+
+    internal static string Backup(string backend, string id)
+    {
+        return $"backups/{backend}/{id}";
+    }
+
+    internal static string BackupRestore(string backend, string id) =>
+        $"backups/{backend}/{id}/restore";
+
+    internal static string BackupStatus(
+        string backend,
+        string id,
+        string? bucket = null,
+        string? path = null
+    )
+    {
+        var ep = Backup(backend, id);
+        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+        if (!string.IsNullOrWhiteSpace(bucket))
+        {
+            query["bucket"] = bucket;
+        }
+        if (!string.IsNullOrWhiteSpace(path))
+        {
+            query["path"] = path;
+        }
+        if (query.Count > 0)
+        {
+            ep += $"?{query}";
+        }
+        return ep;
+    }
+
+    internal static string BackupRestoreStatus(
+        string backend,
+        string id,
+        string? bucket = null,
+        string? path = null
+    )
+    {
+        var ep = BackupRestore(backend, id);
+        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+        if (!string.IsNullOrWhiteSpace(bucket))
+        {
+            query["bucket"] = bucket;
+        }
+        if (!string.IsNullOrWhiteSpace(path))
+        {
+            query["path"] = path;
+        }
+        if (query.Count > 0)
+        {
+            ep += $"?{query}";
+        }
+        return ep;
+    }
 }
