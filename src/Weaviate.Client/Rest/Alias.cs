@@ -14,8 +14,11 @@ public partial class WeaviateRestClient
 
         await response.EnsureExpectedStatusCodeAsync([200], "get aliases");
 
-        return await response.Content.ReadFromJsonAsync<IEnumerable<Dto.Alias>>()
+        var aliasesResponse =
+            await response.Content.ReadFromJsonAsync<Dto.AliasResponse>()
             ?? throw new WeaviateRestException();
+
+        return aliasesResponse.Aliases ?? Array.Empty<Dto.Alias>();
     }
 
     internal async Task<Dto.Alias> CollectionAliasesPost(Dto.Alias data)
