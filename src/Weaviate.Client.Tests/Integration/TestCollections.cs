@@ -544,10 +544,7 @@ public partial class CollectionsTests : IntegrationTests
             properties: [Property.Text("name")]
         );
 
-        if (collection.WeaviateVersion < Version.Parse("1.31.0"))
-        {
-            Assert.Skip("Skipping test for Weaviate versions < 1.31.0");
-        }
+        RequireVersion("1.31.0");
 
         await collection.Config.AddVector(
             Configure.Vectors.Text2VecContextionary().New("nondefault")
@@ -696,10 +693,7 @@ public partial class CollectionsTests : IntegrationTests
         config = (await collection.Get())!;
 
         // Description assertion with version check
-        if (
-            collection.WeaviateVersion >= Version.Parse("1.25.2")
-            || collection.WeaviateVersion < Version.Parse("1.25.0")
-        )
+        if (ServerVersionIsInRange("1.25.2") || !ServerVersionIsInRange("1.25.0"))
         {
             Assert.Equal("Test", config.Description);
         }
@@ -724,7 +718,7 @@ public partial class CollectionsTests : IntegrationTests
         Assert.NotNull(config.ReplicationConfig);
         Assert.Equal(2, config.ReplicationConfig.Factor);
 
-        if (collection.WeaviateVersion >= Version.Parse("1.26.0"))
+        if (ServerVersionIsInRange("1.26.0"))
         {
             Assert.True(config.ReplicationConfig.AsyncEnabled);
         }
@@ -733,7 +727,7 @@ public partial class CollectionsTests : IntegrationTests
             Assert.False(config.ReplicationConfig.AsyncEnabled);
         }
 
-        if (collection.WeaviateVersion >= Version.Parse("1.24.25"))
+        if (ServerVersionIsInRange("1.24.25"))
         {
             Assert.Equal(
                 DeletionStrategy.DeleteOnConflict,
@@ -770,7 +764,7 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(128, hnswConfig.EfConstruction);
         Assert.Equal(40000, hnswConfig.FlatSearchCutoff);
 
-        if (collection.WeaviateVersion <= Version.Parse("1.26.0"))
+        if (ServerVersionIsInRange("0.0.0", "1.26.0"))
         {
             Assert.Equal(64, hnswConfig.MaxConnections);
         }
@@ -794,7 +788,7 @@ public partial class CollectionsTests : IntegrationTests
         Assert.False(hnswConfig.Skip);
         Assert.Equal(2000000, hnswConfig.VectorCacheMaxObjects);
 
-        if (collection.WeaviateVersion >= Version.Parse("1.27.0"))
+        if (ServerVersionIsInRange("1.27.0"))
         {
             Assert.Equal(
                 VectorIndexConfig.VectorIndexFilterStrategy.Acorn,
@@ -814,7 +808,7 @@ public partial class CollectionsTests : IntegrationTests
         Assert.NotNull(config.MultiTenancyConfig);
         Assert.True(config.MultiTenancyConfig.Enabled);
 
-        if (collection.WeaviateVersion >= Version.Parse("1.25.2"))
+        if (ServerVersionIsInRange("1.25.2"))
         {
             Assert.True(config.MultiTenancyConfig.AutoTenantActivation);
         }
@@ -823,7 +817,7 @@ public partial class CollectionsTests : IntegrationTests
             Assert.False(config.MultiTenancyConfig.AutoTenantActivation);
         }
 
-        if (collection.WeaviateVersion >= Version.Parse("1.25.1"))
+        if (ServerVersionIsInRange("1.25.1"))
         {
             Assert.True(config.MultiTenancyConfig.AutoTenantCreation);
         }
@@ -849,10 +843,7 @@ public partial class CollectionsTests : IntegrationTests
         config = (await collection.Get())!;
 
         // Description should persist
-        if (
-            collection.WeaviateVersion >= Version.Parse("1.25.2")
-            || collection.WeaviateVersion < Version.Parse("1.25.0")
-        )
+        if (ServerVersionIsInRange("1.25.2") || !ServerVersionIsInRange("1.25.0"))
         {
             Assert.Equal("Test", config.Description);
         }
@@ -878,7 +869,7 @@ public partial class CollectionsTests : IntegrationTests
             config.ReplicationConfig.DeletionStrategy
         );
 
-        if (collection.WeaviateVersion >= Version.Parse("1.26.0"))
+        if (ServerVersionIsInRange("1.26.0"))
         {
             Assert.True(config.ReplicationConfig.AsyncEnabled);
         }
@@ -906,7 +897,7 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(128, hnswConfig.EfConstruction);
         Assert.Equal(40000, hnswConfig.FlatSearchCutoff);
 
-        if (collection.WeaviateVersion < Version.Parse("1.26.0"))
+        if (!ServerVersionIsInRange("1.26.0"))
         {
             Assert.Equal(64, hnswConfig.MaxConnections);
         }
