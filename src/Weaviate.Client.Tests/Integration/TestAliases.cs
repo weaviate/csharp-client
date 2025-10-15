@@ -28,11 +28,10 @@ public class TestAliases : IntegrationTests
         );
 
         var aliasName = MakeUniqueCollectionName<object>("TestAlias");
-        var alias = new Alias(aliasName, collection.Name);
 
         // Act
-        var createdAlias = await collection.Alias.Add(alias);
-        var retrievedAlias = await collection.Alias.Get(aliasName);
+        var createdAlias = await collection.Alias.Add(aliasName);
+        var retrievedAlias = await _weaviate.Alias.Get(aliasName);
 
         // Assert
         Assert.NotNull(createdAlias);
@@ -44,7 +43,7 @@ public class TestAliases : IntegrationTests
         Assert.Equal(collection.Name, retrievedAlias.TargetClass);
 
         // Cleanup
-        await collection.Alias.Delete(aliasName);
+        await _weaviate.Alias.Delete(aliasName);
     }
 
     [Fact]
@@ -64,29 +63,25 @@ public class TestAliases : IntegrationTests
         var alias2Name = MakeUniqueCollectionName<object>("Alias2");
         var alias3Name = MakeUniqueCollectionName<object>("Alias3");
 
-        var alias1 = new Alias(alias1Name, collection1.Name);
-        var alias2 = new Alias(alias2Name, collection1.Name);
-        var alias3 = new Alias(alias3Name, collection2.Name);
-
         // Ensure clean state by deleting aliases if they exist
-        var allExistingAliases = await collection1.Alias.List();
+        var allExistingAliases = await _weaviate.Alias.List();
         var existingAliasNames = allExistingAliases.Select(a => a.Name).ToHashSet();
         if (existingAliasNames.Contains(alias1Name))
-            await collection1.Alias.Delete(alias1Name);
+            await _weaviate.Alias.Delete(alias1Name);
         if (existingAliasNames.Contains(alias2Name))
-            await collection1.Alias.Delete(alias2Name);
+            await _weaviate.Alias.Delete(alias2Name);
         if (existingAliasNames.Contains(alias3Name))
-            await collection2.Alias.Delete(alias3Name);
+            await _weaviate.Alias.Delete(alias3Name);
 
-        await collection1.Alias.Add(alias1);
-        await collection1.Alias.Add(alias2);
-        await collection2.Alias.Add(alias3);
+        await collection1.Alias.Add(alias1Name);
+        await collection1.Alias.Add(alias2Name);
+        await collection2.Alias.Add(alias3Name);
 
         // Act - List all aliases
-        var allAliases = await collection1.Alias.List();
+        var allAliases = await _weaviate.Alias.List();
 
         // Act - List aliases for collection1
-        var collection1Aliases = await collection1.Alias.List(collection1.Name);
+        var collection1Aliases = await _weaviate.Alias.List(collection1.Name);
 
         // Assert - All aliases should include our created aliases
         var allAliasNames = allAliases.Select(a => a.Name).ToHashSet();
@@ -101,9 +96,9 @@ public class TestAliases : IntegrationTests
         Assert.DoesNotContain(alias3Name, collection1AliasNames);
 
         // Cleanup
-        await collection1.Alias.Delete(alias1Name);
-        await collection1.Alias.Delete(alias2Name);
-        await collection2.Alias.Delete(alias3Name);
+        await _weaviate.Alias.Delete(alias1Name);
+        await _weaviate.Alias.Delete(alias2Name);
+        await _weaviate.Alias.Delete(alias3Name);
     }
 
     [Fact]
@@ -120,14 +115,13 @@ public class TestAliases : IntegrationTests
         );
 
         var aliasName = MakeUniqueCollectionName<object>("UpdateAlias");
-        var alias = new Alias(aliasName, collection1.Name);
 
-        await collection1.Alias.Add(alias);
+        await collection1.Alias.Add(aliasName);
 
         // Act
-        var updatedAlias = await collection1.Alias.Update(aliasName, collection2.Name);
+        var updatedAlias = await _weaviate.Alias.Update(aliasName, collection2.Name);
 
-        var retrievedAlias = await collection2.Alias.Get(aliasName);
+        var retrievedAlias = await _weaviate.Alias.Get(aliasName);
 
         // Assert
         Assert.NotNull(updatedAlias);
@@ -139,7 +133,7 @@ public class TestAliases : IntegrationTests
         Assert.Equal(collection2.Name, retrievedAlias.TargetClass);
 
         // Cleanup
-        await collection2.Alias.Delete(aliasName);
+        await _weaviate.Alias.Delete(aliasName);
     }
 
     [Fact]
@@ -152,20 +146,19 @@ public class TestAliases : IntegrationTests
         );
 
         var aliasName = MakeUniqueCollectionName<object>("DeleteAlias");
-        var alias = new Alias(aliasName, collection.Name);
 
-        await collection.Alias.Add(alias);
+        await collection.Alias.Add(aliasName);
 
         // Verify alias exists
-        var retrievedAlias = await collection.Alias.Get(aliasName);
+        var retrievedAlias = await _weaviate.Alias.Get(aliasName);
         Assert.NotNull(retrievedAlias);
 
         // Act
-        await collection.Alias.Delete(aliasName);
+        await _weaviate.Alias.Delete(aliasName);
 
         // Assert - Getting deleted alias should throw exception
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
-            await collection.Alias.Get(aliasName)
+            await _weaviate.Alias.Get(aliasName)
         );
     }
 
@@ -182,7 +175,7 @@ public class TestAliases : IntegrationTests
 
         // Act & Assert
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
-            await collection.Alias.Get(nonexistentAliasName)
+            await _weaviate.Alias.Get(nonexistentAliasName)
         );
     }
 
@@ -201,7 +194,7 @@ public class TestAliases : IntegrationTests
 
         // Act & Assert
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
-            await collection.Alias.Add(alias)
+            await _weaviate.Alias.Add(alias)
         );
     }
 
@@ -215,17 +208,16 @@ public class TestAliases : IntegrationTests
         );
 
         var aliasName = MakeUniqueCollectionName<object>("DuplicateAlias");
-        var alias = new Alias(aliasName, collection.Name);
 
-        await collection.Alias.Add(alias);
+        await collection.Alias.Add(aliasName);
 
         // Act & Assert - Creating the same alias again should throw
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
-            await collection.Alias.Add(alias)
+            await collection.Alias.Add(aliasName)
         );
 
         // Cleanup
-        await collection.Alias.Delete(aliasName);
+        await _weaviate.Alias.Delete(aliasName);
     }
 
     [Fact]
@@ -245,7 +237,7 @@ public class TestAliases : IntegrationTests
 
         // Act & Assert
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
-            await collection1.Alias.Update(nonexistentAliasName, collection2.Name)
+            await _weaviate.Alias.Update(nonexistentAliasName, collection2.Name)
         );
     }
 
@@ -263,22 +255,21 @@ public class TestAliases : IntegrationTests
         );
 
         var aliasName = MakeUniqueCollectionName<object>("SurvivingAlias");
-        var alias = new Alias(aliasName, collection1.Name);
 
-        await collection1.Alias.Add(alias);
+        await collection1.Alias.Add(aliasName);
 
         // Act - Delete the target collection (will be cleaned up automatically)
         // Note: We can't remove from cleanup list as it's private, but that's fine
 
         // Update alias to point to a different collection
-        var updatedAlias = await collection2.Alias.Update(aliasName, collection2.Name);
+        var updatedAlias = await _weaviate.Alias.Update(aliasName, collection2.Name);
 
         // Assert
         Assert.NotNull(updatedAlias);
         Assert.Equal(collection2.Name, updatedAlias.TargetClass);
 
         // Cleanup
-        await collection2.Alias.Delete(aliasName);
+        await _weaviate.Alias.Delete(aliasName);
     }
 
     [Fact]
@@ -294,25 +285,21 @@ public class TestAliases : IntegrationTests
         var alias2Name = MakeUniqueCollectionName<object>("SharedAlias2");
         var alias3Name = MakeUniqueCollectionName<object>("SharedAlias3");
 
-        var alias1 = new Alias(alias1Name, collection.Name);
-        var alias2 = new Alias(alias2Name, collection.Name);
-        var alias3 = new Alias(alias3Name, collection.Name);
-
-        var allExistingAliases = await collection.Alias.List();
+        var allExistingAliases = await _weaviate.Alias.List();
         var existingAliasNames = allExistingAliases.Select(a => a.Name).ToHashSet();
         if (existingAliasNames.Contains(alias1Name))
-            await collection.Alias.Delete(alias1Name);
+            await _weaviate.Alias.Delete(alias1Name);
         if (existingAliasNames.Contains(alias2Name))
-            await collection.Alias.Delete(alias2Name);
+            await _weaviate.Alias.Delete(alias2Name);
         if (existingAliasNames.Contains(alias3Name))
-            await collection.Alias.Delete(alias3Name);
+            await _weaviate.Alias.Delete(alias3Name);
 
         // Act
-        await collection.Alias.Add(alias1);
-        await collection.Alias.Add(alias2);
-        await collection.Alias.Add(alias3);
+        await collection.Alias.Add(alias1Name);
+        await collection.Alias.Add(alias2Name);
+        await collection.Alias.Add(alias3Name);
 
-        var collectionAliases = await collection.Alias.List(collection.Name);
+        var collectionAliases = await collection.Alias.List();
 
         // Assert
         var aliasNames = collectionAliases.Select(a => a.Name).ToHashSet();
@@ -329,9 +316,9 @@ public class TestAliases : IntegrationTests
         );
 
         // Cleanup
-        await collection.Alias.Delete(alias1Name);
-        await collection.Alias.Delete(alias2Name);
-        await collection.Alias.Delete(alias3Name);
+        await _weaviate.Alias.Delete(alias1Name);
+        await _weaviate.Alias.Delete(alias2Name);
+        await _weaviate.Alias.Delete(alias3Name);
     }
 
     [Fact]
@@ -354,30 +341,23 @@ public class TestAliases : IntegrationTests
 
         // Create an alias pointing to this collection
         var aliasName = MakeUniqueCollectionName<object>("AliasToDeletedCollection");
-        var alias = new Alias(aliasName, collection.Name);
         try
         {
-            await collection.Alias.Delete(alias.Name);
+            await _weaviate.Alias.Delete(aliasName);
         }
         catch { }
-        await collection.Alias.Add(alias);
+        await collection.Alias.Add(aliasName);
 
         // Verify the alias exists
-        var retrievedAlias = await collection.Alias.Get(aliasName);
+        var retrievedAlias = await _weaviate.Alias.Get(aliasName);
         Assert.NotNull(retrievedAlias);
         Assert.Equal(collection.Name, retrievedAlias.TargetClass);
 
         // Act - Delete the collection
         await _weaviate.Collections.Delete(collection.Name);
 
-        // Create a temporary collection client just for accessing alias operations
-        var tempCollection = await CollectionFactory(
-            name: "TempAliasHelper",
-            properties: [Property.Text("Name")]
-        );
-
         // Assert - List aliases to confirm the alias still exists
-        var allAliases = await tempCollection.Alias.List();
+        var allAliases = await _weaviate.Alias.List();
         var aliasStillExists = allAliases.Any(a => a.Name == aliasName);
         Assert.True(
             aliasStillExists,
@@ -385,7 +365,7 @@ public class TestAliases : IntegrationTests
         );
 
         // Get the alias to verify it still points to the deleted collection
-        var aliasAfterDeletion = await tempCollection.Alias.Get(aliasName);
+        var aliasAfterDeletion = await _weaviate.Alias.Get(aliasName);
         Assert.NotNull(aliasAfterDeletion);
         Assert.Equal(collection.Name, aliasAfterDeletion.TargetClass);
 
@@ -407,6 +387,6 @@ public class TestAliases : IntegrationTests
         );
 
         // Cleanup - Delete the alias
-        await tempCollection.Alias.Delete(aliasName);
+        await _weaviate.Alias.Delete(aliasName);
     }
 }

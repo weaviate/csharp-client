@@ -2,15 +2,17 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
-public partial class CollectionClient
+/// <summary>
+/// Client for managing collection aliases at the Weaviate instance level.
+/// </summary>
+public class AliasClient
 {
-    public AliasClient Alias => new(this);
-}
+    private readonly WeaviateClient _client;
 
-public partial class AliasClient : BaseCollectionClient
-{
-    internal AliasClient(CollectionClient collectionClient)
-        : base(collectionClient) { }
+    internal AliasClient(WeaviateClient client)
+    {
+        _client = client ?? throw new ArgumentNullException(nameof(client));
+    }
 
     /// <summary>
     /// Get an alias by name
@@ -19,7 +21,7 @@ public partial class AliasClient : BaseCollectionClient
     /// <returns>The alias with its target collection</returns>
     public async Task<Alias> Get(string aliasName)
     {
-        var dto = await Rest.AliasGet(aliasName);
+        var dto = await _client.RestClient.AliasGet(aliasName);
         return ToModel(dto);
     }
 
@@ -31,7 +33,7 @@ public partial class AliasClient : BaseCollectionClient
     public async Task<Alias> Add(Alias alias)
     {
         var dto = ToDto(alias);
-        var result = await Rest.CollectionAliasesPost(dto);
+        var result = await _client.RestClient.CollectionAliasesPost(dto);
         return ToModel(result);
     }
 
@@ -42,7 +44,7 @@ public partial class AliasClient : BaseCollectionClient
     /// <returns>Enumerable of all aliases (or aliases pointing to the specified collection)</returns>
     public async Task<IEnumerable<Alias>> List(string? collectionName = null)
     {
-        var dtos = await Rest.CollectionAliasesGet(collectionName);
+        var dtos = await _client.RestClient.CollectionAliasesGet(collectionName);
         return dtos.Select(ToModel);
     }
 
@@ -54,7 +56,7 @@ public partial class AliasClient : BaseCollectionClient
     /// <returns>The updated alias</returns>
     public async Task<Alias> Update(string aliasName, string targetCollection)
     {
-        var dto = await Rest.AliasPut(aliasName, targetCollection);
+        var dto = await _client.RestClient.AliasPut(aliasName, targetCollection);
         return ToModel(dto);
     }
 
@@ -64,7 +66,7 @@ public partial class AliasClient : BaseCollectionClient
     /// <param name="aliasName">The name of the alias to delete</param>
     public async Task Delete(string aliasName)
     {
-        await Rest.AliasDelete(aliasName);
+        await _client.RestClient.AliasDelete(aliasName);
     }
 
     private static Alias ToModel(Rest.Dto.Alias dto)

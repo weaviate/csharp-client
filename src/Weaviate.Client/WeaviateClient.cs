@@ -176,6 +176,8 @@ public class WeaviateClient : IDisposable
 
     public NodesClient Nodes { get; }
 
+    public AliasClient Alias { get; }
+
     static bool IsWeaviateDomain(string url)
     {
         return url.ToLower().Contains("weaviate.io")
@@ -238,6 +240,7 @@ public class WeaviateClient : IDisposable
 
         Nodes = new NodesClient(RestClient);
         Collections = new CollectionsClient(this);
+        Alias = new AliasClient(this);
     }
 
     private async Task<ITokenService?> InitializeTokenService()
