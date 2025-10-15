@@ -38,7 +38,7 @@ public partial class AggregateClient
     }
 
     public async Task<AggregateGroupByResult> OverAll(
-        Aggregate.GroupBy? groupBy,
+        Aggregate.GroupBy groupBy,
         bool totalCount = true,
         Filter? filters = null,
         string? tenant = null,

@@ -28,7 +28,7 @@ internal partial class WeaviateGrpcClient
             r.GroupBy = new AggregateRequest.Types.GroupBy
             {
                 Collection = "",
-                Property = groupBy.Property,
+                Property = groupBy.Property.Decapitalize(),
             };
 
             if (groupBy.Limit.HasValue)
@@ -280,11 +280,6 @@ internal partial class WeaviateGrpcClient
         if (queryProperties is not null && queryProperties.Length > 0)
         {
             request.Hybrid.Properties.AddRange(queryProperties);
-        }
-
-        if (groupBy is not null)
-        {
-            request.GroupBy = new AggregateRequest.Types.GroupBy { Property = groupBy.Property };
         }
 
         var (targets, _, vector) = BuildTargetVector(
