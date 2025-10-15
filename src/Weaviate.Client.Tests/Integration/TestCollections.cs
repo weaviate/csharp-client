@@ -302,7 +302,7 @@ public partial class CollectionsTests : IntegrationTests
 
         // Properties validation
         Assert.NotNull(export.Properties);
-        Assert.Equal(2, export.Properties.Count);
+        Assert.Equal(2, export.Properties.Length);
         var property = export.Properties.First();
         Assert.Equal("name", property.Name);
         Assert.Contains("text", property.DataType);
@@ -443,7 +443,7 @@ public partial class CollectionsTests : IntegrationTests
 
         // Properties validation
         Assert.NotNull(export.Properties);
-        Assert.Equal(2, export.Properties.Count);
+        Assert.Equal(2, export.Properties.Length);
         var property = export.Properties.First();
         Assert.Equal("name", property.Name);
         Assert.Contains("text", property.DataType);
