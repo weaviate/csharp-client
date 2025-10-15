@@ -20,7 +20,16 @@ public class BackupClient
     /// <summary>
     /// Start creating a backup
     /// </summary>
-    public async Task<Backup> Create(string backend, Models.BackupCreateRequest request)
+    public async Task<Backup> Create(
+        string backend,
+        Models.BackupCreateRequest request,
+        bool waitForCompletion = false,
+        TimeSpan? pollInterval = null,
+        TimeSpan? timeout = null,
+        string? bucket = null,
+        string? path = null,
+        CancellationToken cancellationToken = default
+    )
     {
         var dto = new Models.BackupCreateRequest(
             request.Id,
@@ -54,7 +63,20 @@ public class BackupClient
         };
 
         var response = await _client.RestClient.BackupCreate(backend, restRequest);
-        return ToModel(response);
+        var model = ToModel(response);
+        if (!waitForCompletion)
+        {
+            return model;
+        }
+        return await WaitForCreateCompletion(
+            backend,
+            model.Id,
+            pollInterval,
+            timeout,
+            bucket,
+            path,
+            cancellationToken
+        );
     }
 
     /// <summary>
@@ -62,7 +84,8 @@ public class BackupClient
     /// </summary>
     public async Task<IEnumerable<Backup>> List(string backend)
     {
-        var list = await _client.RestClient.BackupList(backend);
+        List<Anonymous3> list = (await _client.RestClient.BackupList(backend)).ToList();
+
         return list.Select(ToModelListItem);
     }
 
@@ -92,7 +115,13 @@ public class BackupClient
     public async Task<Backup> Restore(
         string backend,
         string id,
-        Models.BackupRestoreRequest request
+        Models.BackupRestoreRequest request,
+        bool waitForCompletion = false,
+        TimeSpan? pollInterval = null,
+        TimeSpan? timeout = null,
+        string? bucket = null,
+        string? path = null,
+        CancellationToken cancellationToken = default
     )
     {
         var restRequest = new Rest.Dto.BackupRestoreRequest
@@ -124,7 +153,20 @@ public class BackupClient
             OverwriteAlias = request.OverwriteAlias,
         };
         var response = await _client.RestClient.BackupRestore(backend, id, restRequest);
-        return ToModel(response);
+        if (!waitForCompletion)
+        {
+            var model = ToModel(response);
+            return model;
+        }
+        return await WaitForRestoreCompletion(
+            backend,
+            id,
+            pollInterval,
+            timeout,
+            bucket,
+            path,
+            cancellationToken
+        );
     }
 
     /// <summary>
@@ -205,4 +247,75 @@ public class BackupClient
             dto.CompletedAt,
             null
         );
+
+    private static readonly HashSet<BackupStatus> TerminalStatuses = new()
+    {
+        BackupStatus.Success,
+        BackupStatus.Failed,
+        BackupStatus.Canceled,
+    };
+
+    private async Task<Backup> WaitForCreateCompletion(
+        string backend,
+        string id,
+        TimeSpan? pollInterval,
+        TimeSpan? timeout,
+        string? bucket,
+        string? path,
+        CancellationToken ct
+    )
+    {
+        pollInterval ??= TimeSpan.FromMilliseconds(250);
+        timeout ??= TimeSpan.FromMinutes(10);
+        var start = DateTime.UtcNow;
+        while (true)
+        {
+            ct.ThrowIfCancellationRequested();
+            var status = await _client.RestClient.BackupStatus(backend, id, bucket, path);
+            var model = ToModel(status);
+            if (TerminalStatuses.Contains(model.StatusRaw.ToBackupStatus()))
+            {
+                return model;
+            }
+            if (DateTime.UtcNow - start > timeout)
+            {
+                throw new TimeoutException(
+                    $"Backup create did not finish within {timeout}. Last status={model.StatusRaw}"
+                );
+            }
+            await Task.Delay(pollInterval.Value, ct);
+        }
+    }
+
+    private async Task<Backup> WaitForRestoreCompletion(
+        string backend,
+        string id,
+        TimeSpan? pollInterval,
+        TimeSpan? timeout,
+        string? bucket,
+        string? path,
+        CancellationToken ct
+    )
+    {
+        pollInterval ??= TimeSpan.FromMilliseconds(250);
+        timeout ??= TimeSpan.FromMinutes(10);
+        var start = DateTime.UtcNow;
+        while (true)
+        {
+            ct.ThrowIfCancellationRequested();
+            var status = await _client.RestClient.BackupRestoreStatus(backend, id, bucket, path);
+            var model = ToModel(status);
+            if (TerminalStatuses.Contains(model.StatusRaw.ToBackupStatus()))
+            {
+                return model;
+            }
+            if (DateTime.UtcNow - start > timeout)
+            {
+                throw new TimeoutException(
+                    $"Backup restore did not finish within {timeout}. Last status={model.StatusRaw}"
+                );
+            }
+            await Task.Delay(pollInterval.Value, ct);
+        }
+    }
 }

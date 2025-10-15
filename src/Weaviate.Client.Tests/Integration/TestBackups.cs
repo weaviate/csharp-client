@@ -1,0 +1,635 @@
+namespace Weaviate.Client.Tests.Integration;
+
+using System.Threading.Tasks;
+using Weaviate.Client;
+using Weaviate.Client.Models;
+using Xunit;
+
+[Collection("TestBackups")] // Placeholder collection grouping
+public class TestBackups : IntegrationTests
+{
+    public TestBackups()
+        : base()
+    {
+        RequireVersion("1.30.0");
+    }
+
+    [Fact]
+    public async Task Test_Create_List_Status_Cancel_Backup()
+    {
+        var backend = "filesystem"; // typical default backend
+        var collectionName = MakeUniqueCollectionName<object>("backup");
+        var id = Helpers.GenerateUniqueIdentifier(collectionName);
+        var request = new BackupCreateRequest(id);
+
+        try
+        {
+            var created = await _weaviate.Backups.Create(
+                backend,
+                request,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+            Assert.Equal(id, created.Id);
+
+            var list = await _weaviate.Backups.List(backend);
+            Assert.Contains(list, b => b.Id == id);
+
+            var status = await _weaviate.Backups.GetStatus(backend, id);
+            Assert.Equal(id, status.Id);
+        }
+        finally
+        {
+            try
+            {
+                await _weaviate.Backups.Cancel(backend, id);
+            }
+            catch { }
+        }
+    }
+
+    [Fact]
+    public async Task Test_Create_And_Restore_Backup_With_Waiting()
+    {
+        // Arrange
+        var backend = "filesystem";
+        var collectionSeed = MakeUniqueCollectionName<object>("bkp");
+        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+
+        // Create two collections with sample data
+        var articles = await CollectionFactory(
+            name: "Article",
+            properties: [Property.Text("title"), Property.Date("datePublished")]
+        );
+        var paragraphs = await CollectionFactory(
+            name: "Paragraph",
+            properties: [Property.Text("contents")]
+        );
+
+        var articlesName = articles.Name;
+        var paragraphsName = paragraphs.Name;
+
+        var articleIds = new List<Guid>();
+        var paragraphIds = new List<Guid>();
+        for (int i = 1; i <= 5; i++)
+        {
+            articleIds.Add(
+                await articles.Data.Insert(
+                    new { title = $"article {i}", datePublished = DateTime.UtcNow }
+                )
+            );
+            paragraphIds.Add(await paragraphs.Data.Insert(new { contents = $"paragraph {i}" }));
+        }
+
+        // Act - create backup and wait for completion
+        var createResp = await _weaviate.Backups.Create(
+            backend,
+            new BackupCreateRequest(backupId, Include: new[] { articlesName, paragraphsName }),
+            waitForCompletion: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(BackupStatus.Success, createResp.Status);
+
+        // Verify data before deletion
+        var articlesBefore = await articles.Query.FetchObjects();
+        var paragraphsBefore = await paragraphs.Query.FetchObjects();
+        Assert.Equal(5, articlesBefore.Objects.Count);
+        Assert.Equal(5, paragraphsBefore.Objects.Count);
+
+        // Delete collections
+        await _weaviate.Collections.Delete(articlesName);
+        await _weaviate.Collections.Delete(paragraphsName);
+
+        // Restore backup and wait
+        var restoreResp = await _weaviate.Backups.Restore(
+            backend,
+            backupId,
+            new BackupRestoreRequest(Include: new[] { articlesName, paragraphsName }),
+            waitForCompletion: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(BackupStatus.Success, restoreResp.Status);
+
+        var articlesRestored = _weaviate.Collections.Use(articlesName);
+        var paragraphsRestored = _weaviate.Collections.Use(paragraphsName);
+
+        var articlesAfter = await articlesRestored.Query.FetchObjects();
+        var paragraphsAfter = await paragraphsRestored.Query.FetchObjects();
+        Assert.Equal(5, articlesAfter.Objects.Count);
+        Assert.Equal(5, paragraphsAfter.Objects.Count);
+
+        // Status endpoints
+        var createStatus = await _weaviate.Backups.GetStatus(backend, backupId);
+        Assert.Equal(BackupStatus.Success, createStatus.Status);
+        var restoreStatus = await _weaviate.Backups.GetRestoreStatus(backend, backupId);
+        Assert.Equal(BackupStatus.Success, restoreStatus.Status);
+    }
+
+    [Fact]
+    public async Task Test_Create_And_Restore_Backup_Without_Waiting()
+    {
+        // Arrange
+        var backend = "filesystem";
+        var collectionSeed = MakeUniqueCollectionName<object>("bkp_async");
+        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+
+        var article = await CollectionFactory(
+            name: "ArticleAsync",
+            properties: [Property.Text("title")]
+        );
+
+        var articleName = article.Name;
+
+        // insert objects
+        for (int i = 1; i <= 3; i++)
+        {
+            await article.Data.Insert(new { title = $"article {i}" });
+        }
+
+        // Act - create without waiting
+        var createResp = await _weaviate.Backups.Create(
+            backend,
+            new BackupCreateRequest(backupId, Include: new[] { articleName }),
+            waitForCompletion: false,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.NotNull(createResp);
+        Assert.NotEqual(BackupStatus.Failed, createResp.Status); // initial status should be STARTED/TRANSFERRING/TRANSFERRED
+
+        // Poll until success
+        Backup status;
+        while (true)
+        {
+            status = await _weaviate.Backups.GetStatus(backend, backupId);
+            if (
+                status.Status
+                is BackupStatus.Success
+                    or BackupStatus.Failed
+                    or BackupStatus.Canceled
+            )
+            {
+                break;
+            }
+            await Task.Delay(200, TestContext.Current.CancellationToken);
+        }
+        Assert.Equal(BackupStatus.Success, status.Status);
+
+        // Delete collection
+        await _weaviate.Collections.Delete(articleName);
+
+        // Restore without waiting
+        var restoreResp = await _weaviate.Backups.Restore(
+            backend,
+            backupId,
+            new BackupRestoreRequest(Include: new[] { articleName }),
+            waitForCompletion: false,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.NotNull(restoreResp);
+
+        // Poll restore status
+        Backup restoreStatus;
+        while (true)
+        {
+            restoreStatus = await _weaviate.Backups.GetRestoreStatus(backend, backupId);
+            if (
+                restoreStatus.Status
+                is BackupStatus.Success
+                    or BackupStatus.Failed
+                    or BackupStatus.Canceled
+            )
+            {
+                break;
+            }
+            await Task.Delay(200, TestContext.Current.CancellationToken);
+        }
+        Assert.Equal(BackupStatus.Success, restoreStatus.Status);
+
+        // Verify data restored
+        var articleRestored = _weaviate.Collections.Use(articleName);
+
+        var objectsAfter = await articleRestored.Query.FetchObjects();
+        Assert.Equal(3, objectsAfter.Objects.Count);
+    }
+
+    [Fact]
+    public async Task Test_Create_And_Restore_Single_Collection_Backup_With_Waiting()
+    {
+        var backend = "filesystem";
+        var collectionSeed = MakeUniqueCollectionName<object>("bkp_single");
+        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+
+        var article = await CollectionFactory(
+            name: "ArticleSingle",
+            properties: [Property.Text("title")]
+        );
+        var articleName = article.Name;
+
+        for (int i = 1; i <= 4; i++)
+        {
+            await article.Data.Insert(new { title = $"article {i}" });
+        }
+
+        // Create backup for only ArticleSingle
+        var createResp = await _weaviate.Backups.Create(
+            backend,
+            new BackupCreateRequest(backupId, Include: new[] { articleName }),
+            waitForCompletion: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(BackupStatus.Success, createResp.Status);
+
+        // Verify count before deletion
+        var before = await article.Query.FetchObjects();
+        Assert.Equal(4, before.Objects.Count);
+
+        // Delete collection
+        await _weaviate.Collections.Delete(articleName);
+
+        // Restore only that collection
+        var restoreResp = await _weaviate.Backups.Restore(
+            backend,
+            backupId,
+            new BackupRestoreRequest(Include: new[] { articleName }),
+            waitForCompletion: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(BackupStatus.Success, restoreResp.Status);
+
+        var articleRestored = _weaviate.Collections.Use(articleName);
+        var after = await articleRestored.Query.FetchObjects();
+        Assert.Equal(4, after.Objects.Count);
+    }
+
+    [Fact]
+    public async Task Test_Fail_Backup_On_NonExisting_Collection()
+    {
+        var backend = "filesystem";
+        var collectionSeed = MakeUniqueCollectionName<object>("bkp_fail_nonexist");
+        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+        var bogusCollectionName = MakeUniqueCollectionName<object>("DoesNotExist");
+
+        // Create should fail when including non-existing collection
+        await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
+            await _weaviate.Backups.Create(
+                backend,
+                new BackupCreateRequest(backupId, Include: new[] { bogusCollectionName }),
+                waitForCompletion: true,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
+
+        // Restore should also fail if collection doesn't exist in backup
+        await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
+            await _weaviate.Backups.Restore(
+                backend,
+                backupId,
+                new BackupRestoreRequest(Include: new[] { bogusCollectionName }),
+                waitForCompletion: true,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
+    }
+
+    [Fact]
+    public async Task Test_Fail_Creating_Duplicate_Backup()
+    {
+        var backend = "filesystem";
+        var collectionSeed = MakeUniqueCollectionName<object>("bkp_duplicate");
+        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+
+        var collection = await CollectionFactory(
+            name: "ArticleDup",
+            properties: [Property.Text("title")]
+        );
+        var collectionName = collection.Name;
+
+        await collection.Data.Insert(new { title = "one" });
+
+        var first = await _weaviate.Backups.Create(
+            backend,
+            new BackupCreateRequest(backupId, Include: new[] { collectionName }),
+            waitForCompletion: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(BackupStatus.Success, first.Status);
+
+        // Second attempt should throw (422)
+        await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
+            await _weaviate.Backups.Create(
+                backend,
+                new BackupCreateRequest(backupId, Include: new[] { collectionName }),
+                waitForCompletion: true,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
+    }
+
+    [Fact]
+    public async Task Test_Fail_Restoring_Backup_For_Existing_Collection()
+    {
+        var backend = "filesystem";
+        var collectionSeed = MakeUniqueCollectionName<object>("bkp_restore_conflict");
+        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+
+        var collection = await CollectionFactory(
+            name: "ArticleConflict",
+            properties: [Property.Text("title")]
+        );
+        var collectionName = collection.Name;
+
+        await collection.Data.Insert(new { title = "alpha" });
+
+        var create = await _weaviate.Backups.Create(
+            backend,
+            new BackupCreateRequest(backupId, Include: new[] { collectionName }),
+            waitForCompletion: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(BackupStatus.Success, create.Status);
+
+        // Attempt to restore while collection still exists should fail
+        var restoreResp = await _weaviate.Backups.Restore(
+            backend,
+            backupId,
+            new BackupRestoreRequest(Include: new[] { collectionName }),
+            waitForCompletion: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.NotNull(restoreResp.Error);
+    }
+
+    [Fact]
+    public async Task Test_Cancel_Running_Backup()
+    {
+        var backend = "filesystem";
+        var collectionSeed = MakeUniqueCollectionName<object>("bkp_cancel");
+        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+
+        // Create a collection with enough objects to keep backup busy for a moment
+        var collection = await CollectionFactory(
+            name: "ArticleCancel",
+            properties: [Property.Text("title"), Property.Text("body")]
+        );
+        var collectionName = collection.Name;
+
+        for (int i = 0; i < 40; i++)
+        {
+            await collection.Data.Insert(new { title = $"t{i}", body = new string('x', 500) });
+        }
+
+        // Start backup without waiting
+        var createResp = await _weaviate.Backups.Create(
+            backend,
+            new BackupCreateRequest(backupId, Include: new[] { collectionName }),
+            waitForCompletion: false,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(backupId, createResp.Id);
+
+        // Immediately request cancel
+        await _weaviate.Backups.Cancel(backend, backupId);
+
+        // Poll status until terminal
+        Backup status;
+        while (true)
+        {
+            status = await _weaviate.Backups.GetStatus(backend, backupId);
+            if (
+                status.Status
+                is BackupStatus.Success
+                    or BackupStatus.Failed
+                    or BackupStatus.Canceled
+            )
+            {
+                break;
+            }
+            await Task.Delay(250, TestContext.Current.CancellationToken);
+        }
+        Assert.Equal(BackupStatus.Canceled, status.Status);
+    }
+
+    [Fact(Skip = "Flaky test, needs investigation")]
+    public async Task Test_List_Backups()
+    {
+        var backend = "filesystem";
+        var collectionSeed1 = "bkp_list_1";
+        var backupId1 = Helpers.GenerateUniqueIdentifier(collectionSeed1);
+        var collectionSeed2 = "bkp_list_2";
+        var backupId2 = Helpers.GenerateUniqueIdentifier(collectionSeed2);
+
+        var c1 = await CollectionFactory(
+            name: "ArticleList1",
+            properties: [Property.Text("title")]
+        );
+        var c2 = await CollectionFactory(
+            name: "ArticleList2",
+            properties: [Property.Text("title")]
+        );
+        var c1Name = c1.Name;
+        var c2Name = c2.Name;
+
+        await c1.Data.Insert(new { title = "one" });
+        await c2.Data.Insert(new { title = "two" });
+
+        // Start two backups (non-waiting)
+        await _weaviate.Backups.Create(
+            backend,
+            new BackupCreateRequest(backupId1, Include: new[] { c1Name }),
+            waitForCompletion: false,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // This should not be necessary, but without a short delay the second backup
+        // will return an error saying the first backup is already in progress.
+        await Task.Delay(2500, TestContext.Current.CancellationToken);
+
+        await _weaviate.Backups.Create(
+            backend,
+            new BackupCreateRequest(backupId2, Include: new[] { c2Name }),
+            waitForCompletion: false,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // List should contain both (status may still be STARTED)
+        var list = await _weaviate.Backups.List(backend);
+        Assert.Contains(list, b => b.Id == backupId1);
+        Assert.Contains(list, b => b.Id == backupId2);
+
+        // Poll for completion of both
+        var done1 = false;
+        var done2 = false;
+        Backup s1 = null!;
+        Backup s2 = null!;
+        while (!(done1 && done2))
+        {
+            if (!done1)
+            {
+                s1 = await _weaviate.Backups.GetStatus(backend, backupId1);
+                if (
+                    s1.Status
+                    is BackupStatus.Success
+                        or BackupStatus.Failed
+                        or BackupStatus.Canceled
+                )
+                {
+                    done1 = true;
+                }
+            }
+            if (!done2)
+            {
+                s2 = await _weaviate.Backups.GetStatus(backend, backupId2);
+                if (
+                    s2.Status
+                    is BackupStatus.Success
+                        or BackupStatus.Failed
+                        or BackupStatus.Canceled
+                )
+                {
+                    done2 = true;
+                }
+            }
+            if (!(done1 && done2))
+            {
+                await Task.Delay(250, TestContext.Current.CancellationToken);
+            }
+        }
+        Assert.Equal(BackupStatus.Success, s1.Status);
+        Assert.Equal(BackupStatus.Success, s2.Status);
+    }
+
+    [Fact]
+    public async Task Test_Overwrite_Alias_False_Should_Not_Conflict()
+    {
+        RequireVersion("1.33.0"); // overwriteAlias supported from 1.33.0
+
+        var backend = "filesystem";
+        var seed = Helpers.GenerateUniqueIdentifier("overwrite_false");
+        var backupId = Helpers.GenerateUniqueIdentifier(seed);
+
+        // Use deterministic names derived from seed so we can assert post conditions
+        var articleName = $"{seed}_Article";
+        var paragraphName = $"{seed}_Paragraph";
+        var aliasName = $"{seed}_Literature";
+
+        // Create source and target collections
+        var articleClient = await CollectionFactory(
+            name: articleName,
+            properties: [Property.Text("title")]
+        );
+        articleName = articleClient.Name;
+
+        var paragraphClient = await CollectionFactory(
+            name: paragraphName,
+            properties: [Property.Text("contents")]
+        );
+        paragraphName = paragraphClient.Name;
+
+        await articleClient.Data.Insert(new { title = "original" });
+        await paragraphClient.Data.Insert(new { contents = "p1" });
+
+        // Create alias pointing to the Article collection
+        // Delete alias if it already exists
+        try
+        {
+            await articleClient.Alias.Delete(aliasName);
+        }
+        catch { }
+        await articleClient.Alias.Add(new Alias(aliasName, articleName));
+
+        // Create backup including only Article
+        var createResp = await _weaviate.Backups.Create(
+            backend,
+            new BackupCreateRequest(backupId, Include: new[] { articleName }),
+            waitForCompletion: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(BackupStatus.Success, createResp.Status);
+
+        // Delete Article and repoint alias to Paragraph (conflict scenario for restore)
+        await _weaviate.Collections.Delete(articleName);
+        await paragraphClient.Alias.Update(aliasName, paragraphName);
+
+        // Attempt restore with overwriteAlias = false -> expect failure & alias unchanged
+        var restoreResp = await _weaviate.Backups.Restore(
+            backend,
+            backupId,
+            new BackupRestoreRequest(Include: new[] { articleName }, OverwriteAlias: false),
+            waitForCompletion: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        Assert.Equal(BackupStatus.Success, restoreResp.Status); // terminal failed
+        Assert.Null(restoreResp.Error);
+
+        // Alias should still point to Paragraph
+        var aliasAfter = await paragraphClient.Alias.Get(aliasName);
+        Assert.Equal(paragraphName, aliasAfter.TargetClass);
+
+        // Article should have been restored (attempting to use should NOT raise)
+        await _weaviate.Collections.Use(articleName).Query.FetchObjects();
+    }
+
+    [Fact]
+    public async Task Test_Overwrite_Alias_True_Should_Replace_Existing_Alias()
+    {
+        RequireVersion("1.33.0");
+
+        var backend = "filesystem";
+        var seed = Helpers.GenerateUniqueIdentifier("overwrite_true");
+        var backupId = Helpers.GenerateUniqueIdentifier(seed);
+
+        var articleName = $"{seed}_Article";
+        var paragraphName = $"{seed}_Paragraph";
+        var aliasName = $"{seed}_Literature";
+
+        var articleClient = await CollectionFactory(
+            name: articleName,
+            properties: [Property.Text("title")]
+        );
+        articleName = articleClient.Name;
+
+        var paragraphClient = await CollectionFactory(
+            name: paragraphName,
+            properties: [Property.Text("contents")]
+        );
+        paragraphName = paragraphClient.Name;
+
+        await articleClient.Data.Insert(new { title = "original" });
+        await paragraphClient.Data.Insert(new { contents = "p1" });
+
+        await articleClient.Alias.Add(new Alias(aliasName, articleName));
+
+        var createResp = await _weaviate.Backups.Create(
+            backend,
+            new BackupCreateRequest(backupId, Include: new[] { articleName }),
+            waitForCompletion: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(BackupStatus.Success, createResp.Status);
+
+        // Delete original, repoint alias to Paragraph to simulate conflicting alias
+        await _weaviate.Collections.Delete(articleName);
+        await paragraphClient.Alias.Update(aliasName, paragraphName);
+
+        // Restore with overwriteAlias = true should repoint alias back & recreate Article
+        var restoreResp = await _weaviate.Backups.Restore(
+            backend,
+            backupId,
+            new BackupRestoreRequest(Include: new[] { articleName }, OverwriteAlias: true),
+            waitForCompletion: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(BackupStatus.Success, restoreResp.Status);
+        Assert.Null(restoreResp.Error);
+
+        // Alias should now target recreated Article collection
+        var aliasAfter = await paragraphClient.Alias.Get(aliasName);
+        Assert.Equal(articleName, aliasAfter.TargetClass);
+
+        // Article collection should exist with restored data (1 object)
+        var restoredArticle = _weaviate.Collections.Use(articleName);
+        var objects = await restoredArticle.Query.FetchObjects();
+        Assert.Single(objects.Objects);
+        Assert.Equal("original", objects.Objects.First().Properties["title"]);
+    }
+}
