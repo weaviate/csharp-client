@@ -391,7 +391,10 @@ public static partial class Aggregate
 
 public static partial class Aggregate
 {
-    public record GroupBy(string Property, uint? Limit = null);
+    public record GroupBy(string Property, uint? Limit = null)
+    {
+        public static implicit operator GroupBy(string property) => new(property);
+    };
 
     public abstract record Property
     {
