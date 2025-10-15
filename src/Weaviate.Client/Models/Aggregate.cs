@@ -59,21 +59,26 @@ public partial record AggregateGroupByResult
                 _ => throw new NotImplementedException($"Unknown group by type: {gb.ValueCase}"),
             };
 
-        return new AggregateGroupByResult
+        var groupExtract = new Func<V1.AggregateReply.Types.Group, Group>(g =>
         {
-            Groups =
-                result
-                    .GroupedResults?.Groups.Select(g => new Group
-                    {
-                        GroupedBy = groupByToGrpc(g.GroupedBy),
-                        Properties = g.Aggregations.Aggregations_.ToDictionary(
-                            p => p.Property,
-                            AggregateResult.FromGrpcProperty
-                        ),
-                        TotalCount = g.ObjectsCount,
-                    })
-                    .ToList() ?? [],
-        };
+            var groupedBy = groupByToGrpc(g.GroupedBy);
+            var properties =
+                g.Aggregations?.Aggregations_?.ToDictionary(
+                    p => p.Property,
+                    AggregateResult.FromGrpcProperty
+                ) ?? new Dictionary<string, Aggregate.Property>();
+
+            return new Group
+            {
+                GroupedBy = groupedBy,
+                Properties = properties,
+                TotalCount = g.ObjectsCount,
+            };
+        });
+
+        var groupByGroups = result.GroupedResults?.Groups.Select(groupExtract).ToList() ?? [];
+
+        return new AggregateGroupByResult { Groups = groupByGroups };
     }
 }
 
