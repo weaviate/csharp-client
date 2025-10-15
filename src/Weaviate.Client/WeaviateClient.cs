@@ -157,6 +157,43 @@ public class WeaviateClient : IDisposable
 
     public System.Version WeaviateVersion => GetWeaviateVersionAsync().GetAwaiter().GetResult();
 
+    /// <summary>
+    /// Returns true if the Weaviate process is live.
+    /// </summary>
+    public Task<bool> Live() => RestClient.LiveAsync();
+
+    /// <summary>
+    /// Returns true if the Weaviate instance is ready to accept requests.
+    /// </summary>
+    public Task<bool> IsReady() => RestClient.ReadyAsync();
+
+    /// <summary>
+    /// Waits until the instance becomes ready or the timeout/cancellation token triggers.
+    /// </summary>
+    /// <param name="timeout">Maximum time to wait.</param>
+    /// <param name="cancellationToken">Cancellation token to abort waiting early.</param>
+    /// <param name="pollInterval">Optional polling interval (defaults to 250ms).</param>
+    /// <returns>true if ready was reached before timing out or cancellation; false otherwise.</returns>
+    public async Task<bool> WaitUntilReady(
+        TimeSpan timeout,
+        CancellationToken cancellationToken,
+        TimeSpan? pollInterval = null
+    )
+    {
+        var interval = pollInterval ?? TimeSpan.FromMilliseconds(250);
+        var start = DateTime.UtcNow;
+        while (DateTime.UtcNow - start < timeout)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (await IsReady())
+            {
+                return true;
+            }
+            await Task.Delay(interval, cancellationToken);
+        }
+        return await IsReady();
+    }
+
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
 
     private bool _isDisposed = false;
