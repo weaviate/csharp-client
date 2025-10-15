@@ -15,8 +15,9 @@ public partial class WeaviateRestClient
         await response.EnsureExpectedStatusCodeAsync([200], "get aliases");
 
         var aliasesResponse =
-            await response.Content.ReadFromJsonAsync<Dto.AliasResponse>()
-            ?? throw new WeaviateRestException();
+            await response.Content.ReadFromJsonAsync<Dto.AliasResponse>(
+                WeaviateRestClient.RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestException();
 
         return aliasesResponse.Aliases ?? Array.Empty<Dto.Alias>();
     }
@@ -31,8 +32,9 @@ public partial class WeaviateRestClient
 
         await response.EnsureExpectedStatusCodeAsync([200], "create alias");
 
-        return await response.Content.ReadFromJsonAsync<Dto.Alias>()
-            ?? throw new WeaviateRestException();
+        return await response.Content.ReadFromJsonAsync<Dto.Alias>(
+                WeaviateRestClient.RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestException();
     }
 
     internal async Task<Dto.Alias> AliasGet(string aliasName)
@@ -41,21 +43,24 @@ public partial class WeaviateRestClient
 
         await response.EnsureExpectedStatusCodeAsync([200], "get alias");
 
-        return await response.Content.ReadFromJsonAsync<Dto.Alias>()
-            ?? throw new WeaviateRestException();
+        return await response.Content.ReadFromJsonAsync<Dto.Alias>(
+                WeaviateRestClient.RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestException();
     }
 
     internal async Task<Dto.Alias> AliasPut(string alias, string targetCollection)
     {
         var response = await _httpClient.PutAsJsonAsync(
             WeaviateEndpoints.Alias(alias),
-            new { @class = targetCollection }
+            new { @class = targetCollection },
+            options: RestJsonSerializerOptions
         );
 
         await response.EnsureExpectedStatusCodeAsync([200], "update alias");
 
-        return await response.Content.ReadFromJsonAsync<Dto.Alias>()
-            ?? throw new WeaviateRestException();
+        return await response.Content.ReadFromJsonAsync<Dto.Alias>(
+                WeaviateRestClient.RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestException();
     }
 
     internal async Task AliasDelete(string aliasName)
