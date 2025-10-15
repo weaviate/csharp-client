@@ -98,4 +98,9 @@ internal static class WeaviateEndpoints
 
         return path;
     }
+
+    // Well-known endpoints
+    internal static string WellKnownLive() => ".well-known/live";
+
+    internal static string WellKnownReady() => ".well-known/ready";
 }
