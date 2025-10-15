@@ -11,7 +11,7 @@ public class TestBackups : IntegrationTests
     public TestBackups()
         : base()
     {
-        RequireVersion("1.30.0");
+        RequireVersion("1.32.0");
     }
 
     [Fact]
