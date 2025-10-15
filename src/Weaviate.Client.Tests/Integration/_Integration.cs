@@ -166,4 +166,16 @@ public abstract partial class IntegrationTests : IAsyncDisposable
             collectionNamePartSeparator
         );
     }
+
+    protected void RequireWeaviateVersion(string minimumVersion)
+    {
+        if (_weaviate.WeaviateVersion >= System.Version.Parse(minimumVersion))
+        {
+            return;
+        }
+
+        Assert.Skip(
+            $"Weaviate version {minimumVersion} or higher is required. Current version: {_weaviate.WeaviateVersion}"
+        );
+    }
 }
