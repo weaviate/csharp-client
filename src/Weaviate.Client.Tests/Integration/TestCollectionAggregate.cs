@@ -510,7 +510,7 @@ public partial class AggregatesTests : IntegrationTests
 
         // Group by "text"
         var resultByText = await collectionClient.Aggregate.OverAll(
-            groupBy: new Aggregate.GroupBy("text"),
+            groupBy: "text", // shorthand for new Aggregate.GroupBy("text")
             metrics: new[]
             {
                 Metrics.ForProperty("text").Text(count: true),
@@ -529,7 +529,7 @@ public partial class AggregatesTests : IntegrationTests
 
         // Group by "int"
         var resultByInt = await collectionClient.Aggregate.OverAll(
-            groupBy: new Aggregate.GroupBy("int"),
+            groupBy: "int", // shorthand for new Aggregate.GroupBy("int")
             metrics: new[]
             {
                 Metrics.ForProperty("text").Text(count: true),
