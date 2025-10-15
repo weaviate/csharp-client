@@ -100,7 +100,7 @@ public sealed record ClientConfiguration(
         new(this, httpMessageHandler: messageHandler);
 };
 
-public class WeaviateClient : IDisposable
+public partial class WeaviateClient : IDisposable
 {
     private static readonly Lazy<ClientConfiguration> _defaultOptions = new(() =>
         new()
