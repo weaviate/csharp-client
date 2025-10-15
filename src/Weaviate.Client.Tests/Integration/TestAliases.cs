@@ -12,6 +12,12 @@ using Xunit;
 [Collection("TestAliases")]
 public class TestAliases : IntegrationTests
 {
+    public TestAliases()
+        : base()
+    {
+        RequireVersion("1.32.0");
+    }
+
     [Fact]
     public async Task Test_Create_And_Get_Alias()
     {

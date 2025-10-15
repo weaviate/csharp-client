@@ -167,15 +167,39 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         );
     }
 
-    protected void RequireWeaviateVersion(string minimumVersion)
+    protected static bool VersionIsInRange(
+        System.Version version,
+        string minimumVersion,
+        string? maximumVersion = null
+    )
     {
-        if (_weaviate.WeaviateVersion >= System.Version.Parse(minimumVersion))
-        {
-            return;
-        }
-
-        Assert.Skip(
-            $"Weaviate version {minimumVersion} or higher is required. Current version: {_weaviate.WeaviateVersion}"
+        return (
+            version >= System.Version.Parse(minimumVersion)
+            && (maximumVersion == null || version <= System.Version.Parse(maximumVersion))
         );
+    }
+
+    protected bool ServerVersionIsInRange(string minimumVersion, string? maximumVersion = null)
+    {
+        return VersionIsInRange(_weaviate.WeaviateVersion, minimumVersion, maximumVersion);
+    }
+
+    protected void RequireVersion(string minimumVersion, string? maximumVersion = null)
+    {
+        if (!ServerVersionIsInRange(minimumVersion, maximumVersion))
+        {
+            if (maximumVersion is null)
+            {
+                Assert.Skip(
+                    $"Weaviate minimum version should be at least {minimumVersion}. Current version: {_weaviate.WeaviateVersion}"
+                );
+            }
+            else
+            {
+                Assert.Skip(
+                    $"Weaviate minimum version should be between {minimumVersion} and {maximumVersion}. Current version: {_weaviate.WeaviateVersion}"
+                );
+            }
+        }
     }
 }

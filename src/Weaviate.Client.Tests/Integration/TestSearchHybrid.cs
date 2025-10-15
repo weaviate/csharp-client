@@ -634,15 +634,12 @@ public partial class SearchTests : IntegrationTests
     {
         Assert.Skip("Aggregate Hybrid not fully supported yet");
 
+        RequireVersion("1.26.4");
+
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("name") },
             vectorConfig: Configure.Vectors.SelfProvided()
         );
-
-        if (collection.WeaviateVersion <= Version.Parse("1.26.3"))
-        {
-            Assert.Skip("Hybrid max vector distance only supported in versions > 1.26.3");
-        }
 
         await collection.Data.Insert(
             new { name = "banana one" },
