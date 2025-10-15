@@ -247,7 +247,7 @@ public static class WeaviateExtensions
                                 Description = p.Description,
                             }
                     )
-                    .ToList() ?? [],
+                    .ToArray() ?? [],
             Properties =
                 collection
                     ?.Properties?.Where(p => p.DataType?.All(t => char.IsLower(t.First())) ?? false)
@@ -264,7 +264,7 @@ public static class WeaviateExtensions
                         IndexSearchable = p.IndexSearchable,
                         PropertyTokenization = (PropertyTokenization?)p.Tokenization,
                     })
-                    .ToList() ?? [],
+                    .ToArray() ?? [],
             InvertedIndexConfig = invertedIndexConfig,
             ModuleConfig = moduleConfig,
             RerankerConfig = reranker,

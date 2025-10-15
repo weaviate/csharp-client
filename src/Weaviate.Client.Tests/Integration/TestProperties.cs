@@ -202,7 +202,7 @@ public partial class PropertyTests : IntegrationTests
         var export = await _weaviate.Collections.Export(c.Name);
 
         Assert.NotNull(export);
-        Assert.Equal(3, export.Properties.Count);
+        Assert.Equal(3, export.Properties.Length);
 
         // var propA = export.Properties.First(p => p.Name == "Name");
         var propA = export.Properties[0];
