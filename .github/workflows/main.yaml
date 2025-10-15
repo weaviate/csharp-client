@@ -17,6 +17,8 @@ on:
 env:
   WEAVIATE_130: 1.30.2
   WEAVIATE_131: 1.31.3
+  WEAVIATE_132: 1.32.1
+  WEAVIATE_133: 1.33.0
   DOTNET_VERSION: '8.x'
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -56,6 +58,8 @@ jobs:
         server: [
           $WEAVIATE_130,
           $WEAVIATE_131
+          $WEAVIATE_132
+          $WEAVIATE_133
         ]
 
     steps:
