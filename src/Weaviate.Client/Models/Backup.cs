@@ -1,5 +1,33 @@
 namespace Weaviate.Client.Models;
 
+public enum BackupStatus
+{
+    Unknown,
+    Started,
+    Transferring,
+    Transferred,
+    Success,
+    Failed,
+    Canceled,
+}
+
+public static class BackupStatusExtensions
+{
+    public static BackupStatus ToBackupStatus(this string? status)
+    {
+        return status?.ToUpperInvariant() switch
+        {
+            "STARTED" => BackupStatus.Started,
+            "TRANSFERRING" => BackupStatus.Transferring,
+            "TRANSFERRED" => BackupStatus.Transferred,
+            "SUCCESS" => BackupStatus.Success,
+            "FAILED" => BackupStatus.Failed,
+            "CANCELED" => BackupStatus.Canceled,
+            _ => BackupStatus.Unknown,
+        };
+    }
+}
+
 /// <summary>
 /// Represents a backup as returned by list/status operations
 /// </summary>
@@ -8,12 +36,15 @@ public record Backup(
     string Backend,
     string? Bucket,
     string? Path,
-    string Status,
+    string StatusRaw,
     string[]? Classes,
     DateTimeOffset? StartedAt,
     DateTimeOffset? CompletedAt,
     string? Error
-);
+)
+{
+    public BackupStatus Status => StatusRaw.ToBackupStatus();
+}
 
 /// <summary>
 /// Options for creating a backup

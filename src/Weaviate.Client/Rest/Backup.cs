@@ -16,16 +16,18 @@ public partial class WeaviateRestClient
             options: RestJsonSerializerOptions
         );
         await response.EnsureExpectedStatusCodeAsync([200], "create backup");
-        return await response.Content.ReadFromJsonAsync<Dto.BackupCreateResponse>()
-            ?? throw new WeaviateRestException();
+        return await response.Content.ReadFromJsonAsync<Dto.BackupCreateResponse>(
+                WeaviateRestClient.RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestException();
     }
 
     internal async Task<Dto.BackupListResponse> BackupList(string backend)
     {
         var response = await _httpClient.GetAsync(WeaviateEndpoints.Backups(backend));
         await response.EnsureExpectedStatusCodeAsync([200], "list backups");
-        return await response.Content.ReadFromJsonAsync<Dto.BackupListResponse>()
-            ?? throw new WeaviateRestException();
+        return await response.Content.ReadFromJsonAsync<Dto.BackupListResponse>(
+                WeaviateRestClient.RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestException();
     }
 
     internal async Task<Dto.BackupCreateStatusResponse> BackupStatus(
@@ -39,8 +41,9 @@ public partial class WeaviateRestClient
             WeaviateEndpoints.BackupStatus(backend, id, bucket, path)
         );
         await response.EnsureExpectedStatusCodeAsync([200], "backup status");
-        return await response.Content.ReadFromJsonAsync<Dto.BackupCreateStatusResponse>()
-            ?? throw new WeaviateRestException();
+        return await response.Content.ReadFromJsonAsync<Dto.BackupCreateStatusResponse>(
+                WeaviateRestClient.RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestException();
     }
 
     internal async Task BackupCancel(
@@ -68,8 +71,9 @@ public partial class WeaviateRestClient
             options: RestJsonSerializerOptions
         );
         await response.EnsureExpectedStatusCodeAsync([200], "backup restore");
-        return await response.Content.ReadFromJsonAsync<Dto.BackupRestoreResponse>()
-            ?? throw new WeaviateRestException();
+        return await response.Content.ReadFromJsonAsync<Dto.BackupRestoreResponse>(
+                WeaviateRestClient.RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestException();
     }
 
     internal async Task<Dto.BackupRestoreStatusResponse> BackupRestoreStatus(
@@ -83,7 +87,8 @@ public partial class WeaviateRestClient
             WeaviateEndpoints.BackupRestoreStatus(backend, id, bucket, path)
         );
         await response.EnsureExpectedStatusCodeAsync([200], "backup restore status");
-        return await response.Content.ReadFromJsonAsync<Dto.BackupRestoreStatusResponse>()
-            ?? throw new WeaviateRestException();
+        return await response.Content.ReadFromJsonAsync<Dto.BackupRestoreStatusResponse>(
+                WeaviateRestClient.RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestException();
     }
 }
