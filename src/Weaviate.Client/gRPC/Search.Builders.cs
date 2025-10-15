@@ -54,7 +54,7 @@ internal partial class WeaviateGrpcClient
             GroupBy = groupBy is not null
                 ? new V1.GroupBy()
                 {
-                    Path = { groupBy.PropertyName.ToLowerInvariant() },
+                    Path = { groupBy.PropertyName.Decapitalize() },
                     NumberOfGroups = Convert.ToInt32(groupBy.NumberOfGroups),
                     ObjectsPerGroup = Convert.ToInt32(groupBy.ObjectsPerGroup),
                 }
