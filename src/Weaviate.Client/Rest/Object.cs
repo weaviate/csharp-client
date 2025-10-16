@@ -18,8 +18,9 @@ public partial class WeaviateRestClient
 
         await response.EnsureExpectedStatusCodeAsync([200], "insert object");
 
-        return await response.Content.ReadFromJsonAsync<Dto.Object>()
-            ?? throw new WeaviateRestException();
+        return await response.Content.ReadFromJsonAsync<Dto.Object>(
+                WeaviateRestClient.RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestClientException();
     }
 
     internal async Task<Dto.Object> ObjectReplace(string collectionName, Dto.Object data)
@@ -34,8 +35,9 @@ public partial class WeaviateRestClient
 
         await response.EnsureExpectedStatusCodeAsync([200], "replace object");
 
-        return await response.Content.ReadFromJsonAsync<Dto.Object>()
-            ?? throw new WeaviateRestException();
+        return await response.Content.ReadFromJsonAsync<Dto.Object>(
+                WeaviateRestClient.RestJsonSerializerOptions
+            ) ?? throw new WeaviateRestClientException();
     }
 
     internal async Task DeleteObject(string collectionName, Guid id, string? tenant = null)
