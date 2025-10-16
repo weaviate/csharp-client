@@ -7,7 +7,7 @@ namespace Weaviate.Client.Rest;
 
 public static class HttpResponseMessageExtensions
 {
-    public static async Task EnsureExpectedStatusCodeAsync(
+    public static async Task<HttpStatusCode> EnsureExpectedStatusCodeAsync(
         this HttpResponseMessage response,
         SortedSet<HttpStatusCode> codes,
         string error = ""
@@ -15,7 +15,7 @@ public static class HttpResponseMessageExtensions
     {
         if (codes.Contains(response.StatusCode))
         {
-            return;
+            return response.StatusCode;
         }
 
         var content = await response.Content.ReadAsStringAsync();
@@ -29,18 +29,11 @@ public static class HttpResponseMessageExtensions
         throw new SimpleHttpResponseException(response.StatusCode, codes, content);
     }
 
-    public static async Task EnsureExpectedStatusCodeAsync(
+    public static Task<HttpStatusCode> EnsureExpectedStatusCodeAsync(
         this HttpResponseMessage response,
         SortedSet<int> codes,
         string error = ""
-    )
-    {
-        await EnsureExpectedStatusCodeAsync(
-            response,
-            [.. codes.Select(x => (HttpStatusCode)x)],
-            error
-        );
-    }
+    ) => EnsureExpectedStatusCodeAsync(response, [.. codes.Select(x => (HttpStatusCode)x)], error);
 
     public static async Task EnsureExpectedStatusCodeAsync(
         this HttpResponseMessage response,
