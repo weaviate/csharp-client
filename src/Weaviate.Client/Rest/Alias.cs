@@ -58,17 +58,33 @@ public partial class WeaviateRestClient
             options: RestJsonSerializerOptions
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "update alias");
+        var statusCode = await response.EnsureExpectedStatusCodeAsync(
+            [200, 404, 422],
+            "update alias"
+        );
 
-        return await response.Content.ReadFromJsonAsync<Dto.Alias>(
+        return statusCode switch
+        {
+            HttpStatusCode.NotFound => throw new WeaviateRestException(
+                "Alias not found",
+                statusCode
+            ),
+            HttpStatusCode.UnprocessableEntity => throw new WeaviateRestException(
+                "Target collection does not exist",
+                statusCode
+            ),
+            _ => await response.Content.ReadFromJsonAsync<Dto.Alias>(
                 WeaviateRestClient.RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestException();
+            ) ?? throw new WeaviateRestException(),
+        };
     }
 
-    internal async Task AliasDelete(string aliasName)
+    internal async Task<bool> AliasDelete(string aliasName)
     {
         var response = await _httpClient.DeleteAsync(WeaviateEndpoints.Alias(aliasName));
 
-        await response.EnsureExpectedStatusCodeAsync([200, 204], "delete alias");
+        var statusCode = await response.EnsureExpectedStatusCodeAsync([204], "delete alias");
+
+        return statusCode == HttpStatusCode.NoContent;
     }
 }
