@@ -58,19 +58,12 @@ public partial class WeaviateRestClient
             options: RestJsonSerializerOptions
         );
 
-        var statusCode = await response.EnsureExpectedStatusCodeAsync(
-            [200, 404, 422],
-            "update alias"
-        );
+        var statusCode = await response.EnsureExpectedStatusCodeAsync([200, 404], "update alias");
 
         return statusCode switch
         {
             HttpStatusCode.NotFound => throw new WeaviateRestException(
                 "Alias not found",
-                statusCode
-            ),
-            HttpStatusCode.UnprocessableEntity => throw new WeaviateRestException(
-                "Target collection does not exist",
                 statusCode
             ),
             _ => await response.Content.ReadFromJsonAsync<Dto.Alias>(
