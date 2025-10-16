@@ -1,6 +1,6 @@
 namespace Weaviate.Client.Rest;
 
-internal class WeaviateRestException : WeaviateException
+public class WeaviateRestException : WeaviateClientException
 {
     public WeaviateRestException(Exception? innerException = null)
         : base("An error occurred in the Weaviate REST API", innerException) { }
