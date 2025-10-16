@@ -17,7 +17,7 @@ public partial class WeaviateRestClient
         var aliasesResponse =
             await response.Content.ReadFromJsonAsync<Dto.AliasResponse>(
                 WeaviateRestClient.RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestException();
+            ) ?? throw new WeaviateRestClientException();
 
         return aliasesResponse.Aliases ?? Array.Empty<Dto.Alias>();
     }
@@ -34,7 +34,7 @@ public partial class WeaviateRestClient
 
         return await response.Content.ReadFromJsonAsync<Dto.Alias>(
                 WeaviateRestClient.RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestException();
+            ) ?? throw new WeaviateRestClientException();
     }
 
     internal async Task<Dto.Alias?> AliasGet(string aliasName)
@@ -46,7 +46,7 @@ public partial class WeaviateRestClient
             HttpStatusCode.NotFound => null,
             _ => await response.Content.ReadFromJsonAsync<Dto.Alias>(
                 WeaviateRestClient.RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestException(),
+            ) ?? throw new WeaviateRestClientException(),
         };
     }
 
@@ -62,13 +62,13 @@ public partial class WeaviateRestClient
 
         return statusCode switch
         {
-            HttpStatusCode.NotFound => throw new WeaviateRestException(
+            HttpStatusCode.NotFound => throw new WeaviateRestServerException(
                 "Alias not found",
                 statusCode
             ),
             _ => await response.Content.ReadFromJsonAsync<Dto.Alias>(
                 WeaviateRestClient.RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestException(),
+            ) ?? throw new WeaviateRestClientException(),
         };
     }
 
