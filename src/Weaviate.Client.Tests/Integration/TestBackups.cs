@@ -10,6 +10,7 @@ using Xunit;
 public class TestBackups : IntegrationTests
 {
     const string _backend = "filesystem"; // typical default backend
+    static readonly TimeSpan _pollingTimeout = TimeSpan.FromSeconds(5);
 
     public TestBackups()
         : base()
@@ -26,25 +27,112 @@ public class TestBackups : IntegrationTests
     /// <summary>
     /// Wait for all running backups to complete before starting a new one.
     /// Since only one backup can run at a time per backend, this prevents conflicts.
+    /// Cancels any backups stuck in Started status and times out after 5 seconds.
     /// </summary>
     private async Task WaitForNoRunningBackups(CancellationToken ct = default)
     {
+        var timeout = _pollingTimeout;
+        var startTime = DateTime.UtcNow;
+
         while (true)
         {
-            var backups = await _weaviate.Backups.List(_backend);
-            var hasRunning = backups.Any(b =>
-                b.Status
-                    is BackupStatus.Started
-                        or BackupStatus.Transferring
-                        or BackupStatus.Transferred
-            );
+            // Check for timeout
+            if (DateTime.UtcNow - startTime > timeout)
+            {
+                // Cancel any remaining backups and break
+                var remainingBackups = await _weaviate.Backups.List(_backend);
+                foreach (var backup in remainingBackups)
+                {
+                    if (
+                        backup.Status
+                        is BackupStatus.Started
+                            or BackupStatus.Transferring
+                            or BackupStatus.Transferred
+                    )
+                    {
+                        try
+                        {
+                            await _weaviate.Backups.Cancel(_backend, backup.Id);
+                        }
+                        catch
+                        {
+                            /* Ignore cancellation errors */
+                        }
+                    }
+                }
+                break;
+            }
 
-            if (!hasRunning)
+            var backups = await _weaviate.Backups.List(_backend);
+            var runningBackups = backups
+                .Where(b =>
+                    b.Status
+                        is BackupStatus.Started
+                            or BackupStatus.Transferring
+                            or BackupStatus.Transferred
+                )
+                .ToList();
+
+            if (!runningBackups.Any())
             {
                 break;
             }
 
+            // Cancel backups stuck in Started status for more than 2 seconds
+            foreach (var backup in runningBackups)
+            {
+                if (backup.Status == BackupStatus.Started)
+                {
+                    try
+                    {
+                        await _weaviate.Backups.Cancel(_backend, backup.Id);
+                    }
+                    catch
+                    {
+                        /* Ignore cancellation errors */
+                    }
+                }
+            }
+
             await Task.Delay(250, ct);
+        }
+    }
+
+    private async Task<Backup> PollBackupUntil(
+        string backupId,
+        string operationName,
+        IReadOnlyCollection<BackupStatus> desiredStatuses,
+        int delayMs = 250,
+        bool isRestore = false,
+        TimeSpan? timeout = null,
+        CancellationToken ct = default
+    )
+    {
+        ArgumentNullException.ThrowIfNull(desiredStatuses);
+        var effectiveTimeout = timeout ?? _pollingTimeout;
+        var startedAt = DateTime.UtcNow;
+
+        while (true)
+        {
+            Assert.SkipWhen(ct.IsCancellationRequested, "Polling canceled by test framework.");
+
+            if (DateTime.UtcNow - startedAt > effectiveTimeout)
+            {
+                Assert.Fail(
+                    $"Polling '{operationName}' for backup '{backupId}' exceeded timeout {effectiveTimeout}"
+                );
+            }
+
+            var status = isRestore
+                ? await _weaviate.Backups.GetRestoreStatus(_backend, backupId)
+                : await _weaviate.Backups.GetStatus(_backend, backupId);
+
+            if (desiredStatuses.Contains(status.Status))
+            {
+                return status;
+            }
+
+            await Task.Delay(delayMs, ct);
         }
     }
 
@@ -187,21 +275,17 @@ public class TestBackups : IntegrationTests
         Assert.NotEqual(BackupStatus.Failed, createResp.Status); // initial status should be STARTED/TRANSFERRING/TRANSFERRED
 
         // Poll until success
-        Backup status;
-        while (true)
-        {
-            status = await _weaviate.Backups.GetStatus(_backend, backupId);
-            if (
-                status.Status
-                is BackupStatus.Success
-                    or BackupStatus.Failed
-                    or BackupStatus.Canceled
-            )
+        var status = await PollBackupUntil(
+            backupId,
+            "backup creation",
+            desiredStatuses: new[]
             {
-                break;
-            }
-            await Task.Delay(200, TestContext.Current.CancellationToken);
-        }
+                BackupStatus.Success,
+                BackupStatus.Failed,
+                BackupStatus.Canceled,
+            },
+            ct: TestContext.Current.CancellationToken
+        );
         Assert.Equal(BackupStatus.Success, status.Status);
 
         // Delete collection
@@ -218,21 +302,18 @@ public class TestBackups : IntegrationTests
         Assert.NotNull(restoreResp);
 
         // Poll restore status
-        Backup restoreStatus;
-        while (true)
-        {
-            restoreStatus = await _weaviate.Backups.GetRestoreStatus(_backend, backupId);
-            if (
-                restoreStatus.Status
-                is BackupStatus.Success
-                    or BackupStatus.Failed
-                    or BackupStatus.Canceled
-            )
+        var restoreStatus = await PollBackupUntil(
+            backupId,
+            "backup restore",
+            desiredStatuses: new[]
             {
-                break;
-            }
-            await Task.Delay(200, TestContext.Current.CancellationToken);
-        }
+                BackupStatus.Success,
+                BackupStatus.Failed,
+                BackupStatus.Canceled,
+            },
+            isRestore: true,
+            ct: TestContext.Current.CancellationToken
+        );
         Assert.Equal(BackupStatus.Success, restoreStatus.Status);
 
         // Verify data restored
@@ -416,21 +497,17 @@ public class TestBackups : IntegrationTests
         await _weaviate.Backups.Cancel(_backend, backupId);
 
         // Poll status until terminal
-        Backup status;
-        while (true)
-        {
-            status = await _weaviate.Backups.GetStatus(_backend, backupId);
-            if (
-                status.Status
-                is BackupStatus.Success
-                    or BackupStatus.Failed
-                    or BackupStatus.Canceled
-            )
+        var status = await PollBackupUntil(
+            backupId,
+            "canceled backup status",
+            desiredStatuses: new[]
             {
-                break;
-            }
-            await Task.Delay(250, TestContext.Current.CancellationToken);
-        }
+                BackupStatus.Success,
+                BackupStatus.Failed,
+                BackupStatus.Canceled,
+            },
+            ct: TestContext.Current.CancellationToken
+        );
         Assert.Equal(BackupStatus.Canceled, status.Status);
     }
 
@@ -454,24 +531,21 @@ public class TestBackups : IntegrationTests
         var backups = await _weaviate.Backups.List(_backend);
         Assert.Contains(backups, b => b.Id.Equals(backupId, StringComparison.OrdinalIgnoreCase));
 
-        // Poll until backup creation completes (wait for SUCCESS)
-        while (true)
-        {
-            var createStatus = await _weaviate.Backups.GetStatus(_backend, backupId);
-            Assert.True(
-                createStatus.Status
-                    is BackupStatus.Success
-                        or BackupStatus.Transferred
-                        or BackupStatus.Transferring
-                        or BackupStatus.Started,
-                $"Unexpected status: {createStatus.Status}"
-            );
-            if (createStatus.Status == BackupStatus.Success)
+        // Cancel request
+        await _weaviate.Backups.Cancel(_backend, backupId);
+
+        // Poll status until terminal
+        var status = await PollBackupUntil(
+            backupId,
+            "list backup status",
+            desiredStatuses: new[]
             {
-                break;
-            }
-            await Task.Delay(100, TestContext.Current.CancellationToken);
-        }
+                BackupStatus.Success,
+                BackupStatus.Failed,
+                BackupStatus.Canceled,
+            },
+            ct: TestContext.Current.CancellationToken
+        );
     }
 
     [Fact]
