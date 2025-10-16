@@ -139,8 +139,17 @@ public class TestBackups : IntegrationTests
     [Fact]
     public async Task Test_Create_List_Status_Cancel_Backup()
     {
-        var collectionName = MakeUniqueCollectionName<object>("backup");
-        var id = Helpers.GenerateUniqueIdentifier(collectionName);
+        // Create a dummy collection for the backup to operate on
+        var dummyCollection = await CollectionFactory(
+            name: "BackupTestCollection",
+            properties: [Property.Text("dummyField")]
+        );
+        var dummyCollectionName = dummyCollection.Name;
+
+        // Insert a sample object into the dummy collection
+        await dummyCollection.Data.Insert(new { dummyField = "sample data" });
+
+        var id = Helpers.GenerateUniqueIdentifier(dummyCollectionName);
         var request = new BackupCreateRequest(id);
 
         try
@@ -514,6 +523,16 @@ public class TestBackups : IntegrationTests
     [Fact]
     public async Task Test_List_Backups()
     {
+        // Create a dummy collection for the backup to operate on
+        var dummyCollection = await CollectionFactory(
+            name: "DummyCollection",
+            properties: [Property.Text("dummyField")]
+        );
+        var dummyCollectionName = dummyCollection.Name;
+
+        // Insert a sample object into the dummy collection
+        await dummyCollection.Data.Insert(new { dummyField = "sample data" });
+
         // Match Python test: create backup, list it, poll until success
         var collectionSeed = "bkp_list";
         var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
