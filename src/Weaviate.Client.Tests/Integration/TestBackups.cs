@@ -600,10 +600,10 @@ public class TestBackups : IntegrationTests
         // Delete alias if it already exists
         try
         {
-            await articleClient.Alias.Delete(aliasName);
+            await _weaviate.Alias.Delete(aliasName);
         }
         catch { }
-        await articleClient.Alias.Add(new Alias(aliasName, articleName));
+        await articleClient.Alias.Add(aliasName);
 
         // Create backup including only Article
         var createResp = await _weaviate.Backups.Create(
@@ -616,7 +616,7 @@ public class TestBackups : IntegrationTests
 
         // Delete Article and repoint alias to Paragraph (conflict scenario for restore)
         await _weaviate.Collections.Delete(articleName);
-        await paragraphClient.Alias.Update(aliasName, paragraphName);
+        await paragraphClient.Alias.Claim(aliasName);
 
         // Attempt restore with overwriteAlias = false -> expect failure & alias unchanged
         var restoreResp = await _weaviate.Backups.Restore(
@@ -631,7 +631,8 @@ public class TestBackups : IntegrationTests
         Assert.Null(restoreResp.Error);
 
         // Alias should still point to Paragraph
-        var aliasAfter = await paragraphClient.Alias.Get(aliasName);
+        var aliasAfter = await _weaviate.Alias.Get(aliasName);
+        Assert.NotNull(aliasAfter);
         Assert.Equal(paragraphName, aliasAfter.TargetClass);
 
         // Article should have been restored (attempting to use should NOT raise)
@@ -665,7 +666,7 @@ public class TestBackups : IntegrationTests
         await articleClient.Data.Insert(new { title = "original" });
         await paragraphClient.Data.Insert(new { contents = "p1" });
 
-        await articleClient.Alias.Add(new Alias(aliasName, articleName));
+        await articleClient.Alias.Add(aliasName);
 
         var createResp = await _weaviate.Backups.Create(
             _backend,
@@ -677,7 +678,7 @@ public class TestBackups : IntegrationTests
 
         // Delete original, repoint alias to Paragraph to simulate conflicting alias
         await _weaviate.Collections.Delete(articleName);
-        await paragraphClient.Alias.Update(aliasName, paragraphName);
+        await paragraphClient.Alias.Claim(aliasName);
 
         // Restore with overwriteAlias = true should repoint alias back & recreate Article
         var restoreResp = await _weaviate.Backups.Restore(
@@ -691,7 +692,8 @@ public class TestBackups : IntegrationTests
         Assert.Null(restoreResp.Error);
 
         // Alias should now target recreated Article collection
-        var aliasAfter = await paragraphClient.Alias.Get(aliasName);
+        var aliasAfter = await _weaviate.Alias.Get(aliasName);
+        Assert.NotNull(aliasAfter);
         Assert.Equal(articleName, aliasAfter.TargetClass);
 
         // Article collection should exist with restored data (1 object)
