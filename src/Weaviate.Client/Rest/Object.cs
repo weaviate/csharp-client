@@ -20,7 +20,7 @@ public partial class WeaviateRestClient
 
         return await response.Content.ReadFromJsonAsync<Dto.Object>(
                 WeaviateRestClient.RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestException();
+            ) ?? throw new WeaviateRestClientException();
     }
 
     internal async Task<Dto.Object> ObjectReplace(string collectionName, Dto.Object data)
@@ -37,7 +37,7 @@ public partial class WeaviateRestClient
 
         return await response.Content.ReadFromJsonAsync<Dto.Object>(
                 WeaviateRestClient.RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestException();
+            ) ?? throw new WeaviateRestClientException();
     }
 
     internal async Task DeleteObject(string collectionName, Guid id, string? tenant = null)
