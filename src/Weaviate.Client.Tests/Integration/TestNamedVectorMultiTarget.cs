@@ -12,11 +12,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
     [Fact]
     public async Task Test_NamedVector_MultiTargetVectorPerTarget()
     {
-        var dummy = await CollectionFactory();
-        if (dummy.WeaviateVersion < Version.Parse("1.26.0"))
-        {
-            Assert.Skip("Named vectors are not supported in versions lower than 1.26.0");
-        }
+        RequireVersion("1.26.0");
 
         var collection = await CollectionFactory(
             vectorConfig: new[]
@@ -152,11 +148,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         string[] targetVector
     )
     {
-        var dummy = await CollectionFactory();
-        if (dummy.WeaviateVersion < Version.Parse("1.27.0"))
-        {
-            Assert.Skip("Multi vector per target is not supported in versions lower than 1.27.0");
-        }
+        RequireVersion("1.27.0");
 
         var collection = await CollectionFactory(
             properties: Array.Empty<Property>(),
@@ -321,11 +313,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         string[] targetVector
     )
     {
-        var dummy = await CollectionFactory();
-        if (dummy.WeaviateVersion < Version.Parse("1.27.0"))
-        {
-            Assert.Skip("Multi vector per target is not supported in versions lower than 1.27.0");
-        }
+        RequireVersion("1.27.0");
 
         var collection = await CollectionFactory(
             properties: Array.Empty<Property>(),
@@ -392,11 +380,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         float[] expectedDistances
     )
     {
-        var dummy = await CollectionFactory();
-        if (dummy.WeaviateVersion < Version.Parse("1.26.0"))
-        {
-            Assert.Skip("Named vectors are not supported in versions lower than 1.26.0");
-        }
+        RequireVersion("1.26.0");
 
         var collection = await CollectionFactory(
             properties: Array.Empty<Property>(),
@@ -474,11 +458,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
     [MemberData(nameof(MultiTargetVectors))]
     public async Task Test_NamedVector_MultiTarget(string[] targetVector)
     {
-        var dummy = await CollectionFactory();
-        if (dummy.WeaviateVersion < Version.Parse("1.26.0"))
-        {
-            Assert.Skip("Named vectors are not supported in versions lower than 1.26.0");
-        }
+        RequireVersion("1.26.0");
 
         var collection = await CollectionFactory(
             properties: Array.Empty<Property>(),
