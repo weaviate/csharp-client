@@ -38,7 +38,7 @@ public partial class WeaviateRestClient
 
         if (contents is null)
         {
-            throw new WeaviateRestException();
+            throw new WeaviateRestClientException();
         }
 
         return contents;
@@ -67,7 +67,7 @@ public partial class WeaviateRestClient
 
         if (contents is null)
         {
-            throw new WeaviateRestException();
+            throw new WeaviateRestClientException();
         }
 
         return contents;
@@ -85,7 +85,7 @@ public partial class WeaviateRestClient
 
         var contents =
             await response.Content.ReadFromJsonAsync<Dto.Class>(options: RestJsonSerializerOptions)
-            ?? throw new WeaviateRestException();
+            ?? throw new WeaviateRestServerException();
 
         return contents;
     }

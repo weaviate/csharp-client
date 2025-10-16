@@ -110,6 +110,6 @@ public partial class WeaviateRestClient
 
         return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>(
                 RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestException();
+            ) ?? throw new WeaviateRestClientException();
     }
 }
