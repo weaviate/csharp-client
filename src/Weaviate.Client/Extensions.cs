@@ -247,7 +247,7 @@ public static class WeaviateExtensions
                                 Description = p.Description,
                             }
                     )
-                    .ToList() ?? [],
+                    .ToArray() ?? [],
             Properties =
                 collection
                     ?.Properties?.Where(p => p.DataType?.All(t => char.IsLower(t.First())) ?? false)
@@ -264,7 +264,7 @@ public static class WeaviateExtensions
                         IndexSearchable = p.IndexSearchable,
                         PropertyTokenization = (PropertyTokenization?)p.Tokenization,
                     })
-                    .ToList() ?? [],
+                    .ToArray() ?? [],
             InvertedIndexConfig = invertedIndexConfig,
             ModuleConfig = moduleConfig,
             RerankerConfig = reranker,
@@ -501,21 +501,21 @@ public static class WeaviateExtensions
         return default(T);
     }
 
-    public static string Capitalize(this string str)
+    internal static string Capitalize(this string str)
     {
         if (string.IsNullOrEmpty(str))
             return str;
         return char.ToUpper(str[0]) + str[1..];
     }
 
-    public static string Decapitalize(this string str)
+    internal static string Decapitalize(this string str)
     {
         if (string.IsNullOrEmpty(str))
             return str;
         return char.ToLower(str[0]) + str[1..];
     }
 
-    public static bool IsNativeType(this Type type)
+    internal static bool IsNativeType(this Type type)
     {
         // Handle nullable types
         var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
