@@ -37,15 +37,17 @@ public partial class WeaviateRestClient
             ) ?? throw new WeaviateRestException();
     }
 
-    internal async Task<Dto.Alias> AliasGet(string aliasName)
+    internal async Task<Dto.Alias?> AliasGet(string aliasName)
     {
         var response = await _httpClient.GetAsync(WeaviateEndpoints.Alias(aliasName));
 
-        await response.EnsureExpectedStatusCodeAsync([200], "get alias");
-
-        return await response.Content.ReadFromJsonAsync<Dto.Alias>(
+        return await response.EnsureExpectedStatusCodeAsync([200, 404], "get alias") switch
+        {
+            HttpStatusCode.NotFound => null,
+            _ => await response.Content.ReadFromJsonAsync<Dto.Alias>(
                 WeaviateRestClient.RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestException();
+            ) ?? throw new WeaviateRestException(),
+        };
     }
 
     internal async Task<Dto.Alias> AliasPut(string alias, string targetCollection)

@@ -19,10 +19,10 @@ public class AliasClient
     /// </summary>
     /// <param name="aliasName">The name of the alias to retrieve</param>
     /// <returns>The alias with its target collection</returns>
-    public async Task<Alias> Get(string aliasName)
+    public async Task<Alias?> Get(string aliasName)
     {
         var dto = await _client.RestClient.AliasGet(aliasName);
-        return ToModel(dto);
+        return dto != null ? ToModel(dto) : null;
     }
 
     /// <summary>
