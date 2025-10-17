@@ -3,6 +3,29 @@ using System.Text.Json.Nodes;
 
 namespace Weaviate.Client.Tests;
 
+public static class Helpers
+{
+    // Useful for collection names, backups, aliases, etc.
+    public static string GenerateUniqueIdentifier(string name)
+    {
+        // Sanitize the collection name
+        name = SanitizeCollectionName(name);
+        // Generate a random part using GUID
+        var randomPart = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 12);
+        return string.Concat(name, randomPart).ToLowerInvariant();
+    }
+
+    public static string SanitizeCollectionName(string name)
+    {
+        name = name.Replace("[", "")
+            .Replace("]", "")
+            .Replace("-", "")
+            .Replace(" ", "")
+            .Replace(".", "");
+        return char.ToUpper(name[0]) + name.Substring(1);
+    }
+}
+
 public class LoggingHandler : DelegatingHandler
 {
     private readonly Action<string> _log;
