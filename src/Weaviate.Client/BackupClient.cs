@@ -53,11 +53,17 @@ public class BackupClient
                     ChunkSize = dto.Config.ChunkSize,
                     CompressionLevel = dto.Config.CompressionLevel switch
                     {
-                        "BestSpeed" => Rest.Dto.BackupConfigCompressionLevel.BestSpeed,
-                        "BestCompression" => Rest.Dto.BackupConfigCompressionLevel.BestCompression,
-                        "DefaultCompression" or _ => Rest.Dto
+                        Models.BackupCompressionLevel.BestSpeed => Rest.Dto
+                            .BackupConfigCompressionLevel
+                            .BestSpeed,
+                        Models.BackupCompressionLevel.BestCompression => Rest.Dto
+                            .BackupConfigCompressionLevel
+                            .BestCompression,
+                        Models.BackupCompressionLevel.DefaultCompression => Rest.Dto
                             .BackupConfigCompressionLevel
                             .DefaultCompression,
+                        null => Rest.Dto.BackupConfigCompressionLevel.DefaultCompression,
+                        _ => Rest.Dto.BackupConfigCompressionLevel.DefaultCompression,
                     },
                 },
         };

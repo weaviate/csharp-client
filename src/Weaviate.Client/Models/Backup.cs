@@ -11,6 +11,27 @@ public enum BackupStatus
     Canceled,
 }
 
+/// <summary>
+/// Compression level for backup operations
+/// </summary>
+public enum BackupCompressionLevel
+{
+    /// <summary>
+    /// Default compression level
+    /// </summary>
+    DefaultCompression,
+
+    /// <summary>
+    /// Optimized for speed
+    /// </summary>
+    BestSpeed,
+
+    /// <summary>
+    /// Optimized for compression ratio
+    /// </summary>
+    BestCompression,
+}
+
 public static class BackupStatusExtensions
 {
     public static BackupStatus ToBackupStatus(this string? status)
@@ -73,7 +94,7 @@ public record BackupConfig(
     string? Path = null,
     int? CPUPercentage = null,
     int? ChunkSize = null,
-    string? CompressionLevel = null
+    BackupCompressionLevel? CompressionLevel = null
 );
 
 public record RestoreConfig(
