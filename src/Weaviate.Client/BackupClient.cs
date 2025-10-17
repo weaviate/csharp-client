@@ -1,5 +1,4 @@
 using Weaviate.Client.Models;
-using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 
@@ -21,7 +20,7 @@ public class BackupClient
     /// Start creating a backup
     /// </summary>
     public async Task<Backup> Create(
-        string backend,
+        BackupStorage backend,
         Models.BackupCreateRequest request,
         bool waitForCompletion = false,
         TimeSpan? pollInterval = null,
@@ -88,18 +87,17 @@ public class BackupClient
     /// <summary>
     /// List existing backups for a backend
     /// </summary>
-    public async Task<IEnumerable<Backup>> List(string backend)
+    public async Task<IEnumerable<Backup>> List(BackupStorage backend)
     {
-        List<Anonymous3> list = (await _client.RestClient.BackupList(backend)).ToList();
-
-        return list.Select(ToModelListItem);
+        var list = await _client.RestClient.BackupList(backend);
+        return list.Select(ToModelListItem) ?? Array.Empty<Backup>();
     }
 
     /// <summary>
     /// Get creation status for a backup
     /// </summary>
     public async Task<Backup> GetStatus(
-        string backend,
+        BackupStorage backend,
         string id,
         string? bucket = null,
         string? path = null
@@ -112,14 +110,18 @@ public class BackupClient
     /// <summary>
     /// Cancel a running backup
     /// </summary>
-    public Task Cancel(string backend, string id, string? bucket = null, string? path = null) =>
-        _client.RestClient.BackupCancel(backend, id, bucket, path);
+    public Task Cancel(
+        BackupStorage backend,
+        string id,
+        string? bucket = null,
+        string? path = null
+    ) => _client.RestClient.BackupCancel(backend, id, bucket, path);
 
     /// <summary>
     /// Start restoring a backup
     /// </summary>
     public async Task<Backup> Restore(
-        string backend,
+        BackupStorage backend,
         string id,
         Models.BackupRestoreRequest request,
         bool waitForCompletion = false,
@@ -179,7 +181,7 @@ public class BackupClient
     /// Get restore status
     /// </summary>
     public async Task<Backup> GetRestoreStatus(
-        string backend,
+        BackupStorage backend,
         string id,
         string? bucket = null,
         string? path = null
@@ -262,7 +264,7 @@ public class BackupClient
     };
 
     private async Task<Backup> WaitForCreateCompletion(
-        string backend,
+        BackupStorage backend,
         string id,
         TimeSpan? pollInterval,
         TimeSpan? timeout,
@@ -294,7 +296,7 @@ public class BackupClient
     }
 
     private async Task<Backup> WaitForRestoreCompletion(
-        string backend,
+        BackupStorage backend,
         string id,
         TimeSpan? pollInterval,
         TimeSpan? timeout,

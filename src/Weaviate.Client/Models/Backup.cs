@@ -32,6 +32,36 @@ public enum BackupCompressionLevel
     BestCompression,
 }
 
+/// <summary>
+/// Backend storage type for backups
+/// </summary>
+public enum BackupStorage
+{
+    /// <summary>
+    /// Local filesystem storage
+    /// </summary>
+    [System.Runtime.Serialization.EnumMember(Value = "filesystem")]
+    Filesystem,
+
+    /// <summary>
+    /// Amazon S3 storage
+    /// </summary>
+    [System.Runtime.Serialization.EnumMember(Value = "s3")]
+    S3,
+
+    /// <summary>
+    /// Google Cloud Storage
+    /// </summary>
+    [System.Runtime.Serialization.EnumMember(Value = "gcs")]
+    GCS,
+
+    /// <summary>
+    /// Azure Blob Storage
+    /// </summary>
+    [System.Runtime.Serialization.EnumMember(Value = "azure")]
+    Azure,
+}
+
 public static class BackupStatusExtensions
 {
     public static BackupStatus ToBackupStatus(this string? status)

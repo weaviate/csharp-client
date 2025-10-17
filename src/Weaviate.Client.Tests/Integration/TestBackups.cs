@@ -9,7 +9,7 @@ using Xunit;
 [CollectionDefinition("TestBackups", DisableParallelization = true)]
 public class TestBackups : IntegrationTests
 {
-    const string _backend = "filesystem"; // typical default backend
+    static readonly BackupStorage _backend = BackupStorage.Filesystem; // typical default backend
     static readonly TimeSpan _pollingTimeout = TimeSpan.FromSeconds(5);
 
     public TestBackups()
