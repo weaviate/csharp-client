@@ -17,7 +17,8 @@ public class BackupClient
     }
 
     /// <summary>
-    /// Start creating a backup
+    /// Start creating a backup.
+    /// Bucket and path should be supplied via <see cref="Models.BackupCreateRequest.Config"/> when needed.
     /// </summary>
     public async Task<Backup> Create(
         BackupStorage backend,
@@ -25,8 +26,6 @@ public class BackupClient
         bool waitForCompletion = false,
         TimeSpan? pollInterval = null,
         TimeSpan? timeout = null,
-        string? bucket = null,
-        string? path = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -73,13 +72,16 @@ public class BackupClient
         {
             return model;
         }
+        // When waiting for completion, use bucket/path from request.Config if provided
+        var cfgBucket = request.Config?.Bucket;
+        var cfgPath = request.Config?.Path;
         return await WaitForCreateCompletion(
             backend,
             model.Id,
             pollInterval,
             timeout,
-            bucket,
-            path,
+            cfgBucket,
+            cfgPath,
             cancellationToken
         );
     }
@@ -118,7 +120,8 @@ public class BackupClient
     ) => _client.RestClient.BackupCancel(backend, id, bucket, path);
 
     /// <summary>
-    /// Start restoring a backup
+    /// Start restoring a backup.
+    /// Bucket and path should be supplied via <see cref="Models.BackupRestoreRequest.Config"/> when needed.
     /// </summary>
     public async Task<Backup> Restore(
         BackupStorage backend,
@@ -127,8 +130,6 @@ public class BackupClient
         bool waitForCompletion = false,
         TimeSpan? pollInterval = null,
         TimeSpan? timeout = null,
-        string? bucket = null,
-        string? path = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -166,13 +167,16 @@ public class BackupClient
             var model = ToModel(response);
             return model;
         }
+        // Use bucket/path from restore config if provided when waiting for completion
+        var cfgBucket = request.Config?.Bucket;
+        var cfgPath = request.Config?.Path;
         return await WaitForRestoreCompletion(
             backend,
             id,
             pollInterval,
             timeout,
-            bucket,
-            path,
+            cfgBucket,
+            cfgPath,
             cancellationToken
         );
     }
