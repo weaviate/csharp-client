@@ -4,12 +4,20 @@ namespace Weaviate.Client;
 
 public partial class WeaviateClient
 {
-    public BackupClient Backups => new(this);
+    private BackupClient? _backups;
+
+    public BackupClient Backups => _backups ??= new(this);
 }
 
 public class BackupClient
 {
     private readonly WeaviateClient _client;
+
+    /// <summary>
+    /// Static configuration used for all backup operations.
+    /// Can be modified to change default polling behavior.
+    /// </summary>
+    public static BackupClientConfig Config { get; set; } = BackupClientConfig.Default;
 
     internal BackupClient(WeaviateClient client)
     {
@@ -17,39 +25,71 @@ public class BackupClient
     }
 
     /// <summary>
-    /// Start creating a backup.
+    /// Start creating a backup asynchronously.
+    /// Returns a BackupOperation that can be used to track status or wait for completion.
     /// Bucket and path should be supplied via <see cref="Models.BackupCreateRequest.Config"/> when needed.
     /// </summary>
-    public async Task<Backup> Create(
+    /// <example>
+    /// // Start backup and check status later
+    /// var operation = await client.Backups.Create(BackupStorage.Filesystem, request);
+    ///
+    /// // Or await it directly for completion
+    /// var result = await client.Backups.Create(BackupStorage.Filesystem, request);
+    /// </example>
+    public async Task<BackupOperation> Create(
         BackupStorage backend,
         Models.BackupCreateRequest request,
-        bool waitForCompletion = false,
-        TimeSpan? pollInterval = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var restRequest = BuildBackupCreateRequest(request);
+        var response = await _client.RestClient.BackupCreate(backend, restRequest);
+        var model = ToModel(response);
+
+        var cfgBucket = request.Config?.Bucket;
+        var cfgPath = request.Config?.Path;
+
+        return new BackupOperation(
+            model,
+            async () => await GetStatus(backend, model.Id, cfgBucket, cfgPath),
+            async () => await Cancel(backend, model.Id, cfgBucket, cfgPath)
+        );
+    }
+
+    /// <summary>
+    /// Create a backup and wait synchronously for completion.
+    /// This method blocks until the backup operation finishes.
+    /// </summary>
+    public async Task<Backup> CreateSync(
+        BackupStorage backend,
+        Models.BackupCreateRequest request,
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default
     )
     {
-        var dto = new Models.BackupCreateRequest(
-            request.Id,
-            request.Include,
-            request.Exclude,
-            request.Config
-        );
-        var restRequest = new Rest.Dto.BackupCreateRequest
+        var operation = await Create(backend, request, cancellationToken);
+        return await operation.WaitForCompletion(timeout, cancellationToken);
+    }
+
+    private Rest.Dto.BackupCreateRequest BuildBackupCreateRequest(
+        Models.BackupCreateRequest request
+    )
+    {
+        return new Rest.Dto.BackupCreateRequest
         {
-            Id = dto.Id,
-            Include = dto.Include?.ToList(),
-            Exclude = dto.Exclude?.ToList(),
-            Config = dto.Config is null
+            Id = request.Id,
+            Include = request.Include?.ToList(),
+            Exclude = request.Exclude?.ToList(),
+            Config = request.Config is null
                 ? null
                 : new Rest.Dto.BackupConfig
                 {
-                    Endpoint = dto.Config.Endpoint,
-                    Bucket = dto.Config.Bucket,
-                    Path = dto.Config.Path,
-                    CPUPercentage = dto.Config.CPUPercentage,
-                    ChunkSize = dto.Config.ChunkSize,
-                    CompressionLevel = dto.Config.CompressionLevel switch
+                    Endpoint = request.Config.Endpoint,
+                    Bucket = request.Config.Bucket,
+                    Path = request.Config.Path,
+                    CPUPercentage = request.Config.CPUPercentage,
+                    ChunkSize = request.Config.ChunkSize,
+                    CompressionLevel = request.Config.CompressionLevel switch
                     {
                         Models.BackupCompressionLevel.BestSpeed => Rest.Dto
                             .BackupConfigCompressionLevel
@@ -65,25 +105,6 @@ public class BackupClient
                     },
                 },
         };
-
-        var response = await _client.RestClient.BackupCreate(backend, restRequest);
-        var model = ToModel(response);
-        if (!waitForCompletion)
-        {
-            return model;
-        }
-        // When waiting for completion, use bucket/path from request.Config if provided
-        var cfgBucket = request.Config?.Bucket;
-        var cfgPath = request.Config?.Path;
-        return await WaitForCreateCompletion(
-            backend,
-            model.Id,
-            pollInterval,
-            timeout,
-            cfgBucket,
-            cfgPath,
-            cancellationToken
-        );
     }
 
     /// <summary>
@@ -120,20 +141,59 @@ public class BackupClient
     ) => _client.RestClient.BackupCancel(backend, id, bucket, path);
 
     /// <summary>
-    /// Start restoring a backup.
+    /// Start restoring a backup asynchronously.
+    /// Returns a BackupOperation that can be used to track status or wait for completion.
     /// Bucket and path should be supplied via <see cref="Models.BackupRestoreRequest.Config"/> when needed.
     /// </summary>
-    public async Task<Backup> Restore(
+    /// <example>
+    /// // Start restore and check status later
+    /// var operation = await client.Backups.Restore(BackupStorage.Filesystem, backupId, request);
+    ///
+    /// // Or await it directly for completion
+    /// var result = await client.Backups.Restore(BackupStorage.Filesystem, backupId, request);
+    /// </example>
+    public async Task<RestoreOperation> Restore(
         BackupStorage backend,
         string id,
         Models.BackupRestoreRequest request,
-        bool waitForCompletion = false,
-        TimeSpan? pollInterval = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var restRequest = BuildBackupRestoreRequest(request);
+        var response = await _client.RestClient.BackupRestore(backend, id, restRequest);
+        var model = ToModel(response);
+
+        var cfgBucket = request.Config?.Bucket;
+        var cfgPath = request.Config?.Path;
+
+        return new RestoreOperation(
+            model,
+            async () => await GetRestoreStatus(backend, model.Id, cfgBucket, cfgPath),
+            async () => await Cancel(backend, model.Id, cfgBucket, cfgPath)
+        );
+    }
+
+    /// <summary>
+    /// Restore a backup and wait synchronously for completion.
+    /// This method blocks until the restore operation finishes.
+    /// </summary>
+    public async Task<Backup> RestoreSync(
+        BackupStorage backend,
+        string id,
+        Models.BackupRestoreRequest request,
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default
     )
     {
-        var restRequest = new Rest.Dto.BackupRestoreRequest
+        var operation = await Restore(backend, id, request, cancellationToken);
+        return await operation.WaitForCompletion(timeout, cancellationToken);
+    }
+
+    private Rest.Dto.BackupRestoreRequest BuildBackupRestoreRequest(
+        Models.BackupRestoreRequest request
+    )
+    {
+        return new Rest.Dto.BackupRestoreRequest
         {
             Include = request.Include?.ToList(),
             Exclude = request.Exclude?.ToList(),
@@ -161,24 +221,6 @@ public class BackupClient
                 },
             OverwriteAlias = request.OverwriteAlias,
         };
-        var response = await _client.RestClient.BackupRestore(backend, id, restRequest);
-        if (!waitForCompletion)
-        {
-            var model = ToModel(response);
-            return model;
-        }
-        // Use bucket/path from restore config if provided when waiting for completion
-        var cfgBucket = request.Config?.Bucket;
-        var cfgPath = request.Config?.Path;
-        return await WaitForRestoreCompletion(
-            backend,
-            id,
-            pollInterval,
-            timeout,
-            cfgBucket,
-            cfgPath,
-            cancellationToken
-        );
     }
 
     /// <summary>
@@ -259,75 +301,4 @@ public class BackupClient
             dto.CompletedAt,
             null
         );
-
-    private static readonly HashSet<BackupStatus> TerminalStatuses = new()
-    {
-        BackupStatus.Success,
-        BackupStatus.Failed,
-        BackupStatus.Canceled,
-    };
-
-    private async Task<Backup> WaitForCreateCompletion(
-        BackupStorage backend,
-        string id,
-        TimeSpan? pollInterval,
-        TimeSpan? timeout,
-        string? bucket,
-        string? path,
-        CancellationToken ct
-    )
-    {
-        pollInterval ??= TimeSpan.FromMilliseconds(250);
-        timeout ??= TimeSpan.FromMinutes(10);
-        var start = DateTime.UtcNow;
-        while (true)
-        {
-            ct.ThrowIfCancellationRequested();
-            var status = await _client.RestClient.BackupStatus(backend, id, bucket, path);
-            var model = ToModel(status);
-            if (TerminalStatuses.Contains(model.StatusRaw.ToBackupStatus()))
-            {
-                return model;
-            }
-            if (DateTime.UtcNow - start > timeout)
-            {
-                throw new TimeoutException(
-                    $"Backup create did not finish within {timeout}. Last status={model.StatusRaw}"
-                );
-            }
-            await Task.Delay(pollInterval.Value, ct);
-        }
-    }
-
-    private async Task<Backup> WaitForRestoreCompletion(
-        BackupStorage backend,
-        string id,
-        TimeSpan? pollInterval,
-        TimeSpan? timeout,
-        string? bucket,
-        string? path,
-        CancellationToken ct
-    )
-    {
-        pollInterval ??= TimeSpan.FromMilliseconds(250);
-        timeout ??= TimeSpan.FromMinutes(10);
-        var start = DateTime.UtcNow;
-        while (true)
-        {
-            ct.ThrowIfCancellationRequested();
-            var status = await _client.RestClient.BackupRestoreStatus(backend, id, bucket, path);
-            var model = ToModel(status);
-            if (TerminalStatuses.Contains(model.StatusRaw.ToBackupStatus()))
-            {
-                return model;
-            }
-            if (DateTime.UtcNow - start > timeout)
-            {
-                throw new TimeoutException(
-                    $"Backup restore did not finish within {timeout}. Last status={model.StatusRaw}"
-                );
-            }
-            await Task.Delay(pollInterval.Value, ct);
-        }
-    }
 }
