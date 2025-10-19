@@ -154,12 +154,12 @@ public class TestBackups : IntegrationTests
 
         try
         {
-            var created = await _weaviate.Backups.Create(
+            var operation = await _weaviate.Backups.Create(
                 _backend,
                 request,
                 cancellationToken: TestContext.Current.CancellationToken
             );
-            Assert.Equal(id, created.Id);
+            Assert.Equal(id, operation.Current.Id);
 
             var list = await _weaviate.Backups.List(_backend);
             Assert.Contains(list, b => b.Id == id);
@@ -210,10 +210,9 @@ public class TestBackups : IntegrationTests
         }
 
         // Act - create backup and wait for completion
-        var createResp = await _weaviate.Backups.Create(
+        var createResp = await _weaviate.Backups.CreateSync(
             _backend,
             new BackupCreateRequest(backupId, Include: new[] { articlesName, paragraphsName }),
-            waitForCompletion: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(BackupStatus.Success, createResp.Status);
@@ -229,11 +228,10 @@ public class TestBackups : IntegrationTests
         await _weaviate.Collections.Delete(paragraphsName);
 
         // Restore backup and wait
-        var restoreResp = await _weaviate.Backups.Restore(
+        var restoreResp = await _weaviate.Backups.RestoreSync(
             _backend,
             backupId,
             new BackupRestoreRequest(Include: new[] { articlesName, paragraphsName }),
-            waitForCompletion: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(BackupStatus.Success, restoreResp.Status);
@@ -274,56 +272,37 @@ public class TestBackups : IntegrationTests
         }
 
         // Act - create without waiting
-        var createResp = await _weaviate.Backups.Create(
+        var operation = await _weaviate.Backups.Create(
             _backend,
             new BackupCreateRequest(backupId, Include: new[] { articleName }),
-            waitForCompletion: false,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        Assert.NotNull(createResp);
-        Assert.NotEqual(BackupStatus.Failed, createResp.Status); // initial status should be STARTED/TRANSFERRING/TRANSFERRED
+        Assert.NotNull(operation);
+        Assert.NotEqual(BackupStatus.Failed, operation.Current.Status); // initial status should be STARTED/TRANSFERRING/TRANSFERRED
 
-        // Poll until success
-        var status = await PollBackupUntil(
-            backupId,
-            "backup creation",
-            desiredStatuses: new[]
-            {
-                BackupStatus.Success,
-                BackupStatus.Failed,
-                BackupStatus.Canceled,
-            },
-            ct: TestContext.Current.CancellationToken
+        // Wait for completion using the operation
+        var createResp = await operation.WaitForCompletion(
+            cancellationToken: TestContext.Current.CancellationToken
         );
-        Assert.Equal(BackupStatus.Success, status.Status);
+        Assert.Equal(BackupStatus.Success, createResp.Status);
 
         // Delete collection
         await _weaviate.Collections.Delete(articleName);
 
         // Restore without waiting
-        var restoreResp = await _weaviate.Backups.Restore(
+        RestoreOperation restoreOperation = await _weaviate.Backups.Restore(
             _backend,
             backupId,
             new BackupRestoreRequest(Include: new[] { articleName }),
-            waitForCompletion: false,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        Assert.NotNull(restoreResp);
+        Assert.NotNull(restoreOperation);
 
-        // Poll restore status
-        var restoreStatus = await PollBackupUntil(
-            backupId,
-            "backup restore",
-            desiredStatuses: new[]
-            {
-                BackupStatus.Success,
-                BackupStatus.Failed,
-                BackupStatus.Canceled,
-            },
-            isRestore: true,
-            ct: TestContext.Current.CancellationToken
+        // Wait for restore completion using the operation
+        var restoreResp = await restoreOperation.WaitForCompletion(
+            cancellationToken: TestContext.Current.CancellationToken
         );
-        Assert.Equal(BackupStatus.Success, restoreStatus.Status);
+        Assert.Equal(BackupStatus.Success, restoreResp.Status);
 
         // Verify data restored
         var articleRestored = _weaviate.Collections.Use(articleName);
@@ -350,10 +329,9 @@ public class TestBackups : IntegrationTests
         }
 
         // Create backup for only ArticleSingle
-        var createResp = await _weaviate.Backups.Create(
+        var createResp = await _weaviate.Backups.CreateSync(
             _backend,
             new BackupCreateRequest(backupId, Include: new[] { articleName }),
-            waitForCompletion: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(BackupStatus.Success, createResp.Status);
@@ -366,11 +344,10 @@ public class TestBackups : IntegrationTests
         await _weaviate.Collections.Delete(articleName);
 
         // Restore only that collection
-        var restoreResp = await _weaviate.Backups.Restore(
+        var restoreResp = await _weaviate.Backups.RestoreSync(
             _backend,
             backupId,
             new BackupRestoreRequest(Include: new[] { articleName }),
-            waitForCompletion: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(BackupStatus.Success, restoreResp.Status);
@@ -389,21 +366,19 @@ public class TestBackups : IntegrationTests
 
         // Create should fail when including non-existing collection
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
-            await _weaviate.Backups.Create(
+            await _weaviate.Backups.CreateSync(
                 _backend,
                 new BackupCreateRequest(backupId, Include: new[] { bogusCollectionName }),
-                waitForCompletion: true,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         );
 
         // Restore should also fail if collection doesn't exist in backup
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
-            await _weaviate.Backups.Restore(
+            await _weaviate.Backups.RestoreSync(
                 _backend,
                 backupId,
                 new BackupRestoreRequest(Include: new[] { bogusCollectionName }),
-                waitForCompletion: true,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         );
@@ -423,20 +398,18 @@ public class TestBackups : IntegrationTests
 
         await collection.Data.Insert(new { title = "one" });
 
-        var first = await _weaviate.Backups.Create(
+        var first = await _weaviate.Backups.CreateSync(
             _backend,
             new BackupCreateRequest(backupId, Include: new[] { collectionName }),
-            waitForCompletion: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(BackupStatus.Success, first.Status);
 
         // Second attempt should throw (422)
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
-            await _weaviate.Backups.Create(
+            await _weaviate.Backups.CreateSync(
                 _backend,
                 new BackupCreateRequest(backupId, Include: new[] { collectionName }),
-                waitForCompletion: true,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         );
@@ -456,20 +429,18 @@ public class TestBackups : IntegrationTests
 
         await collection.Data.Insert(new { title = "alpha" });
 
-        var create = await _weaviate.Backups.Create(
+        var create = await _weaviate.Backups.CreateSync(
             _backend,
             new BackupCreateRequest(backupId, Include: new[] { collectionName }),
-            waitForCompletion: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(BackupStatus.Success, create.Status);
 
         // Attempt to restore while collection still exists should fail
-        var restoreResp = await _weaviate.Backups.Restore(
+        var restoreResp = await _weaviate.Backups.RestoreSync(
             _backend,
             backupId,
             new BackupRestoreRequest(Include: new[] { collectionName }),
-            waitForCompletion: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.NotNull(restoreResp.Error);
@@ -494,28 +465,19 @@ public class TestBackups : IntegrationTests
         }
 
         // Start backup without waiting
-        var createResp = await _weaviate.Backups.Create(
+        BackupOperation operation = await _weaviate.Backups.Create(
             _backend,
             new BackupCreateRequest(backupId, Include: new[] { collectionName }),
-            waitForCompletion: false,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        Assert.Equal(backupId, createResp.Id);
+        Assert.Equal(backupId, operation.Current.Id);
 
-        // Immediately request cancel
-        await _weaviate.Backups.Cancel(_backend, backupId);
+        // Immediately request cancel via operation
+        await operation.Cancel();
 
-        // Poll status until terminal
-        var status = await PollBackupUntil(
-            backupId,
-            "canceled backup status",
-            desiredStatuses: new[]
-            {
-                BackupStatus.Success,
-                BackupStatus.Failed,
-                BackupStatus.Canceled,
-            },
-            ct: TestContext.Current.CancellationToken
+        // Wait and verify it's canceled
+        var status = await operation.WaitForCompletion(
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(BackupStatus.Canceled, status.Status);
     }
@@ -538,33 +500,22 @@ public class TestBackups : IntegrationTests
         var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
 
         // Create backup without waiting (mimics Python resp = client.backup.create(...))
-        var resp = await _weaviate.Backups.Create(
+        var operation = await _weaviate.Backups.Create(
             _backend,
             new BackupCreateRequest(backupId),
-            waitForCompletion: false,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        Assert.Equal(BackupStatus.Started, resp.Status);
+        Assert.Equal(BackupStatus.Started, operation.Current.Status);
 
         // List backups and verify our backup is present
         var backups = await _weaviate.Backups.List(_backend);
         Assert.Contains(backups, b => b.Id.Equals(backupId, StringComparison.OrdinalIgnoreCase));
 
-        // Cancel request
-        await _weaviate.Backups.Cancel(_backend, backupId);
+        // Cancel via operation
+        await operation.Cancel();
 
-        // Poll status until terminal
-        var status = await PollBackupUntil(
-            backupId,
-            "list backup status",
-            desiredStatuses: new[]
-            {
-                BackupStatus.Success,
-                BackupStatus.Failed,
-                BackupStatus.Canceled,
-            },
-            ct: TestContext.Current.CancellationToken
-        );
+        // Verify canceled
+        await operation.WaitForCompletion(cancellationToken: TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -606,10 +557,9 @@ public class TestBackups : IntegrationTests
         await articleClient.Alias.Add(aliasName);
 
         // Create backup including only Article
-        var createResp = await _weaviate.Backups.Create(
+        var createResp = await _weaviate.Backups.CreateSync(
             _backend,
             new BackupCreateRequest(backupId, Include: new[] { articleName }),
-            waitForCompletion: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(BackupStatus.Success, createResp.Status);
@@ -619,11 +569,10 @@ public class TestBackups : IntegrationTests
         await paragraphClient.Alias.Claim(aliasName);
 
         // Attempt restore with overwriteAlias = false -> expect failure & alias unchanged
-        var restoreResp = await _weaviate.Backups.Restore(
+        var restoreResp = await _weaviate.Backups.RestoreSync(
             _backend,
             backupId,
             new BackupRestoreRequest(Include: new[] { articleName }, OverwriteAlias: false),
-            waitForCompletion: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -668,10 +617,9 @@ public class TestBackups : IntegrationTests
 
         await articleClient.Alias.Add(aliasName);
 
-        var createResp = await _weaviate.Backups.Create(
+        var createResp = await _weaviate.Backups.CreateSync(
             _backend,
             new BackupCreateRequest(backupId, Include: new[] { articleName }),
-            waitForCompletion: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(BackupStatus.Success, createResp.Status);
@@ -681,11 +629,10 @@ public class TestBackups : IntegrationTests
         await paragraphClient.Alias.Claim(aliasName);
 
         // Restore with overwriteAlias = true should repoint alias back & recreate Article
-        var restoreResp = await _weaviate.Backups.Restore(
+        var restoreResp = await _weaviate.Backups.RestoreSync(
             _backend,
             backupId,
             new BackupRestoreRequest(Include: new[] { articleName }, OverwriteAlias: true),
-            waitForCompletion: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(BackupStatus.Success, restoreResp.Status);
