@@ -6,8 +6,9 @@ namespace Weaviate.Client.Models
 {
     /// <summary>
     /// Abstract base for backup/restore operations, with status polling and cancellation.
+    /// Implements automatic resource cleanup when the operation completes.
     /// </summary>
-    public abstract class BackupOperationBase : IDisposable
+    public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
     {
         private readonly Func<Task<Backup>> _statusFetcher;
         private readonly Func<Task> _operationCancel;
@@ -89,6 +90,10 @@ namespace Weaviate.Client.Models
                 _isSuccessful = status.Status == BackupStatus.Success;
                 _isCanceled = status.Status == BackupStatus.Canceled;
                 await _cts.CancelAsync(); // Stop background polling
+
+                // Auto-dispose resources now that operation is complete
+                // This prevents resource leaks if caller forgets to dispose
+                DisposeInternal();
             }
         }
 
@@ -125,8 +130,6 @@ namespace Weaviate.Client.Models
         /// </summary>
         public async Task Cancel()
         {
-            await _cts.CancelAsync();
-
             // Call server-side Cancel
             await _operationCancel();
 
@@ -156,9 +159,57 @@ namespace Weaviate.Client.Models
             _disposed = true;
         }
 
+        /// <summary>
+        /// Internal disposal logic that can be called from background task without re-entrancy issues.
+        /// </summary>
+        private void DisposeInternal()
+        {
+            if (_disposed)
+                return;
+
+            try
+            {
+                // Wait for background task to complete (should be immediate since we just canceled)
+                _backgroundRefreshTask.Wait(BackupClient.Config.PollInterval);
+            }
+            catch (Exception)
+            {
+                // Ignore exceptions, disposal is best-effort
+            }
+
+            _cts.Dispose();
+            _disposed = true;
+        }
+
         public void Dispose()
         {
             Dispose(true);
+        }
+
+        /// <summary>
+        /// Asynchronously dispose the operation and cancel background polling.
+        /// </summary>
+        public async ValueTask DisposeAsync()
+        {
+            if (_disposed)
+                return;
+
+            _cts.Cancel();
+
+            try
+            {
+                // Await the background task gracefully
+                await _backgroundRefreshTask.ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                // Ignore exceptions, disposal is best-effort
+            }
+
+            _cts.Dispose();
+            _disposed = true;
+
+            GC.SuppressFinalize(this);
         }
 
         private static bool IsTerminalStatus(BackupStatus? status)
