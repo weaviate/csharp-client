@@ -9,7 +9,7 @@ namespace Weaviate.Client;
 
 public static class WeaviateExtensions
 {
-    internal static Rest.Dto.Class ToDto(this Collection collection)
+    internal static Rest.Dto.Class ToDto(this CollectionConfig collection)
     {
         var moduleConfig = new ModuleConfigList();
 
@@ -114,7 +114,7 @@ public static class WeaviateExtensions
         return data;
     }
 
-    internal static Collection ToModel(this Rest.Dto.Class collection)
+    internal static CollectionConfig ToModel(this Rest.Dto.Class collection)
     {
         var makeVectorConfig = (string name, Rest.Dto.VectorConfig v) =>
         {
@@ -231,7 +231,7 @@ public static class WeaviateExtensions
                 }
                 : null;
 
-        return new Collection()
+        return new CollectionConfig()
         {
             Name = collection?.Class1 ?? string.Empty,
             Description = collection?.Description ?? string.Empty,

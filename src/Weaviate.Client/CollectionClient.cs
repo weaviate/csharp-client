@@ -25,7 +25,7 @@ public partial class CollectionClient
 
     internal CollectionClient(
         WeaviateClient client,
-        Collection collection,
+        CollectionConfig collection,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null
     )
@@ -47,13 +47,6 @@ public partial class CollectionClient
         _collectionName = name;
         _pinnedTenant = tenant;
         _pinnedConsistencyLevel = consistencyLevel;
-    }
-
-    public async Task<Collection?> Get()
-    {
-        var response = await _client.RestClient.CollectionGet(Name);
-
-        return response?.ToModel();
     }
 
     public async Task Delete()
@@ -132,7 +125,7 @@ public partial class CollectionClient<TData> : CollectionClient
 
     internal CollectionClient(
         WeaviateClient client,
-        Collection collection,
+        CollectionConfig collection,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null
     )
