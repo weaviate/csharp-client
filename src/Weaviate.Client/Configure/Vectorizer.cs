@@ -9,7 +9,7 @@ public static partial class Configure
         public static VectorConfig SelfProvided(
             string name = "default",
             VectorIndexConfig? indexConfig = null,
-            VectorIndexConfig.QuantizerConfig? quantizerConfig = null
+            VectorIndexConfig.QuantizerConfigAll? quantizerConfig = null
         )
         {
             var builder = new VectorConfigBuilder(new Vectorizer.SelfProvided());
@@ -34,7 +34,7 @@ public static partial class Configure
                 null => builder.New(
                     name,
                     (VectorIndex.HNSW?)null,
-                    (VectorIndexConfig.QuantizerConfig?)null
+                    (VectorIndexConfig.QuantizerConfigAll?)null
                 ),
                 _ => throw new WeaviateClientException(
                     $"Unsupported VectorIndexConfig type: {indexConfig.GetType().Name}"
@@ -57,7 +57,7 @@ public static partial class Configure
             public VectorConfig New(
                 string name,
                 VectorIndex.HNSW? indexConfig,
-                VectorIndexConfig.QuantizerConfig? quantizerConfig = null,
+                VectorIndexConfig.QuantizerConfigAll? quantizerConfig = null,
                 params string[] sourceProperties
             ) =>
                 new(
@@ -114,7 +114,7 @@ public static partial class Configure
             /// </returns>
             private static VectorIndexConfig? EnrichVectorIndexConfig(
                 VectorIndexConfig? indexConfig,
-                VectorIndexConfig.QuantizerConfig? quantizerConfig
+                VectorIndexConfig.QuantizerConfigAll? quantizerConfig
             )
             {
                 if (indexConfig is null)
