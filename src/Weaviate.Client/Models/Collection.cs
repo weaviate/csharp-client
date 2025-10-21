@@ -1,6 +1,6 @@
 namespace Weaviate.Client.Models;
 
-public partial record Collection : IEquatable<Collection>
+public partial record CollectionConfig : IEquatable<CollectionConfig>
 {
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
@@ -67,7 +67,7 @@ public partial record Collection : IEquatable<Collection>
         return hash.ToHashCode();
     }
 
-    public virtual bool Equals(Collection? other)
+    public virtual bool Equals(CollectionConfig? other)
     {
         if (other is null)
             return false;
