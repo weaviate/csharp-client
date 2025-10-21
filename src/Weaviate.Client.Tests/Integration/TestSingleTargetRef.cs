@@ -9,6 +9,85 @@ public partial class ReferenceTests : IntegrationTests
     readonly Guid TO_UUID2 = new Guid("577887c1-4c6b-5594-aa62-f0c17883d9cf");
 
     [Fact]
+    public async Task Test_SingleTargetReferenceOps()
+    {
+        var cA = await CollectionFactory<TestData>("A", "Collection A");
+
+        var uuid_A1 = await cA.Data.Insert(new TestData() { Name = "A1" });
+        var uuid_A2 = await cA.Data.Insert(new TestData() { Name = "A2" });
+        var uuid_A3 = await cA.Data.Insert(new TestData() { Name = "A3" });
+
+        var cB = await CollectionFactory<TestData>(
+            name: "B",
+            description: "Collection B",
+            references: new Reference("a", cA.Name)
+        );
+
+        var uuid_B = await cB.Data.Insert(new() { Name = "B" }, references: [("a", uuid_A1)]);
+
+        await cB.Data.ReferenceAdd(from: uuid_B, fromProperty: "a", to: uuid_A2);
+
+        var result = await cB.Query.FetchObjectByID(
+            uuid_B,
+            returnReferences: [new QueryReference("a", ["name"])]
+        );
+        Assert.NotNull(result);
+
+        var refs = result.References["a"].ToList();
+        Assert.Equal(2, refs.Count);
+        Assert.Contains(refs, r => r.ID == uuid_A2);
+        Assert.Contains(refs, r => r.ID == uuid_A1);
+
+        await cB.Data.ReferenceDelete(from: uuid_B, fromProperty: "a", to: uuid_A2);
+        var resultAfterDelete = await cB.Query.FetchObjectByID(
+            uuid_B,
+            returnReferences: [new QueryReference("a", ["name"])]
+        );
+        Assert.NotNull(resultAfterDelete);
+        var refsAfterDelete = resultAfterDelete.References["a"].ToList();
+        Assert.Single(refsAfterDelete);
+        Assert.Contains(refsAfterDelete, r => r.ID == uuid_A1);
+
+        await cB.Data.ReferenceReplace(
+            from: uuid_B,
+            fromProperty: "a",
+            to: new[] { uuid_A1, uuid_A2, uuid_A3 }
+        );
+        var resultAfterReplace = await cB.Query.FetchObjectByID(
+            uuid_B,
+            returnReferences: [new QueryReference("a", ["name"])]
+        );
+        Assert.NotNull(resultAfterReplace);
+        var refsAfterReplace = resultAfterReplace.References["a"].ToList();
+        Assert.Equal(3, refsAfterReplace.Count);
+        Assert.Contains(refsAfterReplace, r => r.ID == uuid_A2);
+        Assert.Contains(refsAfterReplace, r => r.ID == uuid_A1);
+        Assert.Contains(refsAfterReplace, r => r.ID == uuid_A3);
+
+        var uuid_B2 = await cB.Data.Insert(new() { Name = "B" });
+
+        await cB.Data.ReferenceAddMany(
+            new[]
+            {
+                new DataReference(uuid_B2, "a", uuid_A1),
+                new DataReference(uuid_B2, "a", uuid_A2),
+                new DataReference(uuid_B2, "a", uuid_A3),
+            }
+        );
+
+        var resultB2 = await cB.Query.FetchObjectByID(
+            uuid_B2,
+            returnReferences: [new QueryReference("a", ["name"])]
+        );
+        Assert.NotNull(resultB2);
+        var refsB2 = resultB2.References["a"].ToList();
+        Assert.Equal(3, refsB2.Count);
+        Assert.Contains(refsB2, r => r.ID == uuid_A2);
+        Assert.Contains(refsB2, r => r.ID == uuid_A1);
+        Assert.Contains(refsB2, r => r.ID == uuid_A3);
+    }
+
+    [Fact]
     public async Task Test_SingleTargetReference_Basic()
     {
         // Arrange
