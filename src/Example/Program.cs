@@ -61,7 +61,7 @@ class Program
         // Should throw CollectionNotFound
         try
         {
-            var collectionNotFound = await collection.Get();
+            var collectionNotFound = await collection.Config.Get();
         }
         catch
         {
@@ -79,7 +79,7 @@ class Program
             Console.WriteLine($"Error deleting collections: {e.Message}");
         }
 
-        var catCollection = new Collection()
+        var catCollection = new CollectionConfig()
         {
             Name = "Cat",
             Description = "Lots of Cats of multiple breeds",

@@ -19,13 +19,14 @@ public partial class CollectionsTests : IntegrationTests
         );
 
         // Assert
-        var collection = await _weaviate.Collections.Use(collectionClient.Name).Get();
-        Assert.NotNull(collection);
+        var collection = _weaviate.Collections.Use(collectionClient.Name);
+        var config = await collection.Config.Get();
+        Assert.NotNull(config);
         Assert.Equal(
             $"CollectionClient_Creates_And_Retrieves_Collection_{TestContext.Current.Test?.UniqueID}_Object_RandomCollectionName",
-            collection.Name
+            config.Name
         );
-        Assert.Equal("Test collection description", collection.Description);
+        Assert.Equal("Test collection description", config.Description);
     }
 
     [Fact]
@@ -113,7 +114,9 @@ public partial class CollectionsTests : IntegrationTests
         );
 
         // Act
-        var collection = await _weaviate.Collections.Use<dynamic>(collectionClient.Name).Get();
+        var collection = await _weaviate
+            .Collections.Use<dynamic>(collectionClient.Name)
+            .Config.Get();
 
         // Assert
         Assert.NotNull(collection);
@@ -135,7 +138,9 @@ public partial class CollectionsTests : IntegrationTests
         );
 
         // Act
-        var collection = await _weaviate.Collections.Use<dynamic>(collectionClient.Name).Get();
+        var collection = await _weaviate
+            .Collections.Use<dynamic>(collectionClient.Name)
+            .Config.Get();
 
         // Assert
         Assert.NotNull(collection);
@@ -550,7 +555,7 @@ public partial class CollectionsTests : IntegrationTests
             Configure.Vectors.Text2VecContextionary().New("nondefault")
         );
 
-        var c = await collection.Get();
+        var c = await collection.Config.Get();
 
         Assert.NotNull(c);
         Assert.Equal(2, c.VectorConfig.Count);
@@ -604,7 +609,7 @@ public partial class CollectionsTests : IntegrationTests
 
         await collection.Config.AddProperty(Property.Text("description"));
 
-        var config = await collection.Get();
+        var config = await collection.Config.Get();
 
         Assert.NotNull(config);
         Assert.Contains(config.Properties, p => p.Name == "description");
@@ -627,7 +632,7 @@ public partial class CollectionsTests : IntegrationTests
         );
 
         // Act & Assert - Initial state
-        Collection config = (await collection.Get())!;
+        CollectionConfig config = (await collection.Config.Get())!;
 
         Assert.Equal(1, config.ReplicationConfig!.Factor);
         Assert.False(config.ReplicationConfig.AsyncEnabled);
@@ -690,7 +695,7 @@ public partial class CollectionsTests : IntegrationTests
         });
 
         // Assert - After first update
-        config = (await collection.Get())!;
+        config = (await collection.Config.Get())!;
 
         // Description assertion with version check
         if (ServerVersionIsInRange("1.25.2") || !ServerVersionIsInRange("1.25.0"))
@@ -840,7 +845,7 @@ public partial class CollectionsTests : IntegrationTests
         });
 
         // Assert - After second update
-        config = (await collection.Get())!;
+        config = (await collection.Config.Get())!;
 
         // Description should persist
         if (ServerVersionIsInRange("1.25.2") || !ServerVersionIsInRange("1.25.0"))
@@ -931,7 +936,7 @@ public partial class CollectionsTests : IntegrationTests
                 }
             )
         );
-        var config = await collection.Get();
+        var config = await collection.Config.Get();
         Assert.NotNull(config);
         var vc = config.VectorConfig["hnswSq"];
         Assert.NotNull(vc);
@@ -956,7 +961,7 @@ public partial class CollectionsTests : IntegrationTests
             });
         });
 
-        config = await collection.Get();
+        config = await collection.Config.Get();
         Assert.NotNull(config);
         vc = config.VectorConfig["hnswSq"];
         Assert.NotNull(vc);

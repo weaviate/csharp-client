@@ -29,7 +29,8 @@ public class TestMultiVector : IntegrationTests
         );
 
         var vic =
-            (await collection.Get())?.VectorConfig["colbert"].VectorIndexConfig as VectorIndex.HNSW;
+            (await collection.Config.Get())?.VectorConfig["colbert"].VectorIndexConfig
+            as VectorIndex.HNSW;
 
         Assert.NotNull(vic);
         Assert.NotNull(vic.MultiVector);
@@ -50,7 +51,7 @@ public class TestMultiVector : IntegrationTests
 
         Assert.NotNull(client);
 
-        var collection = await client.Get();
+        var collection = await client.Config.Get();
 
         Assert.NotNull(collection);
         Assert.Contains(collection.VectorConfig.Keys, k => k == "regular");
@@ -69,7 +70,7 @@ public class TestMultiVector : IntegrationTests
             }
         );
 
-        var config = await collection.Get();
+        var config = await collection.Config.Get();
         Assert.NotNull(config);
         Assert.NotNull(config.VectorConfig);
         Assert.True(config.VectorConfig.ContainsKey("regular"));
@@ -110,7 +111,7 @@ public class TestMultiVector : IntegrationTests
             }
         );
 
-        var config = await collection.Get();
+        var config = await collection.Config.Get();
         Assert.NotNull(config);
         Assert.NotNull(config.VectorConfig);
         Assert.IsType<VectorIndex.HNSW>(config.VectorConfig["colbert"].VectorIndexConfig);

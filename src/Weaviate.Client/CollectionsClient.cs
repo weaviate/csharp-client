@@ -11,14 +11,14 @@ public record CollectionsClient
         _client = client;
     }
 
-    public async Task<CollectionClient<dynamic>> Create(Models.Collection collection)
+    public async Task<CollectionClient<dynamic>> Create(Models.CollectionConfig collection)
     {
         var response = await _client.RestClient.CollectionCreate(collection.ToDto());
 
         return new CollectionClient<dynamic>(_client, response.ToModel());
     }
 
-    public async Task<CollectionClient<TData>> Create<TData>(Models.Collection collection)
+    public async Task<CollectionClient<TData>> Create<TData>(Models.CollectionConfig collection)
     {
         var response = await _client.RestClient.CollectionCreate(collection.ToDto());
 
@@ -46,7 +46,7 @@ public record CollectionsClient
         return await _client.RestClient.CollectionExists(collectionName);
     }
 
-    public async Task<Collection?> Export(string collectionName)
+    public async Task<CollectionConfig?> Export(string collectionName)
     {
         var response = await _client.RestClient.CollectionGet(collectionName);
 
@@ -58,7 +58,7 @@ public record CollectionsClient
         return response.ToModel();
     }
 
-    public async IAsyncEnumerable<Models.Collection> List()
+    public async IAsyncEnumerable<Models.CollectionConfig> List()
     {
         var response = await _client.RestClient.CollectionList();
 
