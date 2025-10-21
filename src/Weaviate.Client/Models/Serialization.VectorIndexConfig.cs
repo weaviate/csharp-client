@@ -93,6 +93,9 @@ internal class HnswDto
     [JsonPropertyName("sq")]
     public VectorIndex.Quantizers.SQ? SQ { get; set; }
 
+    [JsonPropertyName("rq")]
+    public VectorIndex.Quantizers.RQ? RQ { get; set; }
+
     [JsonPropertyName("multivector")]
     public MultiVectorDto? MultiVector { get; set; }
 }
@@ -143,7 +146,7 @@ internal static class VectorIndexMappingExtensions
     // HNSW mapping
     public static VectorIndex.HNSW ToHnsw(this HnswDto dto)
     {
-        var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ);
+        var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ, dto.RQ);
 
         var muvera = dto.MultiVector?.Muvera?.ToModel();
 
@@ -215,6 +218,9 @@ internal static class VectorIndexMappingExtensions
                     break;
                 case "sq":
                     dto.SQ = hnsw.Quantizer as VectorIndex.Quantizers.SQ;
+                    break;
+                case "rq":
+                    dto.RQ = hnsw.Quantizer as VectorIndex.Quantizers.RQ;
                     break;
             }
         }
