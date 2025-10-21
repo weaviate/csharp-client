@@ -103,6 +103,17 @@ public static class VectorIndex
             public override string Type => TypeValue;
         }
 
+        public record RQ : QuantizerConfig
+        {
+            public const string TypeValue = "rq";
+
+            public int RescoreLimit { get; set; }
+            public int? Bits { get; set; }
+
+            [JsonIgnore]
+            public override string Type => TypeValue;
+        }
+
         public record SQ : QuantizerConfig
         {
             public const string TypeValue = "sq";

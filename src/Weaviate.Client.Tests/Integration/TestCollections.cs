@@ -921,31 +921,50 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     [Fact]
-    public async Task Test_hnsw_with_sq()
+    public async Task Test_hnsw_with_sq_rq()
     {
         var collection = await CollectionFactory(
-            vectorConfig: Configure.Vectors.SelfProvided(
-                name: "hnswSq",
-                indexConfig: new VectorIndex.HNSW
-                {
-                    Quantizer = new VectorIndex.Quantizers.SQ
+            vectorConfig: new[]
+            {
+                Configure.Vectors.SelfProvided(
+                    name: "hnswSq",
+                    indexConfig: new VectorIndex.HNSW
                     {
-                        TrainingLimit = 100001,
-                        RescoreLimit = 123,
-                    },
-                }
-            )
+                        Quantizer = new VectorIndex.Quantizers.SQ
+                        {
+                            TrainingLimit = 100001,
+                            RescoreLimit = 123,
+                        },
+                    }
+                ),
+                Configure.Vectors.SelfProvided(
+                    name: "hnswRq",
+                    indexConfig: new VectorIndex.HNSW
+                    {
+                        Quantizer = new VectorIndex.Quantizers.RQ { Bits = 8, RescoreLimit = 123 },
+                    }
+                ),
+            }
         );
         var config = await collection.Config.Get();
         Assert.NotNull(config);
-        var vc = config.VectorConfig["hnswSq"];
-        Assert.NotNull(vc);
-        var hnswConfig = vc.VectorIndexConfig as VectorIndex.HNSW;
+        var vcSQ = config.VectorConfig["hnswSq"];
+        Assert.NotNull(vcSQ);
+        var hnswConfig = vcSQ.VectorIndexConfig as VectorIndex.HNSW;
         Assert.NotNull(hnswConfig);
         var sqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.SQ;
         Assert.NotNull(sqQuantizer);
         Assert.Equal(100001, sqQuantizer.TrainingLimit);
         Assert.Equal(123, sqQuantizer.RescoreLimit);
+
+        var vcRQ = config.VectorConfig["hnswRq"];
+        Assert.NotNull(vcRQ);
+        hnswConfig = vcRQ.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        var rqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.RQ;
+        Assert.NotNull(rqQuantizer);
+        Assert.Equal(8, rqQuantizer.Bits);
+        Assert.Equal(123, rqQuantizer.RescoreLimit);
 
         await collection.Config.Update(c =>
         {
@@ -961,16 +980,35 @@ public partial class CollectionsTests : IntegrationTests
             });
         });
 
+        await collection.Config.Update(c =>
+        {
+            var vc = c.VectorConfig["hnswRq"];
+            vc.VectorIndexConfig.UpdateHNSW(vic =>
+            {
+                vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Sweeping;
+                vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
+            });
+        });
+
         config = await collection.Config.Get();
         Assert.NotNull(config);
-        vc = config.VectorConfig["hnswSq"];
-        Assert.NotNull(vc);
-        hnswConfig = vc.VectorIndexConfig as VectorIndex.HNSW;
+        vcSQ = config.VectorConfig["hnswSq"];
+        Assert.NotNull(vcSQ);
+        hnswConfig = vcSQ.VectorIndexConfig as VectorIndex.HNSW;
         Assert.NotNull(hnswConfig);
         sqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.SQ;
         Assert.NotNull(sqQuantizer);
         Assert.Equal(456, sqQuantizer.TrainingLimit);
         Assert.Equal(789, sqQuantizer.RescoreLimit);
+
+        vcRQ = config.VectorConfig["hnswRq"];
+        Assert.NotNull(vcRQ);
+        hnswConfig = vcRQ.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        rqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.RQ;
+        Assert.NotNull(rqQuantizer);
+        Assert.Equal(8, rqQuantizer.Bits);
+        Assert.Equal(456, rqQuantizer.RescoreLimit);
     }
 
     [Fact]
