@@ -26,7 +26,7 @@ public class BackupClient
 
     /// <summary>
     /// Start creating a backup asynchronously.
-    /// Returns a BackupOperation that can be used to track status or wait for completion.
+    /// Returns a BackupCreateOperation that can be used to track status or wait for completion.
     /// Bucket and path should be supplied via <see cref="Models.BackupCreateRequest.Config"/> when needed.
     /// </summary>
     /// <example>
@@ -36,7 +36,7 @@ public class BackupClient
     /// // Or await it directly for completion
     /// var result = await client.Backups.Create(BackupStorage.Filesystem, request);
     /// </example>
-    public async Task<BackupOperation> Create(
+    public async Task<BackupCreateOperation> Create(
         BackupStorage backend,
         Models.BackupCreateRequest request,
         CancellationToken cancellationToken = default
@@ -49,7 +49,7 @@ public class BackupClient
         var cfgBucket = request.Config?.Bucket;
         var cfgPath = request.Config?.Path;
 
-        return new BackupOperation(
+        return new BackupCreateOperation(
             model,
             async () => await GetStatus(backend, model.Id, cfgBucket, cfgPath),
             async () => await Cancel(backend, model.Id, cfgBucket, cfgPath)
@@ -142,7 +142,7 @@ public class BackupClient
 
     /// <summary>
     /// Start restoring a backup asynchronously.
-    /// Returns a BackupOperation that can be used to track status or wait for completion.
+    /// Returns a BackupRestoreOperation that can be used to track status or wait for completion.
     /// Bucket and path should be supplied via <see cref="Models.BackupRestoreRequest.Config"/> when needed.
     /// </summary>
     /// <example>
@@ -152,7 +152,7 @@ public class BackupClient
     /// // Or await it directly for completion
     /// var result = await client.Backups.Restore(BackupStorage.Filesystem, backupId, request);
     /// </example>
-    public async Task<RestoreOperation> Restore(
+    public async Task<BackupRestoreOperation> Restore(
         BackupStorage backend,
         string id,
         Models.BackupRestoreRequest request,
@@ -166,7 +166,7 @@ public class BackupClient
         var cfgBucket = request.Config?.Bucket;
         var cfgPath = request.Config?.Path;
 
-        return new RestoreOperation(
+        return new BackupRestoreOperation(
             model,
             async () => await GetRestoreStatus(backend, model.Id, cfgBucket, cfgPath),
             async () => await Cancel(backend, model.Id, cfgBucket, cfgPath)
