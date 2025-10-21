@@ -274,9 +274,9 @@ public class VectorIndexConfigUpdateDynamic(VectorIndex.Dynamic WrappedDynamic)
 
 public class VectorIndexConfigUpdateFlat(VectorIndex.Flat WrappedFlat)
 {
-    public VectorIndex.Quantizers.BQ? Quantizer
+    public VectorIndexConfig.QuantizerConfigFlat? Quantizer
     {
-        get => (VectorIndex.Quantizers.BQ?)WrappedFlat.Quantizer;
+        get => (VectorIndexConfig.QuantizerConfigFlat?)WrappedFlat.Quantizer;
         set => WrappedFlat.Quantizer = value;
     }
 
