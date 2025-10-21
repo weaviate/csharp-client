@@ -924,6 +924,10 @@ public partial class CollectionsTests : IntegrationTests
     [Fact]
     public async Task Test_sq_and_rq()
     {
+        if (!ServerVersionIsInRange("1.32.0"))
+        {
+            Assert.Skip("RQ only supported in server version 1.32.0+");
+        }
         var collection = await CollectionFactory(
             vectorConfig: new[]
             {
@@ -1016,7 +1020,7 @@ public partial class CollectionsTests : IntegrationTests
     {
         if (!ServerVersionIsInRange("1.34.0"))
         {
-            Assert.Skip("Test not supported in server version 1.34.0");
+            Assert.Skip("RQ with flat only supported in server version 1.34.0+");
         }
         var collection = await CollectionFactory(
             vectorConfig: new[]
