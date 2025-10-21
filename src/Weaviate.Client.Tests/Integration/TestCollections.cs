@@ -1,4 +1,5 @@
 using Weaviate.Client.Models;
+using Xunit.Runner.Common;
 
 namespace Weaviate.Client.Tests.Integration;
 
@@ -938,18 +939,6 @@ public partial class CollectionsTests : IntegrationTests
                     }
                 ),
                 Configure.Vectors.SelfProvided(
-                    name: "flatRq",
-                    indexConfig: new VectorIndex.Flat
-                    {
-                        Quantizer = new VectorIndex.Quantizers.RQ
-                        {
-                            Bits = 8,
-                            RescoreLimit = 123,
-                            Cache = true,
-                        },
-                    }
-                ),
-                Configure.Vectors.SelfProvided(
                     name: "hnswRq",
                     indexConfig: new VectorIndex.HNSW
                     {
@@ -978,19 +967,6 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(8, rqQuantizer.Bits);
         Assert.Equal(123, rqQuantizer.RescoreLimit);
 
-        var vcRQ = config.VectorConfig["flatRq"];
-        Assert.NotNull(vcRQ);
-        var flatConfig = vcRQ.VectorIndexConfig as VectorIndex.Flat;
-        Assert.NotNull(flatConfig);
-        rqQuantizer = flatConfig.Quantizer as VectorIndex.Quantizers.RQ;
-        Assert.NotNull(rqQuantizer);
-        Assert.Equal(8, rqQuantizer.Bits);
-        Assert.Equal(123, rqQuantizer.RescoreLimit);
-        if (ServerVersionIsInRange("1.34.0"))
-        {
-            Assert.True(rqQuantizer.Cache);
-        }
-
         await collection.Config.Update(c =>
         {
             var vc = c.VectorConfig["hnswSq"];
@@ -1005,34 +981,94 @@ public partial class CollectionsTests : IntegrationTests
             });
         });
 
-        // await collection.Config.Update(c =>
-        // {
-        //     var vc = c.VectorConfig["flatRq"];
-        //     vc.VectorIndexConfig.UpdateFlat(vic =>
-        //     {
-        //         vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
-        //     });
-        // });
+        await collection.Config.Update(c =>
+        {
+            var vc = c.VectorConfig["hnswRq"];
+            vc.VectorIndexConfig.UpdateHNSW(vic =>
+            {
+                vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
+            });
+        });
 
-        // config = await collection.Config.Get();
-        // Assert.NotNull(config);
-        // vcSQ = config.VectorConfig["hnswSq"];
-        // Assert.NotNull(vcSQ);
-        // hnswConfig = vcSQ.VectorIndexConfig as VectorIndex.HNSW;
-        // Assert.NotNull(hnswConfig);
-        // sqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.SQ;
-        // Assert.NotNull(sqQuantizer);
-        // Assert.Equal(456, sqQuantizer.TrainingLimit);
-        // Assert.Equal(789, sqQuantizer.RescoreLimit);
+        config = await collection.Config.Get();
+        Assert.NotNull(config);
+        vcSQ = config.VectorConfig["hnswSq"];
+        Assert.NotNull(vcSQ);
+        hnswConfig = vcSQ.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        sqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.SQ;
+        Assert.NotNull(sqQuantizer);
+        Assert.Equal(456, sqQuantizer.TrainingLimit);
+        Assert.Equal(789, sqQuantizer.RescoreLimit);
 
-        // vcRQ = config.VectorConfig["flatRq"];
-        // Assert.NotNull(vcRQ);
-        // flatConfig = vcRQ.VectorIndexConfig as VectorIndex.Flat;
-        // Assert.NotNull(flatConfig);
-        // rqQuantizer = flatConfig.Quantizer as VectorIndex.Quantizers.RQ;
-        // Assert.NotNull(rqQuantizer);
-        // Assert.Equal(8, rqQuantizer.Bits);
-        // Assert.Equal(456, rqQuantizer.RescoreLimit);
+        var vcRQ = config.VectorConfig["hnswRq"];
+        Assert.NotNull(vcRQ);
+        hnswConfig = vcRQ.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        rqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.RQ;
+        Assert.NotNull(rqQuantizer);
+        Assert.Equal(8, rqQuantizer.Bits);
+        Assert.Equal(456, rqQuantizer.RescoreLimit);
+    }
+
+    [Fact]
+    public async Task Test_flat_rq()
+    {
+        if (!ServerVersionIsInRange("1.34.0"))
+        {
+            Assert.Skip("Test not supported in server version 1.34.0");
+        }
+        var collection = await CollectionFactory(
+            vectorConfig: new[]
+            {
+                Configure.Vectors.SelfProvided(
+                    name: "flatRq",
+                    indexConfig: new VectorIndex.Flat
+                    {
+                        Quantizer = new VectorIndex.Quantizers.RQ
+                        {
+                            Bits = 8,
+                            RescoreLimit = 123,
+                            Cache = true,
+                        },
+                    }
+                ),
+            }
+        );
+        var config = await collection.Config.Get();
+        Assert.NotNull(config);
+        var vcRQ = config.VectorConfig["flatRq"];
+        Assert.NotNull(vcRQ);
+        var flatConfig = vcRQ.VectorIndexConfig as VectorIndex.Flat;
+        Assert.NotNull(flatConfig);
+        var rqQuantizer = flatConfig.Quantizer as VectorIndex.Quantizers.RQ;
+        Assert.NotNull(rqQuantizer);
+        Assert.Equal(8, rqQuantizer.Bits);
+        Assert.Equal(123, rqQuantizer.RescoreLimit);
+        if (ServerVersionIsInRange("1.34.0"))
+        {
+            Assert.True(rqQuantizer.Cache);
+        }
+
+        await collection.Config.Update(c =>
+        {
+            var vc = c.VectorConfig["flatRq"];
+            vc.VectorIndexConfig.UpdateFlat(vic =>
+            {
+                vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
+            });
+        });
+
+        config = await collection.Config.Get();
+        Assert.NotNull(config);
+        vcRQ = config.VectorConfig["flatRq"];
+        Assert.NotNull(vcRQ);
+        flatConfig = vcRQ.VectorIndexConfig as VectorIndex.Flat;
+        Assert.NotNull(flatConfig);
+        rqQuantizer = flatConfig.Quantizer as VectorIndex.Quantizers.RQ;
+        Assert.NotNull(rqQuantizer);
+        Assert.Equal(8, rqQuantizer.Bits);
+        Assert.Equal(456, rqQuantizer.RescoreLimit);
     }
 
     [Fact]
