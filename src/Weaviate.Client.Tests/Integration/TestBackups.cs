@@ -290,7 +290,7 @@ public class TestBackups : IntegrationTests
         await _weaviate.Collections.Delete(articleName);
 
         // Restore without waiting
-        RestoreOperation restoreOperation = await _weaviate.Backups.Restore(
+        BackupRestoreOperation restoreOperation = await _weaviate.Backups.Restore(
             _backend,
             backupId,
             new BackupRestoreRequest(Include: new[] { articleName }),
@@ -465,7 +465,7 @@ public class TestBackups : IntegrationTests
         }
 
         // Start backup without waiting
-        BackupOperation operation = await _weaviate.Backups.Create(
+        BackupCreateOperation operation = await _weaviate.Backups.Create(
             _backend,
             new BackupCreateRequest(backupId, Include: new[] { collectionName }),
             cancellationToken: TestContext.Current.CancellationToken

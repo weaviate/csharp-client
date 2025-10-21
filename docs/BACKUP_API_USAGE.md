@@ -6,7 +6,7 @@ This guide covers the modern, idiomatic backup and restore API with automatic re
 ## Key Features
 
 - **Automatic cleanup**: Resources are automatically disposed when operations complete
-- **Type-safe operations**: Separate `BackupOperation` and `RestoreOperation` types
+- **Type-safe operations**: Separate `BackupCreateOperation` and `BackupRestoreOperation` types
 - **Flexible patterns**: Async tracking, sync blocking, or fire-and-forget
 - **Background polling**: Status updates automatically in the background
 - **Configurable timeouts**: Global defaults with per-call overrides
@@ -27,7 +27,7 @@ BackupClient.Config = new BackupClientConfig
 
 ### Async (track status)
 ```csharp
-BackupOperation operation = await client.Backups.Create(
+BackupCreateOperation operation = await client.Backups.Create(
     BackupStorage.Filesystem,
     new BackupCreateRequest("my-backup-id")
 );
@@ -61,7 +61,7 @@ var backupWithTimeout = await client.Backups.CreateSync(
 
 ### Async (track status)
 ```csharp
-RestoreOperation operation = await client.Backups.Restore(
+BackupRestoreOperation operation = await client.Backups.Restore(
     BackupStorage.Filesystem,
     "my-backup-id",
     new BackupRestoreRequest(Include: new[] { "Article" })
@@ -103,7 +103,7 @@ Assert.Equal(BackupStatus.Canceled, result.Status);
 
 ## Custom Timeout
 ```csharp
-BackupOperation operation = await client.Backups.Create(...);
+BackupCreateOperation operation = await client.Backups.Create(...);
 try
 {
     var result = await operation.WaitForCompletion(TimeSpan.FromMinutes(5));
@@ -137,13 +137,13 @@ You can still use traditional disposal patterns if preferred:
 
 ```csharp
 // Synchronous disposal
-using (BackupOperation operation = await client.Backups.Create(...))
+using (BackupCreateOperation operation = await client.Backups.Create(...))
 {
     var backup = await operation.WaitForCompletion();
 }
 
 // Asynchronous disposal (recommended for async code)
-await using (BackupOperation operation = await client.Backups.Create(...))
+await using (BackupCreateOperation operation = await client.Backups.Create(...))
 {
     var backup = await operation.WaitForCompletion();
 }
@@ -226,7 +226,7 @@ Console.WriteLine($"Final: {result.Status}");
 ### Pattern 4: Timeout with Fallback
 Best for robust production code:
 ```csharp
-BackupOperation operation = await client.Backups.Create(
+BackupCreateOperation operation = await client.Backups.Create(
     BackupStorage.Filesystem,
     new BackupCreateRequest("my-backup")
 );
