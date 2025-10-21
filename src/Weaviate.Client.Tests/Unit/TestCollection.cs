@@ -8,7 +8,7 @@ public class CollectionTests
     [Fact]
     public void Collections_Are_Equal()
     {
-        var c1 = new Collection
+        var c1 = new CollectionConfig
         {
             Name = "ClassName",
             Description = "Description",
@@ -24,7 +24,7 @@ public class CollectionTests
             MultiTenancyConfig = MultiTenancyConfig.Default,
         };
 
-        var c2 = new Collection
+        var c2 = new CollectionConfig
         {
             Name = "ClassName",
             Description = "Description",
@@ -47,7 +47,7 @@ public class CollectionTests
     public void Collection_Equals_Null_Returns_False()
     {
         // Arrange
-        var collection = new Collection();
+        var collection = new CollectionConfig();
 
         // Act
         var result = collection.Equals(null);
@@ -60,7 +60,7 @@ public class CollectionTests
     public void Collection_Equals_Self_Returns_True()
     {
         // Arrange
-        var collection = new Collection();
+        var collection = new CollectionConfig();
 
         // Act
         var result = collection.Equals(collection);
@@ -73,8 +73,8 @@ public class CollectionTests
     public void Collection_Equals_DifferentObjects_Returns_False()
     {
         // Arrange
-        var collection1 = new Collection();
-        var collection2 = new Collection();
+        var collection1 = new CollectionConfig();
+        var collection2 = new CollectionConfig();
 
         // Act
 
@@ -87,8 +87,8 @@ public class CollectionTests
     public void Collection_Equals_Mismatching_Returns_False()
     {
         // Arrange
-        var collection1 = new Collection { Name = "Test", Description = "Test" };
-        var collection2 = new Collection { Name = "Different", Description = "Test" };
+        var collection1 = new CollectionConfig { Name = "Test", Description = "Test" };
+        var collection2 = new CollectionConfig { Name = "Different", Description = "Test" };
 
         // Act
 
@@ -100,8 +100,8 @@ public class CollectionTests
     public void Collection_Equals_InvertedIndexConfig_Matches_Returns_True()
     {
         // Arrange
-        var collection1 = new Collection { InvertedIndexConfig = new InvertedIndexConfig() };
-        var collection2 = new Collection { InvertedIndexConfig = new InvertedIndexConfig() };
+        var collection1 = new CollectionConfig { InvertedIndexConfig = new InvertedIndexConfig() };
+        var collection2 = new CollectionConfig { InvertedIndexConfig = new InvertedIndexConfig() };
 
         // Act
 
@@ -113,8 +113,8 @@ public class CollectionTests
     public void Collection_Equals_InvertedIndexConfig_DoesNotMatch_Returns_False()
     {
         // Arrange
-        var collection1 = new Collection { InvertedIndexConfig = new InvertedIndexConfig() };
-        var collection2 = new Collection { InvertedIndexConfig = null };
+        var collection1 = new CollectionConfig { InvertedIndexConfig = new InvertedIndexConfig() };
+        var collection2 = new CollectionConfig { InvertedIndexConfig = null };
 
         // Act
 
@@ -126,8 +126,8 @@ public class CollectionTests
     public void Collection_Equals_ModuleConfig_Matches_Returns_True()
     {
         // Arrange
-        var collection1 = new Collection { ModuleConfig = new() };
-        var collection2 = new Collection { ModuleConfig = new() };
+        var collection1 = new CollectionConfig { ModuleConfig = new() };
+        var collection2 = new CollectionConfig { ModuleConfig = new() };
 
         // Act
 
@@ -140,8 +140,8 @@ public class CollectionTests
     public void Collection_Equals_ModuleConfig_DoesNotMatch_Returns_False()
     {
         // Arrange
-        var collection1 = new Collection { ModuleConfig = new() };
-        var collection2 = new Collection { ModuleConfig = null };
+        var collection1 = new CollectionConfig { ModuleConfig = new() };
+        var collection2 = new CollectionConfig { ModuleConfig = null };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -154,8 +154,8 @@ public class CollectionTests
     public void Collection_Equals_MultiTenancyConfig_Matches_Returns_True()
     {
         // Arrange
-        var collection1 = new Collection { MultiTenancyConfig = new MultiTenancyConfig() };
-        var collection2 = new Collection { MultiTenancyConfig = new MultiTenancyConfig() };
+        var collection1 = new CollectionConfig { MultiTenancyConfig = new MultiTenancyConfig() };
+        var collection2 = new CollectionConfig { MultiTenancyConfig = new MultiTenancyConfig() };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -168,8 +168,8 @@ public class CollectionTests
     public void Collection_Equals_MultiTenancyConfig_DoesNotMatch_Returns_False()
     {
         // Arrange
-        var collection1 = new Collection { MultiTenancyConfig = new MultiTenancyConfig() };
-        var collection2 = new Collection { MultiTenancyConfig = null };
+        var collection1 = new CollectionConfig { MultiTenancyConfig = new MultiTenancyConfig() };
+        var collection2 = new CollectionConfig { MultiTenancyConfig = null };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -182,8 +182,8 @@ public class CollectionTests
     public void Collection_Equals_ReplicationConfig_Matches_Returns_True()
     {
         // Arrange
-        var collection1 = new Collection { ReplicationConfig = new ReplicationConfig() };
-        var collection2 = new Collection { ReplicationConfig = new ReplicationConfig() };
+        var collection1 = new CollectionConfig { ReplicationConfig = new ReplicationConfig() };
+        var collection2 = new CollectionConfig { ReplicationConfig = new ReplicationConfig() };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -196,8 +196,8 @@ public class CollectionTests
     public void Collection_Equals_ReplicationConfig_DoesNotMatch_Returns_False()
     {
         // Arrange
-        var collection1 = new Collection { ReplicationConfig = new ReplicationConfig() };
-        var collection2 = new Collection { ReplicationConfig = null };
+        var collection1 = new CollectionConfig { ReplicationConfig = new ReplicationConfig() };
+        var collection2 = new CollectionConfig { ReplicationConfig = null };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -210,8 +210,8 @@ public class CollectionTests
     public void Collection_Equals_ShardingConfig_Matches_Returns_True()
     {
         // Arrange
-        var collection1 = new Collection { ShardingConfig = new ShardingConfig() };
-        var collection2 = new Collection { ShardingConfig = new ShardingConfig() };
+        var collection1 = new CollectionConfig { ShardingConfig = new ShardingConfig() };
+        var collection2 = new CollectionConfig { ShardingConfig = new ShardingConfig() };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -224,8 +224,8 @@ public class CollectionTests
     public void Collection_Equals_ShardingConfig_DoesNotMatch_Returns_False()
     {
         // Arrange
-        var collection1 = new Collection { ShardingConfig = new ShardingConfig() };
-        var collection2 = new Collection { ShardingConfig = null };
+        var collection1 = new CollectionConfig { ShardingConfig = new ShardingConfig() };
+        var collection2 = new CollectionConfig { ShardingConfig = null };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -238,8 +238,8 @@ public class CollectionTests
     public void Collection_Equals_VectorConfig_Matches_Returns_True()
     {
         // Arrange
-        var collection1 = new Collection { VectorConfig = new VectorConfigList() };
-        var collection2 = new Collection { VectorConfig = new VectorConfigList() };
+        var collection1 = new CollectionConfig { VectorConfig = new VectorConfigList() };
+        var collection2 = new CollectionConfig { VectorConfig = new VectorConfigList() };
 
         // Act
         var result = collection1.Equals(collection2);
