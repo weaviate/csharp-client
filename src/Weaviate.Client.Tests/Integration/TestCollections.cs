@@ -936,7 +936,7 @@ public partial class CollectionsTests : IntegrationTests
                 }
             )
         );
-        var config = await collection.Get();
+        var config = await collection.Config.Get();
         Assert.NotNull(config);
         var vc = config.VectorConfig["hnswSq"];
         Assert.NotNull(vc);
@@ -961,7 +961,7 @@ public partial class CollectionsTests : IntegrationTests
             });
         });
 
-        config = await collection.Get();
+        config = await collection.Config.Get();
         Assert.NotNull(config);
         vc = config.VectorConfig["hnswSq"];
         Assert.NotNull(vc);
