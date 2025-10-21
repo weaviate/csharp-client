@@ -384,7 +384,17 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(100, config?.DynamicEfMin);
         Assert.Equal(-1, config?.Ef);
         Assert.Equal(128, config?.EfConstruction);
-        Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Sweeping, config?.FilterStrategy);
+        if (ServerVersionIsInRange("0.0.0", "1.33.0"))
+        {
+            Assert.Equal(
+                VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
+                config?.FilterStrategy
+            );
+        }
+        else
+        {
+            Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Acorn, config?.FilterStrategy);
+        }
         Assert.Equal(40000, config?.FlatSearchCutoff);
         Assert.Equal(32, config?.MaxConnections);
         Assert.Equal(300, config?.CleanupIntervalSeconds);
@@ -525,7 +535,17 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(100, config?.DynamicEfMin);
         Assert.Equal(-1, config?.Ef);
         Assert.Equal(128, config?.EfConstruction);
-        Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Sweeping, config?.FilterStrategy);
+        if (ServerVersionIsInRange("0.0.0", "1.33.0"))
+        {
+            Assert.Equal(
+                VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
+                config?.FilterStrategy
+            );
+        }
+        else
+        {
+            Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Acorn, config?.FilterStrategy);
+        }
         Assert.Equal(40000, config?.FlatSearchCutoff);
         Assert.Equal(32, config?.MaxConnections);
         Assert.Equal(300, config?.CleanupIntervalSeconds);
@@ -648,10 +668,21 @@ public partial class CollectionsTests : IntegrationTests
         Assert.NotNull(defaultVectorConfig.VectorIndexConfig);
         Assert.IsType<VectorIndex.HNSW>(defaultVectorConfig.VectorIndexConfig);
         var hnswConfig = defaultVectorConfig.VectorIndexConfig as VectorIndex.HNSW;
-        Assert.Equal(
-            VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
-            hnswConfig?.FilterStrategy
-        );
+
+        if (ServerVersionIsInRange("0.0.0", "1.33.0"))
+        {
+            Assert.Equal(
+                VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
+                hnswConfig?.FilterStrategy
+            );
+        }
+        else
+        {
+            Assert.Equal(
+                VectorIndexConfig.VectorIndexFilterStrategy.Acorn,
+                hnswConfig?.FilterStrategy
+            );
+        }
 
         // Act - Update configuration
         await collection.Config.Update(c =>
