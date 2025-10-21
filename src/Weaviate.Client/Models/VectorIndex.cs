@@ -61,13 +61,15 @@ public abstract record VectorIndexConfig()
         Acorn,
     }
 
-    public abstract record QuantizerConfig
+    public abstract record QuantizerConfigAll
     {
         [JsonIgnore]
         public abstract string Type { get; }
 
         public bool Enabled { get; init; } = true;
     }
+
+    public abstract record QuantizerConfigFlat : QuantizerConfigAll { }
 }
 
 public static class VectorIndex
@@ -92,7 +94,7 @@ public static class VectorIndex
             Tile,
         }
 
-        public record BQ : QuantizerConfig
+        public record BQ : QuantizerConfigFlat
         {
             public const string TypeValue = "bq";
 
@@ -103,18 +105,19 @@ public static class VectorIndex
             public override string Type => TypeValue;
         }
 
-        public record RQ : QuantizerConfig
+        public record RQ : QuantizerConfigFlat
         {
             public const string TypeValue = "rq";
 
             public int RescoreLimit { get; set; }
             public int? Bits { get; set; }
+            public bool Cache { get; set; }
 
             [JsonIgnore]
             public override string Type => TypeValue;
         }
 
-        public record SQ : QuantizerConfig
+        public record SQ : QuantizerConfigAll
         {
             public const string TypeValue = "sq";
 
@@ -125,7 +128,7 @@ public static class VectorIndex
             public override string Type => TypeValue;
         }
 
-        public record PQ : QuantizerConfig
+        public record PQ : QuantizerConfigAll
         {
             public const string TypeValue = "pq";
 
@@ -162,7 +165,7 @@ public static class VectorIndex
         public int? MaxConnections { get; set; }
         public bool? Skip { get; set; }
         public long? VectorCacheMaxObjects { get; set; }
-        public QuantizerConfig? Quantizer { get; set; }
+        public QuantizerConfigAll? Quantizer { get; set; }
         public MultiVectorConfig? MultiVector { get; set; }
 
         public override string Type => TypeValue;
@@ -174,7 +177,7 @@ public static class VectorIndex
 
         public VectorDistance? Distance { get; set; }
         public long? VectorCacheMaxObjects { get; set; }
-        public Quantizers.BQ? Quantizer { get; set; }
+        public QuantizerConfigFlat? Quantizer { get; set; }
 
         public override string Type => TypeValue;
     }
