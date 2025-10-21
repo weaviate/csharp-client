@@ -236,7 +236,7 @@ public class VectorIndexConfigUpdateHNSW(VectorIndex.HNSW WrappedHNSW)
         set => WrappedHNSW.FlatSearchCutoff = value;
     }
 
-    public VectorIndexConfig.QuantizerConfigAll? Quantizer
+    public VectorIndexConfig.QuantizerConfigBase? Quantizer
     {
         get => WrappedHNSW.Quantizer;
         set => WrappedHNSW.Quantizer = value;
