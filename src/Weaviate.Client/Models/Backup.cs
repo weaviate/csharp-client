@@ -33,10 +33,16 @@ public enum BackupCompressionLevel
 }
 
 /// <summary>
-/// Backend storage type for backups
+/// Backend storage provider type for backups
 /// </summary>
-public enum BackupStorage
+public enum BackupStorageProvider
 {
+    /// <summary>
+    /// No backend specified
+    /// </summary>
+    [System.Runtime.Serialization.EnumMember(Value = "none")]
+    None,
+
     /// <summary>
     /// Local filesystem storage
     /// </summary>
@@ -62,6 +68,112 @@ public enum BackupStorage
     Azure,
 }
 
+/// <summary>
+/// Base class for backup backend configurations
+/// </summary>
+public abstract record BackupBackend
+{
+    /// <summary>
+    /// The backend storage provider
+    /// </summary>
+    public abstract BackupStorageProvider Provider { get; }
+
+    /// <summary>
+    /// Optional path for the backup location
+    /// </summary>
+    public abstract string? Path { get; }
+
+    /// <summary>
+    /// Creates an empty backend (no backend specified)
+    /// </summary>
+    public static BackupBackend Empty() => new EmptyBackend();
+
+    /// <summary>
+    /// Creates a filesystem backend
+    /// </summary>
+    public static BackupBackend Filesystem(string? path = null) => new FilesystemBackend(path);
+
+    /// <summary>
+    /// Creates an S3 backend
+    /// </summary>
+    public static BackupBackend S3(string? bucket = null, string? path = null) =>
+        new ObjectStorageBackend(BackupStorageProvider.S3, bucket, path);
+
+    /// <summary>
+    /// Creates a GCS backend
+    /// </summary>
+    public static BackupBackend GCS(string? bucket = null, string? path = null) =>
+        new ObjectStorageBackend(BackupStorageProvider.GCS, bucket, path);
+
+    /// <summary>
+    /// Creates an Azure backend
+    /// </summary>
+    public static BackupBackend Azure(string? bucket = null, string? path = null) =>
+        new ObjectStorageBackend(BackupStorageProvider.Azure, bucket, path);
+}
+
+/// <summary>
+/// Empty backend configuration (no backend specified)
+/// </summary>
+internal record EmptyBackend() : BackupBackend
+{
+    public override BackupStorageProvider Provider => BackupStorageProvider.None;
+    public override string? Path => null;
+}
+
+/// <summary>
+/// Filesystem backend configuration for backups
+/// </summary>
+public record FilesystemBackend : BackupBackend
+{
+    /// <summary>
+    /// Optional path for the backup location
+    /// </summary>
+    public override string? Path { get; }
+
+    /// <summary>
+    /// The backend provider, always Filesystem
+    /// </summary>
+    public override BackupStorageProvider Provider => BackupStorageProvider.Filesystem;
+
+    public FilesystemBackend(string? path = null)
+    {
+        Path = path;
+    }
+}
+
+/// <summary>
+/// Object storage backend configuration (S3, GCS, Azure, etc.)
+/// </summary>
+public record ObjectStorageBackend : BackupBackend
+{
+    /// <summary>
+    /// The backend storage provider
+    /// </summary>
+    public override BackupStorageProvider Provider { get; }
+
+    /// <summary>
+    /// The bucket name for object storage
+    /// </summary>
+    public string? Bucket { get; }
+
+    /// <summary>
+    /// Optional path within the bucket
+    /// </summary>
+    public override string? Path { get; }
+
+    public ObjectStorageBackend(
+        BackupStorageProvider provider,
+        string? bucket = null,
+        string? path = null
+    )
+    {
+        Provider = provider;
+        Bucket = bucket;
+        Path = path;
+    }
+}
+
 public static class BackupStatusExtensions
 {
     public static BackupStatus ToBackupStatus(this string? status)
@@ -84,9 +196,7 @@ public static class BackupStatusExtensions
 /// </summary>
 public record Backup(
     string Id,
-    string Backend,
-    string? Bucket,
-    string? Path,
+    BackupBackend Backend,
     string StatusRaw,
     string[]? Classes,
     DateTimeOffset? StartedAt,
@@ -102,6 +212,7 @@ public record Backup(
 /// </summary>
 public record BackupCreateRequest(
     string Id,
+    BackupBackend Backend,
     IEnumerable<string>? Include = null,
     IEnumerable<string>? Exclude = null,
     BackupConfig? Config = null
@@ -111,6 +222,8 @@ public record BackupCreateRequest(
 /// Options for restoring a backup
 /// </summary>
 public record BackupRestoreRequest(
+    string Id,
+    BackupBackend Backend,
     IEnumerable<string>? Include = null,
     IEnumerable<string>? Exclude = null,
     IDictionary<string, string>? NodeMapping = null,
@@ -120,8 +233,6 @@ public record BackupRestoreRequest(
 
 public record BackupConfig(
     string? Endpoint = null,
-    string? Bucket = null,
-    string? Path = null,
     int? CPUPercentage = null,
     int? ChunkSize = null,
     BackupCompressionLevel? CompressionLevel = null
@@ -129,8 +240,6 @@ public record BackupConfig(
 
 public record RestoreConfig(
     string? Endpoint = null,
-    string? Bucket = null,
-    string? Path = null,
     int? CPUPercentage = null,
     string? RolesOptions = null,
     string? UsersOptions = null

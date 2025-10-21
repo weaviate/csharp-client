@@ -1,6 +1,5 @@
 namespace Weaviate.Client;
 
-[Serializable]
 public class WeaviateException : Exception
 {
     protected WeaviateException(Exception innerException)
@@ -10,7 +9,6 @@ public class WeaviateException : Exception
         : base(message, innerException) { }
 }
 
-[Serializable]
 public class WeaviateClientException : WeaviateException
 {
     public WeaviateClientException(string? message)
@@ -20,12 +18,24 @@ public class WeaviateClientException : WeaviateException
         : base(message, innerException) { }
 }
 
-[Serializable]
 public class WeaviateServerException : WeaviateException
 {
     public WeaviateServerException(string? message)
         : base(message) { }
 
     public WeaviateServerException(string? message, Exception? innerException)
+        : base(message, innerException) { }
+}
+
+/// <summary>
+/// Exception thrown when a backup or restore operation cannot be started because another one is already in progress.
+/// The Weaviate server only allows one backup or restore operation at a time.
+/// </summary>
+public class WeaviateBackupConflictException : WeaviateServerException
+{
+    public WeaviateBackupConflictException(string? message)
+        : base(message) { }
+
+    public WeaviateBackupConflictException(string? message, Exception? innerException)
         : base(message, innerException) { }
 }
