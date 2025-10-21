@@ -61,7 +61,7 @@ public abstract record VectorIndexConfig()
         Acorn,
     }
 
-    public abstract record QuantizerConfigAll
+    public abstract record QuantizerConfigBase
     {
         [JsonIgnore]
         public abstract string Type { get; }
@@ -69,7 +69,7 @@ public abstract record VectorIndexConfig()
         public bool Enabled { get; init; } = true;
     }
 
-    public abstract record QuantizerConfigFlat : QuantizerConfigAll { }
+    public abstract record QuantizerConfigFlat : QuantizerConfigBase { }
 }
 
 public static class VectorIndex
@@ -117,7 +117,7 @@ public static class VectorIndex
             public override string Type => TypeValue;
         }
 
-        public record SQ : QuantizerConfigAll
+        public record SQ : QuantizerConfigBase
         {
             public const string TypeValue = "sq";
 
@@ -128,7 +128,7 @@ public static class VectorIndex
             public override string Type => TypeValue;
         }
 
-        public record PQ : QuantizerConfigAll
+        public record PQ : QuantizerConfigBase
         {
             public const string TypeValue = "pq";
 
@@ -165,7 +165,7 @@ public static class VectorIndex
         public int? MaxConnections { get; set; }
         public bool? Skip { get; set; }
         public long? VectorCacheMaxObjects { get; set; }
-        public QuantizerConfigAll? Quantizer { get; set; }
+        public QuantizerConfigBase? Quantizer { get; set; }
         public MultiVectorConfig? MultiVector { get; set; }
 
         public override string Type => TypeValue;

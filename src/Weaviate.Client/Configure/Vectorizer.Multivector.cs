@@ -10,7 +10,7 @@ public static partial class Configure
         public static VectorConfig SelfProvided(
             string name = "default",
             VectorIndex.HNSW? indexConfig = null,
-            QuantizerConfigAll? quantizerConfig = null
+            QuantizerConfigBase? quantizerConfig = null
         )
         {
             return new VectorConfigBuilder(new Vectorizer.SelfProvided()).New(
@@ -25,7 +25,7 @@ public static partial class Configure
             public VectorConfig New(
                 string name,
                 VectorIndex.HNSW? indexConfig = null,
-                QuantizerConfigAll? quantizerConfig = null,
+                QuantizerConfigBase? quantizerConfig = null,
                 params string[] sourceProperties
             )
             {

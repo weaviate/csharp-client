@@ -141,7 +141,9 @@ internal class DynamicDto
 internal static class VectorIndexMappingExtensions
 {
     // Helper to get the single enabled quantizer
-    private static QuantizerConfigAll? GetEnabledQuantizer(params QuantizerConfigAll?[] quantizers)
+    private static QuantizerConfigBase? GetEnabledQuantizer(
+        params QuantizerConfigBase?[] quantizers
+    )
     {
         return quantizers.FirstOrDefault(q => q?.Enabled == true);
     }
