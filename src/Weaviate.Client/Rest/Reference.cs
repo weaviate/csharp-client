@@ -74,7 +74,7 @@ public partial class WeaviateRestClient
 
         var response = await _httpClient.SendAsync(request);
 
-        await response.EnsureExpectedStatusCodeAsync([200], "reference delete");
+        await response.EnsureExpectedStatusCodeAsync([204], "reference delete");
     }
 
     internal async Task<BatchReferenceResponse[]> ReferenceAddMany(
