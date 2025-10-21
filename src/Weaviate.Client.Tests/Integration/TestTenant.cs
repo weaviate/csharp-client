@@ -479,7 +479,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        var collection = await collectionClient.Get();
+        var collection = await collectionClient.Config.Get();
 
         Assert.NotNull(collection);
 

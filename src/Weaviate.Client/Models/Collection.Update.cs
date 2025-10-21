@@ -57,7 +57,7 @@ public partial record PropertyUpdate(Property WrappedProperty)
     }
 }
 
-public partial record CollectionUpdate(Collection WrappedCollection)
+public partial record CollectionUpdate(CollectionConfig WrappedCollection)
 {
     public string Name => WrappedCollection.Name;
     public string Description
@@ -145,7 +145,10 @@ public partial record CollectionUpdate(Collection WrappedCollection)
     }
 }
 
-public class VectorConfigUpdate(Collection WrappedCollection, VectorConfig WrappedVectorConfig)
+public class VectorConfigUpdate(
+    CollectionConfig WrappedCollection,
+    VectorConfig WrappedVectorConfig
+)
 {
     public string Name
     {
@@ -381,7 +384,7 @@ public class CollectionUpdateBuilder<T>
 
     // Proxied property updates
 
-    public async Task<Collection> Update(Action<CollectionUpdate> c)
+    public async Task<CollectionConfig> Update(Action<CollectionUpdate> c)
     {
         // 1. Fetch the collection config
         var collection =
@@ -397,5 +400,12 @@ public class CollectionUpdateBuilder<T>
         var result = await _client.RestClient.CollectionUpdate(_collectionName, collection.ToDto());
 
         return result.ToModel();
+    }
+
+    public async Task<CollectionConfig?> Get()
+    {
+        var response = await _client.RestClient.CollectionGet(_collectionName);
+
+        return response?.ToModel();
     }
 }
