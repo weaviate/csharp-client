@@ -921,6 +921,59 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     [Fact]
+    public async Task Test_hnsw_with_sq()
+    {
+        var collection = await CollectionFactory(
+            vectorConfig: Configure.Vectors.SelfProvided(
+                name: "hnswSq",
+                indexConfig: new VectorIndex.HNSW
+                {
+                    Quantizer = new VectorIndex.Quantizers.SQ
+                    {
+                        TrainingLimit = 100001,
+                        RescoreLimit = 123,
+                    },
+                }
+            )
+        );
+        var config = await collection.Config.Get();
+        Assert.NotNull(config);
+        var vc = config.VectorConfig["hnswSq"];
+        Assert.NotNull(vc);
+        var hnswConfig = vc.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        var sqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.SQ;
+        Assert.NotNull(sqQuantizer);
+        Assert.Equal(100001, sqQuantizer.TrainingLimit);
+        Assert.Equal(123, sqQuantizer.RescoreLimit);
+
+        await collection.Config.Update(c =>
+        {
+            var vc = c.VectorConfig["hnswSq"];
+            vc.VectorIndexConfig.UpdateHNSW(vic =>
+            {
+                vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Sweeping;
+                vic.Quantizer = new VectorIndex.Quantizers.SQ
+                {
+                    TrainingLimit = 456,
+                    RescoreLimit = 789,
+                };
+            });
+        });
+
+        config = await collection.Config.Get();
+        Assert.NotNull(config);
+        vc = config.VectorConfig["hnswSq"];
+        Assert.NotNull(vc);
+        hnswConfig = vc.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        sqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.SQ;
+        Assert.NotNull(sqQuantizer);
+        Assert.Equal(456, sqQuantizer.TrainingLimit);
+        Assert.Equal(789, sqQuantizer.RescoreLimit);
+    }
+
+    [Fact]
     public async Task Test_Return_Blob_Property()
     {
         // Arrange
