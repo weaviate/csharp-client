@@ -23,10 +23,10 @@ public static class HttpResponseMessageExtensions
         if (response.Content != null)
             response.Content.Dispose();
 
-        content =
+        var errorMessage =
             $"Unexpected status code {response.StatusCode}. Expected: {string.Join(", ", codes)}. {error}. Server replied: {content}";
 
-        throw new SimpleHttpResponseException(response.StatusCode, codes, content);
+        throw new WeaviateUnexpectedStatusCodeException(response.StatusCode, codes, errorMessage);
     }
 
     public static Task<HttpStatusCode> EnsureExpectedStatusCodeAsync(
@@ -59,15 +59,14 @@ public static class HttpResponseMessageExtensions
     }
 }
 
-internal class SimpleHttpResponseException : WeaviateServerException
+internal class WeaviateUnexpectedStatusCodeException : WeaviateServerException
 {
     public HttpStatusCode StatusCode { get; private set; }
-    public ISet<HttpStatusCode> ExpectedStatusCodes { get; private set; } =
-        new SortedSet<HttpStatusCode>();
+    public ISet<HttpStatusCode> ExpectedStatusCodes { get; private set; }
 
-    public SimpleHttpResponseException(
+    public WeaviateUnexpectedStatusCodeException(
         HttpStatusCode statusCode,
-        SortedSet<HttpStatusCode> expectedStatusCodes,
+        ISet<HttpStatusCode> expectedStatusCodes,
         string content
     )
         : base(content)
