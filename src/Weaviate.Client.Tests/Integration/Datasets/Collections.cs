@@ -29,12 +29,12 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
         VectorCacheMaxObjects = 1000000000000L,
     };
 
-    private static VectorIndexConfig _vectorIndexConfigHNSW_BQ = _vectorIndexConfigHNSW_base with
+    private static VectorIndex.HNSW _vectorIndexConfigHNSW_BQ = _vectorIndexConfigHNSW_base with
     {
         Quantizer = new Quantizers.BQ() { Cache = true, RescoreLimit = 64 },
     };
 
-    private static VectorIndexConfig _vectorIndexConfigHNSW_PQ = _vectorIndexConfigHNSW_base with
+    private static VectorIndex.HNSW _vectorIndexConfigHNSW_PQ = _vectorIndexConfigHNSW_base with
     {
         Quantizer = new Quantizers.PQ()
         {
@@ -50,7 +50,7 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
         },
     };
 
-    private static VectorIndexConfig _vectorIndexConfigHNSW_SQ = _vectorIndexConfigHNSW_base with
+    private static VectorIndex.HNSW _vectorIndexConfigHNSW_SQ = _vectorIndexConfigHNSW_base with
     {
         Quantizer = new Quantizers.SQ() { TrainingLimit = 100000, RescoreLimit = 20 },
     };
@@ -191,13 +191,13 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 Properties = [_nameProperty],
                 VectorConfig = new[]
                 {
-                    Configure.Vectors.SelfProvided("hnswbase", _vectorIndexConfigHNSW_base),
+                    Configure.Vectors.SelfProvided().New("hnswbase", _vectorIndexConfigHNSW_base),
                     // TODO BQ is only returning Enabled property for HNSW
                     // Configure.Vectors.SelfProvided("hnswbq", _vectorIndexConfigHNSW_BQ),
-                    Configure.Vectors.SelfProvided("hnswpq", _vectorIndexConfigHNSW_PQ),
-                    Configure.Vectors.SelfProvided("hnswsq", _vectorIndexConfigHNSW_SQ),
-                    Configure.Vectors.SelfProvided("flatbase", _vectorIndexConfigFlat_base),
-                    Configure.Vectors.SelfProvided("flatbq", _vectorIndexConfigFlat_BQ),
+                    Configure.Vectors.SelfProvided().New("hnswpq", _vectorIndexConfigHNSW_PQ),
+                    Configure.Vectors.SelfProvided().New("hnswsq", _vectorIndexConfigHNSW_SQ),
+                    Configure.Vectors.SelfProvided().New("flatbase", _vectorIndexConfigFlat_base),
+                    Configure.Vectors.SelfProvided().New("flatbq", _vectorIndexConfigFlat_BQ),
                     // Requires ASYNC_INDEXING: 'true'
                     // Configure.Vectors.SelfProvided("dynamicbase", _vectorIndexConfigDynamic_base),
                 },

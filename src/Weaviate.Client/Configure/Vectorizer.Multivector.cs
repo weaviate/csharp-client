@@ -7,25 +7,14 @@ public static partial class Configure
 {
     public static class MultiVectors
     {
-        public static VectorConfig SelfProvided(
-            string name = "default",
-            VectorIndex.HNSW? indexConfig = null,
-            QuantizerConfig? quantizerConfig = null
-        )
-        {
-            return new VectorConfigBuilder(new Vectorizer.SelfProvided()).New(
-                name,
-                indexConfig,
-                quantizerConfig
-            );
-        }
+        public static VectorConfigBuilder SelfProvided() => new(new Vectorizer.SelfProvided());
 
         public class VectorConfigBuilder(VectorizerConfig Config)
         {
             public VectorConfig New(
-                string name,
+                string name = "default",
                 VectorIndex.HNSW? indexConfig = null,
-                QuantizerConfig? quantizerConfig = null,
+                QuantizerConfigBase? quantizerConfig = null,
                 params string[] sourceProperties
             )
             {

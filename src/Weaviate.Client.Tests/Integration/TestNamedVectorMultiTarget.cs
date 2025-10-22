@@ -17,8 +17,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         var collection = await CollectionFactory(
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided(name: "first"),
-                Configure.Vectors.SelfProvided(name: "second"),
+                Configure.Vectors.SelfProvided().New(name: "first"),
+                Configure.Vectors.SelfProvided().New(name: "second"),
             }
         );
 
@@ -154,8 +154,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided(name: "first"),
-                Configure.Vectors.SelfProvided(name: "second"),
+                Configure.Vectors.SelfProvided().New(name: "first"),
+                Configure.Vectors.SelfProvided().New(name: "second"),
             }
         );
 
@@ -319,8 +319,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided(name: "first"),
-                Configure.Vectors.SelfProvided(name: "second"),
+                Configure.Vectors.SelfProvided().New(name: "first"),
+                Configure.Vectors.SelfProvided().New(name: "second"),
             }
         );
 
@@ -386,8 +386,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided(name: "first"),
-                Configure.Vectors.SelfProvided(name: "second"),
+                Configure.Vectors.SelfProvided().New(name: "first"),
+                Configure.Vectors.SelfProvided().New(name: "second"),
             }
         );
 
@@ -464,8 +464,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided(name: "first"),
-                Configure.Vectors.SelfProvided(name: "second"),
+                Configure.Vectors.SelfProvided().New(name: "first"),
+                Configure.Vectors.SelfProvided().New(name: "second"),
             }
         );
 
