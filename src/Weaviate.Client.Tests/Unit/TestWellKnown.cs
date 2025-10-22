@@ -1,9 +1,7 @@
 using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Weaviate.Client;
-using Xunit;
+using System.Text;
+using System.Text.Json;
+using Weaviate.Client.Rest;
 
 namespace Weaviate.Client.Tests.Unit;
 
@@ -24,6 +22,29 @@ public class TestWellKnown
             CancellationToken cancellationToken
         )
         {
+            // Intercept requests to the Meta endpoint and return a dummy response
+            if (
+                request.RequestUri != null
+                && request.RequestUri.AbsolutePath.EndsWith(WeaviateEndpoints.Meta())
+                && request.Method == HttpMethod.Get
+            )
+            {
+                var dummyMeta = new
+                {
+                    hostname = "http://localhost:8080",
+                    version = "1.28.0",
+                    modules = new { },
+                    grpcMaxMessageSize = 10485760UL,
+                };
+
+                var json = JsonSerializer.Serialize(dummyMeta);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                return Task.FromResult(
+                    new HttpResponseMessage(HttpStatusCode.OK) { Content = content }
+                );
+            }
+
             Requests.Add(request);
             return Task.FromResult(_responder(request));
         }

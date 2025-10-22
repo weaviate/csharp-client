@@ -7,7 +7,7 @@ public partial class CollectionClient
 {
     public const uint ITERATOR_CACHE_SIZE = 100;
 
-    public System.Version WeaviateVersion => _client.WeaviateVersion;
+    public System.Version? WeaviateVersion => _client.WeaviateVersion;
 
     private readonly WeaviateClient _client;
 
