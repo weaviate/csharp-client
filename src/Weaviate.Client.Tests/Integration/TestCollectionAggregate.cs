@@ -251,7 +251,7 @@ public partial class AggregatesTests : IntegrationTests
     {
         var collectionClient = await CollectionFactory(
             properties: [Property.Text("text")],
-            vectorConfig: Configure.Vectors.SelfProvided("default")
+            vectorConfig: Configure.Vectors.SelfProvided().New("default")
         );
 
         var text1 = "some text";
