@@ -203,7 +203,7 @@ public partial class ReferenceTests : IntegrationTests
                 Property.Int("movie_id"),
             ],
             references: new Reference("forMovie", TargetCollection: movies.Name),
-            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecContextionary())
+            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers())
         );
 
         var moviesData = new[]
@@ -394,7 +394,7 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         Assert.True(disappointedObjects[0].References.ContainsKey("forMovie"));
         Assert.True(disappointedObjects[1].References.ContainsKey("forMovie"));
-        Assert.Equal(movieIds[162], disappointedObjects[0].References["forMovie"][0].ID);
-        Assert.Equal(movieIds[771], disappointedObjects[1].References["forMovie"][0].ID);
+        Assert.Equal(movieIds[771], disappointedObjects[0].References["forMovie"][0].ID);
+        Assert.Equal(movieIds[769], disappointedObjects[1].References["forMovie"][0].ID);
     }
 }
