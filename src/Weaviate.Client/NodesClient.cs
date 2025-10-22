@@ -16,27 +16,29 @@ public class NodesClient
     }
 
     /// <summary>
-    /// Lists all nodes in the cluster.
+    /// Lists all nodes in the cluster with minimal information.
     /// </summary>
-    /// <param name="detailLevel">The level of detail to retrieve (Minimal or Verbose).</param>
-    /// <param name="collection">Optional collection name to filter shard information. Only applicable when detailLevel is Verbose.</param>
-    /// <returns>An array of cluster node information with the specified level of detail.</returns>
-    public async Task<ClusterNode[]> List(
-        NodeDetailLevel detailLevel = NodeDetailLevel.Minimal,
-        string? collection = null
-    )
+    /// <returns>An array of cluster node information.</returns>
+    public async Task<ClusterNode[]> List()
     {
-        var verbosityString = detailLevel switch
-        {
-            NodeDetailLevel.Minimal => "minimal",
-            NodeDetailLevel.Verbose => "verbose",
-            _ => "minimal",
-        };
-
-        var nodes = await _client.Nodes(collection, verbosityString);
+        var nodes = await _client.Nodes(null, "minimal");
         if (nodes == null)
             return Array.Empty<ClusterNode>();
 
-        return nodes.Where(n => n != null).Select(n => n.ToModel(detailLevel)).ToArray();
+        return nodes.Where(n => n != null).Select(n => n.ToModel()).ToArray();
+    }
+
+    /// <summary>
+    /// Lists all nodes in the cluster with verbose information including statistics and shard details.
+    /// </summary>
+    /// <param name="collection">Optional collection name to filter shard information.</param>
+    /// <returns>An array of verbose cluster node information.</returns>
+    public async Task<ClusterNodeVerbose[]> ListVerbose(string? collection = null)
+    {
+        var nodes = await _client.Nodes(collection, "verbose");
+        if (nodes == null)
+            return Array.Empty<ClusterNodeVerbose>();
+
+        return nodes.Where(n => n != null).Select(n => n.ToVerboseModel()).ToArray();
     }
 }
