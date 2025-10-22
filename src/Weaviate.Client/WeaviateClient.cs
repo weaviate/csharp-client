@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
+using Weaviate.Client.Rest.Dto;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Weaviate.Client.Tests")]
 
@@ -118,7 +119,7 @@ public partial class WeaviateClient : IDisposable
 
         return new Models.MetaInfo
         {
-            GrpcMaxMessageSize = meta?.GrpcMaxMessageSize ?? 0,
+            GrpcMaxMessageSize = meta?.GrpcMaxMessageSize ?? null,
             Hostname = meta?.Hostname ?? string.Empty,
             Version =
                 Models.MetaInfo.ParseWeaviateVersion(meta?.Version ?? string.Empty)
@@ -267,11 +268,15 @@ public partial class WeaviateClient : IDisposable
         }
 
         RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
+        var meta = RestClient.GetMeta().GetAwaiter().GetResult();
+
         GrpcClient = new WeaviateGrpcClient(
             Configuration.GrpcUri,
             wcdHost,
             _tokenService,
-            Configuration.Headers
+            Configuration.Headers,
+            null,
+            meta?.GrpcMaxMessageSize ?? null
         );
 
         Cluster = new ClusterClient(RestClient);
