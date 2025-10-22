@@ -143,7 +143,7 @@ public partial class CollectionClient<TData> : CollectionClient
         _queryClient = new QueryClient<TData>(this);
     }
 
-    public CollectionUpdateBuilder<TData> Config => new(Client, Name);
+    public CollectionConfigClient<TData> Config => new(Client, Name);
 
     public new CollectionClient<TData> WithTenant(string tenant)
     {
