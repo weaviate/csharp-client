@@ -61,7 +61,7 @@ public partial class ClientTests : IntegrationTests
     public async Task TestNodesVerbose()
     {
         var client = Connect.Local();
-        var nodesVerbose = await client.Cluster.Nodes.List(Models.NodeDetailLevel.Verbose);
+        var nodesVerbose = await client.Cluster.Nodes.ListVerbose();
         Assert.Single(nodesVerbose);
         var nodeV = nodesVerbose[0];
         Assert.NotNull(nodeV);
@@ -80,10 +80,7 @@ public partial class ClientTests : IntegrationTests
         var collectionName = "TestNodesVerboseWithCollection";
         var collection = await CollectionFactory(collectionName);
 
-        var nodesVerbose = await client.Cluster.Nodes.List(
-            Models.NodeDetailLevel.Verbose,
-            collection.Name
-        );
+        var nodesVerbose = await client.Cluster.Nodes.ListVerbose(collection.Name);
         Assert.Single(nodesVerbose);
         var nodeV = nodesVerbose[0];
         Assert.NotNull(nodeV);

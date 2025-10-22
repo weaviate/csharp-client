@@ -10,36 +10,44 @@ public partial class NodeStatus
     /// <summary>
     /// Converts this NodeStatus DTO to a ClusterNode model.
     /// </summary>
-    /// <param name="detailLevel">The level of detail to include in the conversion.</param>
     /// <returns>A ClusterNode model object.</returns>
-    public ClusterNode ToModel(NodeDetailLevel detailLevel)
+    public ClusterNode ToModel()
     {
-        var node = new ClusterNode
+        return new ClusterNode
         {
-            DetailLevel = detailLevel,
             GitHash = GitHash ?? string.Empty,
             Name = Name ?? string.Empty,
             Status = Status?.ToString() ?? "Unknown",
             Version = Version ?? string.Empty,
         };
+    }
 
-        if (detailLevel == NodeDetailLevel.Verbose)
+    /// <summary>
+    /// Converts this NodeStatus DTO to a ClusterNodeVerbose model.
+    /// </summary>
+    /// <returns>A ClusterNodeVerbose model object.</returns>
+    public ClusterNodeVerbose ToVerboseModel()
+    {
+        return new ClusterNodeVerbose
         {
-            return node with
+            GitHash = GitHash ?? string.Empty,
+            Name = Name ?? string.Empty,
+            Status = Status?.ToString() ?? "Unknown",
+            Version = Version ?? string.Empty,
+            Stats = Stats?.ToModel() ?? new ClusterNodeVerbose.NodeStats
             {
-                Stats = Stats?.ToModel(),
-                Shards = Shards
-                    ?.Where(s =>
-                        s != null
-                        && !string.IsNullOrEmpty(s.Class)
-                        && !string.IsNullOrEmpty(s.Name)
-                    )
-                    .Select(s => s.ToModel())
-                    .ToArray(),
-            };
-        }
-
-        return node;
+            ObjectCount = 0,
+            ShardCount = 0,
+            },
+            Shards = Shards
+            ?.Where(s =>
+                s != null
+                && !string.IsNullOrEmpty(s.Class)
+                && !string.IsNullOrEmpty(s.Name)
+            )
+            .Select(s => s.ToModel())
+            .ToArray() ?? [],
+        };
     }
 }
 
@@ -52,9 +60,9 @@ public partial class NodeStats
     /// Converts this NodeStats DTO to a NodeStats model.
     /// </summary>
     /// <returns>A NodeStats model object.</returns>
-    public ClusterNode.NodeStats ToModel()
+    public ClusterNodeVerbose.NodeStats ToModel()
     {
-        return new ClusterNode.NodeStats
+        return new ClusterNodeVerbose.NodeStats
         {
             ObjectCount = (int)(ObjectCount ?? 0),
             ShardCount = (int)(ShardCount ?? 0),
@@ -71,9 +79,9 @@ public partial class NodeShardStatus
     /// Converts this NodeShardStatus DTO to a Shard model.
     /// </summary>
     /// <returns>A Shard model object.</returns>
-    public ClusterNode.Shard ToModel()
+    public ClusterNodeVerbose.Shard ToModel()
     {
-        return new ClusterNode.Shard
+        return new ClusterNodeVerbose.Shard
         {
             Collection = Class!,
             Name = Name!,
