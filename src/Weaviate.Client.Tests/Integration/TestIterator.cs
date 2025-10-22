@@ -62,7 +62,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Int("data"), Property.Text("text")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecContextionary())
+            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers())
         );
 
         // Insert test data
