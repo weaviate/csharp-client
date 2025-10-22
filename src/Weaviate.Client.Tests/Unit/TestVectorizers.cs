@@ -46,14 +46,14 @@ public partial class VectorConfigListTests
     [Fact]
     public void Test_VectorConfigList()
     {
-        var contextionaryVectorizer = Configure.Vectors.Text2VecContextionary(true);
+        var transformerVectorizer = Configure.Vectors.Text2VecTransformers();
 
         // Arrange
         VectorConfigList ncList = new[]
         {
             new VectorConfig(
                 "default",
-                new Vectorizer.Text2VecContextionary { SourceProperties = ["breed", "color"] },
+                new Vectorizer.Text2VecTransformers { SourceProperties = ["breed", "color"] },
                 new VectorIndex.HNSW()
                 {
                     Distance = VectorIndexConfig.VectorDistance.Cosine,
@@ -69,15 +69,15 @@ public partial class VectorConfigListTests
             ),
             new VectorConfig(
                 "fromSizes",
-                new Vectorizer.Text2VecContextionary { SourceProperties = ["size"] }
+                new Vectorizer.Text2VecTransformers { SourceProperties = ["size"] }
             ),
             new VectorConfig(
                 "location",
-                new Vectorizer.Text2VecContextionary { SourceProperties = ["location"] }
+                new Vectorizer.Text2VecTransformers { SourceProperties = ["location"] }
             ),
             new VectorConfig("nein", new Vectorizer.SelfProvided()),
-            contextionaryVectorizer.New("contextionary1", sourceProperties: ["breed"]),
-            contextionaryVectorizer.New("contextionary2", sourceProperties: ["color"]),
+            transformerVectorizer.New("transf1", sourceProperties: ["breed"]),
+            transformerVectorizer.New("transf2", sourceProperties: ["color"]),
             Configure
                 .Vectors.Text2VecWeaviate(vectorizeCollectionName: true)
                 .New("weaviate", sourceProperties: ["color"]),
@@ -89,13 +89,13 @@ public partial class VectorConfigListTests
         // Assert
         Assert.Equal(
             [
-                "contextionary1",
-                "contextionary2",
                 "default",
                 "fromSizes",
                 "location",
                 "nein",
                 "neural",
+                "transf1",
+                "transf2",
                 "weaviate",
             ],
             ncList.Keys
@@ -135,7 +135,7 @@ public partial class VectorConfigListTests
         // Arrange
         var defaultVec = new VectorConfig(
             "default",
-            new Vectorizer.Text2VecContextionary() { SourceProperties = ["name"] }
+            new Vectorizer.Text2VecTransformers() { SourceProperties = ["name"] }
         );
 
         // Build explicitely, when typing as VectorConfig is needed,

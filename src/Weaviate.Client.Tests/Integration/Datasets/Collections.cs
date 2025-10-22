@@ -107,7 +107,10 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                     ),
                 ],
                 VectorConfig = Configure
-                    .Vectors.Text2VecContextionary(false)
+                    .Vectors.Text2VecTransformers(
+                        vectorizeCollectionName: false,
+                        poolingStrategy: "masked_mean"
+                    )
                     .New("nondefault", _vectorIndexConfigHNSW_base),
                 InvertedIndexConfig = new()
                 {
@@ -154,7 +157,10 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                     ),
                 ],
                 VectorConfig = Configure
-                    .Vectors.Text2VecContextionary(false)
+                    .Vectors.Text2VecTransformers(
+                        vectorizeCollectionName: false,
+                        poolingStrategy: "masked_mean"
+                    )
                     .New("nondefault", _vectorIndexConfigHNSW_base),
                 InvertedIndexConfig = new()
                 {
