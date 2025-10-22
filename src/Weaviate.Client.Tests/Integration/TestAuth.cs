@@ -76,11 +76,9 @@ public class TestAuth : IntegrationTests
     {
         Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_CC}"));
 
-        var client = Connect.Local(hostname: "localhost", restPort: OKTA_PORT_CC);
-
-        await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
+        var client = await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
         {
-            await client.Collections.List().ToListAsync(TestContext.Current.CancellationToken);
+            Connect.Local(hostname: "localhost", restPort: OKTA_PORT_CC);
         });
     }
 
