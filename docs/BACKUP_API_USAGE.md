@@ -1,274 +1,164 @@
-
 # Backup API Usage Guide
 
-This guide covers the modern, idiomatic backup and restore API with automatic resource management.
+This guide covers the Weaviate C# client's backup and restore functionality. It provides examples and best practices for using the modern, idiomatic backup API.
 
-## Key Features
+## Table of Contents
 
-- **Automatic cleanup**: Resources are automatically disposed when operations complete
-- **Type-safe operations**: Separate `BackupCreateOperation` and `BackupRestoreOperation` types
-- **Flexible patterns**: Async tracking, sync blocking, or fire-and-forget
-- **Background polling**: Status updates automatically in the background
-- **Configurable timeouts**: Global defaults with per-call overrides
+- [Overview](#overview)
+- [Backend Configuration](#backend-configuration)
+- [Creating Backups](#creating-backups)
+- [Restoring Backups](#restoring-backups)
+- [Monitoring Operations](#monitoring-operations)
+- [Concurrency and Coordination](#concurrency-and-coordination)
+- [Advanced Usage](#advanced-usage)
 
-## Configuration
+## Overview
 
-Set global polling and timeout configuration for all backup operations:
+The Backup API allows you to create and restore backups of your Weaviate collections. Backups can be stored on various backend storage providers, including the local filesystem, S3, GCS, and Azure Blob Storage.
+
+Key features include:
+
+- **Type-safe operations**: Separate `BackupCreateOperation` and `BackupRestoreOperation` types.
+- **Type-safe backends**: Separate `FilesystemBackend` and `ObjectStorageBackend` types.
+- **Automatic cleanup**: Resources are automatically disposed of when operations complete.
+- **Flexible patterns**: Async tracking, sync blocking, or fire-and-forget.
+- **Configurable timeouts**: Global defaults with per-call overrides.
+
+## Backend Configuration
+
+Backends are configured using the static factory methods on the `BackupBackend` class. Supported backends include:
+
+### Filesystem Backend
+
+```csharp
+var backend = BackupBackend.Filesystem(path: "/backups");
+Console.WriteLine(backend.Provider); // BackupStorageProvider.Filesystem
+```
+
+### Object Storage Backends
+
+#### S3
+
+```csharp
+var backend = BackupBackend.S3(bucket: "my-backup-bucket", path: "backups/");
+Console.WriteLine(backend.Provider); // BackupStorageProvider.S3
+```
+
+#### Google Cloud Storage
+
+```csharp
+var backend = BackupBackend.GCS(bucket: "my-gcs-bucket", path: "weaviate-backups");
+Console.WriteLine(backend.Provider); // BackupStorageProvider.GCS
+```
+
+#### Azure Blob Storage
+
+```csharp
+var backend = BackupBackend.Azure(bucket: "my-container", path: "backups");
+Console.WriteLine(backend.Provider); // BackupStorageProvider.Azure
+```
+
+## Creating Backups
+
+To create a backup, use the `BackupClient.Create` method. This returns a `BackupCreateOperation` object that can be used to track the operation's status.
+
+### Creating Backup Example
+
+```csharp
+var operation = await client.Backups.Create(new BackupCreateRequest(
+    id: "my-backup-id",
+    backend: BackupBackend.Filesystem(path: "/backups")
+));
+
+await operation.WaitForCompletion();
+Console.WriteLine(operation.Current.Status); // BackupStatus.Success
+```
+
+## Restoring Backups
+
+To restore a backup, use the `BackupClient.Restore` method. This returns a `BackupRestoreOperation` object.
+
+### Restoring Backup Example
+
+```csharp
+var operation = await client.Backups.Restore(new BackupRestoreRequest(
+    id: "my-backup-id",
+    backend: BackupBackend.Filesystem(path: "/backups")
+));
+
+await operation.WaitForCompletion();
+Console.WriteLine(operation.Current.Status); // BackupStatus.Success
+```
+
+## Monitoring Operations
+
+Both `BackupCreateOperation` and `BackupRestoreOperation` support:
+
+- **Status polling**: Use the `Current` property to get the latest status.
+- **Cancellation**: Call the `Cancel` method to abort the operation.
+
+### Monitoring Operation Example
+
+```csharp
+var operation = await client.Backups.Create(new BackupCreateRequest(
+    id: "my-backup-id",
+    backend: BackupBackend.Filesystem(path: "/backups")
+));
+
+while (!operation.IsCompleted)
+{
+    Console.WriteLine(operation.Current.Status);
+    await Task.Delay(1000);
+}
+```
+
+## Concurrency and Coordination
+
+**Important:** Concurrent backup or restore operations are not allowed. Attempting to start a new operation while another is in progress will throw a `WeaviateBackupConflictException`.
+
+To perform multiple operations, ensure each one is awaited to completion before starting the next.
+
+### Sequential Operations Example
+
+```csharp
+// Create the first backup
+var operation1 = await client.Backups.Create(new BackupCreateRequest(
+    id: "backup-1",
+    backend: BackupBackend.Filesystem(path: "/backups")
+));
+await operation1.WaitForCompletion();
+
+// Create the second backup after the first completes
+var operation2 = await client.Backups.Create(new BackupCreateRequest(
+    id: "backup-2",
+    backend: BackupBackend.Filesystem(path: "/backups")
+));
+await operation2.WaitForCompletion();
+```
+
+## Advanced Usage
+
+### Configurable Timeouts
+
+You can configure global defaults for polling intervals and timeouts using `BackupClient.Config`:
 
 ```csharp
 BackupClient.Config = new BackupClientConfig
 {
-    PollInterval = TimeSpan.FromSeconds(2),
-    Timeout = TimeSpan.FromMinutes(30)
+    PollInterval = TimeSpan.FromMilliseconds(500),
+    Timeout = TimeSpan.FromMinutes(5)
 };
 ```
 
-## Creating a Backup
+### Selective Backup/Restore
 
-### Async (track status)
-```csharp
-BackupCreateOperation operation = await client.Backups.Create(
-    BackupStorage.Filesystem,
-    new BackupCreateRequest("my-backup-id")
-);
-
-// Status auto-refreshes in background
-Console.WriteLine(operation.Current.Status);
-
-// Wait for completion
-var backup = await operation.WaitForCompletion();
-```
-
-
-### Sync (block until complete)
-```csharp
-// Uses global timeout
-var backup = await client.Backups.CreateSync(
-    BackupStorage.Filesystem,
-    new BackupCreateRequest("my-backup-id")
-);
-Assert.Equal(BackupStatus.Success, backup.Status);
-
-// Or override timeout per call
-var backupWithTimeout = await client.Backups.CreateSync(
-    BackupStorage.Filesystem,
-    new BackupCreateRequest("my-backup-id"),
-    timeout: TimeSpan.FromMinutes(5)
-);
-```
-
-## Restoring a Backup
-
-### Async (track status)
-```csharp
-BackupRestoreOperation operation = await client.Backups.Restore(
-    BackupStorage.Filesystem,
-    "my-backup-id",
-    new BackupRestoreRequest(Include: new[] { "Article" })
-);
-
-// Status auto-refreshes in background
-Console.WriteLine(operation.Current.Status);
-
-// Wait for completion
-var restore = await operation.WaitForCompletion();
-```
-
-
-### Sync (block until complete)
-```csharp
-// Uses global timeout
-var restore = await client.Backups.RestoreSync(
-    BackupStorage.Filesystem,
-    "my-backup-id",
-    new BackupRestoreRequest(Include: new[] { "Article" })
-);
-Assert.Equal(BackupStatus.Success, restore.Status);
-
-// Or override timeout per call
-var restoreWithTimeout = await client.Backups.RestoreSync(
-    BackupStorage.Filesystem,
-    "my-backup-id",
-    new BackupRestoreRequest(Include: new[] { "Article" }),
-    timeout: TimeSpan.FromMinutes(10)
-);
-```
-
-## Canceling an Operation
-```csharp
-await operation.Cancel();
-var result = await operation.WaitForCompletion();
-Assert.Equal(BackupStatus.Canceled, result.Status);
-```
-
-## Custom Timeout
-```csharp
-BackupCreateOperation operation = await client.Backups.Create(...);
-try
-{
-    var result = await operation.WaitForCompletion(TimeSpan.FromMinutes(5));
-}
-catch (TimeoutException)
-{
-    Console.WriteLine("Backup did not finish in 5 minutes");
-}
-```
-
-## Resource Management
-
-### Automatic Cleanup (Recommended)
-Operations **automatically dispose their resources** when they complete (Success, Failed, or Canceled). You don't need to explicitly dispose unless you want to cancel early:
+Include or exclude specific collections:
 
 ```csharp
-// Fire and forget - resources cleaned up automatically when complete
-var operation = await client.Backups.Create(
-    BackupStorage.Filesystem,
-    new BackupCreateRequest("my-backup-id")
-);
-// Resources will be freed automatically when backup completes
-
-// Or wait for completion without disposing
-var backup = await operation.WaitForCompletion();
-// Still automatically cleaned up
-```
-
-### Explicit Disposal (Optional)
-You can still use traditional disposal patterns if preferred:
-
-```csharp
-// Synchronous disposal
-using (BackupCreateOperation operation = await client.Backups.Create(...))
-{
-    var backup = await operation.WaitForCompletion();
-}
-
-// Asynchronous disposal (recommended for async code)
-await using (BackupCreateOperation operation = await client.Backups.Create(...))
-{
-    var backup = await operation.WaitForCompletion();
-}
-
-// Or with declaration pattern
-await using var operation = await client.Backups.Create(...);
-var backup = await operation.WaitForCompletion();
-```
-
-### Early Cancellation
-Explicit disposal is useful for early cancellation:
-
-```csharp
-await using var operation = await client.Backups.Create(...);
-
-// Cancel if taking too long
-if (!operation.IsCompleted)
-{
-    await operation.Cancel();
-}
-// Disposal ensures background polling stops immediately
-```
-
-## Status Checking
-```csharp
-if (operation.IsCompleted) { }
-if (operation.IsSuccessful) { }
-if (operation.IsCanceled) { }
-var current = operation.Current;
-Console.WriteLine($"ID: {current.Id}, Status: {current.Status}");
-```
-
-## Usage Patterns
-
-### Pattern 1: Fire and Forget
-Best for background backups where you don't need to wait:
-```csharp
-// Start backup and continue - resources auto-cleanup
-var operation = await client.Backups.Create(
-    BackupStorage.Filesystem,
-    new BackupCreateRequest("nightly-backup")
-);
-// Operation will complete in background and clean up automatically
-```
-
-### Pattern 2: Simple Blocking
-Best for scripts and simple workflows:
-```csharp
-// Block until complete (uses global timeout)
-var backup = await client.Backups.CreateSync(
-    BackupStorage.Filesystem,
-    new BackupCreateRequest("my-backup")
-);
-
-if (backup.Status == BackupStatus.Success)
-{
-    Console.WriteLine("Backup completed successfully");
-}
-```
-
-### Pattern 3: Progress Monitoring
-Best for UI applications or detailed logging:
-```csharp
-await using var operation = await client.Backups.Create(
-    BackupStorage.Filesystem,
-    new BackupCreateRequest("my-backup")
-);
-
-// Monitor progress
-while (!operation.IsCompleted)
-{
-    Console.WriteLine($"Status: {operation.Current.Status}");
-    await Task.Delay(TimeSpan.FromSeconds(1));
-}
-
-var result = operation.Current;
-Console.WriteLine($"Final: {result.Status}");
-```
-
-### Pattern 4: Timeout with Fallback
-Best for robust production code:
-```csharp
-BackupCreateOperation operation = await client.Backups.Create(
-    BackupStorage.Filesystem,
-    new BackupCreateRequest("my-backup")
-);
-
-try
-{
-    var backup = await operation.WaitForCompletion(TimeSpan.FromMinutes(5));
-    Console.WriteLine("Backup succeeded");
-}
-catch (TimeoutException)
-{
-    // Backup still running - decide whether to cancel
-    await operation.Cancel();
-    Console.WriteLine("Backup canceled due to timeout");
-}
-// Auto-cleanup happens regardless
-```
-
-### Pattern 5: Multiple Operations
-Best for batch operations:
-```csharp
-var backupIds = new[] { "backup-1", "backup-2", "backup-3" };
-
-// Start all backups concurrently
-var operations = await Task.WhenAll(
-    backupIds.Select(id => 
-        client.Backups.Create(
-            BackupStorage.Filesystem,
-            new BackupCreateRequest(id)
-        )
-    )
-);
-
-// Wait for all to complete
-var results = await Task.WhenAll(
-    operations.Select(op => op.WaitForCompletion())
-);
-
-// Check results
-foreach (var result in results)
-{
-    Console.WriteLine($"{result.Id}: {result.Status}");
-}
-// All operations auto-cleaned up
+var operation = await client.Backups.Create(new BackupCreateRequest(
+    id: "my-backup-id",
+    backend: BackupBackend.Filesystem(path: "/backups"),
+    Include = new[] { "Collection1", "Collection2" }
+));
+await operation.WaitForCompletion();
 ```
