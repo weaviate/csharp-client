@@ -342,7 +342,7 @@ public partial class AggregatesTests : IntegrationTests
         };
         yield return new object[]
         {
-            new Dictionary<string, object> { { "distance", 0.7 } },
+            new Dictionary<string, object> { { "distance", 0.75 } },
             1,
             uuid1,
             uuid2,
@@ -429,7 +429,9 @@ public partial class AggregatesTests : IntegrationTests
         // Arrange
         var collectionClient = await CollectionFactory(
             properties: new[] { Property.Text("text") },
-            vectorConfig: Configure.Vectors.Text2VecTransformers().New("default")
+            vectorConfig: Configure
+                .Vectors.Text2VecTransformers(vectorizeCollectionName: true)
+                .New("default")
         );
         var text1 = "some text";
         var text2 = "nothing like the other one at all, not even a little bit";
