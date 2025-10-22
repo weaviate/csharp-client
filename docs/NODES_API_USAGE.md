@@ -22,7 +22,7 @@ Key features include:
 - **Minimal queries**: Get basic node information (name, version, status, git hash).
 - **Verbose queries**: Get detailed information including shard distribution and statistics.
 - **Collection filtering**: Query verbose information for specific collections.
-- **Type-safe results**: Strongly-typed `ClusterNode` record with `DetailLevel` property.
+- **Type-safe results**: Strongly-typed `ClusterNode` and `ClusterNodeVerbose` records.
 
 Access the Nodes API through the cluster client:
 
@@ -34,10 +34,10 @@ var nodes = client.Cluster.Nodes;
 
 ### Basic Usage
 
-Use the `List()` method to query node information. By default, it returns minimal information:
+Use the `List()` method to query basic node information:
 
 ```csharp
-// Get minimal information (default)
+// Get minimal information
 var nodes = await client.Cluster.Nodes.List();
 
 foreach (var node in nodes)
@@ -49,7 +49,6 @@ foreach (var node in nodes)
 foreach (var node in nodes)
 {
     Console.WriteLine($"Node: {node.Name}");
-    Console.WriteLine($"  Detail Level: {node.DetailLevel}");
     Console.WriteLine($"  Version: {node.Version}");
     Console.WriteLine($"  Status: {node.Status}");
     Console.WriteLine($"  Git Hash: {node.GitHash}");
@@ -60,12 +59,10 @@ foreach (var node in nodes)
 
 ```text
 Node: weaviate-0
-  Detail Level: Minimal
   Version: 1.27.0
   Status: Healthy
   Git Hash: abc123def
 Node: weaviate-1
-  Detail Level: Minimal
   Version: 1.27.0
   Status: Healthy
   Git Hash: abc123def
@@ -73,11 +70,11 @@ Node: weaviate-1
 
 ### Verbose Information
 
-To get detailed information including shard details and statistics, specify `NodeDetailLevel.Verbose`:
+To get detailed information including shard details and statistics, use the `ListVerbose()` method:
 
 ```csharp
 // Get verbose information
-var nodes = await client.Cluster.Nodes.List(NodeDetailLevel.Verbose);
+var nodes = await client.Cluster.Nodes.ListVerbose();
 
 // Simply print the node with all details
 foreach (var node in nodes)
@@ -90,15 +87,10 @@ foreach (var node in nodes)
 foreach (var node in nodes)
 {
     Console.WriteLine($"Node: {node.Name}");
-    Console.WriteLine($"  Detail Level: {node.DetailLevel}");
     Console.WriteLine($"  Version: {node.Version}");
     Console.WriteLine($"  Status: {node.Status}");
-    
-    if (node.Stats != null)
-    {
-        Console.WriteLine($"  Total Objects: {node.Stats.ObjectCount}");
-        Console.WriteLine($"  Total Shards: {node.Stats.ShardCount}");
-    }
+    Console.WriteLine($"  Total Objects: {node.Stats.ObjectCount}");
+    Console.WriteLine($"  Total Shards: {node.Stats.ShardCount}");
     
     if (node.Shards != null)
     {
@@ -106,11 +98,14 @@ foreach (var node in nodes)
         foreach (var shard in node.Shards)
         {
             Console.WriteLine($"    - {shard.Collection}/{shard.Name}");
-            Console.WriteLine($"      Objects: {shard.ObjectCount}");
-            Console.WriteLine($"      Status: {shard.VectorIndexingStatus}");
-            Console.WriteLine($"      Compressed: {shard.Compressed}");
-            Console.WriteLine($"      Queue Length: {shard.VectorQueueLength}");
-        }
+    
+    foreach (var shard in node.Shards)
+    {
+        Console.WriteLine($"  Shard: {shard.Collection}/{shard.Name}");
+        Console.WriteLine($"      Objects: {shard.ObjectCount}");
+        Console.WriteLine($"      Status: {shard.VectorIndexingStatus}");
+        Console.WriteLine($"      Compressed: {shard.Compressed}");
+        Console.WriteLine($"      Queue Length: {shard.VectorQueueLength}");
     }
 }
 ```
@@ -119,7 +114,6 @@ foreach (var node in nodes)
 
 ```text
 Node: weaviate-0
-  Detail Level: Verbose
   Version: 1.27.0
   Status: Healthy
   Total Objects: 10000
@@ -142,21 +136,16 @@ Node: weaviate-0
 Query verbose information for a specific collection:
 
 ```csharp
-var nodes = await client.Cluster.Nodes.List(
-    detailLevel: NodeDetailLevel.Verbose,
-    collection: "Article"
-);
+var nodes = await client.Cluster.Nodes.ListVerbose(collection: "Article");
 
 foreach (var node in nodes)
 {
     Console.WriteLine($"Node: {node.Name}");
-    if (node.Shards != null)
+    foreach (var shard in node.Shards)
     {
-        foreach (var shard in node.Shards)
-        {
-            Console.WriteLine($"  Shard: {shard.Name}");
-            Console.WriteLine($"    Objects: {shard.ObjectCount}");
-            Console.WriteLine($"    Indexing Status: {shard.VectorIndexingStatus}");
+        Console.WriteLine($"  Shard: {shard.Name}");
+        Console.WriteLine($"    Objects: {shard.ObjectCount}");
+        Console.WriteLine($"    Indexing Status: {shard.VectorIndexingStatus}");
         }
     }
 }
@@ -169,7 +158,7 @@ foreach (var node in nodes)
 All cluster model classes include `ToString()` methods that provide formatted output:
 
 ```csharp
-var nodes = await client.Cluster.Nodes.List(NodeDetailLevel.Verbose);
+var nodes = await client.Cluster.Nodes.ListVerbose();
 
 // Print complete node information
 foreach (var node in nodes)
@@ -178,48 +167,41 @@ foreach (var node in nodes)
 }
 
 // Print just statistics
-if (nodes[0].Stats != null)
-{
-    Console.WriteLine(nodes[0].Stats); // "Objects: 10000, Shards: 4"
-}
+Console.WriteLine(nodes[0].Stats); // "Objects: 10000, Shards: 4"
 
 // Print individual shards
-if (nodes[0].Shards != null)
+foreach (var shard in nodes[0].Shards)
 {
-    foreach (var shard in nodes[0].Shards)
-    {
-        Console.WriteLine(shard);
-    }
+    Console.WriteLine(shard);
 }
 ```
 
 ### ClusterNode Properties
 
-| Property      | Type                     | Description                                                       |
-|---------------|--------------------------|-------------------------------------------------------------------|
-| `DetailLevel` | `NodeDetailLevel`        | The level of detail in this node information (Minimal or Verbose) |
-| `Name`        | `string`                 | The unique name of the node                                       |
-| `Version`     | `string`                 | Weaviate version running on the node                              |
-| `Status`      | `string`                 | Current status (e.g., "Healthy", "Unknown")                       |
-| `GitHash`     | `string`                 | Git commit hash of the Weaviate build                             |
-| `Stats`       | `ClusterNode.NodeStats?` | Aggregate statistics for the node (only in Verbose mode)          |
-| `Shards`      | `ClusterNode.Shard[]?`   | Array of shard information (only in Verbose mode)                 |
+| Property   | Type     | Description                             |
+|------------|----------|-----------------------------------------|
+| `Name`     | `string` | The unique name of the node             |
+| `Version`  | `string` | Weaviate version running on the node    |
+| `Status`   | `string` | Current status (e.g., "Healthy", "Unknown") |
+| `GitHash`  | `string` | Git commit hash of the Weaviate build   |
 
-### NodeDetailLevel Enum
+### ClusterNodeVerbose Properties
 
-| Value     | Description                                      |
-|-----------|--------------------------------------------------|
-| `Minimal` | Basic node information only                      |
-| `Verbose` | Full information including shards and statistics |
+`ClusterNodeVerbose` inherits all properties from `ClusterNode` and adds:
 
-### ClusterNode.NodeStats Properties
+| Property | Type                            | Description                     |
+|----------|---------------------------------|---------------------------------|
+| `Stats`  | `ClusterNodeVerbose.NodeStats`  | Aggregate statistics for the node |
+| `Shards` | `ClusterNodeVerbose.Shard[]`    | Array of shard information      |
+
+### ClusterNodeVerbose.NodeStats Properties
 
 | Property      | Type  | Description                         |
 |---------------|-------|-------------------------------------|
 | `ObjectCount` | `int` | Total number of objects on the node |
 | `ShardCount`  | `int` | Total number of shards on the node  |
 
-### ClusterNode.Shard Properties
+### ClusterNodeVerbose.Shard Properties
 
 | Property               | Type                   | Description                                                    |
 |------------------------|------------------------|----------------------------------------------------------------|
@@ -265,7 +247,7 @@ else
 ### Monitor Indexing Progress
 
 ```csharp
-var nodes = await client.Cluster.Nodes.List(NodeDetailLevel.Verbose);
+var nodes = await client.Cluster.Nodes.ListVerbose();
 
 foreach (var node in nodes)
 {
@@ -274,6 +256,14 @@ foreach (var node in nodes)
         .ToList() ?? new List<Shard>();
     
     if (indexingShards.Any())
+    {
+    Console.WriteLine($"Node {node.Name}:");
+    
+    var indexingShards = node.Shards
+        .Where(s => s.VectorIndexingStatus == VectorIndexingStatus.Indexing)
+        .ToList();
+    
+    if (indexingShards.Count > 0)
     {
         Console.WriteLine($"Node {node.Name} has {indexingShards.Count} shards indexing:");
         foreach (var shard in indexingShards)
@@ -289,11 +279,8 @@ foreach (var node in nodes)
 ```csharp
 var nodes = await client.Cluster.Nodes.ListVerbose();
 
-var nodes = await client.Cluster.Nodes.ListVerbose();
-
 var shardDistribution = nodes
-    .Where(n => n.Shards != null)
-    .SelectMany(n => n.Shards!.Select(s => new { Node = n.Name, s.Collection, s.Name }))
+    .SelectMany(n => n.Shards.Select(s => new { Node = n.Name, s.Collection, s.Name }))
     .GroupBy(x => x.Collection)
     .Select(g => new
     {
@@ -305,7 +292,6 @@ var shardDistribution = nodes
             Shards = ng.Count()
         })
     });
-```csharp
 
 foreach (var dist in shardDistribution)
 {
@@ -316,7 +302,6 @@ foreach (var dist in shardDistribution)
         Console.WriteLine($"    {node.Node}: {node.Shards} shards");
     }
 }
-
 ```
 
 ## Advanced Usage
@@ -345,21 +330,15 @@ else
 ### Monitor Compression Status
 
 ```csharp
-var nodes = await client.Cluster.Nodes.List(
-    detailLevel: NodeDetailLevel.Verbose,
-    collection: "LargeCollection"
-);
+var nodes = await client.Cluster.Nodes.ListVerbose(collection: "LargeCollection");
 
 foreach (var node in nodes)
 {
-    if (node.Shards != null)
-    {
-        var compressedShards = node.Shards.Count(s => s.Compressed);
-        var totalShards = node.Shards.Length;
-        var compressionRate = (double)compressedShards / totalShards * 100;
-        
-        Console.WriteLine($"Node {node.Name}: {compressionRate:F1}% shards compressed ({compressedShards}/{totalShards})");
-    }
+    var compressedShards = node.Shards.Count(s => s.Compressed);
+    var totalShards = node.Shards.Length;
+    var compressionRate = (double)compressedShards / totalShards * 100;
+    
+    Console.WriteLine($"Node {node.Name}: {compressionRate:F1}% shards compressed ({compressedShards}/{totalShards})");
 }
 ```
 
@@ -372,12 +351,10 @@ async Task WaitForIndexingComplete(string collectionName, TimeSpan timeout)
     
     while (DateTime.UtcNow - startTime < timeout)
     {
-        var nodes = await client.Cluster.Nodes.List(
-            detailLevel: NodeDetailLevel.Verbose,
-            collection: collectionName
-        );
+        var nodes = await client.Cluster.Nodes.ListVerbose(collection: collectionName);
+        
         var allReady = nodes.All(n => 
-            n.Shards?.All(s => s.VectorIndexingStatus == VectorIndexingStatus.Ready) ?? true);
+            n.Shards.All(s => s.VectorIndexingStatus == VectorIndexingStatus.Ready));
         
         if (allReady)
         {
@@ -385,9 +362,7 @@ async Task WaitForIndexingComplete(string collectionName, TimeSpan timeout)
             return;
         }
         
-        var totalQueued = nodes
-            .Where(n => n.Shards != null)
-            .Sum(n => n.Shards!.Sum(s => s.VectorQueueLength));
+        var totalQueued = nodes.Sum(n => n.Shards.Sum(s => s.VectorQueueLength));
         Console.WriteLine($"Waiting for indexing... {totalQueued} vectors queued");
         
         await Task.Delay(TimeSpan.FromSeconds(5));
@@ -398,22 +373,21 @@ async Task WaitForIndexingComplete(string collectionName, TimeSpan timeout)
 
 // Usage
 await WaitForIndexingComplete("Article", TimeSpan.FromMinutes(10));
-
 ```
 
 ### Calculate Cluster Statistics
 
 ```csharp
-var nodes = await client.Cluster.Nodes.List(NodeDetailLevel.Verbose);
+var nodes = await client.Cluster.Nodes.ListVerbose();
 
 var clusterStats = new
 {
     TotalNodes = nodes.Length,
-    TotalObjects = nodes.Sum(n => n.Stats?.ObjectCount ?? 0),
-    TotalShards = nodes.Sum(n => n.Stats?.ShardCount ?? 0),
+    TotalObjects = nodes.Sum(n => n.Stats.ObjectCount),
+    TotalShards = nodes.Sum(n => n.Stats.ShardCount),
     HealthyNodes = nodes.Count(n => n.Status == "Healthy"),
-    AverageObjectsPerNode = nodes.Average(n => n.Stats?.ObjectCount ?? 0),
-    AverageShardsPerNode = nodes.Average(n => n.Stats?.ShardCount ?? 0)
+    AverageObjectsPerNode = nodes.Average(n => n.Stats.ObjectCount),
+    AverageShardsPerNode = nodes.Average(n => n.Stats.ShardCount)
 };
 
 Console.WriteLine($"Cluster Statistics:");

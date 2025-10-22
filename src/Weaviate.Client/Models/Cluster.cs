@@ -4,31 +4,10 @@ using System.Text.Json.Serialization;
 namespace Weaviate.Client.Models;
 
 /// <summary>
-/// Level of detail available in the cluster node information.
-/// </summary>
-public enum NodeDetailLevel
-{
-    /// <summary>
-    /// Minimal node information (name, version, status, git hash).
-    /// </summary>
-    Minimal,
-
-    /// <summary>
-    /// Verbose node information including shard details and statistics.
-    /// </summary>
-    Verbose,
-}
-
-/// <summary>
-/// Represents a node in the Weaviate cluster.
+/// Represents a node in the Weaviate cluster with basic information.
 /// </summary>
 public record ClusterNode
 {
-    /// <summary>
-    /// The level of detail available in this node information.
-    /// </summary>
-    public required NodeDetailLevel DetailLevel { get; init; }
-
     /// <summary>
     /// The git hash of the Weaviate build.
     /// </summary>
@@ -50,14 +29,33 @@ public record ClusterNode
     public required string Version { get; init; }
 
     /// <summary>
-    /// Aggregate statistics for the node. Only available when DetailLevel is Verbose.
+    /// Returns a string representation of the cluster node information.
     /// </summary>
-    public NodeStats? Stats { get; init; }
+    public override string ToString()
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"Node: {Name}");
+        sb.AppendLine($"  Version: {Version}");
+        sb.AppendLine($"  Status: {Status}");
+        sb.AppendLine($"  Git Hash: {GitHash}");
+        return sb.ToString().TrimEnd();
+    }
+}
+
+/// <summary>
+/// Represents a node in the Weaviate cluster with detailed information including statistics and shards.
+/// </summary>
+public record ClusterNodeVerbose : ClusterNode
+{
+    /// <summary>
+    /// Aggregate statistics for the node.
+    /// </summary>
+    public required NodeStats Stats { get; init; }
 
     /// <summary>
-    /// Array of shard information. Only available when DetailLevel is Verbose.
+    /// Array of shard information.
     /// </summary>
-    public Shard[]? Shards { get; init; }
+    public required Shard[] Shards { get; init; }
 
     /// <summary>
     /// Returns a string representation of the cluster node information.
@@ -65,19 +63,11 @@ public record ClusterNode
     public override string ToString()
     {
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine($"Node: {Name}");
-        sb.AppendLine($"  Detail Level: {DetailLevel}");
-        sb.AppendLine($"  Version: {Version}");
-        sb.AppendLine($"  Status: {Status}");
-        sb.AppendLine($"  Git Hash: {GitHash}");
+        sb.AppendLine(base.ToString());
+        sb.AppendLine($"  Total Objects: {Stats.ObjectCount}");
+        sb.AppendLine($"  Total Shards: {Stats.ShardCount}");
 
-        if (DetailLevel == NodeDetailLevel.Verbose && this.Stats != null)
-        {
-            sb.AppendLine($"  Total Objects: {this.Stats.ObjectCount}");
-            sb.AppendLine($"  Total Shards: {this.Stats.ShardCount}");
-        }
-
-        if (DetailLevel == NodeDetailLevel.Verbose && Shards != null && Shards.Length > 0)
+        if (Shards.Length > 0)
         {
             sb.AppendLine("  Shards:");
             foreach (var shard in Shards)
