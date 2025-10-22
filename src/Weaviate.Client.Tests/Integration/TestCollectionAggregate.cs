@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
