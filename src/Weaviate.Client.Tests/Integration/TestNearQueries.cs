@@ -133,7 +133,7 @@ public class TestNearQueries : IntegrationTests
         Assert.Equal(4, objects.Count);
         Assert.Equal("Banana", objects[0].BelongsToGroup);
         Assert.Equal("Banana", objects[1].BelongsToGroup);
-        Assert.Equal("Mountain", objects[2].BelongsToGroup);
-        Assert.Equal("car", objects[3].BelongsToGroup);
+        Assert.Equal("car", objects[2].BelongsToGroup);
+        Assert.Equal("Mountain", objects[3].BelongsToGroup);
     }
 }
