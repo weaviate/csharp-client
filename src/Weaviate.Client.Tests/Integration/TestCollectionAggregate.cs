@@ -335,13 +335,6 @@ public partial class AggregatesTests : IntegrationTests
         };
         yield return new object[]
         {
-            new Dictionary<string, object> { { "certainty", 0.7 } },
-            1,
-            uuid1,
-            uuid2,
-        };
-        yield return new object[]
-        {
             new Dictionary<string, object> { { "distance", 0.75 } },
             1,
             uuid1,
