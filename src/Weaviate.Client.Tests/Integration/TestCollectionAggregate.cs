@@ -14,7 +14,7 @@ public partial class AggregatesTests : IntegrationTests
     public async Task Test_Collection_Length(int howMany)
     {
         var collectionClient = await CollectionFactory(
-            vectorConfig: Configure.Vectors.SelfProvided()
+            vectorConfig: Configure.Vectors.SelfProvided().New()
         );
 
         await collectionClient.Data.InsertMany(

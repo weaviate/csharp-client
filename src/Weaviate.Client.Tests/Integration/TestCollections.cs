@@ -38,17 +38,17 @@ public partial class CollectionsTests : IntegrationTests
             await CollectionFactory(
                 name: "Collection1",
                 properties: [Property.Text("Name")],
-                vectorConfig: Configure.Vectors.SelfProvided()
+                vectorConfig: Configure.Vectors.SelfProvided().New()
             ),
             await CollectionFactory(
                 name: "Collection2",
                 properties: [Property.Text("Lastname")],
-                vectorConfig: Configure.Vectors.SelfProvided()
+                vectorConfig: Configure.Vectors.SelfProvided().New()
             ),
             await CollectionFactory(
                 name: "Collection3",
                 properties: [Property.Text("Address")],
-                vectorConfig: Configure.Vectors.SelfProvided()
+                vectorConfig: Configure.Vectors.SelfProvided().New()
             ),
         };
 
@@ -240,7 +240,17 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(100, config?.DynamicEfMin);
         Assert.Equal(-1, config?.Ef);
         Assert.Equal(128, config?.EfConstruction);
-        Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Sweeping, config?.FilterStrategy);
+        if (ServerVersionIsInRange("0.0.0", "1.33.0"))
+        {
+            Assert.Equal(
+                VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
+                config?.FilterStrategy
+            );
+        }
+        else
+        {
+            Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Acorn, config?.FilterStrategy);
+        }
         Assert.Equal(40000, config?.FlatSearchCutoff);
         Assert.Equal(32, config?.MaxConnections);
         Assert.Equal(300, config?.CleanupIntervalSeconds);
@@ -383,7 +393,17 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(100, config?.DynamicEfMin);
         Assert.Equal(-1, config?.Ef);
         Assert.Equal(128, config?.EfConstruction);
-        Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Sweeping, config?.FilterStrategy);
+        if (ServerVersionIsInRange("0.0.0", "1.33.0"))
+        {
+            Assert.Equal(
+                VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
+                config?.FilterStrategy
+            );
+        }
+        else
+        {
+            Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Acorn, config?.FilterStrategy);
+        }
         Assert.Equal(40000, config?.FlatSearchCutoff);
         Assert.Equal(32, config?.MaxConnections);
         Assert.Equal(300, config?.CleanupIntervalSeconds);
@@ -524,7 +544,17 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(100, config?.DynamicEfMin);
         Assert.Equal(-1, config?.Ef);
         Assert.Equal(128, config?.EfConstruction);
-        Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Sweeping, config?.FilterStrategy);
+        if (ServerVersionIsInRange("0.0.0", "1.33.0"))
+        {
+            Assert.Equal(
+                VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
+                config?.FilterStrategy
+            );
+        }
+        else
+        {
+            Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Acorn, config?.FilterStrategy);
+        }
         Assert.Equal(40000, config?.FlatSearchCutoff);
         Assert.Equal(32, config?.MaxConnections);
         Assert.Equal(300, config?.CleanupIntervalSeconds);
@@ -545,7 +575,7 @@ public partial class CollectionsTests : IntegrationTests
         // Arrange
         var collection = await CollectionFactory(
             name: "Test",
-            vectorConfig: Configure.Vectors.SelfProvided("default"),
+            vectorConfig: Configure.Vectors.SelfProvided().New("default"),
             properties: [Property.Text("name")]
         );
 
@@ -570,7 +600,7 @@ public partial class CollectionsTests : IntegrationTests
     public static IEnumerable<object?> VectorizerConfigData()
     {
         yield return null;
-        yield return Configure.Vectors.SelfProvided();
+        yield return Configure.Vectors.SelfProvided().New();
         yield return Configure
             .Vectors.Text2VecContextionary(vectorizeCollectionName: false)
             .New("vec");
@@ -621,7 +651,7 @@ public partial class CollectionsTests : IntegrationTests
         // Arrange
         var collection = await CollectionFactory(
             name: "TestCollectionUpdate",
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             properties: [Property.Text("name"), Property.Int("age")],
             multiTenancyConfig: new()
             {
@@ -647,10 +677,21 @@ public partial class CollectionsTests : IntegrationTests
         Assert.NotNull(defaultVectorConfig.VectorIndexConfig);
         Assert.IsType<VectorIndex.HNSW>(defaultVectorConfig.VectorIndexConfig);
         var hnswConfig = defaultVectorConfig.VectorIndexConfig as VectorIndex.HNSW;
-        Assert.Equal(
-            VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
-            hnswConfig?.FilterStrategy
-        );
+
+        if (ServerVersionIsInRange("0.0.0", "1.33.0"))
+        {
+            Assert.Equal(
+                VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
+                hnswConfig?.FilterStrategy
+            );
+        }
+        else
+        {
+            Assert.Equal(
+                VectorIndexConfig.VectorIndexFilterStrategy.Acorn,
+                hnswConfig?.FilterStrategy
+            );
+        }
 
         // Act - Update configuration
         await collection.Config.Update(c =>
@@ -921,31 +962,60 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     [Fact]
-    public async Task Test_hnsw_with_sq()
+    public async Task Test_sq_and_rq()
     {
+        RequireVersion("1.32.0", message: "RQ only supported in server version 1.32.0+");
+
         var collection = await CollectionFactory(
-            vectorConfig: Configure.Vectors.SelfProvided(
-                name: "hnswSq",
-                indexConfig: new VectorIndex.HNSW
-                {
-                    Quantizer = new VectorIndex.Quantizers.SQ
-                    {
-                        TrainingLimit = 100001,
-                        RescoreLimit = 123,
-                    },
-                }
-            )
+            vectorConfig: new[]
+            {
+                Configure
+                    .Vectors.SelfProvided()
+                    .New(
+                        name: "hnswSq",
+                        indexConfig: new VectorIndex.HNSW
+                        {
+                            Quantizer = new VectorIndex.Quantizers.SQ
+                            {
+                                TrainingLimit = 100001,
+                                RescoreLimit = 123,
+                            },
+                        }
+                    ),
+                Configure
+                    .Vectors.SelfProvided()
+                    .New(
+                        name: "hnswRq",
+                        indexConfig: new VectorIndex.HNSW
+                        {
+                            Quantizer = new VectorIndex.Quantizers.RQ
+                            {
+                                Bits = 8,
+                                RescoreLimit = 123,
+                            },
+                        }
+                    ),
+            }
         );
         var config = await collection.Config.Get();
         Assert.NotNull(config);
-        var vc = config.VectorConfig["hnswSq"];
-        Assert.NotNull(vc);
-        var hnswConfig = vc.VectorIndexConfig as VectorIndex.HNSW;
+        var vcSQ = config.VectorConfig["hnswSq"];
+        Assert.NotNull(vcSQ);
+        var hnswConfig = vcSQ.VectorIndexConfig as VectorIndex.HNSW;
         Assert.NotNull(hnswConfig);
         var sqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.SQ;
         Assert.NotNull(sqQuantizer);
         Assert.Equal(100001, sqQuantizer.TrainingLimit);
         Assert.Equal(123, sqQuantizer.RescoreLimit);
+
+        var vchnswRQ = config.VectorConfig["hnswRq"];
+        Assert.NotNull(vchnswRQ);
+        hnswConfig = vchnswRQ.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        var rqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.RQ;
+        Assert.NotNull(rqQuantizer);
+        Assert.Equal(8, rqQuantizer.Bits);
+        Assert.Equal(123, rqQuantizer.RescoreLimit);
 
         await collection.Config.Update(c =>
         {
@@ -961,16 +1031,94 @@ public partial class CollectionsTests : IntegrationTests
             });
         });
 
+        await collection.Config.Update(c =>
+        {
+            var vc = c.VectorConfig["hnswRq"];
+            vc.VectorIndexConfig.UpdateHNSW(vic =>
+            {
+                vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
+            });
+        });
+
         config = await collection.Config.Get();
         Assert.NotNull(config);
-        vc = config.VectorConfig["hnswSq"];
-        Assert.NotNull(vc);
-        hnswConfig = vc.VectorIndexConfig as VectorIndex.HNSW;
+        vcSQ = config.VectorConfig["hnswSq"];
+        Assert.NotNull(vcSQ);
+        hnswConfig = vcSQ.VectorIndexConfig as VectorIndex.HNSW;
         Assert.NotNull(hnswConfig);
         sqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.SQ;
         Assert.NotNull(sqQuantizer);
         Assert.Equal(456, sqQuantizer.TrainingLimit);
         Assert.Equal(789, sqQuantizer.RescoreLimit);
+
+        var vcRQ = config.VectorConfig["hnswRq"];
+        Assert.NotNull(vcRQ);
+        hnswConfig = vcRQ.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        rqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.RQ;
+        Assert.NotNull(rqQuantizer);
+        Assert.Equal(8, rqQuantizer.Bits);
+        Assert.Equal(456, rqQuantizer.RescoreLimit);
+    }
+
+    [Fact]
+    public async Task Test_flat_rq()
+    {
+        RequireVersion("1.34.0", message: "RQ with flat only supported in server version 1.34.0+");
+
+        var collection = await CollectionFactory(
+            vectorConfig: new[]
+            {
+                Configure
+                    .Vectors.SelfProvided()
+                    .New(
+                        name: "flatRq",
+                        indexConfig: new VectorIndex.Flat
+                        {
+                            Quantizer = new VectorIndex.Quantizers.RQ
+                            {
+                                Bits = 8,
+                                RescoreLimit = 123,
+                                Cache = true,
+                            },
+                        }
+                    ),
+            }
+        );
+        var config = await collection.Config.Get();
+        Assert.NotNull(config);
+        var vcRQ = config.VectorConfig["flatRq"];
+        Assert.NotNull(vcRQ);
+        var flatConfig = vcRQ.VectorIndexConfig as VectorIndex.Flat;
+        Assert.NotNull(flatConfig);
+        var rqQuantizer = flatConfig.Quantizer as VectorIndex.Quantizers.RQ;
+        Assert.NotNull(rqQuantizer);
+        Assert.Equal(8, rqQuantizer.Bits);
+        Assert.Equal(123, rqQuantizer.RescoreLimit);
+        if (ServerVersionIsInRange("1.34.0"))
+        {
+            Assert.True(rqQuantizer.Cache);
+        }
+
+        await collection.Config.Update(c =>
+        {
+            var vc = c.VectorConfig["flatRq"];
+            vc.VectorIndexConfig.UpdateFlat(vic =>
+            {
+                vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
+            });
+        });
+
+        config = await collection.Config.Get();
+        Assert.NotNull(config);
+        vcRQ = config.VectorConfig["flatRq"];
+        Assert.NotNull(vcRQ);
+        flatConfig = vcRQ.VectorIndexConfig as VectorIndex.Flat;
+        Assert.NotNull(flatConfig);
+        rqQuantizer = flatConfig.Quantizer as VectorIndex.Quantizers.RQ;
+        Assert.NotNull(rqQuantizer);
+        Assert.Equal(8, rqQuantizer.Bits);
+        Assert.Equal(456, rqQuantizer.RescoreLimit);
     }
 
     [Fact]
@@ -1011,7 +1159,7 @@ public partial class CollectionsTests : IntegrationTests
             name: "QueryTestCollection",
             properties: [Property.Text("firstName"), Property.Int("age"), Property.Text("bio")],
             rerankerConfig: new Reranker.Custom { Type = "reranker-dummy", Config = new { } },
-            vectorConfig: Configure.Vectors.SelfProvided()
+            vectorConfig: Configure.Vectors.SelfProvided().New()
         );
 
         // Sample data. The reranker-dummy module will use the length of the "bio" property to

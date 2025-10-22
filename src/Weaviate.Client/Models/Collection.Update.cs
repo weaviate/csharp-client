@@ -236,7 +236,7 @@ public class VectorIndexConfigUpdateHNSW(VectorIndex.HNSW WrappedHNSW)
         set => WrappedHNSW.FlatSearchCutoff = value;
     }
 
-    public VectorIndexConfig.QuantizerConfig? Quantizer
+    public VectorIndexConfig.QuantizerConfigBase? Quantizer
     {
         get => WrappedHNSW.Quantizer;
         set => WrappedHNSW.Quantizer = value;
@@ -274,9 +274,9 @@ public class VectorIndexConfigUpdateDynamic(VectorIndex.Dynamic WrappedDynamic)
 
 public class VectorIndexConfigUpdateFlat(VectorIndex.Flat WrappedFlat)
 {
-    public VectorIndex.Quantizers.BQ? Quantizer
+    public VectorIndexConfig.QuantizerConfigFlat? Quantizer
     {
-        get => WrappedFlat.Quantizer;
+        get => (VectorIndexConfig.QuantizerConfigFlat?)WrappedFlat.Quantizer;
         set => WrappedFlat.Quantizer = value;
     }
 
