@@ -184,20 +184,32 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         return VersionIsInRange(_weaviate.WeaviateVersion, minimumVersion, maximumVersion);
     }
 
-    protected void RequireVersion(string minimumVersion, string? maximumVersion = null)
+    protected void RequireVersion(
+        string minimumVersion,
+        string? maximumVersion = null,
+        string? message = ""
+    )
     {
         if (!ServerVersionIsInRange(minimumVersion, maximumVersion))
         {
             if (maximumVersion is null)
             {
                 Assert.Skip(
-                    $"Weaviate minimum version should be at least {minimumVersion}. Current version: {_weaviate.WeaviateVersion}"
+                    string.Join(
+                        " ",
+                        message,
+                        $"Weaviate minimum version should be at least {minimumVersion}. Current version: {_weaviate.WeaviateVersion}"
+                    )
                 );
             }
             else
             {
                 Assert.Skip(
-                    $"Weaviate minimum version should be between {minimumVersion} and {maximumVersion}. Current version: {_weaviate.WeaviateVersion}"
+                    string.Join(
+                        " ",
+                        message,
+                        $"Weaviate minimum version should be between {minimumVersion} and {maximumVersion}. Current version: {_weaviate.WeaviateVersion}"
+                    )
                 );
             }
         }
