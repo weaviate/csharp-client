@@ -131,32 +131,33 @@ public partial class WeaviateClient : IDisposable
         };
     }
 
-    private System.Version? _weaviateVersion;
-    private readonly SemaphoreSlim _versionSemaphore = new(1, 1);
+    private Models.MetaInfo? _metaCache;
 
-    public async Task<System.Version> GetWeaviateVersionAsync()
+    private async Task<Models.MetaInfo?> GetMetaCached()
     {
-        if (_weaviateVersion != null)
-            return _weaviateVersion;
+        if (_metaCache != null)
+            return _metaCache.Value;
 
-        await _versionSemaphore.WaitAsync();
+        await _metaCacheSemaphore.WaitAsync();
         try
         {
-            if (_weaviateVersion == null)
+            if (_metaCache == null)
             {
                 var meta = await GetMeta();
-                _weaviateVersion = meta.Version;
+                _metaCache = meta;
             }
         }
         finally
         {
-            _versionSemaphore.Release();
+            _metaCacheSemaphore.Release();
         }
 
-        return _weaviateVersion;
+        return _metaCache.Value;
     }
 
-    public System.Version WeaviateVersion => GetWeaviateVersionAsync().GetAwaiter().GetResult();
+    private readonly SemaphoreSlim _metaCacheSemaphore = new(1, 1);
+    public Models.MetaInfo? Meta => GetMetaCached().GetAwaiter().GetResult();
+    public System.Version? WeaviateVersion => Meta?.Version;
 
     /// <summary>
     /// Returns true if the Weaviate process is live.
@@ -268,7 +269,6 @@ public partial class WeaviateClient : IDisposable
         }
 
         RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
-        var meta = RestClient.GetMeta().GetAwaiter().GetResult();
 
         GrpcClient = new WeaviateGrpcClient(
             Configuration.GrpcUri,
@@ -276,7 +276,7 @@ public partial class WeaviateClient : IDisposable
             _tokenService,
             Configuration.Headers,
             null,
-            meta?.GrpcMaxMessageSize ?? null
+            Meta?.GrpcMaxMessageSize ?? null
         );
 
         Cluster = new ClusterClient(RestClient);
