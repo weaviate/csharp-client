@@ -22,10 +22,6 @@ internal static class VectorizerConfigFactory
         { Vectorizer.Text2VecAWS.IdentifierValue, typeof(Vectorizer.Text2VecAWS) },
         { Vectorizer.Text2VecAzureOpenAI.IdentifierValue, typeof(Vectorizer.Text2VecAzureOpenAI) },
         { Vectorizer.Text2VecCohere.IdentifierValue, typeof(Vectorizer.Text2VecCohere) },
-        {
-            Vectorizer.Text2VecTransformers.IdentifierValue,
-            typeof(Vectorizer.Text2VecTransformers)
-        },
         { Vectorizer.Text2VecDatabricks.IdentifierValue, typeof(Vectorizer.Text2VecDatabricks) },
         { Vectorizer.Text2VecHuggingFace.IdentifierValue, typeof(Vectorizer.Text2VecHuggingFace) },
         { Vectorizer.Text2VecJinaAI.IdentifierValue, typeof(Vectorizer.Text2VecJinaAI) },
