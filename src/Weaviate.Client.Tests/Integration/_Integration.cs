@@ -7,7 +7,7 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
-public abstract partial class IntegrationTests : IAsyncDisposable
+public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetime
 {
     private const string ENV_FILE = "development.env";
     const bool _deleteCollectionsAfterTest = true;
@@ -52,14 +52,19 @@ public abstract partial class IntegrationTests : IAsyncDisposable
         _weaviate = builder.Build();
     }
 
-    public async ValueTask DisposeAsync()
+    public virtual async ValueTask DisposeAsync()
     {
         if (_deleteCollectionsAfterTest && _collections.Count > 0)
         {
             await Task.WhenAll(_collections.Select(c => _weaviate.Collections.Delete(c)));
         }
-
         _weaviate.Dispose();
+    }
+
+    public virtual ValueTask InitializeAsync()
+    {
+        // Default: do nothing. Override in derived classes for per-test setup.
+        return ValueTask.CompletedTask;
     }
 
     public string MakeUniqueCollectionName<TData>(
