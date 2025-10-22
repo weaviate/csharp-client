@@ -27,32 +27,33 @@ public class BackupClient
     /// <summary>
     /// Start creating a backup asynchronously.
     /// Returns a BackupCreateOperation that can be used to track status or wait for completion.
-    /// Bucket and path should be supplied via <see cref="Models.BackupCreateRequest.Config"/> when needed.
     /// </summary>
     /// <example>
-    /// // Start backup and check status later
-    /// var operation = await client.Backups.Create(BackupStorage.Filesystem, request);
+    /// // Filesystem backend
+    /// var operation = await client.Backups.Create(new BackupCreateRequest(
+    ///     "my-backup-id",
+    ///     new FilesystemBackend(path: "/backups")
+    /// ));
     ///
-    /// // Or await it directly for completion
-    /// var result = await client.Backups.Create(BackupStorage.Filesystem, request);
+    /// // S3 backend
+    /// var operation = await client.Backups.Create(new BackupCreateRequest(
+    ///     "my-backup-id",
+    ///     ObjectStorageBackend.S3(bucket: "my-bucket")
+    /// ));
     /// </example>
     public async Task<BackupCreateOperation> Create(
-        BackupStorage backend,
         Models.BackupCreateRequest request,
         CancellationToken cancellationToken = default
     )
     {
         var restRequest = BuildBackupCreateRequest(request);
-        var response = await _client.RestClient.BackupCreate(backend, restRequest);
+        var response = await _client.RestClient.BackupCreate(request.Backend.Provider, restRequest);
         var model = ToModel(response);
-
-        var cfgBucket = request.Config?.Bucket;
-        var cfgPath = request.Config?.Path;
 
         return new BackupCreateOperation(
             model,
-            async () => await GetStatus(backend, model.Id, cfgBucket, cfgPath),
-            async () => await Cancel(backend, model.Id, cfgBucket, cfgPath)
+            async () => await GetStatus(request.Backend, model.Id),
+            async () => await Cancel(request.Backend, model.Id)
         );
     }
 
@@ -61,13 +62,12 @@ public class BackupClient
     /// This method blocks until the backup operation finishes.
     /// </summary>
     public async Task<Backup> CreateSync(
-        BackupStorage backend,
         Models.BackupCreateRequest request,
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default
     )
     {
-        var operation = await Create(backend, request, cancellationToken);
+        var operation = await Create(request, cancellationToken);
         return await operation.WaitForCompletion(timeout, cancellationToken);
     }
 
@@ -75,6 +75,10 @@ public class BackupClient
         Models.BackupCreateRequest request
     )
     {
+        var backend = request.Backend;
+        var bucket = backend is ObjectStorageBackend osb ? osb.Bucket : null;
+        var path = backend.Path;
+
         return new Rest.Dto.BackupCreateRequest
         {
             Id = request.Id,
@@ -85,8 +89,8 @@ public class BackupClient
                 : new Rest.Dto.BackupConfig
                 {
                     Endpoint = request.Config.Endpoint,
-                    Bucket = request.Config.Bucket,
-                    Path = request.Config.Path,
+                    Bucket = bucket,
+                    Path = path,
                     CPUPercentage = request.Config.CPUPercentage,
                     ChunkSize = request.Config.ChunkSize,
                     CompressionLevel = request.Config.CompressionLevel switch
@@ -108,68 +112,72 @@ public class BackupClient
     }
 
     /// <summary>
-    /// List existing backups for a backend
+    /// List existing backups for a backend provider
     /// </summary>
-    public async Task<IEnumerable<Backup>> List(BackupStorage backend)
+    public async Task<IEnumerable<Backup>> List(BackupStorageProvider provider)
     {
-        var list = await _client.RestClient.BackupList(backend);
+        var list = await _client.RestClient.BackupList(provider);
         return list.Select(ToModelListItem) ?? Array.Empty<Backup>();
     }
 
     /// <summary>
     /// Get creation status for a backup
     /// </summary>
-    public async Task<Backup> GetStatus(
-        BackupStorage backend,
-        string id,
-        string? bucket = null,
-        string? path = null
-    )
+    public async Task<Backup> GetStatus(BackupBackend backend, string id)
     {
-        var status = await _client.RestClient.BackupStatus(backend, id, bucket, path);
-        return ToModel(status);
+        var bucket = backend is ObjectStorageBackend osb ? osb.Bucket : null;
+        var path = backend.Path;
+
+        var status = await _client.RestClient.BackupStatus(backend.Provider, id, bucket, path);
+        return ToModel(status, backend);
     }
 
     /// <summary>
     /// Cancel a running backup
     /// </summary>
-    public Task Cancel(
-        BackupStorage backend,
-        string id,
-        string? bucket = null,
-        string? path = null
-    ) => _client.RestClient.BackupCancel(backend, id, bucket, path);
+    public Task Cancel(BackupBackend backend, string id)
+    {
+        var bucket = backend is ObjectStorageBackend osb ? osb.Bucket : null;
+        var path = backend.Path;
+
+        return _client.RestClient.BackupCancel(backend.Provider, id, bucket, path);
+    }
 
     /// <summary>
     /// Start restoring a backup asynchronously.
     /// Returns a BackupRestoreOperation that can be used to track status or wait for completion.
-    /// Bucket and path should be supplied via <see cref="Models.BackupRestoreRequest.Config"/> when needed.
     /// </summary>
     /// <example>
-    /// // Start restore and check status later
-    /// var operation = await client.Backups.Restore(BackupStorage.Filesystem, backupId, request);
+    /// // Filesystem backend
+    /// var operation = await client.Backups.Restore(new BackupRestoreRequest(
+    ///     "my-backup-id",
+    ///     new FilesystemBackend(path: "/backups"),
+    ///     Include: new[] { "Article" }
+    /// ));
     ///
-    /// // Or await it directly for completion
-    /// var result = await client.Backups.Restore(BackupStorage.Filesystem, backupId, request);
+    /// // S3 backend
+    /// var operation = await client.Backups.Restore(new BackupRestoreRequest(
+    ///     "my-backup-id",
+    ///     ObjectStorageBackend.S3(bucket: "my-bucket")
+    /// ));
     /// </example>
     public async Task<BackupRestoreOperation> Restore(
-        BackupStorage backend,
-        string id,
         Models.BackupRestoreRequest request,
         CancellationToken cancellationToken = default
     )
     {
         var restRequest = BuildBackupRestoreRequest(request);
-        var response = await _client.RestClient.BackupRestore(backend, id, restRequest);
+        var response = await _client.RestClient.BackupRestore(
+            request.Backend.Provider,
+            request.Id,
+            restRequest
+        );
         var model = ToModel(response);
-
-        var cfgBucket = request.Config?.Bucket;
-        var cfgPath = request.Config?.Path;
 
         return new BackupRestoreOperation(
             model,
-            async () => await GetRestoreStatus(backend, model.Id, cfgBucket, cfgPath),
-            async () => await Cancel(backend, model.Id, cfgBucket, cfgPath)
+            async () => await GetRestoreStatus(request.Backend, model.Id),
+            async () => await Cancel(request.Backend, model.Id)
         );
     }
 
@@ -178,14 +186,12 @@ public class BackupClient
     /// This method blocks until the restore operation finishes.
     /// </summary>
     public async Task<Backup> RestoreSync(
-        BackupStorage backend,
-        string id,
         Models.BackupRestoreRequest request,
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default
     )
     {
-        var operation = await Restore(backend, id, request, cancellationToken);
+        var operation = await Restore(request, cancellationToken);
         return await operation.WaitForCompletion(timeout, cancellationToken);
     }
 
@@ -193,6 +199,10 @@ public class BackupClient
         Models.BackupRestoreRequest request
     )
     {
+        var backend = request.Backend;
+        var bucket = backend is ObjectStorageBackend osb ? osb.Bucket : null;
+        var path = backend.Path;
+
         return new Rest.Dto.BackupRestoreRequest
         {
             Include = request.Include?.ToList(),
@@ -205,8 +215,8 @@ public class BackupClient
                 : new Rest.Dto.RestoreConfig
                 {
                     Endpoint = request.Config.Endpoint,
-                    Bucket = request.Config.Bucket,
-                    Path = request.Config.Path,
+                    Bucket = bucket,
+                    Path = path,
                     CPUPercentage = request.Config.CPUPercentage,
                     RolesOptions = request.Config.RolesOptions switch
                     {
@@ -224,25 +234,45 @@ public class BackupClient
     }
 
     /// <summary>
-    /// Get restore status
+    /// Get status for a restore operation
     /// </summary>
-    public async Task<Backup> GetRestoreStatus(
-        BackupStorage backend,
-        string id,
-        string? bucket = null,
-        string? path = null
-    )
+    public async Task<Backup> GetRestoreStatus(BackupBackend backend, string id)
     {
-        var status = await _client.RestClient.BackupRestoreStatus(backend, id, bucket, path);
-        return ToModel(status);
+        var bucket = backend is ObjectStorageBackend osb ? osb.Bucket : null;
+        var path = backend.Path;
+
+        var status = await _client.RestClient.BackupRestoreStatus(
+            backend.Provider,
+            id,
+            bucket,
+            path
+        );
+        return ToModel(status, backend);
+    }
+
+    private static BackupBackend ParseBackend(string? backendStr, string? bucket, string? path)
+    {
+        var provider = backendStr?.ToLowerInvariant() switch
+        {
+            "filesystem" => BackupStorageProvider.Filesystem,
+            "s3" => BackupStorageProvider.S3,
+            "gcs" => BackupStorageProvider.GCS,
+            "azure" => BackupStorageProvider.Azure,
+            _ => BackupStorageProvider.None,
+        };
+
+        if (provider == BackupStorageProvider.None)
+            return BackupBackend.Empty();
+
+        return provider == BackupStorageProvider.Filesystem
+            ? new FilesystemBackend(path)
+            : new ObjectStorageBackend(provider, bucket, path);
     }
 
     private static Backup ToModel(Rest.Dto.BackupCreateResponse dto) =>
         new(
             dto.Id ?? string.Empty,
-            dto.Backend ?? string.Empty,
-            dto.Bucket,
-            dto.Path,
+            ParseBackend(dto.Backend, dto.Bucket, dto.Path),
             dto.Status?.ToString() ?? string.Empty,
             dto.Classes?.ToArray(),
             null,
@@ -250,12 +280,10 @@ public class BackupClient
             dto.Error
         );
 
-    private static Backup ToModel(Rest.Dto.BackupCreateStatusResponse dto) =>
+    private static Backup ToModel(Rest.Dto.BackupCreateStatusResponse dto, BackupBackend backend) =>
         new(
             dto.Id ?? string.Empty,
-            dto.Backend ?? string.Empty,
-            null,
-            dto.Path,
+            backend,
             dto.Status?.ToString() ?? string.Empty,
             null,
             dto.StartedAt,
@@ -266,9 +294,7 @@ public class BackupClient
     private static Backup ToModel(Rest.Dto.BackupRestoreResponse dto) =>
         new(
             dto.Id ?? string.Empty,
-            dto.Backend ?? string.Empty,
-            null,
-            dto.Path,
+            ParseBackend(dto.Backend, null, dto.Path),
             dto.Status?.ToString() ?? string.Empty,
             dto.Classes?.ToArray(),
             null,
@@ -276,12 +302,13 @@ public class BackupClient
             dto.Error
         );
 
-    private static Backup ToModel(Rest.Dto.BackupRestoreStatusResponse dto) =>
+    private static Backup ToModel(
+        Rest.Dto.BackupRestoreStatusResponse dto,
+        BackupBackend backend
+    ) =>
         new(
             dto.Id ?? string.Empty,
-            dto.Backend ?? string.Empty,
-            null,
-            dto.Path,
+            backend,
             dto.Status?.ToString() ?? string.Empty,
             null,
             null,
@@ -292,9 +319,7 @@ public class BackupClient
     private static Backup ToModelListItem(Rest.Dto.Anonymous3 dto) =>
         new(
             dto.Id ?? string.Empty,
-            string.Empty,
-            null,
-            null,
+            BackupBackend.Empty(), // List endpoint doesn't provide backend info
             dto.Status?.ToString() ?? string.Empty,
             dto.Classes?.ToArray(),
             dto.StartedAt,
