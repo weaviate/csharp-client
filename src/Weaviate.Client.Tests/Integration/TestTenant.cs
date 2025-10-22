@@ -18,7 +18,7 @@ public partial class TenantTests : IntegrationTests
             "",
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -57,7 +57,7 @@ public partial class TenantTests : IntegrationTests
             "",
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -85,7 +85,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("Name")],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -130,7 +130,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("Name")],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -160,7 +160,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("Name")],
-            vectorConfig: Configure.Vectors.SelfProvided()
+            vectorConfig: Configure.Vectors.SelfProvided().New()
         );
 
         var uuid = await collectionClient.Data.Insert(new { Name = "some name" });
@@ -179,7 +179,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("Name")],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -209,7 +209,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -237,7 +237,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -263,7 +263,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -296,7 +296,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -328,7 +328,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -353,7 +353,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -399,7 +399,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -430,7 +430,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -456,7 +456,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -475,7 +475,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -520,7 +520,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -561,7 +561,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -581,7 +581,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -618,7 +618,7 @@ public partial class TenantTests : IntegrationTests
             "dummy",
             "dummy",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -627,7 +627,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true, autoTenantCreation: true)
         );
 
@@ -661,7 +661,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
@@ -696,7 +696,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided(),
+            vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 

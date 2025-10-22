@@ -93,6 +93,9 @@ internal class HnswDto
     [JsonPropertyName("sq")]
     public VectorIndex.Quantizers.SQ? SQ { get; set; }
 
+    [JsonPropertyName("rq")]
+    public VectorIndex.Quantizers.RQ? RQ { get; set; }
+
     [JsonPropertyName("multivector")]
     public MultiVectorDto? MultiVector { get; set; }
 }
@@ -114,6 +117,9 @@ internal class FlatDto
 
     [JsonPropertyName("sq")]
     public VectorIndex.Quantizers.BQ? SQ { get; set; }
+
+    [JsonPropertyName("rq")]
+    public VectorIndex.Quantizers.RQ? RQ { get; set; }
 }
 
 internal class DynamicDto
@@ -135,7 +141,9 @@ internal class DynamicDto
 internal static class VectorIndexMappingExtensions
 {
     // Helper to get the single enabled quantizer
-    private static QuantizerConfig? GetEnabledQuantizer(params QuantizerConfig?[] quantizers)
+    private static QuantizerConfigBase? GetEnabledQuantizer(
+        params QuantizerConfigBase?[] quantizers
+    )
     {
         return quantizers.FirstOrDefault(q => q?.Enabled == true);
     }
@@ -143,7 +151,7 @@ internal static class VectorIndexMappingExtensions
     // HNSW mapping
     public static VectorIndex.HNSW ToHnsw(this HnswDto dto)
     {
-        var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ);
+        var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ, dto.RQ);
 
         var muvera = dto.MultiVector?.Muvera?.ToModel();
 
@@ -216,6 +224,9 @@ internal static class VectorIndexMappingExtensions
                 case "sq":
                     dto.SQ = hnsw.Quantizer as VectorIndex.Quantizers.SQ;
                     break;
+                case "rq":
+                    dto.RQ = hnsw.Quantizer as VectorIndex.Quantizers.RQ;
+                    break;
             }
         }
 
@@ -226,13 +237,13 @@ internal static class VectorIndexMappingExtensions
     public static VectorIndex.Flat ToFlat(this FlatDto dto)
     {
         // For Flat, the Quantizer property is specifically BQ type
-        var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ);
+        var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ, dto.RQ);
 
         return new VectorIndex.Flat
         {
             Distance = dto.Distance,
             VectorCacheMaxObjects = dto.VectorCacheMaxObjects,
-            Quantizer = quantizer as VectorIndex.Quantizers.BQ,
+            Quantizer = quantizer as QuantizerConfigFlat,
         };
     }
 
@@ -248,21 +259,20 @@ internal static class VectorIndexMappingExtensions
         if (flat.Quantizer != null)
         {
             // Based on the original quantizer type, set the appropriate DTO property
-            // But since Flat.Quantizer is always BQ, we can determine the type from the actual quantizer
-            if (flat.Quantizer is VectorIndex.Quantizers.BQ bqQuantizer)
+            switch (flat.Quantizer.Type.ToLowerInvariant())
             {
-                switch (bqQuantizer.Type.ToLowerInvariant())
-                {
-                    case "bq":
-                        dto.BQ = bqQuantizer;
-                        break;
-                    case "pq":
-                        dto.PQ = bqQuantizer;
-                        break;
-                    case "sq":
-                        dto.SQ = bqQuantizer;
-                        break;
-                }
+                case "bq":
+                    dto.BQ = flat.Quantizer as VectorIndex.Quantizers.BQ;
+                    break;
+                // case "pq":
+                //     dto.PQ = flat.Quantizer as VectorIndex.Quantizers.PQ;
+                //     break;
+                // case "sq":
+                //     dto.SQ = flat.Quantizer as VectorIndex.Quantizers.SQ;
+                //     break;
+                case "rq":
+                    dto.RQ = flat.Quantizer as VectorIndex.Quantizers.RQ;
+                    break;
             }
         }
 
