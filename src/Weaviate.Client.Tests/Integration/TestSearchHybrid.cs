@@ -113,7 +113,7 @@ public partial class SearchTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("Name") },
-            vectorConfig: Configure.Vectors.SelfProvided()
+            vectorConfig: Configure.Vectors.SelfProvided().New()
         );
 
         var res = await collection.Data.InsertMany(
@@ -139,7 +139,7 @@ public partial class SearchTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("Name") },
-            vectorConfig: Configure.Vectors.SelfProvided()
+            vectorConfig: Configure.Vectors.SelfProvided().New()
         );
 
         var res = await collection.Data.InsertMany(
@@ -392,8 +392,8 @@ public partial class SearchTests : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided("first"),
-                Configure.Vectors.SelfProvided("second"),
+                Configure.Vectors.SelfProvided().New("first"),
+                Configure.Vectors.SelfProvided().New("second"),
             }
         );
 
@@ -593,7 +593,7 @@ public partial class SearchTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("name") },
-            vectorConfig: Configure.Vectors.SelfProvided()
+            vectorConfig: Configure.Vectors.SelfProvided().New()
         );
 
         var uuid1 = await collection.Data.Insert(
@@ -638,7 +638,7 @@ public partial class SearchTests : IntegrationTests
 
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("name") },
-            vectorConfig: Configure.Vectors.SelfProvided()
+            vectorConfig: Configure.Vectors.SelfProvided().New()
         );
 
         await collection.Data.Insert(
