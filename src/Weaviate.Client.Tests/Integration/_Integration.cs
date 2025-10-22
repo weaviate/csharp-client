@@ -186,6 +186,10 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
 
     protected bool ServerVersionIsInRange(string minimumVersion, string? maximumVersion = null)
     {
+        if (_weaviate.WeaviateVersion == null)
+        {
+            return false;
+        }
         return VersionIsInRange(_weaviate.WeaviateVersion, minimumVersion, maximumVersion);
     }
 
