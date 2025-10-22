@@ -6,41 +6,7 @@ public static partial class Configure
 {
     public static class Vectors
     {
-        public static VectorConfig SelfProvided(
-            string name = "default",
-            VectorIndexConfig? indexConfig = null,
-            VectorIndexConfig.QuantizerConfigBase? quantizerConfig = null
-        )
-        {
-            var builder = new VectorConfigBuilder(new Vectorizer.SelfProvided());
-            return indexConfig switch
-            {
-                VectorIndex.HNSW hnsw => builder.New(name, hnsw, quantizerConfig),
-                VectorIndex.Flat flat => builder.New(
-                    name,
-                    flat,
-                    quantizerConfig is not null
-                        ? quantizerConfig as VectorIndex.Quantizers.BQ
-                            ?? throw new WeaviateClientException(
-                                "Flat index supports only BQ quantization."
-                            )
-                        : null
-                ),
-                VectorIndex.Dynamic dynamic => quantizerConfig is null
-                    ? builder.New(name, dynamic)
-                    : throw new WeaviateClientException(
-                        "Dynamic Index must specify quantizers in their respective Vector Index Configurations."
-                    ),
-                null => builder.New(
-                    name,
-                    (VectorIndex.HNSW?)null,
-                    (VectorIndexConfig.QuantizerConfigBase?)null
-                ),
-                _ => throw new WeaviateClientException(
-                    $"Unsupported VectorIndexConfig type: {indexConfig.GetType().Name}"
-                ),
-            };
-        }
+        public static VectorConfigBuilder SelfProvided() => new(new Vectorizer.SelfProvided());
 
         public class VectorConfigBuilder(VectorizerConfig Config)
         {
@@ -72,7 +38,7 @@ public static partial class Configure
             public VectorConfig New(
                 string name,
                 VectorIndex.Flat? indexConfig,
-                VectorIndex.Quantizers.BQ? quantizerConfig = null,
+                VectorIndexConfig.QuantizerConfigFlat? quantizerConfig = null,
                 params string[] sourceProperties
             ) =>
                 new(

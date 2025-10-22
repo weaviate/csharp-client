@@ -39,11 +39,9 @@ public partial class VectorIndexConfigTests
         var config = new VectorIndex.HNSW { Ef = 100, MaxConnections = 16 };
 
         // Act & Assert
-        var vectorConfig = Configure.Vectors.SelfProvided(
-            name: "regular",
-            indexConfig: config,
-            quantizerConfig: quantizer
-        );
+        var vectorConfig = Configure
+            .Vectors.SelfProvided()
+            .New(name: "regular", indexConfig: config, quantizerConfig: quantizer);
 
         Assert.Null(config.Quantizer);
 
