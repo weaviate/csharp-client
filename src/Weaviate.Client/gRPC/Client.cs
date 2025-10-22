@@ -39,7 +39,8 @@ internal partial class WeaviateGrpcClient : IDisposable
         string? wcdHost,
         ITokenService? tokenService,
         Dictionary<string, string>? headers = null,
-        ILogger<WeaviateGrpcClient>? logger = null
+        ILogger<WeaviateGrpcClient>? logger = null,
+        ulong? maxMessageSize = null
     )
     {
         _logger =
@@ -49,6 +50,13 @@ internal partial class WeaviateGrpcClient : IDisposable
                 .CreateLogger<WeaviateGrpcClient>();
 
         var options = new GrpcChannelOptions();
+
+        if (maxMessageSize != null)
+        {
+            options.MaxReceiveMessageSize = (int)maxMessageSize;
+
+            options.MaxSendMessageSize = (int)maxMessageSize;
+        }
 
         if (tokenService != null)
         {

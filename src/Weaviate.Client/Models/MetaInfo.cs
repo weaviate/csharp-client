@@ -5,7 +5,7 @@ public struct MetaInfo
     public string Hostname { get; set; }
     public System.Version Version { get; set; }
     public Dictionary<string, object> Modules { get; set; }
-    public int GrpcMaxMessageSize { get; set; }
+    public ulong? GrpcMaxMessageSize { get; set; }
 
     public static Version? ParseWeaviateVersion(string versionString)
     {
