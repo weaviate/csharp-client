@@ -1234,7 +1234,7 @@ namespace Weaviate.Client.Rest.Dto
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("grpcMaxMessageSize")]
-        public ulong? GrpcMaxMessageSize { get; set; } = default!;
+        public int? GrpcMaxMessageSize { get; set; } = default!;
 
         public string ToJson()
         {
