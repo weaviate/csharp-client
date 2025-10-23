@@ -276,7 +276,7 @@ public partial class CollectionsTests : IntegrationTests
             collectionNamePartSeparator: "",
             vectorConfig: new VectorConfig(
                 "nondefault",
-                new Vectorizer.Text2VecContextionary() { VectorizeClassName = false }
+                new Vectorizer.Text2VecTransformers() { VectorizeCollectionName = false }
             ),
             invertedIndexConfig: new()
             {
@@ -375,7 +375,7 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal("nondefault", defaultVectorConfig.Name);
         Assert.NotNull(defaultVectorConfig.Vectorizer);
         Assert.Equal(
-            Vectorizer.Text2VecContextionary.IdentifierValue,
+            Vectorizer.Text2VecTransformers.IdentifierValue,
             defaultVectorConfig.Vectorizer.Identifier
         );
 
@@ -429,7 +429,7 @@ public partial class CollectionsTests : IntegrationTests
             collectionNamePartSeparator: "",
             vectorConfig: new VectorConfig(
                 "nondefault",
-                new Vectorizer.Text2VecContextionary() { VectorizeClassName = false }
+                new Vectorizer.Text2VecTransformers() { VectorizeCollectionName = false }
             ),
             multiTenancyConfig: new()
             {
@@ -526,7 +526,7 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal("nondefault", defaultVectorConfig.Name);
         Assert.NotNull(defaultVectorConfig.Vectorizer);
         Assert.Equal(
-            Vectorizer.Text2VecContextionary.IdentifierValue,
+            Vectorizer.Text2VecTransformers.IdentifierValue,
             defaultVectorConfig.Vectorizer.Identifier
         );
 
@@ -582,7 +582,7 @@ public partial class CollectionsTests : IntegrationTests
         RequireVersion("1.31.0");
 
         await collection.Config.AddVector(
-            Configure.Vectors.Text2VecContextionary().New("nondefault")
+            Configure.Vectors.Text2VecTransformers().New("nondefault")
         );
 
         var c = await collection.Config.Get();
@@ -602,13 +602,11 @@ public partial class CollectionsTests : IntegrationTests
         yield return null;
         yield return Configure.Vectors.SelfProvided().New();
         yield return Configure
-            .Vectors.Text2VecContextionary(vectorizeCollectionName: false)
+            .Vectors.Text2VecTransformers(vectorizeCollectionName: false)
             .New("vec");
         yield return new[]
         {
-            Configure
-                .Vectors.Text2VecContextionary(vectorizeCollectionName: false)
-                .New(name: "vec"),
+            Configure.Vectors.Text2VecTransformers(vectorizeCollectionName: false).New(name: "vec"),
         };
     }
 

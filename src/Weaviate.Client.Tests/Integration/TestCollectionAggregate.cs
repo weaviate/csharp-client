@@ -237,7 +237,7 @@ public partial class AggregatesTests : IntegrationTests
         };
         yield return new object[]
         {
-            new Dictionary<string, object> { { "distance", 0.9 } },
+            new Dictionary<string, object> { { "distance", 1.1 } },
             2,
         };
     }
@@ -251,21 +251,22 @@ public partial class AggregatesTests : IntegrationTests
     {
         var collectionClient = await CollectionFactory(
             properties: [Property.Text("text")],
-            vectorConfig: Configure
-                .Vectors.Text2VecContextionary(vectorizeCollectionName: false)
-                .New("default")
+            vectorConfig: Configure.Vectors.SelfProvided().New("default")
         );
 
         var text1 = "some text";
         var text2 = "nothing like the other one at all, not even a little bit";
-        var uuid = await collectionClient.Data.Insert(new { text = text1 });
+        var uuid = await collectionClient.Data.Insert(
+            new { text = text1 },
+            vectors: new[] { 1.0f, 0f, 0f }
+        );
         var obj = await collectionClient.Query.FetchObjectByID(
             uuid,
             returnMetadata: MetadataOptions.Vector
         );
         Assert.NotNull(obj);
         Assert.True(obj.Vectors.ContainsKey("default"));
-        await collectionClient.Data.Insert(new { text = text2 });
+        await collectionClient.Data.Insert(new { text = text2 }, vectors: new[] { 0f, 0.0f, 0f });
 
         var nearVector = obj.Vectors["default"];
         var metrics = new[]
@@ -333,14 +334,7 @@ public partial class AggregatesTests : IntegrationTests
         };
         yield return new object[]
         {
-            new Dictionary<string, object> { { "certainty", 0.9 } },
-            1,
-            uuid1,
-            uuid2,
-        };
-        yield return new object[]
-        {
-            new Dictionary<string, object> { { "distance", 0.1 } },
+            new Dictionary<string, object> { { "distance", 0.66 } },
             1,
             uuid1,
             uuid2,
@@ -428,13 +422,14 @@ public partial class AggregatesTests : IntegrationTests
         var collectionClient = await CollectionFactory(
             properties: new[] { Property.Text("text") },
             vectorConfig: Configure
-                .Vectors.Text2VecContextionary(vectorizeCollectionName: false)
+                .Vectors.Text2VecTransformers(vectorizeCollectionName: true)
                 .New("default")
         );
         var text1 = "some text";
         var text2 = "nothing like the other one at all, not even a little bit";
         await collectionClient.Data.Insert(new { text = text1 }, id: uuid1);
         await collectionClient.Data.Insert(new { text = text2 }, id: uuid2);
+        Assert.Equal(2UL, await collectionClient.Count());
 
         // Act
         AggregateResult? res = null;

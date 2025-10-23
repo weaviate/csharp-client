@@ -210,18 +210,6 @@ public static partial class Vectorizer
     }
 
     /// <summary>
-    /// The configuration for text vectorization using the Contextionary module.
-    /// See the documentation for detailed usage.
-    /// </summary>
-    public partial record Text2VecContextionary : VectorizerConfig
-    {
-        public const string IdentifierValue = "text2vec-contextionary";
-
-        public Text2VecContextionary()
-            : base(IdentifierValue) { }
-    }
-
-    /// <summary>
     /// The configuration for text vectorization using the Databricks module.
     /// See the documentation for detailed usage.
     /// </summary>
@@ -230,18 +218,6 @@ public static partial class Vectorizer
         public const string IdentifierValue = "text2vec-databricks";
 
         public Text2VecDatabricks()
-            : base(IdentifierValue) { }
-    }
-
-    /// <summary>
-    /// The configuration for text vectorization using the GPT-4-All module.
-    /// See the documentation for detailed usage.
-    /// </summary>
-    public partial record Text2VecGPT4All : VectorizerConfig
-    {
-        public const string IdentifierValue = "text2vec-gpt4all";
-
-        public Text2VecGPT4All()
             : base(IdentifierValue) { }
     }
 
