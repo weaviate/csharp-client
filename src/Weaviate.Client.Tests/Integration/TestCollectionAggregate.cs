@@ -334,7 +334,7 @@ public partial class AggregatesTests : IntegrationTests
         };
         yield return new object[]
         {
-            new Dictionary<string, object> { { "distance", 0.75 } },
+            new Dictionary<string, object> { { "distance", 0.66 } },
             1,
             uuid1,
             uuid2,
@@ -430,6 +430,7 @@ public partial class AggregatesTests : IntegrationTests
         await collectionClient.Data.Insert(new { text = text1 }, id: uuid1);
         await collectionClient.Data.Insert(new { text = text2 }, id: uuid2);
         Assert.Equal(2UL, await collectionClient.Count());
+
         // Act
         AggregateResult? res = null;
         var metrics = new[]
