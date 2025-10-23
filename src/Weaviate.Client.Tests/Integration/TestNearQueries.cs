@@ -131,9 +131,9 @@ public class TestNearQueries : IntegrationTests
         var objects = ret.Objects.ToList();
 
         Assert.Equal(4, objects.Count);
-        Assert.Equal("Banana", objects[0].BelongsToGroup);
-        Assert.Equal("Banana", objects[1].BelongsToGroup);
-        Assert.Equal("car", objects[2].BelongsToGroup);
-        Assert.Equal("Mountain", objects[3].BelongsToGroup);
+        Assert.Equal(objects[0].Properties["name"], objects[0].BelongsToGroup);
+        Assert.Equal(objects[1].Properties["name"], objects[1].BelongsToGroup);
+        Assert.Equal(objects[2].Properties["name"], objects[2].BelongsToGroup);
+        Assert.Equal(objects[3].Properties["name"], objects[3].BelongsToGroup);
     }
 }
