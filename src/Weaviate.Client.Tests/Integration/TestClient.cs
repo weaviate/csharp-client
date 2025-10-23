@@ -46,7 +46,7 @@ public partial class ClientTests : IntegrationTests
     public async Task TestNodesMinimal()
     {
         var client = Connect.Local();
-        var nodesMinimal = await client.Nodes.NodesMinimal();
+        var nodesMinimal = await client.Cluster.Nodes.NodesMinimal();
 
         // ip is different depending on the environment
         Assert.Single(nodesMinimal);
@@ -61,7 +61,7 @@ public partial class ClientTests : IntegrationTests
     public async Task TestNodesVerbose()
     {
         var client = Connect.Local();
-        var nodesVerbose = await client.Nodes.NodesVerbose();
+        var nodesVerbose = await client.Cluster.Nodes.NodesVerbose();
         Assert.Single(nodesVerbose);
         var nodeV = nodesVerbose[0];
         Assert.NotNull(nodeV);
@@ -80,7 +80,7 @@ public partial class ClientTests : IntegrationTests
         var collectionName = "TestNodesVerboseWithCollection";
         var collection = await CollectionFactory(collectionName);
 
-        var nodesVerbose = await client.Nodes.NodesVerbose(collection.Name);
+        var nodesVerbose = await client.Cluster.Nodes.NodesVerbose(collection.Name);
         Assert.Single(nodesVerbose);
         var nodeV = nodesVerbose[0];
         Assert.NotNull(nodeV);
