@@ -178,21 +178,32 @@ foreach (var shard in nodes[0].Shards)
 
 ### ClusterNode Properties
 
-| Property   | Type     | Description                             |
-|------------|----------|-----------------------------------------|
-| `Name`     | `string` | The unique name of the node             |
-| `Version`  | `string` | Weaviate version running on the node    |
-| `Status`   | `string` | Current status (e.g., "Healthy", "Unknown") |
-| `GitHash`  | `string` | Git commit hash of the Weaviate build   |
+| Property    | Type         | Description                                                                                    |
+|-------------|--------------|------------------------------------------------------------------------------------------------|
+| `Name`      | `string`     | The unique name of the node                                                                    |
+| `Version`   | `string`     | Weaviate version running on the node                                                           |
+| `StatusRaw` | `string`     | Current status in raw string form (e.g., "HEALTHY", "UNHEALTHY")                               |
+| `Status`    | `NodeStatus` | Current status as a computed enum property (Healthy, Unhealthy, Unavailable, Timeout, Unknown) |
+| `GitHash`   | `string`     | Git commit hash of the Weaviate build                                                          |
+
+### NodeStatus Enum
+
+| Value         | Description                     |
+|---------------|---------------------------------|
+| `Unknown`     | Unknown or unrecognized status  |
+| `Healthy`     | Node is healthy and operational |
+| `Unhealthy`   | Node is unhealthy               |
+| `Unavailable` | Node is unavailable             |
+| `Timeout`     | Node request timed out          |
 
 ### ClusterNodeVerbose Properties
 
 `ClusterNodeVerbose` inherits all properties from `ClusterNode` and adds:
 
-| Property | Type                            | Description                     |
-|----------|---------------------------------|---------------------------------|
-| `Stats`  | `ClusterNodeVerbose.NodeStats`  | Aggregate statistics for the node |
-| `Shards` | `ClusterNodeVerbose.Shard[]`    | Array of shard information      |
+| Property | Type                           | Description                       |
+|----------|--------------------------------|-----------------------------------|
+| `Stats`  | `ClusterNodeVerbose.NodeStats` | Aggregate statistics for the node |
+| `Shards` | `ClusterNodeVerbose.Shard[]`   | Array of shard information        |
 
 ### ClusterNodeVerbose.NodeStats Properties
 
@@ -228,7 +239,7 @@ foreach (var shard in nodes[0].Shards)
 
 ```csharp
 var nodes = await client.Cluster.Nodes.List();
-var allHealthy = nodes.All(n => n.Status == "Healthy");
+var allHealthy = nodes.All(n => n.Status == NodeStatus.Healthy);
 
 if (allHealthy)
 {
@@ -236,7 +247,7 @@ if (allHealthy)
 }
 else
 {
-    var unhealthyNodes = nodes.Where(n => n.Status != "Healthy");
+    var unhealthyNodes = nodes.Where(n => n.Status != NodeStatus.Healthy);
     foreach (var node in unhealthyNodes)
     {
         Console.WriteLine($"Warning: Node {node.Name} is {node.Status}");
@@ -385,7 +396,7 @@ var clusterStats = new
     TotalNodes = nodes.Length,
     TotalObjects = nodes.Sum(n => n.Stats.ObjectCount),
     TotalShards = nodes.Sum(n => n.Stats.ShardCount),
-    HealthyNodes = nodes.Count(n => n.Status == "Healthy"),
+    HealthyNodes = nodes.Count(n => n.Status == NodeStatus.Healthy),
     AverageObjectsPerNode = nodes.Average(n => n.Stats.ObjectCount),
     AverageShardsPerNode = nodes.Average(n => n.Stats.ShardCount)
 };

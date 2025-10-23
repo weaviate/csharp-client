@@ -17,7 +17,7 @@ public partial class NodeStatus
         {
             GitHash = GitHash ?? string.Empty,
             Name = Name ?? string.Empty,
-            Status = Status?.ToString() ?? "Unknown",
+            StatusRaw = Status?.ToString() ?? "Unknown",
             Version = Version ?? string.Empty,
         };
     }
@@ -32,7 +32,7 @@ public partial class NodeStatus
         {
             GitHash = GitHash ?? string.Empty,
             Name = Name ?? string.Empty,
-            Status = Status?.ToString() ?? "Unknown",
+            StatusRaw = Status?.ToString() ?? "Unknown",
             Version = Version ?? string.Empty,
             Stats = Stats?.ToModel() ?? new ClusterNodeVerbose.NodeStats
             {
