@@ -11,7 +11,7 @@ public partial class SearchTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("Name") },
-            vectorConfig: Configure.Vectors.Text2VecContextionary().New("default")
+            vectorConfig: Configure.Vectors.Text2VecTransformers().New("default")
         );
 
         var uuid1 = Guid.NewGuid();
@@ -48,7 +48,7 @@ public partial class SearchTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("Name") },
-            vectorConfig: Configure.Vectors.Text2VecContextionary().New("default")
+            vectorConfig: Configure.Vectors.Text2VecTransformers().New("default")
         );
 
         var uuid1 = Guid.NewGuid();
@@ -82,7 +82,7 @@ public partial class SearchTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("Name") },
-            vectorConfig: Configure.Vectors.Text2VecContextionary().New()
+            vectorConfig: Configure.Vectors.Text2VecTransformers().New()
         );
 
         var uuid = Guid.NewGuid();
@@ -162,7 +162,7 @@ public partial class SearchTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("name") },
-            vectorConfig: Configure.Vectors.Text2VecContextionary().New("default")
+            vectorConfig: Configure.Vectors.Text2VecTransformers().New("default")
         );
 
         var res = await collection.Data.InsertMany(
@@ -190,7 +190,7 @@ public partial class SearchTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("text") },
-            vectorConfig: Configure.Vectors.Text2VecContextionary().New("default")
+            vectorConfig: Configure.Vectors.Text2VecTransformers().New("default")
         );
 
         var uuidBanana = Guid.NewGuid();
@@ -244,8 +244,8 @@ public partial class SearchTests : IntegrationTests
             properties: new[] { Property.Text("text"), Property.Int("int") },
             vectorConfig: new[]
             {
-                Configure.Vectors.Text2VecContextionary().New("text"),
-                Configure.Vectors.Text2VecContextionary().New("int"),
+                Configure.Vectors.Text2VecTransformers().New("text"),
+                Configure.Vectors.Text2VecTransformers().New("int"),
             }
         );
 
@@ -304,12 +304,12 @@ public partial class SearchTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("text") },
-            vectorConfig: Configure.Vectors.Text2VecContextionary().New()
+            vectorConfig: Configure.Vectors.Text2VecTransformers().New()
         );
 
         var uuidBananaPudding = Guid.NewGuid();
         await collection.Data.Insert(new { text = "banana pudding" }, id: uuidBananaPudding);
-        await collection.Data.Insert(new { text = "banana smoothie" });
+        await collection.Data.Insert(new { text = "apple smoothie" });
         await collection.Data.Insert(new { text = "different concept" });
 
         var hybridObjs = (
@@ -346,14 +346,14 @@ public partial class SearchTests : IntegrationTests
             properties: new[] { Property.Text("text"), Property.Int("int") },
             vectorConfig: new[]
             {
-                Configure.Vectors.Text2VecContextionary().New("text"),
-                Configure.Vectors.Text2VecContextionary().New("int"),
+                Configure.Vectors.Text2VecTransformers().New("text"),
+                Configure.Vectors.Text2VecTransformers().New("int"),
             }
         );
 
         var uuidBananaPudding = Guid.NewGuid();
         await collection.Data.Insert(new { text = "banana pudding" }, id: uuidBananaPudding);
-        await collection.Data.Insert(new { text = "banana smoothie" });
+        await collection.Data.Insert(new { text = "apple smoothie" });
         await collection.Data.Insert(new { text = "different concept" });
 
         var hybridObjs = (
@@ -563,7 +563,7 @@ public partial class SearchTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("name") },
-            vectorConfig: Configure.Vectors.Text2VecContextionary().New("default")
+            vectorConfig: Configure.Vectors.Text2VecTransformers().New("default")
         );
 
         var uuid1 = await collection.Data.Insert(new { }, vectors: new float[] { 1, 0, 0 });
