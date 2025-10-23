@@ -119,7 +119,9 @@ public partial class WeaviateClient : IDisposable
 
         return new Models.MetaInfo
         {
-            GrpcMaxMessageSize = meta?.GrpcMaxMessageSize ?? null,
+            GrpcMaxMessageSize = meta?.GrpcMaxMessageSize is not null
+                ? Convert.ToUInt64(meta?.GrpcMaxMessageSize)
+                : null,
             Hostname = meta?.Hostname ?? string.Empty,
             Version =
                 Models.MetaInfo.ParseWeaviateVersion(meta?.Version ?? string.Empty)
