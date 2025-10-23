@@ -4,6 +4,33 @@ using System.Text.Json.Serialization;
 namespace Weaviate.Client.Models;
 
 /// <summary>
+/// Represents the status of a node in the Weaviate cluster.
+/// </summary>
+public enum NodeStatus
+{
+    Unknown,
+    Healthy,
+    Unhealthy,
+    Unavailable,
+    Timeout,
+}
+
+public static class NodeStatusExtensions
+{
+    public static NodeStatus ToNodeStatus(this string? status)
+    {
+        return status?.ToUpperInvariant() switch
+        {
+            "HEALTHY" => NodeStatus.Healthy,
+            "UNHEALTHY" => NodeStatus.Unhealthy,
+            "UNAVAILABLE" => NodeStatus.Unavailable,
+            "TIMEOUT" => NodeStatus.Timeout,
+            _ => NodeStatus.Unknown,
+        };
+    }
+}
+
+/// <summary>
 /// Represents a node in the Weaviate cluster with basic information.
 /// </summary>
 public record ClusterNode
@@ -19,9 +46,14 @@ public record ClusterNode
     public required string Name { get; init; }
 
     /// <summary>
-    /// Current status of the node (e.g., "Healthy", "Unknown").
+    /// Current status of the node in raw string form (e.g., "HEALTHY", "UNHEALTHY").
     /// </summary>
-    public required string Status { get; init; }
+    public required string StatusRaw { get; init; }
+
+    /// <summary>
+    /// Current status of the node as an enum value.
+    /// </summary>
+    public NodeStatus Status => StatusRaw.ToNodeStatus();
 
     /// <summary>
     /// Weaviate version running on the node.
@@ -36,7 +68,7 @@ public record ClusterNode
         var sb = new System.Text.StringBuilder();
         sb.AppendLine($"Node: {Name}");
         sb.AppendLine($"  Version: {Version}");
-        sb.AppendLine($"  Status: {Status}");
+        sb.AppendLine($"  Status: {StatusRaw}");
         sb.AppendLine($"  Git Hash: {GitHash}");
         return sb.ToString().TrimEnd();
     }
