@@ -210,8 +210,7 @@ public partial class WeaviateClient : IDisposable
     public ClientConfiguration Configuration { get; }
 
     public CollectionsClient Collections { get; }
-
-    public NodesClient Nodes { get; }
+    public ClusterClient Cluster { get; }
 
     public AliasClient Alias { get; }
 
@@ -275,7 +274,7 @@ public partial class WeaviateClient : IDisposable
             Configuration.Headers
         );
 
-        Nodes = new NodesClient(RestClient);
+        Cluster = new ClusterClient(RestClient);
         Collections = new CollectionsClient(this);
         Alias = new AliasClient(this);
     }
