@@ -1,9 +1,7 @@
 namespace Weaviate.Client.Tests.Integration;
 
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Weaviate.Client;
 using Xunit;
@@ -76,11 +74,9 @@ public class TestAuth : IntegrationTests
     {
         Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_CC}"));
 
-        var client = Connect.Local(hostname: "localhost", restPort: OKTA_PORT_CC);
-
-        await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
+        var client = Assert.ThrowsAny<WeaviateServerException>(() =>
         {
-            await client.Collections.List().ToListAsync(TestContext.Current.CancellationToken);
+            Connect.Local(hostname: "localhost", restPort: OKTA_PORT_CC);
         });
     }
 
