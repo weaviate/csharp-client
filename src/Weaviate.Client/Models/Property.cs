@@ -19,13 +19,22 @@ public delegate Property PropertyFactory(
     bool? indexFilterable = null,
     bool? indexRangeFilters = null,
     bool? indexSearchable = null,
-    PropertyTokenization? tokenization = null
+    PropertyTokenization? tokenization = null,
+    Property[]? subProperties = null
 );
 
 internal class PropertyHelper
 {
     internal static PropertyFactory Factory(string dataType) =>
-        (name, description, indexFilterable, indexRangeFilters, indexSearchable, tokenization) =>
+        (
+            name,
+            description,
+            indexFilterable,
+            indexRangeFilters,
+            indexSearchable,
+            tokenization,
+            subProperties
+        ) =>
             new Property
             {
                 Name = name,
@@ -35,6 +44,7 @@ internal class PropertyHelper
                 IndexRangeFilters = indexRangeFilters,
                 IndexSearchable = indexSearchable,
                 PropertyTokenization = tokenization,
+                NestedProperties = subProperties,
             };
 
     internal static PropertyFactory ForType(Type t)
@@ -71,13 +81,13 @@ internal class PropertyHelper
             TypeCode.DateTime => Property.Date,
             TypeCode.Boolean => Property.Bool,
             TypeCode.Char => Property.Text,
-            TypeCode.SByte => null,
-            TypeCode.Byte => null,
+            TypeCode.SByte => Property.Blob,
+            TypeCode.Byte => Property.Blob,
             TypeCode.Single => Property.Number,
             TypeCode.Double => Property.Number,
             TypeCode.Decimal => Property.Number,
             TypeCode.Empty => null,
-            TypeCode.Object => null,
+            TypeCode.Object => Property.Object,
             TypeCode.DBNull => null,
             _ => null,
         };
@@ -169,6 +179,7 @@ internal class PropertyHelper
             TypeCode.Single => Property.NumberArray,
             TypeCode.Double => Property.NumberArray,
             TypeCode.Decimal => Property.NumberArray,
+            TypeCode.Object => Property.ObjectArray,
             _ => null,
         };
 
@@ -242,6 +253,7 @@ public record Property : IEquatable<Property>
     public bool? IndexRangeFilters { get; internal set; }
     public bool? IndexSearchable { get; internal set; }
     public PropertyTokenization? PropertyTokenization { get; internal set; }
+    public Property[]? NestedProperties { get; internal set; }
 
     public static PropertyFactory Text => PropertyHelper.Factory(Models.DataType.Text);
     public static PropertyFactory TextArray => PropertyHelper.Factory(Models.DataType.TextArray);
@@ -293,6 +305,7 @@ public record Property : IEquatable<Property>
         hash.Add(IndexRangeFilters);
         hash.Add(IndexSearchable);
         hash.Add(PropertyTokenization);
+        hash.Add(NestedProperties);
         return hash.ToHashCode();
     }
 
@@ -310,6 +323,14 @@ public record Property : IEquatable<Property>
             && IndexFilterable == other.IndexFilterable
             && IndexRangeFilters == other.IndexRangeFilters
             && IndexSearchable == other.IndexSearchable
-            && PropertyTokenization == other.PropertyTokenization;
+            && PropertyTokenization == other.PropertyTokenization
+            && (
+                (NestedProperties == null && other.NestedProperties == null)
+                || (
+                    NestedProperties != null
+                    && other.NestedProperties != null
+                    && NestedProperties.SequenceEqual(other.NestedProperties)
+                )
+            );
     }
 }

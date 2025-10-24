@@ -24,10 +24,32 @@ public partial class PropertyTests : IntegrationTests
             Property.Uuid("testUuid"),
             Property.UuidArray("testUuidArray"),
             Property.GeoCoordinate("testGeo"),
-            // Property.Blob("testBlob"),
-            // Property.PhoneNumber("testPhone"),
-            // Property.Object("testObject"),
-            // Property.ObjectArray("testObjectArray"),
+            Property.Blob("testBlob"),
+            Property.PhoneNumber("testPhone"),
+            Property.Object(
+                "testObject",
+                subProperties:
+                [
+                    Property.Text("testText"),
+                    Property.Int("testInt"),
+                    Property.Object(
+                        "testObject",
+                        subProperties: [Property.Text("testText"), Property.Int("testInt")]
+                    ),
+                ]
+            ),
+            Property.ObjectArray(
+                "testObjectArray",
+                subProperties:
+                [
+                    Property.Text("testText"),
+                    Property.Int("testInt"),
+                    Property.Object(
+                        "testObject",
+                        subProperties: [Property.Text("testText"), Property.Int("testInt")]
+                    ),
+                ]
+            ),
         ];
 
         // 1. Create collection
@@ -43,6 +65,7 @@ public partial class PropertyTests : IntegrationTests
             TestTextArray = new[] { "dummyTextArray1", "dummyTextArray2" },
             TestInt = 123,
             TestIntArray = new[] { 1, 2, 3 },
+            TestBlob = System.Text.Encoding.UTF8.GetBytes("Weaviate"),
             TestBool = true,
             TestBoolArray = new[] { true, false },
             TestNumber = 456.789,
@@ -52,7 +75,31 @@ public partial class PropertyTests : IntegrationTests
             TestUuid = Guid.NewGuid(),
             TestUuidArray = new[] { Guid.NewGuid(), Guid.NewGuid() },
             TestGeo = new GeoCoordinate(12.345f, 67.890f),
-            // TestPhone = new PhoneNumber(),
+            TestPhone = new PhoneNumber("+1 555-123-4567") { DefaultCountry = "US" },
+            TestObject = new TestNestedProperties
+            {
+                TestText = "nestedText",
+                TestInt = 789,
+                TestObject = new TestNestedProperties
+                {
+                    TestText = "nestedNestedText",
+                    TestInt = 101112,
+                },
+            },
+            TestObjectArray = new[]
+            {
+                new TestNestedProperties { TestText = "arrayObjectText1", TestInt = 111 },
+                new TestNestedProperties
+                {
+                    TestText = "arrayObjectText2",
+                    TestInt = 222,
+                    TestObject = new TestNestedProperties
+                    {
+                        TestText = "arrayNestedObjectText",
+                        TestInt = 333,
+                    },
+                },
+            },
         };
 
         var id = await c.Data.Insert(testData);
