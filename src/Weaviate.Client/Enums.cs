@@ -1,5 +1,21 @@
 namespace Weaviate.Client;
 
+public enum ResourceType
+{
+    Alias,
+    Collection,
+    Object,
+    Property,
+    User,
+    Role,
+    Backup,
+    Group,
+    Reference,
+    Shard,
+    Tenant,
+    Unknown,
+}
+
 /// <summary>
 /// The consistency levels when writing to Weaviate with replication enabled.
 /// </summary>
