@@ -28,10 +28,7 @@ public partial class WeaviateRestClient
                 && ex.Message.Contains("already in progress")
             )
         {
-            throw new WeaviateBackupConflictException(
-                $"Cannot start backup: another backup or restore operation is already in progress.",
-                ex
-            );
+            throw new WeaviateBackupConflictException(ex);
         }
     }
 
@@ -98,10 +95,7 @@ public partial class WeaviateRestClient
                 && ex.Message.Contains("already in progress")
             )
         {
-            throw new WeaviateBackupConflictException(
-                $"Cannot start restore: another backup or restore operation is already in progress.",
-                ex
-            );
+            throw new WeaviateBackupConflictException(ex);
         }
     }
 
