@@ -24,6 +24,13 @@ public partial class PropertyTests : IntegrationTests
         };
         yield return new object[]
         {
+            new[] { Property.Blob("testBlob") },
+            new { testBlob = System.Text.Encoding.UTF8.GetBytes("Weaviate") },
+            "testBlob",
+            System.Text.Encoding.UTF8.GetBytes("Weaviate"),
+        };
+        yield return new object[]
+        {
             new[] { Property.Bool("testBool") },
             new { testBool = true },
             "testBool",
@@ -168,12 +175,29 @@ public partial class PropertyTests : IntegrationTests
         );
 
         var id = await c.Data.Insert(obj);
-        var retrieved = await c.Query.FetchObjectByID(id);
+        var retrieved = await c.Query.FetchObjectByID(id, returnProperties: propertyName);
 
         Assert.NotNull(retrieved);
 
         var actual = retrieved.Properties[propertyName];
-        Assert.Equal(expected.GetType(), actual!.GetType());
+
+        if (props[0].DataType.Contains(DataType.Blob))
+        {
+            Assert.IsType<string>(actual);
+            string actualString = (string)actual!;
+            Assert.True(
+                Convert.TryFromBase64String(
+                    actualString,
+                    new Span<byte>(new byte[actualString.Length * 4]),
+                    out _
+                ),
+                "The string is not a valid base64."
+            );
+        }
+        else
+        {
+            Assert.Equal(expected.GetType(), actual!.GetType());
+        }
 
         if (expected is double expectedDouble && actual is double actualDouble)
         {
@@ -188,6 +212,11 @@ public partial class PropertyTests : IntegrationTests
             {
                 Assert.Equal(exp, act, 5);
             }
+        }
+        else if (props[0].DataType.Contains(DataType.Blob) && actual is string actualString)
+        {
+            var actualBytes = Convert.FromBase64String(actualString);
+            Assert.Equal(expected, actualBytes);
         }
         else
         {
@@ -213,7 +242,6 @@ public partial class PropertyTests : IntegrationTests
             Property.Uuid("testUuid"),
             Property.UuidArray("testUuidArray"),
             Property.GeoCoordinate("testGeo"),
-            //Property.Blob("testBlob"),
             Property.PhoneNumber("testPhone"),
             Property.Object(
                 "testObject",
@@ -254,7 +282,6 @@ public partial class PropertyTests : IntegrationTests
             TestTextArray = new[] { "dummyTextArray1", "dummyTextArray2" },
             TestInt = 123,
             TestIntArray = new[] { 1, 2, 3 },
-            // TestBlob = System.Text.Encoding.UTF8.GetBytes("Weaviate"),
             TestBool = true,
             TestBoolArray = new[] { true, false },
             TestNumber = 456.789,
@@ -313,6 +340,41 @@ public partial class PropertyTests : IntegrationTests
     }
 
     [Fact]
+    public async Task Test_BatchInsertBlob_WithArrays()
+    {
+        Property[] props = [Property.Blob("testBlob")];
+
+        var testData = new[]
+        {
+            new TestProperties { TestBlob = System.Text.Encoding.UTF8.GetBytes("WeaviateBlob1") },
+            new TestProperties { TestBlob = System.Text.Encoding.UTF8.GetBytes("WeaviateBlob2") },
+            new TestProperties { TestBlob = System.Text.Encoding.UTF8.GetBytes("WeaviateBlob3") },
+        };
+
+        var c = await CollectionFactory<TestProperties>(
+            description: "Testing batch insert blob with arrays",
+            properties: props
+        );
+
+        var requests = BatchInsertRequest.Create(testData);
+
+        var response = await c.Data.InsertMany(requests);
+
+        // 3. Retrieve the object and confirm all properties match
+        foreach (var r in response)
+        {
+            // Blobs must be explicitly requested in returnProperties
+            var obj = await c.Query.FetchObjectByID(r.ID!.Value, returnProperties: "testBlob");
+
+            Assert.NotNull(obj);
+
+            var concreteObj = obj.As<TestProperties>();
+
+            Assert.Equivalent(testData[r.Index], concreteObj);
+        }
+    }
+
+    [Fact]
     public async Task Test_BatchInsert_WithArrays()
     {
         Property[] props =
@@ -355,8 +417,6 @@ public partial class PropertyTests : IntegrationTests
                     ),
                 ]
             ),
-            // TODO Enable this once Blob property works in batch insert
-            // Property.Blob("testBlob"),
         ];
 
         // 1. Create collection
