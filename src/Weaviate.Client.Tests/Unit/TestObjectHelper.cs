@@ -7,6 +7,23 @@ namespace Weaviate.Client.Tests.Unit;
 public partial class ObjectHelperTests
 {
     [Fact]
+    public void Test_BuildBatchProperties_WithBlob()
+    {
+        var testData = new TestProperties
+        {
+            TestBlob = System.Text.Encoding.UTF8.GetBytes("Weaviate"),
+        };
+
+        var bp = ObjectHelper.BuildBatchProperties(testData);
+
+        Assert.True(bp.NonRefProperties.Fields.ContainsKey("testBlob"));
+        Assert.Equal(
+            bp.NonRefProperties.Fields["testBlob"].StringValue,
+            Convert.ToBase64String(testData.TestBlob)
+        );
+    }
+
+    [Fact]
     public void TestNestedRecursiveObject()
     {
         var testData = new TestProperties
@@ -119,6 +136,7 @@ public partial class ObjectHelperTests
     [InlineData(typeof(char), true)]
     [InlineData(typeof(sbyte), true)]
     [InlineData(typeof(byte), true)]
+    [InlineData(typeof(byte[]), true)]
     [InlineData(typeof(short), true)]
     [InlineData(typeof(ushort), true)]
     [InlineData(typeof(int), true)]
