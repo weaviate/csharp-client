@@ -469,10 +469,10 @@ internal class ObjectHelper
 
             // Handle arrays and collections
             if (
-                propType.IsArray
+                (propType.IsArray && propType != typeof(byte[]))
                 || (
                     typeof(System.Collections.IEnumerable).IsAssignableFrom(propType)
-                    && propType != typeof(string)
+                    && !(propType == typeof(string) || propType == typeof(byte[]))
                 )
             )
             {
@@ -921,6 +921,7 @@ internal class ObjectHelper
                 )
             ),
             Google.Protobuf.WellKnownTypes.Struct s => Value.ForStruct(s),
+            byte[] ba => Value.ForString(Convert.ToBase64String(ba)),
             _ => throw new ArgumentException($"Unsupported type: {obj.GetType()}"),
         };
     }
