@@ -73,19 +73,24 @@ public class QueryClient<TData>
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null
-    ) =>
-        (
-            (WeaviateResult)
-                await _grpc.FetchObjects(
-                    _collectionName,
-                    returnProperties: returnProperties,
-                    filters: Filter.WithID(id),
-                    tenant: tenant ?? _collectionClient.Tenant,
-                    returnReferences: returnReferences,
-                    returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty),
-                    includeVectors: includeVectors
-                )
-        ).SingleOrDefault();
+    )
+    {
+        var searchReply = await _grpc.FetchObjects(
+            _collectionName,
+            returnProperties: returnProperties,
+            filters: Filter.WithID(id),
+            tenant: tenant ?? _collectionClient.Tenant,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty),
+            includeVectors: includeVectors
+        );
+
+        WeaviateResult? result = searchReply;
+
+        WeaviateObject? firstObject = result.SingleOrDefault();
+
+        return firstObject;
+    }
 
     public async Task<WeaviateResult> FetchObjectsByIDs(
         HashSet<Guid> ids,

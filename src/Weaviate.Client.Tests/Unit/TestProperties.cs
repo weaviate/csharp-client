@@ -22,10 +22,9 @@ public partial class PropertyTests
         ["UuidArray"] = (Property.UuidArray, Property<Guid[]>.New),
         ["Geo"] = (Property.GeoCoordinate, Property<GeoCoordinate>.New),
         ["Phone"] = (Property.PhoneNumber, Property<PhoneNumber>.New),
-        // TODO Add support for the properties below
-        // ["Blob"] = (Property.Blob, Property<byte[]>.New),
-        // ["Object"] = (Property.Object, Property<object>.New),
-        // ["ObjectArray"] = (Property.ObjectArray, Property<object[]>.New),
+        ["Blob"] = (Property.Blob, Property<byte[]>.New),
+        ["Object"] = (Property.Object, Property<object>.New),
+        ["ObjectArray"] = (Property.ObjectArray, Property<object[]>.New),
     };
 
     [Theory]
@@ -175,5 +174,120 @@ public partial class PropertyTests
 
         // Assert
         Assert.False(result);
+    }
+
+    private class TestClass
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Age { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+    private class TestClassWithArrayProperty
+    {
+        public TestClass[] Items { get; set; } = Array.Empty<TestClass>();
+    }
+
+    private class NestedClass
+    {
+        public string Title { get; set; } = string.Empty;
+        public NestedClass? Details { get; set; } = null;
+        public NestedClass[]? DetailsArray { get; set; } = null;
+    }
+
+    [Fact]
+    public void FromClass_ShouldGeneratePropertiesForSimpleClass()
+    {
+        // Act
+        var properties = Property.FromClass<TestClass>();
+
+        // Assert
+        Assert.Equal(4, properties.Length);
+
+        Assert.Contains(properties, p => p.Name == "name" && p.DataType.Contains(DataType.Text));
+        Assert.Contains(properties, p => p.Name == "age" && p.DataType.Contains(DataType.Int));
+        Assert.Contains(
+            properties,
+            p => p.Name == "isActive" && p.DataType.Contains(DataType.Bool)
+        );
+        Assert.Contains(
+            properties,
+            p => p.Name == "createdAt" && p.DataType.Contains(DataType.Date)
+        );
+    }
+
+    [Fact]
+    public void FromClass_ShouldGeneratePropertiesForObjectArray()
+    {
+        // Act
+        var properties = Property.FromClass<TestClass[]>();
+
+        // Assert
+        Assert.Equal(4, properties.Length);
+    }
+
+    [Fact]
+    public void FromClass_ShouldGeneratePropertiesForObjectArrayProperty()
+    {
+        // Act
+        var properties = Property.FromClass<TestClassWithArrayProperty>();
+
+        // Assert
+        Assert.Single(properties);
+        Assert.NotNull(properties[0].NestedProperties);
+        Assert.Equal(4, properties[0].NestedProperties!.Length);
+    }
+
+    [Fact]
+    public void FromClass_ShouldGeneratePropertiesForNestedClass()
+    {
+        // Act
+        var properties = Property.FromClass<NestedClass>();
+
+        // Assert
+        Assert.Equal(3, properties.Length);
+
+        Assert.Contains(properties, p => p.Name == "title" && p.DataType.Contains(DataType.Text));
+        Assert.Contains(
+            properties,
+            p => p.Name == "details" && p.DataType.Contains(DataType.Object)
+        );
+        Assert.Contains(
+            properties,
+            p => p.Name == "detailsArray" && p.DataType.Contains(DataType.ObjectArray)
+        );
+        var detailsProperty = properties.FirstOrDefault(p => p.Name == "details");
+        Assert.NotNull(detailsProperty);
+        Assert.Equal(DataType.Object, detailsProperty!.DataType[0]);
+        Assert.NotNull(detailsProperty!.NestedProperties);
+        Assert.NotEmpty(detailsProperty.NestedProperties);
+        Assert.Null(detailsProperty.NestedProperties[0].NestedProperties);
+
+        var detailsArrayProperty = properties.FirstOrDefault(p => p.Name == "detailsArray");
+        Assert.NotNull(detailsArrayProperty);
+        Assert.Equal(DataType.ObjectArray, detailsArrayProperty!.DataType[0]);
+        Assert.NotNull(detailsArrayProperty!.NestedProperties);
+        Assert.NotEmpty(detailsArrayProperty.NestedProperties);
+        Assert.Null(detailsArrayProperty.NestedProperties[0].NestedProperties);
+    }
+
+    class EmptyClass { }
+
+    [Fact]
+    public void FromClass_ShouldHandleEmptyClass()
+    {
+        // Arrange
+
+        // Act
+        var properties = Property.FromClass<EmptyClass>();
+
+        // Assert
+        Assert.Empty(properties);
+    }
+
+    class UnsupportedClass
+    {
+        public object UnsupportedProperty { get; set; } = new object();
     }
 }

@@ -28,24 +28,12 @@ public static class WeaviateExtensions
             Class1 = collection.Name,
             Description = collection.Description,
             Properties = collection.Properties.Any()
-                ?
-                [
-                    .. collection
-                        .Properties.Concat(collection.References.Select(r => (Property)r))
-                        .Select(p => new Rest.Dto.Property()
-                        {
-                            Name = p.Name,
-                            DataType = [.. p.DataType],
-                            Description = p.Description,
-                            IndexFilterable = p.IndexFilterable,
-#pragma warning disable CS0612 // Type or member is obsolete
-                            IndexInverted = p.IndexInverted,
-#pragma warning restore CS0612 // Type or member is obsolete
-                            IndexRangeFilters = p.IndexRangeFilters,
-                            IndexSearchable = p.IndexSearchable,
-                            Tokenization = (Rest.Dto.PropertyTokenization?)p.PropertyTokenization,
-                        }),
-                ]
+                ? collection
+                    .Properties.Concat(
+                        collection.References.Select(r => (Weaviate.Client.Models.Property)r)
+                    )
+                    .Select(p => p.ToDto())
+                    .ToList()
                 : null,
             VectorConfig = collection.VectorConfig?.Values.ToDictionary(
                 e => e.Name,
@@ -60,7 +48,7 @@ public static class WeaviateExtensions
             ModuleConfig = moduleConfig.Any() ? moduleConfig : null,
         };
 
-        if (collection.ReplicationConfig is ReplicationConfig rc)
+        if (collection.ReplicationConfig is Weaviate.Client.Models.ReplicationConfig rc)
         {
             data.ReplicationConfig = new Rest.Dto.ReplicationConfig()
             {
@@ -70,7 +58,7 @@ public static class WeaviateExtensions
             };
         }
 
-        if (collection.MultiTenancyConfig is MultiTenancyConfig mtc)
+        if (collection.MultiTenancyConfig is Weaviate.Client.Models.MultiTenancyConfig mtc)
         {
             data.MultiTenancyConfig = new Rest.Dto.MultiTenancyConfig()
             {
@@ -122,7 +110,7 @@ public static class WeaviateExtensions
 
             var vic = VectorIndexSerialization.Factory(v.VectorIndexType, v.VectorIndexConfig);
 
-            VectorizerConfig? vc = null;
+            Weaviate.Client.Models.VectorizerConfig? vc = null;
 
             if (vectorizer is Dictionary<string, object> vecAsDict)
             {
@@ -145,10 +133,10 @@ public static class WeaviateExtensions
                 }
             }
 
-            return new VectorConfig(name, vc, vic);
+            return new Weaviate.Client.Models.VectorConfig(name, vc, vic);
         };
 
-        var vectorConfig = new VectorConfigList(
+        var vectorConfig = new Weaviate.Client.Models.VectorConfigList(
             [.. collection.VectorConfig?.Select(e => makeVectorConfig(e.Key, e.Value)) ?? []]
         );
 
@@ -198,36 +186,41 @@ public static class WeaviateExtensions
 
         var invertedIndexConfig =
             (collection?.InvertedIndexConfig is Rest.Dto.InvertedIndexConfig iic)
-                ? new InvertedIndexConfig()
+                ? new Weaviate.Client.Models.InvertedIndexConfig()
                 {
                     Bm25 =
                         iic.Bm25 == null
                             ? null
-                            : new BM25Config
+                            : new Weaviate.Client.Models.BM25Config
                             {
-                                B = iic.Bm25.B ?? BM25Config.Default.B,
-                                K1 = iic.Bm25.K1 ?? BM25Config.Default.K1,
+                                B = iic.Bm25.B ?? Weaviate.Client.Models.BM25Config.Default.B,
+                                K1 = iic.Bm25.K1 ?? Weaviate.Client.Models.BM25Config.Default.K1,
                             },
                     Stopwords =
                         (iic.Stopwords is Rest.Dto.StopwordConfig swc)
-                            ? new StopwordConfig
+                            ? new Weaviate.Client.Models.StopwordConfig
                             {
                                 Additions = swc.Additions?.ToList() ?? new List<string>(),
                                 Preset = (
                                     swc.Preset ?? ""
-                                ).FromEnumMemberString<StopwordConfig.Presets>(),
+                                ).FromEnumMemberString<Weaviate.Client.Models.StopwordConfig.Presets>(),
                                 Removals = swc.Removals?.ToList() ?? new List<string>(),
                             }
                             : null,
                     CleanupIntervalSeconds = iic.CleanupIntervalSeconds.HasValue
                         ? Convert.ToInt32(iic.CleanupIntervalSeconds)
-                        : InvertedIndexConfig.Default.CleanupIntervalSeconds,
+                        : Weaviate.Client.Models.InvertedIndexConfig.Default.CleanupIntervalSeconds,
                     IndexNullState =
-                        iic.IndexNullState ?? InvertedIndexConfig.Default.IndexNullState,
+                        iic.IndexNullState
+                        ?? Weaviate.Client.Models.InvertedIndexConfig.Default.IndexNullState,
+
                     IndexPropertyLength =
-                        iic.IndexPropertyLength ?? InvertedIndexConfig.Default.IndexPropertyLength,
+                        iic.IndexPropertyLength
+                        ?? Weaviate.Client.Models.InvertedIndexConfig.Default.IndexPropertyLength,
+
                     IndexTimestamps =
-                        iic.IndexTimestamps ?? InvertedIndexConfig.Default.IndexTimestamps,
+                        iic.IndexTimestamps
+                        ?? Weaviate.Client.Models.InvertedIndexConfig.Default.IndexTimestamps,
                 }
                 : null;
 
@@ -240,7 +233,7 @@ public static class WeaviateExtensions
                     ?.Properties?.Where(p => p.DataType?.Any(t => char.IsUpper(t.First())) ?? false)
                     .Select(p =>
                         (Reference)
-                            new Property()
+                            new Weaviate.Client.Models.Property()
                             {
                                 Name = p.Name ?? string.Empty,
                                 DataType = p.DataType?.ToList() ?? [],
@@ -251,19 +244,7 @@ public static class WeaviateExtensions
             Properties =
                 collection
                     ?.Properties?.Where(p => p.DataType?.All(t => char.IsLower(t.First())) ?? false)
-                    .Select(p => new Property()
-                    {
-                        Name = p.Name ?? string.Empty,
-                        DataType = p.DataType?.ToList() ?? [],
-                        Description = p.Description,
-                        IndexFilterable = p.IndexFilterable,
-#pragma warning disable CS0612 // Type or member is obsolete
-                        IndexInverted = p.IndexInverted,
-#pragma warning restore CS0612 // Type or member is obsolete
-                        IndexRangeFilters = p.IndexRangeFilters,
-                        IndexSearchable = p.IndexSearchable,
-                        PropertyTokenization = (PropertyTokenization?)p.Tokenization,
-                    })
+                    .Select(p => p.ToModel())
                     .ToArray() ?? [],
             InvertedIndexConfig = invertedIndexConfig,
             ModuleConfig = moduleConfig,
@@ -271,23 +252,39 @@ public static class WeaviateExtensions
             GenerativeConfig = generative,
             MultiTenancyConfig =
                 (collection?.MultiTenancyConfig is Rest.Dto.MultiTenancyConfig mtc)
-                    ? new MultiTenancyConfig
+                    ? new Weaviate.Client.Models.MultiTenancyConfig
                     {
-                        Enabled = mtc.Enabled ?? MultiTenancyConfig.Default.Enabled,
+                        Enabled =
+                            mtc.Enabled
+                            ?? Weaviate.Client.Models.MultiTenancyConfig.Default.Enabled,
+
                         AutoTenantActivation =
                             mtc.AutoTenantActivation
-                            ?? MultiTenancyConfig.Default.AutoTenantActivation,
+                            ?? Weaviate
+                                .Client
+                                .Models
+                                .MultiTenancyConfig
+                                .Default
+                                .AutoTenantActivation,
+
                         AutoTenantCreation =
-                            mtc.AutoTenantCreation ?? MultiTenancyConfig.Default.AutoTenantCreation,
+                            mtc.AutoTenantCreation
+                            ?? Weaviate.Client.Models.MultiTenancyConfig.Default.AutoTenantCreation,
                     }
                     : null,
             ReplicationConfig =
                 (collection?.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
-                    ? new ReplicationConfig
+                    ? new Weaviate.Client.Models.ReplicationConfig
                     {
-                        AsyncEnabled = rc.AsyncEnabled ?? ReplicationConfig.Default.AsyncEnabled,
-                        Factor = rc.Factor ?? ReplicationConfig.Default.Factor,
-                        DeletionStrategy = (DeletionStrategy?)rc.DeletionStrategy,
+                        AsyncEnabled =
+                            rc.AsyncEnabled
+                            ?? Weaviate.Client.Models.ReplicationConfig.Default.AsyncEnabled,
+
+                        Factor =
+                            rc.Factor ?? Weaviate.Client.Models.ReplicationConfig.Default.Factor,
+
+                        DeletionStrategy = (Weaviate.Client.Models.DeletionStrategy?)
+                            rc.DeletionStrategy,
                     }
                     : null,
             ShardingConfig = shardingConfig,

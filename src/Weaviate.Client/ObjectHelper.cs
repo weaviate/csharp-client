@@ -1,11 +1,13 @@
+using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
 using System.Text.Json;
+using Google.Protobuf;
+using Google.Protobuf.Reflection;
 using Google.Protobuf.WellKnownTypes;
 using Weaviate.Client.Models;
-using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 
@@ -79,7 +81,17 @@ internal class ObjectHelper
         {
             foreach (var kvp in dict)
             {
-                if (kvp.Value is IDictionary<string, object?> subDict)
+                if (kvp.Value?.GetType() == typeof(Rest.Dto.GeoCoordinates))
+                {
+                    var value = (Rest.Dto.GeoCoordinates)kvp.Value;
+                    target[kvp.Key.Capitalize()] = value.ToModel();
+                }
+                if (kvp.Value?.GetType() == typeof(Rest.Dto.PhoneNumber))
+                {
+                    var value = (Rest.Dto.PhoneNumber)kvp.Value;
+                    target[kvp.Key.Capitalize()] = value.ToModel();
+                }
+                else if (kvp.Value is IDictionary<string, object?> subDict)
                 {
                     object? nestedValue = UnmarshallProperties<ExpandoObject>(subDict);
 
@@ -87,18 +99,7 @@ internal class ObjectHelper
                 }
                 else
                 {
-                    if (kvp.Value?.GetType() == typeof(Rest.Dto.GeoCoordinates))
-                    {
-                        var value = (Rest.Dto.GeoCoordinates)kvp.Value;
-                        target[kvp.Key.Capitalize()] = new GeoCoordinate(
-                            value.Latitude ?? 0f,
-                            value.Longitude ?? 0f
-                        );
-                    }
-                    else
-                    {
-                        target[kvp.Key.Capitalize()] = kvp.Value;
-                    }
+                    target[kvp.Key.Capitalize()] = kvp.Value;
                 }
             }
             return instance;
@@ -124,6 +125,7 @@ internal class ObjectHelper
 
             try
             {
+                // Convert the value to the target property type
                 var convertedValue = ConvertValue(value, property.PropertyType);
                 property.SetValue(instance, convertedValue);
             }
@@ -162,6 +164,31 @@ internal class ObjectHelper
         {
             var underlyingType = Nullable.GetUnderlyingType(targetType)!;
             return ConvertValue(value, underlyingType);
+        }
+
+        if (targetType == typeof(GeoCoordinate) && value is Rest.Dto.GeoCoordinates geo)
+        {
+            return geo.ToModel();
+        }
+
+        if (targetType == typeof(Models.PhoneNumber) && value is Rest.Dto.PhoneNumber phoneNumber)
+        {
+            return phoneNumber.ToModel();
+        }
+
+        if (targetType == typeof(byte[]) && value is string base64String)
+        {
+            return Convert.FromBase64String(base64String);
+        }
+
+        if (targetType == typeof(DateTime) && value is string dateString)
+        {
+            return DateTime.SpecifyKind(DateTime.Parse(dateString), DateTimeKind.Utc);
+        }
+
+        if (targetType == typeof(DateTime) && value is DateTime dateTime)
+        {
+            return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
         }
 
         // Handle nested objects (dictionaries -> custom types)
@@ -288,32 +315,115 @@ internal class ObjectHelper
                 continue; // skip non-readable properties
 
             var value = propertyInfo.GetValue(data);
+            var propertyName = propertyInfo.Name.Decapitalize();
 
             if (value is null)
+                continue;
+
+            var dataType = PropertyHelper.DataTypeForType(propertyInfo.PropertyType);
+
+            if (dataType == DataType.GeoCoordinate && value is GeoCoordinate geoValue)
             {
+                propDict[propertyName] = geoValue.ToDto();
                 continue;
             }
-            else if (propertyInfo.PropertyType == typeof(DateTime))
+            if (dataType == DataType.PhoneNumber && value is Models.PhoneNumber phoneValue)
             {
-                propDict[propertyInfo.Name] = ((DateTime)value).ToUniversalTime().ToString("o");
+                propDict[propertyName] = phoneValue.ToDto();
+                continue;
             }
-            else if (propertyInfo.PropertyType.IsNativeType())
+            if (dataType == DataType.Date && value is DateTime dateValue)
             {
-                propDict[propertyInfo.Name] = value;
+                propDict[propertyName] = dateValue.ToUniversalTime().ToString("o");
+                continue;
             }
-            else if (propertyInfo.PropertyType == typeof(GeoCoordinate))
+            if (dataType == DataType.DateArray && value is IEnumerable<DateTime> dateValues)
             {
-                var newValue = (GeoCoordinate)value;
-                propDict[propertyInfo.Name] = new GeoCoordinates
-                {
-                    Latitude = newValue.Latitude,
-                    Longitude = newValue.Longitude,
-                };
+                propDict[propertyName] = dateValues
+                    .Select(d => d.ToUniversalTime().ToString("o"))
+                    .ToArray();
+                continue;
             }
-            else
+            if (dataType == DataType.Uuid && value is Guid guidValue)
             {
-                propDict[propertyInfo.Name] = BuildDataTransferObject(value); // recursive call
+                propDict[propertyName] = guidValue.ToString();
+                continue;
             }
+            if (dataType == DataType.UuidArray && value is IEnumerable<Guid> guidValues)
+            {
+                propDict[propertyName] = guidValues.Select(g => g.ToString()).ToArray();
+                continue;
+            }
+            if (dataType == DataType.Text && value is string stringValue)
+            {
+                propDict[propertyName] = stringValue;
+                continue;
+            }
+            if (dataType == DataType.TextArray && value is IEnumerable<string> stringValues)
+            {
+                propDict[propertyName] = stringValues.ToArray();
+                continue;
+            }
+            if (dataType == DataType.Bool && value is bool boolValue)
+            {
+                propDict[propertyName] = boolValue;
+                continue;
+            }
+            if (dataType == DataType.BoolArray && value is IEnumerable<bool> boolValues)
+            {
+                propDict[propertyName] = boolValues.ToArray();
+                continue;
+            }
+            // For numeric types, check both int/long/float/double as needed
+            if (dataType == DataType.Int)
+            {
+                propDict[propertyName] = Convert.ToInt64(value);
+                continue;
+            }
+            if (dataType == DataType.IntArray)
+            {
+                var values = (IEnumerable)value;
+                propDict[propertyName] = values.Cast<object>().Select(Convert.ToInt64).ToArray();
+                continue;
+            }
+            if (dataType == DataType.Number)
+            {
+                propDict[propertyName] = Convert.ToDouble(value);
+                continue;
+            }
+            if (dataType == DataType.NumberArray)
+            {
+                var values = (IEnumerable)value;
+                propDict[propertyName] = values.Cast<object>().Select(Convert.ToDouble).ToArray();
+                continue;
+            }
+            if (dataType == DataType.Number)
+            {
+                propDict[propertyName] = Convert.ToDouble(value);
+                continue;
+            }
+            if (dataType == DataType.Blob && value is byte[] blobValue)
+            {
+                propDict[propertyName] = Convert.ToBase64String(blobValue);
+                continue;
+            }
+            if (dataType == DataType.ObjectArray && value is Array array)
+            {
+                var arrayList = new List<object?>();
+                foreach (var item in array)
+                    arrayList.Add(BuildDataTransferObject(item));
+                propDict[propertyName] = arrayList;
+                continue;
+            }
+            if (dataType == DataType.Object)
+            {
+                propDict[propertyName] = BuildDataTransferObject(value);
+                continue;
+            }
+
+            throw new WeaviateClientException(
+                $"Unsupported property type '{propertyInfo.PropertyType.Name}' for property '{propertyInfo.Name}'. Check the documentation for supported value types."
+            );
         }
 
         return obj;
@@ -330,7 +440,14 @@ internal class ObjectHelper
 
         Google.Protobuf.WellKnownTypes.Struct? nonRefProps = null;
 
-        foreach (var propertyInfo in data.GetType().GetProperties())
+        var type = typeof(TProps);
+
+        if (type == typeof(object))
+        {
+            type = data.GetType();
+        }
+
+        foreach (var propertyInfo in type.GetProperties())
         {
             if (propertyInfo is null)
             {
@@ -347,42 +464,97 @@ internal class ObjectHelper
                 continue;
             }
 
-            if (propertyInfo.PropertyType.IsArray)
+            var propType = propertyInfo.PropertyType;
+            var propName = propertyInfo.Name.Decapitalize();
+
+            // Handle arrays and collections
+            if (
+                propType.IsArray
+                || (
+                    typeof(System.Collections.IEnumerable).IsAssignableFrom(propType)
+                    && propType != typeof(string)
+                )
+            )
             {
+                var elementType = propType.IsArray
+                    ? propType.GetElementType()
+                    : propType.GetGenericArguments().FirstOrDefault();
+
+                // Handle array of objects (nested objects)
+                if (
+                    elementType != null
+                    && !elementType.IsNativeType()
+                    && value is System.Collections.IEnumerable objEnumerable
+                )
+                {
+                    var listValue = new Google.Protobuf.WellKnownTypes.ListValue();
+                    foreach (var item in objEnumerable)
+                    {
+                        if (item != null)
+                        {
+                            var structValue = new Google.Protobuf.WellKnownTypes.Struct();
+                            foreach (var nestedProp in item.GetType().GetProperties())
+                            {
+                                if (!nestedProp.CanRead)
+                                    continue;
+                                var nestedVal = nestedProp.GetValue(item);
+                                if (nestedVal == null)
+                                    continue;
+                                var nestedPropName = nestedProp.Name.Decapitalize();
+
+                                if (nestedProp.PropertyType.IsNativeType())
+                                {
+                                    structValue.Fields[nestedPropName] = ConvertToProtoValue(
+                                        nestedVal
+                                    );
+                                }
+                                else
+                                {
+                                    structValue.Fields[nestedPropName] = ConvertToProtoValue(
+                                        BuildBatchProperties(nestedVal).NonRefProperties
+                                    );
+                                }
+                            }
+                            listValue.Values.Add(
+                                Google.Protobuf.WellKnownTypes.Value.ForStruct(structValue)
+                            );
+                        }
+                    }
+                    nonRefProps ??= new();
+                    nonRefProps.Fields.Add(
+                        propName,
+                        Google.Protobuf.WellKnownTypes.Value.ForList(listValue.Values.ToArray())
+                    );
+                    continue;
+                }
+
+                // Handle primitive arrays/collections
                 switch (value)
                 {
                     case bool[] v:
                         props.BooleanArrayProperties.Add(
-                            new V1.BooleanArrayProperties()
-                            {
-                                PropName = propertyInfo.Name,
-                                Values = { v },
-                            }
+                            new V1.BooleanArrayProperties() { PropName = propName, Values = { v } }
                         );
                         break;
                     case int[] v:
                         props.IntArrayProperties.Add(
                             new V1.IntArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 Values = { v.Select(Convert.ToInt64) },
                             }
                         );
                         break;
                     case long[] v:
                         props.IntArrayProperties.Add(
-                            new V1.IntArrayProperties()
-                            {
-                                PropName = propertyInfo.Name,
-                                Values = { v },
-                            }
+                            new V1.IntArrayProperties() { PropName = propName, Values = { v } }
                         );
                         break;
                     case double[] v:
                         props.NumberArrayProperties.Add(
                             new V1.NumberArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 ValuesBytes = v.ToByteString(),
                             }
                         );
@@ -391,26 +563,22 @@ internal class ObjectHelper
                         props.NumberArrayProperties.Add(
                             new V1.NumberArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 ValuesBytes = v.Select(Convert.ToDouble).ToByteString(),
                             }
                         );
                         break;
                     case string[] v:
                         props.TextArrayProperties.Add(
-                            new V1.TextArrayProperties()
-                            {
-                                PropName = propertyInfo.Name,
-                                Values = { v },
-                            }
+                            new V1.TextArrayProperties() { PropName = propName, Values = { v } }
                         );
                         break;
                     case Guid[] v:
                         props.TextArrayProperties.Add(
                             new V1.TextArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
-                                Values = { v.Select(v => v.ToString()) },
+                                PropName = propName,
+                                Values = { v.Select(g => g.ToString()) },
                             }
                         );
                         break;
@@ -418,8 +586,8 @@ internal class ObjectHelper
                         props.TextArrayProperties.Add(
                             new V1.TextArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
-                                Values = { v.Select(v => v.ToUniversalTime().ToString("o")) },
+                                PropName = propName,
+                                Values = { v.Select(d => d.ToUniversalTime().ToString("o")) },
                             }
                         );
                         break;
@@ -427,19 +595,17 @@ internal class ObjectHelper
                         props.TextArrayProperties.Add(
                             new V1.TextArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 Values = { v.Select(dto => dto.ToUniversalTime().ToString("o")) },
                             }
                         );
                         break;
-
-                    // Handle general IEnumerable<T> (e.g., List<T>, HashSet<T>)
                     case System.Collections.IEnumerable enumerable
                         when enumerable is IEnumerable<bool> bools:
                         props.BooleanArrayProperties.Add(
                             new V1.BooleanArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 Values = { bools },
                             }
                         );
@@ -449,7 +615,7 @@ internal class ObjectHelper
                         props.IntArrayProperties.Add(
                             new V1.IntArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 Values = { ints.Select(Convert.ToInt64) },
                             }
                         );
@@ -457,11 +623,7 @@ internal class ObjectHelper
                     case System.Collections.IEnumerable enumerable
                         when enumerable is IEnumerable<long> longs:
                         props.IntArrayProperties.Add(
-                            new V1.IntArrayProperties()
-                            {
-                                PropName = propertyInfo.Name,
-                                Values = { longs },
-                            }
+                            new V1.IntArrayProperties() { PropName = propName, Values = { longs } }
                         );
                         continue;
                     case System.Collections.IEnumerable enumerable
@@ -469,7 +631,7 @@ internal class ObjectHelper
                         props.NumberArrayProperties.Add(
                             new V1.NumberArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 ValuesBytes = doubles.ToByteString(),
                             }
                         );
@@ -479,7 +641,7 @@ internal class ObjectHelper
                         props.NumberArrayProperties.Add(
                             new V1.NumberArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 ValuesBytes = floats
                                     .Select(f => Convert.ToDouble(f))
                                     .ToByteString(),
@@ -491,7 +653,7 @@ internal class ObjectHelper
                         props.TextArrayProperties.Add(
                             new V1.TextArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 Values = { strings },
                             }
                         );
@@ -501,7 +663,7 @@ internal class ObjectHelper
                         props.TextArrayProperties.Add(
                             new V1.TextArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 Values = { guids.Select(g => g.ToString()) },
                             }
                         );
@@ -511,7 +673,7 @@ internal class ObjectHelper
                         props.TextArrayProperties.Add(
                             new V1.TextArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 Values =
                                 {
                                     dateTimes.Select(dt => dt.ToUniversalTime().ToString("o")),
@@ -524,7 +686,7 @@ internal class ObjectHelper
                         props.TextArrayProperties.Add(
                             new V1.TextArrayProperties()
                             {
-                                PropName = propertyInfo.Name,
+                                PropName = propName,
                                 Values =
                                 {
                                     dateTimeOffsets.Select(dto =>
@@ -536,17 +698,32 @@ internal class ObjectHelper
                         continue;
                     default:
                         throw new WeaviateClientException(
-                            $"Unsupported array type '{value.GetType().GetElementType()?.Name ?? value.GetType().Name}' for property '{propertyInfo.Name}'. Check the documentation for supported array value types."
+                            $"Unsupported array type '{value.GetType().GetElementType()?.Name ?? value.GetType().Name}' for property '{propName}'. Check the documentation for supported array value types."
                         );
                 }
-                continue; // Move to the next property after handling array
+                continue;
             }
 
-            if (propertyInfo.PropertyType.IsNativeType())
+            // Handle nested object
+            if (!propType.IsNativeType())
             {
                 nonRefProps ??= new();
+                var nestedStruct = BuildBatchProperties(value).NonRefProperties;
+                if (nestedStruct != null)
+                {
+                    nonRefProps.Fields.Add(
+                        propName,
+                        Google.Protobuf.WellKnownTypes.Value.ForStruct(nestedStruct)
+                    );
+                }
+                continue;
+            }
 
-                nonRefProps.Fields.Add(propertyInfo.Name, ConvertToProtoValue(value));
+            // Handle native types
+            if (propType.IsNativeType())
+            {
+                nonRefProps ??= new();
+                nonRefProps.Fields.Add(propName, ConvertToProtoValue(value));
             }
         }
 
@@ -555,12 +732,168 @@ internal class ObjectHelper
         return props;
     }
 
+    /// <summary>
+    /// Converts any IMessage to a Google.Protobuf.WellKnownTypes.Struct
+    /// efficiently using reflection.
+    /// </summary>
+    public static Struct ToStruct(IMessage message)
+    {
+        var structFields = new Struct().Fields;
+
+        foreach (var field in message.Descriptor.Fields.InDeclarationOrder())
+        {
+            var value = field.Accessor.GetValue(message);
+
+            // 1. Skip nulls (applies to message types)
+            if (value == null)
+            {
+                continue;
+            }
+
+            // 2. Skip fields that are set to their default "zero" value
+            if (field.IsRepeated)
+            {
+                if (value is IList list && list.Count == 0)
+                    continue;
+            }
+            else if (field.IsMap)
+            {
+                if (value is IDictionary map && map.Count == 0)
+                    continue;
+            }
+            else
+            {
+                // Check for scalar defaults
+                switch (field.FieldType)
+                {
+                    case FieldType.Bool:
+                        if (value is false)
+                            continue;
+                        break;
+                    case FieldType.String:
+                        if (value is "")
+                            continue;
+                        break;
+                    case FieldType.Bytes:
+                        if (value is ByteString bs && bs.IsEmpty)
+                            continue;
+                        break;
+                    case FieldType.Double:
+                        if (value is 0.0d)
+                            continue;
+                        break;
+                    case FieldType.Float:
+                        if (value is 0.0f)
+                            continue;
+                        break;
+                    case FieldType.Int64:
+                    case FieldType.SFixed64:
+                    case FieldType.SInt64:
+                        if (value is 0L)
+                            continue;
+                        break;
+                    case FieldType.UInt64:
+                    case FieldType.Fixed64:
+                        if (value is 0UL)
+                            continue;
+                        break;
+                    case FieldType.Int32:
+                    case FieldType.SFixed32:
+                    case FieldType.SInt32:
+                        if (value is 0)
+                            continue;
+                        break;
+                    case FieldType.UInt32:
+                    case FieldType.Fixed32:
+                        if (value is 0U)
+                            continue;
+                        break;
+                    case FieldType.Enum:
+                        // The default for an enum is its 0-value.
+                        // The accessor returns the C# enum, so we cast to int.
+                        if (Convert.ToInt32(value) == 0)
+                            continue;
+                        break;
+                    // FieldType.Message is handled by the null check above
+                }
+            }
+
+            // If we got here, the value is not default. Add it.
+            // Pass the 'field' so we can handle enums correctly.
+            structFields[field.JsonName] = ConvertToProtoValue(value, field);
+        }
+
+        return new Struct { Fields = { structFields } };
+    }
+
+    /// <summary>
+    /// Recursively converts a C# object into a Protobuf Value.
+    /// </summary>
+    private static Value ConvertToProtoValue(object value, FieldDescriptor field)
+    {
+        switch (value)
+        {
+            // Handle nested messages
+            case IMessage messageValue:
+                return Value.ForStruct(ToStruct(messageValue));
+
+            // Handle repeated fields (lists)
+            case IList listValue:
+                var list = new ListValue();
+                foreach (var item in listValue)
+                {
+                    // Pass the field descriptor for nested enum lookups
+                    list.Values.Add(ConvertToProtoValue(item, field));
+                }
+                return Value.ForList(list.Values.ToArray());
+
+            // Handle primitive types
+            case bool boolValue:
+                return Value.ForBool(boolValue);
+            case string stringValue:
+                return Value.ForString(stringValue);
+            case int:
+            case uint:
+            case long:
+            case ulong:
+            case float:
+            case double:
+                return Value.ForNumber(Convert.ToDouble(value));
+
+            case ByteString byteStringValue:
+                return Value.ForString(byteStringValue.ToBase64());
+
+            // Handle Enums (serialize as string name)
+            case System.Enum enumValue:
+                // Find the string name from the enum's descriptor
+                var enumDescriptor = field.EnumType.FindValueByNumber(Convert.ToInt32(value));
+                if (enumDescriptor != null)
+                {
+                    // Standard case: "MY_ENUM_VALUE"
+                    return Value.ForString(enumDescriptor.Name);
+                }
+                else
+                {
+                    // Unrecognized enum value: serialize as its number
+                    return Value.ForNumber(Convert.ToDouble(value));
+                }
+
+            case null:
+                return Value.ForNull();
+
+            // Fallback for unknown types
+            default:
+                return Value.ForString(value.ToString());
+        }
+    }
+
     // Helper method to convert C# objects to protobuf Values
     internal static Value ConvertToProtoValue(object obj)
     {
         return obj switch
         {
             null => Value.ForNull(),
+            // byte[] ba => Value.ForString(Convert.ToBase64String(ba)),
             bool b => Value.ForBool(b),
             int i => Value.ForNumber(i),
             long l => Value.ForNumber(l),
@@ -571,17 +904,23 @@ internal class ObjectHelper
             DateTime dt => Value.ForString(dt.ToUniversalTime().ToString("o")),
             Guid uuid => Value.ForString(uuid.ToString()),
             GeoCoordinate v => Value.ForStruct(
-                new Struct
-                {
-                    Fields =
-                    {
-                        ["latitude"] = Value.ForNumber(v.Latitude),
-                        ["longitude"] = Value.ForNumber(v.Longitude),
-                    },
-                }
+                ToStruct(new V1.GeoCoordinate() { Latitude = v.Latitude, Longitude = v.Longitude })
             ),
-            // Dictionary<string, object> dict => Value.ForStruct(CreateStructFromDictionary(dict)),
-            // IEnumerable<object> enumerable => CreateListValue(enumerable),
+            Models.PhoneNumber pn => Value.ForStruct(
+                ToStruct(
+                    new V1.PhoneNumber()
+                    {
+                        CountryCode = pn.CountryCode ?? 0,
+                        DefaultCountry = pn.DefaultCountry,
+                        Input = pn.Input,
+                        InternationalFormatted = pn.InternationalFormatted,
+                        National = pn.National ?? 0,
+                        NationalFormatted = pn.NationalFormatted,
+                        Valid = pn.Valid ?? false,
+                    }
+                )
+            ),
+            Google.Protobuf.WellKnownTypes.Struct s => Value.ForStruct(s),
             _ => throw new ArgumentException($"Unsupported type: {obj.GetType()}"),
         };
     }

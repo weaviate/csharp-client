@@ -102,13 +102,21 @@ public class MockHttpMessageHandler : HttpMessageHandler
         CancellationToken cancellationToken
     )
     {
-        // Store the request for later assertions
-        _requests.Add(request);
+        // Exclude /v1/meta requests from being added to _requests
+        if (request.RequestUri?.PathAndQuery.Contains("/v1/meta") != true)
+        {
+            _requests.Add(request);
+        }
 
         // If a custom handler is set, use it
         if (_requestHandler != null)
         {
-            return await _requestHandler(request);
+            var handlerResponse = await _requestHandler(request);
+            if (handlerResponse != null)
+            {
+                return handlerResponse;
+            }
+            // If handler returns null, fall back to queued responses
         }
 
         // Otherwise, use queued responses

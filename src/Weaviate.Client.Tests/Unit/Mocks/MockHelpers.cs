@@ -11,10 +11,37 @@ public static class MockWeaviateClient
 {
     /// <summary>
     /// Creates a WeaviateClient with a mock HTTP handler.
+    /// Automatically includes a MetaInfo handler for the /v1/meta endpoint.
     /// </summary>
     public static (WeaviateClient Client, MockHttpMessageHandler Handler) CreateWithMockHandler()
     {
         var handler = new MockHttpMessageHandler();
+
+        // Set a handler that returns MetaInfo for /v1/meta, otherwise uses the queue
+        handler.SetHandler(req =>
+        {
+            if (req.RequestUri?.PathAndQuery.Contains("/v1/meta") == true)
+            {
+                var metaResponse = MockResponses.MetaInfo();
+                return new HttpResponseMessage(metaResponse.StatusCode)
+                {
+                    Content = new System.Net.Http.StringContent(
+                        metaResponse.Content ?? string.Empty,
+                        Encoding.UTF8,
+                        metaResponse.ContentType ?? "application/json"
+                    ),
+                };
+            }
+
+            // For all other requests, let SendAsync use the queued responses
+            return null!;
+
+            throw new InvalidOperationException(
+                $"No mock response configured for {req.Method} {req.RequestUri?.PathAndQuery}. "
+                    + "Use handler.AddResponse() or handler.SetHandler() to configure responses."
+            );
+        });
+
         var client = WeaviateClientBuilder.Local(httpMessageHandler: handler).Build();
 
         return (client, handler);
@@ -220,11 +247,11 @@ public static class MockResponses
     /// </summary>
     public static MockHttpResponse MetaInfo(string version = "1.27.0")
     {
-        var response = new
+        var response = new Rest.Dto.Meta
         {
-            hostname = "localhost",
-            version = version,
-            modules = new { },
+            Hostname = "localhost",
+            Version = version,
+            Modules = new { },
         };
 
         return new MockHttpResponse
