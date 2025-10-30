@@ -81,3 +81,5 @@ public class WeaviateNotFoundException : WeaviateServerException
         return $"{base.ToString()} ResourceType: {ResourceType}.";
     }
 }
+
+// TODO WeaviateUnauthorizedException, WeaviateUnauthenticatedException, WeaviateBadRequestException
