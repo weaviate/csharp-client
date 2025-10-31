@@ -450,7 +450,7 @@ internal partial class WeaviateGrpcClient
     }
 
     private static NearTextSearch BuildNearText(
-        OneOrManyOf<string> query,
+        string[] query,
         double? distance,
         double? certainty,
         Move? moveTo,
@@ -599,7 +599,7 @@ internal partial class WeaviateGrpcClient
         if (vector is null && nearText is not null && nearVector is null)
         {
             request.HybridSearch.NearText = BuildNearText(
-                nearText.Query,
+                [nearText.Query],
                 nearText.Distance,
                 nearText.Certainty,
                 nearText.MoveTo,

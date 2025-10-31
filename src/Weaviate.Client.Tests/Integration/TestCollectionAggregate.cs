@@ -443,7 +443,7 @@ public partial class AggregatesTests : IntegrationTests
         if (option.ContainsKey("object_limit"))
         {
             res = await collectionClient.Aggregate.NearText(
-                new[] { text1 },
+                text1,
                 metrics: metrics,
                 limit: Convert.ToUInt32(option["object_limit"])
             );
@@ -451,7 +451,7 @@ public partial class AggregatesTests : IntegrationTests
         else if (option.ContainsKey("certainty"))
         {
             res = await collectionClient.Aggregate.NearText(
-                new[] { text1 },
+                [text1],
                 metrics: metrics,
                 certainty: Convert.ToDouble(option["certainty"])
             );
@@ -459,7 +459,7 @@ public partial class AggregatesTests : IntegrationTests
         else if (option.ContainsKey("distance"))
         {
             res = await collectionClient.Aggregate.NearText(
-                new[] { text1 },
+                new[] { text1 }!,
                 metrics: metrics,
                 distance: Convert.ToDouble(option["distance"])
             );
@@ -470,7 +470,7 @@ public partial class AggregatesTests : IntegrationTests
             var moveTo = option.ContainsKey("move_to") ? option["move_to"] as Move : null;
             var moveAway = option.ContainsKey("move_away") ? option["move_away"] as Move : null;
             res = await collectionClient.Aggregate.NearText(
-                new[] { text1 },
+                new[] { text1 }!,
                 metrics: metrics,
                 moveTo: moveTo,
                 moveAway: moveAway
