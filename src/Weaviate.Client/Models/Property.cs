@@ -19,13 +19,22 @@ public delegate Property PropertyFactory(
     bool? indexFilterable = null,
     bool? indexRangeFilters = null,
     bool? indexSearchable = null,
-    PropertyTokenization? tokenization = null
+    PropertyTokenization? tokenization = null,
+    Property[]? subProperties = null
 );
 
 internal class PropertyHelper
 {
     internal static PropertyFactory Factory(string dataType) =>
-        (name, description, indexFilterable, indexRangeFilters, indexSearchable, tokenization) =>
+        (
+            name,
+            description,
+            indexFilterable,
+            indexRangeFilters,
+            indexSearchable,
+            tokenization,
+            subProperties
+        ) =>
             new Property
             {
                 Name = name,
@@ -35,9 +44,55 @@ internal class PropertyHelper
                 IndexRangeFilters = indexRangeFilters,
                 IndexSearchable = indexSearchable,
                 PropertyTokenization = tokenization,
+                NestedProperties =
+                    (dataType == Models.DataType.Object || dataType == Models.DataType.ObjectArray)
+                        ? subProperties
+                        : null,
             };
 
-    internal static PropertyFactory ForType(Type t)
+    internal static string DataTypeForCollectionType(Type? elementType)
+    {
+        if (elementType == null)
+            return null!; // or throw an exception
+
+        // Handle special collection element types
+        if (elementType == typeof(Guid))
+        {
+            return DataType.UuidArray; // Assuming you have array-specific methods
+        }
+
+        if (elementType == typeof(String))
+        {
+            return DataType.TextArray; // Assuming you have array-specific methods
+        }
+
+        var tc = Type.GetTypeCode(elementType);
+
+        // Handle primitive collection element types
+        string? f = tc switch
+        {
+            TypeCode.Int16 => DataType.IntArray,
+            TypeCode.UInt16 => DataType.IntArray,
+            TypeCode.Int32 => DataType.IntArray,
+            TypeCode.UInt32 => DataType.IntArray,
+            TypeCode.Int64 => DataType.IntArray,
+            TypeCode.UInt64 => DataType.IntArray,
+            TypeCode.DateTime => DataType.DateArray,
+            TypeCode.Boolean => DataType.BoolArray,
+            TypeCode.Byte => DataType.Blob,
+            TypeCode.SByte => DataType.Blob,
+            TypeCode.Char => DataType.TextArray,
+            TypeCode.Single => DataType.NumberArray,
+            TypeCode.Double => DataType.NumberArray,
+            TypeCode.Decimal => DataType.NumberArray,
+            TypeCode.Object => DataType.ObjectArray,
+            _ => null,
+        };
+
+        return f!;
+    }
+
+    internal static string DataTypeForType(Type t)
     {
         // Handle nullable types - get the underlying type
         Type actualType = Nullable.GetUnderlyingType(t) ?? t;
@@ -45,40 +100,52 @@ internal class PropertyHelper
         // Handle special types first
         if (actualType == typeof(Guid))
         {
-            return Property.Uuid;
+            return DataType.Uuid;
         }
 
         if (actualType == typeof(GeoCoordinate))
         {
-            return Property.GeoCoordinate;
+            return DataType.GeoCoordinate;
         }
 
         if (actualType == typeof(PhoneNumber))
         {
-            return Property.PhoneNumber;
+            return DataType.PhoneNumber;
         }
 
-        // Handle primitive types
-        PropertyFactory? f = Type.GetTypeCode(actualType) switch
+        // String must be handled early as it is also IEnumerable<char>,
+        // which would be mistaken for a collection type.
+        if (actualType == typeof(String))
         {
-            TypeCode.String => Property.Text,
-            TypeCode.Int16 => Property.Int,
-            TypeCode.UInt16 => Property.Int,
-            TypeCode.Int32 => Property.Int,
-            TypeCode.UInt32 => Property.Int,
-            TypeCode.Int64 => Property.Int,
-            TypeCode.UInt64 => Property.Int,
-            TypeCode.DateTime => Property.Date,
-            TypeCode.Boolean => Property.Bool,
-            TypeCode.Char => Property.Text,
-            TypeCode.SByte => null,
-            TypeCode.Byte => null,
-            TypeCode.Single => Property.Number,
-            TypeCode.Double => Property.Number,
-            TypeCode.Decimal => Property.Number,
-            TypeCode.Empty => null,
-            TypeCode.Object => null,
-            TypeCode.DBNull => null,
+            return DataType.Text;
+        }
+
+        // Handle arrays and collections
+        if (IsArrayOrCollection(actualType, out Type? elementType))
+        {
+            return DataTypeForCollectionType(elementType);
+        }
+
+        var tc = Type.GetTypeCode(actualType);
+
+        // Handle primitive types
+        string? f = tc switch
+        {
+            TypeCode.String => DataType.Text,
+            TypeCode.Int16 => DataType.Int,
+            TypeCode.UInt16 => DataType.Int,
+            TypeCode.Int32 => DataType.Int,
+            TypeCode.UInt32 => DataType.Int,
+            TypeCode.Int64 => DataType.Int,
+            TypeCode.UInt64 => DataType.Int,
+            TypeCode.DateTime => DataType.Date,
+            TypeCode.Boolean => DataType.Bool,
+            TypeCode.Char => DataType.Text,
+            TypeCode.SByte => DataType.Blob,
+            TypeCode.Byte => DataType.Blob,
+            TypeCode.Single => DataType.Number,
+            TypeCode.Double => DataType.Number,
+            TypeCode.Decimal => DataType.Number,
             _ => null,
         };
 
@@ -87,13 +154,21 @@ internal class PropertyHelper
             return f;
         }
 
-        // Handle arrays and collections
-        if (IsArrayOrCollection(actualType, out Type? elementType))
+        if (tc == TypeCode.Object)
         {
-            return HandleCollectionType(elementType);
+            return DataType.Object;
         }
 
-        throw new NotSupportedException($"Type {t.Name} not supported");
+        throw new WeaviateClientException(
+            new NotSupportedException($"Type {t.Name} not supported")
+        );
+    }
+
+    internal static PropertyFactory ForType(Type t)
+    {
+        var dataType = DataTypeForType(t);
+
+        return PropertyHelper.Factory(dataType);
     }
 
     private static bool IsArrayOrCollection(Type type, out Type? elementType)
@@ -141,60 +216,27 @@ internal class PropertyHelper
 
         return false;
     }
-
-    private static PropertyFactory HandleCollectionType(Type? elementType)
-    {
-        if (elementType == null)
-            return null!; // or throw an exception
-
-        // Handle special collection element types
-        if (elementType == typeof(Guid))
-        {
-            return Property.UuidArray; // Assuming you have array-specific methods
-        }
-
-        // Handle primitive collection element types
-        PropertyFactory? f = Type.GetTypeCode(elementType) switch
-        {
-            TypeCode.String => Property.TextArray,
-            TypeCode.Int16 => Property.IntArray,
-            TypeCode.UInt16 => Property.IntArray,
-            TypeCode.Int32 => Property.IntArray,
-            TypeCode.UInt32 => Property.IntArray,
-            TypeCode.Int64 => Property.IntArray,
-            TypeCode.UInt64 => Property.IntArray,
-            TypeCode.DateTime => Property.DateArray,
-            TypeCode.Boolean => Property.BoolArray,
-            TypeCode.Char => Property.TextArray,
-            TypeCode.Single => Property.NumberArray,
-            TypeCode.Double => Property.NumberArray,
-            TypeCode.Decimal => Property.NumberArray,
-            _ => null,
-        };
-
-        return f!;
-    }
 }
 
 public static class DataType
 {
-    public static string Text => "text";
-    public static string TextArray => "text[]";
-    public static string Int => "int";
-    public static string IntArray => "int[]";
-    public static string Bool => "boolean";
-    public static string BoolArray => "boolean[]";
-    public static string Number => "number";
-    public static string NumberArray => "number[]";
-    public static string Date => "date";
-    public static string DateArray => "date[]";
-    public static string Uuid => "uuid";
-    public static string UuidArray => "uuid[]";
-    public static string GeoCoordinate => "geoCoordinates";
-    public static string Blob => "blob";
-    public static string PhoneNumber => "phoneNumber";
-    public static string Object => "object";
-    public static string ObjectArray => "object[]";
+    public const string Text = "text";
+    public const string TextArray = "text[]";
+    public const string Int = "int";
+    public const string IntArray = "int[]";
+    public const string Bool = "boolean";
+    public const string BoolArray = "boolean[]";
+    public const string Number = "number";
+    public const string NumberArray = "number[]";
+    public const string Date = "date";
+    public const string DateArray = "date[]";
+    public const string Uuid = "uuid";
+    public const string UuidArray = "uuid[]";
+    public const string GeoCoordinate = "geoCoordinates";
+    public const string Blob = "blob";
+    public const string PhoneNumber = "phoneNumber";
+    public const string Object = "object";
+    public const string ObjectArray = "object[]";
 }
 
 public record Reference(string Name, string TargetCollection, string? Description = null)
@@ -242,6 +284,7 @@ public record Property : IEquatable<Property>
     public bool? IndexRangeFilters { get; internal set; }
     public bool? IndexSearchable { get; internal set; }
     public PropertyTokenization? PropertyTokenization { get; internal set; }
+    public Property[]? NestedProperties { get; internal set; }
 
     public static PropertyFactory Text => PropertyHelper.Factory(Models.DataType.Text);
     public static PropertyFactory TextArray => PropertyHelper.Factory(Models.DataType.TextArray);
@@ -271,13 +314,75 @@ public record Property : IEquatable<Property>
         string? description = null
     ) => new(name, targetCollection, description);
 
-    // Extract collection properties from type specified by TData.
-    public static Property[] FromClass<TData>()
+    // Extract collection properties from type specified by TData, supporting nested properties up to maxDepth.
+    public static Property[] FromClass<TData>(int maxDepth = 1)
     {
-        return typeof(TData)
-            .GetProperties()
-            .Select(x => PropertyHelper.ForType(x.PropertyType)(x.Name))
+        return FromClass(typeof(TData), maxDepth);
+    }
+
+    public static Property[] FromClass(Type type, int maxDepth = 1)
+    {
+        string dataType = PropertyHelper.DataTypeForType(type);
+        return FromClass(type, dataType, maxDepth, new Dictionary<Type, int>())
+            ?? Array.Empty<Property>();
+    }
+
+    private static Property[]? FromClass(
+        Type type,
+        string dataType,
+        int maxDepth,
+        Dictionary<Type, int> seenTypes
+    )
+    {
+        int currentDepth = seenTypes.TryGetValue(type, out int prevDepth) ? prevDepth + 1 : 0;
+
+        if (maxDepth < 0 || currentDepth > maxDepth)
+            return null;
+
+        seenTypes[type] = currentDepth;
+
+        if (type.IsArray || dataType == Models.DataType.ObjectArray)
+        {
+            type =
+                type.GetElementType()
+                ?? throw new WeaviateClientException("Can't get element type");
+        }
+
+        var props = type.GetProperties()
+            .Where(x => x.CanRead && x.CanWrite)
+            .Select(x =>
+            {
+                var dataTypeProp = PropertyHelper.DataTypeForType(x.PropertyType);
+
+                Property[]? subProperties = null;
+
+                if (
+                    dataTypeProp == Models.DataType.Object
+                    || dataTypeProp == Models.DataType.ObjectArray
+                )
+                {
+                    subProperties = FromClass(
+                        x.PropertyType,
+                        dataTypeProp,
+                        maxDepth,
+                        new Dictionary<Type, int>(seenTypes)
+                    );
+
+                    if (subProperties == null || subProperties.Length == 0)
+                    {
+                        return null;
+                    }
+                }
+
+                var factory = PropertyHelper.Factory(dataTypeProp);
+
+                return factory(x.Name, subProperties: subProperties);
+            })
+            .Where(p => p != null)
+            .Select(p => p!)
             .ToArray();
+
+        return props;
     }
 
     public override int GetHashCode()
@@ -293,6 +398,7 @@ public record Property : IEquatable<Property>
         hash.Add(IndexRangeFilters);
         hash.Add(IndexSearchable);
         hash.Add(PropertyTokenization);
+        hash.Add(NestedProperties);
         return hash.ToHashCode();
     }
 
@@ -310,6 +416,14 @@ public record Property : IEquatable<Property>
             && IndexFilterable == other.IndexFilterable
             && IndexRangeFilters == other.IndexRangeFilters
             && IndexSearchable == other.IndexSearchable
-            && PropertyTokenization == other.PropertyTokenization;
+            && PropertyTokenization == other.PropertyTokenization
+            && (
+                (NestedProperties == null && other.NestedProperties == null)
+                || (
+                    NestedProperties != null
+                    && other.NestedProperties != null
+                    && NestedProperties.SequenceEqual(other.NestedProperties)
+                )
+            );
     }
 }

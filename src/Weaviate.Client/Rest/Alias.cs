@@ -62,9 +62,9 @@ public partial class WeaviateRestClient
 
         return statusCode switch
         {
-            HttpStatusCode.NotFound => throw new WeaviateRestServerException(
-                "Alias not found",
-                statusCode
+            HttpStatusCode.NotFound => throw new WeaviateNotFoundException(
+                new WeaviateRestServerException(statusCode),
+                resourceType: ResourceType.Alias
             ),
             _ => await response.Content.ReadFromJsonAsync<Dto.Alias>(
                 WeaviateRestClient.RestJsonSerializerOptions
