@@ -125,7 +125,7 @@ public class QueryClient<TData>
     ) =>
         await _grpc.SearchNearText(
             _collectionClient.Name,
-            text,
+            text.ToArray(),
             distance: distance,
             certainty: certainty,
             limit: limit,
@@ -163,7 +163,7 @@ public class QueryClient<TData>
     ) =>
         await _grpc.SearchNearText(
             _collectionClient.Name,
-            text,
+            text.ToArray(),
             groupBy: groupBy,
             distance: distance,
             certainty: certainty,
