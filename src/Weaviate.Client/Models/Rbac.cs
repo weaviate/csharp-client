@@ -1,5 +1,9 @@
 namespace Weaviate.Client.Models;
 
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+
 /// <summary>
 /// Database user types (subset of underlying DTO enum values)
 /// </summary>
@@ -38,8 +42,20 @@ public record RoleInfo(string Name, IEnumerable<PermissionInfo> Permissions);
 
 /// <summary>
 /// Simplified permission representation exposing only the action; full resource scoping is available via Raw.
+/// Provides convenience constructor accepting an <see cref="RbacPermissionAction"/> enum value.
 /// </summary>
-public record PermissionInfo(string Action);
+public record PermissionInfo(string Action)
+{
+    public PermissionInfo(RbacPermissionAction action)
+        : this(action.ToEnumMemberString()) { }
+
+    private static string GetEnumMemberValue(RbacPermissionAction action) =>
+        typeof(RbacPermissionAction)
+            .GetMember(action.ToString())
+            .First()
+            .GetCustomAttribute<EnumMemberAttribute>()
+            ?.Value ?? action.ToString();
+}
 
 /// <summary>
 /// Role assignment for a user.

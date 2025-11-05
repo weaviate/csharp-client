@@ -459,13 +459,8 @@ public static class WeaviateExtensions
         return Google.Protobuf.ByteString.FromStream(stream);
     }
 
-    internal static string? ToEnumMemberString(this Enum? enumValue)
+    internal static string ToEnumMemberString(this Enum enumValue)
     {
-        if (enumValue == null)
-        {
-            return null;
-        }
-
         return enumValue
                 .GetType()
                 .GetMember(enumValue.ToString())
