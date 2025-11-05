@@ -28,8 +28,14 @@ public class MockHttpMessageHandler : HttpMessageHandler
     /// Enqueues a response to be returned for the next request.
     /// Multiple responses can be queued for sequential requests.
     /// </summary>
-    public MockHttpMessageHandler AddResponse(MockHttpResponse response)
+    /// <param name="response">The mock response to return.</param>
+    /// <param name="expectedEndpoint">Optional endpoint path that must match the incoming request (e.g., "/v1/users/db"). If provided, the handler will validate the request path before returning this response.</param>
+    public MockHttpMessageHandler AddResponse(
+        MockHttpResponse response,
+        string? expectedEndpoint = null
+    )
     {
+        response.ExpectedEndpoint = expectedEndpoint;
         _responses.Enqueue(response);
         return this;
     }
@@ -37,8 +43,12 @@ public class MockHttpMessageHandler : HttpMessageHandler
     /// <summary>
     /// Enqueues a JSON response with status 200 OK.
     /// </summary>
+    /// <param name="data">The object to serialize as JSON.</param>
+    /// <param name="expectedEndpoint">Optional endpoint path that must match the incoming request (e.g., "/v1/users/db"). If provided, the handler will validate the request path before returning this response.</param>
+    /// <param name="statusCode">HTTP status code (default: 200 OK).</param>
     public MockHttpMessageHandler AddJsonResponse<T>(
         T data,
+        string? expectedEndpoint = null,
         HttpStatusCode statusCode = HttpStatusCode.OK
     )
     {
@@ -62,6 +72,7 @@ public class MockHttpMessageHandler : HttpMessageHandler
                 StatusCode = statusCode,
                 Content = json,
                 ContentType = "application/json",
+                ExpectedEndpoint = expectedEndpoint,
             }
         );
     }
@@ -128,6 +139,18 @@ public class MockHttpMessageHandler : HttpMessageHandler
         }
 
         var mockResponse = _responses.Dequeue();
+
+        // Validate expected endpoint if specified
+        if (
+            mockResponse.ExpectedEndpoint != null
+            && !request.RequestUri!.PathAndQuery.Contains(mockResponse.ExpectedEndpoint)
+        )
+        {
+            throw new InvalidOperationException(
+                $"Expected request to '{mockResponse.ExpectedEndpoint}' but got '{request.RequestUri?.PathAndQuery}'"
+            );
+        }
+
         var response = new HttpResponseMessage(mockResponse.StatusCode)
         {
             Content = new StringContent(
@@ -155,4 +178,5 @@ public class MockHttpResponse
     public string? Content { get; set; }
     public string? ContentType { get; set; } = "application/json";
     public Dictionary<string, string> Headers { get; set; } = new();
+    public string? ExpectedEndpoint { get; set; }
 }
