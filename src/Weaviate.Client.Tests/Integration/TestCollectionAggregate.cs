@@ -260,10 +260,7 @@ public partial class AggregatesTests : IntegrationTests
             new { text = text1 },
             vectors: new[] { 1.0f, 0f, 0f }
         );
-        var obj = await collectionClient.Query.FetchObjectByID(
-            uuid,
-            returnMetadata: MetadataOptions.Vector
-        );
+        var obj = await collectionClient.Query.FetchObjectByID(uuid, includeVectors: true);
         Assert.NotNull(obj);
         Assert.True(obj.Vectors.ContainsKey("default"));
         await collectionClient.Data.Insert(new { text = text2 }, vectors: new[] { 0f, 0.0f, 0f });
