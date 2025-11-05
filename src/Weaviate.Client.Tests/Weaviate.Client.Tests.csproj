@@ -7,10 +7,10 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <CheckEolTargetFramework>true</CheckEolTargetFramework>
-    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <TestingPlatformDotnetTestSupport>false</TestingPlatformDotnetTestSupport>
     <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
     <TestingPlatformShowTestsSummary>true</TestingPlatformShowTestsSummary>
-    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+    <UseMicrosoftTestingPlatformRunner>false</UseMicrosoftTestingPlatformRunner>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
