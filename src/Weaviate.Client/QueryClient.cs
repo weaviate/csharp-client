@@ -24,7 +24,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.FetchObjects(
             _collectionName,
@@ -37,7 +38,8 @@ public class QueryClient<TData>
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
 
     public async Task<WeaviateResult> FetchObjects(
@@ -48,7 +50,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.FetchObjects(
             _collectionName,
@@ -59,7 +62,8 @@ public class QueryClient<TData>
             tenant: tenant ?? _collectionClient.Tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
+            returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty),
+            includeVectors: includeVectors
         );
 
     public async Task<WeaviateObject?> FetchObjectByID(
@@ -67,7 +71,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         (
             (WeaviateResult)
@@ -77,7 +82,8 @@ public class QueryClient<TData>
                     filters: Filter.WithID(id),
                     tenant: tenant ?? _collectionClient.Tenant,
                     returnReferences: returnReferences,
-                    returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
+                    returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty),
+                    includeVectors: includeVectors
                 )
         ).SingleOrDefault();
 
@@ -90,7 +96,8 @@ public class QueryClient<TData>
         OneOrManyOf<Sort>? sort = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.FetchObjects(
             _collectionName,
@@ -101,7 +108,8 @@ public class QueryClient<TData>
             rerank: rerank,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty)
+            returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty),
+            includeVectors: includeVectors
         );
     #endregion
 
@@ -121,7 +129,8 @@ public class QueryClient<TData>
         TargetVectors? targetVector = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.SearchNearText(
             _collectionClient.Name,
@@ -140,7 +149,8 @@ public class QueryClient<TData>
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
 
     public async Task<GroupByResult> NearText(
@@ -159,7 +169,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.SearchNearText(
             _collectionClient.Name,
@@ -179,7 +190,8 @@ public class QueryClient<TData>
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
 
     public async Task<WeaviateResult> NearVector(
@@ -195,7 +207,8 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.SearchNearVector(
             _collectionClient.Name,
@@ -212,7 +225,8 @@ public class QueryClient<TData>
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
 
     public async Task<GroupByResult> NearVector(
@@ -229,7 +243,8 @@ public class QueryClient<TData>
         Rerank? rerank = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.SearchNearVector(
             _collectionClient.Name,
@@ -247,7 +262,8 @@ public class QueryClient<TData>
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
 
     public async Task<GroupByResult> BM25(
@@ -264,6 +280,7 @@ public class QueryClient<TData>
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
         IList<QueryReference>? returnReferences = null
     ) =>
         await _grpc.SearchBM25(
@@ -280,6 +297,7 @@ public class QueryClient<TData>
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnReferences: returnReferences,
             returnProperties: returnProperties
         );
@@ -297,6 +315,7 @@ public class QueryClient<TData>
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
         IList<QueryReference>? returnReferences = null
     ) =>
         await _grpc.SearchBM25(
@@ -313,6 +332,7 @@ public class QueryClient<TData>
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnReferences: returnReferences,
             returnProperties: returnProperties
         );
@@ -334,7 +354,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.SearchHybrid(
             _collectionClient.Name,
@@ -356,6 +377,7 @@ public class QueryClient<TData>
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -378,7 +400,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.SearchHybrid(
             _collectionClient.Name,
@@ -401,6 +424,7 @@ public class QueryClient<TData>
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -418,7 +442,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.SearchNearObject(
             _collectionClient.Name,
@@ -437,6 +462,7 @@ public class QueryClient<TData>
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -455,7 +481,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.SearchNearObject(
             _collectionClient.Name,
@@ -474,6 +501,7 @@ public class QueryClient<TData>
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -491,7 +519,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await NearMedia(
@@ -507,6 +536,7 @@ public class QueryClient<TData>
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -528,7 +558,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await NearMedia(
             media: nearImage,
@@ -544,6 +575,7 @@ public class QueryClient<TData>
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -562,7 +594,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.SearchNearMedia(
             _collectionClient.Name,
@@ -582,6 +615,7 @@ public class QueryClient<TData>
             targetVector: targetVector,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -601,7 +635,8 @@ public class QueryClient<TData>
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _grpc.SearchNearMedia(
             _collectionClient.Name,
@@ -621,6 +656,7 @@ public class QueryClient<TData>
             targetVector: targetVector,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );

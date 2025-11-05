@@ -35,7 +35,8 @@ internal partial class WeaviateGrpcClient
         GroupedPrompt? groupedPrompt = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var req = BaseSearchRequest(
@@ -52,6 +53,7 @@ internal partial class WeaviateGrpcClient
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnReferences: returnReferences
         );
 
@@ -75,6 +77,7 @@ internal partial class WeaviateGrpcClient
         SinglePrompt? singlePrompt = null,
         GroupedPrompt? groupedPrompt = null,
         MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null
     )
@@ -94,6 +97,7 @@ internal partial class WeaviateGrpcClient
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnReferences: returnReferences
         );
 
@@ -122,7 +126,8 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var request = BaseSearchRequest(
@@ -140,6 +145,7 @@ internal partial class WeaviateGrpcClient
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnReferences: returnReferences
         );
 
@@ -172,6 +178,7 @@ internal partial class WeaviateGrpcClient
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
         IList<QueryReference>? returnReferences = null
     )
     {
@@ -190,6 +197,7 @@ internal partial class WeaviateGrpcClient
             tenant: tenant,
             consistencyLevel: consistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnReferences: returnReferences,
             returnProperties: returnProperties
         );
@@ -223,6 +231,7 @@ internal partial class WeaviateGrpcClient
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
         IList<QueryReference>? returnReferences = null
     )
     {
@@ -251,6 +260,7 @@ internal partial class WeaviateGrpcClient
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnReferences: returnReferences
         );
 
@@ -286,6 +296,7 @@ internal partial class WeaviateGrpcClient
         GroupedPrompt? groupedPrompt,
         TargetVectors? targetVector,
         MetadataQuery? returnMetadata,
+        VectorQuery? includeVectors,
         OneOrManyOf<string>? returnProperties,
         IList<QueryReference>? returnReferences,
         string? tenant = null,
@@ -307,6 +318,7 @@ internal partial class WeaviateGrpcClient
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnReferences: returnReferences
         );
 
@@ -334,6 +346,7 @@ internal partial class WeaviateGrpcClient
         ConsistencyLevels? consistencyLevel,
         OneOrManyOf<string>? returnProperties,
         MetadataQuery? returnMetadata,
+        VectorQuery? includeVectors,
         IList<QueryReference>? returnReferences
     )
     {
@@ -352,6 +365,7 @@ internal partial class WeaviateGrpcClient
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnReferences: returnReferences
         );
 
