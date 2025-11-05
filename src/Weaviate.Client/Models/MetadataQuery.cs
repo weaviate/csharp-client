@@ -1,15 +1,35 @@
+using System.Collections;
+
 namespace Weaviate.Client.Models;
 
-public class VectorQuery : List<string>
+public class VectorQuery : IEnumerable<string>
 {
+    private List<string>? _vectors = null;
+
     public VectorQuery() { }
 
     public VectorQuery(IEnumerable<string>? vectors)
     {
-        AddRange(vectors ?? Enumerable.Empty<string>());
+        _vectors = vectors?.ToList();
     }
 
-    public string[]? Vectors => this.ToArray();
+    public string[]? Vectors => _vectors?.ToArray();
+
+    public void Add(string vector)
+    {
+        _vectors ??= new List<string>();
+        _vectors.Add(vector);
+    }
+
+    public IEnumerator<string> GetEnumerator()
+    {
+        return _vectors?.GetEnumerator() ?? Enumerable.Empty<string>().GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 
     // Implicit conversion from bool to VectorQuery
     // false stores null, true stores empty array
