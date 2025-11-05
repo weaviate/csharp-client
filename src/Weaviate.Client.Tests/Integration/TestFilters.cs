@@ -477,6 +477,8 @@ public partial class FilterTests : IntegrationTests
     [Fact]
     public async Task Filter_ContainsNone_Integration()
     {
+        RequireVersion("1.33.0");
+
         // Arrange
         var collection = await CollectionFactory(
             properties: [Property.UuidArray("uuids"), Property.Text("name")]
@@ -506,6 +508,8 @@ public partial class FilterTests : IntegrationTests
     [Fact]
     public async Task Filter_Not_ContainsAny_Integration()
     {
+        RequireVersion("1.33.0");
+
         // Arrange
         var collection = await CollectionFactory(properties: [Property.Text("name")]);
         var uuid1 = Guid.NewGuid();
