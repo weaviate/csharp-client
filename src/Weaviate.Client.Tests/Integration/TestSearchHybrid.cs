@@ -25,7 +25,7 @@ public partial class SearchTests : IntegrationTests
                 alpha: 0,
                 query: "name",
                 fusionType: fusionType,
-                returnMetadata: MetadataOptions.Vector
+                includeVectors: true
             )
         ).Objects;
 
@@ -67,7 +67,7 @@ public partial class SearchTests : IntegrationTests
                     ObjectsPerGroup = 1,
                     NumberOfGroups = 2,
                 },
-                returnMetadata: MetadataOptions.Vector
+                includeVectors: true
             )
         ).Objects;
 
@@ -88,10 +88,7 @@ public partial class SearchTests : IntegrationTests
         var uuid = Guid.NewGuid();
         await collection.Data.Insert(new { Name = "some name" }, id: uuid);
 
-        var obj = await collection.Query.FetchObjectByID(
-            uuid,
-            returnMetadata: MetadataOptions.Vector
-        );
+        var obj = await collection.Query.FetchObjectByID(uuid, includeVectors: true);
         Assert.NotNull(obj);
         Assert.NotEmpty(obj.Vectors);
 
@@ -195,10 +192,7 @@ public partial class SearchTests : IntegrationTests
 
         var uuidBanana = Guid.NewGuid();
         await collection.Data.Insert(new { text = "banana" }, id: uuidBanana);
-        var obj = await collection.Query.FetchObjectByID(
-            uuidBanana,
-            returnMetadata: MetadataOptions.Vector
-        );
+        var obj = await collection.Query.FetchObjectByID(uuidBanana, includeVectors: true);
         Assert.NotNull(obj);
 
         await collection.Data.Insert(new { text = "dog" });
@@ -254,10 +248,7 @@ public partial class SearchTests : IntegrationTests
         await collection.Data.Insert(new { text = "dog" });
         await collection.Data.Insert(new { text = "different concept" });
 
-        var obj = await collection.Query.FetchObjectByID(
-            uuidBanana,
-            returnMetadata: MetadataOptions.Vector
-        );
+        var obj = await collection.Query.FetchObjectByID(uuidBanana, includeVectors: true);
 
         Assert.NotNull(obj);
 

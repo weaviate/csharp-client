@@ -1,10 +1,32 @@
 namespace Weaviate.Client.Models;
 
+public class VectorQuery : List<string>
+{
+    public VectorQuery() { }
+
+    public VectorQuery(IEnumerable<string>? vectors)
+    {
+        AddRange(vectors ?? Enumerable.Empty<string>());
+    }
+
+    public string[]? Vectors => this.ToArray();
+
+    // Implicit conversion from bool to VectorQuery
+    // false stores null, true stores empty array
+    public static implicit operator VectorQuery(bool includeVectors) =>
+        new(includeVectors ? [] : null);
+
+    // Implicit conversion from string array to VectorQuery
+    public static implicit operator VectorQuery(string[] vectors) => new(vectors);
+
+    // Implicit conversion from string to VectorQuery
+    public static implicit operator VectorQuery(string vector) => new[] { vector };
+}
+
 [Flags]
 public enum MetadataOptions
 {
     None = 0,
-    Vector = 1 << 0, // 2^0
     CreationTime = 1 << 1, // 2^1
     LastUpdateTime = 1 << 2, // 2^2
     Distance = 1 << 3, // 2^3
@@ -18,12 +40,8 @@ public enum MetadataOptions
 
 public record MetadataQuery
 {
-    public MetadataQuery(params string[] vectors)
-        : this(MetadataOptions.None, vectors) { }
-
-    public MetadataQuery(MetadataOptions options = MetadataOptions.None, params string[] vectors)
+    public MetadataQuery(MetadataOptions options = MetadataOptions.None)
     {
-        _vectors = new(vectors);
         Options = options;
     }
 
@@ -42,16 +60,6 @@ public record MetadataQuery
     // Implicit conversion from MetadataOptions to MetadataQuery
     public static implicit operator MetadataQuery(MetadataOptions options) => new(options);
 
-    // Implicit conversion from HashSet<string> to MetadataQuery
-    public static implicit operator MetadataQuery(string[] vectors) =>
-        new(MetadataOptions.None, vectors);
-
-    // Implicit conversion from (MetadataOptions, HashSet<string>) to MetadataQuery
-    public static implicit operator MetadataQuery(
-        (MetadataOptions options, string[] vectors) metadata
-    ) => new(metadata.options, metadata.vectors);
-
-    public bool Vector => (Options & MetadataOptions.Vector) != 0;
     public bool CreationTime => (Options & MetadataOptions.CreationTime) != 0;
     public bool LastUpdateTime => (Options & MetadataOptions.LastUpdateTime) != 0;
     public bool Distance => (Options & MetadataOptions.Distance) != 0;
@@ -59,9 +67,6 @@ public record MetadataQuery
     public bool Score => (Options & MetadataOptions.Score) != 0;
     public bool ExplainScore => (Options & MetadataOptions.ExplainScore) != 0;
     public bool IsConsistent => (Options & MetadataOptions.IsConsistent) != 0;
-
-    readonly HashSet<string> _vectors = new HashSet<string>();
-    public HashSet<string> Vectors => _vectors;
 
     public MetadataOptions Options { get; private set; } = MetadataOptions.None;
 }
