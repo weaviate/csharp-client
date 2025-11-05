@@ -217,6 +217,9 @@ public partial class WeaviateClient : IDisposable
     public ClusterClient Cluster { get; }
 
     public AliasClient Alias { get; }
+    public UsersClient Users { get; }
+    public RolesClient Roles { get; }
+    public GroupsClient Groups { get; }
 
     static bool IsWeaviateDomain(string url)
     {
@@ -284,6 +287,9 @@ public partial class WeaviateClient : IDisposable
         Cluster = new ClusterClient(RestClient);
         Collections = new CollectionsClient(this);
         Alias = new AliasClient(this);
+        Users = new UsersClient(this);
+        Roles = new RolesClient(this);
+        Groups = new GroupsClient(this);
     }
 
     private async Task<ITokenService?> InitializeTokenService()

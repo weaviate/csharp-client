@@ -166,4 +166,111 @@ internal static partial class WeaviateEndpoints
         }
         return ep;
     }
+
+    // Users endpoints
+    internal static string UsersOwnInfo() => "users/own-info";
+
+    internal static string UsersDb(bool? includeLastUsedTime = null)
+    {
+        var path = "users/db";
+        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+        if (includeLastUsedTime == true)
+        {
+            query["includeLastUsedTime"] = "true";
+        }
+        if (query.Count > 0)
+        {
+            path += $"?{query}";
+        }
+        return path;
+    }
+
+    internal static string UserDb(string userId, bool? includeLastUsedTime = null)
+    {
+        var path = $"users/db/{userId}";
+        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+        if (includeLastUsedTime == true)
+        {
+            query["includeLastUsedTime"] = "true";
+        }
+        if (query.Count > 0)
+        {
+            path += $"?{query}";
+        }
+        return path;
+    }
+
+    internal static string UserDbRotateKey(string userId) => $"users/db/{userId}/rotate-key";
+
+    internal static string UserDbActivate(string userId) => $"users/db/{userId}/activate";
+
+    internal static string UserDbDeactivate(string userId) => $"users/db/{userId}/deactivate";
+
+    // Authz Roles & Assignments endpoints
+    internal static string Roles() => "authz/roles";
+
+    internal static string Role(string id) => $"authz/roles/{id}";
+
+    internal static string RoleAddPermissions(string id) => $"authz/roles/{id}/add-permissions";
+
+    internal static string RoleRemovePermissions(string id) =>
+        $"authz/roles/{id}/remove-permissions";
+
+    internal static string RoleHasPermission(string id) => $"authz/roles/{id}/has-permission";
+
+    internal static string RoleUsersDeprecated(string id) => $"authz/roles/{id}/users"; // deprecated
+
+    internal static string RoleUserAssignments(string id) => $"authz/roles/{id}/user-assignments";
+
+    internal static string RoleGroupAssignments(string id) => $"authz/roles/{id}/group-assignments";
+
+    // Authz Users (role assignment)
+    internal static string AuthzUserRoles(
+        string userId,
+        string userType,
+        bool? includeFullRoles = null
+    )
+    {
+        var path = $"authz/users/{userId}/roles/{userType}";
+        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+        if (includeFullRoles == true)
+        {
+            query["includeFullRoles"] = "true";
+        }
+        if (query.Count > 0)
+        {
+            path += $"?{query}";
+        }
+        return path;
+    }
+
+    internal static string AuthzUserAssign(string userId) => $"authz/users/{userId}/assign";
+
+    internal static string AuthzUserRevoke(string userId) => $"authz/users/{userId}/revoke";
+
+    // Authz Groups
+    internal static string AuthzGroupAssign(string groupId) => $"authz/groups/{groupId}/assign";
+
+    internal static string AuthzGroupRevoke(string groupId) => $"authz/groups/{groupId}/revoke";
+
+    internal static string AuthzGroupRoles(
+        string groupId,
+        string groupType,
+        bool? includeFullRoles = null
+    )
+    {
+        var path = $"authz/groups/{groupId}/roles/{groupType}";
+        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+        if (includeFullRoles == true)
+        {
+            query["includeFullRoles"] = "true";
+        }
+        if (query.Count > 0)
+        {
+            path += $"?{query}";
+        }
+        return path;
+    }
+
+    internal static string AuthzGroups(string groupType) => $"authz/groups/{groupType}";
 }
