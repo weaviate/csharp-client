@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
 
-public partial class WeaviateRestClient
+internal partial class WeaviateRestClient
 {
     internal async Task<Dto.UserOwnInfo?> UserOwnInfoGet()
     {
