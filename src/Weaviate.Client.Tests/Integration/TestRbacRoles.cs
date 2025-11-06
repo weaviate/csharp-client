@@ -16,6 +16,11 @@ public class TestRbacRoles : IntegrationTests
     private static string MakeRoleName(string suffix) =>
         $"test-role-{suffix}-{Random.Shared.Next(1, 1_000_000)}";
 
+    public TestRbacRoles()
+    {
+        RequireVersion("1.30.0");
+    }
+
     [Fact, Trait("Category", "RBAC")]
     public async Task ListRoles()
     {
