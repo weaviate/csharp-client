@@ -98,7 +98,7 @@ public sealed record ClientConfiguration(
         }.Uri;
 
     public WeaviateClient Client(HttpMessageHandler? messageHandler = null) =>
-        new(this, httpMessageHandler: messageHandler);
+        new(configuration: this, httpMessageHandler: messageHandler, logger: null);
 };
 
 public partial class WeaviateClient : IDisposable
@@ -233,6 +233,14 @@ public partial class WeaviateClient : IDisposable
         HttpMessageHandler? httpMessageHandler = null,
         ILogger<WeaviateClient>? logger = null
     )
+        : this(configuration, httpMessageHandler, logger, grpcClient: null) { }
+
+    internal WeaviateClient(
+        ClientConfiguration? configuration = null,
+        HttpMessageHandler? httpMessageHandler = null,
+        ILogger<WeaviateClient>? logger = null,
+        WeaviateGrpcClient? grpcClient = null
+    )
     {
         _logger = logger ?? _logger;
 
@@ -275,14 +283,17 @@ public partial class WeaviateClient : IDisposable
 
         RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
 
-        GrpcClient = new WeaviateGrpcClient(
-            Configuration.GrpcUri,
-            wcdHost,
-            _tokenService,
-            Configuration.Headers,
-            null,
-            Meta?.GrpcMaxMessageSize ?? null
-        );
+        // Use injected gRPC client if provided (for testing), otherwise create a real one
+        GrpcClient =
+            grpcClient
+            ?? WeaviateGrpcClient.Create(
+                Configuration.GrpcUri,
+                wcdHost,
+                _tokenService,
+                Configuration.Headers,
+                null,
+                Meta?.GrpcMaxMessageSize ?? null
+            );
 
         Cluster = new ClusterClient(RestClient);
         Collections = new CollectionsClient(this);
