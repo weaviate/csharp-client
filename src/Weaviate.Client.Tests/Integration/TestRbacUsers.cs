@@ -18,7 +18,10 @@ public class TestRbacUsers : IntegrationTests
 
     public override ICredentials? Credentials => Auth.ApiKey(ADMIN_API_KEY);
 
-    // Base _weaviate already configured with overridden ports and credentials
+    public TestRbacUsers()
+    {
+        RequireVersion("1.30.0");
+    }
 
     [Fact, Trait("Category", "RBAC")]
     public async Task Test_OwnUser()
