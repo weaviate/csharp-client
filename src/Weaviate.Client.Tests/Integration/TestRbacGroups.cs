@@ -14,6 +14,11 @@ public class TestRbacGroups : IntegrationTests
     public override ushort GrpcPort => 50063;
     private const string ADMIN_API_KEY = "admin-key";
 
+    public TestRbacGroups()
+    {
+        RequireVersion("1.32.0");
+    }
+
     public override ICredentials? Credentials => Auth.ApiKey(ADMIN_API_KEY);
 
     [Fact, Trait("Category", "RBAC")]
