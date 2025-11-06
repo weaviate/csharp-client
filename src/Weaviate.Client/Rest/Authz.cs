@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
 
-public partial class WeaviateRestClient
+internal partial class WeaviateRestClient
 {
     // Roles
     internal async Task<IEnumerable<Dto.Role>> RolesList()

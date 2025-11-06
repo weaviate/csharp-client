@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Rest;
 
-public partial class WeaviateRestClient
+internal partial class WeaviateRestClient
 {
     /// <summary>
     /// Checks if the Weaviate instance reports it is live (process is running).

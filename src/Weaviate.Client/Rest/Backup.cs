@@ -4,7 +4,7 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Rest;
 
-public partial class WeaviateRestClient
+internal partial class WeaviateRestClient
 {
     internal async Task<Dto.BackupCreateResponse> BackupCreate(
         BackupStorageProvider backend,
