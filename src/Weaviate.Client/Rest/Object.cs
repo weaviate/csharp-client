@@ -6,7 +6,7 @@ using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client.Rest;
 
-public partial class WeaviateRestClient
+internal partial class WeaviateRestClient
 {
     internal async Task<Dto.Object> ObjectInsert(Dto.Object data)
     {
