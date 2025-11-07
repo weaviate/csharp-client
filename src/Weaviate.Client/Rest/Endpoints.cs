@@ -273,4 +273,55 @@ internal static partial class WeaviateEndpoints
     }
 
     internal static string AuthzGroups(string groupType) => $"authz/groups/{groupType}";
+
+    // Replication endpoints
+    internal static string Replicate() => "replication/replicate";
+
+    internal static string ReplicationDetails(Guid id, bool includeHistory = false)
+    {
+        var path = $"replication/replicate/{id}";
+        if (includeHistory)
+        {
+            path += "?includeHistory=true";
+        }
+        return path;
+    }
+
+    internal static string ReplicationList(
+        string? collection = null,
+        string? shard = null,
+        string? targetNode = null,
+        bool includeHistory = false
+    )
+    {
+        var path = "replication/replicate/list";
+        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+        if (collection is not null)
+        {
+            query["collection"] = collection;
+        }
+        if (shard is not null)
+        {
+            query["shard"] = shard;
+        }
+        if (targetNode is not null)
+        {
+            query["targetNode"] = targetNode;
+        }
+        if (includeHistory)
+        {
+            query["includeHistory"] = "true";
+        }
+
+        if (query.Count > 0)
+        {
+            path += $"?{query}";
+        }
+        return path;
+    }
+
+    internal static string ReplicationCancel(Guid id) => $"replication/replicate/{id}/cancel";
+
+    internal static string ReplicationDelete(Guid id) => $"replication/replicate/{id}";
 }
