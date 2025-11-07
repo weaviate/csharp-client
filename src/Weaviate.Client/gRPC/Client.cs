@@ -1,5 +1,6 @@
 using System.Security.Authentication;
 using Grpc.Core;
+using Grpc.Core.Interceptors;
 using Grpc.Health.V1;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,7 @@ internal partial class WeaviateGrpcClient : IDisposable
     private readonly V1.Weaviate.WeaviateClient _grpcClient;
     private readonly ILogger<WeaviateGrpcClient> _logger;
     private readonly TimeSpan? _timeout;
+    private readonly RetryPolicy? _retryPolicy;
 
     /// <summary>
     /// Internal constructor for testing. Accepts a pre-configured GrpcChannel to bypass network initialization.
@@ -21,6 +23,7 @@ internal partial class WeaviateGrpcClient : IDisposable
         GrpcChannel channel,
         string? wcdHost = null,
         TimeSpan? timeout = null,
+        RetryPolicy? retryPolicy = null,
         Dictionary<string, string>? headers = null,
         ILogger<WeaviateGrpcClient>? logger = null
     )
@@ -32,6 +35,7 @@ internal partial class WeaviateGrpcClient : IDisposable
                 .CreateLogger<WeaviateGrpcClient>();
 
         _timeout = timeoue;
+        _retryPolicy = retryPolicy;
         _channel = channel;
 
         // Create default headers
@@ -52,7 +56,15 @@ internal partial class WeaviateGrpcClient : IDisposable
             }
         }
 
-        _grpcClient = new V1.Weaviate.WeaviateClient(_channel);
+        if (_retryPolicy is not null && _retryPolicy.MaxRetries > 0)
+        {
+            var invoker = _channel.Intercept(new RetryInterceptor(_retryPolicy, _logger));
+            _grpcClient = new V1.Weaviate.WeaviateClient(invoker);
+        }
+        else
+        {
+            _grpcClient = new V1.Weaviate.WeaviateClient(_channel);
+        }
     }
 
     AsyncAuthInterceptor _AuthInterceptorFactory(ITokenService tokenService)
@@ -84,6 +96,7 @@ internal partial class WeaviateGrpcClient : IDisposable
         string? wcdHost,
         TimeSpan? timeout = null,
         ulong? maxMessageSize = null,
+        RetryPolicy? retryPolicy = null,
         ITokenService? tokenService,
         Dictionary<string, string>? headers = null,
         ILogger<WeaviateGrpcClient>? logger = null
@@ -100,7 +113,7 @@ internal partial class WeaviateGrpcClient : IDisposable
         // Perform health check
         PerformHealthCheck(channel);
 
-        return new WeaviateGrpcClient(channel, wcdHost, timeout, headers, logger);
+        return new WeaviateGrpcClient(channel, wcdHost, timeout, retryPolicy, headers, logger);
     }
 
     private static GrpcChannel CreateChannel(

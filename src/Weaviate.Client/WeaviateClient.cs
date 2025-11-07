@@ -17,6 +17,11 @@ public static class WeaviateDefaults
     /// This can be overridden per client via ClientConfiguration.
     /// </summary>
     public static TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(30);
+
+    /// <summary>
+    /// Default retry policy applied when a client does not specify one explicitly.
+    /// </summary>
+    public static RetryPolicy DefaultRetryPolicy { get; set; } = RetryPolicy.Default;
 }
 
 public interface ICredentials
@@ -87,7 +92,9 @@ public sealed record ClientConfiguration(
     bool UseSsl = false,
     Dictionary<string, string>? Headers = null,
     ICredentials? Credentials = null,
-    TimeSpan? RequestTimeout = null
+    TimeSpan? RequestTimeout = null,
+    RetryPolicy? RetryPolicy = null,
+    DelegatingHandler[]? CustomHandlers = null
 )
 {
     public Uri RestUri =>
@@ -256,18 +263,42 @@ public partial class WeaviateClient : IDisposable
 
         _tokenService = InitializeTokenService().GetAwaiter().GetResult();
 
-        httpMessageHandler ??= new HttpClientHandler();
+        // Base handler
+        var effectiveHandler = httpMessageHandler ?? new HttpClientHandler();
 
+        // Attach user-provided custom handlers (inner-most first so added order preserves intuitive wrapping)
+        if (Configuration.CustomHandlers is { Length: > 0 })
+        {
+            foreach (var handler in Configuration.CustomHandlers)
+            {
+                if (handler.InnerHandler == null)
+                {
+                    handler.InnerHandler = effectiveHandler;
+                }
+                effectiveHandler = handler;
+            }
+        }
+
+        // Auth handler (inner-most before base handler) so each retry re-runs auth logic
         if (_tokenService != null)
         {
-            // Add a delegating handler to inject the access token into each request
-            httpMessageHandler = new AuthenticatedHttpHandler(_tokenService)
+            effectiveHandler = new AuthenticatedHttpHandler(_tokenService)
             {
-                InnerHandler = httpMessageHandler,
+                InnerHandler = effectiveHandler,
             };
         }
 
-        var httpClient = new HttpClient(httpMessageHandler);
+        // Retry handler (outer-most)
+        var retryPolicy = Configuration.RetryPolicy ?? WeaviateDefaults.DefaultRetryPolicy;
+        if (retryPolicy is not null && retryPolicy.MaxRetries > 0)
+        {
+            effectiveHandler = new RetryHandler(retryPolicy, _logger)
+            {
+                InnerHandler = effectiveHandler,
+            };
+        }
+
+        var httpClient = new HttpClient(effectiveHandler);
 
         // Set request timeout
         var timeout = Configuration.RequestTimeout ?? WeaviateDefaults.DefaultTimeout;
@@ -301,11 +332,12 @@ public partial class WeaviateClient : IDisposable
             ?? WeaviateGrpcClient.Create(
                 Configuration.GrpcUri,
                 wcdHost,
+                Meta?.GrpcMaxMessageSize ?? null,
+                timeout,
+                retryPolicy,
                 _tokenService,
                 Configuration.Headers,
-                null,
-                Meta?.GrpcMaxMessageSize ?? null,
-                timeout
+                null
             );
 
         Cluster = new ClusterClient(RestClient);
