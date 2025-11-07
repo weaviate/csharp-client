@@ -1,5 +1,7 @@
 namespace Weaviate.Client;
 
+using System.Net.Http;
+
 public partial class WeaviateClientBuilder
 {
     private string _restEndpoint = "localhost";
@@ -13,6 +15,8 @@ public partial class WeaviateClientBuilder
     private ICredentials? _credentials = null;
     private HttpMessageHandler? _httpMessageHandler = null;
     private TimeSpan? _requestTimeout = null;
+    private RetryPolicy? _retryPolicy = null;
+    private readonly List<DelegatingHandler> _customHandlers = new();
 
     public static WeaviateClientBuilder Custom(
         string restEndpoint = "localhost",
@@ -165,7 +169,40 @@ public partial class WeaviateClientBuilder
         return this;
     }
 
-    // ...existing code...
+    /// <summary>
+    /// Sets the retry policy for transient failures.
+    /// </summary>
+    public WeaviateClientBuilder WithRetryPolicy(RetryPolicy policy)
+    {
+        _retryPolicy = policy;
+        return this;
+    }
+
+    /// <summary>
+    /// Disables retries.
+    /// </summary>
+    public WeaviateClientBuilder WithoutRetries()
+    {
+        _retryPolicy = RetryPolicy.None;
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a custom delegating handler that will wrap the HTTP pipeline.
+    /// Handlers are applied in the order added (each new handler becomes the outer-most).
+    /// The retry handler, if enabled, will still be the outer-most wrapper.
+    /// </summary>
+    /// <remarks>
+    /// If the handler's InnerHandler is already set it will not be overwritten.
+    /// </remarks>
+    public WeaviateClientBuilder AddHandler(DelegatingHandler handler)
+    {
+        if (handler != null)
+        {
+            _customHandlers.Add(handler);
+        }
+        return this;
+    }
 
     public WeaviateClient Build()
     {
@@ -179,7 +216,9 @@ public partial class WeaviateClientBuilder
             _useSsl,
             _headers.Count > 0 ? new Dictionary<string, string>(_headers) : null,
             _credentials,
-            _requestTimeout
+            _requestTimeout,
+            _retryPolicy,
+            _customHandlers.Count > 0 ? _customHandlers.ToArray() : null
         ).Client(_httpMessageHandler);
     }
 
