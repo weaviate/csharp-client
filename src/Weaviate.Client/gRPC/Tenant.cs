@@ -13,10 +13,7 @@ internal partial class WeaviateGrpcClient
             request.Names = new TenantNames { Values = { tenantNames } };
         }
 
-        TenantsGetReply reply = await _grpcClient.TenantsGetAsync(
-            request,
-            headers: _defaultHeaders
-        );
+        TenantsGetReply reply = await _grpcClient.TenantsGetAsync(request, CreateCallOptions());
 
         return reply.Tenants;
     }

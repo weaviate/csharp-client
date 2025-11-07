@@ -7,6 +7,18 @@ using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// Global default settings for Weaviate clients.
+/// </summary>
+public static class WeaviateDefaults
+{
+    /// <summary>
+    /// Default timeout for all requests. Default is 30 seconds.
+    /// This can be overridden per client via ClientConfiguration.
+    /// </summary>
+    public static TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(30);
+}
+
 public interface ICredentials
 {
     internal string GetScopes();
@@ -74,7 +86,8 @@ public sealed record ClientConfiguration(
     ushort GrpcPort = 50051,
     bool UseSsl = false,
     Dictionary<string, string>? Headers = null,
-    ICredentials? Credentials = null
+    ICredentials? Credentials = null,
+    TimeSpan? RequestTimeout = null
 )
 {
     public Uri RestUri =>
@@ -256,6 +269,10 @@ public partial class WeaviateClient : IDisposable
 
         var httpClient = new HttpClient(httpMessageHandler);
 
+        // Set request timeout
+        var timeout = Configuration.RequestTimeout ?? WeaviateDefaults.DefaultTimeout;
+        httpClient.Timeout = timeout;
+
         var wcdHost = IsWeaviateDomain(Configuration.RestAddress)
             ? Configuration.RestAddress
             : null;
@@ -287,7 +304,8 @@ public partial class WeaviateClient : IDisposable
                 _tokenService,
                 Configuration.Headers,
                 null,
-                Meta?.GrpcMaxMessageSize ?? null
+                Meta?.GrpcMaxMessageSize ?? null,
+                timeout
             );
 
         Cluster = new ClusterClient(RestClient);
