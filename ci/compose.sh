@@ -23,7 +23,8 @@ function compose_down_all {
 }
 
 function all_weaviate_ports {
-  echo "8080"
+  # Include single-node default and multi-node cluster compose exposed REST ports
+  echo "8080 8087 8088 8089"
 }
 
 function wait(){

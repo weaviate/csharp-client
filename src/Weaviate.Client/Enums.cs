@@ -13,6 +13,7 @@ public enum ResourceType
     Reference,
     Shard,
     Tenant,
+    Replication,
     Unknown,
 }
 
