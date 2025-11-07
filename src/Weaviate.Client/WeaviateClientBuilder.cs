@@ -12,6 +12,7 @@ public partial class WeaviateClientBuilder
     private Dictionary<string, string> _headers = new();
     private ICredentials? _credentials = null;
     private HttpMessageHandler? _httpMessageHandler = null;
+    private TimeSpan? _requestTimeout = null;
 
     public static WeaviateClientBuilder Custom(
         string restEndpoint = "localhost",
@@ -153,6 +154,17 @@ public partial class WeaviateClientBuilder
         return this;
     }
 
+    /// <summary>
+    /// Sets the request timeout for both REST and gRPC operations.
+    /// If not set, defaults to WeaviateDefaults.DefaultTimeout (30 seconds).
+    /// </summary>
+    /// <param name="timeout">The timeout duration for requests.</param>
+    public WeaviateClientBuilder WithTimeout(TimeSpan timeout)
+    {
+        _requestTimeout = timeout;
+        return this;
+    }
+
     // ...existing code...
 
     public WeaviateClient Build()
@@ -166,7 +178,8 @@ public partial class WeaviateClientBuilder
             _grpcPort,
             _useSsl,
             _headers.Count > 0 ? new Dictionary<string, string>(_headers) : null,
-            _credentials
+            _credentials,
+            _requestTimeout
         ).Client(_httpMessageHandler);
     }
 

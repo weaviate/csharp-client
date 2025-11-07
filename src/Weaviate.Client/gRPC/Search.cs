@@ -10,7 +10,7 @@ internal partial class WeaviateGrpcClient
     {
         try
         {
-            var reply = await _grpcClient.SearchAsync(request, headers: _defaultHeaders);
+            var reply = await _grpcClient.SearchAsync(request, CreateCallOptions());
             reply.Collection = request.Collection;
 
             return reply;

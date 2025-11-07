@@ -12,6 +12,7 @@ internal partial class WeaviateGrpcClient : IDisposable
     internal Metadata? _defaultHeaders = null;
     private readonly V1.Weaviate.WeaviateClient _grpcClient;
     private readonly ILogger<WeaviateGrpcClient> _logger;
+    private readonly TimeSpan? _timeout;
 
     /// <summary>
     /// Internal constructor for testing. Accepts a pre-configured GrpcChannel to bypass network initialization.
@@ -19,6 +20,7 @@ internal partial class WeaviateGrpcClient : IDisposable
     internal WeaviateGrpcClient(
         GrpcChannel channel,
         string? wcdHost = null,
+        TimeSpan? timeout = null,
         Dictionary<string, string>? headers = null,
         ILogger<WeaviateGrpcClient>? logger = null
     )
@@ -29,6 +31,7 @@ internal partial class WeaviateGrpcClient : IDisposable
                 .Create(builder => builder.AddConsole())
                 .CreateLogger<WeaviateGrpcClient>();
 
+        _timeout = timeoue;
         _channel = channel;
 
         // Create default headers
@@ -49,10 +52,28 @@ internal partial class WeaviateGrpcClient : IDisposable
             }
         }
 
-        // Perform health check
-        PerformHealthCheck(channel);
-
         _grpcClient = new V1.Weaviate.WeaviateClient(_channel);
+    }
+
+    AsyncAuthInterceptor _AuthInterceptorFactory(ITokenService tokenService)
+    {
+        return async (context, metadata) =>
+        {
+            try
+            {
+                var token = await tokenService.GetAccessTokenAsync();
+
+                if (tokenService.IsAuthenticated())
+                {
+                    metadata.Add("Authorization", $"Bearer {token}");
+                }
+            }
+            catch (AuthenticationException ex)
+            {
+                _logger.LogError(ex, "Failed to retrieve access token");
+                return;
+            }
+        };
     }
 
     /// <summary>
@@ -61,10 +82,11 @@ internal partial class WeaviateGrpcClient : IDisposable
     public static WeaviateGrpcClient Create(
         Uri grpcUri,
         string? wcdHost,
+        TimeSpan? timeout = null,
+        ulong? maxMessageSize = null,
         ITokenService? tokenService,
         Dictionary<string, string>? headers = null,
-        ILogger<WeaviateGrpcClient>? logger = null,
-        ulong? maxMessageSize = null
+        ILogger<WeaviateGrpcClient>? logger = null
     )
     {
         var loggerInstance =
@@ -75,7 +97,10 @@ internal partial class WeaviateGrpcClient : IDisposable
 
         var channel = CreateChannel(grpcUri, tokenService, maxMessageSize, loggerInstance);
 
-        return new WeaviateGrpcClient(channel, wcdHost, headers, logger);
+        // Perform health check
+        PerformHealthCheck(channel);
+
+        return new WeaviateGrpcClient(channel, wcdHost, timeout, headers, logger);
     }
 
     private static GrpcChannel CreateChannel(
@@ -170,6 +195,24 @@ internal partial class WeaviateGrpcClient : IDisposable
                 ex
             );
         }
+    }
+
+    /// <summary>
+    /// Creates CallOptions with timeout and default headers.
+    /// </summary>
+    internal CallOptions CreateCallOptions(CancellationToken cancellationToken = default)
+    {
+        var options = new CallOptions(
+            headers: _defaultHeaders,
+            cancellationToken: cancellationToken
+        );
+
+        if (_timeout.HasValue)
+        {
+            options = options.WithDeadline(DateTime.UtcNow.Add(_timeout.Value));
+        }
+
+        return options;
     }
 
     public void Dispose()
