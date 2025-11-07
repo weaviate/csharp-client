@@ -1,4 +1,4 @@
-namespace Weaviate.Client.Models;
+namespace Weaviate.Client;
 
 /// <summary>
 /// Defines what types of failures should trigger a retry.
