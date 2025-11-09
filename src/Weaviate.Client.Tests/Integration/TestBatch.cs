@@ -33,11 +33,13 @@ public partial class BatchTests : IntegrationTests
         await client.Config.AddReference(new Reference("ref2", client.Name));
 
         var result = await client.Data.InsertMany(requests);
+        Assert.Equal(expectedErrors, result.Count(r => r.Error != null));
+        Assert.Equal(expectedErrors > 0, result.HasErrors);
+        Assert.Equal(expectedObjects + expectedErrors, result.Count);
 
         var data = await client.Query.FetchObjects(returnReferences: [new("ref"), new("ref2")]);
 
         Assert.Equal(expectedObjects, data.Count());
-        Assert.Equal(expectedErrors, result.Count(r => r.Error != null));
         Assert.Equal(expectedReferences, data.Count(r => r.References.Any()));
         Assert.Equal(
             expectedReferencedObjects,
