@@ -84,49 +84,47 @@ public class DataClient<TData>
         var response = await _client.RestClient.ObjectReplace(_collectionName, dto);
     }
 
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(params TData[] data)
+    public async Task<BatchInsertResponse> InsertMany(params TData[] data)
     {
         return await InsertMany(data.AsEnumerable());
     }
 
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(IEnumerable<TData> data)
+    public async Task<BatchInsertResponse> InsertMany(IEnumerable<TData> data)
     {
         return await InsertMany(data.Select(r => BatchInsertRequest.Create<TData>(r)));
     }
 
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
-        IEnumerable<(TData, Guid id)> requests
-    ) => await InsertMany(requests.Select(r => BatchInsertRequest.Create<TData>(r)));
+    public async Task<BatchInsertResponse> InsertMany(IEnumerable<(TData, Guid id)> requests) =>
+        await InsertMany(requests.Select(r => BatchInsertRequest.Create<TData>(r)));
 
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+    public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<(TData, Models.Vectors vectors)> requests
     ) => await InsertMany(requests.Select(r => BatchInsertRequest.Create<TData>(r)));
 
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+    public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<(TData data, IEnumerable<ObjectReference>? references)> requests
     ) => await InsertMany(requests.Select(r => BatchInsertRequest.Create<TData>(r)));
 
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
-        params (TData, Guid id)[] requests
-    ) => await InsertMany(requests.AsEnumerable());
+    public async Task<BatchInsertResponse> InsertMany(params (TData, Guid id)[] requests) =>
+        await InsertMany(requests.AsEnumerable());
 
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+    public async Task<BatchInsertResponse> InsertMany(
         params (TData, Models.Vectors vectors)[] requests
     ) => await InsertMany(requests.AsEnumerable());
 
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+    public async Task<BatchInsertResponse> InsertMany(
         params (TData data, IEnumerable<ObjectReference>? references)[] requests
     ) => await InsertMany(requests.AsEnumerable());
 
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+    public async Task<BatchInsertResponse> InsertMany(
         params BatchInsertRequest<TData>[] requests
     ) => await InsertMany(requests.AsEnumerable());
 
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+    public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<BatchInsertRequest<TData>[]> requestBatches
     )
     {
-        var results = new List<BatchInsertResponse>();
+        var results = new List<BatchInsertResponseEntry>();
 
         foreach (var batch in requestBatches)
         {
@@ -134,10 +132,10 @@ public class DataClient<TData>
             results.AddRange(batchResults);
         }
 
-        return results;
+        return new BatchInsertResponse(results);
     }
 
-    public async Task<IEnumerable<BatchInsertResponse>> InsertMany(
+    public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<BatchInsertRequest<TData>> requests
     )
     {
@@ -196,12 +194,12 @@ public class DataClient<TData>
             .Where(o => !dictErr.ContainsKey(o.Index))
             .ToDictionary(kv => kv.Index, kv => Guid.Parse(kv.Uuid));
 
-        var results = new List<BatchInsertResponse>();
+        var results = new List<BatchInsertResponseEntry>();
 
         foreach (int r in Enumerable.Range(0, objects.Count))
         {
             results.Add(
-                new BatchInsertResponse(
+                new BatchInsertResponseEntry(
                     Index: r,
                     dictUuid.TryGetValue(r, out Guid uuid) ? uuid : (Guid?)null,
                     dictErr.TryGetValue(r, out string? error)
@@ -211,7 +209,7 @@ public class DataClient<TData>
             );
         }
 
-        return results;
+        return new BatchInsertResponse(results);
     }
 
     public async Task DeleteByID(Guid id)

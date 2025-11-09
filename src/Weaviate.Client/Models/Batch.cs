@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+
 namespace Weaviate.Client.Models;
 
 public record BatchInsertRequest<TData>(
@@ -50,7 +53,35 @@ public static class BatchInsertRequest
     }
 }
 
-public record BatchInsertResponse(int Index, Guid? ID = null, WeaviateException? Error = null);
+public record BatchInsertResponseEntry(int Index, Guid? ID = null, WeaviateException? Error = null);
+
+public record BatchInsertResponse : IEnumerable<BatchInsertResponseEntry>
+{
+    internal BatchInsertResponse(List<BatchInsertResponseEntry> entries)
+    {
+        Objects = entries;
+    }
+
+    public IEnumerable<BatchInsertResponseEntry> Objects { get; internal set; } =
+        new List<BatchInsertResponseEntry>();
+
+    public IEnumerator<BatchInsertResponseEntry> GetEnumerator()
+    {
+        return Objects.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public IEnumerable<WeaviateException> Errors =>
+        Objects.Where(o => o.Error is not null).Select(o => o.Error!);
+
+    public bool HasErrors => Errors.Any();
+
+    public int Count => Objects.Count();
+}
 
 public class DeleteManyResult
 {
