@@ -75,11 +75,7 @@ public partial class BasicTests
         MetadataQuery? metadata = null;
         if (includeVector && returnFullMetadata == true)
         {
-            metadata = new MetadataQuery(MetadataOptions.All | MetadataOptions.Vector);
-        }
-        else if (includeVector)
-        {
-            metadata = new MetadataQuery(MetadataOptions.Vector);
+            metadata = MetadataOptions.All;
         }
         else if (returnFullMetadata == true)
         {
@@ -96,7 +92,8 @@ public partial class BasicTests
         var iter = collection.Iterator(
             returnMetadata: metadata,
             returnProperties: fields,
-            cacheSize: cacheSize ?? CollectionClient<object>.ITERATOR_CACHE_SIZE,
+            includeVectors: includeVector,
+            cacheSize: cacheSize ?? CollectionClient.ITERATOR_CACHE_SIZE,
             cancellationToken: TestContext.Current.CancellationToken
         );
 

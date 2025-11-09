@@ -31,7 +31,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _client.GrpcClient.FetchObjects(
             _collectionName,
@@ -46,7 +47,8 @@ public class GenerateClient
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
 
     public async Task<GenerativeWeaviateResult?> FetchObjects(
@@ -59,7 +61,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     ) =>
         await _client.GrpcClient.FetchObjects(
             _collectionName,
@@ -72,7 +75,8 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
 
     public async Task<GenerativeWeaviateResult?> FetchObjectByID(
@@ -82,7 +86,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.FetchObjects(
@@ -91,6 +96,7 @@ public class GenerateClient
             filters: Filter.WithID(id),
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             tenant: tenant ?? _collectionClient.Tenant,
             singlePrompt: prompt,
             groupedPrompt: groupedPrompt
@@ -109,7 +115,8 @@ public class GenerateClient
         GroupedPrompt? groupedPrompt = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         if (ids == null)
@@ -134,7 +141,8 @@ public class GenerateClient
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
     }
     #endregion
@@ -158,7 +166,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchNearText(
@@ -180,7 +189,8 @@ public class GenerateClient
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
         return result;
     }
@@ -203,7 +213,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchNearText(
@@ -226,7 +237,8 @@ public class GenerateClient
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
         return result;
     }
@@ -246,7 +258,8 @@ public class GenerateClient
         GroupedPrompt? groupedPrompt = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchNearVector(
@@ -266,7 +279,8 @@ public class GenerateClient
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
         return result;
     }
@@ -287,7 +301,8 @@ public class GenerateClient
         GroupedPrompt? groupedPrompt = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchNearVector(
@@ -308,7 +323,8 @@ public class GenerateClient
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnMetadata: returnMetadata
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
         return result;
     }
@@ -329,6 +345,7 @@ public class GenerateClient
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
         IList<QueryReference>? returnReferences = null
     )
     {
@@ -348,6 +365,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnReferences: returnReferences,
             returnProperties: returnProperties
         );
@@ -369,6 +387,7 @@ public class GenerateClient
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
         IList<QueryReference>? returnReferences = null
     )
     {
@@ -388,6 +407,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnReferences: returnReferences,
             returnProperties: returnProperties
         );
@@ -413,7 +433,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchHybrid(
@@ -435,6 +456,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -461,7 +483,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchHybrid(
@@ -484,6 +507,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -510,7 +534,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchHybrid(
@@ -535,6 +560,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -562,7 +588,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchHybrid(
@@ -588,6 +615,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -610,7 +638,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchNearObject(
@@ -630,6 +659,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -653,7 +683,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchNearObject(
@@ -673,6 +704,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -695,7 +727,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await NearMedia(
@@ -713,6 +746,7 @@ public class GenerateClient
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -736,7 +770,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await NearMedia(
@@ -755,6 +790,7 @@ public class GenerateClient
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -778,7 +814,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchNearMedia(
@@ -799,6 +836,7 @@ public class GenerateClient
             targetVector: targetVector,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
@@ -823,7 +861,8 @@ public class GenerateClient
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        MetadataQuery? returnMetadata = null
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
     )
     {
         var result = await _client.GrpcClient.SearchNearMedia(
@@ -844,6 +883,7 @@ public class GenerateClient
             targetVector: targetVector,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
             returnProperties: returnProperties,
             returnReferences: returnReferences
         );
