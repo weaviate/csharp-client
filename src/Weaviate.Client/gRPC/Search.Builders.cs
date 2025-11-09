@@ -22,6 +22,7 @@ internal partial class WeaviateGrpcClient
         GroupedPrompt? groupedPrompt = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
         IList<QueryReference>? returnReferences = null
     )
     {
@@ -36,10 +37,10 @@ internal partial class WeaviateGrpcClient
             ExplainScore = returnMetadata?.ExplainScore ?? false,
             IsConsistent = returnMetadata?.IsConsistent ?? false,
             Vector =
-                (returnMetadata?.Vectors != null && returnMetadata?.Vectors.Count > 0)
+                (includeVectors?.Vectors != null && includeVectors.Vectors.Length > 0)
                     ? false
-                    : (returnMetadata?.Vector ?? false),
-            Vectors = { returnMetadata?.Vectors ?? [] },
+                    : (includeVectors?.Vectors != null),
+            Vectors = { includeVectors?.Vectors ?? [] },
         };
 
         var request = new V1.SearchRequest()

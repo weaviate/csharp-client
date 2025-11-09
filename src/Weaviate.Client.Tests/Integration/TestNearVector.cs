@@ -29,9 +29,7 @@ public partial class SearchTests
             vectors: new[] { 0.5f, 0.6f, 0.7f }
         );
 
-        var objs = await collectionClient.Query.FetchObjects(
-            returnMetadata: MetadataOptions.Vector
-        );
+        var objs = await collectionClient.Query.FetchObjects(includeVectors: true);
 
         // Assert
         var retrieved = await collectionClient.Query.NearVector(new[] { 0.1f, 0.2f, 0.3f });

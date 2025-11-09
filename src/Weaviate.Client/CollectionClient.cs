@@ -58,6 +58,7 @@ public partial class CollectionClient
         Guid? after = null,
         uint cacheSize = ITERATOR_CACHE_SIZE,
         MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default
@@ -74,6 +75,7 @@ public partial class CollectionClient
                 limit: cacheSize,
                 after: cursor,
                 returnMetadata: returnMetadata,
+                includeVectors: includeVectors,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences
             );
