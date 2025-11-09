@@ -32,7 +32,7 @@ public partial class SearchTests : IntegrationTests
             moveTo: new Move(1.0f, objects: [guids[0]]),
             moveAway: new Move(0.5f, concepts: concepts),
             returnProperties: ["value"],
-            returnMetadata: new MetadataQuery("default")
+            includeVectors: "default"
         );
         var retrieved = retriever.Objects.ToList();
 
@@ -71,7 +71,7 @@ public partial class SearchTests : IntegrationTests
                 NumberOfGroups = 2,
                 ObjectsPerGroup = 100,
             },
-            returnMetadata: new MetadataQuery("default")
+            includeVectors: new[] { "default" }
         );
 
         // Assert
@@ -85,7 +85,7 @@ public partial class SearchTests : IntegrationTests
 
         var obj = await collectionClient.Query.FetchObjectByID(
             guids[3],
-            returnMetadata: new MetadataQuery("default")
+            includeVectors: new[] { "default" }
         );
 
         Assert.NotNull(obj);
