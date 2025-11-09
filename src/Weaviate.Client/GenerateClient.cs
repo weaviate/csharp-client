@@ -163,7 +163,7 @@ public class GenerateClient
     {
         var result = await _client.GrpcClient.SearchNearText(
             _collectionClient.Name,
-            text,
+            text.ToArray(),
             distance: distance,
             certainty: certainty,
             limit: limit,
@@ -208,7 +208,7 @@ public class GenerateClient
     {
         var result = await _client.GrpcClient.SearchNearText(
             _collectionClient.Name,
-            text,
+            text.ToArray(),
             groupBy: groupBy,
             distance: distance,
             certainty: certainty,

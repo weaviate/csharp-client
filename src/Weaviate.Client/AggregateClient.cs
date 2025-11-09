@@ -117,7 +117,7 @@ public partial class AggregateClient
     }
 
     public async Task<AggregateGroupByResult> NearText(
-        string[] query,
+        OneOrManyOf<string> query,
         Aggregate.GroupBy? groupBy,
         double? certainty = null,
         double? distance = null,
@@ -133,7 +133,7 @@ public partial class AggregateClient
     {
         var result = await _client.GrpcClient.AggregateNearText(
             _collectionName,
-            query,
+            query.ToArray(),
             certainty,
             distance,
             limit,
@@ -151,7 +151,7 @@ public partial class AggregateClient
     }
 
     public async Task<AggregateResult> NearText(
-        string[] query,
+        OneOrManyOf<string> query,
         double? certainty = null,
         double? distance = null,
         uint? limit = null,
@@ -166,7 +166,7 @@ public partial class AggregateClient
     {
         var result = await _client.GrpcClient.AggregateNearText(
             _collectionName,
-            query,
+            query.ToArray(),
             certainty,
             distance,
             limit,
