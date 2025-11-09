@@ -104,7 +104,7 @@ internal partial class WeaviateGrpcClient
 
     internal async Task<SearchReply> SearchNearText(
         string collection,
-        OneOrManyOf<string> query,
+        string[] query,
         float? distance = null,
         float? certainty = null,
         uint? limit = null,
