@@ -13,6 +13,10 @@ public interface IFilterEquality<T>
 public interface IFilterContainsAny<T>
 {
     Filter ContainsAny(IEnumerable<T> value);
+}
+
+public interface IFilterContainsNone<T>
+{
     Filter ContainsNone(IEnumerable<T> value);
 }
 
@@ -21,7 +25,10 @@ public interface IFilterContainsAll<T>
     Filter ContainsAll(IEnumerable<T> value);
 }
 
-public interface IFilterContains<T> : IFilterContainsAll<T>, IFilterContainsAny<T> { }
+public interface IFilterContains<T>
+    : IFilterContainsAll<T>,
+        IFilterContainsAny<T>,
+        IFilterContainsNone<T> { }
 
 public interface IFilterCompare<T>
 {
