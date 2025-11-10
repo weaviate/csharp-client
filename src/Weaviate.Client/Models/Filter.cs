@@ -15,12 +15,20 @@ public interface IFilterContainsAny<T>
     Filter ContainsAny(IEnumerable<T> value);
 }
 
+public interface IFilterContainsNone<T>
+{
+    Filter ContainsNone(IEnumerable<T> value);
+}
+
 public interface IFilterContainsAll<T>
 {
     Filter ContainsAll(IEnumerable<T> value);
 }
 
-public interface IFilterContains<T> : IFilterContainsAll<T>, IFilterContainsAny<T> { }
+public interface IFilterContains<T>
+    : IFilterContainsAll<T>,
+        IFilterContainsAny<T>,
+        IFilterContainsNone<T> { }
 
 public interface IFilterCompare<T>
 {
@@ -59,6 +67,8 @@ public abstract record TypedBase<T>
     protected Filter InternalContainsAll(IEnumerable<T> value) => Internal.ContainsAll(value);
 
     protected Filter InternalContainsAny(IEnumerable<T> value) => Internal.ContainsAny(value);
+
+    protected Filter InternalContainsNone(IEnumerable<T> value) => Internal.ContainsNone(value);
 }
 
 public record TypedGuid(PropertyFilter Parent)
@@ -67,6 +77,8 @@ public record TypedGuid(PropertyFilter Parent)
         IFilterContainsAny<Guid>
 {
     public Filter ContainsAny(IEnumerable<Guid> value) => InternalContainsAny(value);
+
+    public Filter ContainsNone(IEnumerable<Guid> value) => InternalContainsNone(value);
 
     public Filter Equal(Guid value) => InternalEqual(value);
 
@@ -86,6 +98,8 @@ public record TypedValue<T>
     public Filter ContainsAll(IEnumerable<T> value) => InternalContainsAll(value);
 
     public Filter ContainsAny(IEnumerable<T> value) => InternalContainsAny(value);
+
+    public Filter ContainsNone(IEnumerable<T> value) => InternalContainsNone(value);
 
     public Filter Equal(T value) => InternalEqual(value);
 
@@ -113,6 +127,8 @@ public partial record Filter
     public static Filter Or(params Filter[] filters) => new OrNestedFilter(filters);
 
     public static Filter And(params Filter[] filters) => new AndNestedFilter(filters);
+
+    public static Filter Not(Filter filter) => new NotNestedFilter(filter);
 
     public static TypedGuid ID => new(Property("_id"));
 
@@ -200,17 +216,17 @@ public partial record Filter
             // If right is also an AND filter, combine all operands
             if (right is AndNestedFilter rightNested)
             {
-                return new AndNestedFilter([.. leftNested.Filters, .. rightNested.Filters]);
+                return new AndNestedFilter([.. leftNested.filters, .. rightNested.filters]);
             }
             else
             {
-                return new AndNestedFilter([.. leftNested.Filters, right]);
+                return new AndNestedFilter([.. leftNested.filters, right]);
             }
         }
         // If right is an AND filter but left is not
         else if (right is AndNestedFilter rightNested)
         {
-            return new AndNestedFilter([left, .. rightNested.Filters]);
+            return new AndNestedFilter([left, .. rightNested.filters]);
         }
         // Neither is an AND filter
         else
@@ -228,17 +244,17 @@ public partial record Filter
             // If right is also an OR filter, combine all operands
             if (right is OrNestedFilter rightNested)
             {
-                return new OrNestedFilter([.. leftNested.Filters, .. rightNested.Filters]);
+                return new OrNestedFilter([.. leftNested.filters, .. rightNested.filters]);
             }
             else
             {
-                return new OrNestedFilter([.. leftNested.Filters, right]);
+                return new OrNestedFilter([.. leftNested.filters, right]);
             }
         }
         // If right is an OR filter but left is not
         else if (right is OrNestedFilter rightNested)
         {
-            return new OrNestedFilter([left, .. rightNested.Filters]);
+            return new OrNestedFilter([left, .. rightNested.filters]);
         }
         // Neither is an OR filter
         else
@@ -278,11 +294,27 @@ public record PropertyFilter : Filter
         return new TypedValue<int>(this);
     }
 
+    private Filter ContainsHelper<T>(Filters.Types.Operator op, IEnumerable<T> value)
+    {
+        ArgumentNullException.ThrowIfNull(value);
+        if (!value.Any())
+        {
+            throw new ArgumentException(
+                "The 'value' parameter must contain at least one value.",
+                nameof(value)
+            );
+        }
+        return WithOperator(op).WithValue(value);
+    }
+
     public Filter ContainsAll<T>(IEnumerable<T> value) =>
-        WithOperator(Filters.Types.Operator.ContainsAll).WithValue(value);
+        ContainsHelper(Filters.Types.Operator.ContainsAll, value);
 
     public Filter ContainsAny<T>(IEnumerable<T> value) =>
-        WithOperator(Filters.Types.Operator.ContainsAny).WithValue(value);
+        ContainsHelper(Filters.Types.Operator.ContainsAny, value);
+
+    public Filter ContainsNone<T>(IEnumerable<T> value) =>
+        ContainsHelper(Filters.Types.Operator.ContainsNone, value);
 
     public Filter Equal<TResult>(TResult value) =>
         WithOperator(Filters.Types.Operator.Equal).WithValue(value);
@@ -367,11 +399,14 @@ public abstract record NestedFilter : Filter
         WithOperator(op).WithNestedFilters(filters);
 }
 
-public record AndNestedFilter(params Filter[] Filters)
-    : NestedFilter(V1.Filters.Types.Operator.And, Filters) { }
+public record AndNestedFilter(params Filter[] filters)
+    : NestedFilter(V1.Filters.Types.Operator.And, filters) { }
 
-public record OrNestedFilter(params Filter[] Filters)
-    : NestedFilter(V1.Filters.Types.Operator.Or, Filters) { }
+public record OrNestedFilter(params Filter[] filters)
+    : NestedFilter(V1.Filters.Types.Operator.Or, filters) { }
+
+public record NotNestedFilter(Filter filter)
+    : NestedFilter(V1.Filters.Types.Operator.Not, filter) { }
 
 public record TimeFilter : TypedValue<DateTime>
 {
