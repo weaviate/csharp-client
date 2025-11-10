@@ -6,6 +6,240 @@ namespace Weaviate.Client.Tests.Integration;
 [Collection("PropertiesTests")]
 public partial class PropertyTests : IntegrationTests
 {
+    public static IEnumerable<object[]> PropertyTestData()
+    {
+        yield return new object[]
+        {
+            new[] { Property.Text("testText") },
+            new { testText = "hello world" },
+            "testText",
+            "hello world",
+        };
+        yield return new object[]
+        {
+            new[] { Property.Int("testInt") },
+            new { testInt = 42L },
+            "testInt",
+            42L,
+        };
+        yield return new object[]
+        {
+            new[] { Property.Blob("testBlob") },
+            new { testBlob = System.Text.Encoding.UTF8.GetBytes("Weaviate") },
+            "testBlob",
+            System.Text.Encoding.UTF8.GetBytes("Weaviate"),
+        };
+        yield return new object[]
+        {
+            new[] { Property.Bool("testBool") },
+            new { testBool = true },
+            "testBool",
+            true,
+        };
+        yield return new object[]
+        {
+            new[] { Property.Number("testNumber") },
+            new { testNumber = 123.456 },
+            "testNumber",
+            123.456,
+        };
+        yield return new object[]
+        {
+            new[] { Property.Date("testDate") },
+            new { testDate = new DateTime(2025, 10, 29) },
+            "testDate",
+            new DateTime(2025, 10, 29),
+        };
+        yield return new object[]
+        {
+            new[] { Property.Uuid("testUuid") },
+            new { testUuid = Guid.Parse("12345678-1234-5678-1234-567812345678") },
+            "testUuid",
+            Guid.Parse("12345678-1234-5678-1234-567812345678"),
+        };
+        yield return new object[]
+        {
+            new[] { Property.GeoCoordinate("testGeo") },
+            new { testGeo = new GeoCoordinate(12.345f, 67.89f) },
+            "testGeo",
+            new GeoCoordinate(12.345f, 67.89f),
+        };
+        yield return new object[]
+        {
+            new[] { Property.PhoneNumber("testPhone") },
+            new { testPhone = new PhoneNumber("+1 555-123-4567") { DefaultCountry = "US" } },
+            "testPhone",
+            new PhoneNumber("+1 555-123-4567")
+            {
+                DefaultCountry = "US",
+                CountryCode = 1,
+                Input = "+1 555-123-4567",
+                InternationalFormatted = "+1 555-123-4567",
+                National = 5551234567,
+                NationalFormatted = "(555) 123-4567",
+                Valid = false,
+            },
+        };
+        yield return new object[]
+        {
+            new[] { Property.TextArray("testTextArray") },
+            new { testTextArray = new[] { "a", "b" } },
+            "testTextArray",
+            new[] { "a", "b" },
+        };
+        yield return new object[]
+        {
+            new[] { Property.IntArray("testIntArray") },
+            new { testIntArray = new[] { 1, 2, 3 } },
+            "testIntArray",
+            new[] { 1L, 2L, 3L },
+        };
+        yield return new object[]
+        {
+            new[] { Property.BoolArray("testBoolArray") },
+            new { testBoolArray = new[] { true, false } },
+            "testBoolArray",
+            new[] { true, false },
+        };
+        yield return new object[]
+        {
+            new[] { Property.NumberArray("testNumberArray") },
+            new { testNumberArray = new[] { 1.1, 2.2, 3.3 } },
+            "testNumberArray",
+            new[] { 1.1, 2.2, 3.3 },
+        };
+        yield return new object[]
+        {
+            new[] { Property.NumberArray("testNumberArrayFloat") },
+            new { testNumberArrayFloat = new[] { 1.1f, 2.2f, 3.3f } },
+            "testNumberArrayFloat",
+            new[] { 1.1, 2.2, 3.3 },
+        };
+        yield return new object[]
+        {
+            new[] { Property.DateArray("testDateArray") },
+            new
+            {
+                testDateArray = new[] { new DateTime(2025, 10, 29), new DateTime(2025, 10, 30) },
+            },
+            "testDateArray",
+            new[] { new DateTime(2025, 10, 29), new DateTime(2025, 10, 30) },
+        };
+        yield return new object[]
+        {
+            new[] { Property.UuidArray("testUuidArray") },
+            new
+            {
+                testUuidArray = new[]
+                {
+                    Guid.Parse("12345678-1234-5678-1234-567812345678"),
+                    Guid.Parse("87654321-4321-8765-4321-876543218765"),
+                },
+            },
+            "testUuidArray",
+            new[]
+            {
+                Guid.Parse("12345678-1234-5678-1234-567812345678"),
+                Guid.Parse("87654321-4321-8765-4321-876543218765"),
+            },
+        };
+        // Anonymous types don't work well for the assertions below. Commenting them out for now.
+        // yield return new object[]
+        // {
+        //     new[]
+        //     {
+        //         Property.Object(
+        //             "testObject",
+        //             subProperties: new[] { Property.Text("testText"), Property.Int("testInt") }
+        //         ),
+        //     },
+        //     new { testObject = new { testText = "nested text", testInt = 99 } },
+        //     "testObject",
+        //     new { testText = "nested text", testInt = 99 },
+        // };
+        // Add more property types as needed
+    }
+
+    [Theory]
+    [MemberData(nameof(PropertyTestData))]
+    public async Task Property_OfAnyType_Should_SaveAndRetrieve(
+        Property[] props,
+        object obj,
+        string propertyName,
+        object expected
+    )
+    {
+        var c = await CollectionFactory(
+            description: $"Testing property {propertyName}",
+            properties: props
+        );
+
+        var cb = await CollectionFactory(
+            name: "batch",
+            description: $"Testing batch insert of property {propertyName}",
+            properties: props
+        );
+
+        var id = await c.Data.Insert(obj);
+        var idb = (await cb.Data.InsertMany(BatchInsertRequest.Create(new[] { obj })))
+            .First()
+            .ID!.Value;
+
+        var retrieved = await c.Query.FetchObjectByID(id, returnProperties: propertyName);
+        var retrievedBatch = await cb.Query.FetchObjectByID(idb, returnProperties: propertyName);
+
+        Assert.NotNull(retrieved);
+        Assert.NotNull(retrievedBatch);
+
+        var actualSingle = retrieved.Properties[propertyName];
+        var actualBatch = retrievedBatch.Properties[propertyName];
+
+        foreach (var actual in new[] { actualSingle, actualBatch })
+        {
+            if (props[0].DataType.Contains(DataType.Blob))
+            {
+                Assert.IsType<string>(actual);
+                string actualString = (string)actual!;
+                Assert.True(
+                    Convert.TryFromBase64String(
+                        actualString,
+                        new Span<byte>(new byte[actualString.Length * 4]),
+                        out _
+                    ),
+                    "The string is not a valid base64."
+                );
+            }
+            else
+            {
+                Assert.Equal(expected.GetType(), actual!.GetType());
+            }
+
+            if (expected is double expectedDouble && actual is double actualDouble)
+            {
+                Assert.Equal(expectedDouble, actualDouble, 5);
+            }
+            else if (
+                expected is IEnumerable<double> expectedEnumerable
+                && actual is IEnumerable<double> actualEnumerable
+            )
+            {
+                foreach (var (exp, act) in expectedEnumerable.Zip(actualEnumerable))
+                {
+                    Assert.Equal(exp, act, 5);
+                }
+            }
+            else if (props[0].DataType.Contains(DataType.Blob) && actual is string actualString)
+            {
+                var actualBytes = Convert.FromBase64String(actualString);
+                Assert.Equal(expected, actualBytes);
+            }
+            else
+            {
+                Assert.Equal(expected, actual!);
+            }
+        }
+    }
+
     [Fact]
     public async Task AllPropertiesSaveRetrieve()
     {
@@ -24,10 +258,31 @@ public partial class PropertyTests : IntegrationTests
             Property.Uuid("testUuid"),
             Property.UuidArray("testUuidArray"),
             Property.GeoCoordinate("testGeo"),
-            // Property.Blob("testBlob"),
-            // Property.PhoneNumber("testPhone"),
-            // Property.Object("testObject"),
-            // Property.ObjectArray("testObjectArray"),
+            Property.PhoneNumber("testPhone"),
+            Property.Object(
+                "testObject",
+                subProperties:
+                [
+                    Property.Text("testText"),
+                    Property.Int("testInt"),
+                    Property.Object(
+                        "testObject",
+                        subProperties: [Property.Text("testText"), Property.Int("testInt")]
+                    ),
+                ]
+            ),
+            Property.ObjectArray(
+                "testObjectArray",
+                subProperties:
+                [
+                    Property.Text("testText"),
+                    Property.Int("testInt"),
+                    Property.Object(
+                        "testObject",
+                        subProperties: [Property.Text("testText"), Property.Int("testInt")]
+                    ),
+                ]
+            ),
         ];
 
         // 1. Create collection
@@ -52,7 +307,31 @@ public partial class PropertyTests : IntegrationTests
             TestUuid = Guid.NewGuid(),
             TestUuidArray = new[] { Guid.NewGuid(), Guid.NewGuid() },
             TestGeo = new GeoCoordinate(12.345f, 67.890f),
-            // TestPhone = new PhoneNumber(),
+            TestPhone = new PhoneNumber("+1 555-123-4567") { DefaultCountry = "US" },
+            TestObject = new TestNestedProperties
+            {
+                TestText = "nestedText",
+                TestInt = 789,
+                TestObject = new TestNestedProperties
+                {
+                    TestText = "nestedNestedText",
+                    TestInt = 101112,
+                },
+            },
+            TestObjectArray = new[]
+            {
+                new TestNestedProperties { TestText = "arrayObjectText1", TestInt = 111 },
+                new TestNestedProperties
+                {
+                    TestText = "arrayObjectText2",
+                    TestInt = 222,
+                    TestObject = new TestNestedProperties
+                    {
+                        TestText = "arrayNestedObjectText",
+                        TestInt = 333,
+                    },
+                },
+            },
         };
 
         var id = await c.Data.Insert(testData);
@@ -62,7 +341,53 @@ public partial class PropertyTests : IntegrationTests
 
         var concreteObj = obj?.As<TestProperties>();
 
+        testData.TestPhone = new PhoneNumber(testData.TestPhone.Input)
+        {
+            DefaultCountry = testData.TestPhone.DefaultCountry,
+            CountryCode = 1,
+            Input = "+1 555-123-4567",
+            InternationalFormatted = "+1 555-123-4567",
+            National = 5551234567,
+            NationalFormatted = "(555) 123-4567",
+            Valid = false,
+        };
+
         Assert.Equivalent(testData, concreteObj);
+    }
+
+    [Fact]
+    public async Task Test_BatchInsertBlob_WithArrays()
+    {
+        Property[] props = [Property.Blob("testBlob")];
+
+        var testData = new[]
+        {
+            new TestProperties { TestBlob = System.Text.Encoding.UTF8.GetBytes("WeaviateBlob1") },
+            new TestProperties { TestBlob = System.Text.Encoding.UTF8.GetBytes("WeaviateBlob2") },
+            new TestProperties { TestBlob = System.Text.Encoding.UTF8.GetBytes("WeaviateBlob3") },
+        };
+
+        var c = await CollectionFactory<TestProperties>(
+            description: "Testing batch insert blob with arrays",
+            properties: props
+        );
+
+        var requests = BatchInsertRequest.Create(testData);
+
+        var response = await c.Data.InsertMany(requests);
+
+        // 3. Retrieve the object and confirm all properties match
+        foreach (var r in response)
+        {
+            // Blobs must be explicitly requested in returnProperties
+            var obj = await c.Query.FetchObjectByID(r.ID!.Value, returnProperties: "testBlob");
+
+            Assert.NotNull(obj);
+
+            var concreteObj = obj.As<TestProperties>();
+
+            Assert.Equivalent(testData[r.Index], concreteObj);
+        }
     }
 
     [Fact]
@@ -83,10 +408,31 @@ public partial class PropertyTests : IntegrationTests
             Property.Uuid("testUuid"),
             Property.UuidArray("testUuidArray"),
             Property.GeoCoordinate("testGeo"),
-            // Property.Blob("testBlob"),
-            // Property.PhoneNumber("testPhone"),
-            // Property.Object("testObject"),
-            // Property.ObjectArray("testObjectArray"),
+            Property.PhoneNumber("testPhone"),
+            Property.Object(
+                "testObject",
+                subProperties:
+                [
+                    Property.Text("testText"),
+                    Property.Int("testInt"),
+                    Property.Object(
+                        "testObject",
+                        subProperties: [Property.Text("testText"), Property.Int("testInt")]
+                    ),
+                ]
+            ),
+            Property.ObjectArray(
+                "testObjectArray",
+                subProperties:
+                [
+                    Property.Text("testText"),
+                    Property.Int("testInt"),
+                    Property.Object(
+                        "testObject",
+                        subProperties: [Property.Text("testText"), Property.Int("testInt")]
+                    ),
+                ]
+            ),
         ];
 
         // 1. Create collection
@@ -113,6 +459,32 @@ public partial class PropertyTests : IntegrationTests
                 TestUuid = Guid.NewGuid(),
                 TestUuidArray = new[] { Guid.NewGuid(), Guid.NewGuid() },
                 TestGeo = new GeoCoordinate(12.345f, 67.890f),
+                // Add nested object
+                TestObject = new TestNestedProperties
+                {
+                    TestText = "nestedText",
+                    TestInt = 789,
+                    TestObject = new TestNestedProperties
+                    {
+                        TestText = "deepNestedText",
+                        TestInt = 101112,
+                    },
+                },
+                // Add array of nested objects
+                TestObjectArray = new[]
+                {
+                    new TestNestedProperties { TestText = "arrayObjectText1", TestInt = 111 },
+                    new TestNestedProperties
+                    {
+                        TestText = "arrayObjectText2",
+                        TestInt = 222,
+                        TestObject = new TestNestedProperties
+                        {
+                            TestText = "arrayDeepNestedText",
+                            TestInt = 333,
+                        },
+                    },
+                },
             },
             new TestProperties
             {
@@ -129,6 +501,11 @@ public partial class PropertyTests : IntegrationTests
                 TestUuid = Guid.NewGuid(),
                 TestUuidArray = new[] { Guid.NewGuid(), Guid.NewGuid() },
                 TestGeo = new GeoCoordinate(23.456f, 78.910f),
+                TestObject = new TestNestedProperties { TestText = "nestedText2", TestInt = 888 },
+                TestObjectArray = new[]
+                {
+                    new TestNestedProperties { TestText = "arrayObjectText3", TestInt = 333 },
+                },
             },
             new TestProperties
             {
@@ -144,10 +521,17 @@ public partial class PropertyTests : IntegrationTests
                 TestUuid = Guid.NewGuid(),
                 TestUuidArray = new[] { Guid.NewGuid(), Guid.NewGuid() },
                 TestGeo = new GeoCoordinate(34.567f, 98.765f),
+                TestObject = new TestNestedProperties { TestText = "nestedText3", TestInt = 999 },
+                TestObjectArray = new[]
+                {
+                    new TestNestedProperties { TestText = "arrayObjectText4", TestInt = 444 },
+                },
             },
         };
 
-        var response = await c.Data.InsertMany(BatchInsertRequest.Create<object>(testData));
+        var requests = BatchInsertRequest.Create<object>(testData);
+
+        var response = await c.Data.InsertMany(requests);
 
         // 3. Retrieve the object and confirm all properties match
         foreach (var r in response)

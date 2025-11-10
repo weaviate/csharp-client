@@ -4,27 +4,38 @@ namespace Weaviate.Client.Rest;
 
 public class WeaviateRestClientException : WeaviateClientException
 {
-    public WeaviateRestClientException(string? message = null, Exception? innerException = null)
+    private const string DefaultMessage =
+        "An error occurred processing the response from the Weaviate REST API.";
+
+    public WeaviateRestClientException(Exception innerException)
+        : base(DefaultMessage, innerException) { }
+
+    public WeaviateRestClientException(string message = DefaultMessage)
         : base(
-            $"An error occurred processing the response from the Weaviate REST API: {message}",
-            innerException
+            message != DefaultMessage ? string.Join(" ", DefaultMessage, message) : DefaultMessage
         ) { }
 }
 
 public class WeaviateRestServerException : WeaviateServerException
 {
+    private const string DefaultMessage =
+        "An error occurred in the server while processing the request.";
+
     public WeaviateRestServerException(
-        string? message = null,
         HttpStatusCode? statusCode = null,
         Exception? innerException = null
     )
-        : base(
-            $"An error occurred in the Weaviate REST API: [{statusCode}] {message}",
-            innerException
-        )
+        : base(DefaultMessage, innerException)
     {
         StatusCode = statusCode;
     }
 
     public HttpStatusCode? StatusCode { get; }
+
+    public override string ToString()
+    {
+        var status = StatusCode.HasValue ? $" StatusCode: {StatusCode.Value}." : string.Empty;
+
+        return $"Server-Side Error: {base.ToString()}{status}";
+    }
 }
