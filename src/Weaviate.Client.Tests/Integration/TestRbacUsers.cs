@@ -38,7 +38,7 @@ public class TestRbacUsers : IntegrationTests
     public async Task Test_ListUsers()
     {
         RequireVersion("1.30.0");
-        var users = await _weaviate.Users.List();
+        var users = await _weaviate.Users.Db.List();
         var userList = users.ToList();
 
         Assert.NotEmpty(userList);
@@ -54,12 +54,12 @@ public class TestRbacUsers : IntegrationTests
         try
         {
             // Create user
-            var apiKey = await _weaviate.Users.Create(randomUserName);
+            var apiKey = await _weaviate.Users.Db.Create(randomUserName);
             Assert.NotNull(apiKey);
             Assert.NotEmpty(apiKey);
 
             // Get user
-            var user = await _weaviate.Users.Get(randomUserName);
+            var user = await _weaviate.Users.Db.Get(randomUserName);
             Assert.NotNull(user);
             Assert.Equal(randomUserName, user.UserId);
             Assert.Equal(DatabaseUserType.DbUser, user.DbUserType);
@@ -80,7 +80,7 @@ public class TestRbacUsers : IntegrationTests
         finally
         {
             // Cleanup
-            await _weaviate.Users.Delete(randomUserName);
+            await _weaviate.Users.Db.Delete(randomUserName);
         }
     }
 
@@ -91,14 +91,14 @@ public class TestRbacUsers : IntegrationTests
         var randomUserName = $"delete-user-{Random.Shared.Next(1, 10000)}";
 
         // Create user
-        await _weaviate.Users.Create(randomUserName);
+        await _weaviate.Users.Db.Create(randomUserName);
 
         // Delete user
-        var deleted = await _weaviate.Users.Delete(randomUserName);
+        var deleted = await _weaviate.Users.Db.Delete(randomUserName);
         Assert.True(deleted);
 
         // Verify delete of non-existent user returns false
-        var deletedAgain = await _weaviate.Users.Delete("i-do-not-exist");
+        var deletedAgain = await _weaviate.Users.Db.Delete("i-do-not-exist");
         Assert.False(deletedAgain);
     }
 
@@ -111,7 +111,7 @@ public class TestRbacUsers : IntegrationTests
         try
         {
             // Create user
-            var apiKeyOld = await _weaviate.Users.Create(randomUserName);
+            var apiKeyOld = await _weaviate.Users.Db.Create(randomUserName);
 
             // Verify old key works
             var oldKeyClient = Connect.Local(
@@ -126,7 +126,7 @@ public class TestRbacUsers : IntegrationTests
             Assert.Equal(randomUserName, user!.Username);
 
             // Rotate key
-            var apiKeyNew = await _weaviate.Users.RotateApiKey(randomUserName);
+            var apiKeyNew = await _weaviate.Users.Db.RotateApiKey(randomUserName);
             Assert.NotNull(apiKeyNew);
             Assert.NotEmpty(apiKeyNew);
             Assert.NotEqual(apiKeyOld, apiKeyNew);
@@ -145,7 +145,7 @@ public class TestRbacUsers : IntegrationTests
         }
         finally
         {
-            await _weaviate.Users.Delete(randomUserName);
+            await _weaviate.Users.Db.Delete(randomUserName);
         }
     }
 
@@ -158,37 +158,37 @@ public class TestRbacUsers : IntegrationTests
         try
         {
             // Create user
-            await _weaviate.Users.Create(randomUserName);
+            await _weaviate.Users.Db.Create(randomUserName);
 
             // Deactivate
-            var deactivated = await _weaviate.Users.Deactivate(randomUserName);
+            var deactivated = await _weaviate.Users.Db.Deactivate(randomUserName);
             Assert.True(deactivated);
 
             // Second deactivation returns conflict (false)
-            var deactivatedAgain = await _weaviate.Users.Deactivate(randomUserName);
+            var deactivatedAgain = await _weaviate.Users.Db.Deactivate(randomUserName);
             Assert.False(deactivatedAgain);
 
             // Verify user is inactive
-            var user = await _weaviate.Users.Get(randomUserName);
+            var user = await _weaviate.Users.Db.Get(randomUserName);
             Assert.NotNull(user);
             Assert.False(user!.Active);
 
             // Activate
-            var activated = await _weaviate.Users.Activate(randomUserName);
+            var activated = await _weaviate.Users.Db.Activate(randomUserName);
             Assert.True(activated);
 
             // Second activation returns conflict (false)
-            var activatedAgain = await _weaviate.Users.Activate(randomUserName);
+            var activatedAgain = await _weaviate.Users.Db.Activate(randomUserName);
             Assert.False(activatedAgain);
 
             // Verify user is active
-            user = await _weaviate.Users.Get(randomUserName);
+            user = await _weaviate.Users.Db.Get(randomUserName);
             Assert.NotNull(user);
             Assert.True(user!.Active);
         }
         finally
         {
-            await _weaviate.Users.Delete(randomUserName);
+            await _weaviate.Users.Db.Delete(randomUserName);
         }
     }
 
@@ -201,10 +201,10 @@ public class TestRbacUsers : IntegrationTests
         try
         {
             // Create user
-            var apiKeyOld = await _weaviate.Users.Create(randomUserName);
+            var apiKeyOld = await _weaviate.Users.Db.Create(randomUserName);
 
             // Deactivate with revoke_key=true
-            var deactivated = await _weaviate.Users.Deactivate(randomUserName, revokeKey: true);
+            var deactivated = await _weaviate.Users.Db.Deactivate(randomUserName, revokeKey: true);
             Assert.True(deactivated);
 
             // Old key should not work anymore (capture exception from client construction + call)
@@ -221,7 +221,7 @@ public class TestRbacUsers : IntegrationTests
             });
 
             // Re-activate
-            await _weaviate.Users.Activate(randomUserName);
+            await _weaviate.Users.Db.Activate(randomUserName);
 
             // Old key still shouldn't work (revoked)
             await Assert.ThrowsAnyAsync<WeaviateException>(async () =>
@@ -237,7 +237,7 @@ public class TestRbacUsers : IntegrationTests
             });
 
             // Rotate to get new key
-            var apiKeyNew = await _weaviate.Users.RotateApiKey(randomUserName);
+            var apiKeyNew = await _weaviate.Users.Db.RotateApiKey(randomUserName);
 
             // New key should work
             var newKeyClient = Connect.Local(
@@ -253,7 +253,7 @@ public class TestRbacUsers : IntegrationTests
         }
         finally
         {
-            await _weaviate.Users.Delete(randomUserName);
+            await _weaviate.Users.Db.Delete(randomUserName);
         }
     }
 }

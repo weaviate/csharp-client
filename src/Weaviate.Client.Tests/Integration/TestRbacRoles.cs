@@ -247,13 +247,13 @@ public class TestRbacRoles : IntegrationTests
 
             await _weaviate.Roles.Create(roleName, Array.Empty<PermissionInfo>());
 
-            await _weaviate.Users.Delete(userName);
+            await _weaviate.Users.Db.Delete(userName);
 
-            await _weaviate.Users.Create(userName);
-            await _weaviate.Roles.AssignToUser(userName, "db", new[] { roleName });
+            await _weaviate.Users.Db.Create(userName);
+            await _weaviate.Users.Db.AssignRoles(userName, new[] { roleName });
             var assignments = (await _weaviate.Roles.GetUserAssignments(roleName)).ToList();
             Assert.Contains(assignments, a => a.UserId == userName);
-            await _weaviate.Roles.RevokeFromUser(userName, "db", new[] { roleName });
+            await _weaviate.Users.Db.RevokeRoles(userName, new[] { roleName });
             var after = (await _weaviate.Roles.GetUserAssignments(roleName)).ToList();
             Assert.DoesNotContain(after, a => a.UserId == userName);
         }
@@ -261,7 +261,7 @@ public class TestRbacRoles : IntegrationTests
         {
             await _weaviate.Roles.Delete(roleName);
 
-            await _weaviate.Users.Delete(userName);
+            await _weaviate.Users.Db.Delete(userName);
             {
                 // Expected if already cleaned up
             }
@@ -280,11 +280,11 @@ public class TestRbacRoles : IntegrationTests
 
             await _weaviate.Roles.Create(roleName, Array.Empty<PermissionInfo>());
 
-            await _weaviate.Users.Delete(userName);
+            await _weaviate.Users.Db.Delete(userName);
 
-            await _weaviate.Users.Create(userName);
-            await _weaviate.Roles.AssignToUser(userName, "db", new[] { roleName });
-            var roles = (await _weaviate.Roles.RolesForUser(userName, "db")).ToList();
+            await _weaviate.Users.Db.Create(userName);
+            await _weaviate.Users.Db.AssignRoles(userName, new[] { roleName });
+            var roles = (await _weaviate.Users.Db.GetRoles(userName)).ToList();
             Assert.NotEmpty(roles);
             Assert.Contains(roles, r => r.Name == roleName);
         }
@@ -292,7 +292,7 @@ public class TestRbacRoles : IntegrationTests
         {
             await _weaviate.Roles.Delete(roleName);
 
-            await _weaviate.Users.Delete(userName);
+            await _weaviate.Users.Db.Delete(userName);
         }
     }
 }
