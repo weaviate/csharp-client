@@ -473,4 +473,61 @@ public partial class FilterTests : IntegrationTests
         var expectedUuids = results.Select(result => uuids[result]).ToHashSet();
         Assert.True(objects.All(obj => expectedUuids.Contains(obj.ID!.Value)));
     }
+
+    [Fact]
+    public async Task Filter_ContainsNone_Integration()
+    {
+        RequireVersion("1.33.0");
+
+        // Arrange
+        var collection = await CollectionFactory(
+            properties: [Property.UuidArray("uuids"), Property.Text("name")]
+        );
+        var uuid1 = Guid.NewGuid();
+        var uuid2 = Guid.NewGuid();
+        var uuid3 = Guid.NewGuid();
+        var uuid4 = Guid.NewGuid();
+
+        var idA = await collection.Data.Insert(new { name = "A", uuids = new[] { uuid1, uuid2 } });
+        var idB = await collection.Data.Insert(new { name = "B", uuids = new[] { uuid3 } });
+        var idC = await collection.Data.Insert(new { name = "C", uuids = new[] { uuid4 } });
+        var idD = await collection.Data.Insert(new { name = "D", uuids = new Guid[0] });
+
+        // Act
+        var filter = Filter.Property("uuids").ContainsNone(new[] { uuid1, uuid2 });
+        var objects = await collection.Query.FetchObjects(filters: filter);
+        var ids = objects.Select(o => o.ID).ToHashSet();
+
+        // Assert
+        Assert.DoesNotContain(idA, ids);
+        Assert.Contains(idB, ids);
+        Assert.Contains(idC, ids);
+        Assert.Contains(idD, ids);
+    }
+
+    [Fact]
+    public async Task Filter_Not_ContainsAny_Integration()
+    {
+        RequireVersion("1.33.0");
+
+        // Arrange
+        var collection = await CollectionFactory(properties: [Property.Text("name")]);
+        var uuid1 = Guid.NewGuid();
+        var uuid2 = Guid.NewGuid();
+        var uuid3 = Guid.NewGuid();
+
+        var idA = await collection.Data.Insert(new { name = "A" }, id: uuid1);
+        var idB = await collection.Data.Insert(new { name = "B" }, id: uuid2);
+        var idC = await collection.Data.Insert(new { name = "C" }, id: uuid3);
+
+        // Act
+        var filter = Filter.Not(Filter.ID.ContainsAny(new[] { uuid1, uuid2 }));
+        var objects = await collection.Query.FetchObjects(filters: filter);
+        var ids = objects.Select(o => o.ID).ToHashSet();
+
+        // Assert
+        Assert.DoesNotContain(idA, ids);
+        Assert.DoesNotContain(idB, ids);
+        Assert.Contains(idC, ids);
+    }
 }

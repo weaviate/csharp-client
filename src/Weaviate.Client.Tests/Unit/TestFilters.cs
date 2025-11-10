@@ -192,4 +192,56 @@ public partial class FilterTests
         Assert.Equal(expectedAllOf.InternalFilter, fAllOf.InternalFilter);
         Assert.Equal(expectedAnyOf.InternalFilter, fAnyOf.InternalFilter);
     }
+
+    [Fact]
+    public void Filter_ContainsNone()
+    {
+        // Arrange
+        var uuid1 = Guid.NewGuid();
+        var uuid2 = Guid.NewGuid();
+        var f1 = Filter.Property("uuids").ContainsNone(new[] { uuid1, uuid2 });
+
+        var expectedF1 = new V1.Filters
+        {
+            Target = new V1.FilterTarget() { Property = "uuids" },
+            Operator = V1.Filters.Types.Operator.ContainsNone,
+            ValueTextArray = new V1.TextArray() { Values = { uuid1.ToString(), uuid2.ToString() } },
+        };
+
+        // Act
+
+        // Assert
+        Assert.Equal(expectedF1, f1.InternalFilter);
+    }
+
+    [Fact]
+    public void Filter_Not()
+    {
+        // Arrange
+        var uuid1 = Guid.NewGuid();
+        var uuid2 = Guid.NewGuid();
+        var f1 = Filter.Not(Filter.ID.ContainsAny(new[] { uuid1, uuid2 }));
+
+        var expectedF1 = new V1.Filters
+        {
+            Filters_ =
+            {
+                new V1.Filters
+                {
+                    Target = new V1.FilterTarget() { Property = "_id" },
+                    Operator = V1.Filters.Types.Operator.ContainsAny,
+                    ValueTextArray = new V1.TextArray()
+                    {
+                        Values = { uuid1.ToString(), uuid2.ToString() },
+                    },
+                },
+            },
+            Operator = V1.Filters.Types.Operator.Not,
+        };
+
+        // Act
+
+        // Assert
+        Assert.Equal(expectedF1, f1.InternalFilter);
+    }
 }
