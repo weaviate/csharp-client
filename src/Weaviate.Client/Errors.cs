@@ -52,6 +52,15 @@ public class WeaviateBackupConflictException : WeaviateServerException
         : base(DefaultMessage, innerException) { }
 }
 
+/// <summary>
+/// Exception thrown when attempting to create a resource that already exists (HTTP 409 Conflict).
+/// </summary>
+public class WeaviateConflictException : WeaviateServerException
+{
+    public WeaviateConflictException(string message, Exception? innerException = null)
+        : base(message, innerException) { }
+}
+
 public class WeaviateNotFoundException : WeaviateServerException
 {
     private const string DefaultMessage = "The requested resource was not found in Weaviate.";
@@ -72,6 +81,15 @@ public class WeaviateNotFoundException : WeaviateServerException
         ResourceType resourceType = Client.ResourceType.Unknown
     )
         : base(DefaultMessage, grpcException)
+    {
+        ResourceType = resourceType;
+    }
+
+    internal WeaviateNotFoundException(
+        Rest.WeaviateUnexpectedStatusCodeException restException,
+        ResourceType resourceType = Client.ResourceType.Unknown
+    )
+        : base(DefaultMessage, restException)
     {
         ResourceType = resourceType;
     }

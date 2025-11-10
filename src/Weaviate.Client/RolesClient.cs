@@ -11,7 +11,7 @@ public class RolesClient
 
     internal RolesClient(WeaviateClient client) => _client = client;
 
-    public async Task<IEnumerable<RoleInfo>> List()
+    public async Task<IEnumerable<RoleInfo>> ListAll()
     {
         var roles = await _client.RestClient.RolesList();
         return roles.Select(ToModel);
@@ -23,7 +23,7 @@ public class RolesClient
         return role is null ? null : ToModel(role);
     }
 
-    public Task<bool> Create(string name, IEnumerable<PermissionInfo> permissions)
+    public async Task<RoleInfo> Create(string name, IEnumerable<PermissionInfo> permissions)
     {
         var dto = new Rest.Dto.Role
         {
@@ -35,30 +35,36 @@ public class RolesClient
                 })
                 .ToList(),
         };
-        return _client.RestClient.RoleCreate(dto);
+        var created = await _client.RestClient.RoleCreate(dto);
+        return ToModel(created);
     }
 
-    public Task<bool> Delete(string id) => _client.RestClient.RoleDelete(id);
+    public Task Delete(string id) => _client.RestClient.RoleDelete(id);
 
-    public Task<bool> AddPermissions(string id, IEnumerable<PermissionInfo> permissions)
+    public async Task<RoleInfo> AddPermissions(string id, IEnumerable<PermissionInfo> permissions)
     {
         var dtos = permissions.Select(p => new Rest.Dto.Permission
         {
             Action = p.Action.FromEnumMemberString<Rest.Dto.PermissionAction>(),
         });
-        return _client.RestClient.RoleAddPermissions(id, dtos);
+        var updated = await _client.RestClient.RoleAddPermissions(id, dtos);
+        return ToModel(updated);
     }
 
-    public Task<bool> RemovePermissions(string id, IEnumerable<PermissionInfo> permissions)
+    public async Task<RoleInfo> RemovePermissions(
+        string id,
+        IEnumerable<PermissionInfo> permissions
+    )
     {
         var dtos = permissions.Select(p => new Rest.Dto.Permission
         {
             Action = p.Action.FromEnumMemberString<Rest.Dto.PermissionAction>(),
         });
-        return _client.RestClient.RoleRemovePermissions(id, dtos);
+        var updated = await _client.RestClient.RoleRemovePermissions(id, dtos);
+        return ToModel(updated);
     }
 
-    public Task<bool?> HasPermission(string id, PermissionInfo permission)
+    public Task<bool> HasPermission(string id, PermissionInfo permission)
     {
         var dto = new Rest.Dto.Permission
         {

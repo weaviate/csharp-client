@@ -25,25 +25,38 @@ internal partial class WeaviateRestClient
             : null;
     }
 
-    internal async Task<bool> RoleDelete(string id)
+    internal async Task RoleDelete(string id)
     {
         var response = await _httpClient.DeleteAsync(WeaviateEndpoints.Role(id));
-        var status = await response.EnsureExpectedStatusCodeAsync([204, 404], "delete role");
-        return status == HttpStatusCode.NoContent;
+        await response.EnsureExpectedStatusCodeAsync([204], "delete role");
     }
 
-    internal async Task<bool> RoleCreate(Dto.Role role)
+    internal async Task<Dto.Role> RoleCreate(Dto.Role role)
     {
         var response = await _httpClient.PostAsJsonAsync(
             WeaviateEndpoints.Roles(),
             role,
             options: RestJsonSerializerOptions
         );
-        var status = await response.EnsureExpectedStatusCodeAsync([201, 409], "create role");
-        return status == HttpStatusCode.Created;
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([201], "create role");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.Conflict)
+        {
+            throw new WeaviateConflictException($"Role '{role.Name}' already exists.", ex);
+        }
+
+        // Re-fetch the created role since the API doesn't return it in the response
+        var created = await RoleGet(role.Name!);
+        return created ?? throw new WeaviateRestClientException();
     }
 
-    internal async Task<bool> RoleAddPermissions(string id, IEnumerable<Dto.Permission> permissions)
+    internal async Task<Dto.Role> RoleAddPermissions(
+        string id,
+        IEnumerable<Dto.Permission> permissions
+    )
     {
         var body = new { permissions = permissions };
         var response = await _httpClient.PostAsJsonAsync(
@@ -51,11 +64,22 @@ internal partial class WeaviateRestClient
             body,
             options: RestJsonSerializerOptions
         );
-        var status = await response.EnsureExpectedStatusCodeAsync([200, 404], "add permissions");
-        return status == HttpStatusCode.OK;
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "add permissions");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.Role);
+        }
+
+        // Re-fetch role to get updated permissions
+        var updated = await RoleGet(id);
+        return updated ?? throw new WeaviateRestClientException();
     }
 
-    internal async Task<bool> RoleRemovePermissions(
+    internal async Task<Dto.Role> RoleRemovePermissions(
         string id,
         IEnumerable<Dto.Permission> permissions
     )
@@ -66,20 +90,30 @@ internal partial class WeaviateRestClient
             body,
             options: RestJsonSerializerOptions
         );
-        var status = await response.EnsureExpectedStatusCodeAsync([200, 404], "remove permissions");
-        return status == HttpStatusCode.OK;
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "remove permissions");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.Role);
+        }
+
+        // Re-fetch role to get updated permissions
+        var updated = await RoleGet(id);
+        return updated ?? throw new WeaviateRestClientException();
     }
 
-    internal async Task<bool?> RoleHasPermission(string id, Dto.Permission permission)
+    internal async Task<bool> RoleHasPermission(string id, Dto.Permission permission)
     {
         var response = await _httpClient.PostAsJsonAsync(
             WeaviateEndpoints.RoleHasPermission(id),
             permission,
             options: RestJsonSerializerOptions
         );
-        var status = await response.EnsureExpectedStatusCodeAsync([200, 404], "has permission");
-        if (status == HttpStatusCode.NotFound)
-            return null;
+
+        await response.EnsureExpectedStatusCodeAsync([200], "has permission");
         var result = await response.Content.ReadFromJsonAsync<bool>(RestJsonSerializerOptions);
         return result;
     }
