@@ -263,7 +263,9 @@ public class DataClient<TData>
                     var errors = entry.Result?.Errors?.Error ?? Enumerable.Empty<Error>();
 
                     return errors
-                        .Select(e => new WeaviateClientException(e.Message) as WeaviateException)
+                        .Where(e => e.Message is not null)
+                        .Select(e => new WeaviateServerException(e.Message!))
+                        .Cast<WeaviateException>()
                         .ToArray();
                 }
             );
