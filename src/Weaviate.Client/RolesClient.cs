@@ -88,41 +88,6 @@ public class RolesClient
         ));
     }
 
-    public Task<bool> AssignToUser(string userId, string userType, IEnumerable<string> roles) =>
-        _client.RestClient.UserAssignRoles(userId, userType, roles);
-
-    public Task<bool> RevokeFromUser(string userId, string userType, IEnumerable<string> roles) =>
-        _client.RestClient.UserRevokeRoles(userId, userType, roles);
-
-    public Task<bool> AssignToGroup(string groupId, string groupType, IEnumerable<string> roles) =>
-        _client.RestClient.GroupAssignRoles(groupId, groupType, roles);
-
-    public Task<bool> RevokeFromGroup(
-        string groupId,
-        string groupType,
-        IEnumerable<string> roles
-    ) => _client.RestClient.GroupRevokeRoles(groupId, groupType, roles);
-
-    public async Task<IEnumerable<RoleInfo>> RolesForUser(
-        string userId,
-        string userType,
-        bool? includeFullRoles = null
-    )
-    {
-        var roles = await _client.RestClient.UserRolesGet(userId, userType, includeFullRoles);
-        return roles.Select(ToModel);
-    }
-
-    public async Task<IEnumerable<RoleInfo>> RolesForGroup(
-        string groupId,
-        string groupType,
-        bool? includeFullRoles = null
-    )
-    {
-        var roles = await _client.RestClient.GroupRolesGet(groupId, groupType, includeFullRoles);
-        return roles.Select(ToModel);
-    }
-
     private static RoleInfo ToModel(Rest.Dto.Role dto) =>
         new(
             dto.Name ?? string.Empty,

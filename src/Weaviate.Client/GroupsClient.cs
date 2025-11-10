@@ -3,20 +3,21 @@ using Weaviate.Client.Models;
 namespace Weaviate.Client;
 
 /// <summary>
-/// Client for listing and inspecting groups (role assignments for groups handled via RolesClient).
+/// Client for managing groups.
+/// Provides access to OIDC group operations via <see cref="Oidc"/>.
 /// </summary>
 public class GroupsClient
 {
     private readonly WeaviateClient _client;
 
-    internal GroupsClient(WeaviateClient client) => _client = client;
+    internal GroupsClient(WeaviateClient client)
+    {
+        _client = client;
+        Oidc = new GroupsOidcClient(client);
+    }
 
-    public Task<IEnumerable<string>> List(string groupType) =>
-        _client.RestClient.GroupsList(groupType);
-
-    public Task<IEnumerable<RoleInfo>> Roles(
-        string groupId,
-        string groupType,
-        bool? includeFullRoles = null
-    ) => _client.Roles.RolesForGroup(groupId, groupType, includeFullRoles);
+    /// <summary>
+    /// OIDC groups client - for listing groups and managing role assignments.
+    /// </summary>
+    public GroupsOidcClient Oidc { get; }
 }
