@@ -121,8 +121,11 @@ Please ensure that all code adheres to file-scoped namespaces style. This allows
 ### Models and DTOs
 - **User-facing Models**: `src/Weaviate.Client/Models/` - C# records with strong typing
 - **REST DTOs**: `src/Weaviate.Client/Rest/Dto/` - Auto-generated, internal mapping only
-- Use `ToDto()` extension methods to convert Models → DTOs (in model files)
-- Use `ToModel()` extension methods to convert DTOs → Models (in model files)
+- Use `ToDto()` extension methods to convert Models → DTOs
+- Use `ToModel()` extension methods to convert DTOs → Models
+- **Important**: All `ToModel()` and `ToDto()` extension methods should be added to `src/Weaviate.Client/Rest/Dto/Extensions.cs` (not in model files)
+- **ToModel() pattern**: Extend the partial `Rest.Dto` classes (e.g., `partial class Role { public Models.RoleInfo ToModel() => ... }`)
+- **ToDto() pattern**: Use extension methods on Model types (e.g., `public static Dto.Role ToDto(this Models.RoleInfo model) => ...`)
 
 ### Type Safety
 - Generic collections: `CollectionClient<TData>` where `TData` is user's data class
@@ -149,6 +152,43 @@ var client = WeaviateClientBuilder.Cloud("cluster-url.weaviate.cloud", apiKey: "
 - Fluent API: `collection.WithTenant("tenant1").WithConsistencyLevel(ConsistencyLevels.One)`
 - Method chaining returns new instances (immutable pattern)
 - Enums: Use C# enums with `EnumMember` attributes for wire format
+
+### REST API Behavior and OpenAPI Spec Correlation
+
+**Critical**: Always verify REST endpoint behavior against the OpenAPI specification before implementing REST client methods. The OpenAPI spec is the source of truth for:
+- Expected HTTP status codes (success and error cases)
+- Response schemas (including empty response bodies)
+- Request/response content types
+- Error response structures
+
+**Common Patterns to Verify**:
+
+1. **Empty Response Bodies**: Some mutation endpoints (POST/PUT/PATCH) return success status codes (200/201/204) with empty response bodies
+   - Example: `POST /v1/authz/roles` returns `201 Created` with no body
+   - Pattern: Re-fetch the created/updated resource with a subsequent GET request
+   - Check OpenAPI spec for `responses.<status>.content` - if missing, expect empty body
+
+2. **Idempotent Operations**: Some DELETE endpoints return success regardless of resource existence
+   - Example: `DELETE /v1/authz/roles/{id}` returns `204 No Content` whether the role exists or not
+   - Pattern: Don't throw exceptions on 404 for these endpoints
+   - Check OpenAPI spec `responses` - if 404 is not listed as an error response, the operation is idempotent
+
+3. **Lenient Validation**: Some endpoints return success (200) with specific body values instead of 404 for non-existent resources
+   - Example: `POST /v1/authz/roles/{id}/has-permission` returns `200 OK` with `false` for non-existent roles
+   - Pattern: Don't expect 404; handle the semantic meaning in the response body
+   - Check OpenAPI spec - if only 200 is listed in successful responses, expect lenient behavior
+
+4. **Error Status Codes**: Verify which error codes are documented (400, 404, 409, 422, 500, etc.)
+   - Only throw specific exceptions (e.g., `WeaviateNotFoundException`, `WeaviateConflictException`) for documented error responses
+   - Check OpenAPI spec `responses` section for all documented error statuses
+
+**Workflow**:
+1. Before implementing a REST method in `Rest/*.cs`, check the corresponding endpoint in the OpenAPI spec
+2. Document expected status codes in code comments
+3. Write tests that verify actual server behavior matches OpenAPI spec expectations
+4. For unexpected behavior, file an issue rather than implementing workarounds
+
+**Reference**: OpenAPI spec is regenerated via `./tools/gen_rest_dto.sh` from the `weaviate/weaviate` repository
 
 ## Common Pitfalls
 

@@ -74,7 +74,7 @@ public class RbacTests
             expectedEndpoint: "/v1/authz/roles"
         );
 
-        var roles = (await client.Roles.List()).ToList();
+        var roles = (await client.Roles.ListAll()).ToList();
         Assert.Equal(2, roles.Count);
         Assert.Contains(
             roles,
