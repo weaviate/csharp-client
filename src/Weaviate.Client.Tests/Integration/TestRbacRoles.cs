@@ -193,10 +193,10 @@ public class TestRbacRoles : IntegrationTests
             await _weaviate.Users.Delete(userName);
             await _weaviate.Users.Create(userName);
             await _weaviate.Roles.AssignToUser(userName, "db", new[] { roleName });
-            var assignments = (await _weaviate.Roles.UserAssignments(roleName)).ToList();
+            var assignments = (await _weaviate.Roles.GetUserAssignments(roleName)).ToList();
             Assert.Contains(assignments, a => a.UserId == userName);
             await _weaviate.Roles.RevokeFromUser(userName, "db", new[] { roleName });
-            var after = (await _weaviate.Roles.UserAssignments(roleName)).ToList();
+            var after = (await _weaviate.Roles.GetUserAssignments(roleName)).ToList();
             Assert.DoesNotContain(after, a => a.UserId == userName);
         }
         finally
