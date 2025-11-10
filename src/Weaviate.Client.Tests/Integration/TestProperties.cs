@@ -174,53 +174,69 @@ public partial class PropertyTests : IntegrationTests
             properties: props
         );
 
+        var cb = await CollectionFactory(
+            name: "batch",
+            description: $"Testing batch insert of property {propertyName}",
+            properties: props
+        );
+
         var id = await c.Data.Insert(obj);
+        var idb = (await cb.Data.InsertMany(BatchInsertRequest.Create(new[] { obj })))
+            .First()
+            .ID!.Value;
+
         var retrieved = await c.Query.FetchObjectByID(id, returnProperties: propertyName);
+        var retrievedBatch = await cb.Query.FetchObjectByID(idb, returnProperties: propertyName);
 
         Assert.NotNull(retrieved);
+        Assert.NotNull(retrievedBatch);
 
-        var actual = retrieved.Properties[propertyName];
+        var actualSingle = retrieved.Properties[propertyName];
+        var actualBatch = retrievedBatch.Properties[propertyName];
 
-        if (props[0].DataType.Contains(DataType.Blob))
+        foreach (var actual in new[] { actualSingle, actualBatch })
         {
-            Assert.IsType<string>(actual);
-            string actualString = (string)actual!;
-            Assert.True(
-                Convert.TryFromBase64String(
-                    actualString,
-                    new Span<byte>(new byte[actualString.Length * 4]),
-                    out _
-                ),
-                "The string is not a valid base64."
-            );
-        }
-        else
-        {
-            Assert.Equal(expected.GetType(), actual!.GetType());
-        }
-
-        if (expected is double expectedDouble && actual is double actualDouble)
-        {
-            Assert.Equal(expectedDouble, actualDouble, 5);
-        }
-        else if (
-            expected is IEnumerable<double> expectedEnumerable
-            && actual is IEnumerable<double> actualEnumerable
-        )
-        {
-            foreach (var (exp, act) in expectedEnumerable.Zip(actualEnumerable))
+            if (props[0].DataType.Contains(DataType.Blob))
             {
-                Assert.Equal(exp, act, 5);
+                Assert.IsType<string>(actual);
+                string actualString = (string)actual!;
+                Assert.True(
+                    Convert.TryFromBase64String(
+                        actualString,
+                        new Span<byte>(new byte[actualString.Length * 4]),
+                        out _
+                    ),
+                    "The string is not a valid base64."
+                );
             }
-        }
-        else if (props[0].DataType.Contains(DataType.Blob) && actual is string actualString)
-        {
-            var actualBytes = Convert.FromBase64String(actualString);
-            Assert.Equal(expected, actualBytes);
-        }
-        else
-        {
-            Assert.Equal(expected, actual!);
+            else
+            {
+                Assert.Equal(expected.GetType(), actual!.GetType());
+            }
+
+            if (expected is double expectedDouble && actual is double actualDouble)
+            {
+                Assert.Equal(expectedDouble, actualDouble, 5);
+            }
+            else if (
+                expected is IEnumerable<double> expectedEnumerable
+                && actual is IEnumerable<double> actualEnumerable
+            )
+            {
+                foreach (var (exp, act) in expectedEnumerable.Zip(actualEnumerable))
+                {
+                    Assert.Equal(exp, act, 5);
+                }
+            }
+            else if (props[0].DataType.Contains(DataType.Blob) && actual is string actualString)
+            {
+                var actualBytes = Convert.FromBase64String(actualString);
+                Assert.Equal(expected, actualBytes);
+            }
+            else
+            {
+                Assert.Equal(expected, actual!);
+            }
         }
     }
 
