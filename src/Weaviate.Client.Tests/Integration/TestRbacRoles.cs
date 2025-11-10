@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Weaviate.Client.Models;
 using Xunit;
 
+[Trait("Category", "RBAC")]
 public class TestRbacRoles : IntegrationTests
 {
     public override ushort RestPort => 8092;
@@ -21,7 +22,7 @@ public class TestRbacRoles : IntegrationTests
         RequireVersion("1.30.0");
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task ListRoles()
     {
         RequireVersion("1.30.0");
@@ -30,7 +31,7 @@ public class TestRbacRoles : IntegrationTests
         Assert.Contains(roles, r => r.Name == "viewer");
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task CreateRoleWithPermissions()
     {
         RequireVersion("1.30.0");
@@ -55,7 +56,7 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task GetRole()
     {
         RequireVersion("1.30.0");
@@ -78,7 +79,7 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task DeleteRole()
     {
         RequireVersion("1.30.0");
@@ -91,7 +92,7 @@ public class TestRbacRoles : IntegrationTests
         Assert.Null(role);
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task AddPermissionsToExisting()
     {
         RequireVersion("1.30.0");
@@ -119,7 +120,7 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task RemovePermissionsFromExisting()
     {
         RequireVersion("1.30.0");
@@ -150,7 +151,7 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task HasPermission()
     {
         RequireVersion("1.30.0");
@@ -179,7 +180,7 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task UserAssignments()
     {
         RequireVersion("1.30.0");
@@ -205,7 +206,7 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task GetUserRoles()
     {
         RequireVersion("1.30.0");
