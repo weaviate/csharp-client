@@ -32,7 +32,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The type of the user. `db` users are managed by Weaviate, `oidc` users are managed by an external OIDC provider.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum UserTypeInput
+    internal enum UserTypeInput
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"db")]
@@ -47,7 +47,7 @@ namespace Weaviate.Client.Rest.Dto
     /// If the group contains OIDC or database users.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum GroupType
+    internal enum GroupType
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"oidc")]
@@ -59,7 +59,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The type of the user. `db_user` users are created through the `users` API, `db_env_user` users are created through environment variables, and `oidc` users are managed by an external OIDC provider.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum UserTypeOutput
+    internal enum UserTypeOutput
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"db_user")]
@@ -74,7 +74,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class UserOwnInfo
+    internal partial class UserOwnInfo
     {
         /// <summary>
         /// The groups associated with the user.
@@ -114,7 +114,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DBUserInfo
+    internal partial class DBUserInfo
     {
         /// <summary>
         /// The roles associated with the user.
@@ -190,7 +190,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class UserApiKey
+    internal partial class UserApiKey
     {
         /// <summary>
         /// The API key associated with the user.
@@ -220,7 +220,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Role
+    internal partial class Role
     {
         /// <summary>
         /// The name (ID) of the role.
@@ -257,7 +257,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Permissions attached to a role.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Permission
+    internal partial class Permission
     {
         /// <summary>
         /// Resources applicable for backup actions.
@@ -361,7 +361,7 @@ namespace Weaviate.Client.Rest.Dto
     /// List of roles.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class RolesListResponse : System.Collections.ObjectModel.Collection<Role>
+    internal partial class RolesListResponse : System.Collections.ObjectModel.Collection<Role>
     {
 
         public string ToJson()
@@ -384,7 +384,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Link
+    internal partial class Link
     {
         /// <summary>
         /// target of the link
@@ -434,7 +434,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Principal
+    internal partial class Principal
     {
         /// <summary>
         /// The username that was extracted either from the authentication information
@@ -473,7 +473,7 @@ namespace Weaviate.Client.Rest.Dto
     /// An array of available words and contexts.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class C11yWordsResponse
+    internal partial class C11yWordsResponse
     {
         /// <summary>
         /// Weighted results for all words
@@ -512,7 +512,7 @@ namespace Weaviate.Client.Rest.Dto
     /// A resource describing an extension to the contextinoary, containing both the identifier and the definition of the extension
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class C11yExtension
+    internal partial class C11yExtension
     {
         /// <summary>
         /// The new concept you want to extend. Must be an all-lowercase single word, or a space delimited compound word. Examples: 'foobarium', 'my custom concept'
@@ -558,7 +558,7 @@ namespace Weaviate.Client.Rest.Dto
     /// C11y function to show the nearest neighbors to a word.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class C11yNearestNeighbors : System.Collections.ObjectModel.Collection<Anonymous4>
+    internal partial class C11yNearestNeighbors : System.Collections.ObjectModel.Collection<Anonymous4>
     {
 
         public string ToJson()
@@ -584,7 +584,7 @@ namespace Weaviate.Client.Rest.Dto
     /// A vector representation of the object in the Contextionary. If provided at object creation, this wil take precedence over any vectorizer setting.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class C11yVector : System.Collections.ObjectModel.Collection<float>
+    internal partial class C11yVector : System.Collections.ObjectModel.Collection<float>
     {
 
         public string ToJson()
@@ -610,7 +610,7 @@ namespace Weaviate.Client.Rest.Dto
     /// A map of named vectors for multi-vector representations.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Vectors : System.Collections.Generic.Dictionary<string, object>
+    internal partial class Vectors : System.Collections.Generic.Dictionary<string, object>
     {
 
         public string ToJson()
@@ -636,7 +636,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Receive question based on array of classes, properties and values.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class C11yVectorBasedQuestion : System.Collections.ObjectModel.Collection<Anonymous5>
+    internal partial class C11yVectorBasedQuestion : System.Collections.ObjectModel.Collection<Anonymous5>
     {
 
         public string ToJson()
@@ -659,7 +659,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Deprecation
+    internal partial class Deprecation
     {
         /// <summary>
         /// The id that uniquely identifies this particular deprecations (mostly used internally)
@@ -761,7 +761,7 @@ namespace Weaviate.Client.Rest.Dto
     /// An error response given by Weaviate end-points.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ErrorResponse
+    internal partial class ErrorResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("error")]
@@ -790,7 +790,7 @@ namespace Weaviate.Client.Rest.Dto
     /// An error response caused by a GraphQL query.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class GraphQLError
+    internal partial class GraphQLError
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("locations")]
@@ -825,7 +825,7 @@ namespace Weaviate.Client.Rest.Dto
     /// GraphQL query based on: http://facebook.github.io/graphql/.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class GraphQLQuery
+    internal partial class GraphQLQuery
     {
         /// <summary>
         /// The name of the operation if multiple exist in the query.
@@ -871,7 +871,7 @@ namespace Weaviate.Client.Rest.Dto
     /// A list of GraphQL queries.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class GraphQLQueries : System.Collections.ObjectModel.Collection<GraphQLQuery>
+    internal partial class GraphQLQueries : System.Collections.ObjectModel.Collection<GraphQLQuery>
     {
 
         public string ToJson()
@@ -897,7 +897,7 @@ namespace Weaviate.Client.Rest.Dto
     /// GraphQL based response: http://facebook.github.io/graphql/.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class GraphQLResponse
+    internal partial class GraphQLResponse
     {
         /// <summary>
         /// GraphQL data object.
@@ -936,7 +936,7 @@ namespace Weaviate.Client.Rest.Dto
     /// A list of GraphQL responses.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class GraphQLResponses : System.Collections.ObjectModel.Collection<GraphQLResponse>
+    internal partial class GraphQLResponses : System.Collections.ObjectModel.Collection<GraphQLResponse>
     {
 
         public string ToJson()
@@ -962,7 +962,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Configure the inverted index built into Weaviate (default: 60).
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class InvertedIndexConfig
+    internal partial class InvertedIndexConfig
     {
         /// <summary>
         /// Asynchronous index clean up happens every n seconds
@@ -1028,7 +1028,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Configure how replication is executed in a cluster
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationConfig
+    internal partial class ReplicationConfig
     {
         /// <summary>
         /// Number of times a class is replicated (default: 1).
@@ -1075,7 +1075,7 @@ namespace Weaviate.Client.Rest.Dto
     /// tuning parameters for the BM25 algorithm
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BM25Config
+    internal partial class BM25Config
     {
         /// <summary>
         /// Calibrates term-weight scaling based on the term frequency within a document (default: 1.2).
@@ -1114,7 +1114,7 @@ namespace Weaviate.Client.Rest.Dto
     /// fine-grained control over stopword list usage
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class StopwordConfig
+    internal partial class StopwordConfig
     {
         /// <summary>
         /// Pre-existing list of common words by language (default: 'en'). Options: ['en', 'none'].
@@ -1160,7 +1160,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Configuration related to multi-tenancy within a class
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class MultiTenancyConfig
+    internal partial class MultiTenancyConfig
     {
         /// <summary>
         /// Whether or not multi-tenancy is enabled for this class (default: false).
@@ -1206,7 +1206,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Contains meta information of the current Weaviate instance.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Meta
+    internal partial class Meta
     {
         /// <summary>
         /// The url of the host.
@@ -1259,7 +1259,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Multiple instances of references to other objects.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class MultipleRef : System.Collections.ObjectModel.Collection<SingleRef>
+    internal partial class MultipleRef : System.Collections.ObjectModel.Collection<SingleRef>
     {
 
         public string ToJson()
@@ -1285,7 +1285,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Either a JSONPatch document as defined by RFC 6902 (from, op, path, value), or a merge document (RFC 7396).
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class PatchDocumentObject
+    internal partial class PatchDocumentObject
     {
         /// <summary>
         /// A string containing a JSON Pointer value.
@@ -1344,7 +1344,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Either a JSONPatch document as defined by RFC 6902 (from, op, path, value), or a merge document (RFC 7396).
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class PatchDocumentAction
+    internal partial class PatchDocumentAction
     {
         /// <summary>
         /// A string containing a JSON Pointer value.
@@ -1403,7 +1403,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Specifies the parameters required to initiate a shard replica movement operation between two nodes for a given collection and shard. This request defines the source and target node, the collection and type of transfer.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationReplicateReplicaRequest
+    internal partial class ReplicationReplicateReplicaRequest
     {
         /// <summary>
         /// The name of the Weaviate node currently hosting the shard replica that needs to be moved or copied.
@@ -1468,7 +1468,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Contains the unique identifier for a successfully initiated asynchronous replica movement operation. This ID can be used to track the progress of the operation.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationReplicateReplicaResponse
+    internal partial class ReplicationReplicateReplicaResponse
     {
         /// <summary>
         /// The unique identifier (ID) assigned to the registered replication operation.
@@ -1501,7 +1501,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Provides the detailed sharding state for one or more collections, including the distribution of shards and their replicas across the cluster nodes.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationShardingStateResponse
+    internal partial class ReplicationShardingStateResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("shardingState")]
@@ -1530,7 +1530,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Specifies the parameters required to mark a specific shard replica as inactive (soft-delete) on a particular node. This action typically prevents the replica from serving requests but does not immediately remove its data.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationDisableReplicaRequest
+    internal partial class ReplicationDisableReplicaRequest
     {
         /// <summary>
         /// The name of the Weaviate node hosting the shard replica that is to be disabled.
@@ -1579,7 +1579,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Specifies the parameters required to permanently delete a specific shard replica from a particular node. This action will remove the replica's data from the node.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationDeleteReplicaRequest
+    internal partial class ReplicationDeleteReplicaRequest
     {
         /// <summary>
         /// The name of the Weaviate node from which the shard replica will be deleted.
@@ -1628,7 +1628,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Represents a shard and lists the nodes that currently host its replicas.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationShardReplicas
+    internal partial class ReplicationShardReplicas
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("shard")]
@@ -1660,7 +1660,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Details the sharding layout for a specific collection, mapping each shard to its set of replicas across the cluster.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationShardingState
+    internal partial class ReplicationShardingState
     {
         /// <summary>
         /// The name of the collection.
@@ -1699,7 +1699,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Represents an error encountered during a replication operation, including its timestamp and a human-readable message.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationReplicateDetailsReplicaStatusError
+    internal partial class ReplicationReplicateDetailsReplicaStatusError
     {
         /// <summary>
         /// The unix timestamp in ms when the error occurred. This is an approximate time and so should not be used for precise timing.
@@ -1738,7 +1738,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Represents the current or historical status of a shard replica involved in a replication operation, including its operational state and any associated errors.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationReplicateDetailsReplicaStatus
+    internal partial class ReplicationReplicateDetailsReplicaStatus
     {
         /// <summary>
         /// The current operational state of the replica during the replication process.
@@ -1785,7 +1785,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Provides a comprehensive overview of a specific replication operation, detailing its unique ID, the involved collection, shard, source and target nodes, transfer type, current status, and optionally, its status history.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationReplicateDetailsReplicaResponse
+    internal partial class ReplicationReplicateDetailsReplicaResponse
     {
         /// <summary>
         /// The unique identifier (ID) of this specific replication operation.
@@ -1902,7 +1902,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Specifies the parameters available when force deleting replication operations.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationReplicateForceDeleteRequest
+    internal partial class ReplicationReplicateForceDeleteRequest
     {
         /// <summary>
         /// The unique identifier (ID) of the replication operation to be forcefully deleted.
@@ -1962,7 +1962,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Provides the UUIDs that were successfully force deleted as part of the replication operation. If dryRun is true, this will return the expected outcome without actually deleting anything.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReplicationReplicateForceDeleteResponse
+    internal partial class ReplicationReplicateForceDeleteResponse
     {
         /// <summary>
         /// The unique identifiers (IDs) of the replication operations that were forcefully deleted.
@@ -2001,7 +2001,7 @@ namespace Weaviate.Client.Rest.Dto
     /// A single peer in the network.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class PeerUpdate
+    internal partial class PeerUpdate
     {
         /// <summary>
         /// The session ID of the peer.
@@ -2054,7 +2054,7 @@ namespace Weaviate.Client.Rest.Dto
     /// List of known peers.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class PeerUpdateList : System.Collections.ObjectModel.Collection<PeerUpdate>
+    internal partial class PeerUpdateList : System.Collections.ObjectModel.Collection<PeerUpdate>
     {
 
         public string ToJson()
@@ -2080,7 +2080,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Definitions of semantic schemas (also see: https://github.com/weaviate/weaviate-semantic-schemas).
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Schema
+    internal partial class Schema
     {
         /// <summary>
         /// Semantic classes that are available.
@@ -2126,7 +2126,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Indicates the health of the schema in a cluster.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SchemaClusterStatus
+    internal partial class SchemaClusterStatus
     {
         /// <summary>
         /// True if the cluster is in sync, false if there is an issue (see error).
@@ -2183,7 +2183,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Class
+    internal partial class Class
     {
         /// <summary>
         /// Name of the class (a.k.a. 'collection') (required). Multiple words should be concatenated in CamelCase, e.g. `ArticleAuthor`.
@@ -2277,7 +2277,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Property
+    internal partial class Property
     {
         /// <summary>
         /// Data type of the property (required). If it starts with a capital (for example Person), may be a reference to another type.
@@ -2370,7 +2370,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class VectorConfig
+    internal partial class VectorConfig
     {
         /// <summary>
         /// Configuration of a specific vectorizer used by this vector
@@ -2413,7 +2413,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class NestedProperty
+    internal partial class NestedProperty
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("dataType")]
@@ -2468,7 +2468,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The status of all the shards of a Class
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ShardStatusList : System.Collections.ObjectModel.Collection<ShardStatusGetResponse>
+    internal partial class ShardStatusList : System.Collections.ObjectModel.Collection<ShardStatusGetResponse>
     {
 
         public string ToJson()
@@ -2494,7 +2494,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Response body of shard status get request
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ShardStatusGetResponse
+    internal partial class ShardStatusGetResponse
     {
         /// <summary>
         /// Name of the shard
@@ -2540,7 +2540,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The status of a single shard
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ShardStatus
+    internal partial class ShardStatus
     {
         /// <summary>
         /// Status of the shard
@@ -2572,7 +2572,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The definition of a backup create metadata
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BackupCreateStatusResponse
+    internal partial class BackupCreateStatusResponse
     {
         /// <summary>
         /// The ID of the backup. Must be URL-safe and work as a filesystem path, only lowercase, numbers, underscore, minus characters allowed.
@@ -2647,7 +2647,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The definition of a backup restore metadata
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BackupRestoreStatusResponse
+    internal partial class BackupRestoreStatusResponse
     {
         /// <summary>
         /// The ID of the backup. Must be URL-safe and work as a filesystem path, only lowercase, numbers, underscore, minus characters allowed.
@@ -2708,7 +2708,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Backup custom configuration
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BackupConfig
+    internal partial class BackupConfig
     {
         /// <summary>
         /// name of the endpoint, e.g. s3.amazonaws.com
@@ -2778,7 +2778,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Backup custom configuration
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class RestoreConfig
+    internal partial class RestoreConfig
     {
         /// <summary>
         /// name of the endpoint, e.g. s3.amazonaws.com
@@ -2848,7 +2848,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Request body for creating a backup of a set of classes
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BackupCreateRequest
+    internal partial class BackupCreateRequest
     {
         /// <summary>
         /// The ID of the backup (required). Must be URL-safe and work as a filesystem path, only lowercase, numbers, underscore, minus characters allowed.
@@ -2901,7 +2901,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The definition of a backup create response body
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BackupCreateResponse
+    internal partial class BackupCreateResponse
     {
         /// <summary>
         /// The ID of the backup. Must be URL-safe and work as a filesystem path, only lowercase, numbers, underscore, minus characters allowed.
@@ -2976,7 +2976,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The definition of a backup create response body
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BackupListResponse : System.Collections.ObjectModel.Collection<Anonymous3>
+    internal partial class BackupListResponse : System.Collections.ObjectModel.Collection<Anonymous3>
     {
 
         public string ToJson()
@@ -3002,7 +3002,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Request body for restoring a backup for a set of classes
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BackupRestoreRequest
+    internal partial class BackupRestoreRequest
     {
         /// <summary>
         /// Custom configuration for the backup restoration process
@@ -3062,7 +3062,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The definition of a backup restore response body
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BackupRestoreResponse
+    internal partial class BackupRestoreResponse
     {
         /// <summary>
         /// The ID of the backup. Must be URL-safe and work as a filesystem path, only lowercase, numbers, underscore, minus characters allowed.
@@ -3130,7 +3130,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The summary of Weaviate's statistics.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class NodeStats
+    internal partial class NodeStats
     {
         /// <summary>
         /// The count of Weaviate's shards. To see this value, set `output` to `verbose`.
@@ -3169,7 +3169,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The summary of a nodes batch queue congestion status.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BatchStats
+    internal partial class BatchStats
     {
         /// <summary>
         /// How many objects are currently in the batch queue.
@@ -3208,7 +3208,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The definition of a node shard status response body
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class NodeShardStatus
+    internal partial class NodeShardStatus
     {
         /// <summary>
         /// The name of the shard.
@@ -3303,7 +3303,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The status of the async replication.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class AsyncReplicationStatus
+    internal partial class AsyncReplicationStatus
     {
         /// <summary>
         /// The number of objects propagated in the most recent iteration.
@@ -3349,7 +3349,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The definition of a backup node status response body
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class NodeStatus
+    internal partial class NodeStatus
     {
         /// <summary>
         /// The name of the node.
@@ -3424,7 +3424,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The status of all of the Weaviate nodes
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class NodesStatusResponse
+    internal partial class NodesStatusResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("nodes")]
@@ -3453,7 +3453,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Distributed task metadata.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DistributedTask
+    internal partial class DistributedTask
     {
         /// <summary>
         /// The ID of the task.
@@ -3534,7 +3534,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Active distributed tasks by namespace.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DistributedTasks : System.Collections.Generic.Dictionary<string, System.Collections.ObjectModel.Collection<DistributedTask>>
+    internal partial class DistributedTasks : System.Collections.Generic.Dictionary<string, System.Collections.ObjectModel.Collection<DistributedTask>>
     {
 
         public string ToJson()
@@ -3560,7 +3560,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The definition of Raft statistics.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class RaftStatistics
+    internal partial class RaftStatistics
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("appliedIndex")]
@@ -3644,7 +3644,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The definition of node statistics.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Statistics
+    internal partial class Statistics
     {
         /// <summary>
         /// The name of the node.
@@ -3721,7 +3721,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The cluster statistics of all of the Weaviate nodes
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ClusterStatisticsResponse
+    internal partial class ClusterStatisticsResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("statistics")]
@@ -3753,7 +3753,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Either set beacon (direct reference) or set class and schema (concept reference)
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SingleRef
+    internal partial class SingleRef
     {
         /// <summary>
         /// If using a concept reference (rather than a direct reference), specify the desired class name here
@@ -3813,7 +3813,7 @@ namespace Weaviate.Client.Rest.Dto
     /// (Response only) Additional meta information about a single object.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class AdditionalProperties : System.Collections.Generic.Dictionary<string, object>
+    internal partial class AdditionalProperties : System.Collections.Generic.Dictionary<string, object>
     {
 
         public string ToJson()
@@ -3839,7 +3839,7 @@ namespace Weaviate.Client.Rest.Dto
     /// This meta field contains additional info about the classified reference property
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ReferenceMetaClassification
+    internal partial class ReferenceMetaClassification
     {
         /// <summary>
         /// overall neighbors checked as part of the classification. In most cases this will equal k, but could be lower than k - for example if not enough data was present
@@ -3931,7 +3931,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BatchReference
+    internal partial class BatchReference
     {
         /// <summary>
         /// Long-form beacon-style URI to identify the source of the cross-ref including the property name. Should be in the form of weaviate://localhost/&lt;kinds&gt;/&lt;uuid&gt;/&lt;className&gt;/&lt;propertyName&gt;, where &lt;kinds&gt; must be one of 'objects', 'objects' and &lt;className&gt; and &lt;propertyName&gt; must represent the cross-ref property of source class to be used.
@@ -3974,7 +3974,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BatchReferenceResponse : BatchReference
+    internal partial class BatchReferenceResponse : BatchReference
     {
         /// <summary>
         /// Results for this specific reference.
@@ -4003,7 +4003,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class GeoCoordinates
+    internal partial class GeoCoordinates
     {
         /// <summary>
         /// The latitude of the point on earth in decimal form
@@ -4039,7 +4039,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class PhoneNumber
+    internal partial class PhoneNumber
     {
         /// <summary>
         /// The raw input as the phone number is present in your raw data set. It will be parsed into the standardized formats if valid.
@@ -4110,7 +4110,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Object
+    internal partial class Object
     {
         /// <summary>
         /// Class of the Object, defined in the schema.
@@ -4190,7 +4190,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ObjectsGetResponse : Object
+    internal partial class ObjectsGetResponse : Object
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("deprecations")]
@@ -4223,7 +4223,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BatchDelete
+    internal partial class BatchDelete
     {
         /// <summary>
         /// Outlines how to find the objects to be deleted.
@@ -4276,7 +4276,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Delete Objects response.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BatchDeleteResponse
+    internal partial class BatchDeleteResponse
     {
         /// <summary>
         /// Outlines how to find the objects to be deleted.
@@ -4332,7 +4332,7 @@ namespace Weaviate.Client.Rest.Dto
     /// List of Objects.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ObjectsListResponse
+    internal partial class ObjectsListResponse
     {
         /// <summary>
         /// The actual list of Objects.
@@ -4374,7 +4374,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Manage classifications, trigger them and view status of past classifications.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Classification
+    internal partial class Classification
     {
         /// <summary>
         /// ID to uniquely identify this classification run
@@ -4466,7 +4466,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Additional information to a specific classification
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ClassificationMeta
+    internal partial class ClassificationMeta
     {
         /// <summary>
         /// time when this classification was started
@@ -4526,7 +4526,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Filter search results using a where filter
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class WhereFilter
+    internal partial class WhereFilter
     {
         /// <summary>
         /// combine multiple where filters, requires 'And' or 'Or' operator
@@ -4664,7 +4664,7 @@ namespace Weaviate.Client.Rest.Dto
     /// filter within a distance of a georange
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class WhereFilterGeoRange
+    internal partial class WhereFilterGeoRange
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("geoCoordinates")]
@@ -4696,7 +4696,7 @@ namespace Weaviate.Client.Rest.Dto
     /// attributes representing a single tenant within weaviate
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Tenant
+    internal partial class Tenant
     {
         /// <summary>
         /// The name of the tenant (required).
@@ -4736,7 +4736,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Represents the mapping between an alias name and a collection. An alias provides an alternative name for accessing a collection.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Alias
+    internal partial class Alias
     {
         /// <summary>
         /// The unique name of the alias that serves as an alternative identifier for the collection.
@@ -4775,7 +4775,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Response object containing a list of alias mappings.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class AliasResponse
+    internal partial class AliasResponse
     {
         /// <summary>
         /// Array of alias objects, each containing an alias-to-collection mapping.
@@ -4804,7 +4804,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Body
+    internal partial class Body
     {
         /// <summary>
         /// EXPERIMENTAL, DONT USE. THIS WILL BE REMOVED AGAIN. - import api key from static user
@@ -4840,7 +4840,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Body2
+    internal partial class Body2
     {
         /// <summary>
         /// Whether the API key should be revoked when deactivating the user.
@@ -4869,7 +4869,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Body3
+    internal partial class Body3
     {
         /// <summary>
         /// Permissions to be added to the role.
@@ -4899,7 +4899,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Body4
+    internal partial class Body4
     {
         /// <summary>
         /// Permissions to remove from the role.
@@ -4932,7 +4932,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The type of the user.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum UserType
+    internal enum UserType
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"oidc")]
@@ -4944,7 +4944,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Body5
+    internal partial class Body5
     {
         /// <summary>
         /// The roles that are assigned to the specified user.
@@ -4977,7 +4977,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Body6
+    internal partial class Body6
     {
         /// <summary>
         /// The roles to revoke from the specified user.
@@ -5010,7 +5010,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Body7
+    internal partial class Body7
     {
         /// <summary>
         /// The roles to assign to the specified group.
@@ -5043,7 +5043,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Body8
+    internal partial class Body8
     {
         /// <summary>
         /// The roles to revoke from the specified group.
@@ -5079,7 +5079,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The type of the group.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum GroupType2
+    internal enum GroupType2
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"oidc")]
@@ -5091,7 +5091,7 @@ namespace Weaviate.Client.Rest.Dto
     /// The type of group to retrieve.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum GroupType3
+    internal enum GroupType3
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"oidc")]
@@ -5100,7 +5100,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Body9
+    internal partial class Body9
     {
         /// <summary>
         /// Define which fields need to be returned. Default value is ALL
@@ -5134,7 +5134,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Body10
+    internal partial class Body10
     {
         /// <summary>
         /// The new collection (class) that the alias should point to.
@@ -5163,7 +5163,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Response
+    internal partial class Response
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("links")]
@@ -5189,7 +5189,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Response2
+    internal partial class Response2
     {
         /// <summary>
         /// The Location to redirect to
@@ -5232,7 +5232,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Anonymous
+    internal partial class Anonymous
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("userId")]
@@ -5263,7 +5263,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Anonymous2
+    internal partial class Anonymous2
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("groupId")]
@@ -5294,7 +5294,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Anonymous3
+    internal partial class Anonymous3
     {
         /// <summary>
         /// The ID of the backup. Must be URL-safe and work as a filesystem path, only lowercase, numbers, underscore, minus characters allowed.
@@ -5352,7 +5352,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum DBUserInfoDbUserType
+    internal enum DBUserInfoDbUserType
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"db_user")]
@@ -5364,7 +5364,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Backups
+    internal partial class Backups
     {
         /// <summary>
         /// A string that specifies which collections this permission applies to. Can be an exact collection name or a regex pattern. The default value `*` applies the permission to all collections.
@@ -5393,7 +5393,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Data
+    internal partial class Data
     {
         /// <summary>
         /// A string that specifies which collections this permission applies to. Can be an exact collection name or a regex pattern. The default value `*` applies the permission to all collections.
@@ -5436,7 +5436,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Nodes
+    internal partial class Nodes
     {
         /// <summary>
         /// Whether to allow (verbose) returning shards and stats data in the response.
@@ -5473,7 +5473,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Users
+    internal partial class Users
     {
         /// <summary>
         /// A string that specifies which users this permission applies to. Can be an exact user name or a regex pattern. The default value `*` applies the permission to all users.
@@ -5502,7 +5502,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Groups
+    internal partial class Groups
     {
         /// <summary>
         /// A string that specifies which groups this permission applies to. Can be an exact group name or a regex pattern. The default value `*` applies the permission to all groups.
@@ -5535,7 +5535,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Tenants
+    internal partial class Tenants
     {
         /// <summary>
         /// A string that specifies which collections this permission applies to. Can be an exact collection name or a regex pattern. The default value `*` applies the permission to all collections.
@@ -5571,7 +5571,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Roles
+    internal partial class Roles
     {
         /// <summary>
         /// A string that specifies which roles this permission applies to. Can be an exact role name or a regex pattern. The default value `*` applies the permission to all roles.
@@ -5608,7 +5608,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Collections
+    internal partial class Collections
     {
         /// <summary>
         /// A string that specifies which collections this permission applies to. Can be an exact collection name or a regex pattern. The default value `*` applies the permission to all collections.
@@ -5637,7 +5637,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Replicate
+    internal partial class Replicate
     {
         /// <summary>
         /// string or regex. if a specific collection name, if left empty it will be ALL or *
@@ -5673,7 +5673,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Aliases
+    internal partial class Aliases
     {
         /// <summary>
         /// A string that specifies which collections this permission applies to. Can be an exact collection name or a regex pattern. The default value `*` applies the permission to all collections.
@@ -5709,7 +5709,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum PermissionAction
+    internal enum PermissionAction
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"manage_backups")]
@@ -5817,7 +5817,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ConcatenatedWord
+    internal partial class ConcatenatedWord
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("concatenatedWord")]
@@ -5852,7 +5852,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class IndividualWords
+    internal partial class IndividualWords
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("word")]
@@ -5884,7 +5884,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Anonymous4
+    internal partial class Anonymous4
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("word")]
@@ -5913,7 +5913,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Anonymous5
+    internal partial class Anonymous5
     {
         /// <summary>
         /// Vectorized classname.
@@ -5953,7 +5953,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Error
+    internal partial class Error
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("message")]
@@ -5979,7 +5979,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Locations
+    internal partial class Locations
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("column")]
@@ -6008,7 +6008,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum ReplicationConfigDeletionStrategy
+    internal enum ReplicationConfigDeletionStrategy
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"NoAutomatedResolution")]
@@ -6023,7 +6023,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum PatchDocumentObjectOp
+    internal enum PatchDocumentObjectOp
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"add")]
@@ -6047,7 +6047,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum PatchDocumentActionOp
+    internal enum PatchDocumentActionOp
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"add")]
@@ -6071,7 +6071,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum ReplicationReplicateReplicaRequestType
+    internal enum ReplicationReplicateReplicaRequestType
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"COPY")]
@@ -6083,7 +6083,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum ReplicationReplicateDetailsReplicaStatusState
+    internal enum ReplicationReplicateDetailsReplicaStatusState
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"REGISTERED")]
@@ -6107,7 +6107,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum ReplicationReplicateDetailsReplicaResponseType
+    internal enum ReplicationReplicateDetailsReplicaResponseType
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"COPY")]
@@ -6119,7 +6119,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum PropertyTokenization
+    internal enum PropertyTokenization
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"word")]
@@ -6152,7 +6152,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum NestedPropertyTokenization
+    internal enum NestedPropertyTokenization
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"word")]
@@ -6185,7 +6185,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum BackupCreateStatusResponseStatus
+    internal enum BackupCreateStatusResponseStatus
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"STARTED")]
@@ -6209,7 +6209,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum BackupRestoreStatusResponseStatus
+    internal enum BackupRestoreStatusResponseStatus
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"STARTED")]
@@ -6233,7 +6233,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum BackupConfigCompressionLevel
+    internal enum BackupConfigCompressionLevel
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"DefaultCompression")]
@@ -6248,7 +6248,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum RestoreConfigRolesOptions
+    internal enum RestoreConfigRolesOptions
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"noRestore")]
@@ -6260,7 +6260,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum RestoreConfigUsersOptions
+    internal enum RestoreConfigUsersOptions
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"noRestore")]
@@ -6272,7 +6272,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum BackupCreateResponseStatus
+    internal enum BackupCreateResponseStatus
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"STARTED")]
@@ -6296,7 +6296,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum BackupRestoreResponseStatus
+    internal enum BackupRestoreResponseStatus
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"STARTED")]
@@ -6320,7 +6320,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum NodeStatusStatus
+    internal enum NodeStatusStatus
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"HEALTHY")]
@@ -6338,7 +6338,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum StatisticsStatus
+    internal enum StatisticsStatus
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"HEALTHY")]
@@ -6356,7 +6356,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Result
+    internal partial class Result
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
@@ -6386,7 +6386,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Result2
+    internal partial class Result2
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
@@ -6416,7 +6416,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Match
+    internal partial class Match
     {
         /// <summary>
         /// Class (name) which objects will be deleted.
@@ -6452,7 +6452,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Match2
+    internal partial class Match2
     {
         /// <summary>
         /// Class (name) which objects will be deleted.
@@ -6488,7 +6488,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Results
+    internal partial class Results
     {
         /// <summary>
         /// How many objects were matched by the filter.
@@ -6545,7 +6545,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum ClassificationStatus
+    internal enum ClassificationStatus
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"running")]
@@ -6560,7 +6560,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Filters
+    internal partial class Filters
     {
         /// <summary>
         /// limit the objects to be classified
@@ -6603,7 +6603,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum WhereFilterOperator
+    internal enum WhereFilterOperator
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"And")]
@@ -6654,7 +6654,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Distance
+    internal partial class Distance
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("max")]
@@ -6680,7 +6680,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum TenantActivityStatus
+    internal enum TenantActivityStatus
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"ACTIVE")]
@@ -6716,7 +6716,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum Fields
+    internal enum Fields
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"ALL")]
@@ -6737,7 +6737,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum Status
+    internal enum Status
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"STARTED")]
@@ -6761,7 +6761,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum NodesVerbosity
+    internal enum NodesVerbosity
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"verbose")]
@@ -6773,7 +6773,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum RolesScope
+    internal enum RolesScope
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"all")]
@@ -6785,7 +6785,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Info
+    internal partial class Info
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("vector")]
@@ -6814,7 +6814,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ClassProps
+    internal partial class ClassProps
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("propsVectors")]
@@ -6847,7 +6847,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum ResultStatus
+    internal enum ResultStatus
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"SUCCESS")]
@@ -6859,7 +6859,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum Result2Status
+    internal enum Result2Status
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"SUCCESS")]
@@ -6874,7 +6874,7 @@ namespace Weaviate.Client.Rest.Dto
     /// Results for this specific Object.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Objects
+    internal partial class Objects
     {
         /// <summary>
         /// ID of the Object.
@@ -6910,7 +6910,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum ObjectsStatus
+    internal enum ObjectsStatus
     {
 
         [System.Runtime.Serialization.EnumMember(Value = @"SUCCESS")]

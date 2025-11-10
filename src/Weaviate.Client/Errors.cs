@@ -1,7 +1,13 @@
+using Weaviate.Client.gRPC;
+using Weaviate.Client.Rest;
+
 namespace Weaviate.Client;
 
 public class WeaviateException : Exception
 {
+    public WeaviateException(string message)
+        : base(message) { }
+
     protected WeaviateException(Exception innerException)
         : base(innerException.Message, innerException) { }
 
@@ -11,19 +17,25 @@ public class WeaviateException : Exception
 
 public class WeaviateClientException : WeaviateException
 {
-    public WeaviateClientException(string? message)
+    public WeaviateClientException(string message)
         : base(message) { }
 
-    public WeaviateClientException(string? message, Exception? innerException)
+    public WeaviateClientException(Exception innerException)
+        : base(innerException) { }
+
+    public WeaviateClientException(string? message = null, Exception? innerException = null)
         : base(message, innerException) { }
 }
 
 public class WeaviateServerException : WeaviateException
 {
-    public WeaviateServerException(string? message)
+    public WeaviateServerException(string message)
         : base(message) { }
 
-    public WeaviateServerException(string? message, Exception? innerException)
+    public WeaviateServerException(Exception innerException)
+        : base(innerException) { }
+
+    public WeaviateServerException(string? message = null, Exception? innerException = null)
         : base(message, innerException) { }
 }
 
@@ -33,9 +45,41 @@ public class WeaviateServerException : WeaviateException
 /// </summary>
 public class WeaviateBackupConflictException : WeaviateServerException
 {
-    public WeaviateBackupConflictException(string? message)
-        : base(message) { }
+    public const string DefaultMessage =
+        "A backup or restore operation is already in progress. Only one backup or restore operation can be performed at a time.";
 
-    public WeaviateBackupConflictException(string? message, Exception? innerException)
-        : base(message, innerException) { }
+    public WeaviateBackupConflictException(Exception innerException)
+        : base(DefaultMessage, innerException) { }
 }
+
+public class WeaviateNotFoundException : WeaviateServerException
+{
+    private const string DefaultMessage = "The requested resource was not found in Weaviate.";
+
+    public ResourceType? ResourceType { get; }
+
+    internal WeaviateNotFoundException(
+        WeaviateRestServerException restException,
+        ResourceType resourceType = Client.ResourceType.Unknown
+    )
+        : base(DefaultMessage, restException)
+    {
+        ResourceType = resourceType;
+    }
+
+    internal WeaviateNotFoundException(
+        WeaviateGrpcServerException grpcException,
+        ResourceType resourceType = Client.ResourceType.Unknown
+    )
+        : base(DefaultMessage, grpcException)
+    {
+        ResourceType = resourceType;
+    }
+
+    public override string ToString()
+    {
+        return $"{base.ToString()} ResourceType: {ResourceType}.";
+    }
+}
+
+// TODO WeaviateUnauthorizedException, WeaviateUnauthenticatedException, WeaviateBadRequestException

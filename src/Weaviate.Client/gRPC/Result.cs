@@ -140,7 +140,10 @@ internal partial class WeaviateGrpcClient
                     eo[r.Key] = MakeListValue(r.Value.ListValue);
                     break;
                 case V1.Value.KindOneofCase.DateValue:
-                    eo[r.Key] = r.Value.DateValue; // TODO Parse date here?
+                    eo[r.Key] = DateTime.SpecifyKind(
+                        DateTime.Parse(r.Value.DateValue),
+                        DateTimeKind.Utc
+                    );
                     break;
                 case V1.Value.KindOneofCase.UuidValue:
                     eo[r.Key] = Guid.Parse(r.Value.UuidValue);
@@ -158,7 +161,16 @@ internal partial class WeaviateGrpcClient
                     eo[r.Key] = r.Value.BlobValue;
                     break;
                 case V1.Value.KindOneofCase.PhoneValue:
-                    eo[r.Key] = r.Value.PhoneValue;
+                    eo[r.Key] = new Models.PhoneNumber
+                    {
+                        Input = r.Value.PhoneValue.Input,
+                        CountryCode = r.Value.PhoneValue.CountryCode,
+                        DefaultCountry = r.Value.PhoneValue.DefaultCountry,
+                        InternationalFormatted = r.Value.PhoneValue.InternationalFormatted,
+                        National = r.Value.PhoneValue.National,
+                        NationalFormatted = r.Value.PhoneValue.NationalFormatted,
+                        Valid = r.Value.PhoneValue.Valid,
+                    };
                     break;
                 case V1.Value.KindOneofCase.TextValue:
                     eo[r.Key] = r.Value.TextValue;
@@ -178,11 +190,15 @@ internal partial class WeaviateGrpcClient
             case V1.ListValue.KindOneofCase.ObjectValues:
                 return list.ObjectValues.Values.Select(v => MakeNonRefs(v)).ToArray();
             case V1.ListValue.KindOneofCase.DateValues:
-                return list.DateValues.Values.Select(v => DateTime.Parse(v)).ToArray();
+                return list
+                    .DateValues.Values.Select(v =>
+                        DateTime.SpecifyKind(DateTime.Parse(v), DateTimeKind.Utc)
+                    )
+                    .ToArray();
             case V1.ListValue.KindOneofCase.UuidValues:
                 return list.UuidValues.Values.Select(v => Guid.Parse(v)).ToArray();
             case V1.ListValue.KindOneofCase.TextValues:
-                return list.TextValues.Values;
+                return list.TextValues.Values.ToArray();
             case V1.ListValue.KindOneofCase.IntValues:
                 return list.IntValues.Values.FromByteString<long>().ToArray();
             case V1.ListValue.KindOneofCase.NumberValues:

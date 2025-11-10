@@ -13,9 +13,11 @@ public class TestQueries : IntegrationTests
     [InlineData("testDate")]
     public async Task Test_Sorting(string propertyName)
     {
+        var props = Property.FromClass<TestProperties>();
+
         // Arrange
         var collection = await this.CollectionFactory<TestProperties>(
-            properties: Property.FromClass<TestProperties>(),
+            properties: props,
             vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
