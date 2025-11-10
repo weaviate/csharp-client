@@ -67,13 +67,13 @@ public class RolesClient
         return _client.RestClient.RoleHasPermission(id, dto);
     }
 
-    public async Task<IEnumerable<UserRoleAssignment>> UserAssignments(string roleId)
+    public async Task<IEnumerable<UserRoleAssignment>> GetUserAssignments(string roleId)
     {
         var list = await _client.RestClient.RoleUserAssignments(roleId);
         return list.Select(a => new UserRoleAssignment(a.userId, a.userType.ToEnumMemberString()!));
     }
 
-    public async Task<IEnumerable<GroupRoleAssignment>> GroupAssignments(string roleId)
+    public async Task<IEnumerable<GroupRoleAssignment>> GetGroupAssignments(string roleId)
     {
         var list = await _client.RestClient.RoleGroupAssignments(roleId);
         return list.Select(a => new GroupRoleAssignment(
