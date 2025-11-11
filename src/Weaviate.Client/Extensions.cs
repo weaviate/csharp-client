@@ -469,7 +469,8 @@ public static class WeaviateExtensions
                 ?.Value ?? enumValue.ToString();
     }
 
-    internal static T? FromEnumMemberString<T>(this string? str)
+    internal static T FromEnumMemberString<T>(this string? str, T? unknownValue = null)
+        where T : struct
     {
         if (str is null)
         {
@@ -490,7 +491,7 @@ public static class WeaviateExtensions
                 return (T)Enum.Parse(enumType, name);
         }
 
-        return default(T);
+        return unknownValue ?? default(T);
     }
 
     internal static string Capitalize(this string str)

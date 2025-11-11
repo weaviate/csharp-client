@@ -62,3 +62,36 @@ internal partial class PhoneNumber
     }
 }
 
+// RBAC Permission mapping
+internal partial class Permission
+{
+    public Weaviate.Client.Models.PermissionInfo ToModel()
+    {
+        var resources = new Weaviate.Client.Models.PermissionResource(
+            Backups is not null ? new Weaviate.Client.Models.BackupsResource(Backups.Collection) : null,
+            Data is not null ? new Weaviate.Client.Models.DataResource(Data.Collection, Data.Tenant, Data.Object) : null,
+            Nodes is not null ? new Weaviate.Client.Models.NodesResource(Nodes.Collection, Nodes.Verbosity?.ToString()) : null,
+            Users is not null ? new Weaviate.Client.Models.UsersResource(Users.Users1) : null,
+            Groups is not null ? new Weaviate.Client.Models.GroupsResource(Groups.Group, Groups.GroupType?.ToString()) : null,
+            Tenants is not null ? new Weaviate.Client.Models.TenantsResource(Tenants.Collection, Tenants.Tenant) : null,
+            Roles is not null ? new Weaviate.Client.Models.RolesResource(Roles.Role, Roles.Scope?.ToString()) : null,
+            Collections is not null ? new Weaviate.Client.Models.CollectionsResource(Collections.Collection) : null,
+            Replicate is not null ? new Weaviate.Client.Models.ReplicateResource(Replicate.Collection, Replicate.Shard) : null,
+            Aliases is not null ? new Weaviate.Client.Models.AliasesResource(Aliases.Collection, Aliases.Alias) : null
+        );
+        return new Weaviate.Client.Models.PermissionInfo(Action.ToEnumMemberString() ?? string.Empty, resources);
+    }
+}
+
+// RBAC Role mapping
+internal partial class Role
+{
+    public Weaviate.Client.Models.RoleInfo ToModel()
+    {
+        return new Weaviate.Client.Models.RoleInfo(
+            Name ?? string.Empty,
+            (Permissions ?? []).Select(p => p.ToModel())
+        );
+    }
+}
+

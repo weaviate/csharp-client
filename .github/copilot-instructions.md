@@ -1,3 +1,4 @@
+````instructions
 # Weaviate C# Client - AI Coding Agent Instructions
 
 ## Project Overview
@@ -307,3 +308,82 @@ These hooks ensure code quality and consistency without manual intervention. If 
 ### Note on File-Scoped Namespaces
 
 Please ensure that all code adheres to file-scoped namespaces style. This allows for a more concise declaration of namespaces, improving code readability and maintainability.
+
+## RBAC Permissions Modeling Pattern
+
+The C# SDK models RBAC permissions using a type-safe, resource-centric pattern:
+
+- Each permission scope (Alias, Data, Backups, etc.) is represented by a subclass of `PermissionsScope`.
+- Each scope class holds a resource record (from `PermissionResource.cs`) and boolean properties for each supported action.
+- The `GetEnumerator()` method yields `PermissionInfo` objects using the `RbacPermissionAction` enum for type safety.
+- Each scope class provides a static `Parse(IEnumerable<PermissionInfo> infos)` method that groups and aggregates permissions by resource, using the enum for switch logic.
+- The root `Permissions.Parse(IEnumerable<PermissionInfo> infos)` method delegates to all scope types and aggregates the results.
+- All permission construction and parsing should use the `RbacPermissionAction` enum, not raw strings.
+
+**Example:**
+
+```csharp
+public class Permissions
+{
+  public class Alias : PermissionsScope
+  {
+    public AliasesResource Resource { get; }
+    public bool Create { get; set; }
+    public bool Read { get; set; }
+    public bool Update { get; set; }
+    public bool Delete { get; set; }
+
+    public Alias(AliasesResource resource) { Resource = resource; }
+
+    public override IEnumerator<PermissionInfo> GetEnumerator()
+    {
+      var permResource = new PermissionResource(Aliases: Resource);
+      if (Create) yield return new PermissionInfo(RbacPermissionAction.CreateAliases, permResource);
+      if (Read) yield return new PermissionInfo(RbacPermissionAction.ReadAliases, permResource);
+      if (Update) yield return new PermissionInfo(RbacPermissionAction.UpdateAliases, permResource);
+      if (Delete) yield return new PermissionInfo(RbacPermissionAction.DeleteAliases, permResource);
+    }
+
+    public static List<PermissionsScope> Parse(IEnumerable<PermissionInfo> infos)
+    {
+      return infos
+        .Where(i => i.Resources?.Aliases != null)
+        .GroupBy(i => i.Resources!.Aliases!)
+        .Select(group =>
+        {
+          var aliasPerm = new Alias(group.Key);
+          foreach (var info in group)
+          {
+            switch (info.Action)
+            {
+              case RbacPermissionAction.CreateAliases: aliasPerm.Create = true; break;
+              case RbacPermissionAction.ReadAliases: aliasPerm.Read = true; break;
+              case RbacPermissionAction.UpdateAliases: aliasPerm.Update = true; break;
+              case RbacPermissionAction.DeleteAliases: aliasPerm.Delete = true; break;
+            }
+          }
+          return (PermissionsScope)aliasPerm;
+        })
+        .ToList();
+    }
+  }
+  // Repeat for Data, Backups, etc.
+  public static List<PermissionsScope> Parse(IEnumerable<PermissionInfo> infos)
+  {
+    var scopes = new List<PermissionsScope>();
+    scopes.AddRange(Alias.Parse(infos));
+    // scopes.AddRange(Data.Parse(infos));
+    // scopes.AddRange(Backups.Parse(infos));
+    // ...other scopes...
+    return scopes;
+  }
+}
+```
+
+#### Guidelines
+
+- Always use the enum for permission actions.
+- Always group by the correct resource record for each scope.
+- Extend the pattern for all supported resource types and actions.
+- Add thorough unit tests for GroupBy and aggregation logic.
+````
