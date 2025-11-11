@@ -225,7 +225,7 @@ public static class Permissions
     {
         public NodesResource Resource { get; }
 
-        public Nodes(string? collection, string? verbosity)
+        public Nodes(string? collection, NodeVerbosity? verbosity)
             : this(new NodesResource(collection, verbosity)) { }
 
         public Nodes(NodesResource resource)
@@ -467,7 +467,7 @@ public static class Permissions
     {
         public GroupsResource Resource { get; }
 
-        public Groups(string? group, string? groupType)
+        public Groups(string? group, RbacGroupType? groupType)
             : this(new GroupsResource(group, groupType)) { }
 
         public Groups(GroupsResource resource)
