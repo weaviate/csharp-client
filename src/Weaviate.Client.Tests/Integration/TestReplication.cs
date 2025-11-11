@@ -104,7 +104,7 @@ public class TestReplication : IntegrationTests
         // Retrieve node + shard info with retry (may lag right after creation)
         var nodes = await RetryAsync(async () =>
         {
-            var n = await _weaviate.Cluster.Nodes.NodesVerbose(collection: collectionName);
+            var n = await _weaviate.Cluster.Nodes.ListVerbose(collection: collectionName);
             if (n.Length < 2 || n[0].Shards is null || n[0].Shards.Length == 0)
             {
                 throw new InvalidOperationException("Shard info not yet available");
@@ -171,7 +171,7 @@ public class TestReplication : IntegrationTests
         await WaitForCollectionReady(collectionName);
         var nodes = await RetryAsync(async () =>
         {
-            var n = await _weaviate.Cluster.Nodes.NodesVerbose(collection: collectionName);
+            var n = await _weaviate.Cluster.Nodes.ListVerbose(collection: collectionName);
             if (n.Length < 2 || n[0].Shards is null || n[0].Shards.Length == 0)
             {
                 throw new InvalidOperationException("Shard info not yet available");
@@ -226,7 +226,7 @@ public class TestReplication : IntegrationTests
         await WaitForCollectionReady(collectionName);
         var nodes = await RetryAsync(async () =>
         {
-            var n = await _weaviate.Cluster.Nodes.NodesVerbose(collection: collectionName);
+            var n = await _weaviate.Cluster.Nodes.ListVerbose(collection: collectionName);
             if (n.Length < 2 || n[0].Shards is null || n[0].Shards.Length == 0)
             {
                 throw new InvalidOperationException("Shard info not yet available");
@@ -293,7 +293,7 @@ public class TestReplication : IntegrationTests
         await WaitForCollectionReady(collectionName);
         var nodes = await RetryAsync(async () =>
         {
-            var n = await _weaviate.Cluster.Nodes.NodesVerbose(collection: collectionName);
+            var n = await _weaviate.Cluster.Nodes.ListVerbose(collection: collectionName);
             if (n.Length < 2 || n[0].Shards is null || n[0].Shards.Length == 0)
             {
                 throw new InvalidOperationException("Shard info not yet available");
@@ -364,7 +364,7 @@ public class TestReplication : IntegrationTests
         await WaitForCollectionReady(collectionName);
         var nodes = await RetryAsync(async () =>
         {
-            var n = await _weaviate.Cluster.Nodes.NodesVerbose(collection: collectionName);
+            var n = await _weaviate.Cluster.Nodes.ListVerbose(collection: collectionName);
             if (n.Length < 2 || n[0].Shards is null || n[0].Shards.Length == 0)
             {
                 throw new InvalidOperationException("Shard info not yet available");
@@ -426,7 +426,7 @@ public class TestReplication : IntegrationTests
         await WaitForCollectionReady(collectionName);
         var nodes = await RetryAsync(async () =>
         {
-            var n = await _weaviate.Cluster.Nodes.NodesVerbose(collection: collectionName);
+            var n = await _weaviate.Cluster.Nodes.ListVerbose(collection: collectionName);
             if (n.Length < 2 || n[0].Shards is null || n[0].Shards.Length == 0)
             {
                 throw new InvalidOperationException("Shard info not yet available");
@@ -485,7 +485,7 @@ public class TestReplication : IntegrationTests
         await WaitForCollectionReady(collectionName);
         var nodes = await RetryAsync(async () =>
         {
-            var n = await _weaviate.Cluster.Nodes.NodesVerbose(collection: collectionName);
+            var n = await _weaviate.Cluster.Nodes.ListVerbose(collection: collectionName);
             if (n.Length < 2 || n[0].Shards is null || n[0].Shards.Length == 0)
             {
                 throw new InvalidOperationException("Shard info not yet available");
@@ -556,7 +556,7 @@ public class TestReplication : IntegrationTests
         await WaitForCollectionReady(collectionName);
         var nodes = await RetryAsync(async () =>
         {
-            var n = await _weaviate.Cluster.Nodes.NodesVerbose(collection: collectionName);
+            var n = await _weaviate.Cluster.Nodes.ListVerbose(collection: collectionName);
             if (n.Length < 2 || n[0].Shards is null || n[0].Shards.Length == 0)
             {
                 throw new InvalidOperationException("Shard info not yet available");
