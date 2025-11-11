@@ -11,14 +11,17 @@ This guide shows how to use the Weaviate C# client's Role-Based Access Control (
   - [Own User Info](#own-user-info)
   - [List Users](#list-users)
   - [Create & Get User](#create--get-user)
+  - [Delete User](#delete-user)
   - [Rotate User API Key](#rotate-user-api-key)
   - [Activate / Deactivate User](#activate--deactivate-user)
   - [Assign / Revoke Roles](#assign--revoke-roles)
   - [List Roles For User](#list-roles-for-user)
-  - [Check Role For User](#check-role-for-user)
+  - [Check Role For User](#check-role-for-user-indirect)
 - [Roles](#roles)
   - [List Roles](#list-roles)
+  - [Get Role](#get-role)
   - [Create Role With Permissions](#create-role-with-permissions)
+  - [Delete Role](#delete-role)
   - [Add / Remove Permissions](#add--remove-permissions)
   - [Check Permission](#check-permission)
   - [User Assignments For Role](#user-assignments-for-role)
@@ -36,24 +39,28 @@ This guide shows how to use the Weaviate C# client's Role-Based Access Control (
 The RBAC surface provides high-level async operations:
 
 ```csharp
-client.Users;   // UsersClient
-client.Roles;   // RolesClient
-client.Groups;  // GroupsClient
+client.Users;   // UsersClient - manages database users
+client.Roles;   // RolesClient - manages roles, permissions, and assignments
+client.Groups;  // GroupsClient - queries OIDC groups
 ```
 
-- `UsersClient`: create/list/get users, rotate API keys, activate/deactivate.
-- `RolesClient`: create/list/get/delete roles, manage permissions, assign/revoke roles to users or groups, query assignments.
-- `GroupsClient`: list groups (e.g. OIDC) and retrieve role assignments.
+- `UsersClient`: Provides specialized sub-clients for database and OIDC user management:
+  - `Users.Database`: Create, list, get, delete database users; rotate API keys; activate/deactivate
+  - `Users.Oidc`: List OIDC users and retrieve user details
+- `RolesClient`: Create/list/get/delete roles, manage permissions, assign/revoke roles to users or groups, query assignments
+- `GroupsClient`: Provides specialized sub-client for OIDC group management:
+  - `Groups.Oidc`: List OIDC groups and retrieve role assignments
 
 ## Version Requirements
 
 | Feature | Minimum Version |
 | ------- | --------------- |
-| Own user info | 1.28.0 |
-| User CRUD, role assignment helpers | 1.30.0 |
-| Groups listing / roles | 1.32.0 |
+| RBAC APIs (users, roles, groups) | 1.28.0 |
+| C# Client Integration Tests | 1.31.0 |
 
-Use `client.WeaviateVersion` or test helpers to gate functionality when targeting older servers.
+The C# client library targets Weaviate >= 1.31.0 for integration testing. Core RBAC features are available from Weaviate 1.28.0, but the client enforces 1.31.0 as the minimum supported version.
+
+Use `client.WeaviateVersion` to check the server version at runtime if needed.
 
 ## Client Initialization
 
@@ -71,7 +78,14 @@ if (!await client.IsReady()) throw new Exception("Weaviate not ready");
 
 ## Users
 
+The `UsersClient` provides specialized sub-clients for managing database and OIDC users:
+
+- `client.Users.Database`: Database user management (create, delete, activate, deactivate, rotate keys)
+- `client.Users.Oidc`: OIDC user queries (list, get details)
+
 ### Own User Info
+
+Get information about the currently authenticated user:
 
 ```csharp
 var me = await client.Users.OwnInfo();
@@ -80,33 +94,55 @@ Console.WriteLine($"Me: {me.Username}, Active={me.Active}, Roles={string.Join(",
 
 ### List Users
 
+List all database users:
+
 ```csharp
-var users = await client.Users.List();
+var users = await client.Users.Database.List();
 foreach (var u in users)
     Console.WriteLine($"User: {u.UserId}, Active={u.Active}");
 ```
 
+List all OIDC users:
+
+```csharp
+var oidcUsers = await client.Users.Oidc.List();
+foreach (var u in oidcUsers)
+    Console.WriteLine($"OIDC User: {u.Username}");
+```
+
 ### Create & Get User
+
+Database users only (OIDC users are managed by the identity provider):
 
 ```csharp
 var newUserId = $"user-{Random.Shared.Next(1, 10_000)}";
-var apiKey = await client.Users.Create(newUserId);
-var user = await client.Users.Get(newUserId);
+var apiKey = await client.Users.Database.Create(newUserId);
+var user = await client.Users.Database.Get(newUserId);
 Console.WriteLine($"Created {user.UserId}, Active={user.Active}");
+```
+
+### Delete User
+
+```csharp
+await client.Users.Database.Delete(newUserId);
 ```
 
 ### Rotate User API Key
 
+Database users only:
+
 ```csharp
-var rotatedKey = await client.Users.RotateApiKey(newUserId);
+var rotatedKey = await client.Users.Database.RotateApiKey(newUserId);
 // Use rotatedKey to create a secondary client if needed
 ```
 
 ### Activate / Deactivate User
 
+Database users only:
+
 ```csharp
-await client.Users.Deactivate(newUserId);
-await client.Users.Activate(newUserId);
+await client.Users.Database.Deactivate(newUserId);
+await client.Users.Database.Activate(newUserId);
 ```
 
 ### Assign / Revoke Roles
@@ -138,12 +174,29 @@ var roles = await client.Roles.List();
 foreach (var r in roles) Console.WriteLine(r.Name);
 ```
 
+### Get Role
+
+```csharp
+var role = await client.Roles.Get("viewer");
+Console.WriteLine($"Role: {role.Name}, Permissions: {role.Permissions.Count}");
+```
+
 ### Create Role With Permissions
+
+Creates a new role with optional initial permissions. Returns the created role details:
 
 ```csharp
 var roleName = $"role-{Guid.NewGuid():N}";
-await client.Roles.Delete(roleName); // idempotent cleanup
-await client.Roles.Create(roleName, new[] { new PermissionInfo("read_roles") });
+var createdRole = await client.Roles.Create(roleName, new[] { new PermissionInfo("read_roles") });
+Console.WriteLine($"Created role: {createdRole.Name}");
+```
+
+### Delete Role
+
+Idempotent—returns success even if the role doesn't exist:
+
+```csharp
+await client.Roles.Delete(roleName);
 ```
 
 ### Add / Remove Permissions
@@ -155,10 +208,14 @@ await client.Roles.RemovePermissions(roleName, new[] { new PermissionInfo("creat
 
 ### Check Permission
 
+Returns `true` if the role has the specified permission, `false` otherwise (including when the role doesn't exist):
+
 ```csharp
 var has = await client.Roles.HasPermission(roleName, new PermissionInfo("read_roles"));
-Console.WriteLine(has);
+Console.WriteLine($"Has permission: {has}");
 ```
+
+**Note:** This endpoint returns a boolean result with HTTP 200 status, even for non-existent roles. It does not throw exceptions for missing roles.
 
 ### User Assignments For Role
 
@@ -169,19 +226,25 @@ foreach (var a in assignments) Console.WriteLine(a.UserId);
 
 ## Groups
 
-Groups usually originate from identity providers (e.g. OIDC). They may be empty locally.
+The `GroupsClient` provides specialized sub-clients for managing groups by type. Currently, only OIDC groups are supported.
+
+Groups originate from identity providers (e.g., OIDC) and cannot be created via the client—they're synchronized from the external identity provider.
 
 ### List Groups
 
 ```csharp
-var groups = await client.Groups.List("oidc");
+var groups = await client.Groups.Oidc.List();
+foreach (var g in groups)
+    Console.WriteLine($"Group: {g.Name}");
 ```
 
 ### Roles For Group
 
 ```csharp
 var groupId = "/example-group";
-var groupRoles = await client.Groups.Roles(groupId, "oidc");
+var groupRoles = await client.Groups.Oidc.Roles(groupId);
+foreach (var r in groupRoles)
+    Console.WriteLine($"Role: {r.Name}");
 ```
 
 ## Permission Action Strings
@@ -199,20 +262,33 @@ Use them via `new PermissionInfo("read_roles")`. If you add enums, prefer `[Enum
 
 ## Error Handling
 
-Non-success HTTP codes throw `WeaviateUnexpectedStatusCodeException`:
+RBAC operations follow standard Weaviate error handling patterns. For comprehensive information about exception types and error handling strategies, see the **[Error Handling Guide](ERRORS.md)**.
 
+### Common Patterns in RBAC
+
+**Idempotent Deletes:**
+```csharp
+// Succeeds even if role doesn't exist
+await client.Roles.Delete("role-name");
+```
+
+**Lenient Permission Checks:**
+```csharp
+// Returns false instead of throwing for non-existent roles
+var hasPermission = await client.Roles.HasPermission("role-name", permission);
+```
+
+**Conflict Handling:**
 ```csharp
 try
 {
-    await client.Roles.Create("existing-role", Array.Empty<PermissionInfo>());
+    await client.Roles.Create("existing-role", permissions);
 }
-catch (WeaviateUnexpectedStatusCodeException ex)
+catch (WeaviateConflictException ex)
 {
-    Console.WriteLine($"Status={ex.StatusCode} Message={ex.Message}");
+    Console.WriteLine($"Role already exists: {ex.Message}");
 }
 ```
-
-Invalid API keys can fail early during client construction (meta endpoint auth).
 
 ## Readiness & Test Infrastructure
 
@@ -229,6 +305,9 @@ Integration tests invoke `_weaviate.IsReady()` in a centralized `InitializeAsync
 ## Complete Example
 
 ```csharp
+using Weaviate.Client;
+using Weaviate.Client.Models;
+
 var adminKey = Environment.GetEnvironmentVariable("WEAVIATE_ADMIN_API_KEY") ?? "admin-key";
 var client = WeaviateClientBuilder.Local(restPort: 8092, grpcPort: 50063)
     .WithCredentials(Auth.ApiKey(adminKey))
@@ -236,28 +315,41 @@ var client = WeaviateClientBuilder.Local(restPort: 8092, grpcPort: 50063)
 
 if (!await client.IsReady()) throw new Exception("Weaviate not ready");
 
-// Create a role
+// Create a role with permissions
 var roleName = $"demo-role-{Guid.NewGuid():N}";
-await client.Roles.Delete(roleName);
-await client.Roles.Create(roleName, new[] { new PermissionInfo("read_roles") });
+var role = await client.Roles.Create(roleName, new[] 
+{ 
+    new PermissionInfo("read_roles"),
+    new PermissionInfo("read_collections")
+});
+Console.WriteLine($"Created role: {role.Name}");
 
-// Create a user
+// Create a database user
 var userId = $"demo-user-{Guid.NewGuid():N}";
-var userKey = await client.Users.Create(userId);
+var userKey = await client.Users.Database.Create(userId);
+Console.WriteLine($"Created user {userId} with API key");
 
-// Assign role
+// Assign role to user
 await client.Roles.AssignToUser(userId, "db", new[] { roleName });
+Console.WriteLine($"Assigned role {roleName} to user {userId}");
 
-// Verify
-var has = await client.Roles.HasPermission(roleName, new PermissionInfo("read_roles"));
-Console.WriteLine($"Role has read_roles? {has}");
+// Verify role assignment
 var userRoles = await client.Roles.RolesForUser(userId, "db");
-Console.WriteLine($"User roles: {string.Join(",", userRoles.Select(r => r.Name))}");
+Console.WriteLine($"User roles: {string.Join(", ", userRoles.Select(r => r.Name))}");
+
+// Check specific permission
+var hasPermission = await client.Roles.HasPermission(roleName, new PermissionInfo("read_roles"));
+Console.WriteLine($"Role has read_roles permission: {hasPermission}");
+
+// List all role assignments for this user
+var assignments = await client.Roles.UserAssignments(roleName);
+Console.WriteLine($"Users with role {roleName}: {assignments.Count}");
 
 // Cleanup
 await client.Roles.RevokeFromUser(userId, "db", new[] { roleName });
 await client.Roles.Delete(roleName);
-await client.Users.Delete(userId);
+await client.Users.Database.Delete(userId);
+Console.WriteLine("Cleanup complete");
 ```
 
 ---
