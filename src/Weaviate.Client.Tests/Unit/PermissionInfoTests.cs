@@ -20,14 +20,25 @@ public class PermissionInfoTests
         // Arrange: mock client & queue server response for role creation.
         var (client, handler) = MockWeaviateClient.CreateWithMockHandler();
         var roleName = $"role-{Guid.NewGuid():N}";
-        var roleResponse = new
+        var roleResponse = new Rest.Dto.Role
         {
-            name = roleName,
-            permissions = new object[] { new { action = "read_roles" } },
+            Name = roleName,
+            Permissions = new Rest.Dto.Permission[]
+            {
+                new Rest.Dto.Permission
+                {
+                    Roles = new Rest.Dto.Roles
+                    {
+                        Role = roleName,
+                        Scope = Rest.Dto.RolesScope.Match,
+                    },
+                    Action = Rest.Dto.PermissionAction.Read_roles,
+                },
+            },
         };
         // Response to POST /v1/authz/roles (201 Created)
         handler.AddJsonResponse(
-            roleResponse,
+            new { },
             expectedEndpoint: "/v1/authz/roles",
             statusCode: HttpStatusCode.Created
         );
@@ -38,10 +49,10 @@ public class PermissionInfoTests
             statusCode: HttpStatusCode.OK
         );
 
-        // Act: create role with known enum permission.
+        // Act: create role
         var created = await client.Roles.Create(
             roleName,
-            new[] { new Permissions.Roles(new RolesResource(roleName, null)) { Read = true } }
+            new[] { new Permissions.Roles(roleName) { Read = true } }
         );
 
         // Assert: request body contained correct action string.
