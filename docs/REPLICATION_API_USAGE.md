@@ -366,7 +366,7 @@ var result = await operation.CancelSync(
 Get cluster nodes and their shards to determine replication targets:
 
 ```csharp
-var nodes = await client.Cluster.Nodes.NodesVerbose(collection: "Articles");
+var nodes = await client.Cluster.Nodes.ListVerbose(collection: "Articles");
 
 foreach (var node in nodes)
 {
