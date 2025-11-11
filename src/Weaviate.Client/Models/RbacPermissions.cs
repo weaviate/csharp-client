@@ -19,6 +19,9 @@ public static class Permissions
         public bool Update { get; set; }
         public bool Delete { get; set; }
 
+        public Alias(string? name, string? collection)
+            : this(new AliasesResource(name, collection)) { }
+
         public Alias(AliasesResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
@@ -85,6 +88,9 @@ public static class Permissions
         public bool Update { get; set; }
         public bool Delete { get; set; }
 
+        public Data(string? name, string? collection, string? @object)
+            : this(new DataResource(name, collection, @object)) { }
+
         public Data(DataResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
@@ -148,6 +154,9 @@ public static class Permissions
         public BackupsResource Resource { get; }
         public bool Manage { get; set; }
 
+        public Backups(string? collection)
+            : this(new BackupsResource(collection)) { }
+
         public Backups(BackupsResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
@@ -204,18 +213,20 @@ public static class Permissions
                 {
                     case RbacPermissionAction.ReadCluster:
                         cluster.Read = true;
-                        break;
+                        return new List<PermissionScope> { cluster };
                 }
             }
-            return cluster.Read
-                ? new List<PermissionScope> { cluster }
-                : new List<PermissionScope>();
+
+            return new();
         }
     }
 
     public class Nodes : PermissionScope
     {
         public NodesResource Resource { get; }
+
+        public Nodes(string? collection, string? verbosity)
+            : this(new NodesResource(collection, verbosity)) { }
 
         public Nodes(NodesResource resource)
         {
@@ -226,8 +237,9 @@ public static class Permissions
 
         internal override IEnumerable<PermissionInfo> ToDto()
         {
+            var permResource = new PermissionResource(Nodes: Resource);
             if (Read)
-                yield return new PermissionInfo(RbacPermissionAction.ReadNodes);
+                yield return new PermissionInfo(RbacPermissionAction.ReadNodes, permResource);
         }
 
         internal static List<PermissionScope> Parse(IEnumerable<PermissionInfo> infos)
@@ -257,8 +269,8 @@ public static class Permissions
     {
         public RolesResource Resource { get; }
 
-        public Roles()
-            : this(new RolesResource(string.Empty, null)) { }
+        public Roles(string? name, string? scope = null)
+            : this(new RolesResource(name, scope)) { }
 
         public Roles(RolesResource resource)
         {
@@ -272,14 +284,15 @@ public static class Permissions
 
         internal override IEnumerable<PermissionInfo> ToDto()
         {
+            var permResource = new PermissionResource(Roles: Resource);
             if (Create)
-                yield return new PermissionInfo(RbacPermissionAction.CreateRoles);
+                yield return new PermissionInfo(RbacPermissionAction.CreateRoles, permResource);
             if (Read)
-                yield return new PermissionInfo(RbacPermissionAction.ReadRoles);
+                yield return new PermissionInfo(RbacPermissionAction.ReadRoles, permResource);
             if (Update)
-                yield return new PermissionInfo(RbacPermissionAction.UpdateRoles);
+                yield return new PermissionInfo(RbacPermissionAction.UpdateRoles, permResource);
             if (Delete)
-                yield return new PermissionInfo(RbacPermissionAction.DeleteRoles);
+                yield return new PermissionInfo(RbacPermissionAction.DeleteRoles, permResource);
         }
 
         internal static List<PermissionScope> Parse(IEnumerable<PermissionInfo> infos)
@@ -321,6 +334,9 @@ public static class Permissions
         public Users()
             : this(new UsersResource(null)) { }
 
+        public Users(string? name)
+            : this(new UsersResource(name)) { }
+
         public Users(UsersResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
@@ -334,47 +350,54 @@ public static class Permissions
 
         internal override IEnumerable<PermissionInfo> ToDto()
         {
+            var permResource = new PermissionResource(Users: Resource);
             if (Create)
-                yield return new PermissionInfo(RbacPermissionAction.CreateUsers);
+                yield return new PermissionInfo(RbacPermissionAction.CreateUsers, permResource);
             if (Read)
-                yield return new PermissionInfo(RbacPermissionAction.ReadUsers);
+                yield return new PermissionInfo(RbacPermissionAction.ReadUsers, permResource);
             if (Update)
-                yield return new PermissionInfo(RbacPermissionAction.UpdateUsers);
+                yield return new PermissionInfo(RbacPermissionAction.UpdateUsers, permResource);
             if (Delete)
-                yield return new PermissionInfo(RbacPermissionAction.DeleteUsers);
+                yield return new PermissionInfo(RbacPermissionAction.DeleteUsers, permResource);
             if (AssignAndRevoke)
-                yield return new PermissionInfo(RbacPermissionAction.AssignAndRevokeUsers);
+                yield return new PermissionInfo(
+                    RbacPermissionAction.AssignAndRevokeUsers,
+                    permResource
+                );
         }
 
         internal static List<PermissionScope> Parse(IEnumerable<PermissionInfo> infos)
         {
-            var users = new Users();
-            foreach (var info in infos)
-            {
-                switch (info.Action)
+            return infos
+                .Where(i => i.Resources?.Users != null)
+                .GroupBy(i => i.Resources!.Users!)
+                .Select(group =>
                 {
-                    case RbacPermissionAction.CreateUsers:
-                        users.Create = true;
-                        break;
-                    case RbacPermissionAction.ReadUsers:
-                        users.Read = true;
-                        break;
-                    case RbacPermissionAction.UpdateUsers:
-                        users.Update = true;
-                        break;
-                    case RbacPermissionAction.DeleteUsers:
-                        users.Delete = true;
-                        break;
-                    case RbacPermissionAction.AssignAndRevokeUsers:
-                        users.AssignAndRevoke = true;
-                        break;
-                }
-            }
-            return (
-                users.Create || users.Read || users.Update || users.Delete || users.AssignAndRevoke
-            )
-                ? new List<PermissionScope> { users }
-                : new List<PermissionScope>();
+                    var users = new Users(group.Key!);
+                    foreach (var info in group)
+                    {
+                        switch (info.Action)
+                        {
+                            case RbacPermissionAction.CreateUsers:
+                                users.Create = true;
+                                break;
+                            case RbacPermissionAction.ReadUsers:
+                                users.Read = true;
+                                break;
+                            case RbacPermissionAction.UpdateUsers:
+                                users.Update = true;
+                                break;
+                            case RbacPermissionAction.DeleteUsers:
+                                users.Delete = true;
+                                break;
+                            case RbacPermissionAction.AssignAndRevokeUsers:
+                                users.AssignAndRevoke = true;
+                                break;
+                        }
+                    }
+                    return (PermissionScope)users;
+                })
+                .ToList();
         }
     }
 
@@ -382,8 +405,8 @@ public static class Permissions
     {
         public TenantsResource Resource { get; }
 
-        public Tenants()
-            : this(new TenantsResource(null, null)) { }
+        public Tenants(string? collection, string? tenant)
+            : this(new TenantsResource(collection, tenant)) { }
 
         public Tenants(TenantsResource resource)
         {
@@ -397,40 +420,46 @@ public static class Permissions
 
         internal override IEnumerable<PermissionInfo> ToDto()
         {
+            var permResource = new PermissionResource(Tenants: Resource);
             if (Create)
-                yield return new PermissionInfo(RbacPermissionAction.CreateTenants);
+                yield return new PermissionInfo(RbacPermissionAction.CreateTenants, permResource);
             if (Read)
-                yield return new PermissionInfo(RbacPermissionAction.ReadTenants);
+                yield return new PermissionInfo(RbacPermissionAction.ReadTenants, permResource);
             if (Update)
-                yield return new PermissionInfo(RbacPermissionAction.UpdateTenants);
+                yield return new PermissionInfo(RbacPermissionAction.UpdateTenants, permResource);
             if (Delete)
-                yield return new PermissionInfo(RbacPermissionAction.DeleteTenants);
+                yield return new PermissionInfo(RbacPermissionAction.DeleteTenants, permResource);
         }
 
         internal static List<PermissionScope> Parse(IEnumerable<PermissionInfo> infos)
         {
-            var tenants = new Tenants();
-            foreach (var info in infos)
-            {
-                switch (info.Action)
+            return infos
+                .Where(i => i.Resources?.Tenants != null)
+                .GroupBy(i => i.Resources!.Tenants!)
+                .Select(group =>
                 {
-                    case RbacPermissionAction.CreateTenants:
-                        tenants.Create = true;
-                        break;
-                    case RbacPermissionAction.ReadTenants:
-                        tenants.Read = true;
-                        break;
-                    case RbacPermissionAction.UpdateTenants:
-                        tenants.Update = true;
-                        break;
-                    case RbacPermissionAction.DeleteTenants:
-                        tenants.Delete = true;
-                        break;
-                }
-            }
-            return (tenants.Create || tenants.Read || tenants.Update || tenants.Delete)
-                ? new List<PermissionScope> { tenants }
-                : new List<PermissionScope>();
+                    var tenants = new Tenants(group.Key!);
+                    foreach (var info in group)
+                    {
+                        switch (info.Action)
+                        {
+                            case RbacPermissionAction.CreateTenants:
+                                tenants.Create = true;
+                                break;
+                            case RbacPermissionAction.ReadTenants:
+                                tenants.Read = true;
+                                break;
+                            case RbacPermissionAction.UpdateTenants:
+                                tenants.Update = true;
+                                break;
+                            case RbacPermissionAction.DeleteTenants:
+                                tenants.Delete = true;
+                                break;
+                        }
+                    }
+                    return (PermissionScope)tenants;
+                })
+                .ToList();
         }
     }
 
@@ -438,8 +467,8 @@ public static class Permissions
     {
         public GroupsResource Resource { get; }
 
-        public Groups()
-            : this(new GroupsResource(null, null)) { }
+        public Groups(string? group, string? groupType)
+            : this(new GroupsResource(group, groupType)) { }
 
         public Groups(GroupsResource resource)
         {
@@ -451,30 +480,39 @@ public static class Permissions
 
         internal override IEnumerable<PermissionInfo> ToDto()
         {
+            var permResource = new PermissionResource(Groups: Resource);
             if (AssignAndRevoke)
-                yield return new PermissionInfo(RbacPermissionAction.AssignAndRevokeGroups);
+                yield return new PermissionInfo(
+                    RbacPermissionAction.AssignAndRevokeGroups,
+                    permResource
+                );
             if (Read)
-                yield return new PermissionInfo(RbacPermissionAction.ReadGroups);
+                yield return new PermissionInfo(RbacPermissionAction.ReadGroups, permResource);
         }
 
         internal static List<PermissionScope> Parse(IEnumerable<PermissionInfo> infos)
         {
-            var groups = new Groups();
-            foreach (var info in infos)
-            {
-                switch (info.Action)
+            return infos
+                .Where(i => i.Resources?.Groups != null)
+                .GroupBy(i => i.Resources!.Groups!)
+                .Select(group =>
                 {
-                    case RbacPermissionAction.AssignAndRevokeGroups:
-                        groups.AssignAndRevoke = true;
-                        break;
-                    case RbacPermissionAction.ReadGroups:
-                        groups.Read = true;
-                        break;
-                }
-            }
-            return (groups.AssignAndRevoke || groups.Read)
-                ? new List<PermissionScope> { groups }
-                : new List<PermissionScope>();
+                    var groupsPerm = new Groups(group.Key!);
+                    foreach (var info in group)
+                    {
+                        switch (info.Action)
+                        {
+                            case RbacPermissionAction.AssignAndRevokeGroups:
+                                groupsPerm.AssignAndRevoke = true;
+                                break;
+                            case RbacPermissionAction.ReadGroups:
+                                groupsPerm.Read = true;
+                                break;
+                        }
+                    }
+                    return (PermissionScope)groupsPerm;
+                })
+                .ToList();
         }
     }
 
@@ -482,8 +520,8 @@ public static class Permissions
     {
         public ReplicateResource Resource { get; }
 
-        public Replicate()
-            : this(new ReplicateResource(null, null)) { }
+        public Replicate(string? collection, string? shard)
+            : this(new ReplicateResource(collection, shard)) { }
 
         public Replicate(ReplicateResource resource)
         {
@@ -497,40 +535,46 @@ public static class Permissions
 
         internal override IEnumerable<PermissionInfo> ToDto()
         {
+            var permResource = new PermissionResource(Replicate: Resource);
             if (Create)
-                yield return new PermissionInfo(RbacPermissionAction.CreateReplicate);
+                yield return new PermissionInfo(RbacPermissionAction.CreateReplicate, permResource);
             if (Read)
-                yield return new PermissionInfo(RbacPermissionAction.ReadReplicate);
+                yield return new PermissionInfo(RbacPermissionAction.ReadReplicate, permResource);
             if (Update)
-                yield return new PermissionInfo(RbacPermissionAction.UpdateReplicate);
+                yield return new PermissionInfo(RbacPermissionAction.UpdateReplicate, permResource);
             if (Delete)
-                yield return new PermissionInfo(RbacPermissionAction.DeleteReplicate);
+                yield return new PermissionInfo(RbacPermissionAction.DeleteReplicate, permResource);
         }
 
         internal static List<PermissionScope> Parse(IEnumerable<PermissionInfo> infos)
         {
-            var replicate = new Replicate();
-            foreach (var info in infos)
-            {
-                switch (info.Action)
+            return infos
+                .Where(i => i.Resources?.Replicate != null)
+                .GroupBy(i => i.Resources!.Replicate!)
+                .Select(group =>
                 {
-                    case RbacPermissionAction.CreateReplicate:
-                        replicate.Create = true;
-                        break;
-                    case RbacPermissionAction.ReadReplicate:
-                        replicate.Read = true;
-                        break;
-                    case RbacPermissionAction.UpdateReplicate:
-                        replicate.Update = true;
-                        break;
-                    case RbacPermissionAction.DeleteReplicate:
-                        replicate.Delete = true;
-                        break;
-                }
-            }
-            return (replicate.Create || replicate.Read || replicate.Update || replicate.Delete)
-                ? new List<PermissionScope> { replicate }
-                : new List<PermissionScope>();
+                    var replicate = new Replicate(group.Key);
+                    foreach (var info in group)
+                    {
+                        switch (info.Action)
+                        {
+                            case RbacPermissionAction.CreateReplicate:
+                                replicate.Create = true;
+                                break;
+                            case RbacPermissionAction.ReadReplicate:
+                                replicate.Read = true;
+                                break;
+                            case RbacPermissionAction.UpdateReplicate:
+                                replicate.Update = true;
+                                break;
+                            case RbacPermissionAction.DeleteReplicate:
+                                replicate.Delete = true;
+                                break;
+                        }
+                    }
+                    return (PermissionScope)replicate;
+                })
+                .ToList();
         }
     }
 
@@ -538,8 +582,8 @@ public static class Permissions
     {
         public CollectionsResource Resource { get; }
 
-        public Collections()
-            : this(new CollectionsResource(null)) { }
+        public Collections(string? collection)
+            : this(new CollectionsResource(collection)) { }
 
         public Collections(CollectionsResource resource)
         {
@@ -553,42 +597,55 @@ public static class Permissions
 
         internal override IEnumerable<PermissionInfo> ToDto()
         {
+            var permResource = new PermissionResource(Collections: Resource);
             if (Create)
-                yield return new PermissionInfo(RbacPermissionAction.CreateCollections);
+                yield return new PermissionInfo(
+                    RbacPermissionAction.CreateCollections,
+                    permResource
+                );
             if (Read)
-                yield return new PermissionInfo(RbacPermissionAction.ReadCollections);
+                yield return new PermissionInfo(RbacPermissionAction.ReadCollections, permResource);
             if (Update)
-                yield return new PermissionInfo(RbacPermissionAction.UpdateCollections);
+                yield return new PermissionInfo(
+                    RbacPermissionAction.UpdateCollections,
+                    permResource
+                );
             if (Delete)
-                yield return new PermissionInfo(RbacPermissionAction.DeleteCollections);
+                yield return new PermissionInfo(
+                    RbacPermissionAction.DeleteCollections,
+                    permResource
+                );
         }
 
         internal static List<PermissionScope> Parse(IEnumerable<PermissionInfo> infos)
         {
-            var collections = new Collections();
-            foreach (var info in infos)
-            {
-                switch (info.Action)
+            return infos
+                .Where(i => i.Resources?.Collections != null)
+                .GroupBy(i => i.Resources!.Collections!)
+                .Select(group =>
                 {
-                    case RbacPermissionAction.CreateCollections:
-                        collections.Create = true;
-                        break;
-                    case RbacPermissionAction.ReadCollections:
-                        collections.Read = true;
-                        break;
-                    case RbacPermissionAction.UpdateCollections:
-                        collections.Update = true;
-                        break;
-                    case RbacPermissionAction.DeleteCollections:
-                        collections.Delete = true;
-                        break;
-                }
-            }
-            return (
-                collections.Create || collections.Read || collections.Update || collections.Delete
-            )
-                ? new List<PermissionScope> { collections }
-                : new List<PermissionScope>();
+                    var collections = new Collections(group.Key!);
+                    foreach (var info in group)
+                    {
+                        switch (info.Action)
+                        {
+                            case RbacPermissionAction.CreateCollections:
+                                collections.Create = true;
+                                break;
+                            case RbacPermissionAction.ReadCollections:
+                                collections.Read = true;
+                                break;
+                            case RbacPermissionAction.UpdateCollections:
+                                collections.Update = true;
+                                break;
+                            case RbacPermissionAction.DeleteCollections:
+                                collections.Delete = true;
+                                break;
+                        }
+                    }
+                    return (PermissionScope)collections;
+                })
+                .ToList();
         }
     }
 

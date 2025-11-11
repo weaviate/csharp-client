@@ -79,7 +79,7 @@ internal partial class Permission
             Replicate is not null ? new Weaviate.Client.Models.ReplicateResource(Replicate.Collection, Replicate.Shard) : null,
             Aliases is not null ? new Weaviate.Client.Models.AliasesResource(Aliases.Collection, Aliases.Alias) : null
         );
-        return new Weaviate.Client.Models.PermissionInfo(Action.ToEnumMemberString() ?? string.Empty, resources);
+        return new Weaviate.Client.Models.PermissionInfo(Action.ToEnumMemberString(), resources);
     }
 }
 

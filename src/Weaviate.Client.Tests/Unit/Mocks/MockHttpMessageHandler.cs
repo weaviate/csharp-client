@@ -54,16 +54,7 @@ public class MockHttpMessageHandler : HttpMessageHandler
     {
         var json = JsonSerializer.Serialize(
             data,
-            new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = System
-                    .Text
-                    .Json
-                    .Serialization
-                    .JsonIgnoreCondition
-                    .WhenWritingNull,
-            }
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
         );
 
         return AddResponse(
