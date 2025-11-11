@@ -1,4 +1,15 @@
+using System.Runtime.Serialization;
+
 namespace Weaviate.Client.Models;
+
+public enum NodeVerbosity
+{
+    [EnumMember(Value = "verbose")]
+    Verbose,
+
+    [EnumMember(Value = "minimal")]
+    Minimal,
+}
 
 /// <summary>
 /// Represents the resource scope for a permission.
@@ -20,11 +31,11 @@ public record BackupsResource(string? Collection);
 
 public record DataResource(string? Collection, string? Tenant, string? Object);
 
-public record NodesResource(string? Collection, string? Verbosity);
+public record NodesResource(string? Collection, NodeVerbosity? Verbosity);
 
 public record UsersResource(string? Users);
 
-public record GroupsResource(string? Group, string? GroupType);
+public record GroupsResource(string? Group, RbacGroupType? GroupType = RbacGroupType.Oidc);
 
 public record TenantsResource(string? Collection, string? Tenant);
 

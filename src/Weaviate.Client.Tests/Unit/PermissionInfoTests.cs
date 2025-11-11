@@ -150,10 +150,10 @@ public class PermissionInfoTests
         Assert.Equal("tenant1", r.Data?.Tenant);
         Assert.Equal("object1", r.Data?.Object);
         Assert.Equal("nodes-collection", r.Nodes?.Collection);
-        Assert.Equal("Verbose", r.Nodes?.Verbosity);
+        Assert.Equal(NodeVerbosity.Verbose, r.Nodes?.Verbosity);
         Assert.Equal("userA", r.Users?.Users);
         Assert.Equal("groupA", r.Groups?.Group);
-        Assert.Equal("Oidc", r.Groups?.GroupType);
+        Assert.Equal(RbacGroupType.Oidc, r.Groups?.GroupType);
         Assert.Equal("tenant-collection", r.Tenants?.Collection);
         Assert.Equal("tenant2", r.Tenants?.Tenant);
         Assert.Equal("roleA", r.Roles?.Role);

@@ -81,7 +81,7 @@ public class PermissionsScopeTests
         {
             new(
                 RbacPermissionAction.ReadNodes,
-                new PermissionResource(Nodes: new NodesResource("colA", "verbose"))
+                new PermissionResource(Nodes: new NodesResource("colA", NodeVerbosity.Verbose))
             ),
         };
         var nodes = Permissions.Nodes.Parse(infos).Cast<Permissions.Nodes>().ToList();
@@ -151,7 +151,7 @@ public class PermissionsScopeTests
     [Fact]
     public void Groups_Aggregates_AllActions()
     {
-        var resource = new GroupsResource("typeA", "groupA");
+        var resource = new GroupsResource("groupA", RbacGroupType.Oidc);
         var infos = new List<PermissionInfo>
         {
             new PermissionInfo(
