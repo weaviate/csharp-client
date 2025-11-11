@@ -1,7 +1,5 @@
-using System.Net;
 using Weaviate.Client.Models;
 using Weaviate.Client.Tests.Unit.Mocks;
-using Xunit;
 
 namespace Weaviate.Client.Tests.Unit;
 
@@ -78,7 +76,9 @@ public class RbacTests
         Assert.Equal(2, roles.Count);
         Assert.Contains(
             roles,
-            r => r.Name == "reader" && r.Permissions.Any(p => p.Action == "read_roles")
+            r =>
+                r.Name == "reader"
+                && r.Permissions.Any(p => p.Action == RbacPermissionAction.ReadRoles)
         );
     }
 }

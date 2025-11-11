@@ -47,13 +47,13 @@ public class TestRbacRoles : IntegrationTests
             Assert.NotNull(created);
             Assert.Equal(roleName, created.Name);
             Assert.Single(created.Permissions);
-            Assert.Equal("read_roles", created.Permissions.First().Action);
+            Assert.Contains(created.Permissions, p => p.Action == RbacPermissionAction.ReadRoles);
 
             var fetched = await _weaviate.Roles.Get(roleName);
             Assert.NotNull(fetched);
             Assert.Equal(roleName, fetched!.Name);
             Assert.Single(fetched.Permissions);
-            Assert.Equal("read_roles", fetched.Permissions.First().Action);
+            Assert.Contains(fetched.Permissions, p => p.Action == RbacPermissionAction.ReadRoles);
         }
         finally
         {
@@ -139,8 +139,8 @@ public class TestRbacRoles : IntegrationTests
             );
             Assert.NotNull(updated);
             Assert.Equal(2, updated.Permissions.Count());
-            Assert.Contains(updated.Permissions, p => p.Action == "read_roles");
-            Assert.Contains(updated.Permissions, p => p.Action == "create_roles");
+            Assert.Contains(updated.Permissions, p => p.Action == RbacPermissionAction.ReadRoles);
+            Assert.Contains(updated.Permissions, p => p.Action == RbacPermissionAction.CreateRoles);
         }
         finally
         {
@@ -171,7 +171,7 @@ public class TestRbacRoles : IntegrationTests
             );
             Assert.NotNull(updated);
             Assert.Single(updated.Permissions);
-            Assert.Equal("read_roles", updated.Permissions.First().Action);
+            Assert.Contains(updated.Permissions, p => p.Action == RbacPermissionAction.ReadRoles);
         }
         finally
         {

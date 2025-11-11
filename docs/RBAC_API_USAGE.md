@@ -260,6 +260,35 @@ assign_roles
 
 Use them via `new PermissionInfo("read_roles")`. If you add enums, prefer `[EnumMember(Value=...)]` + `ToEnumMemberString()`.
 
+### PermissionInfo Model Semantics
+
+`PermissionInfo` now exposes two properties:
+
+| Property | Type | Meaning |
+|----------|------|---------|
+| `ActionRaw` | `string` | The exact wire value sent to / received from the REST API. Always populated. |
+| `Action` | `RbacPermissionAction` | Parsed enum value. If the raw string is not recognized by this client version, it is set to `RbacPermissionAction.Custom`. |
+
+Construct with either a raw string or an enum:
+
+```csharp
+// From raw string (recommended – forward compatible)
+var p1 = new PermissionInfo("read_roles");
+
+// From enum (convenience)
+var p2 = new PermissionInfo(RbacPermissionAction.ReadRoles);
+
+// Inspecting unknown future actions
+var future = new PermissionInfo("future_new_action");
+if (future.Action == RbacPermissionAction.Custom)
+{
+  Console.WriteLine($"Unrecognized action: {future.ActionRaw}");
+  // Decide whether to ignore, warn, or surface as-is.
+}
+```
+
+When sending permissions (e.g. `RolesClient.Create/AddPermissions`), the client will throw if `ActionRaw` does not map to a known server enum in this version—this prevents silently serializing an incorrect value. Upgrade the client when new actions are introduced server-side.
+
 ## Error Handling
 
 RBAC operations follow standard Weaviate error handling patterns. For comprehensive information about exception types and error handling strategies, see the **[Error Handling Guide](ERRORS.md)**.
@@ -267,18 +296,21 @@ RBAC operations follow standard Weaviate error handling patterns. For comprehens
 ### Common Patterns in RBAC
 
 **Idempotent Deletes:**
+
 ```csharp
 // Succeeds even if role doesn't exist
 await client.Roles.Delete("role-name");
 ```
 
 **Lenient Permission Checks:**
+
 ```csharp
 // Returns false instead of throwing for non-existent roles
 var hasPermission = await client.Roles.HasPermission("role-name", permission);
 ```
 
 **Conflict Handling:**
+
 ```csharp
 try
 {
