@@ -91,12 +91,7 @@ public class UsersDatabaseClient
             UserType.ToEnumMemberString(),
             includeFullRoles
         );
-        return roles.Select(r => new RoleInfo(
-            r.Name ?? string.Empty,
-            (r.Permissions ?? []).Select(p => new PermissionInfo(
-                p.Action.ToEnumMemberString() ?? string.Empty
-            ))
-        ));
+        return roles.Select(r => r.ToModel());
     }
 
     private static DatabaseUser ToModel(Rest.Dto.DBUserInfo dto)

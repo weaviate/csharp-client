@@ -37,12 +37,7 @@ public class UsersClient
             return null;
         return new CurrentUserInfo(
             dto.Username ?? string.Empty,
-            (dto.Roles ?? []).Select(r => new RoleInfo(
-                r.Name ?? string.Empty,
-                (r.Permissions ?? []).Select(p => new PermissionInfo(
-                    p.Action.ToEnumMemberString() ?? string.Empty
-                ))
-            )),
+            (dto.Roles ?? []).Select(r => r.ToModel()),
             dto.Groups
         );
     }
