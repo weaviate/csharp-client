@@ -201,7 +201,7 @@ public static class Permissions
         internal override IEnumerable<PermissionInfo> ToDto()
         {
             if (Read)
-                yield return new PermissionInfo(RbacPermissionAction.ReadCluster);
+                yield return new PermissionInfo(RbacPermissionAction.ReadCluster, null);
         }
 
         internal static List<PermissionScope> Parse(IEnumerable<PermissionInfo> infos)

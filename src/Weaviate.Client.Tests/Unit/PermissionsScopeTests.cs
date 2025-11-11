@@ -68,7 +68,7 @@ public class PermissionsScopeTests
     [Fact]
     public void Cluster_Aggregates_ReadPermission()
     {
-        var infos = new List<PermissionInfo> { new(RbacPermissionAction.ReadCluster) };
+        var infos = new List<PermissionInfo> { new(RbacPermissionAction.ReadCluster, null) };
         var clusters = Permissions.Cluster.Parse(infos).Cast<Permissions.Cluster>().ToList();
         Assert.Single(clusters);
         Assert.True(clusters[0].Read);
@@ -77,7 +77,13 @@ public class PermissionsScopeTests
     [Fact]
     public void Nodes_Aggregates_ReadPermission()
     {
-        var infos = new List<PermissionInfo> { new(RbacPermissionAction.ReadNodes) };
+        var infos = new List<PermissionInfo>
+        {
+            new(
+                RbacPermissionAction.ReadNodes,
+                new PermissionResource(Nodes: new NodesResource("colA", "verbose"))
+            ),
+        };
         var nodes = Permissions.Nodes.Parse(infos).Cast<Permissions.Nodes>().ToList();
         Assert.Single(nodes);
         Assert.True(nodes[0].Read);
@@ -86,12 +92,13 @@ public class PermissionsScopeTests
     [Fact]
     public void Roles_Aggregates_AllActions()
     {
+        var resource = new RolesResource("scopeA", "roleA");
         var infos = new List<PermissionInfo>
         {
-            new(RbacPermissionAction.CreateRoles),
-            new(RbacPermissionAction.ReadRoles),
-            new(RbacPermissionAction.UpdateRoles),
-            new(RbacPermissionAction.DeleteRoles),
+            new(RbacPermissionAction.CreateRoles, new PermissionResource(Roles: resource)),
+            new(RbacPermissionAction.ReadRoles, new PermissionResource(Roles: resource)),
+            new(RbacPermissionAction.UpdateRoles, new PermissionResource(Roles: resource)),
+            new(RbacPermissionAction.DeleteRoles, new PermissionResource(Roles: resource)),
         };
         var roles = Permissions.Roles.Parse(infos).Cast<Permissions.Roles>().ToList();
         Assert.Single(roles);
@@ -104,13 +111,14 @@ public class PermissionsScopeTests
     [Fact]
     public void Users_Aggregates_AllActions()
     {
+        var resource = new UsersResource("userA");
         var infos = new List<PermissionInfo>
         {
-            new(RbacPermissionAction.CreateUsers),
-            new(RbacPermissionAction.ReadUsers),
-            new(RbacPermissionAction.UpdateUsers),
-            new(RbacPermissionAction.DeleteUsers),
-            new(RbacPermissionAction.AssignAndRevokeUsers),
+            new(RbacPermissionAction.CreateUsers, new PermissionResource(Users: resource)),
+            new(RbacPermissionAction.ReadUsers, new PermissionResource(Users: resource)),
+            new(RbacPermissionAction.UpdateUsers, new PermissionResource(Users: resource)),
+            new(RbacPermissionAction.DeleteUsers, new PermissionResource(Users: resource)),
+            new(RbacPermissionAction.AssignAndRevokeUsers, new PermissionResource(Users: resource)),
         };
         var users = Permissions.Users.Parse(infos).Cast<Permissions.Users>().ToList();
         Assert.Single(users);
@@ -124,12 +132,13 @@ public class PermissionsScopeTests
     [Fact]
     public void Tenants_Aggregates_AllActions()
     {
+        var resource = new TenantsResource("tenantA", "scopeA");
         var infos = new List<PermissionInfo>
         {
-            new(RbacPermissionAction.CreateTenants),
-            new(RbacPermissionAction.ReadTenants),
-            new(RbacPermissionAction.UpdateTenants),
-            new(RbacPermissionAction.DeleteTenants),
+            new(RbacPermissionAction.CreateTenants, new PermissionResource(Tenants: resource)),
+            new(RbacPermissionAction.ReadTenants, new PermissionResource(Tenants: resource)),
+            new(RbacPermissionAction.UpdateTenants, new PermissionResource(Tenants: resource)),
+            new(RbacPermissionAction.DeleteTenants, new PermissionResource(Tenants: resource)),
         };
         var tenants = Permissions.Tenants.Parse(infos).Cast<Permissions.Tenants>().ToList();
         Assert.Single(tenants);
@@ -142,10 +151,17 @@ public class PermissionsScopeTests
     [Fact]
     public void Groups_Aggregates_AllActions()
     {
+        var resource = new GroupsResource("typeA", "groupA");
         var infos = new List<PermissionInfo>
         {
-            new(RbacPermissionAction.AssignAndRevokeGroups),
-            new(RbacPermissionAction.ReadGroups),
+            new PermissionInfo(
+                RbacPermissionAction.AssignAndRevokeGroups,
+                new PermissionResource(Groups: resource)
+            ),
+            new PermissionInfo(
+                RbacPermissionAction.ReadGroups,
+                new PermissionResource(Groups: resource)
+            ),
         };
         var groups = Permissions.Groups.Parse(infos).Cast<Permissions.Groups>().ToList();
         Assert.Single(groups);
@@ -156,12 +172,25 @@ public class PermissionsScopeTests
     [Fact]
     public void Replicate_Aggregates_AllActions()
     {
+        var resource = new ReplicateResource("shardA", "replicateA");
         var infos = new List<PermissionInfo>
         {
-            new(RbacPermissionAction.CreateReplicate),
-            new(RbacPermissionAction.ReadReplicate),
-            new(RbacPermissionAction.UpdateReplicate),
-            new(RbacPermissionAction.DeleteReplicate),
+            new PermissionInfo(
+                RbacPermissionAction.CreateReplicate,
+                new PermissionResource(Replicate: resource)
+            ),
+            new PermissionInfo(
+                RbacPermissionAction.ReadReplicate,
+                new PermissionResource(Replicate: resource)
+            ),
+            new PermissionInfo(
+                RbacPermissionAction.UpdateReplicate,
+                new PermissionResource(Replicate: resource)
+            ),
+            new PermissionInfo(
+                RbacPermissionAction.DeleteReplicate,
+                new PermissionResource(Replicate: resource)
+            ),
         };
         var replicate = Permissions.Replicate.Parse(infos).Cast<Permissions.Replicate>().ToList();
         Assert.Single(replicate);
@@ -174,12 +203,25 @@ public class PermissionsScopeTests
     [Fact]
     public void Collections_Aggregates_AllActions()
     {
+        var resource = new CollectionsResource("collectionA");
         var infos = new List<PermissionInfo>
         {
-            new(RbacPermissionAction.CreateCollections),
-            new(RbacPermissionAction.ReadCollections),
-            new(RbacPermissionAction.UpdateCollections),
-            new(RbacPermissionAction.DeleteCollections),
+            new(
+                RbacPermissionAction.CreateCollections,
+                new PermissionResource(Collections: resource)
+            ),
+            new(
+                RbacPermissionAction.ReadCollections,
+                new PermissionResource(Collections: resource)
+            ),
+            new(
+                RbacPermissionAction.UpdateCollections,
+                new PermissionResource(Collections: resource)
+            ),
+            new(
+                RbacPermissionAction.DeleteCollections,
+                new PermissionResource(Collections: resource)
+            ),
         };
         var collections = Permissions
             .Collections.Parse(infos)

@@ -56,17 +56,39 @@ public class RbacTests
     {
         var (client, handler) = MockWeaviateClient.CreateWithMockHandler();
         handler.AddJsonResponse(
-            new object[]
+            new[]
             {
-                new
+                new Weaviate.Client.Rest.Dto.Role
                 {
-                    name = "reader",
-                    permissions = new object[] { new { action = "read_roles" } },
+                    Name = "reader",
+                    Permissions = new[]
+                    {
+                        new Weaviate.Client.Rest.Dto.Permission
+                        {
+                            Roles = new Weaviate.Client.Rest.Dto.Roles
+                            {
+                                Role = "reader",
+                                Scope = Weaviate.Client.Rest.Dto.RolesScope.Match,
+                            },
+                            Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_roles,
+                        },
+                    },
                 },
-                new
+                new Weaviate.Client.Rest.Dto.Role
                 {
-                    name = "writer",
-                    permissions = new object[] { new { action = "update_roles" } },
+                    Name = "writer",
+                    Permissions = new[]
+                    {
+                        new Weaviate.Client.Rest.Dto.Permission
+                        {
+                            Roles = new Weaviate.Client.Rest.Dto.Roles
+                            {
+                                Role = "writer",
+                                Scope = Weaviate.Client.Rest.Dto.RolesScope.Match,
+                            },
+                            Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_roles,
+                        },
+                    },
                 },
             },
             expectedEndpoint: "/v1/authz/roles"

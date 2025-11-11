@@ -67,18 +67,17 @@ public record RoleInfo(string Name, IEnumerable<PermissionScope> Permissions);
 internal record PermissionInfo
 {
     public string ActionRaw { get; }
-    public RbacPermissionAction Action =>
-        ActionRaw.FromEnumMemberString<RbacPermissionAction>(RbacPermissionAction.Custom);
+    public RbacPermissionAction Action => ActionRaw.FromEnumMemberString<RbacPermissionAction>();
 
     public PermissionResource? Resources { get; }
 
-    internal PermissionInfo(string actionRaw, PermissionResource? resources = null)
+    internal PermissionInfo(string actionRaw, PermissionResource? resources)
     {
         ActionRaw = actionRaw ?? string.Empty;
         Resources = resources;
     }
 
-    internal PermissionInfo(RbacPermissionAction action, PermissionResource? resources = null)
+    internal PermissionInfo(RbacPermissionAction action, PermissionResource? resources)
         : this(action.ToEnumMemberString(), resources) { }
 
     public Rest.Dto.Permission ToDto()
