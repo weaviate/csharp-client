@@ -45,6 +45,13 @@ For more detailed information on specific features, please refer to the official
 - **[How-to: Manage data objects](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/manage-objects)**
 - **[How-to: Query & search data](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/search)**
 
+### Additional Guides
+
+- **[Error Handling](docs/ERRORS.md)**: Exception types and error handling patterns
+- **[RBAC API Usage](docs/RBAC_API_USAGE.md)**: Managing users, roles, permissions, and groups
+- **[Backup API Usage](docs/BACKUP_API_USAGE.md)**: Creating and restoring backups
+- **[Nodes API Usage](docs/NODES_API_USAGE.md)**: Querying cluster node information
+
 ---
 
 ## 💬 Feedback
