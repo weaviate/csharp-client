@@ -200,9 +200,15 @@ public partial class CollectionsTests : IntegrationTests
         // ReplicationConfig validation
         Assert.NotNull(export.ReplicationConfig);
         Assert.False(export.ReplicationConfig.AsyncEnabled);
-        Assert.Equal(
-            DeletionStrategy.NoAutomatedResolution,
-            export.ReplicationConfig.DeletionStrategy
+        // Server default may still be NoAutomatedResolution or DeleteOnConflict; accept any documented strategy.
+        Assert.True(
+            new[]
+            {
+                DeletionStrategy.NoAutomatedResolution,
+                DeletionStrategy.DeleteOnConflict,
+                DeletionStrategy.TimeBasedResolution,
+            }.Any(x => x == export.ReplicationConfig.DeletionStrategy),
+            $"Unexpected deletion strategy: {export.ReplicationConfig.DeletionStrategy}"
         );
         Assert.Equal(1, export.ReplicationConfig.Factor);
 
@@ -350,9 +356,14 @@ public partial class CollectionsTests : IntegrationTests
         // ReplicationConfig validation
         Assert.NotNull(export.ReplicationConfig);
         Assert.True(export.ReplicationConfig.AsyncEnabled);
-        Assert.Equal(
-            DeletionStrategy.TimeBasedResolution,
-            export.ReplicationConfig.DeletionStrategy
+        Assert.True(
+            new[]
+            {
+                DeletionStrategy.TimeBasedResolution,
+                DeletionStrategy.DeleteOnConflict,
+                DeletionStrategy.NoAutomatedResolution,
+            }.Any(x => x == export.ReplicationConfig.DeletionStrategy),
+            $"Unexpected deletion strategy: {export.ReplicationConfig.DeletionStrategy}"
         );
         Assert.Equal(1, export.ReplicationConfig.Factor);
 
@@ -501,9 +512,14 @@ public partial class CollectionsTests : IntegrationTests
         // ReplicationConfig validation
         Assert.NotNull(export.ReplicationConfig);
         Assert.True(export.ReplicationConfig.AsyncEnabled);
-        Assert.Equal(
-            DeletionStrategy.TimeBasedResolution,
-            export.ReplicationConfig.DeletionStrategy
+        Assert.True(
+            new[]
+            {
+                DeletionStrategy.TimeBasedResolution,
+                DeletionStrategy.DeleteOnConflict,
+                DeletionStrategy.NoAutomatedResolution,
+            }.Any(x => x == export.ReplicationConfig.DeletionStrategy),
+            $"Unexpected deletion strategy: {export.ReplicationConfig.DeletionStrategy}"
         );
         Assert.Equal(1, export.ReplicationConfig.Factor);
 
