@@ -55,6 +55,33 @@ We would love to hear your feedback! For specific feature requests, bug reports,
 
 ## 🤝 Community
 
+## 🧪 Integration Testing
+
+To run the integration test suite locally you need a Weaviate server at version >= **1.31.0**.
+
+Start a local instance with the helper script (defaults to the minimum supported version):
+
+```bash
+./ci/start_weaviate.sh            # uses 1.31.0
+# or explicitly
+./ci/start_weaviate.sh 1.32.7     # any version >= 1.31.0
+```
+
+Run the tests:
+
+```bash
+dotnet test src/Weaviate.Client.Tests/Weaviate.Client.Tests.csproj
+```
+
+Stop the environment when finished:
+
+```bash
+./ci/stop_weaviate.sh
+```
+
+If the server version is below 1.31.0 the integration tests will be skipped automatically.
+
+
 Connect with the Weaviate community and the team through our online channels.
 
 - **[Weaviate Forum](https://forum.weaviate.io/)**: For questions and discussions.

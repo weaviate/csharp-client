@@ -9,7 +9,7 @@ namespace Weaviate.Client;
 public class UsersDatabaseClient
 {
     private readonly WeaviateClient _client;
-    private const string UserType = "db";
+    private const RbacUserType UserType = RbacUserType.Database;
 
     internal UsersDatabaseClient(WeaviateClient client) => _client = client;
 
@@ -73,20 +73,24 @@ public class UsersDatabaseClient
     /// Assigns roles to a database user.
     /// </summary>
     public Task<bool> AssignRoles(string userId, IEnumerable<string> roles) =>
-        _client.RestClient.UserAssignRoles(userId, UserType, roles);
+        _client.RestClient.UserAssignRoles(userId, UserType.ToEnumMemberString(), roles);
 
     /// <summary>
     /// Revokes roles from a database user.
     /// </summary>
     public Task<bool> RevokeRoles(string userId, IEnumerable<string> roles) =>
-        _client.RestClient.UserRevokeRoles(userId, UserType, roles);
+        _client.RestClient.UserRevokeRoles(userId, UserType.ToEnumMemberString(), roles);
 
     /// <summary>
     /// Gets all roles assigned to a database user.
     /// </summary>
     public async Task<IEnumerable<RoleInfo>> GetRoles(string userId, bool? includeFullRoles = null)
     {
-        var roles = await _client.RestClient.UserRolesGet(userId, UserType, includeFullRoles);
+        var roles = await _client.RestClient.UserRolesGet(
+            userId,
+            UserType.ToEnumMemberString(),
+            includeFullRoles
+        );
         return roles.Select(r => new RoleInfo(
             r.Name ?? string.Empty,
             (r.Permissions ?? []).Select(p => new PermissionInfo(

@@ -40,6 +40,22 @@ public class WeaviateServerException : WeaviateException
 }
 
 /// <summary>
+/// Exception thrown when a requested server feature or RPC method is not supported by the connected
+/// Weaviate instance (e.g. gRPC Aggregate method missing on older versions / builds).
+/// </summary>
+public class WeaviateFeatureNotSupportedException : WeaviateServerException
+{
+    public const string DefaultMessage =
+        "The requested feature is not supported by the connected Weaviate server version.";
+
+    public WeaviateFeatureNotSupportedException(
+        string? message = null,
+        Exception? innerException = null
+    )
+        : base(message ?? DefaultMessage, innerException) { }
+}
+
+/// <summary>
 /// Exception thrown when a backup or restore operation cannot be started because another one is already in progress.
 /// The Weaviate server only allows one backup or restore operation at a time.
 /// </summary>

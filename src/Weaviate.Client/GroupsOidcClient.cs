@@ -9,33 +9,38 @@ namespace Weaviate.Client;
 public class GroupsOidcClient
 {
     private readonly WeaviateClient _client;
-    private const string GroupType = "oidc";
+    private const RbacGroupType GroupType = RbacGroupType.Oidc;
 
     internal GroupsOidcClient(WeaviateClient client) => _client = client;
 
     /// <summary>
     /// Lists all OIDC groups.
     /// </summary>
-    public Task<IEnumerable<string>> List() => _client.RestClient.GroupsList(GroupType);
+    public Task<IEnumerable<string>> List() =>
+        _client.RestClient.GroupsList(GroupType.ToEnumMemberString());
 
     /// <summary>
     /// Assigns roles to an OIDC group.
     /// </summary>
     public Task<bool> AssignRoles(string groupId, IEnumerable<string> roles) =>
-        _client.RestClient.GroupAssignRoles(groupId, GroupType, roles);
+        _client.RestClient.GroupAssignRoles(groupId, GroupType.ToEnumMemberString(), roles);
 
     /// <summary>
     /// Revokes roles from an OIDC group.
     /// </summary>
     public Task<bool> RevokeRoles(string groupId, IEnumerable<string> roles) =>
-        _client.RestClient.GroupRevokeRoles(groupId, GroupType, roles);
+        _client.RestClient.GroupRevokeRoles(groupId, GroupType.ToEnumMemberString(), roles);
 
     /// <summary>
     /// Gets all roles assigned to an OIDC group.
     /// </summary>
     public async Task<IEnumerable<RoleInfo>> GetRoles(string groupId, bool? includeFullRoles = null)
     {
-        var roles = await _client.RestClient.GroupRolesGet(groupId, GroupType, includeFullRoles);
+        var roles = await _client.RestClient.GroupRolesGet(
+            groupId,
+            GroupType.ToEnumMemberString(),
+            includeFullRoles
+        );
         return roles.Select(r => new RoleInfo(
             r.Name ?? string.Empty,
             (r.Permissions ?? []).Select(p => new PermissionInfo(

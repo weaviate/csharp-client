@@ -96,6 +96,9 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
                 $"Weaviate not ready on REST:{RestPort} gRPC:{GrpcPort}. Expected a running instance for integration tests."
             );
         }
+
+        // Enforce minimum supported version globally for integration tests.
+        RequireVersion(Weaviate.Client.Tests.Common.ServerVersions.MinSupported);
     }
 
     public string MakeUniqueCollectionName<TData>(

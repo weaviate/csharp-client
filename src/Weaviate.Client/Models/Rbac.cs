@@ -14,6 +14,27 @@ public enum DatabaseUserType
 }
 
 /// <summary>
+/// RBAC user types for role assignment endpoints.
+/// </summary>
+public enum RbacUserType
+{
+    [EnumMember(Value = "db")]
+    Database,
+
+    [EnumMember(Value = "oidc")]
+    Oidc,
+}
+
+/// <summary>
+/// RBAC group types for role assignment endpoints.
+/// </summary>
+public enum RbacGroupType
+{
+    [EnumMember(Value = "oidc")]
+    Oidc,
+}
+
+/// <summary>
 /// Represents a database user returned by the Users API.
 /// </summary>
 public record DatabaseUser(
