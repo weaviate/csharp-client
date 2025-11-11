@@ -20,9 +20,19 @@ internal partial class WeaviateRestClient
     {
         var response = await _httpClient.GetAsync(WeaviateEndpoints.Role(id));
         var status = await response.EnsureExpectedStatusCodeAsync([200, 404], "get role");
-        return status == HttpStatusCode.OK
-            ? await response.Content.ReadFromJsonAsync<Dto.Role>(RestJsonSerializerOptions)
-            : null;
+        if (status == HttpStatusCode.OK)
+        {
+            return await response.Content.ReadFromJsonAsync<Dto.Role>(RestJsonSerializerOptions);
+        }
+        else if (status == HttpStatusCode.NotFound)
+        {
+            var ex = new WeaviateRestServerException(HttpStatusCode.NotFound);
+            throw new WeaviateNotFoundException(ex, ResourceType.Role);
+        }
+        else
+        {
+            return null;
+        }
     }
 
     internal async Task RoleDelete(string id)
