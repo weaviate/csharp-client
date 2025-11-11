@@ -41,7 +41,7 @@ public class PermissionInfoTests
         // Act: create role with known enum permission.
         var created = await client.Roles.Create(
             roleName,
-            new[] { new PermissionInfo(RbacPermissionAction.ReadRoles) }
+            new[] { new Permissions.Roles(new RolesResource(roleName, null)) { Read = true } }
         );
 
         // Assert: request body contained correct action string.
@@ -60,32 +60,7 @@ public class PermissionInfoTests
 
         // Assert: returned model mapped both raw and enum values.
         var perm = Assert.Single(created.Permissions);
-        Assert.Equal("read_roles", perm.ActionRaw);
-        Assert.Equal(RbacPermissionAction.ReadRoles, perm.Action);
-    }
-
-    [Fact]
-    public async Task RolesClient_CreateRole_WithCustomAction_Throws()
-    {
-        // Arrange: custom (unknown) action simulated via raw string ctor.
-        var (client, handler) = MockWeaviateClient.CreateWithMockHandler();
-        var roleName = $"role-{Guid.NewGuid():N}";
-        var customPermission = new PermissionInfo("future_new_action");
-        Assert.Equal(RbacPermissionAction.Custom, customPermission.Action); // sanity
-
-        // Act & Assert: creating a role with unknown action should throw before HTTP call.
-        var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await client.Roles.Create(roleName, new[] { customPermission })
-        );
-        Assert.Contains("Unknown permission action", ex.Message);
-
-        // Ensure no role creation request was sent (only meta endpoint during client init).
-        Assert.DoesNotContain(
-            handler.Requests,
-            r =>
-                r.RequestUri!.PathAndQuery.Contains("/v1/authz/roles")
-                && r.Method == HttpMethod.Post
-        );
+        Assert.True(perm is Permissions.Roles { Read: true });
     }
 
     [Fact]

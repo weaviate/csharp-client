@@ -41,11 +41,6 @@ public class GroupsOidcClient
             GroupType.ToEnumMemberString(),
             includeFullRoles
         );
-        return roles.Select(r => new RoleInfo(
-            r.Name ?? string.Empty,
-            (r.Permissions ?? []).Select(p => new PermissionInfo(
-                p.Action.ToEnumMemberString() ?? string.Empty
-            ))
-        ));
+        return roles.Select(r => r.ToModel());
     }
 }

@@ -23,14 +23,12 @@ public class RolesClient
         return role is null ? null : role.ToModel();
     }
 
-    public async Task<RoleInfo> Create(string name, IEnumerable<PermissionInfo> permissions)
+    public async Task<RoleInfo> Create(string name, IEnumerable<PermissionScope> permissions)
     {
         var dto = new Rest.Dto.Role
         {
             Name = name,
-            Permissions = permissions
-                .Select(p => new Rest.Dto.Permission { Action = MapActionOrThrow(p) })
-                .ToList(),
+            Permissions = permissions.SelectMany(p => p.ToDto()).Select(p => p.ToDto()).ToList(),
         };
         var created = await _client.RestClient.RoleCreate(dto);
         return created.ToModel();
@@ -38,32 +36,26 @@ public class RolesClient
 
     public Task Delete(string id) => _client.RestClient.RoleDelete(id);
 
-    public async Task<RoleInfo> AddPermissions(string id, IEnumerable<PermissionInfo> permissions)
+    public async Task<RoleInfo> AddPermissions(string id, IEnumerable<PermissionScope> permissions)
     {
-        var dtos = permissions.Select(p => new Rest.Dto.Permission
-        {
-            Action = MapActionOrThrow(p),
-        });
+        var dtos = permissions.SelectMany(p => p.ToDto()).Select(p => p.ToDto());
         var updated = await _client.RestClient.RoleAddPermissions(id, dtos);
         return updated.ToModel();
     }
 
     public async Task<RoleInfo> RemovePermissions(
         string id,
-        IEnumerable<PermissionInfo> permissions
+        IEnumerable<PermissionScope> permissions
     )
     {
-        var dtos = permissions.Select(p => new Rest.Dto.Permission
-        {
-            Action = MapActionOrThrow(p),
-        });
+        var dtos = permissions.SelectMany(p => p.ToDto()).Select(p => p.ToDto());
         var updated = await _client.RestClient.RoleRemovePermissions(id, dtos);
         return updated.ToModel();
     }
 
-    public Task<bool> HasPermission(string id, PermissionInfo permission)
+    public Task<bool> HasPermission(string id, PermissionScope permission)
     {
-        var dto = new Rest.Dto.Permission { Action = MapActionOrThrow(permission) };
+        var dto = permission.ToDto().Single().ToDto();
         return _client.RestClient.RoleHasPermission(id, dto);
     }
 
@@ -83,18 +75,5 @@ public class RolesClient
             a.groupId,
             a.groupType.ToEnumMemberString().FromEnumMemberString<RbacGroupType>()
         ));
-    }
-
-    private static Rest.Dto.PermissionAction MapActionOrThrow(PermissionInfo permission)
-    {
-        var mapped = permission.ActionRaw.FromEnumMemberString<Rest.Dto.PermissionAction>();
-        // Detect unknown mapping: if the enum's wire value does not match the raw string, the raw string is unsupported.
-        if (mapped.ToEnumMemberString() != permission.ActionRaw)
-        {
-            throw new InvalidOperationException(
-                $"Unknown permission action '{permission.ActionRaw}'. Update the Weaviate C# client to a newer version that knows this action."
-            );
-        }
-        return mapped;
     }
 }
