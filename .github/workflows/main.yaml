@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - mvp
     tags:
       - '**'
     paths-ignore:
@@ -15,7 +14,6 @@ on:
   pull_request:
 
 env:
-  WEAVIATE_130: 1.30.18
   WEAVIATE_131: 1.31.16
   WEAVIATE_132: 1.32.11
   WEAVIATE_133: 1.33.0
@@ -57,7 +55,6 @@ jobs:
       fail-fast: false
       matrix:
         server: [
-          $WEAVIATE_130,
           $WEAVIATE_131,
           $WEAVIATE_132,
           $WEAVIATE_133,
