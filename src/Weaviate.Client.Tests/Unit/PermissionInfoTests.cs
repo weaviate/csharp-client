@@ -7,14 +7,6 @@ namespace Weaviate.Client.Tests.Unit;
 public class PermissionInfoTests
 {
     [Fact]
-    public void CustomAction_ConstructorSetsCustomEnum()
-    {
-        var info = new PermissionInfo("future_new_action");
-        Assert.Equal("future_new_action", info.ActionRaw);
-        Assert.Equal(RbacPermissionAction.Custom, info.Action);
-    }
-
-    [Fact]
     public async Task RolesClient_CreateRole_PipelineMapsPermissionInfo()
     {
         // Arrange: mock client & queue server response for role creation.
@@ -72,22 +64,6 @@ public class PermissionInfoTests
         // Assert: returned model mapped both raw and enum values.
         var perm = Assert.Single(created.Permissions);
         Assert.True(perm is Permissions.Roles { Read: true });
-    }
-
-    [Fact]
-    public async Task RolesClient_UnknownString_MapsToCustom()
-    {
-        // NOTE: Due to strict enum deserialization in the generated REST DTOs, an unknown
-        // server action string currently causes a JsonException. We cannot pass the pipeline end-to-end
-        // until the server action list is regenerated. This test documents forward-compat mapping logic
-        // by emulating the post-deserialization step: taking a raw action string and producing a PermissionInfo
-        // with Action=Custom.
-        const string futureAction = "future_new_action";
-        var info = new PermissionInfo(futureAction);
-        Assert.Equal(RbacPermissionAction.Custom, info.Action);
-        Assert.Equal(futureAction, info.ActionRaw);
-
-        await Task.CompletedTask;
     }
 
     [Fact]

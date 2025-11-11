@@ -24,9 +24,6 @@ public enum NearMediaType
 /// </summary>
 public enum RbacPermissionAction
 {
-    [EnumMember(Value = "custom")]
-    Custom = -1,
-
     [EnumMember(Value = "manage_backups")]
     ManageBackups,
 
