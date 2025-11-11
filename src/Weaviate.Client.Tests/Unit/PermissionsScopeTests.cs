@@ -1,6 +1,8 @@
 using Weaviate.Client;
 using Weaviate.Client.Models;
 
+namespace Weaviate.Client.Tests.Unit;
+
 public class PermissionsScopeTests
 {
     [Fact]

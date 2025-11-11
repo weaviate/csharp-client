@@ -76,9 +76,7 @@ public class RbacTests
         Assert.Equal(2, roles.Count);
         Assert.Contains(
             roles,
-            r =>
-                r.Name == "reader"
-                && r.Permissions.Any(p => p.Action == RbacPermissionAction.ReadRoles)
+            r => r.Name == "reader" && r.Permissions.Any(p => p is Permissions.Roles { Read: true })
         );
     }
 }

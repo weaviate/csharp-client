@@ -90,7 +90,7 @@ internal partial class Role
     {
         return new Weaviate.Client.Models.RoleInfo(
             Name ?? string.Empty,
-            (Permissions ?? []).Select(p => p.ToModel())
+            Models.Permissions.Parse((Permissions ?? []).Select(p => p.ToModel()))
         );
     }
 }

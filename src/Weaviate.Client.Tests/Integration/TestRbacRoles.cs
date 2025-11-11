@@ -42,18 +42,18 @@ public class TestRbacRoles : IntegrationTests
 
             var created = await _weaviate.Roles.Create(
                 roleName,
-                new[] { new PermissionInfo(RbacPermissionAction.ReadRoles) }
+                [new Permissions.Roles(new RolesResource(roleName, null)) { Read = true }]
             );
             Assert.NotNull(created);
             Assert.Equal(roleName, created.Name);
             Assert.Single(created.Permissions);
-            Assert.Contains(created.Permissions, p => p.Action == RbacPermissionAction.ReadRoles);
+            Assert.Contains(created.Permissions, p => p is Permissions.Roles { Read: true });
 
             var fetched = await _weaviate.Roles.Get(roleName);
             Assert.NotNull(fetched);
             Assert.Equal(roleName, fetched!.Name);
             Assert.Single(fetched.Permissions);
-            Assert.Contains(fetched.Permissions, p => p.Action == RbacPermissionAction.ReadRoles);
+            Assert.Contains(fetched.Permissions, p => p is Permissions.Roles { Read: true });
         }
         finally
         {
@@ -70,11 +70,11 @@ public class TestRbacRoles : IntegrationTests
         {
             await _weaviate.Roles.Delete(roleName);
 
-            await _weaviate.Roles.Create(roleName, Array.Empty<PermissionInfo>());
+            await _weaviate.Roles.Create(roleName, Array.Empty<PermissionScope>());
 
             // Attempting to create again should throw WeaviateConflictException
             await Assert.ThrowsAsync<WeaviateConflictException>(async () =>
-                await _weaviate.Roles.Create(roleName, Array.Empty<PermissionInfo>())
+                await _weaviate.Roles.Create(roleName, Array.Empty<PermissionScope>())
             );
         }
         finally
@@ -92,10 +92,7 @@ public class TestRbacRoles : IntegrationTests
         {
             await _weaviate.Roles.Delete(roleName);
 
-            await _weaviate.Roles.Create(
-                roleName,
-                new[] { new PermissionInfo(RbacPermissionAction.ReadRoles) }
-            );
+            await _weaviate.Roles.Create(roleName, [new Permissions.Roles { Read = true }]);
             var role = await _weaviate.Roles.Get(roleName);
             Assert.NotNull(role);
             Assert.Equal(roleName, role!.Name);
@@ -114,7 +111,7 @@ public class TestRbacRoles : IntegrationTests
         var roleName = MakeRoleName("delete");
         await _weaviate.Roles.Delete(roleName);
 
-        await _weaviate.Roles.Create(roleName, Array.Empty<PermissionInfo>());
+        await _weaviate.Roles.Create(roleName, Array.Empty<PermissionScope>());
         await _weaviate.Roles.Delete(roleName);
         var role = await _weaviate.Roles.Get(roleName);
         Assert.Null(role);
@@ -129,18 +126,15 @@ public class TestRbacRoles : IntegrationTests
         {
             await _weaviate.Roles.Delete(roleName);
 
-            await _weaviate.Roles.Create(
-                roleName,
-                new[] { new PermissionInfo(RbacPermissionAction.ReadRoles) }
-            );
+            await _weaviate.Roles.Create(roleName, [new Permissions.Roles { Read = true }]);
             var updated = await _weaviate.Roles.AddPermissions(
                 roleName,
-                new[] { new PermissionInfo(RbacPermissionAction.CreateRoles) }
+                [new Permissions.Roles { Create = true }]
             );
             Assert.NotNull(updated);
             Assert.Equal(2, updated.Permissions.Count());
-            Assert.Contains(updated.Permissions, p => p.Action == RbacPermissionAction.ReadRoles);
-            Assert.Contains(updated.Permissions, p => p.Action == RbacPermissionAction.CreateRoles);
+            Assert.Contains(updated.Permissions, p => p is Permissions.Roles { Read: true });
+            Assert.Contains(updated.Permissions, p => p is Permissions.Roles { Create: true });
         }
         finally
         {
@@ -161,17 +155,17 @@ public class TestRbacRoles : IntegrationTests
                 roleName,
                 new[]
                 {
-                    new PermissionInfo(RbacPermissionAction.ReadRoles),
-                    new PermissionInfo(RbacPermissionAction.CreateRoles),
+                    new Permissions.Roles { Read = true },
+                    new Permissions.Roles { Create = true },
                 }
             );
             var updated = await _weaviate.Roles.RemovePermissions(
                 roleName,
-                new[] { new PermissionInfo(RbacPermissionAction.CreateRoles) }
+                new[] { new Permissions.Roles { Create = true } }
             );
             Assert.NotNull(updated);
             Assert.Single(updated.Permissions);
-            Assert.Contains(updated.Permissions, p => p.Action == RbacPermissionAction.ReadRoles);
+            Assert.Contains(updated.Permissions, p => p is Permissions.Roles { Read: true });
         }
         finally
         {
@@ -199,18 +193,15 @@ public class TestRbacRoles : IntegrationTests
         {
             await _weaviate.Roles.Delete(roleName);
 
-            await _weaviate.Roles.Create(
-                roleName,
-                new[] { new PermissionInfo(RbacPermissionAction.ReadRoles) }
-            );
+            await _weaviate.Roles.Create(roleName, new[] { new Permissions.Roles { Read = true } });
             var has = await _weaviate.Roles.HasPermission(
                 roleName,
-                new PermissionInfo(RbacPermissionAction.ReadRoles)
+                new Permissions.Roles { Read = true }
             );
             Assert.True(has);
             var hasOther = await _weaviate.Roles.HasPermission(
                 roleName,
-                new PermissionInfo(RbacPermissionAction.CreateRoles)
+                new Permissions.Roles { Create = true }
             );
             Assert.False(hasOther);
         }
@@ -230,7 +221,7 @@ public class TestRbacRoles : IntegrationTests
         // Does not throw exception - returns false instead
         var has = await _weaviate.Roles.HasPermission(
             roleName,
-            new PermissionInfo(RbacPermissionAction.ReadRoles)
+            new Permissions.Roles { Read = true }
         );
         Assert.False(has);
     }
@@ -245,7 +236,7 @@ public class TestRbacRoles : IntegrationTests
         {
             await _weaviate.Roles.Delete(roleName);
 
-            await _weaviate.Roles.Create(roleName, Array.Empty<PermissionInfo>());
+            await _weaviate.Roles.Create(roleName, Array.Empty<PermissionScope>());
 
             await _weaviate.Users.Db.Delete(userName);
 
@@ -278,7 +269,7 @@ public class TestRbacRoles : IntegrationTests
         {
             await _weaviate.Roles.Delete(roleName);
 
-            await _weaviate.Roles.Create(roleName, Array.Empty<PermissionInfo>());
+            await _weaviate.Roles.Create(roleName, PermissionScope.Empty());
 
             await _weaviate.Users.Db.Delete(userName);
 
