@@ -70,9 +70,9 @@ internal partial class Permission
         var resources = new Weaviate.Client.Models.PermissionResource(
             Backups is not null ? new Weaviate.Client.Models.BackupsResource(Backups.Collection) : null,
             Data is not null ? new Weaviate.Client.Models.DataResource(Data.Collection, Data.Tenant, Data.Object) : null,
-            Nodes is not null ? new Weaviate.Client.Models.NodesResource(Nodes.Collection, Nodes.Verbosity?.ToString()) : null,
+            Nodes is not null ? new Weaviate.Client.Models.NodesResource(Nodes.Collection, (Models.NodeVerbosity?)Nodes.Verbosity) : null,
             Users is not null ? new Weaviate.Client.Models.UsersResource(Users.Users1) : null,
-            Groups is not null ? new Weaviate.Client.Models.GroupsResource(Groups.Group, Groups.GroupType?.ToString()) : null,
+            Groups is not null ? new Weaviate.Client.Models.GroupsResource(Groups.Group, (Models.RbacGroupType?)Groups.GroupType) : null,
             Tenants is not null ? new Weaviate.Client.Models.TenantsResource(Tenants.Collection, Tenants.Tenant) : null,
             Roles is not null ? new Weaviate.Client.Models.RolesResource(Roles.Role, Roles.Scope?.ToString()) : null,
             Collections is not null ? new Weaviate.Client.Models.CollectionsResource(Collections.Collection) : null,
