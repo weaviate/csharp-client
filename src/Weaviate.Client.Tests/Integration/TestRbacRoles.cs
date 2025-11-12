@@ -114,10 +114,14 @@ public class TestRbacRoles : IntegrationTests
         var roleName = MakeRoleName("delete");
         await _weaviate.Roles.Delete(roleName);
 
-        await _weaviate.Roles.Create(roleName, Array.Empty<PermissionScope>());
+        var role = await _weaviate.Roles.Create(roleName, Array.Empty<PermissionScope>());
+        Assert.NotNull(role);
+
         await _weaviate.Roles.Delete(roleName);
-        var role = await _weaviate.Roles.Get(roleName);
-        Assert.Null(role);
+
+        await Assert.ThrowsAsync<WeaviateNotFoundException>(async () =>
+            await _weaviate.Roles.Get(roleName)
+        );
     }
 
     [Fact]
