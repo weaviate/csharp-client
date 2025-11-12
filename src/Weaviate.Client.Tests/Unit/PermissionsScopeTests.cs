@@ -92,7 +92,7 @@ public class PermissionsScopeTests
     [Fact]
     public void Roles_Aggregates_AllActions()
     {
-        var resource = new RolesResource("scopeA", "roleA");
+        var resource = new RolesResource("roleA", RolesScope.Match);
         var infos = new List<PermissionInfo>
         {
             new(RbacPermissionAction.CreateRoles, new PermissionResource(Roles: resource)),

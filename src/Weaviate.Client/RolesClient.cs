@@ -62,18 +62,12 @@ public class RolesClient
     public async Task<IEnumerable<UserRoleAssignment>> GetUserAssignments(string roleId)
     {
         var list = await _client.RestClient.RoleUserAssignments(roleId);
-        return list.Select(a => new UserRoleAssignment(
-            a.userId,
-            a.userType.ToEnumMemberString().FromEnumMemberString<RbacUserType>()
-        ));
+        return list.Select(a => a.ToModel());
     }
 
     public async Task<IEnumerable<GroupRoleAssignment>> GetGroupAssignments(string roleId)
     {
         var list = await _client.RestClient.RoleGroupAssignments(roleId);
-        return list.Select(a => new GroupRoleAssignment(
-            a.groupId,
-            a.groupType.ToEnumMemberString().FromEnumMemberString<RbacGroupType>()
-        ));
+        return list.Select(a => a.ToModel());
     }
 }

@@ -157,7 +157,7 @@ public class PermissionInfoTests
         Assert.Equal("tenant-collection", r.Tenants?.Collection);
         Assert.Equal("tenant2", r.Tenants?.Tenant);
         Assert.Equal("roleA", r.Roles?.Role);
-        Assert.Equal("Match", r.Roles?.Scope);
+        Assert.Equal(RolesScope.Match, r.Roles?.Scope);
         Assert.Equal("collA", r.Collections?.Collection);
         Assert.Equal("replicate-collection", r.Replicate?.Collection);
         Assert.Equal("shardA", r.Replicate?.Shard);

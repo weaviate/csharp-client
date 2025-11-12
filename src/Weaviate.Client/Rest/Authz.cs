@@ -59,8 +59,18 @@ internal partial class WeaviateRestClient
         }
 
         // Re-fetch the created role since the API doesn't return it in the response
-        var created = await RoleGet(role.Name!);
-        return created ?? throw new WeaviateRestClientException();
+        try
+        {
+            var created = await RoleGet(role.Name!);
+            return created!;
+        }
+        catch (WeaviateNotFoundException ex)
+        {
+            throw new WeaviateRestClientException(
+                $"Role '{role.Name}' was not found after creation.",
+                ex
+            );
+        }
     }
 
     internal async Task<Dto.Role> RoleAddPermissions(
@@ -128,10 +138,46 @@ internal partial class WeaviateRestClient
         return result;
     }
 
-    // Role assignments
-    internal record RoleUserAssignment(string userId, Dto.UserTypeOutput userType);
+    private static Models.RbacUserType MapUserType(Dto.UserTypeOutput userType)
+    {
+        // Custom mapping: db_user/db_env_user → Database, oidc → Oidc
+        return userType switch
+        {
+            Dto.UserTypeOutput.Db_user => Models.RbacUserType.Database,
+            Dto.UserTypeOutput.Db_env_user => Models.RbacUserType.Database,
+            Dto.UserTypeOutput.Oidc => Models.RbacUserType.Oidc,
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(userType),
+                userType,
+                $"Unknown UserTypeOutput: {userType}"
+            ),
+        };
+    }
 
-    internal record RoleGroupAssignment(string groupId, Dto.GroupType groupType);
+    private static Models.RbacGroupType MapGroupType(Dto.GroupType groupType)
+    {
+        // Custom mapping: oidc → Oidc
+        return groupType switch
+        {
+            Dto.GroupType.Oidc => Models.RbacGroupType.Oidc,
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(groupType),
+                groupType,
+                $"Unknown GroupType: {groupType}"
+            ),
+        };
+    }
+
+    // Role assignments
+    internal record RoleUserAssignment(string userId, Dto.UserTypeOutput userType)
+    {
+        public Models.UserRoleAssignment ToModel() => new(userId, MapUserType(userType));
+    }
+
+    internal record RoleGroupAssignment(string groupId, Dto.GroupType groupType)
+    {
+        public Models.GroupRoleAssignment ToModel() => new(groupId, MapGroupType(groupType));
+    }
 
     internal async Task<IEnumerable<RoleUserAssignment>> RoleUserAssignments(string id)
     {

@@ -459,39 +459,76 @@ public static class WeaviateExtensions
         return Google.Protobuf.ByteString.FromStream(stream);
     }
 
-    internal static string ToEnumMemberString(this Enum enumValue)
+    /// <summary>
+    /// Converts an enum value to its wire-format string using EnumMemberAttribute.
+    /// </summary>
+    internal static T ToEquivalentEnum<T>(this Enum value)
+        where T : struct, Enum
     {
-        return enumValue
-                .GetType()
-                .GetMember(enumValue.ToString())
-                .First()
-                .GetCustomAttribute<EnumMemberAttribute>()
-                ?.Value ?? enumValue.ToString();
+        var str = value.ToEnumMemberString();
+        if (!str.IsValidEnumMemberString<T>())
+            throw new InvalidEnumWireFormatException($"Can't translate Enum value: {str}");
+
+        return value.ToEnumMemberString().FromEnumMemberString<T>();
     }
 
-    internal static T FromEnumMemberString<T>(this string? str, T? unknownValue = null)
-        where T : struct
+    /// <summary>
+    /// Converts an enum value to its wire-format string using EnumMemberAttribute.
+    /// </summary>
+    internal static string ToEnumMemberString<T>(this T value)
+        where T : Enum
     {
-        if (str is null)
+        var type = typeof(T);
+        var member = type.GetMember(value.ToString()).FirstOrDefault();
+        var attr = member?.GetCustomAttribute<EnumMemberAttribute>();
+        return attr?.Value ?? value.ToString();
+    }
+
+    /// <summary>
+    /// Converts an enum value to its wire-format string using EnumMemberAttribute.
+    /// </summary>
+    internal static string ToEnumMemberString<T>(this Nullable<T> value)
+        where T : struct, Enum
+    {
+        if (!value.HasValue)
+            throw new ArgumentNullException(nameof(value));
+
+        return ToEnumMemberString(value!.Value);
+    }
+
+    /// <summary>
+    /// Parses a wire-format string to an enum value using EnumMemberAttribute.
+    /// Throws ArgumentException if no match is found.
+    /// </summary>
+    internal static T FromEnumMemberString<T>(this string value)
+        where T : struct, Enum
+    {
+        var type = typeof(T);
+        foreach (var field in type.GetFields())
         {
-            return default(T);
+            var attr = field.GetCustomAttribute<EnumMemberAttribute>();
+            if ((attr?.Value ?? field.Name).Equals(value, StringComparison.OrdinalIgnoreCase))
+                return (T)field.GetValue(null)!;
         }
+        throw new ArgumentException($"Value '{value}' is not valid for enum {type.Name}");
+    }
 
-        var enumType = typeof(T);
-        foreach (var name in Enum.GetNames(enumType))
-        {
-            var enumMemberAttribute = (EnumMemberAttribute)(
-                enumType
-                    .GetField(name)!
-                    .GetCustomAttributes(typeof(EnumMemberAttribute), true)
-                    .Single()
-            );
-
-            if (enumMemberAttribute.Value == str)
-                return (T)Enum.Parse(enumType, name);
-        }
-
-        return unknownValue ?? default(T);
+    /// <summary>
+    /// Validates if a string is a valid wire-format value for the enum.
+    /// </summary>
+    internal static bool IsValidEnumMemberString<T>(this string value)
+        where T : Enum
+    {
+        var type = typeof(T);
+        return type.GetFields()
+            .Any(field =>
+            {
+                var attr = field.GetCustomAttribute<EnumMemberAttribute>();
+                return (attr?.Value ?? field.Name).Equals(
+                    value,
+                    StringComparison.OrdinalIgnoreCase
+                );
+            });
     }
 
     internal static string Capitalize(this string str)
