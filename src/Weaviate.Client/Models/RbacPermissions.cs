@@ -269,7 +269,7 @@ public static class Permissions
     {
         public RolesResource Resource { get; }
 
-        public Roles(string? name, string? scope = null)
+        public Roles(string? name, RolesScope? scope = null)
             : this(new RolesResource(name, scope)) { }
 
         public Roles(RolesResource resource)

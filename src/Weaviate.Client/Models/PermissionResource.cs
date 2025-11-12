@@ -11,6 +11,15 @@ public enum NodeVerbosity
     Minimal,
 }
 
+public enum RolesScope
+{
+    [EnumMember(Value = "all")]
+    All = 0,
+
+    [EnumMember(Value = "match")]
+    Match = 1,
+}
+
 /// <summary>
 /// Represents the resource scope for a permission.
 /// </summary>
@@ -29,20 +38,23 @@ public record PermissionResource(
 
 public record BackupsResource(string? Collection);
 
-public record DataResource(string? Collection, string? Tenant, string? Object);
+public record DataResource(string? Collection = "*", string? Tenant = "*", string? Object = "*");
 
-public record NodesResource(string? Collection, NodeVerbosity? Verbosity);
+public record NodesResource(
+    string? Collection = "*",
+    NodeVerbosity? Verbosity = NodeVerbosity.Minimal
+);
 
-public record UsersResource(string? Users);
+public record UsersResource(string? Users = "*");
 
-public record GroupsResource(string? Group, RbacGroupType? GroupType = RbacGroupType.Oidc);
+public record GroupsResource(string? Group = "*", RbacGroupType? GroupType = RbacGroupType.Oidc);
 
-public record TenantsResource(string? Collection, string? Tenant);
+public record TenantsResource(string? Collection = "*", string? Tenant = "*");
 
-public record RolesResource(string? Role, string? Scope);
+public record RolesResource(string? Role = "*", RolesScope? Scope = RolesScope.Match);
 
 public record CollectionsResource(string? Collection);
 
-public record ReplicateResource(string? Collection, string? Shard);
+public record ReplicateResource(string? Collection = "*", string? Shard = "*");
 
-public record AliasesResource(string? Collection, string? Alias);
+public record AliasesResource(string? Collection = "*", string? Alias = "*");
