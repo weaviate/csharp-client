@@ -108,16 +108,27 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
         var effectiveTimeout = timeout ?? ReplicationClientConfig.Default.Timeout;
         var start = DateTime.UtcNow;
 
-        while (!_current.IsCompleted)
+        var effectiveToken = CancellationTokenSource
+            .CreateLinkedTokenSource(_cts.Token, cancellationToken)
+            .Token;
+
+        while (!_current.IsCompleted && !effectiveToken.IsCancellationRequested)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            effectiveToken.ThrowIfCancellationRequested();
             if (DateTime.UtcNow - start > effectiveTimeout)
             {
                 throw new TimeoutException(
                     $"Replication operation did not complete within {effectiveTimeout} (last status={_current.Status.State})."
                 );
             }
-            await Task.Delay(ReplicationClientConfig.Default.PollInterval, cancellationToken);
+            try
+            {
+                await Task.Delay(ReplicationClientConfig.Default.PollInterval, effectiveToken);
+            }
+            catch (OperationCanceledException) when (_current.IsCompleted)
+            {
+                // Operation completed while waiting
+            }
         }
         return _current;
     }
