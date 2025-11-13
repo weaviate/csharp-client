@@ -28,7 +28,7 @@ public class RolesClient
         var dto = new Rest.Dto.Role
         {
             Name = name,
-            Permissions = permissions.SelectMany(p => p.ToDto()).Select(p => p.ToDto()).ToList(),
+            Permissions = permissions.SelectMany(p => p.ToDto()).ToList(),
         };
         var created = await _client.RestClient.RoleCreate(dto);
         return created.ToModel();
@@ -38,7 +38,7 @@ public class RolesClient
 
     public async Task<RoleInfo> AddPermissions(string id, IEnumerable<PermissionScope> permissions)
     {
-        var dtos = permissions.SelectMany(p => p.ToDto()).Select(p => p.ToDto());
+        var dtos = permissions.SelectMany(p => p.ToDto()).ToList();
         var updated = await _client.RestClient.RoleAddPermissions(id, dtos);
         return updated.ToModel();
     }
@@ -48,14 +48,14 @@ public class RolesClient
         IEnumerable<PermissionScope> permissions
     )
     {
-        var dtos = permissions.SelectMany(p => p.ToDto()).Select(p => p.ToDto());
+        var dtos = permissions.SelectMany(p => p.ToDto()).ToList();
         var updated = await _client.RestClient.RoleRemovePermissions(id, dtos);
         return updated.ToModel();
     }
 
     public Task<bool> HasPermission(string id, PermissionScope permission)
     {
-        var dto = permission.ToDto().Single().ToDto();
+        var dto = permission.ToDto().Single();
         return _client.RestClient.RoleHasPermission(id, dto);
     }
 

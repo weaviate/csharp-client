@@ -10,7 +10,7 @@ internal partial class WeaviateRestClient
     {
         var response = await _httpClient.GetAsync(WeaviateEndpoints.Roles());
         await response.EnsureExpectedStatusCodeAsync([200], "list roles");
-        var list = await response.Content.ReadFromJsonAsync<Dto.RolesListResponse>(
+        var list = await response.Content.ReadFromJsonAsync<List<Dto.Role>>(
             RestJsonSerializerOptions
         );
         return list is null ? Array.Empty<Dto.Role>() : list;
@@ -242,10 +242,10 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.AuthzUserRoles(userId, userType, includeFullRoles)
         );
         await response.EnsureExpectedStatusCodeAsync([200, 404], "get roles for user");
-        var list = await response.Content.ReadFromJsonAsync<Dto.RolesListResponse>(
+        var list = await response.Content.ReadFromJsonAsync<List<Dto.Role>>(
             RestJsonSerializerOptions
         );
-        return list is null ? Array.Empty<Dto.Role>() : list;
+        return list ?? [];
     }
 
     // Group role operations
@@ -291,10 +291,10 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.AuthzGroupRoles(groupId, groupType, includeFullRoles)
         );
         await response.EnsureExpectedStatusCodeAsync([200, 404], "get roles for group");
-        var list = await response.Content.ReadFromJsonAsync<Dto.RolesListResponse>(
+        var list = await response.Content.ReadFromJsonAsync<List<Dto.Role>>(
             RestJsonSerializerOptions
         );
-        return list is null ? Array.Empty<Dto.Role>() : list;
+        return list ?? [];
     }
 
     internal async Task<IEnumerable<string>> GroupsList(string groupType)

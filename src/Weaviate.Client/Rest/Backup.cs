@@ -32,13 +32,13 @@ internal partial class WeaviateRestClient
         }
     }
 
-    internal async Task<Dto.BackupListResponse> BackupList(BackupStorageProvider backend)
+    internal async Task<List<Dto.Anonymous3>> BackupList(BackupStorageProvider backend)
     {
         var response = await _httpClient.GetAsync(
             WeaviateEndpoints.Backups(backend.ToEnumMemberString()!)
         );
         await response.EnsureExpectedStatusCodeAsync([200], "list backups");
-        return await response.Content.ReadFromJsonAsync<Dto.BackupListResponse>(
+        return await response.Content.ReadFromJsonAsync<List<Dto.Anonymous3>>(
                 WeaviateRestClient.RestJsonSerializerOptions
             ) ?? throw new WeaviateRestClientException();
     }

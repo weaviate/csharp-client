@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using Weaviate.Client.Models;
 using Weaviate.Client.Tests.Unit.Mocks;
 using Dto = Weaviate.Client.Rest.Dto;
@@ -115,17 +116,20 @@ public partial class RestClientTests
             }
 
             // Return mock response using actual DTO
-            var mockResponse = new Dto.Class
-            {
-                Class1 = "TestClass",
-                Vectorizer = "none",
-                Properties = [],
-            };
+            var mockResponse = JsonSerializer.Serialize(
+                new Dto.Class
+                {
+                    Class1 = "TestClass",
+                    Vectorizer = "none",
+                    Properties = [],
+                },
+                Rest.WeaviateRestClient.RestJsonSerializerOptions
+            );
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(
-                    mockResponse.ToJson(),
+                    mockResponse,
                     System.Text.Encoding.UTF8,
                     "application/json"
                 ),
@@ -284,11 +288,11 @@ public partial class RestClientTests
                 {
                     Vectorizer = new Dictionary<string, object> { ["none"] = new { } },
                     VectorIndexType = "hnsw",
-                    VectorIndexConfig = new
+                    VectorIndexConfig = new Dictionary<string, object>
                     {
-                        distance = "cosine",
-                        ef = 100,
-                        efConstruction = 128,
+                        ["distance"] = "cosine",
+                        ["ef"] = 100,
+                        ["efConstruction"] = 128,
                     },
                 },
             },

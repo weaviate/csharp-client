@@ -309,18 +309,14 @@ internal static class VectorIndexSerialization
     {
         ArgumentException.ThrowIfNullOrEmpty(type);
 
-        if (vectorIndexConfig is JsonElement vic)
+        if (vectorIndexConfig is IDictionary<string, object?> vic)
         {
             var result = type switch
             {
                 VectorIndex.HNSW.TypeValue => (VectorIndexConfig?)
-                    VectorIndexSerialization.DeserializeHnsw(vic.GetRawText()),
-                VectorIndex.Flat.TypeValue => VectorIndexSerialization.DeserializeFlat(
-                    vic.GetRawText()
-                ),
-                VectorIndex.Dynamic.TypeValue => VectorIndexSerialization.DeserializeDynamic(
-                    vic.GetRawText()
-                ),
+                    VectorIndexSerialization.DeserializeHnsw(vic),
+                VectorIndex.Flat.TypeValue => VectorIndexSerialization.DeserializeFlat(vic),
+                VectorIndex.Dynamic.TypeValue => VectorIndexSerialization.DeserializeDynamic(vic),
                 _ => null,
             };
 
@@ -345,10 +341,10 @@ internal static class VectorIndexSerialization
         return JsonSerializer.Serialize(dto, Rest.WeaviateRestClient.RestJsonSerializerOptions);
     }
 
-    public static VectorIndex.HNSW DeserializeHnsw(string json)
+    public static VectorIndex.HNSW DeserializeHnsw(IDictionary<string, object?> json)
     {
         var dto = JsonSerializer.Deserialize<HnswDto>(
-            json,
+            JsonSerializer.Serialize(json, Rest.WeaviateRestClient.RestJsonSerializerOptions),
             Rest.WeaviateRestClient.RestJsonSerializerOptions
         );
         return dto?.ToHnsw() ?? new VectorIndex.HNSW();
@@ -360,10 +356,10 @@ internal static class VectorIndexSerialization
         return JsonSerializer.Serialize(dto, Rest.WeaviateRestClient.RestJsonSerializerOptions);
     }
 
-    public static VectorIndex.Flat DeserializeFlat(string json)
+    public static VectorIndex.Flat DeserializeFlat(IDictionary<string, object?> json)
     {
         var dto = JsonSerializer.Deserialize<FlatDto>(
-            json,
+            JsonSerializer.Serialize(json, Rest.WeaviateRestClient.RestJsonSerializerOptions),
             Rest.WeaviateRestClient.RestJsonSerializerOptions
         );
         return dto?.ToFlat() ?? new VectorIndex.Flat();
@@ -375,10 +371,10 @@ internal static class VectorIndexSerialization
         return JsonSerializer.Serialize(dto, Rest.WeaviateRestClient.RestJsonSerializerOptions);
     }
 
-    public static VectorIndex.Dynamic DeserializeDynamic(string json)
+    public static VectorIndex.Dynamic DeserializeDynamic(IDictionary<string, object?> json)
     {
         var dto = JsonSerializer.Deserialize<DynamicDto>(
-            json,
+            JsonSerializer.Serialize(json, Rest.WeaviateRestClient.RestJsonSerializerOptions),
             Rest.WeaviateRestClient.RestJsonSerializerOptions
         );
         return dto?.ToDynamic() ?? new VectorIndex.Dynamic() { Flat = null, Hnsw = null };

@@ -71,7 +71,9 @@ public partial class ObjectHelperTests
 
         var props = ObjectHelper.BuildDataTransferObject(testData);
 
-        TestProperties? concrete = ObjectHelper.UnmarshallProperties<TestProperties>(props);
+        TestProperties? concrete = ObjectHelper.UnmarshallProperties<TestProperties>(
+            (IDictionary<string, object?>)props
+        );
 
         Assert.Equivalent(testData, concrete);
     }
@@ -82,7 +84,9 @@ public partial class ObjectHelperTests
         var geo = new { TestingPropertyType = new GeoCoordinate(12.345f, 67.890f) };
         var props = ObjectHelper.BuildDataTransferObject(geo);
 
-        dynamic? concrete = ObjectHelper.UnmarshallProperties<ExpandoObject>(props);
+        dynamic? concrete = ObjectHelper.UnmarshallProperties<ExpandoObject>(
+            (IDictionary<string, object?>)props
+        );
 
         Assert.NotNull(concrete);
         Assert.Equal(geo.TestingPropertyType.Latitude, concrete!.TestingPropertyType.Latitude);

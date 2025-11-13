@@ -8,35 +8,65 @@ public class PermissionsScopeTests
     [Fact]
     public void Alias_GroupBy_CorrectlyAggregatesPermissions()
     {
-        var infos = new List<PermissionInfo>
+        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
         {
-            new(
-                RbacPermissionAction.CreateAliases,
-                new PermissionResource(Aliases: new AliasesResource("colA", "alias1"))
-            ),
-            new(
-                RbacPermissionAction.ReadAliases,
-                new PermissionResource(Aliases: new AliasesResource("colA", "alias1"))
-            ),
-            new(
-                RbacPermissionAction.DeleteAliases,
-                new PermissionResource(Aliases: new AliasesResource("colA", "alias1"))
-            ),
-            new(
-                RbacPermissionAction.UpdateAliases,
-                new PermissionResource(Aliases: new AliasesResource("colA", "alias2"))
-            ),
-            new(
-                RbacPermissionAction.ReadAliases,
-                new PermissionResource(Aliases: new AliasesResource("colA", "alias2"))
-            ),
-            new(
-                RbacPermissionAction.CreateAliases,
-                new PermissionResource(Aliases: new AliasesResource("colB", "alias3"))
-            ),
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_aliases,
+                Aliases = new Weaviate.Client.Rest.Dto.Aliases
+                {
+                    Collection = "colA",
+                    Alias = "alias1",
+                },
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_aliases,
+                Aliases = new Weaviate.Client.Rest.Dto.Aliases
+                {
+                    Collection = "colA",
+                    Alias = "alias1",
+                },
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Delete_aliases,
+                Aliases = new Weaviate.Client.Rest.Dto.Aliases
+                {
+                    Collection = "colA",
+                    Alias = "alias1",
+                },
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Update_aliases,
+                Aliases = new Weaviate.Client.Rest.Dto.Aliases
+                {
+                    Collection = "colA",
+                    Alias = "alias2",
+                },
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_aliases,
+                Aliases = new Weaviate.Client.Rest.Dto.Aliases
+                {
+                    Collection = "colA",
+                    Alias = "alias2",
+                },
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_aliases,
+                Aliases = new Weaviate.Client.Rest.Dto.Aliases
+                {
+                    Collection = "colB",
+                    Alias = "alias3",
+                },
+            },
         };
 
-        var aliases = Permissions.Alias.Parse(infos).Cast<Permissions.Alias>().ToList();
+        var aliases = Permissions.Alias.Parse(permissions).Cast<Permissions.Alias>().ToList();
 
         Assert.Equal(3, aliases.Count);
 
@@ -68,8 +98,11 @@ public class PermissionsScopeTests
     [Fact]
     public void Cluster_Aggregates_ReadPermission()
     {
-        var infos = new List<PermissionInfo> { new(RbacPermissionAction.ReadCluster, null) };
-        var clusters = Permissions.Cluster.Parse(infos).Cast<Permissions.Cluster>().ToList();
+        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        {
+            new() { Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_cluster },
+        };
+        var clusters = Permissions.Cluster.Parse(permissions).Cast<Permissions.Cluster>().ToList();
         Assert.Single(clusters);
         Assert.True(clusters[0].Read);
     }
@@ -77,14 +110,19 @@ public class PermissionsScopeTests
     [Fact]
     public void Nodes_Aggregates_ReadPermission()
     {
-        var infos = new List<PermissionInfo>
+        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
         {
-            new(
-                RbacPermissionAction.ReadNodes,
-                new PermissionResource(Nodes: new NodesResource("colA", NodeVerbosity.Verbose))
-            ),
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_nodes,
+                Nodes = new Weaviate.Client.Rest.Dto.Nodes
+                {
+                    Collection = "colA",
+                    Verbosity = Weaviate.Client.Rest.Dto.NodesVerbosity.Verbose,
+                },
+            },
         };
-        var nodes = Permissions.Nodes.Parse(infos).Cast<Permissions.Nodes>().ToList();
+        var nodes = Permissions.Nodes.Parse(permissions).Cast<Permissions.Nodes>().ToList();
         Assert.Single(nodes);
         Assert.True(nodes[0].Read);
     }
@@ -92,15 +130,35 @@ public class PermissionsScopeTests
     [Fact]
     public void Roles_Aggregates_AllActions()
     {
-        var resource = new RolesResource("roleA", RolesScope.Match);
-        var infos = new List<PermissionInfo>
+        var resource = new Weaviate.Client.Rest.Dto.Roles
         {
-            new(RbacPermissionAction.CreateRoles, new PermissionResource(Roles: resource)),
-            new(RbacPermissionAction.ReadRoles, new PermissionResource(Roles: resource)),
-            new(RbacPermissionAction.UpdateRoles, new PermissionResource(Roles: resource)),
-            new(RbacPermissionAction.DeleteRoles, new PermissionResource(Roles: resource)),
+            Role = "roleA",
+            Scope = Weaviate.Client.Rest.Dto.RolesScope.Match,
         };
-        var roles = Permissions.Roles.Parse(infos).Cast<Permissions.Roles>().ToList();
+        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        {
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_roles,
+                Roles = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_roles,
+                Roles = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Update_roles,
+                Roles = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Delete_roles,
+                Roles = resource,
+            },
+        };
+        var roles = Permissions.Roles.Parse(permissions).Cast<Permissions.Roles>().ToList();
         Assert.Single(roles);
         Assert.True(roles[0].Create);
         Assert.True(roles[0].Read);
@@ -111,16 +169,36 @@ public class PermissionsScopeTests
     [Fact]
     public void Users_Aggregates_AllActions()
     {
-        var resource = new UsersResource("userA");
-        var infos = new List<PermissionInfo>
+        var resource = new Weaviate.Client.Rest.Dto.Users { Users1 = "userA" };
+        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
         {
-            new(RbacPermissionAction.CreateUsers, new PermissionResource(Users: resource)),
-            new(RbacPermissionAction.ReadUsers, new PermissionResource(Users: resource)),
-            new(RbacPermissionAction.UpdateUsers, new PermissionResource(Users: resource)),
-            new(RbacPermissionAction.DeleteUsers, new PermissionResource(Users: resource)),
-            new(RbacPermissionAction.AssignAndRevokeUsers, new PermissionResource(Users: resource)),
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_users,
+                Users = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_users,
+                Users = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Update_users,
+                Users = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Delete_users,
+                Users = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Assign_and_revoke_users,
+                Users = resource,
+            },
         };
-        var users = Permissions.Users.Parse(infos).Cast<Permissions.Users>().ToList();
+        var users = Permissions.Users.Parse(permissions).Cast<Permissions.Users>().ToList();
         Assert.Single(users);
         Assert.True(users[0].Create);
         Assert.True(users[0].Read);
@@ -132,15 +210,35 @@ public class PermissionsScopeTests
     [Fact]
     public void Tenants_Aggregates_AllActions()
     {
-        var resource = new TenantsResource("tenantA", "scopeA");
-        var infos = new List<PermissionInfo>
+        var resource = new Weaviate.Client.Rest.Dto.Tenants
         {
-            new(RbacPermissionAction.CreateTenants, new PermissionResource(Tenants: resource)),
-            new(RbacPermissionAction.ReadTenants, new PermissionResource(Tenants: resource)),
-            new(RbacPermissionAction.UpdateTenants, new PermissionResource(Tenants: resource)),
-            new(RbacPermissionAction.DeleteTenants, new PermissionResource(Tenants: resource)),
+            Collection = "tenantA",
+            Tenant = "scopeA",
         };
-        var tenants = Permissions.Tenants.Parse(infos).Cast<Permissions.Tenants>().ToList();
+        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        {
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_tenants,
+                Tenants = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_tenants,
+                Tenants = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Update_tenants,
+                Tenants = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Delete_tenants,
+                Tenants = resource,
+            },
+        };
+        var tenants = Permissions.Tenants.Parse(permissions).Cast<Permissions.Tenants>().ToList();
         Assert.Single(tenants);
         Assert.True(tenants[0].Create);
         Assert.True(tenants[0].Read);
@@ -151,19 +249,25 @@ public class PermissionsScopeTests
     [Fact]
     public void Groups_Aggregates_AllActions()
     {
-        var resource = new GroupsResource("groupA", RbacGroupType.Oidc);
-        var infos = new List<PermissionInfo>
+        var resource = new Weaviate.Client.Rest.Dto.Groups
         {
-            new PermissionInfo(
-                RbacPermissionAction.AssignAndRevokeGroups,
-                new PermissionResource(Groups: resource)
-            ),
-            new PermissionInfo(
-                RbacPermissionAction.ReadGroups,
-                new PermissionResource(Groups: resource)
-            ),
+            Group = "groupA",
+            GroupType = Weaviate.Client.Rest.Dto.GroupType.Oidc,
         };
-        var groups = Permissions.Groups.Parse(infos).Cast<Permissions.Groups>().ToList();
+        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        {
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Assign_and_revoke_groups,
+                Groups = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_groups,
+                Groups = resource,
+            },
+        };
+        var groups = Permissions.Groups.Parse(permissions).Cast<Permissions.Groups>().ToList();
         Assert.Single(groups);
         Assert.True(groups[0].AssignAndRevoke);
         Assert.True(groups[0].Read);
@@ -172,27 +276,38 @@ public class PermissionsScopeTests
     [Fact]
     public void Replicate_Aggregates_AllActions()
     {
-        var resource = new ReplicateResource("shardA", "replicateA");
-        var infos = new List<PermissionInfo>
+        var resource = new Weaviate.Client.Rest.Dto.Replicate
         {
-            new PermissionInfo(
-                RbacPermissionAction.CreateReplicate,
-                new PermissionResource(Replicate: resource)
-            ),
-            new PermissionInfo(
-                RbacPermissionAction.ReadReplicate,
-                new PermissionResource(Replicate: resource)
-            ),
-            new PermissionInfo(
-                RbacPermissionAction.UpdateReplicate,
-                new PermissionResource(Replicate: resource)
-            ),
-            new PermissionInfo(
-                RbacPermissionAction.DeleteReplicate,
-                new PermissionResource(Replicate: resource)
-            ),
+            Collection = "shardA",
+            Shard = "replicateA",
         };
-        var replicate = Permissions.Replicate.Parse(infos).Cast<Permissions.Replicate>().ToList();
+        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        {
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_replicate,
+                Replicate = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_replicate,
+                Replicate = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Update_replicate,
+                Replicate = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Delete_replicate,
+                Replicate = resource,
+            },
+        };
+        var replicate = Permissions
+            .Replicate.Parse(permissions)
+            .Cast<Permissions.Replicate>()
+            .ToList();
         Assert.Single(replicate);
         Assert.True(replicate[0].Create);
         Assert.True(replicate[0].Read);
@@ -203,28 +318,32 @@ public class PermissionsScopeTests
     [Fact]
     public void Collections_Aggregates_AllActions()
     {
-        var resource = new CollectionsResource("collectionA");
-        var infos = new List<PermissionInfo>
+        var resource = new Weaviate.Client.Rest.Dto.Collections { Collection = "collectionA" };
+        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
         {
-            new(
-                RbacPermissionAction.CreateCollections,
-                new PermissionResource(Collections: resource)
-            ),
-            new(
-                RbacPermissionAction.ReadCollections,
-                new PermissionResource(Collections: resource)
-            ),
-            new(
-                RbacPermissionAction.UpdateCollections,
-                new PermissionResource(Collections: resource)
-            ),
-            new(
-                RbacPermissionAction.DeleteCollections,
-                new PermissionResource(Collections: resource)
-            ),
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_collections,
+                Collections = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_collections,
+                Collections = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Update_collections,
+                Collections = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Delete_collections,
+                Collections = resource,
+            },
         };
         var collections = Permissions
-            .Collections.Parse(infos)
+            .Collections.Parse(permissions)
             .Cast<Permissions.Collections>()
             .ToList();
         Assert.Single(collections);
@@ -237,12 +356,16 @@ public class PermissionsScopeTests
     [Fact]
     public void Backups_Aggregates_ManageBackupsOnly()
     {
-        var resource = new BackupsResource("backup1");
-        var infos = new List<PermissionInfo>
+        var resource = new Weaviate.Client.Rest.Dto.Backups { Collection = "backup1" };
+        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
         {
-            new(RbacPermissionAction.ManageBackups, new PermissionResource(Backups: resource)),
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Manage_backups,
+                Backups = resource,
+            },
         };
-        var backups = Permissions.Backups.Parse(infos).Cast<Permissions.Backups>().ToList();
+        var backups = Permissions.Backups.Parse(permissions).Cast<Permissions.Backups>().ToList();
         Assert.Single(backups);
         Assert.True(backups[0].Manage);
     }
@@ -251,73 +374,85 @@ public class PermissionsScopeTests
     public void AllPermissionActions_AreMentioned()
     {
         // This test ensures every valid permission action is covered in the suite
-        var allActions = Enum.GetValues(typeof(RbacPermissionAction))
-            .Cast<RbacPermissionAction>()
+        var allActions = Enum.GetValues(typeof(Weaviate.Client.Rest.Dto.PermissionAction))
+            .Cast<Weaviate.Client.Rest.Dto.PermissionAction>()
             .ToList();
         // Exclude deprecated or custom actions if present
         allActions.RemoveAll(a =>
-            a.ToEnumMemberString() == "custom"
-            || a.ToEnumMemberString() == "create_backup"
-            || a.ToEnumMemberString() == "read_backup"
-            || a.ToEnumMemberString() == "update_backup"
-            || a.ToEnumMemberString() == "delete_backup"
+            a.ToString() == "Custom"
+            || a.ToString() == "Create_backup"
+            || a.ToString() == "Read_backup"
+            || a.ToString() == "Update_backup"
+            || a.ToString() == "Delete_backup"
         );
         // List of actions covered by tests
         var testedActions = new HashSet<string>
         {
-            "manage_backups",
-            "read_cluster",
-            "create_data",
-            "read_data",
-            "update_data",
-            "delete_data",
-            "read_nodes",
-            "create_roles",
-            "read_roles",
-            "update_roles",
-            "delete_roles",
-            "create_collections",
-            "read_collections",
-            "update_collections",
-            "delete_collections",
-            "assign_and_revoke_users",
-            "create_users",
-            "read_users",
-            "update_users",
-            "delete_users",
-            "create_tenants",
-            "read_tenants",
-            "update_tenants",
-            "delete_tenants",
-            "create_replicate",
-            "read_replicate",
-            "update_replicate",
-            "delete_replicate",
-            "create_aliases",
-            "read_aliases",
-            "update_aliases",
-            "delete_aliases",
-            "assign_and_revoke_groups",
-            "read_groups",
+            "Manage_backups",
+            "Read_cluster",
+            "Create_data",
+            "Read_data",
+            "Update_data",
+            "Delete_data",
+            "Read_nodes",
+            "Create_roles",
+            "Read_roles",
+            "Update_roles",
+            "Delete_roles",
+            "Create_collections",
+            "Read_collections",
+            "Update_collections",
+            "Delete_collections",
+            "Assign_and_revoke_users",
+            "Create_users",
+            "Read_users",
+            "Update_users",
+            "Delete_users",
+            "Create_tenants",
+            "Read_tenants",
+            "Update_tenants",
+            "Delete_tenants",
+            "Create_replicate",
+            "Read_replicate",
+            "Update_replicate",
+            "Delete_replicate",
+            "Create_aliases",
+            "Read_aliases",
+            "Update_aliases",
+            "Delete_aliases",
+            "Assign_and_revoke_groups",
+            "Read_groups",
         };
         foreach (var action in allActions)
         {
-            Assert.Contains(action.ToEnumMemberString(), testedActions);
+            Assert.Contains(action.ToString(), testedActions);
         }
     }
 
     [Fact]
     public void Data_Aggregates_AllActions()
     {
-        var resource = new DataResource("colA", null, null);
-        var infos = new List<PermissionInfo>
+        var resource = new Weaviate.Client.Rest.Dto.Data { Collection = "colA" };
+        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
         {
-            new(RbacPermissionAction.CreateData, new PermissionResource(Data: resource)),
-            new(RbacPermissionAction.ReadData, new PermissionResource(Data: resource)),
-            new(RbacPermissionAction.UpdateData, new PermissionResource(Data: resource)),
-            new(RbacPermissionAction.DeleteData, new PermissionResource(Data: resource)),
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_data,
+                Data = resource,
+            },
+            new() { Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_data, Data = resource },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Update_data,
+                Data = resource,
+            },
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Delete_data,
+                Data = resource,
+            },
         };
-        var data = Permissions.Data.Parse(infos).Cast<Permissions.Data>().ToList();
+        var data = Permissions.Data.Parse(permissions).Cast<Permissions.Data>().ToList();
         Assert.Single(data);
         Assert.True(data[0].Create);
         Assert.True(data[0].Read);

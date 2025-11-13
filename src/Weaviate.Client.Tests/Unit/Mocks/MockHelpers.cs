@@ -261,7 +261,7 @@ public static class MockResponses
         {
             Hostname = "localhost",
             Version = version,
-            Modules = new { },
+            Modules = new Dictionary<string, object>(),
         };
 
         return new MockHttpResponse
