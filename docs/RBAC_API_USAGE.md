@@ -249,45 +249,37 @@ foreach (var r in groupRoles)
 
 ## Permission Action Strings
 
-Permission actions are lowercase snake-case identifiers:
+Permission actions are lowercase snake-case identifiers, but the C# client provides strongly-typed permission classes for each resource. You should construct permissions using these types, not raw strings.
 
-```text
-read_roles
-create_roles
-update_roles
-assign_roles
-```
+**Supported Permission Types:**
 
-Use them via `new PermissionInfo("read_roles")`. If you add enums, prefer `[EnumMember(Value=...)]` + `ToEnumMemberString()`.
+| Type                | Properties (actions)                | Example Usage |
+|---------------------|-------------------------------------|---------------|
+| `Permissions.Alias` | `Create`, `Read`, `Update`, `Delete`| `new Permissions.Alias { Read = true }` |
+| `Permissions.Data`  | `Create`, `Read`, `Update`, `Delete`| `new Permissions.Data { Read = true }` |
+| `Permissions.Backups` | `Manage`                           | `new Permissions.Backups { Manage = true }` |
+| `Permissions.Cluster` | `Read`                             | `new Permissions.Cluster { Read = true }` |
+| `Permissions.Nodes` | `Read`                              | `new Permissions.Nodes { Read = true }` |
+| `Permissions.Roles` | `Create`, `Read`, `Update`, `Delete`| `new Permissions.Roles { Read = true }` |
+| `Permissions.Users` | `Create`, `Read`, `Update`, `Delete`, `AssignAndRevoke` | `new Permissions.Users { Create = true }` |
+| `Permissions.Tenants` | `Create`, `Read`, `Update`, `Delete` | `new Permissions.Tenants { Read = true }` |
+| `Permissions.Groups` | `AssignAndRevoke`, `Read`           | `new Permissions.Groups { Read = true }` |
+| `Permissions.Replicate` | `Create`, `Read`, `Update`, `Delete` | `new Permissions.Replicate { Read = true }` |
+| `Permissions.Collections` | `Create`, `Read`, `Update`, `Delete` | `new Permissions.Collections { Read = true }` |
 
-### PermissionInfo Model Semantics
-
-`PermissionInfo` now exposes two properties:
-
-| Property | Type | Meaning |
-|----------|------|---------|
-| `ActionRaw` | `string` | The exact wire value sent to / received from the REST API. Always populated. |
-| `Action` | `RbacPermissionAction` | Parsed enum value. If the raw string is not recognized by this client version, it is set to `RbacPermissionAction.Custom`. |
-
-Construct with either a raw string or an enum:
+**Example:**
 
 ```csharp
-// From raw string (recommended – forward compatible)
-var p1 = new PermissionInfo("read_roles");
-
-// From enum (convenience)
-var p2 = new PermissionInfo(RbacPermissionAction.ReadRoles);
-
-// Inspecting unknown future actions
-var future = new PermissionInfo("future_new_action");
-if (future.Action == RbacPermissionAction.Custom)
-{
-  Console.WriteLine($"Unrecognized action: {future.ActionRaw}");
-  // Decide whether to ignore, warn, or surface as-is.
-}
+// Grant read access to roles and collections
+var permissions = new[] {
+    new Permissions.Roles { Read = true },
+    new Permissions.Collections { Read = true }
+};
+var createdRole = await client.Roles.Create(roleName, permissions);
 ```
 
-When sending permissions (e.g. `RolesClient.Create/AddPermissions`), the client will throw if `ActionRaw` does not map to a known server enum in this version—this prevents silently serializing an incorrect value. Upgrade the client when new actions are introduced server-side.
+**Wire Format Handling:**
+PermissionScope objects are converted directly to DTOs (`Rest.Dto.Permission`) by the client
 
 ## Error Handling
 
@@ -298,15 +290,16 @@ RBAC operations follow standard Weaviate error handling patterns. For comprehens
 **Idempotent Deletes:**
 
 ```csharp
-// Succeeds even if role doesn't exist
 await client.Roles.Delete("role-name");
+await client.Roles.Delete("role-name");
+// Succeeds even if role doesn't exist
 ```
 
 **Lenient Permission Checks:**
 
 ```csharp
 // Returns false instead of throwing for non-existent roles
-var hasPermission = await client.Roles.HasPermission("role-name", permission);
+var hasPermission = await client.Roles.HasPermission("unknown-role-name", permission);
 ```
 
 **Conflict Handling:**
@@ -347,12 +340,13 @@ var client = WeaviateClientBuilder.Local(restPort: 8092, grpcPort: 50063)
 
 if (!await client.IsReady()) throw new Exception("Weaviate not ready");
 
+
 // Create a role with permissions
 var roleName = $"demo-role-{Guid.NewGuid():N}";
-var role = await client.Roles.Create(roleName, new[] 
-{ 
-    new PermissionInfo("read_roles"),
-    new PermissionInfo("read_collections")
+var role = await client.Roles.Create(roleName, new[]
+{
+  new Permissions.Roles { Read = true },
+  new Permissions.Collections { Read = true }
 });
 Console.WriteLine($"Created role: {role.Name}");
 
@@ -370,7 +364,7 @@ var userRoles = await client.Roles.RolesForUser(userId, "db");
 Console.WriteLine($"User roles: {string.Join(", ", userRoles.Select(r => r.Name))}");
 
 // Check specific permission
-var hasPermission = await client.Roles.HasPermission(roleName, new PermissionInfo("read_roles"));
+var hasPermission = await client.Roles.HasPermission(roleName, new Permissions.Roles { Read = true });
 Console.WriteLine($"Role has read_roles permission: {hasPermission}");
 
 // List all role assignments for this user
