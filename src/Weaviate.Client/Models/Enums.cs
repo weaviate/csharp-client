@@ -18,111 +18,50 @@ public enum NearMediaType
     Video,
 }
 
-/// <summary>
-/// RBAC permission actions for all resource types.
-/// EnumMember values match wire-format strings for REST/gRPC APIs.
-/// </summary>
-public enum RbacPermissionAction
+public enum NodeVerbosity
 {
-    [EnumMember(Value = "manage_backups")]
-    ManageBackups,
+    [EnumMember(Value = "verbose")]
+    Verbose,
 
-    [EnumMember(Value = "read_cluster")]
-    ReadCluster,
+    [EnumMember(Value = "minimal")]
+    Minimal,
+}
 
-    [EnumMember(Value = "create_data")]
-    CreateData,
+public enum RolesScope
+{
+    [EnumMember(Value = "all")]
+    All = 0,
 
-    [EnumMember(Value = "read_data")]
-    ReadData,
+    [EnumMember(Value = "match")]
+    Match = 1,
+}
 
-    [EnumMember(Value = "update_data")]
-    UpdateData,
+/// <summary>
+/// Database user types (subset of underlying DTO enum values)
+/// </summary>
+public enum DatabaseUserType
+{
+    DbUser,
+    DbEnvUser,
+}
 
-    [EnumMember(Value = "delete_data")]
-    DeleteData,
+/// <summary>
+/// RBAC user types for role assignment endpoints.
+/// </summary>
+public enum RbacUserType
+{
+    [EnumMember(Value = "db")]
+    Database,
 
-    [EnumMember(Value = "read_nodes")]
-    ReadNodes,
+    [EnumMember(Value = "oidc")]
+    Oidc,
+}
 
-    [EnumMember(Value = "create_roles")]
-    CreateRoles,
-
-    [EnumMember(Value = "read_roles")]
-    ReadRoles,
-
-    [EnumMember(Value = "update_roles")]
-    UpdateRoles,
-
-    [EnumMember(Value = "delete_roles")]
-    DeleteRoles,
-
-    [EnumMember(Value = "create_collections")]
-    CreateCollections,
-
-    [EnumMember(Value = "read_collections")]
-    ReadCollections,
-
-    [EnumMember(Value = "update_collections")]
-    UpdateCollections,
-
-    [EnumMember(Value = "delete_collections")]
-    DeleteCollections,
-
-    [EnumMember(Value = "assign_and_revoke_users")]
-    AssignAndRevokeUsers,
-
-    [EnumMember(Value = "create_users")]
-    CreateUsers,
-
-    [EnumMember(Value = "read_users")]
-    ReadUsers,
-
-    [EnumMember(Value = "update_users")]
-    UpdateUsers,
-
-    [EnumMember(Value = "delete_users")]
-    DeleteUsers,
-
-    [EnumMember(Value = "create_tenants")]
-    CreateTenants,
-
-    [EnumMember(Value = "read_tenants")]
-    ReadTenants,
-
-    [EnumMember(Value = "update_tenants")]
-    UpdateTenants,
-
-    [EnumMember(Value = "delete_tenants")]
-    DeleteTenants,
-
-    [EnumMember(Value = "create_replicate")]
-    CreateReplicate,
-
-    [EnumMember(Value = "read_replicate")]
-    ReadReplicate,
-
-    [EnumMember(Value = "update_replicate")]
-    UpdateReplicate,
-
-    [EnumMember(Value = "delete_replicate")]
-    DeleteReplicate,
-
-    [EnumMember(Value = "create_aliases")]
-    CreateAliases,
-
-    [EnumMember(Value = "read_aliases")]
-    ReadAliases,
-
-    [EnumMember(Value = "update_aliases")]
-    UpdateAliases,
-
-    [EnumMember(Value = "delete_aliases")]
-    DeleteAliases,
-
-    [EnumMember(Value = "assign_and_revoke_groups")]
-    AssignAndRevokeGroups,
-
-    [EnumMember(Value = "read_groups")]
-    ReadGroups,
+/// <summary>
+/// RBAC group types for role assignment endpoints.
+/// </summary>
+public enum RbacGroupType
+{
+    [EnumMember(Value = "oidc")]
+    Oidc,
 }

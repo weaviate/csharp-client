@@ -1,39 +1,5 @@
 namespace Weaviate.Client.Models;
 
-using System.Collections;
-using System.Linq;
-using System.Runtime.Serialization;
-
-/// <summary>
-/// Database user types (subset of underlying DTO enum values)
-/// </summary>
-public enum DatabaseUserType
-{
-    DbUser,
-    DbEnvUser,
-}
-
-/// <summary>
-/// RBAC user types for role assignment endpoints.
-/// </summary>
-public enum RbacUserType
-{
-    [EnumMember(Value = "db")]
-    Database,
-
-    [EnumMember(Value = "oidc")]
-    Oidc,
-}
-
-/// <summary>
-/// RBAC group types for role assignment endpoints.
-/// </summary>
-public enum RbacGroupType
-{
-    [EnumMember(Value = "oidc")]
-    Oidc,
-}
-
 /// <summary>
 /// Represents a database user returned by the Users API.
 /// </summary>
@@ -60,34 +26,6 @@ public record CurrentUserInfo(
 /// Simplified role representation.
 /// </summary>
 public record RoleInfo(string Name, IEnumerable<PermissionScope> Permissions);
-
-/// <summary>
-/// Internal permission representation for REST DTO conversion only.
-/// </summary>
-internal record PermissionInfo
-{
-    public string ActionRaw { get; }
-    public RbacPermissionAction Action => ActionRaw.FromEnumMemberString<RbacPermissionAction>();
-
-    public PermissionResource? Resources { get; }
-
-    internal PermissionInfo(string actionRaw, PermissionResource? resources)
-    {
-        ActionRaw = actionRaw ?? string.Empty;
-        Resources = resources;
-    }
-
-    internal PermissionInfo(RbacPermissionAction action, PermissionResource? resources)
-        : this(action.ToEnumMemberString(), resources) { }
-
-    public Rest.Dto.Permission ToDto()
-    {
-        return new Rest.Dto.Permission
-        {
-            Action = Action.ToEnumMemberString().FromEnumMemberString<Rest.Dto.PermissionAction>(),
-        };
-    }
-}
 
 /// <summary>
 /// Role assignment for a user.

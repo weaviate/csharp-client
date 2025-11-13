@@ -126,10 +126,7 @@ public partial class WeaviateClient : IDisposable
             Version =
                 Models.MetaInfo.ParseWeaviateVersion(meta?.Version ?? string.Empty)
                 ?? new System.Version(0, 0),
-            Modules =
-                (meta?.Modules as JsonElement?)
-                    ?.EnumerateObject()
-                    .ToDictionary(k => k.Name, k => (object)k.Value) ?? [],
+            Modules = meta?.Modules?.ToDictionary() ?? [],
         };
     }
 
