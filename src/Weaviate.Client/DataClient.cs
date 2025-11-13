@@ -18,6 +18,21 @@ public class DataClient<TData>
         _collectionClient = collectionClient;
     }
 
+    public IDictionary<string, object>? VectorsToDto(Models.Vectors? vectors)
+    {
+        if (vectors == null || vectors.Count == 0)
+            return null;
+
+        var result = new Dictionary<string, object>();
+
+        foreach (var vector in vectors)
+        {
+            result[vector.Key] = vector.Value;
+        }
+
+        return result;
+    }
+
     public async Task<Guid> Insert(
         TData data,
         Guid? id = null,
@@ -33,17 +48,12 @@ public class DataClient<TData>
             propDict[kvp.Name] = ObjectHelper.MakeBeacons(kvp.TargetID);
         }
 
-        var dtoVectors =
-            vectors?.Count == 0
-                ? null
-                : Rest.Dto.Vectors.FromJson(JsonSerializer.Serialize(vectors ?? []));
-
         var dto = new Rest.Dto.Object()
         {
             Id = id ?? Guid.NewGuid(),
             Class = _collectionName,
             Properties = propDict,
-            Vectors = dtoVectors,
+            Vectors = VectorsToDto(vectors),
             Tenant = tenant ?? _collectionClient.Tenant,
         };
 
@@ -67,17 +77,12 @@ public class DataClient<TData>
             propDict[kvp.Name] = ObjectHelper.MakeBeacons(kvp.TargetID);
         }
 
-        var dtoVectors =
-            vectors?.Count == 0
-                ? null
-                : Rest.Dto.Vectors.FromJson(JsonSerializer.Serialize(vectors ?? []));
-
         var dto = new Rest.Dto.Object()
         {
             Id = id,
             Class = _collectionName,
             Properties = propDict,
-            Vectors = dtoVectors,
+            Vectors = VectorsToDto(vectors),
             Tenant = tenant ?? _collectionClient.Tenant,
         };
 

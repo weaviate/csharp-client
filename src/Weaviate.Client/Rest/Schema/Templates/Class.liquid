@@ -107,7 +107,13 @@
     [System.Obsolete{% if property.HasDeprecatedMessage %}({{ property.DeprecatedMessage | literal }}){% endif %}]
 {%-   endif -%}
     {%- template Class.Property.Annotations -%}
+
+{%- if property.PropertyName == "Vectors" -%}
+    public System.Collections.Generic.IDictionary<string, object>? Vectors { get; set; } = default!;
+{%- elsif property.PropertyName != "Vectors" -%}
     public {% if UseRequiredKeyword and property.IsRequired %}required {% endif %}{{ property.Type }} {{ property.PropertyName }}{% if RenderInpc == false and RenderPrism == false %} { get; {% if property.HasSetter and RenderRecord == false %}set; {% elsif RenderRecord and GenerateNativeRecords %}init; {% endif %}}{% if property.HasDefaultValue and RenderRecord == false %} = {{ property.DefaultValue }};{% elsif GenerateNullableReferenceTypes and RenderRecord == false %} = default!;{% endif %}
+{%- endif -%}
+
 {% else %}
     {
         get { return {{ property.FieldName }}; }
