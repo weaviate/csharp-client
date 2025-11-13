@@ -29,7 +29,7 @@ This guide describes the exception hierarchy and error handling patterns in the 
 
 ## Exception Hierarchy
 
-```
+```plaintext
 Exception (System)
 └── WeaviateException
     ├── WeaviateClientException
@@ -79,6 +79,7 @@ public class WeaviateClientException : WeaviateException
 ```
 
 **When thrown:**
+
 - Invalid client configuration
 - Network connectivity issues
 - Request serialization failures
@@ -108,6 +109,7 @@ public class WeaviateServerException : WeaviateException
 ```
 
 **When thrown:**
+
 - Server returns an error response
 - Server is unavailable or misconfigured
 - Server-side validation failures
@@ -142,6 +144,7 @@ internal class WeaviateUnexpectedStatusCodeException : WeaviateServerException
 **When thrown:** REST endpoint returns a status code not in the expected set for that operation.
 
 **Properties:**
+
 - `StatusCode`: The actual HTTP status code received
 - `ExpectedStatusCodes`: Set of status codes the client expected
 - `Message`: Response body content (often contains server error details)
@@ -175,6 +178,7 @@ public class WeaviateNotFoundException : WeaviateServerException
 ```
 
 **When thrown:**
+
 - Collection doesn't exist
 - Object ID not found
 - Role or user doesn't exist
@@ -203,6 +207,7 @@ public class WeaviateConflictException : WeaviateServerException
 ```
 
 **When thrown:**
+
 - Attempting to create a collection that already exists
 - Creating a role with a duplicate name
 - Creating an alias that conflicts with existing resources
@@ -230,6 +235,7 @@ public class WeaviateFeatureNotSupportedException : WeaviateServerException
 ```
 
 **When thrown:**
+
 - Using gRPC aggregate on servers without the aggregate RPC method
 - Accessing features added in newer Weaviate versions
 - Server built without optional modules
@@ -270,6 +276,7 @@ public class WeaviateBackupConflictException : WeaviateServerException
 ```
 
 **When thrown:**
+
 - Starting a backup while another backup is running
 - Starting a restore while another restore is running
 - Starting either operation while any backup/restore is in progress
@@ -595,6 +602,7 @@ catch (WeaviateNotFoundException) { }
 ---
 
 **Related Documentation:**
+
 - [RBAC API Usage](RBAC_API_USAGE.md)
 - [Backup API Usage](BACKUP_API_USAGE.md)
 - [Nodes API Usage](NODES_API_USAGE.md)
