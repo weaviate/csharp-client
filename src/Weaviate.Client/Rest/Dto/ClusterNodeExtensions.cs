@@ -34,17 +34,14 @@ internal partial record NodeStatus
             Name = Name ?? string.Empty,
             StatusRaw = Status?.ToString() ?? "Unknown",
             Version = Version ?? string.Empty,
-            Stats = Stats?.ToModel() ?? new ClusterNodeVerbose.NodeStats
-            {
-            ObjectCount = 0,
-            ShardCount = 0,
-            },
-            Shards = Shards
-            ?.Where(s =>
-                s != null
-                && !string.IsNullOrEmpty(s.Class)
-                && !string.IsNullOrEmpty(s.Name)
-            )
+            Stats =
+                Stats?.ToModel()
+                ?? new ClusterNodeVerbose.NodeStats { ObjectCount = 0, ShardCount = 0 },
+            Shards =
+                Shards
+                    ?.Where(s =>
+                        s != null && !string.IsNullOrEmpty(s.Class) && !string.IsNullOrEmpty(s.Name)
+                    )
             .Select(s => s.ToModel())
             .ToArray() ?? [],
         };
