@@ -332,10 +332,10 @@ public partial class WeaviateClient : IDisposable
             ?? WeaviateGrpcClient.Create(
                 Configuration.GrpcUri,
                 wcdHost,
-                Meta?.GrpcMaxMessageSize ?? null,
-                timeout,
-                retryPolicy,
                 _tokenService,
+                timeout,
+                Meta?.GrpcMaxMessageSize ?? null,
+                retryPolicy,
                 Configuration.Headers,
                 null
             );
