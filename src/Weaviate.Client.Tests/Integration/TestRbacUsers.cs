@@ -7,7 +7,7 @@ using Xunit;
 
 /// <summary>
 /// Integration tests for Users client operations against RBAC-enabled Weaviate.
-/// Requires Weaviate with RBAC running on port defined in RBAC_PORT.
+/// Requires Weaviate with RBAC running on port defined in 8092/50063.
 /// </summary>
 [Trait("Category", "RBAC")]
 public class TestRbacUsers : IntegrationTests
@@ -19,10 +19,7 @@ public class TestRbacUsers : IntegrationTests
 
     public override ICredentials? Credentials => Auth.ApiKey(ADMIN_API_KEY);
 
-    public TestRbacUsers()
-    {
-        RequireVersion("1.30.0");
-    }
+    public TestRbacUsers() => RequireVersion("1.30.0");
 
     [Fact]
     public async Task Test_OwnUser()
@@ -89,7 +86,7 @@ public class TestRbacUsers : IntegrationTests
     public async Task Test_DeleteUser()
     {
         RequireVersion("1.30.0");
-        var randomUserName = $"delete-user-{Random.Shared.Next(1, 10000)}";
+        var randomUserName = $"delete-user-{Random.Shared.Next(1, 10_000)}";
 
         // Create user
         await _weaviate.Users.Db.Create(randomUserName);
@@ -109,7 +106,7 @@ public class TestRbacUsers : IntegrationTests
     public async Task Test_RotateUserKey()
     {
         RequireVersion("1.30.0");
-        var randomUserName = $"rotate-user-{Random.Shared.Next(1, 10000)}";
+        var randomUserName = $"rotate-user-{Random.Shared.Next(1, 10_000)}";
 
         try
         {

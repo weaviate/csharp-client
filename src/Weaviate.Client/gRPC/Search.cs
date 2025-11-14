@@ -77,9 +77,9 @@ internal partial class WeaviateGrpcClient
         SinglePrompt? singlePrompt = null,
         GroupedPrompt? groupedPrompt = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null,
         OneOrManyOf<string>? returnProperties = null,
-        IList<QueryReference>? returnReferences = null
+        IList<QueryReference>? returnReferences = null,
+        VectorQuery? includeVectors = null
     )
     {
         var request = BaseSearchRequest(
@@ -97,8 +97,8 @@ internal partial class WeaviateGrpcClient
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
-            includeVectors: includeVectors,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            includeVectors: includeVectors
         );
 
         request.NearVector = BuildNearVector(vector, certainty, distance, targetVector);
@@ -144,9 +144,9 @@ internal partial class WeaviateGrpcClient
             singlePrompt: singlePrompt,
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
+            returnReferences: returnReferences,
             returnMetadata: returnMetadata,
-            includeVectors: includeVectors,
-            returnReferences: returnReferences
+            includeVectors: includeVectors
         );
 
         request.NearText = BuildNearText(
@@ -177,9 +177,9 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null,
-        IList<QueryReference>? returnReferences = null
+        VectorQuery? includeVectors = null
     )
     {
         var request = BaseSearchRequest(
@@ -196,10 +196,10 @@ internal partial class WeaviateGrpcClient
             after: after,
             tenant: tenant,
             consistencyLevel: consistencyLevel,
-            returnMetadata: returnMetadata,
-            includeVectors: includeVectors,
+            returnProperties: returnProperties,
             returnReferences: returnReferences,
-            returnProperties: returnProperties
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors
         );
 
         BuildBM25(request, query, properties: searchFields);
@@ -230,9 +230,9 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null,
-        IList<QueryReference>? returnReferences = null
+        VectorQuery? includeVectors = null
     )
     {
         if (
