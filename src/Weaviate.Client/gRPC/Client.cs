@@ -67,7 +67,7 @@ internal partial class WeaviateGrpcClient : IDisposable
         }
     }
 
-    AsyncAuthInterceptor _AuthInterceptorFactory(ITokenService tokenService)
+    static AsyncAuthInterceptor _AuthInterceptorFactory(ITokenService tokenService, ILogger logger)
     {
         return async (context, metadata) =>
         {
@@ -82,7 +82,7 @@ internal partial class WeaviateGrpcClient : IDisposable
             }
             catch (AuthenticationException ex)
             {
-                _logger.LogError(ex, "Failed to retrieve access token");
+                logger.LogError(ex, "Failed to retrieve access token");
                 return;
             }
         };
@@ -134,23 +134,7 @@ internal partial class WeaviateGrpcClient : IDisposable
         if (tokenService != null)
         {
             var credentials = CallCredentials.FromInterceptor(
-                async (context, metadata) =>
-                {
-                    try
-                    {
-                        var token = await tokenService.GetAccessTokenAsync();
-
-                        if (tokenService.IsAuthenticated())
-                        {
-                            metadata.Add("Authorization", $"Bearer {token}");
-                        }
-                    }
-                    catch (AuthenticationException ex)
-                    {
-                        logger.LogError(ex, "Failed to retrieve access token");
-                        return;
-                    }
-                }
+                _AuthInterceptorFactory(tokenService, logger)
             );
 
             if (grpcUri.Scheme == Uri.UriSchemeHttps)
