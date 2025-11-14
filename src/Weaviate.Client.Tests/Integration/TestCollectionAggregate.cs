@@ -317,71 +317,33 @@ public partial class AggregatesTests : IntegrationTests
         }
     }
 
-    public static IEnumerable<object[]> NearTextAggregationOptions()
+    private static Dictionary<
+        string,
+        (Dictionary<string, object> option, int expectedLen)
+    > _nearTextAggregationOptions = new()
     {
-        var uuid1 = Guid.NewGuid();
-        var uuid2 = Guid.NewGuid();
-
-        yield return new object[]
-        {
-            new Dictionary<string, object> { { "distance", 0.80f } },
-            1,
-            uuid1,
-            uuid2,
-        };
-
-        yield return new object[]
-        {
-            new Dictionary<string, object> { { "object_limit", 1 } },
-            1,
-            uuid1,
-            uuid2,
-        };
-        yield return new object[]
-        {
-            new Dictionary<string, object> { { "object_limit", 2 } },
-            2,
-            uuid1,
-            uuid2,
-        };
-        yield return new object[]
-        {
-            new Dictionary<string, object> { { "certainty", 0.1 } },
-            2,
-            uuid1,
-            uuid2,
-        };
-        yield return new object[]
-        {
-            new Dictionary<string, object> { { "distance", 0.9 } },
-            2,
-            uuid1,
-            uuid2,
-        };
-        yield return new object[]
-        {
+        ["distance 0.8=1"] = (new Dictionary<string, object> { { "distance", 0.80f } }, 1),
+        ["distance 0.9=2"] = (new Dictionary<string, object> { { "distance", 0.9 } }, 2),
+        ["limit 1"] = (new Dictionary<string, object> { { "object_limit", 1 } }, 1),
+        ["limit 2"] = (new Dictionary<string, object> { { "object_limit", 2 } }, 2),
+        ["certainty 0.1"] = (new Dictionary<string, object> { { "certainty", 0.1 } }, 2),
+        ["move_away concepts"] = (
             new Dictionary<string, object>
             {
-                { "move_away", new Move(concepts: ["something"], force: 0.000001f) },
+                { "move_away", new Move(concepts: new[] { "something" }, force: 0.000001f) },
                 { "distance", 0.9 },
             },
-            2,
-            uuid1,
-            uuid2,
-        };
-        yield return new object[]
-        {
+            2
+        ),
+        ["move_away uuid1"] = (
             new Dictionary<string, object>
             {
-                { "move_away", new Move(objects: [uuid1], force: 0.000001f) },
+                { "move_away", new Move(objects: new[] { _reusableUuids[0] }, force: 0.000001f) },
                 { "distance", 0.9 },
             },
-            2,
-            uuid1,
-            uuid2,
-        };
-        yield return new object[]
-        {
+            2
+        ),
+        ["move_away concepts array"] = (
             new Dictionary<string, object>
             {
                 {
@@ -390,33 +352,38 @@ public partial class AggregatesTests : IntegrationTests
                 },
                 { "distance", 0.9 },
             },
-            2,
-            uuid1,
-            uuid2,
-        };
-        yield return new object[]
-        {
+            2
+        ),
+        ["move_to uuid1 uuid2"] = (
             new Dictionary<string, object>
             {
-                { "move_to", new Move(objects: new[] { uuid1, uuid2 }, force: 0.000001f) },
+                {
+                    "move_to",
+                    new Move(
+                        objects: new[] { _reusableUuids[0], _reusableUuids[1] },
+                        force: 0.000001f
+                    )
+                },
                 { "distance", 0.9 },
             },
-            2,
-            uuid1,
-            uuid2,
-        };
+            2
+        ),
+    };
+
+    public static TheoryData<string> NearTextAggregationOptions()
+    {
+        return [.. _nearTextAggregationOptions.Keys];
     }
 
     [Theory]
     [MemberData(nameof(NearTextAggregationOptions))]
-    public async Task Test_Near_Text_Aggregation(
-        Dictionary<string, object> option,
-        int expectedLen,
-        Guid uuid1,
-        Guid uuid2
-    )
+    public async Task Test_Near_Text_Aggregation(string usecase)
     {
         // Arrange
+        var uuid1 = Guid.NewGuid();
+        var uuid2 = Guid.NewGuid();
+
+        var (option, expectedLen) = _nearTextAggregationOptions[usecase];
         var collectionClient = await CollectionFactory(
             properties: new[] { Property.Text("text") },
             vectorConfig: Configure

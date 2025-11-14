@@ -623,7 +623,7 @@ public partial class SearchTests : IntegrationTests
     [Fact]
     public async Task Test_Aggregate_Max_Vector_Distance()
     {
-        Assert.Skip("Aggregate Hybrid not fully supported yet");
+        Assert.Skip("Aggregate Hybrid with Named Vectors not fully supported yet");
 
         RequireVersion("1.26.4");
 

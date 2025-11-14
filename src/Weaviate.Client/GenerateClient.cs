@@ -517,6 +517,51 @@ public class GenerateClient
 
     public async Task<GenerativeWeaviateResult> Hybrid(
         string? query,
+        Vectors vectors,
+        float? alpha = null,
+        string[]? queryProperties = null,
+        HybridFusion? fusionType = null,
+        float? maxVectorDistance = null,
+        uint? limit = null,
+        uint? offset = null,
+        BM25Operator? bm25Operator = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        SinglePrompt? prompt = null,
+        GroupedPrompt? groupedPrompt = null,
+        TargetVectors? targetVector = null,
+        string? tenant = null,
+        OneOrManyOf<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null
+    ) =>
+        await Hybrid(
+            query,
+            vectors: vectors,
+            alpha,
+            queryProperties,
+            fusionType,
+            maxVectorDistance,
+            limit,
+            offset,
+            bm25Operator,
+            autoLimit,
+            filters,
+            rerank,
+            prompt,
+            groupedPrompt,
+            targetVector,
+            tenant,
+            returnProperties,
+            returnReferences,
+            returnMetadata,
+            includeVectors
+        );
+
+    public async Task<GenerativeWeaviateResult> Hybrid(
+        string? query,
         IHybridVectorInput vectors,
         float? alpha = null,
         string[]? queryProperties = null,

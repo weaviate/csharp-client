@@ -191,7 +191,7 @@ public partial class ReferenceTests : IntegrationTests
             ]
         );
 
-        var reviews = await CollectionFactory<object>(
+        var reviews = await CollectionFactory<dynamic>(
             name: "Review",
             "Movie Reviews",
             properties:
@@ -210,7 +210,7 @@ public partial class ReferenceTests : IntegrationTests
         {
             new
             {
-                movie_id = 162,
+                movie_id = 1,
                 title = "Edward Scissorhands",
                 overview = "A small suburban town receives a visit from a castaway unfinished science experiment named Edward.",
                 release_date = DateTime.Parse("1990-12-07").ToUniversalTime(),
@@ -218,7 +218,7 @@ public partial class ReferenceTests : IntegrationTests
             },
             new
             {
-                movie_id = 769,
+                movie_id = 2,
                 title = "GoodFellas",
                 overview = "The true story of Henry Hill, a half-Irish, half-Sicilian Brooklyn kid who is adopted by neighbourhood gangsters at an early age and climbs the ranks of a Mafia family under the guidance of Jimmy Conway.",
                 release_date = DateTime.Parse("1990-09-12").ToUniversalTime(),
@@ -226,7 +226,7 @@ public partial class ReferenceTests : IntegrationTests
             },
             new
             {
-                movie_id = 771,
+                movie_id = 3,
                 title = "Home Alone",
                 overview = "Eight-year-old Kevin McCallister makes the most of the situation after his family unwittingly leaves him behind when they go on Christmas vacation. But when a pair of bungling burglars set their sights on Kevin's house, the plucky kid stands ready to defend his territory. By planting booby traps galore, adorably mischievous Kevin stands his ground as his frantic mother attempts to race home before Christmas Day.",
                 release_date = DateTime.Parse("1990-11-16").ToUniversalTime(),
@@ -241,15 +241,15 @@ public partial class ReferenceTests : IntegrationTests
             movieIds.Add(m.movie_id, uuid);
         }
 
-        var reviewsData = new List<dynamic>
+        var reviewsData = new[]
         {
             new
             {
                 author_username = "kineticandroid",
                 content = @"Take the story of Frankenstein's monster, remove the hateful creator, and replace the little girl's flowers with a brightly pastel Reagan-era suburb. Though not my personal favorite Tim Burton film, I feel like this one best encapsulates his style and story interests.",
                 rating = (double?)null,
-                movie_id = 162,
-                review_id = 162,
+                movie_id = 1,
+                review_id = 1621,
             },
             new
             {
@@ -266,24 +266,24 @@ The film looks neat, as I've come to expect from Tim Burton. It has the obvious 
 
 Undoubtedly worth a watch.",
                 rating = (double?)8.0,
-                movie_id = 162,
-                review_id = 162,
+                movie_id = 1,
+                review_id = 1622,
             },
             new
             {
                 author_username = "SoSmooth1982",
                 content = @"Love this movie. It's like a non evil Freddy Kruger. The ending could have been better though.",
                 rating = (double?)8.0,
-                movie_id = 162,
-                review_id = 162,
+                movie_id = 1,
+                review_id = 1623,
             },
             new
             {
                 author_username = "Geronimo1967",
                 content = @"Vincent Price has spent his life working on a labour of love - a ""son"", an artificially constructed person that lacks only hands - for which he temporarily has two pairs of scissors. Sadly, the creator dies before he can rectify this and so young ""Edward"" (Johnny Depp) is left alone in his lofty castle. Alone, that is until a kindly Dianne Wiest (""Peg"") takes him under her wing, introduces him to her many friends - including an on-form Winona Ryder (""Kim"") - and they all discover he has a remarkable ability for topiary (and hairdressing!). Soon he is all the rage, the talk of the town - but always the misfit, and of course when a mishap - in this case a robbery for which he is framed - occurs, his fickle friends turn on him readily. It's a touching tale of innocence and humanity; Depp plays his role skilfully and with delicacy and humour, and the last half hour is quite a damning indictment of thoughtlessness and selfishness that still resonates today. Like many ""fairy"" tales, it has it's root in decent morals and Tim Burton is ahead of the game in delivering a nuanced and enjoyable modern day parable that makes you laugh, smile and wince with shame in equal measure.",
                 rating = (double?)7.0,
-                movie_id = 162,
-                review_id = 162,
+                movie_id = 1,
+                review_id = 1624,
             },
             new
             {
@@ -296,8 +296,8 @@ The story itself, based on Nicholas Pileggi’s non-fiction book Wiseguy, pulls 
 
 It’s not romanticism here, if anything it’s a debunking of the Mafia myth, but even as the blood flows and the dialogue crackles with electricity, it always remains icy cool, brought to us by a man who had is eyes and ears open while growing up in Queens, New York in the 40s and 50s. Eccellente! 9/10",
                 rating = (double?)9.0,
-                movie_id = 769,
-                review_id = 769,
+                movie_id = 2,
+                review_id = 7691,
             },
             new
             {
@@ -308,16 +308,16 @@ The film talks about liberation, stereotypes, and entering a new world for human
 
 Martin Scorsese (the director) filmed this unfamiliar life and directed it in the form of a film similar to documentaries because he filmed it as if it were a real, realistic life. That is why the presence of Voice Over was important in order to give you the feeling that there is a person sitting next to you telling you the story while whispering in your ear as it happens in the movies documentaries.",
                 rating = (double?)7.0,
-                movie_id = 769,
-                review_id = 769,
+                movie_id = 2,
+                review_id = 7692,
             },
             new
             {
                 author_username = "Geronimo1967",
                 content = @"Ray Liotta is superb here as ""Henry Hill"", a man whom ever since he was young has been captivated by the mob. He starts off as a runner and before too long has ingratiated himself with the local fraternity lead by ""Paulie"" (Paul Sorvino) and is best mates with fellow hoods, the enigmatic and devious ""Jimmy"" (Robert De Niro) and the excellently vile ""Tommy"" (Joe Pesci). They put together an audacious robbery at JFK and are soon the talk of the town, but the latter in the trio is a bit of a live-wire and when he goes just a bit too far one night, the three of them find that their really quite idyllic lives of extortion and larceny start to go awry - and it's their own who are on their tracks. Scorsese takes him time with this story: the development of the characters - their personalities, trust, inter-reliance, sometimes divided, fractured, loyalties and ruthlessness and are built up in a thoroughly convincing fashion. We can, ourselves, see the obvious attractions for the young ""Henry"" of a life so very far removed from his working class Irish-Italian background - the wine, the women, the thrills; it's tantalising! If anything let's it down it's the last half hour; it's just a little too predictable and having spent so long building up the characters, we seem to be in just a bit too much of a rush; but that is a nit-pick. It's not the ""Godfather"" but it is not far short.",
                 rating = (double?)7.0,
-                movie_id = 769,
-                review_id = 769,
+                movie_id = 2,
+                review_id = 7693,
             },
             new
             {
@@ -326,24 +326,24 @@ Martin Scorsese (the director) filmed this unfamiliar life and directed it in th
 
 _Final rating:★★★ - I liked it. Would personally recommend you give it a go._",
                 rating = (double?)6.0,
-                movie_id = 771,
-                review_id = 771,
+                movie_id = 3,
+                review_id = 7711,
             },
             new
             {
                 author_username = "SoSmooth1982",
                 content = @"Love this movie. I was 8 when this came out. I remember being so jealous of Kevin, because I wished I could be home alone like that to do whatever I wanted.",
                 rating = (double?)10.0,
-                movie_id = 771,
-                review_id = 771,
+                movie_id = 3,
+                review_id = 7712,
             },
             new
             {
                 author_username = "Geronimo1967",
                 content = @"It has taken me 30 years to sit down and watch this film and I'm quite glad I finally did. I usually loathe kids movies, and the trails at the time always put me off - but Macauley Culkin is really quite a charmer in this tale of a youngster who is accidentally left at home at Christmas by his family. They have jetted off to Paris leaving him alone facing the unwanted attentions of two would-be burglars (Joe Pesci & Daniel Stern). Initially a bit unsettled, he is soon is his stride using just about every gadget (and critter) in their large family home to make sure he thwarts their thieving intentions. It's really all about the kid - and this one delivers well. The slapstick elements of the plot are designed to raise a smile, never to maim - even if having your head set on fire by a blow torch, or being walloped in the face by an hot iron might do longer term damage than happens here. That's the fun of it, for fun it is - it's a modern day Laurel & Hardy style story with an ending that's never in doubt. It does have a slightly more serious purpose, highlighting loneliness - not just for ""Kevin"" but his elderly neighbour ""Marley"" (Roberts Blossom) and it has that lovely scene on the aircraft when mother Catherine O'Hara realises that it wasn't just the garage doors that they forgot to sort out before they left! A great, and instantly recognisable score from maestro John Williams tops it all off nicely.",
                 rating = (double?)7.0,
-                movie_id = 771,
-                review_id = 771,
+                movie_id = 3,
+                review_id = 7713,
             },
             new
             {
@@ -356,17 +356,14 @@ If you are one of those gentle souls like our friend who has difficulty distingu
 
 It won’t make the regular rotation of our traditional holiday movies, but I am glad we fit it in this year.",
                 rating = (double?)9.0,
-                movie_id = 771,
-                review_id = 771,
+                movie_id = 3,
+                review_id = 7714,
             },
         };
 
         foreach (var r in reviewsData)
         {
-            Guid movieId = movieIds[r.movie_id];
-
-            ObjectReference movieRef = ("forMovie", movieId);
-            await reviews.Data.Insert(r, references: new List<ObjectReference>() { movieRef });
+            await reviews.Data.Insert(r, references: [("forMovie", movieIds[r.movie_id])]);
         }
 
         // Act
@@ -389,22 +386,24 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         Assert.NotNull(disappointed);
         Assert.Equal(2, disappointedObjects.Count);
+        Assert.Equal(1, disappointedObjects[0]?.References.Count);
+        Assert.Equal(1, disappointedObjects[1]?.References.Count);
 
-        // Check each object has exactly one reference for "forMovie"
-        foreach (var obj in disappointedObjects)
-        {
-            Assert.Equal(1, obj?.References.Count);
-            Assert.True(obj!.References.ContainsKey("forMovie"));
-            Assert.Single(obj!.References["forMovie"]);
-        }
+        Assert.True(disappointedObjects[0].References.ContainsKey("forMovie"));
+        Assert.True(disappointedObjects[1].References.ContainsKey("forMovie"));
 
-        // Collect returned movie IDs
-        var returnedMovieIds = disappointedObjects
-            .Select(o => o.References["forMovie"][0].ID)
-            .ToHashSet();
+        Assert.True(
+            disappointedObjects[0].References["forMovie"][0].Properties.ContainsKey("title")
+        );
+        Assert.True(
+            disappointedObjects[1].References["forMovie"][0].Properties.ContainsKey("title")
+        );
 
-        // Should contain both expected movie IDs, regardless of order
-        Assert.Contains(movieIds[769], returnedMovieIds);
-        Assert.Contains(movieIds[771], returnedMovieIds);
+        var dmRefs = disappointedObjects
+            .SelectMany(x => x.References["forMovie"])
+            .Select(r => r.ID)
+            .ToHashSet()
+        Assert.Contains(movieIds[2], dmRefs);
+        Assert.Contains(movieIds[1], dmRefs);
     }
 }
