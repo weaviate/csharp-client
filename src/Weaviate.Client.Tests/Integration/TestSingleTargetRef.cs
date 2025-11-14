@@ -191,7 +191,7 @@ public partial class ReferenceTests : IntegrationTests
             ]
         );
 
-        var reviews = await CollectionFactory<dynamic>(
+        var reviews = await CollectionFactory(
             name: "Review",
             "Movie Reviews",
             properties:
