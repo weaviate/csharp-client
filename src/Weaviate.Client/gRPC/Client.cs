@@ -34,7 +34,7 @@ internal partial class WeaviateGrpcClient : IDisposable
                 .Create(builder => builder.AddConsole())
                 .CreateLogger<WeaviateGrpcClient>();
 
-        _timeout = timeoue;
+        _timeout = timeout;
         _retryPolicy = retryPolicy;
         _channel = channel;
 
@@ -94,10 +94,10 @@ internal partial class WeaviateGrpcClient : IDisposable
     public static WeaviateGrpcClient Create(
         Uri grpcUri,
         string? wcdHost,
+        ITokenService? tokenService,
         TimeSpan? timeout = null,
         ulong? maxMessageSize = null,
         RetryPolicy? retryPolicy = null,
-        ITokenService? tokenService,
         Dictionary<string, string>? headers = null,
         ILogger<WeaviateGrpcClient>? logger = null
     )
@@ -177,7 +177,7 @@ internal partial class WeaviateGrpcClient : IDisposable
         return GrpcChannel.ForAddress(grpcUri, options);
     }
 
-    private void PerformHealthCheck(GrpcChannel channel)
+    private static void PerformHealthCheck(GrpcChannel channel)
     {
         var healthClient = new Health.HealthClient(channel);
         var request = new HealthCheckRequest();
