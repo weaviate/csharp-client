@@ -37,7 +37,7 @@ public class DataClient<TData>
         TData data,
         Guid? id = null,
         Models.Vectors? vectors = null,
-        IEnumerable<ObjectReference>? references = null,
+        OneOrManyOf<ObjectReference>? references = null,
         string? tenant = null
     )
     {
