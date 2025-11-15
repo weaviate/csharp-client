@@ -11,63 +11,83 @@ public class RolesClient
 
     internal RolesClient(WeaviateClient client) => _client = client;
 
-    public async Task<IEnumerable<RoleInfo>> ListAll()
+    public async Task<IEnumerable<RoleInfo>> ListAll(CancellationToken cancellationToken = default)
     {
-        var roles = await _client.RestClient.RolesList();
+        var roles = await _client.RestClient.RolesList(cancellationToken);
         return roles.Select(r => r.ToModel());
     }
 
-    public async Task<RoleInfo?> Get(string id)
+    public async Task<RoleInfo?> Get(string id, CancellationToken cancellationToken = default)
     {
-        var role = await _client.RestClient.RoleGet(id);
+        var role = await _client.RestClient.RoleGet(id, cancellationToken);
         return role is null ? null : role.ToModel();
     }
 
-    public async Task<RoleInfo> Create(string name, IEnumerable<PermissionScope> permissions)
+    public async Task<RoleInfo> Create(
+        string name,
+        IEnumerable<PermissionScope> permissions,
+        CancellationToken cancellationToken = default
+    )
     {
         var dto = new Rest.Dto.Role
         {
             Name = name,
             Permissions = permissions.SelectMany(p => p.ToDto()).ToList(),
         };
-        var created = await _client.RestClient.RoleCreate(dto);
+        var created = await _client.RestClient.RoleCreate(dto, cancellationToken);
         return created.ToModel();
     }
 
-    public Task Delete(string id) => _client.RestClient.RoleDelete(id);
+    public Task Delete(string id, CancellationToken cancellationToken = default) =>
+        _client.RestClient.RoleDelete(id, cancellationToken);
 
-    public async Task<RoleInfo> AddPermissions(string id, IEnumerable<PermissionScope> permissions)
+    public async Task<RoleInfo> AddPermissions(
+        string id,
+        IEnumerable<PermissionScope> permissions,
+        CancellationToken cancellationToken = default
+    )
     {
         var dtos = permissions.SelectMany(p => p.ToDto()).ToList();
-        var updated = await _client.RestClient.RoleAddPermissions(id, dtos);
+        var updated = await _client.RestClient.RoleAddPermissions(id, dtos, cancellationToken);
         return updated.ToModel();
     }
 
     public async Task<RoleInfo> RemovePermissions(
         string id,
-        IEnumerable<PermissionScope> permissions
+        IEnumerable<PermissionScope> permissions,
+        CancellationToken cancellationToken = default
     )
     {
         var dtos = permissions.SelectMany(p => p.ToDto()).ToList();
-        var updated = await _client.RestClient.RoleRemovePermissions(id, dtos);
+        var updated = await _client.RestClient.RoleRemovePermissions(id, dtos, cancellationToken);
         return updated.ToModel();
     }
 
-    public Task<bool> HasPermission(string id, PermissionScope permission)
+    public async Task<bool> HasPermission(
+        string id,
+        PermissionScope permission,
+        CancellationToken cancellationToken = default
+    )
     {
         var dto = permission.ToDto().Single();
-        return _client.RestClient.RoleHasPermission(id, dto);
+        return await _client.RestClient.RoleHasPermission(id, dto, cancellationToken);
     }
 
-    public async Task<IEnumerable<UserRoleAssignment>> GetUserAssignments(string roleId)
+    public async Task<IEnumerable<UserRoleAssignment>> GetUserAssignments(
+        string roleId,
+        CancellationToken cancellationToken = default
+    )
     {
-        var list = await _client.RestClient.RoleUserAssignments(roleId);
+        var list = await _client.RestClient.RoleUserAssignments(roleId, cancellationToken);
         return list.Select(a => a.ToModel());
     }
 
-    public async Task<IEnumerable<GroupRoleAssignment>> GetGroupAssignments(string roleId)
+    public async Task<IEnumerable<GroupRoleAssignment>> GetGroupAssignments(
+        string roleId,
+        CancellationToken cancellationToken = default
+    )
     {
-        var list = await _client.RestClient.RoleGroupAssignments(roleId);
+        var list = await _client.RestClient.RoleGroupAssignments(roleId, cancellationToken);
         return list.Select(a => a.ToModel());
     }
 }

@@ -136,7 +136,10 @@ public class TestReplication : IntegrationTests
         Assert.NotEqual(Guid.Empty, operation.Current.Id);
 
         // Test Get operation
-        var retrieved = await _weaviate.Cluster.Replications.Get(operation.Current.Id);
+        var retrieved = await _weaviate.Cluster.Replications.Get(
+            operation.Current.Id,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(retrieved);
         Assert.Equal(collectionName, retrieved.Collection);
         Assert.Equal(shard, retrieved.Shard);
@@ -147,14 +150,21 @@ public class TestReplication : IntegrationTests
         // Test Get with history
         var retrievedWithHistory = await _weaviate.Cluster.Replications.Get(
             operation.Current.Id,
-            includeHistory: true
+            includeHistory: true,
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.NotNull(retrievedWithHistory);
         Assert.NotNull(retrievedWithHistory.StatusHistory);
 
         // Cleanup
-        await _weaviate.Cluster.Replications.Cancel(operation.Current.Id);
-        await _weaviate.Cluster.Replications.Delete(operation.Current.Id);
+        await _weaviate.Cluster.Replications.Cancel(
+            operation.Current.Id,
+            TestContext.Current.CancellationToken
+        );
+        await _weaviate.Cluster.Replications.Delete(
+            operation.Current.Id,
+            TestContext.Current.CancellationToken
+        );
     }
 
     [Fact]
@@ -209,7 +219,10 @@ public class TestReplication : IntegrationTests
         );
 
         // Cleanup
-        await _weaviate.Cluster.Replications.Delete(operation.Current.Id);
+        await _weaviate.Cluster.Replications.Delete(
+            operation.Current.Id,
+            TestContext.Current.CancellationToken
+        );
     }
 
     [Fact]
@@ -262,14 +275,20 @@ public class TestReplication : IntegrationTests
         Assert.True(operation.IsCancelled, "Operation should be cancelled before deletion");
 
         // Delete the operation
-        await _weaviate.Cluster.Replications.Delete(operationId);
+        await _weaviate.Cluster.Replications.Delete(
+            operationId,
+            TestContext.Current.CancellationToken
+        );
 
         // Verify it's deleted - poll until it's actually gone (deletion is asynchronous)
         var deleted = false;
         for (int i = 0; i < 20; i++) // Try for up to 10 seconds
         {
             await Task.Delay(500, TestContext.Current.CancellationToken);
-            var retrieved = await _weaviate.Cluster.Replications.Get(operationId);
+            var retrieved = await _weaviate.Cluster.Replications.Get(
+                operationId,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
             if (retrieved == null)
             {
                 deleted = true;
@@ -324,30 +343,43 @@ public class TestReplication : IntegrationTests
         Assert.NotNull(operation);
 
         // Test ListAll
-        var allOperations = await _weaviate.Cluster.Replications.ListAll();
+        var allOperations = await _weaviate.Cluster.Replications.ListAll(
+            TestContext.Current.CancellationToken
+        );
         Assert.NotNull(allOperations);
         Assert.Contains(allOperations, op => op.Id == operation.Current.Id);
 
         // Test List with filters
         var collectionFiltered = await _weaviate.Cluster.Replications.List(
-            collection: collectionName
+            collection: collectionName,
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.NotNull(collectionFiltered);
         Assert.Contains(collectionFiltered, op => op.Id == operation.Current.Id);
 
         var shardFiltered = await _weaviate.Cluster.Replications.List(
             collection: collectionName,
-            shard: shard
+            shard: shard,
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.NotNull(shardFiltered);
         Assert.Contains(shardFiltered, op => op.Id == operation.Current.Id);
 
-        var targetFiltered = await _weaviate.Cluster.Replications.List(targetNode: targetNode);
+        var targetFiltered = await _weaviate.Cluster.Replications.List(
+            targetNode: targetNode,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(targetFiltered);
 
         // Cleanup
-        await _weaviate.Cluster.Replications.Cancel(operation.Current.Id);
-        await _weaviate.Cluster.Replications.Delete(operation.Current.Id);
+        await _weaviate.Cluster.Replications.Cancel(
+            operation.Current.Id,
+            TestContext.Current.CancellationToken
+        );
+        await _weaviate.Cluster.Replications.Delete(
+            operation.Current.Id,
+            TestContext.Current.CancellationToken
+        );
     }
 
     [Fact]
@@ -395,14 +427,16 @@ public class TestReplication : IntegrationTests
         Assert.NotNull(op1);
 
         // Delete all operations
-        await _weaviate.Cluster.Replications.DeleteAll();
+        await _weaviate.Cluster.Replications.DeleteAll(TestContext.Current.CancellationToken);
 
         // Verify all deleted - poll until actually gone (deletion is asynchronous)
         var allDeleted = false;
         for (int i = 0; i < 20; i++) // Try for up to 10 seconds
         {
             await Task.Delay(500, TestContext.Current.CancellationToken);
-            var operations = await _weaviate.Cluster.Replications.ListAll();
+            var operations = await _weaviate.Cluster.Replications.ListAll(
+                TestContext.Current.CancellationToken
+            );
             if (!operations.Any())
             {
                 allDeleted = true;
@@ -468,7 +502,10 @@ public class TestReplication : IntegrationTests
         Assert.Equal(ReplicationOperationState.Ready, operation.Current.Status.State);
 
         // Cleanup
-        await _weaviate.Cluster.Replications.Delete(operation.Current.Id);
+        await _weaviate.Cluster.Replications.Delete(
+            operation.Current.Id,
+            TestContext.Current.CancellationToken
+        );
     }
 
     [Fact]
@@ -528,7 +565,10 @@ public class TestReplication : IntegrationTests
         await Task.Delay(100, TestContext.Current.CancellationToken);
 
         // Cancel via direct REST client call (simulating external/concurrent cancellation)
-        await _weaviate.Cluster.Replications.Cancel(operationId);
+        await _weaviate.Cluster.Replications.Cancel(
+            operationId,
+            TestContext.Current.CancellationToken
+        );
 
         // Wait for the tracker to detect the cancellation
         // The background refresh should pick it up within ~500ms
@@ -539,7 +579,10 @@ public class TestReplication : IntegrationTests
         Assert.Equal(ReplicationOperationState.Cancelled, completed.Status.State);
 
         // Cleanup
-        await _weaviate.Cluster.Replications.Delete(operationId);
+        await _weaviate.Cluster.Replications.Delete(
+            operationId,
+            TestContext.Current.CancellationToken
+        );
     }
 
     [Fact]
@@ -603,6 +646,9 @@ public class TestReplication : IntegrationTests
             operation.IsCancelled || operation.IsSuccessful,
             "Operation should be cancelled or have completed successfully"
         );
-        await _weaviate.Cluster.Replications.Delete(operation.Current.Id);
+        await _weaviate.Cluster.Replications.Delete(
+            operation.Current.Id,
+            TestContext.Current.CancellationToken
+        );
     }
 }

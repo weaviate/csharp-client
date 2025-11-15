@@ -131,9 +131,9 @@ public partial class WeaviateClient : IDisposable
     );
     private readonly ITokenService? _tokenService;
 
-    public async Task<Models.MetaInfo> GetMeta()
+    public async Task<Models.MetaInfo> GetMeta(CancellationToken cancellationToken = default)
     {
-        var meta = await RestClient.GetMeta();
+        var meta = await RestClient.GetMeta(cancellationToken);
 
         return new Models.MetaInfo
         {
@@ -150,7 +150,9 @@ public partial class WeaviateClient : IDisposable
 
     private Models.MetaInfo? _metaCache;
 
-    private async Task<Models.MetaInfo?> GetMetaCached()
+    private async Task<Models.MetaInfo?> GetMetaCached(
+        CancellationToken cancellationToken = default
+    )
     {
         if (_metaCache != null)
             return _metaCache.Value;
@@ -160,7 +162,7 @@ public partial class WeaviateClient : IDisposable
         {
             if (_metaCache == null)
             {
-                var meta = await GetMeta();
+                var meta = await GetMeta(cancellationToken);
                 _metaCache = meta;
             }
         }
@@ -173,18 +175,24 @@ public partial class WeaviateClient : IDisposable
     }
 
     private readonly SemaphoreSlim _metaCacheSemaphore = new(1, 1);
-    public Models.MetaInfo? Meta => GetMetaCached().GetAwaiter().GetResult();
+    public Models.MetaInfo? Meta => GetMetaCached().GetAwaiter().GetResult(); // Synchronous accessor unchanged; advanced usage should call GetMeta directly with a token.
     public System.Version? WeaviateVersion => Meta?.Version;
 
     /// <summary>
     /// Returns true if the Weaviate process is live.
     /// </summary>
-    public Task<bool> Live() => RestClient.LiveAsync();
+    public Task<bool> Live(CancellationToken cancellationToken = default)
+    {
+        return RestClient.LiveAsync(cancellationToken);
+    }
 
     /// <summary>
     /// Returns true if the Weaviate instance is ready to accept requests.
     /// </summary>
-    public Task<bool> IsReady() => RestClient.ReadyAsync();
+    public Task<bool> IsReady(CancellationToken cancellationToken = default)
+    {
+        return RestClient.ReadyAsync(cancellationToken);
+    }
 
     /// <summary>
     /// Waits until the instance becomes ready or the timeout/cancellation token triggers.
@@ -204,13 +212,13 @@ public partial class WeaviateClient : IDisposable
         while (DateTime.UtcNow - start < timeout)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (await IsReady())
+            if (await IsReady(cancellationToken))
             {
                 return true;
             }
             await Task.Delay(interval, cancellationToken);
         }
-        return await IsReady();
+        return await IsReady(cancellationToken);
     }
 
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;

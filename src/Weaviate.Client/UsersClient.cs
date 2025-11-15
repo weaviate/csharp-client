@@ -30,9 +30,9 @@ public class UsersClient
     /// <summary>
     /// Gets information about the current authenticated user.
     /// </summary>
-    public async Task<CurrentUserInfo?> OwnInfo()
+    public async Task<CurrentUserInfo?> OwnInfo(CancellationToken cancellationToken = default)
     {
-        var dto = await _client.RestClient.UserOwnInfoGet();
+        var dto = await _client.RestClient.UserOwnInfoGet(cancellationToken);
         if (dto is null)
             return null;
         return new CurrentUserInfo(

@@ -37,7 +37,8 @@ public class UsersDatabaseClient
     public async Task<string> Create(
         string userId,
         bool? import = null,
-        DateTimeOffset? createTime = null
+        DateTimeOffset? createTime = null,
+        CancellationToken cancellationToken = default
     )
     {
         var apiKey = await _client.RestClient.UserDbCreate(userId, import, createTime);
@@ -47,14 +48,18 @@ public class UsersDatabaseClient
     /// <summary>
     /// Deletes a database user.
     /// </summary>
-    public Task<bool> Delete(string userId) => _client.RestClient.UserDbDelete(userId);
+    public Task<bool> Delete(string userId, CancellationToken cancellationToken = default) =>
+        _client.RestClient.UserDbDelete(userId, cancellationToken);
 
     /// <summary>
     /// Rotates the API key for a database user.
     /// </summary>
-    public async Task<string> RotateApiKey(string userId)
+    public async Task<string> RotateApiKey(
+        string userId,
+        CancellationToken cancellationToken = default
+    )
     {
-        var apiKey = await _client.RestClient.UserDbRotateKey(userId);
+        var apiKey = await _client.RestClient.UserDbRotateKey(userId, cancellationToken);
 
         return apiKey.Apikey;
     }
@@ -73,8 +78,11 @@ public class UsersDatabaseClient
     /// <summary>
     /// Assigns roles to a database user.
     /// </summary>
-    public Task AssignRoles(string userId, params string[] roles) =>
-        _client.RestClient.UserAssignRoles(userId, UserType.ToEnumMemberString(), roles);
+    public Task AssignRoles(
+        string userId,
+        CancellationToken cancellationToken = default,
+        params string[] roles
+    ) => _client.RestClient.UserAssignRoles(userId, UserType.ToEnumMemberString(), roles);
 
     /// <summary>
     /// Revokes roles from a database user.
@@ -85,7 +93,11 @@ public class UsersDatabaseClient
     /// <summary>
     /// Gets all roles assigned to a database user.
     /// </summary>
-    public async Task<IEnumerable<RoleInfo>> GetRoles(string userId, bool? includeFullRoles = null)
+    public async Task<IEnumerable<RoleInfo>> GetRoles(
+        string userId,
+        bool? includeFullRoles = null,
+        CancellationToken cancellationToken = default
+    )
     {
         var roles = await _client.RestClient.UserRolesGet(
             userId,
