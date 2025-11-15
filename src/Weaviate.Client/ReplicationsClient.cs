@@ -16,10 +16,15 @@ public class ReplicationsClient
     /// </summary>
     /// <param name="id">The unique identifier of the replication operation</param>
     /// <param name="includeHistory">Whether to include status history</param>
+    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The replication operation, or null if not found</returns>
-    public async Task<ReplicationOperation?> Get(Guid id, bool includeHistory = false)
+    public async Task<ReplicationOperation?> Get(
+        Guid id,
+        bool includeHistory = false,
+        CancellationToken cancellationToken = default
+    )
     {
-        var dto = await _restClient.ReplicationDetailsAsync(id, includeHistory);
+        var dto = await _restClient.ReplicationDetailsAsync(id, includeHistory, cancellationToken);
         return dto is null ? null : ToModel(dto);
     }
 
@@ -30,19 +35,22 @@ public class ReplicationsClient
     /// <param name="shard">Filter by shard name</param>
     /// <param name="targetNode">Filter by target node name</param>
     /// <param name="includeHistory">Whether to include status history</param>
+    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of replication operations matching the filters</returns>
     public async Task<IEnumerable<ReplicationOperation>> List(
         string? collection = null,
         string? shard = null,
         string? targetNode = null,
-        bool includeHistory = false
+        bool includeHistory = false,
+        CancellationToken cancellationToken = default
     )
     {
         var dtos = await _restClient.ListReplicationsAsync(
             collection,
             shard,
             targetNode,
-            includeHistory
+            includeHistory,
+            cancellationToken
         );
         return dtos.Select(ToModel);
     }
@@ -50,36 +58,42 @@ public class ReplicationsClient
     /// <summary>
     /// List all replication operations (includes status history)
     /// </summary>
+    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of all replication operations</returns>
-    public async Task<IEnumerable<ReplicationOperation>> ListAll()
+    public async Task<IEnumerable<ReplicationOperation>> ListAll(
+        CancellationToken cancellationToken = default
+    )
     {
-        return await List(includeHistory: true);
+        return await List(includeHistory: true, cancellationToken: cancellationToken);
     }
 
     /// <summary>
     /// Cancel a replication operation
     /// </summary>
     /// <param name="id">The unique identifier of the operation to cancel</param>
-    public async Task Cancel(Guid id)
+    /// <param name="cancellationToken">Cancellation token</param>
+    public async Task Cancel(Guid id, CancellationToken cancellationToken = default)
     {
-        await _restClient.CancelReplicationAsync(id);
+        await _restClient.CancelReplicationAsync(id, cancellationToken);
     }
 
     /// <summary>
     /// Delete a replication operation
     /// </summary>
     /// <param name="id">The unique identifier of the operation to delete</param>
-    public async Task Delete(Guid id)
+    /// <param name="cancellationToken">Cancellation token</param>
+    public async Task Delete(Guid id, CancellationToken cancellationToken = default)
     {
-        await _restClient.DeleteReplicationAsync(id);
+        await _restClient.DeleteReplicationAsync(id, cancellationToken);
     }
 
     /// <summary>
     /// Delete all replication operations
     /// </summary>
-    public async Task DeleteAll()
+    /// <param name="cancellationToken">Cancellation token</param>
+    public async Task DeleteAll(CancellationToken cancellationToken = default)
     {
-        await _restClient.DeleteAllReplicationsAsync();
+        await _restClient.DeleteAllReplicationsAsync(cancellationToken);
     }
 
     internal static ReplicationOperation ToModel(

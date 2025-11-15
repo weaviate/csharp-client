@@ -583,7 +583,10 @@ public partial class PropertyTests : IntegrationTests
             properties: props
         );
 
-        var export = await _weaviate.Collections.Export(c.Name);
+        var export = await _weaviate.Collections.Export(
+            c.Name,
+            TestContext.Current.CancellationToken
+        );
 
         Assert.NotNull(export);
         Assert.Equal(3, export.Properties.Length);

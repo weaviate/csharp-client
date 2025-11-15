@@ -98,7 +98,9 @@ public class TestAuth : IntegrationTests
             httpMessageHandler: _httpMessageHandler
         );
 
-        await client.Collections.List().ToListAsync(TestContext.Current.CancellationToken);
+        await client
+            .Collections.List(TestContext.Current.CancellationToken)
+            .ToListAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -123,7 +125,9 @@ public class TestAuth : IntegrationTests
             httpMessageHandler: _httpMessageHandler
         );
 
-        await client.Collections.List().ToListAsync(TestContext.Current.CancellationToken);
+        await client
+            .Collections.List(TestContext.Current.CancellationToken)
+            .ToListAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -170,7 +174,7 @@ public class TestAuth : IntegrationTests
             httpMessageHandler: _httpMessageHandler
         );
 
-        await client.Collections.Exists("something");
+        await client.Collections.Exists("something", TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -198,7 +202,9 @@ public class TestAuth : IntegrationTests
             httpMessageHandler: _httpMessageHandler
         );
 
-        await client.Collections.List().ToListAsync(TestContext.Current.CancellationToken);
+        await client
+            .Collections.List(TestContext.Current.CancellationToken)
+            .ToListAsync(TestContext.Current.CancellationToken);
 
         // TODO Needs a finalized way to inject a logger and check that no warnings were logged
     }

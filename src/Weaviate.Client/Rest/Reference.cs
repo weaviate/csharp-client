@@ -13,7 +13,8 @@ internal partial class WeaviateRestClient
         Guid from,
         string fromProperty,
         Guid to,
-        string? tenant = null
+        string? tenant = null,
+        CancellationToken cancellationToken = default
     )
     {
         var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
@@ -24,7 +25,8 @@ internal partial class WeaviateRestClient
         var response = await _httpClient.PostAsJsonAsync(
             path,
             reference,
-            options: RestJsonSerializerOptions
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
         );
 
         await response.EnsureExpectedStatusCodeAsync([200], "reference add");
@@ -35,7 +37,8 @@ internal partial class WeaviateRestClient
         Guid from,
         string fromProperty,
         Guid[] to,
-        string? tenant = null
+        string? tenant = null,
+        CancellationToken cancellationToken = default
     )
     {
         var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
@@ -46,7 +49,8 @@ internal partial class WeaviateRestClient
         var response = await _httpClient.PutAsJsonAsync(
             path,
             reference,
-            options: RestJsonSerializerOptions
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
         );
 
         await response.EnsureExpectedStatusCodeAsync([200], "reference replace");
@@ -57,7 +61,8 @@ internal partial class WeaviateRestClient
         Guid from,
         string fromProperty,
         Guid to,
-        string? tenant = null
+        string? tenant = null,
+        CancellationToken cancellationToken = default
     )
     {
         var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
@@ -72,7 +77,7 @@ internal partial class WeaviateRestClient
             options: RestJsonSerializerOptions
         );
 
-        var response = await _httpClient.SendAsync(request);
+        var response = await _httpClient.SendAsync(request, cancellationToken);
 
         await response.EnsureExpectedStatusCodeAsync([204], "reference delete");
     }
@@ -81,7 +86,8 @@ internal partial class WeaviateRestClient
         string collectionName,
         Models.DataReference[] references,
         string? tenant = null,
-        ConsistencyLevels? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null,
+        CancellationToken cancellationToken = default
     )
     {
         var batchRefs = references.SelectMany(r =>
@@ -103,13 +109,15 @@ internal partial class WeaviateRestClient
         var response = await _httpClient.PostAsJsonAsync(
             path,
             batchRefs,
-            options: RestJsonSerializerOptions
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
         );
 
         await response.EnsureExpectedStatusCodeAsync([200], "reference add many");
 
         return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>(
-                RestJsonSerializerOptions
+                RestJsonSerializerOptions,
+                cancellationToken: cancellationToken
             ) ?? throw new WeaviateRestClientException();
     }
 }

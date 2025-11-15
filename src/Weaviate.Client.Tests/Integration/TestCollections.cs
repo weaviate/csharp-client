@@ -56,7 +56,7 @@ public partial class CollectionsTests : IntegrationTests
 
         // Act
         var list = await _weaviate
-            .Collections.List()
+            .Collections.List(TestContext.Current.CancellationToken)
             .Select(x => x.Name)
             .ToHashSetAsync(TestContext.Current.CancellationToken);
 
@@ -72,7 +72,10 @@ public partial class CollectionsTests : IntegrationTests
             vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
-        bool exists = await _weaviate.Collections.Exists(collection.Name);
+        bool exists = await _weaviate.Collections.Exists(
+            collection.Name,
+            TestContext.Current.CancellationToken
+        );
 
         Assert.True(exists);
     }
@@ -80,7 +83,10 @@ public partial class CollectionsTests : IntegrationTests
     [Fact]
     public async Task Test_Collections_Not_Exists()
     {
-        bool exists = await _weaviate.Collections.Exists("Some_Random_Name");
+        bool exists = await _weaviate.Collections.Exists(
+            "Some_Random_Name",
+            TestContext.Current.CancellationToken
+        );
 
         Assert.False(exists);
     }
@@ -95,7 +101,10 @@ public partial class CollectionsTests : IntegrationTests
 
         var client = await CollectionFactory<dynamic>(c);
 
-        var export = await _weaviate.Collections.Export(client.Name);
+        var export = await _weaviate.Collections.Export(
+            client.Name,
+            TestContext.Current.CancellationToken
+        );
 
         Assert.Equal(c, export);
     }
@@ -158,7 +167,10 @@ public partial class CollectionsTests : IntegrationTests
             vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
-        var export = await _weaviate.Collections.Export(collection.Name);
+        var export = await _weaviate.Collections.Export(
+            collection.Name,
+            TestContext.Current.CancellationToken
+        );
 
         // Basic collection properties
         Assert.NotNull(export);
@@ -314,7 +326,10 @@ public partial class CollectionsTests : IntegrationTests
             }
         );
 
-        var export = await _weaviate.Collections.Export(collection.Name);
+        var export = await _weaviate.Collections.Export(
+            collection.Name,
+            TestContext.Current.CancellationToken
+        );
 
         // Basic collection properties
         Assert.NotNull(export);
@@ -470,7 +485,10 @@ public partial class CollectionsTests : IntegrationTests
             }
         );
 
-        var export = await _weaviate.Collections.Export(collection.Name);
+        var export = await _weaviate.Collections.Export(
+            collection.Name,
+            TestContext.Current.CancellationToken
+        );
 
         // Basic collection properties
         Assert.NotNull(export);

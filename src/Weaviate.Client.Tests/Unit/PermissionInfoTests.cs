@@ -44,7 +44,8 @@ public class PermissionInfoTests
         // Act: create role
         var created = await client.Roles.Create(
             roleName,
-            new[] { new Permissions.Roles(roleName) { Read = true } }
+            new[] { new Permissions.Roles(roleName) { Read = true } },
+            TestContext.Current.CancellationToken
         );
 
         // Assert: request body contained correct action string.
@@ -86,7 +87,7 @@ public class PermissionInfoTests
 
         // Act & Assert: should throw WeaviateClientException with upgrade guidance.
         var ex = await Assert.ThrowsAsync<WeaviateClientException>(async () =>
-            await client.Roles.Get(roleName)
+            await client.Roles.Get(roleName, TestContext.Current.CancellationToken)
         );
         Assert.Contains("future_new_action", ex.Message);
         Assert.Contains("PermissionAction", ex.Message);

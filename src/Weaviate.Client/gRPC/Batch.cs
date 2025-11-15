@@ -11,7 +11,8 @@ internal partial class WeaviateGrpcClient
         bool dryRun,
         bool verbose,
         string? tenant = null,
-        ConsistencyLevels? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null,
+        CancellationToken cancellationToken = default
     )
     {
         var request = new BatchDeleteRequest
@@ -28,16 +29,25 @@ internal partial class WeaviateGrpcClient
             request.ConsistencyLevel = MapConsistencyLevel(consistencyLevel.Value);
         }
 
-        BatchDeleteReply reply = await _grpcClient.BatchDeleteAsync(request, CreateCallOptions());
+        BatchDeleteReply reply = await _grpcClient.BatchDeleteAsync(
+            request,
+            CreateCallOptions(cancellationToken)
+        );
 
         return reply;
     }
 
-    internal async Task<BatchObjectsReply> InsertMany(IEnumerable<BatchObject> objects)
+    internal async Task<BatchObjectsReply> InsertMany(
+        IEnumerable<BatchObject> objects,
+        CancellationToken cancellationToken = default
+    )
     {
         var request = new BatchObjectsRequest { Objects = { objects } };
 
-        BatchObjectsReply reply = await _grpcClient.BatchObjectsAsync(request, CreateCallOptions());
+        BatchObjectsReply reply = await _grpcClient.BatchObjectsAsync(
+            request,
+            CreateCallOptions(cancellationToken)
+        );
 
         return reply;
     }

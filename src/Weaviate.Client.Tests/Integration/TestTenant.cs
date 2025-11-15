@@ -28,7 +28,8 @@ public partial class TenantTests : IntegrationTests
                 new Tenant { Name = "tenant1" },
                 new Tenant { Name = "tenant2" },
                 new Tenant { Name = "tenant3" },
-            }
+            },
+            TestContext.Current.CancellationToken
         );
 
         var tenant2Collection = collectionClient.WithTenant("tenant2");
@@ -62,7 +63,10 @@ public partial class TenantTests : IntegrationTests
         );
 
         Tenant tenantObj = new() { Name = tenant };
-        await collectionClient.Tenants.Add(tenantObj);
+        await collectionClient.Tenants.Add(
+            new[] { tenantObj },
+            TestContext.Current.CancellationToken
+        );
 
         var tenant1Collection = collectionClient.WithTenant(tenantObj.Name);
         var uuid = await tenant1Collection.Data.Insert(new { });
@@ -89,7 +93,10 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add("tenant1", "tenant2");
+        await collectionClient.Tenants.Add(
+            new[] { "tenant1", "tenant2" },
+            TestContext.Current.CancellationToken
+        );
 
         var tenant1Collection = collectionClient.WithTenant("tenant1");
         var tenant2Collection = collectionClient.WithTenant("tenant2");
@@ -135,8 +142,12 @@ public partial class TenantTests : IntegrationTests
         );
 
         await collectionClient.Tenants.Add(
-            new Tenant { Name = "tenant1" },
-            new Tenant { Name = "tenant2" }
+            new[]
+            {
+                new Tenant { Name = "tenant1" },
+                new Tenant { Name = "tenant2" },
+            },
+            TestContext.Current.CancellationToken
         );
 
         var tenant1Collection = collectionClient.WithTenant("tenant1");
@@ -184,8 +195,12 @@ public partial class TenantTests : IntegrationTests
         );
 
         await collectionClient.Tenants.Add(
-            new Tenant { Name = "tenant1" },
-            new Tenant { Name = "tenant2" }
+            new[]
+            {
+                new Tenant { Name = "tenant1" },
+                new Tenant { Name = "tenant2" },
+            },
+            TestContext.Current.CancellationToken
         );
 
         var tenant1Collection = collectionClient.WithTenant("tenant1");
@@ -213,20 +228,41 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add("tenant1", "tenant2");
+        await collectionClient.Tenants.Add(
+            new[] { "tenant1", "tenant2" },
+            TestContext.Current.CancellationToken
+        );
 
-        var tenants = (await collectionClient.Tenants.List()).ToList();
+        var tenants = (
+            await collectionClient.Tenants.List(
+                Array.Empty<string>(),
+                TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Equal(2, tenants.Count);
         Assert.Contains(tenants, t => t.Name == "tenant1");
         Assert.Contains(tenants, t => t.Name == "tenant2");
 
-        var tenant2List = (await collectionClient.Tenants.List("tenant2")).ToList();
+        var tenant2List = (
+            await collectionClient.Tenants.List(
+                new[] { "tenant2" },
+                TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Single(tenant2List);
         Assert.Equal("tenant2", tenant2List[0].Name);
 
-        await collectionClient.Tenants.Delete(new[] { "tenant1", "tenant2" });
+        await collectionClient.Tenants.Delete(
+            new[] { "tenant1", "tenant2" },
+            TestContext.Current.CancellationToken
+        );
 
-        tenants = (await collectionClient.Tenants.List()).ToList();
+        tenants = (
+            await collectionClient.Tenants.List(
+                Array.Empty<string>(),
+                TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Empty(tenants);
     }
 
@@ -241,7 +277,10 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add("Tenant1", "Tenant2");
+        await collectionClient.Tenants.Add(
+            new[] { "Tenant1", "Tenant2" },
+            TestContext.Current.CancellationToken
+        );
 
         var tenant1Collection = collectionClient.WithTenant("Tenant1");
         var tenant2Collection = collectionClient.WithTenant("Tenant2");
@@ -267,7 +306,10 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add("Tenant1", "Tenant2");
+        await collectionClient.Tenants.Add(
+            ["Tenant1", "Tenant2"],
+            TestContext.Current.CancellationToken
+        );
 
         var tenant1Collection = collectionClient.WithTenant("Tenant1");
         var tenant2Collection = collectionClient.WithTenant("Tenant2");
@@ -300,7 +342,10 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add("Tenant1", "Tenant2");
+        await collectionClient.Tenants.Add(
+            ["Tenant1", "Tenant2"],
+            TestContext.Current.CancellationToken
+        );
 
         var tenant1Collection = collectionClient.WithTenant("Tenant1");
         var tenant2Collection = collectionClient.WithTenant("Tenant2");
@@ -332,7 +377,10 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add("Tenant1", "Tenant2");
+        await collectionClient.Tenants.Add(
+            ["Tenant1", "Tenant2"],
+            TestContext.Current.CancellationToken
+        );
 
         var tenant1Collection = collectionClient.WithTenant("Tenant1");
         var tenant2Collection = collectionClient.WithTenant("Tenant2");
@@ -360,35 +408,47 @@ public partial class TenantTests : IntegrationTests
         // Create with HOT (deprecated)
 #pragma warning disable CS0612 // Type or member is obsolete
         await collectionClient.Tenants.Add(
-            new Tenant { Name = "1", Status = TenantActivityStatus.Hot }
+            [new Tenant { Name = "1", Status = TenantActivityStatus.Hot }],
+            TestContext.Current.CancellationToken
         );
 #pragma warning restore CS0612 // Type or member is obsolete
 
-        var tenants = (await collectionClient.Tenants.List()).ToDictionary(t => t.Name);
+        var tenants = (
+            await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
+        ).ToDictionary(t => t.Name);
         Assert.Equal(TenantActivityStatus.Active, tenants["1"].Status);
 
         // Update to COLD (deprecated)
 #pragma warning disable CS0612 // Type or member is obsolete
         await collectionClient.Tenants.Update(
-            new Tenant { Name = "1", Status = TenantActivityStatus.Cold }
+            [new Tenant { Name = "1", Status = TenantActivityStatus.Cold }],
+            TestContext.Current.CancellationToken
         );
 #pragma warning restore CS0612 // Type or member is obsolete
 
-        tenants = (await collectionClient.Tenants.List()).ToDictionary(t => t.Name);
+        tenants = (
+            await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
+        ).ToDictionary(t => t.Name);
         Assert.Equal(TenantActivityStatus.Inactive, tenants["1"].Status);
 
         // Update to ACTIVE
         await collectionClient.Tenants.Update(
-            new Tenant { Name = "1", Status = TenantActivityStatus.Active }
+            [new Tenant { Name = "1", Status = TenantActivityStatus.Active }],
+            TestContext.Current.CancellationToken
         );
-        tenants = (await collectionClient.Tenants.List()).ToDictionary(t => t.Name);
+        tenants = (
+            await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
+        ).ToDictionary(t => t.Name);
         Assert.Equal(TenantActivityStatus.Active, tenants["1"].Status);
 
         // Update to INACTIVE
         await collectionClient.Tenants.Update(
-            new Tenant { Name = "1", Status = TenantActivityStatus.Inactive }
+            [new Tenant { Name = "1", Status = TenantActivityStatus.Inactive }],
+            TestContext.Current.CancellationToken
         );
-        tenants = (await collectionClient.Tenants.List()).ToDictionary(t => t.Name);
+        tenants = (
+            await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
+        ).ToDictionary(t => t.Name);
         Assert.Equal(TenantActivityStatus.Inactive, tenants["1"].Status);
     }
 
@@ -406,15 +466,20 @@ public partial class TenantTests : IntegrationTests
         // Add tenants with various activity statuses, including deprecated ones
 #pragma warning disable CS0612 // Type or member is obsolete
         await collectionClient.Tenants.Add(
-            new Tenant { Name = "1", Status = TenantActivityStatus.Hot },
-            new Tenant { Name = "2", Status = TenantActivityStatus.Cold },
-            new Tenant { Name = "3", Status = TenantActivityStatus.Active },
-            new Tenant { Name = "4", Status = TenantActivityStatus.Inactive },
-            new Tenant { Name = "5" }
+            [
+                new Tenant { Name = "1", Status = TenantActivityStatus.Hot },
+                new Tenant { Name = "2", Status = TenantActivityStatus.Cold },
+                new Tenant { Name = "3", Status = TenantActivityStatus.Active },
+                new Tenant { Name = "4", Status = TenantActivityStatus.Inactive },
+                new Tenant { Name = "5" },
+            ],
+            TestContext.Current.CancellationToken
         );
 #pragma warning restore CS0612 // Type or member is obsolete
 
-        var tenants = (await collectionClient.Tenants.List()).ToDictionary(t => t.Name);
+        var tenants = (
+            await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
+        ).ToDictionary(t => t.Name);
 
         Assert.Equal(TenantActivityStatus.Active, tenants["1"].Status); // HOT → ACTIVE
         Assert.Equal(TenantActivityStatus.Inactive, tenants["2"].Status); // COLD → INACTIVE
@@ -435,10 +500,17 @@ public partial class TenantTests : IntegrationTests
         );
 
         var tenant = new Tenant { Name = "1" };
-        await collectionClient.Tenants.Add(tenant);
+        await collectionClient.Tenants.Add([tenant], TestContext.Current.CancellationToken);
 
-        Assert.True(await collectionClient.Tenants.Exists(tenant.Name));
-        Assert.False(await collectionClient.Tenants.Exists("2"));
+        Assert.True(
+            await collectionClient.Tenants.Exists(
+                tenant.Name,
+                TestContext.Current.CancellationToken
+            )
+        );
+        Assert.False(
+            await collectionClient.Tenants.Exists("2", TestContext.Current.CancellationToken)
+        );
     }
 
     public static IEnumerable<object[]> TenantCases()
@@ -460,9 +532,12 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add(tenantCase);
+        await collectionClient.Tenants.Add([tenantCase], TestContext.Current.CancellationToken);
 
-        var tenant = await collectionClient.Tenants.Get(tenantCase);
+        var tenant = await collectionClient.Tenants.Get(
+            tenantCase,
+            TestContext.Current.CancellationToken
+        );
 
         Assert.NotNull(tenant);
         Assert.Equal(tenantCase, tenant.Name);
@@ -527,9 +602,12 @@ public partial class TenantTests : IntegrationTests
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
         {
             if (tenants is Tenant t)
-                await collectionClient.Tenants.Add(t);
+                await collectionClient.Tenants.Add([t], TestContext.Current.CancellationToken);
             else if (tenants is List<Tenant> list)
-                await collectionClient.Tenants.Add(list.ToArray());
+                await collectionClient.Tenants.Add(
+                    list.ToArray(),
+                    TestContext.Current.CancellationToken
+                );
         });
     }
 
@@ -568,9 +646,12 @@ public partial class TenantTests : IntegrationTests
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
         {
             if (tenants is Tenant t)
-                await collectionClient.Tenants.Update(t);
+                await collectionClient.Tenants.Update([t], TestContext.Current.CancellationToken);
             else if (tenants is List<Tenant> list)
-                await collectionClient.Tenants.Update(list.ToArray());
+                await collectionClient.Tenants.Update(
+                    list.ToArray(),
+                    TestContext.Current.CancellationToken
+                );
         });
     }
 
@@ -591,9 +672,11 @@ public partial class TenantTests : IntegrationTests
             .Select(i => new Tenant { Name = $"tenant{i}" })
             .ToArray();
 
-        await collectionClient.Tenants.Add(tenantsToCreate);
+        await collectionClient.Tenants.Add(tenantsToCreate, TestContext.Current.CancellationToken);
 
-        var tenants = (await collectionClient.Tenants.List()).ToList();
+        var tenants = (
+            await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
+        ).ToList();
         Assert.Equal(1001, tenants.Count);
         Assert.All(tenants, t => Assert.Equal(TenantActivityStatus.Active, t.Status));
 
@@ -603,9 +686,11 @@ public partial class TenantTests : IntegrationTests
             .ToArray();
 
         foreach (var tenant in tenantsToUpdate)
-            await collectionClient.Tenants.Update(tenant);
+            await collectionClient.Tenants.Update([tenant], TestContext.Current.CancellationToken);
 
-        tenants = (await collectionClient.Tenants.List()).ToList();
+        tenants = (
+            await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
+        ).ToList();
         Assert.Equal(1001, tenants.Count);
         Assert.All(tenants, t => Assert.Equal(TenantActivityStatus.Inactive, t.Status));
     }
@@ -666,7 +751,7 @@ public partial class TenantTests : IntegrationTests
         );
 
         var tenant = new Tenant { Name = "tenant1" };
-        await collectionClient.Tenants.Add(tenant);
+        await collectionClient.Tenants.Add([tenant], TestContext.Current.CancellationToken);
 
         var tenant1Collection = collectionClient.WithTenant(tenant.Name);
 
@@ -676,12 +761,14 @@ public partial class TenantTests : IntegrationTests
         Assert.Single(objects);
         Assert.Equal("some name", objects[0].Properties["name"]);
 
-        await collectionClient.Tenants.Deactivate(tenant);
+        await collectionClient.Tenants.Deactivate([tenant], TestContext.Current.CancellationToken);
 
-        var tenants = (await collectionClient.Tenants.List()).ToDictionary(t => t.Name);
+        var tenants = (
+            await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
+        ).ToDictionary(t => t.Name);
         Assert.Equal(TenantActivityStatus.Inactive, tenants["tenant1"].Status);
 
-        await collectionClient.Tenants.Activate(tenant);
+        await collectionClient.Tenants.Activate([tenant], TestContext.Current.CancellationToken);
 
         objects = (await tenant1Collection.Query.FetchObjects()).ToList();
         Assert.Single(objects);
@@ -701,8 +788,12 @@ public partial class TenantTests : IntegrationTests
         );
 
         await collectionClient.Tenants.Add(
-            new Tenant { Name = "TenantA" },
-            new Tenant { Name = "TenantB" }
+            new[]
+            {
+                new Tenant { Name = "TenantA" },
+                new Tenant { Name = "TenantB" },
+            },
+            TestContext.Current.CancellationToken
         );
 
         // Act
