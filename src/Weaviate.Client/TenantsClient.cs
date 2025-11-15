@@ -16,14 +16,19 @@ public class TenantsClient
         _collectionClient = collectionClient;
     }
 
-    public async Task<IEnumerable<Tenant>> Add(params string[] tenants)
+    public async Task<IEnumerable<Tenant>> Add(
+        string[] tenants,
+        CancellationToken cancellationToken = default
+    )
     {
         var tenantModels = tenants.Select(name => new Tenant { Name = name }).ToArray();
-
-        return await Add(tenantModels);
+        return await Add(tenantModels, cancellationToken);
     }
 
-    public async Task<IEnumerable<Tenant>> Add(params Tenant[] tenants)
+    public async Task<IEnumerable<Tenant>> Add(
+        Tenant[] tenants,
+        CancellationToken cancellationToken = default
+    )
     {
         // Map Models.Tenant to Rest.Dto.Tenant
         var restTenants = tenants
@@ -36,7 +41,8 @@ public class TenantsClient
             .ToArray();
         var result = await _collectionClient.Client.RestClient.TenantsAdd(
             _collectionClient.Name,
-            restTenants
+            restTenants,
+            cancellationToken
         );
         return result.Select(t => new Tenant
         {
@@ -52,7 +58,10 @@ public class TenantsClient
         });
     }
 
-    public async Task<IEnumerable<Tenant>> Update(params Tenant[] tenants)
+    public async Task<IEnumerable<Tenant>> Update(
+        Tenant[] tenants,
+        CancellationToken cancellationToken = default
+    )
     {
         if (tenants == null || tenants.Length == 0)
         {
@@ -75,7 +84,8 @@ public class TenantsClient
 
         var result = await _collectionClient.Client.RestClient.TenantUpdate(
             _collectionClient.Name,
-            restTenants
+            restTenants,
+            cancellationToken
         );
         return result.Select(r => new Tenant
         {
@@ -91,79 +101,119 @@ public class TenantsClient
         });
     }
 
-    public async Task Delete(IEnumerable<string> tenantNames)
+    public async Task Delete(string[] tenantNames, CancellationToken cancellationToken = default)
     {
         await _collectionClient.Client.RestClient.TenantsDelete(
             _collectionClient.Name,
-            tenantNames
+            tenantNames,
+            cancellationToken
         );
     }
 
-    public async Task<Tenant?> Get(string tenantName)
+    public async Task<Tenant?> Get(string tenantName, CancellationToken cancellationToken = default)
     {
-        var tenants = await List(tenantName);
+        var tenants = await List(new[] { tenantName }, cancellationToken);
         return tenants.FirstOrDefault();
     }
 
-    public async Task<IEnumerable<Tenant>> List(params string[] tenantNames)
+    public async Task<IEnumerable<Tenant>> List(CancellationToken cancellationToken = default) =>
+        await List(Array.Empty<string>(), cancellationToken);
+
+    public async Task<IEnumerable<Tenant>> List(
+        string[] tenantNames,
+        CancellationToken cancellationToken = default
+    )
     {
         var response = await _collectionClient.Client.GrpcClient.TenantsGet(
             _collectionClient.Name,
-            tenantNames
+            tenantNames.ToArray(),
+            cancellationToken
         );
 
         return response.Select(t => Tenant.FromGrpc(t));
     }
 
-    public async Task<bool> Exists(string tenantName)
+    public async Task<bool> Exists(string tenantName, CancellationToken cancellationToken = default)
     {
         var response = await _collectionClient.Client.GrpcClient.TenantsGet(
             _collectionClient.Name,
-            [tenantName]
+            [tenantName],
+            cancellationToken
         );
 
         return response.Any();
     }
 
-    public async Task<bool> Activate(params Tenant[] tenants)
+    public async Task<bool> Activate(
+        Tenant[] tenants,
+        CancellationToken cancellationToken = default
+    )
     {
-        await Activate(tenants.Select(tenant => tenant.Name).ToArray());
-
+        await Activate(tenants.Select(tenant => tenant.Name).ToArray(), cancellationToken);
         return true;
     }
 
-    public async Task<bool> Activate(params string[] tenantNames)
+    public async Task<bool> Activate(
+        string[] tenantNames,
+        CancellationToken cancellationToken = default
+    )
     {
         await Task.WhenAll(
             tenantNames.Select(name =>
-                Update(new Tenant { Name = name, Status = Models.TenantActivityStatus.Active })
+                Update(
+                    new[]
+                    {
+                        new Tenant { Name = name, Status = Models.TenantActivityStatus.Active },
+                    },
+                    cancellationToken
+                )
             )
         );
         return true;
     }
 
-    public async Task<bool> Deactivate(params Tenant[] tenants)
+    public async Task<bool> Deactivate(
+        Tenant[] tenants,
+        CancellationToken cancellationToken = default
+    )
     {
-        await Deactivate(tenants.Select(tenant => tenant.Name).ToArray());
-
+        await Deactivate(tenants.Select(tenant => tenant.Name).ToArray(), cancellationToken);
         return true;
     }
 
-    public async Task<bool> Deactivate(params string[] tenantNames)
+    public async Task<bool> Deactivate(
+        string[] tenantNames,
+        CancellationToken cancellationToken = default
+    )
     {
         await Task.WhenAll(
             tenantNames.Select(name =>
-                Update(new Tenant { Name = name, Status = Models.TenantActivityStatus.Inactive })
+                Update(
+                    new[]
+                    {
+                        new Tenant { Name = name, Status = Models.TenantActivityStatus.Inactive },
+                    },
+                    cancellationToken
+                )
             )
         );
         return true;
     }
 
-    public async Task<bool> Offload(params string[] tenantNames)
+    public async Task<bool> Offload(
+        string[] tenantNames,
+        CancellationToken cancellationToken = default
+    )
     {
         await Task.WhenAll(
             tenantNames.Select(name =>
-                Update(new Tenant { Name = name, Status = Models.TenantActivityStatus.Offloaded })
+                Update(
+                    new[]
+                    {
+                        new Tenant { Name = name, Status = Models.TenantActivityStatus.Offloaded },
+                    },
+                    cancellationToken
+                )
             )
         );
         return true;

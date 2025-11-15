@@ -25,7 +25,9 @@ public class TestRbacGroups : IntegrationTests
     public async Task ListGroups()
     {
         RequireVersion("1.30.0");
-        var groups = await _weaviate.Groups.Oidc.GetKnownGroupNames();
+        var groups = await _weaviate.Groups.Oidc.GetKnownGroupNames(
+            TestContext.Current.CancellationToken
+        );
         // Enumeration should not throw; emptiness is acceptable depending on environment configuration.
         _ = groups.ToList();
     }
@@ -35,7 +37,10 @@ public class TestRbacGroups : IntegrationTests
     {
         RequireVersion("1.30.0");
         var groupId = $"/test-group-{Random.Shared.Next(1, 10000)}";
-        var roles = await _weaviate.Groups.Oidc.GetRoles(groupId);
+        var roles = await _weaviate.Groups.Oidc.GetRoles(
+            groupId,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         _ = roles.ToList(); // Accept empty; presence depends on external identity provider configuration.
     }
 }

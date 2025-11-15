@@ -25,10 +25,9 @@ public class TestRbacUsers : IntegrationTests
     public async Task Test_OwnUser()
     {
         RequireVersion("1.28.0");
-        var user = await _weaviate.Users.OwnInfo();
-
+        var user = await _weaviate.Users.OwnInfo(TestContext.Current.CancellationToken);
         Assert.NotNull(user);
-        Assert.Equal("admin-user", user.Username);
+        Assert.Equal("admin-user", user!.Username);
         Assert.NotEmpty(user.Roles);
     }
 
@@ -47,12 +46,15 @@ public class TestRbacUsers : IntegrationTests
     public async Task Test_CreateUserAndGet()
     {
         RequireVersion("1.30.0");
-        var randomUserName = $"new-user-{Random.Shared.Next(1, 10000)}";
+        var randomUserName = $"new-user-{Random.Shared.Next(1, 10_000)}";
 
         try
         {
             // Create user
-            var apiKey = await _weaviate.Users.Db.Create(randomUserName);
+            var apiKey = await _weaviate.Users.Db.Create(
+                randomUserName,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
             Assert.NotNull(apiKey);
             Assert.NotEmpty(apiKey);
 
@@ -71,14 +73,14 @@ public class TestRbacUsers : IntegrationTests
                 credentials: Auth.ApiKey(apiKey),
                 httpMessageHandler: _httpMessageHandler
             );
-            var ownInfo = await newUserClient.Users.OwnInfo();
+            var ownInfo = await newUserClient.Users.OwnInfo(TestContext.Current.CancellationToken);
             Assert.NotNull(ownInfo);
             Assert.Equal(randomUserName, ownInfo!.Username);
         }
         finally
         {
             // Cleanup
-            await _weaviate.Users.Db.Delete(randomUserName);
+            await _weaviate.Users.Db.Delete(randomUserName, TestContext.Current.CancellationToken);
         }
     }
 
@@ -89,14 +91,21 @@ public class TestRbacUsers : IntegrationTests
         var randomUserName = $"delete-user-{Random.Shared.Next(1, 10_000)}";
 
         // Create user
-        await _weaviate.Users.Db.Create(randomUserName);
+        await _weaviate.Users.Db.Create(
+            randomUserName,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Delete user
-        Assert.True(await _weaviate.Users.Db.Delete(randomUserName));
+        Assert.True(
+            await _weaviate.Users.Db.Delete(randomUserName, TestContext.Current.CancellationToken)
+        );
         // No exception means success
 
         // Verify delete of non-existent user throws exception
-        Assert.False(await _weaviate.Users.Db.Delete(randomUserName));
+        Assert.False(
+            await _weaviate.Users.Db.Delete(randomUserName, TestContext.Current.CancellationToken)
+        );
     }
 
     [Fact]
@@ -108,7 +117,10 @@ public class TestRbacUsers : IntegrationTests
         try
         {
             // Create user
-            var apiKeyOld = await _weaviate.Users.Db.Create(randomUserName);
+            var apiKeyOld = await _weaviate.Users.Db.Create(
+                randomUserName,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
 
             // Verify old key works
             var oldKeyClient = Connect.Local(
@@ -118,12 +130,15 @@ public class TestRbacUsers : IntegrationTests
                 credentials: Auth.ApiKey(apiKeyOld),
                 httpMessageHandler: _httpMessageHandler
             );
-            var user = await oldKeyClient.Users.OwnInfo();
+            var user = await oldKeyClient.Users.OwnInfo(TestContext.Current.CancellationToken);
             Assert.NotNull(user);
             Assert.Equal(randomUserName, user!.Username);
 
             // Rotate key
-            var apiKeyNew = await _weaviate.Users.Db.RotateApiKey(randomUserName);
+            var apiKeyNew = await _weaviate.Users.Db.RotateApiKey(
+                randomUserName,
+                TestContext.Current.CancellationToken
+            );
             Assert.NotNull(apiKeyNew);
             Assert.NotEmpty(apiKeyNew);
             Assert.NotEqual(apiKeyOld, apiKeyNew);
@@ -136,13 +151,15 @@ public class TestRbacUsers : IntegrationTests
                 credentials: Auth.ApiKey(apiKeyNew),
                 httpMessageHandler: _httpMessageHandler
             );
-            var userAfterRotate = await newKeyClient.Users.OwnInfo();
+            var userAfterRotate = await newKeyClient.Users.OwnInfo(
+                TestContext.Current.CancellationToken
+            );
             Assert.NotNull(userAfterRotate);
             Assert.Equal(randomUserName, userAfterRotate!.Username);
         }
         finally
         {
-            await _weaviate.Users.Db.Delete(randomUserName);
+            await _weaviate.Users.Db.Delete(randomUserName, TestContext.Current.CancellationToken);
         }
     }
 
@@ -155,7 +172,10 @@ public class TestRbacUsers : IntegrationTests
         try
         {
             // Create user
-            await _weaviate.Users.Db.Create(randomUserName);
+            await _weaviate.Users.Db.Create(
+                randomUserName,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
 
             // Deactivate
             await _weaviate.Users.Db.Deactivate(randomUserName);
@@ -182,7 +202,7 @@ public class TestRbacUsers : IntegrationTests
         }
         finally
         {
-            await _weaviate.Users.Db.Delete(randomUserName);
+            await _weaviate.Users.Db.Delete(randomUserName, TestContext.Current.CancellationToken);
         }
     }
 
@@ -195,7 +215,10 @@ public class TestRbacUsers : IntegrationTests
         try
         {
             // Create user
-            var apiKeyOld = await _weaviate.Users.Db.Create(randomUserName);
+            var apiKeyOld = await _weaviate.Users.Db.Create(
+                randomUserName,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
 
             // Deactivate with revoke_key=true
             await _weaviate.Users.Db.Deactivate(randomUserName, revokeKey: true);
@@ -210,7 +233,7 @@ public class TestRbacUsers : IntegrationTests
                     credentials: Auth.ApiKey(apiKeyOld),
                     httpMessageHandler: _httpMessageHandler
                 );
-                await oldKeyClient.Users.OwnInfo();
+                await oldKeyClient.Users.OwnInfo(TestContext.Current.CancellationToken);
             });
 
             // Re-activate
@@ -226,11 +249,14 @@ public class TestRbacUsers : IntegrationTests
                     credentials: Auth.ApiKey(apiKeyOld),
                     httpMessageHandler: _httpMessageHandler
                 );
-                await oldKeyClient.Users.OwnInfo();
+                await oldKeyClient.Users.OwnInfo(TestContext.Current.CancellationToken);
             });
 
             // Rotate to get new key
-            var apiKeyNew = await _weaviate.Users.Db.RotateApiKey(randomUserName);
+            var apiKeyNew = await _weaviate.Users.Db.RotateApiKey(
+                randomUserName,
+                TestContext.Current.CancellationToken
+            );
 
             // New key should work
             var newKeyClient = Connect.Local(
@@ -240,13 +266,13 @@ public class TestRbacUsers : IntegrationTests
                 credentials: Auth.ApiKey(apiKeyNew ?? string.Empty),
                 httpMessageHandler: _httpMessageHandler
             );
-            var user = await newKeyClient.Users.OwnInfo();
+            var user = await newKeyClient.Users.OwnInfo(TestContext.Current.CancellationToken);
             Assert.NotNull(user);
             Assert.Equal(randomUserName, user!.Username);
         }
         finally
         {
-            await _weaviate.Users.Db.Delete(randomUserName);
+            await _weaviate.Users.Db.Delete(randomUserName, TestContext.Current.CancellationToken);
         }
     }
 }
