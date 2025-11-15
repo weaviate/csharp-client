@@ -17,12 +17,20 @@ internal static class NoOpGrpcChannel
     /// </summary>
     /// <param name="customHandler">Optional custom handler for non-health-check requests.</param>
     public static GrpcChannel Create(
-        Func<HttpRequestMessage, HttpResponseMessage?>? customHandler = null
+        Func<HttpRequestMessage, HttpResponseMessage?>? customHandler = null,
+        Func<
+            HttpRequestMessage,
+            CancellationToken,
+            Task<HttpResponseMessage?>
+        >? customAsyncHandler = null
     )
     {
         return GrpcChannel.ForAddress(
             NoOpAddress,
-            new GrpcChannelOptions { HttpHandler = new NoOpHttpHandler(customHandler) }
+            new GrpcChannelOptions
+            {
+                HttpHandler = new NoOpHttpHandler(customHandler, customAsyncHandler),
+            }
         );
     }
 
@@ -33,31 +41,54 @@ internal static class NoOpGrpcChannel
     private class NoOpHttpHandler : HttpMessageHandler
     {
         private readonly Func<HttpRequestMessage, HttpResponseMessage?>? _customHandler;
+        private readonly Func<
+            HttpRequestMessage,
+            CancellationToken,
+            Task<HttpResponseMessage?>
+        >? _customAsyncHandler;
 
-        public NoOpHttpHandler(Func<HttpRequestMessage, HttpResponseMessage?>? customHandler = null)
+        public NoOpHttpHandler(
+            Func<HttpRequestMessage, HttpResponseMessage?>? customHandler = null,
+            Func<
+                HttpRequestMessage,
+                CancellationToken,
+                Task<HttpResponseMessage?>
+            >? customAsyncHandler = null
+        )
         {
             _customHandler = customHandler;
+            _customAsyncHandler = customAsyncHandler;
         }
 
-        protected override Task<HttpResponseMessage> SendAsync(
+        protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken
         )
         {
-            // First check custom handler
+            // First check async handler (supports cancellation-aware delays)
+            if (_customAsyncHandler != null)
+            {
+                var asyncResponse = await _customAsyncHandler(request, cancellationToken);
+                if (asyncResponse != null)
+                {
+                    return asyncResponse;
+                }
+            }
+
+            // Then check custom sync handler
             if (_customHandler != null)
             {
                 var customResponse = _customHandler(request);
                 if (customResponse != null)
                 {
-                    return Task.FromResult(customResponse);
+                    return customResponse;
                 }
             }
 
             // Check if this is a health check request
             if (IsHealthCheckRequest(request))
             {
-                return Task.FromResult(CreateServingHealthCheckResponse());
+                return CreateServingHealthCheckResponse();
             }
 
             // For any other gRPC call, throw an exception
