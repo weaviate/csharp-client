@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using Weaviate.Client.Rest.Dto;
 
@@ -14,7 +15,16 @@ internal partial class WeaviateRestClient
         var path = WeaviateEndpoints.Nodes(collection, verbosity);
         var response = await _httpClient.GetAsync(path, cancellationToken);
 
-        await response.EnsureExpectedStatusCodeAsync([200], "get nodes");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "get nodes"
+        );
 
         var nodes = await response.Content.ReadFromJsonAsync<NodesStatusResponse>(
             options: RestJsonSerializerOptions,

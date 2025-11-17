@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
@@ -18,7 +19,7 @@ internal partial class WeaviateRestClient
             options: RestJsonSerializerOptions,
             cancellationToken: cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "replicate");
+        await response.ManageStatusCode([HttpStatusCode.OK], "replicate");
         return await response.Content.ReadFromJsonAsync<Dto.ReplicationReplicateReplicaResponse>(
                 WeaviateRestClient.RestJsonSerializerOptions,
                 cancellationToken
@@ -38,10 +39,8 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.ReplicationDetails(id, includeHistory),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200, 404], "replication details");
 
-        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            return null;
+        await response.ManageStatusCode([HttpStatusCode.OK], "replication details");
 
         return await response.Content.ReadFromJsonAsync<Dto.ReplicationReplicateDetailsReplicaResponse>(
                 WeaviateRestClient.RestJsonSerializerOptions,
@@ -66,7 +65,7 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.ReplicationList(collection, shard, targetNode, includeHistory),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "list replications");
+        await response.ManageStatusCode([HttpStatusCode.OK], "list replications");
         return await response.Content.ReadFromJsonAsync<
                 IEnumerable<Dto.ReplicationReplicateDetailsReplicaResponse>
             >(WeaviateRestClient.RestJsonSerializerOptions, cancellationToken)
@@ -86,7 +85,7 @@ internal partial class WeaviateRestClient
             content: null,
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([204], "cancel replication");
+        await response.ManageStatusCode([HttpStatusCode.NoContent], "cancel replication");
     }
 
     /// <summary>
@@ -101,7 +100,7 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.ReplicationDelete(id),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([204], "delete replication");
+        await response.ManageStatusCode([HttpStatusCode.NoContent], "delete replication");
     }
 
     /// <summary>
@@ -113,6 +112,6 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.Replicate(),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([204], "delete all replications");
+        await response.ManageStatusCode([HttpStatusCode.NoContent], "delete all replications");
     }
 }

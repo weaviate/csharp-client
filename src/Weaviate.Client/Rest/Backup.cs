@@ -20,7 +20,19 @@ internal partial class WeaviateRestClient
                 options: RestJsonSerializerOptions,
                 cancellationToken: cancellationToken
             );
-            await response.EnsureExpectedStatusCodeAsync([200], "create backup");
+            await response.ManageStatusCode(
+                [
+                    HttpStatusCode.OK,
+                    // HttpStatusCode.BadRequest,
+                    // HttpStatusCode.Unauthorized,
+                    // HttpStatusCode.Forbidden,
+                    // HttpStatusCode.NotFound,
+                    // HttpStatusCode.Conflict,
+                    // HttpStatusCode.InternalServerError,
+                ],
+                "create backup",
+                ResourceType.Backup
+            );
             return await response.Content.ReadFromJsonAsync<Dto.BackupCreateResponse>(
                     WeaviateRestClient.RestJsonSerializerOptions
                 ) ?? throw new WeaviateRestClientException();
@@ -43,7 +55,19 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.Backups(backend.ToEnumMemberString()!),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "list backups");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "list backups",
+            ResourceType.Backup
+        );
         return await response.Content.ReadFromJsonAsync<List<Dto.Anonymous3>>(
                 WeaviateRestClient.RestJsonSerializerOptions
             ) ?? throw new WeaviateRestClientException();
@@ -61,7 +85,19 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.BackupStatus(backend.ToEnumMemberString()!, id, bucket, path),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "backup status");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "backup status",
+            ResourceType.Backup
+        );
         return await response.Content.ReadFromJsonAsync<Dto.BackupCreateStatusResponse>(
                 WeaviateRestClient.RestJsonSerializerOptions
             ) ?? throw new WeaviateRestClientException();
@@ -79,7 +115,20 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.BackupStatus(backend.ToEnumMemberString()!, id, bucket, path),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200, 204], "backup cancel");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                HttpStatusCode.NoContent,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "backup cancel",
+            ResourceType.Backup
+        );
     }
 
     internal async Task<Dto.BackupRestoreResponse> BackupRestore(
@@ -97,7 +146,19 @@ internal partial class WeaviateRestClient
                 options: RestJsonSerializerOptions,
                 cancellationToken: cancellationToken
             );
-            await response.EnsureExpectedStatusCodeAsync([200], "backup restore");
+            await response.ManageStatusCode(
+                [
+                    HttpStatusCode.OK,
+                    // HttpStatusCode.BadRequest,
+                    // HttpStatusCode.Unauthorized,
+                    // HttpStatusCode.Forbidden,
+                    // HttpStatusCode.NotFound,
+                    // HttpStatusCode.Conflict,
+                    // HttpStatusCode.InternalServerError,
+                ],
+                "backup restore",
+                ResourceType.Backup
+            );
             return await response.Content.ReadFromJsonAsync<Dto.BackupRestoreResponse>(
                     WeaviateRestClient.RestJsonSerializerOptions
                 ) ?? throw new WeaviateRestClientException();
@@ -123,7 +184,19 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.BackupRestoreStatus(backend.ToEnumMemberString()!, id, bucket, path),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "backup restore status");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "backup restore status",
+            ResourceType.Backup
+        );
         return await response.Content.ReadFromJsonAsync<Dto.BackupRestoreStatusResponse>(
                 WeaviateRestClient.RestJsonSerializerOptions
             ) ?? throw new WeaviateRestClientException();

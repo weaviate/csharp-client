@@ -64,9 +64,9 @@ public class AliasClient
     /// Delete an alias
     /// </summary>
     /// <param name="aliasName">The name of the alias to delete</param>
-    public async Task<bool> Delete(string aliasName)
+    public async Task Delete(string aliasName)
     {
-        return await _client.RestClient.AliasDelete(aliasName);
+        await _client.RestClient.AliasDelete(aliasName);
     }
 
     private static Alias ToModel(Rest.Dto.Alias dto)

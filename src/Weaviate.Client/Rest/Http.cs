@@ -1,13 +1,10 @@
 using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Rest;
 
 public static class HttpResponseMessageExtensions
 {
-    public static async Task<HttpStatusCode> EnsureExpectedStatusCodeAsync(
+    private static async Task<HttpStatusCode> EnsureExpectedStatusCodeAsync(
         this HttpResponseMessage response,
         SortedSet<HttpStatusCode> codes,
         string error = ""
@@ -29,33 +26,57 @@ public static class HttpResponseMessageExtensions
         throw new WeaviateUnexpectedStatusCodeException(response.StatusCode, codes, errorMessage);
     }
 
-    public static Task<HttpStatusCode> EnsureExpectedStatusCodeAsync(
+    private static Task<HttpStatusCode> EnsureExpectedStatusCodeAsync(
         this HttpResponseMessage response,
         SortedSet<int> codes,
         string error = ""
     ) => EnsureExpectedStatusCodeAsync(response, [.. codes.Select(x => (HttpStatusCode)x)], error);
 
-    public static async Task EnsureExpectedStatusCodeAsync(
+    private static Task EnsureExpectedStatusCodeAsync(
         this HttpResponseMessage response,
         int code,
         string error = ""
-    )
-    {
-        await EnsureExpectedStatusCodeAsync(response, [(HttpStatusCode)code], error);
-    }
+    ) => EnsureExpectedStatusCodeAsync(response, [(HttpStatusCode)code], error);
 
-    public static async Task EnsureExpectedStatusCodeAsync(
+    private static Task EnsureExpectedStatusCodeAsync(
         this HttpResponseMessage response,
         HttpStatusCode code,
         string error = ""
+    ) => EnsureExpectedStatusCodeAsync(response, [code], error);
+
+    private static Task EnsureSuccessStatusCodeAsync(this HttpResponseMessage response) =>
+        EnsureExpectedStatusCodeAsync(response, [HttpStatusCode.OK]);
+
+    public static async Task ManageStatusCode(
+        this HttpResponseMessage response,
+        IEnumerable<HttpStatusCode> expectedCodes,
+        string error = "",
+        ResourceType resourceType = ResourceType.Unknown
     )
     {
-        await EnsureExpectedStatusCodeAsync(response, [code], error);
-    }
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync(
+                new SortedSet<HttpStatusCode>(expectedCodes),
+                error
+            );
 
-    public static async Task EnsureSuccessStatusCodeAsync(this HttpResponseMessage response)
-    {
-        await EnsureExpectedStatusCodeAsync(response, [HttpStatusCode.OK]);
+            // TODO
+            // HttpStatusCode.BadRequest
+            // HttpStatusCode.Unauthorized
+            // HttpStatusCode.Forbidden
+            // HttpStatusCode.InternalServerError
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, resourceType);
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.Conflict)
+        {
+            throw new WeaviateConflictException($"Conflict accessing {resourceType}", ex);
+        }
     }
 }
 

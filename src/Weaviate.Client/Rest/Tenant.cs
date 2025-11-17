@@ -23,7 +23,19 @@ internal partial class WeaviateRestClient
             options: RestJsonSerializerOptions,
             cancellationToken: cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "tenants add");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "tenants add",
+            ResourceType.Tenant
+        );
         var result = await response.Content.ReadFromJsonAsync<IEnumerable<Rest.Dto.Tenant>>(
             options: RestJsonSerializerOptions,
             cancellationToken: cancellationToken
@@ -49,7 +61,19 @@ internal partial class WeaviateRestClient
             options: RestJsonSerializerOptions,
             cancellationToken: cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "tenant update");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "tenant update",
+            ResourceType.Tenant
+        );
 
         var result = await response.Content.ReadFromJsonAsync<Rest.Dto.Tenant[]>(
             options: RestJsonSerializerOptions,
@@ -79,6 +103,6 @@ internal partial class WeaviateRestClient
             Content = JsonContent.Create(tenantNames, options: RestJsonSerializerOptions),
         };
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        await response.EnsureExpectedStatusCodeAsync([200], "tenants delete");
+        await response.ManageStatusCode([HttpStatusCode.OK], "tenants delete");
     }
 }

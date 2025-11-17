@@ -11,7 +11,7 @@ internal partial class WeaviateRestClient
     )
     {
         var response = await _httpClient.GetAsync(WeaviateEndpoints.Roles(), cancellationToken);
-        await response.EnsureExpectedStatusCodeAsync([200], "list roles");
+        await response.ManageStatusCode([HttpStatusCode.OK], "list roles");
         var list = await response.Content.ReadFromJsonAsync<List<Dto.Role>>(
             RestJsonSerializerOptions,
             cancellationToken
@@ -24,7 +24,7 @@ internal partial class WeaviateRestClient
         var response = await _httpClient.GetAsync(WeaviateEndpoints.Role(id), cancellationToken);
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "get role");
+            await response.ManageStatusCode([HttpStatusCode.OK], "get role");
             return await response.Content.ReadFromJsonAsync<Dto.Role>(
                 RestJsonSerializerOptions,
                 cancellationToken
@@ -40,7 +40,7 @@ internal partial class WeaviateRestClient
     internal async Task RoleDelete(string id, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.DeleteAsync(WeaviateEndpoints.Role(id), cancellationToken);
-        await response.EnsureExpectedStatusCodeAsync([204], "delete role");
+        await response.ManageStatusCode([HttpStatusCode.NoContent], "delete role");
     }
 
     internal async Task<Dto.Role> RoleCreate(
@@ -56,7 +56,7 @@ internal partial class WeaviateRestClient
         );
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([201], "create role");
+            await response.ManageStatusCode([HttpStatusCode.Created], "create role");
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.Conflict)
@@ -94,7 +94,7 @@ internal partial class WeaviateRestClient
         );
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "add permissions");
+            await response.ManageStatusCode([HttpStatusCode.OK], "add permissions");
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -122,7 +122,7 @@ internal partial class WeaviateRestClient
         );
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "remove permissions");
+            await response.ManageStatusCode([HttpStatusCode.OK], "remove permissions");
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -148,7 +148,7 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "has permission");
+        await response.ManageStatusCode([HttpStatusCode.OK], "has permission");
         var result = await response.Content.ReadFromJsonAsync<bool>(
             RestJsonSerializerOptions,
             cancellationToken
@@ -209,7 +209,7 @@ internal partial class WeaviateRestClient
 
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "role user assignments");
+            await response.ManageStatusCode([HttpStatusCode.OK], "role user assignments");
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -236,7 +236,7 @@ internal partial class WeaviateRestClient
 
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "role group assignments");
+            await response.ManageStatusCode([HttpStatusCode.OK], "role group assignments");
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -268,7 +268,7 @@ internal partial class WeaviateRestClient
         );
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "assign roles to user");
+            await response.ManageStatusCode([HttpStatusCode.OK], "assign roles to user");
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -293,7 +293,7 @@ internal partial class WeaviateRestClient
         );
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "revoke roles from user");
+            await response.ManageStatusCode([HttpStatusCode.OK], "revoke roles from user");
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -315,7 +315,7 @@ internal partial class WeaviateRestClient
         );
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "get roles for user");
+            await response.ManageStatusCode([HttpStatusCode.OK], "get roles for user");
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -346,7 +346,7 @@ internal partial class WeaviateRestClient
         );
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "assign roles to group");
+            await response.ManageStatusCode([HttpStatusCode.OK], "assign roles to group");
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -371,7 +371,7 @@ internal partial class WeaviateRestClient
         );
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "revoke roles from group");
+            await response.ManageStatusCode([HttpStatusCode.OK], "revoke roles from group");
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -393,7 +393,7 @@ internal partial class WeaviateRestClient
         );
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "get roles for group");
+            await response.ManageStatusCode([HttpStatusCode.OK], "get roles for group");
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -416,7 +416,7 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.AuthzGroups(groupType),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "list groups");
+        await response.ManageStatusCode([HttpStatusCode.OK], "list groups");
         var list = await response.Content.ReadFromJsonAsync<IEnumerable<string>>(
             RestJsonSerializerOptions,
             cancellationToken
