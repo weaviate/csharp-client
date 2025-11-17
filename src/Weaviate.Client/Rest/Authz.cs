@@ -19,19 +19,15 @@ internal partial class WeaviateRestClient
     internal async Task<Dto.Role?> RoleGet(string id)
     {
         var response = await _httpClient.GetAsync(WeaviateEndpoints.Role(id));
-        var status = await response.EnsureExpectedStatusCodeAsync([200, 404], "get role");
-        if (status == HttpStatusCode.OK)
+        try
         {
+            await response.EnsureExpectedStatusCodeAsync([200], "get role");
             return await response.Content.ReadFromJsonAsync<Dto.Role>(RestJsonSerializerOptions);
         }
-        else if (status == HttpStatusCode.NotFound)
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
         {
-            var ex = new WeaviateRestServerException(HttpStatusCode.NotFound);
             throw new WeaviateNotFoundException(ex, ResourceType.Role);
-        }
-        else
-        {
-            return null;
         }
     }
 
@@ -182,7 +178,17 @@ internal partial class WeaviateRestClient
     internal async Task<IEnumerable<RoleUserAssignment>> RoleUserAssignments(string id)
     {
         var response = await _httpClient.GetAsync(WeaviateEndpoints.RoleUserAssignments(id));
-        await response.EnsureExpectedStatusCodeAsync([200, 404], "role user assignments");
+
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "role user assignments");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.Role);
+        }
+
         var list = await response.Content.ReadFromJsonAsync<IEnumerable<RoleUserAssignment>>(
             RestJsonSerializerOptions
         );
@@ -192,7 +198,17 @@ internal partial class WeaviateRestClient
     internal async Task<IEnumerable<RoleGroupAssignment>> RoleGroupAssignments(string id)
     {
         var response = await _httpClient.GetAsync(WeaviateEndpoints.RoleGroupAssignments(id));
-        await response.EnsureExpectedStatusCodeAsync([200, 404], "role group assignments");
+
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "role group assignments");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.Role);
+        }
+
         var list = await response.Content.ReadFromJsonAsync<IEnumerable<RoleGroupAssignment>>(
             RestJsonSerializerOptions
         );
@@ -212,7 +228,15 @@ internal partial class WeaviateRestClient
             body,
             options: RestJsonSerializerOptions
         );
-        await response.EnsureExpectedStatusCodeAsync([200, 404], "assign roles to user");
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "assign roles to user");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.User);
+        }
         return true;
     }
 
@@ -228,7 +252,15 @@ internal partial class WeaviateRestClient
             body,
             options: RestJsonSerializerOptions
         );
-        await response.EnsureExpectedStatusCodeAsync([200, 404], "revoke roles from user");
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "revoke roles from user");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.User);
+        }
         return true;
     }
 
@@ -241,7 +273,15 @@ internal partial class WeaviateRestClient
         var response = await _httpClient.GetAsync(
             WeaviateEndpoints.AuthzUserRoles(userId, userType, includeFullRoles)
         );
-        await response.EnsureExpectedStatusCodeAsync([200, 404], "get roles for user");
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "get roles for user");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.User);
+        }
         var list = await response.Content.ReadFromJsonAsync<List<Dto.Role>>(
             RestJsonSerializerOptions
         );
@@ -261,7 +301,15 @@ internal partial class WeaviateRestClient
             body,
             options: RestJsonSerializerOptions
         );
-        await response.EnsureExpectedStatusCodeAsync([200, 404], "assign roles to group");
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "assign roles to group");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.Group);
+        }
         return true;
     }
 
@@ -277,7 +325,15 @@ internal partial class WeaviateRestClient
             body,
             options: RestJsonSerializerOptions
         );
-        await response.EnsureExpectedStatusCodeAsync([200, 404], "revoke roles from group");
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "revoke roles from group");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.Group);
+        }
         return true;
     }
 
@@ -290,7 +346,15 @@ internal partial class WeaviateRestClient
         var response = await _httpClient.GetAsync(
             WeaviateEndpoints.AuthzGroupRoles(groupId, groupType, includeFullRoles)
         );
-        await response.EnsureExpectedStatusCodeAsync([200, 404], "get roles for group");
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "get roles for group");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.Group);
+        }
         var list = await response.Content.ReadFromJsonAsync<List<Dto.Role>>(
             RestJsonSerializerOptions
         );
