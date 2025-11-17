@@ -70,7 +70,7 @@ internal partial class WeaviateRestClient
             ) ?? throw new WeaviateRestClientException();
     }
 
-    internal async Task<Dto.Alias?> AliasGet(
+    internal async Task<Dto.Alias> AliasGet(
         string aliasName,
         CancellationToken cancellationToken = default
     )

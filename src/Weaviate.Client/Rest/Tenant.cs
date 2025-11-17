@@ -103,6 +103,7 @@ internal partial class WeaviateRestClient
             Content = JsonContent.Create(tenantNames, options: RestJsonSerializerOptions),
         };
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        await response.ManageStatusCode([HttpStatusCode.OK], "tenants delete");
+
+        await response.ManageStatusCode([HttpStatusCode.OK], "tenants delete", ResourceType.Tenant);
     }
 }

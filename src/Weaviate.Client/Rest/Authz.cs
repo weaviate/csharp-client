@@ -11,7 +11,9 @@ internal partial class WeaviateRestClient
     )
     {
         var response = await _httpClient.GetAsync(WeaviateEndpoints.Roles(), cancellationToken);
-        await response.ManageStatusCode([HttpStatusCode.OK], "list roles");
+
+        await response.ManageStatusCode([HttpStatusCode.OK], "list roles", ResourceType.Role);
+
         var list = await response.Content.ReadFromJsonAsync<List<Dto.Role>>(
             RestJsonSerializerOptions,
             cancellationToken
@@ -22,25 +24,24 @@ internal partial class WeaviateRestClient
     internal async Task<Dto.Role?> RoleGet(string id, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.GetAsync(WeaviateEndpoints.Role(id), cancellationToken);
-        try
-        {
-            await response.ManageStatusCode([HttpStatusCode.OK], "get role");
-            return await response.Content.ReadFromJsonAsync<Dto.Role>(
-                RestJsonSerializerOptions,
-                cancellationToken
-            );
-        }
-        catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.NotFound)
-        {
-            throw new WeaviateNotFoundException(ex, ResourceType.Role);
-        }
+
+        await response.ManageStatusCode([HttpStatusCode.OK], "get role", ResourceType.Role);
+
+        return await response.Content.ReadFromJsonAsync<Dto.Role>(
+            RestJsonSerializerOptions,
+            cancellationToken
+        );
     }
 
     internal async Task RoleDelete(string id, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.DeleteAsync(WeaviateEndpoints.Role(id), cancellationToken);
-        await response.ManageStatusCode([HttpStatusCode.NoContent], "delete role");
+
+        await response.ManageStatusCode(
+            [HttpStatusCode.NoContent],
+            "delete role",
+            ResourceType.Role
+        );
     }
 
     internal async Task<Dto.Role> RoleCreate(
@@ -148,7 +149,8 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        await response.ManageStatusCode([HttpStatusCode.OK], "has permission");
+        await response.ManageStatusCode([HttpStatusCode.OK], "has permission", ResourceType.Role);
+
         var result = await response.Content.ReadFromJsonAsync<bool>(
             RestJsonSerializerOptions,
             cancellationToken
@@ -416,7 +418,9 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.AuthzGroups(groupType),
             cancellationToken
         );
-        await response.ManageStatusCode([HttpStatusCode.OK], "list groups");
+
+        await response.ManageStatusCode([HttpStatusCode.OK], "list groups", ResourceType.Group);
+
         var list = await response.Content.ReadFromJsonAsync<IEnumerable<string>>(
             RestJsonSerializerOptions,
             cancellationToken
