@@ -27,15 +27,23 @@ internal partial class WeaviateRestClient
         return users ?? Array.Empty<Dto.DBUserInfo>();
     }
 
-    internal async Task<Dto.DBUserInfo?> UserDbGet(string userId, bool? includeLastUsedTime = null)
+    internal async Task<Dto.DBUserInfo> UserDbGet(string userId, bool? includeLastUsedTime = null)
     {
         var response = await _httpClient.GetAsync(
             WeaviateEndpoints.UserDb(userId, includeLastUsedTime)
         );
-        var status = await response.EnsureExpectedStatusCodeAsync([200, 404], "get db user");
-        return status == HttpStatusCode.OK
-            ? await response.Content.ReadFromJsonAsync<Dto.DBUserInfo>(RestJsonSerializerOptions)
-            : null;
+        try
+        {
+            var status = await response.EnsureExpectedStatusCodeAsync([200], "get db user");
+            return await response.Content.ReadFromJsonAsync<Dto.DBUserInfo>(
+                    RestJsonSerializerOptions
+                ) ?? throw new WeaviateRestClientException();
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.User);
+        }
     }
 
     internal async Task<Dto.UserApiKey> UserDbCreate(
@@ -65,33 +73,57 @@ internal partial class WeaviateRestClient
             ?? throw new WeaviateRestClientException();
     }
 
-    internal async Task<bool> UserDbDelete(string userId)
+    internal async Task UserDbDelete(string userId)
     {
         var response = await _httpClient.DeleteAsync(WeaviateEndpoints.UserDb(userId));
-        var status = await response.EnsureExpectedStatusCodeAsync([204, 404], "delete db user");
-        return status == HttpStatusCode.NoContent;
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([204], "delete db user");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.User);
+        }
     }
 
-    internal async Task<Dto.UserApiKey?> UserDbRotateKey(string userId)
+    internal async Task<Dto.UserApiKey> UserDbRotateKey(string userId)
     {
         var response = await _httpClient.PostAsync(WeaviateEndpoints.UserDbRotateKey(userId), null);
-        var status = await response.EnsureExpectedStatusCodeAsync(
-            [200, 404],
-            "rotate user api key"
-        );
-        return status == HttpStatusCode.OK
-            ? await response.Content.ReadFromJsonAsync<Dto.UserApiKey>(RestJsonSerializerOptions)
-            : null;
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "rotate user api key");
+            return await response.Content.ReadFromJsonAsync<Dto.UserApiKey>(
+                    RestJsonSerializerOptions
+                ) ?? throw new WeaviateRestClientException();
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.User);
+        }
     }
 
-    internal async Task<bool> UserDbActivate(string userId)
+    internal async Task UserDbActivate(string userId)
     {
         var response = await _httpClient.PostAsync(WeaviateEndpoints.UserDbActivate(userId), null);
-        var status = await response.EnsureExpectedStatusCodeAsync([200, 404, 409], "activate user");
-        return status == HttpStatusCode.OK;
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "activate user");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.User);
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.Conflict)
+        {
+            throw new WeaviateConflictException("user already activated", ex);
+        }
     }
 
-    internal async Task<bool> UserDbDeactivate(string userId, bool? revokeKey = null)
+    internal async Task UserDbDeactivate(string userId, bool? revokeKey = null)
     {
         object? body = revokeKey.HasValue ? new { revoke_key = revokeKey.Value } : null;
         HttpResponseMessage response;
@@ -110,10 +142,19 @@ internal partial class WeaviateRestClient
                 null
             );
         }
-        var status = await response.EnsureExpectedStatusCodeAsync(
-            [200, 404, 409],
-            "deactivate user"
-        );
-        return status == HttpStatusCode.OK;
+        try
+        {
+            await response.EnsureExpectedStatusCodeAsync([200], "deactivate user");
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new WeaviateNotFoundException(ex, ResourceType.User);
+        }
+        catch (WeaviateUnexpectedStatusCodeException ex)
+            when (ex.StatusCode == HttpStatusCode.Conflict)
+        {
+            throw new WeaviateConflictException("user already deactivated", ex);
+        }
     }
 }

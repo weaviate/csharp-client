@@ -42,7 +42,7 @@ public class TestRbacRoles : IntegrationTests
 
             var created = await _weaviate.Roles.Create(
                 roleName,
-                [new Permissions.Roles(new RolesResource(roleName, null)) { Read = true }]
+                [new Permissions.Roles(roleName, null) { Read = true }]
             );
             Assert.NotNull(created);
             Assert.Equal(roleName, created.Name);
@@ -250,13 +250,19 @@ public class TestRbacRoles : IntegrationTests
 
             await _weaviate.Roles.Create(roleName, Array.Empty<PermissionScope>());
 
-            await _weaviate.Users.Db.Delete(userName);
+            try
+            {
+                await _weaviate.Users.Db.Delete(userName);
+            }
+            catch (WeaviateNotFoundException) { }
 
             await _weaviate.Users.Db.Create(userName);
-            await _weaviate.Users.Db.AssignRoles(userName, new[] { roleName });
+
+            await _weaviate.Users.Db.AssignRoles(userName, roleName);
             var assignments = (await _weaviate.Roles.GetUserAssignments(roleName)).ToList();
             Assert.Contains(assignments, a => a.UserId == userName);
-            await _weaviate.Users.Db.RevokeRoles(userName, new[] { roleName });
+
+            await _weaviate.Users.Db.RevokeRoles(userName, roleName);
             var after = (await _weaviate.Roles.GetUserAssignments(roleName)).ToList();
             Assert.DoesNotContain(after, a => a.UserId == userName);
         }
@@ -265,9 +271,6 @@ public class TestRbacRoles : IntegrationTests
             await _weaviate.Roles.Delete(roleName);
 
             await _weaviate.Users.Db.Delete(userName);
-            {
-                // Expected if already cleaned up
-            }
         }
     }
 
@@ -283,7 +286,11 @@ public class TestRbacRoles : IntegrationTests
 
             await _weaviate.Roles.Create(roleName, PermissionScope.Empty());
 
-            await _weaviate.Users.Db.Delete(userName);
+            try
+            {
+                await _weaviate.Users.Db.Delete(userName);
+            }
+            catch (WeaviateNotFoundException) { }
 
             await _weaviate.Users.Db.Create(userName);
             await _weaviate.Users.Db.AssignRoles(userName, new[] { roleName });

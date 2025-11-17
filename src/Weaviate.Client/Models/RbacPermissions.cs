@@ -22,7 +22,7 @@ public static class Permissions
         public Alias(string? collection, string? alias)
             : this(new AliasesResource(collection, alias)) { }
 
-        public Alias(AliasesResource resource)
+        Alias(AliasesResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
@@ -67,7 +67,7 @@ public static class Permissions
         public Data(string? collection, string? tenant, string? @object)
             : this(new DataResource(collection, tenant, @object)) { }
 
-        public Data(DataResource resource)
+        Data(DataResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
@@ -109,7 +109,7 @@ public static class Permissions
         public Backups(string? collection)
             : this(new BackupsResource(collection)) { }
 
-        public Backups(BackupsResource resource)
+        Backups(BackupsResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
@@ -176,7 +176,7 @@ public static class Permissions
         public Nodes(string? collection, NodeVerbosity? verbosity)
             : this(new NodesResource(collection, verbosity)) { }
 
-        public Nodes(NodesResource resource)
+        Nodes(NodesResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
@@ -216,7 +216,7 @@ public static class Permissions
         public Roles(string? name, RolesScope? scope = null)
             : this(new RolesResource(name, scope)) { }
 
-        public Roles(RolesResource resource)
+        Roles(RolesResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
@@ -265,7 +265,7 @@ public static class Permissions
         public Users(string? name)
             : this(new UsersResource(name)) { }
 
-        public Users(UsersResource resource)
+        Users(UsersResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
@@ -316,7 +316,7 @@ public static class Permissions
         public Tenants(string? collection, string? tenant)
             : this(new TenantsResource(collection, tenant)) { }
 
-        public Tenants(TenantsResource resource)
+        Tenants(TenantsResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
@@ -362,7 +362,7 @@ public static class Permissions
         public Groups(string? group, RbacGroupType? groupType)
             : this(new GroupsResource(group, groupType)) { }
 
-        public Groups(GroupsResource resource)
+        Groups(GroupsResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
@@ -407,7 +407,7 @@ public static class Permissions
         public Replicate(string? collection, string? shard)
             : this(new ReplicateResource(collection, shard)) { }
 
-        public Replicate(ReplicateResource resource)
+        Replicate(ReplicateResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
@@ -453,7 +453,7 @@ public static class Permissions
         public Collections(string? collection)
             : this(new CollectionsResource(collection)) { }
 
-        public Collections(CollectionsResource resource)
+        Collections(CollectionsResource resource)
         {
             Resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
