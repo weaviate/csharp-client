@@ -35,7 +35,9 @@ public class TestRbacUsers : IntegrationTests
     public async Task Test_ListUsers()
     {
         RequireVersion("1.30.0");
-        var users = await _weaviate.Users.Db.List();
+        var users = await _weaviate.Users.Db.List(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         var userList = users.ToList();
 
         Assert.NotEmpty(userList);
@@ -59,7 +61,10 @@ public class TestRbacUsers : IntegrationTests
             Assert.NotEmpty(apiKey);
 
             // Get user
-            var user = await _weaviate.Users.Db.Get(randomUserName);
+            var user = await _weaviate.Users.Db.Get(
+                randomUserName,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
             Assert.NotNull(user);
             Assert.Equal(randomUserName, user.UserId);
             Assert.Equal(DatabaseUserType.DbUser, user.DbUserType);
@@ -178,25 +183,47 @@ public class TestRbacUsers : IntegrationTests
             );
 
             // Deactivate
-            await _weaviate.Users.Db.Deactivate(randomUserName);
+            await _weaviate.Users.Db.Deactivate(
+                randomUserName,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
             // Not throwing means success
 
             // Second deactivation should return false because nothing changed
-            Assert.False(await _weaviate.Users.Db.Deactivate(randomUserName));
+            Assert.False(
+                await _weaviate.Users.Db.Deactivate(
+                    randomUserName,
+                    cancellationToken: TestContext.Current.CancellationToken
+                )
+            );
 
             // Verify user is inactive
-            var user = await _weaviate.Users.Db.Get(randomUserName);
+            var user = await _weaviate.Users.Db.Get(
+                randomUserName,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
             Assert.NotNull(user);
             Assert.False(user!.Active);
 
             // Activate
-            await _weaviate.Users.Db.Activate(randomUserName);
+            await _weaviate.Users.Db.Activate(
+                randomUserName,
+                TestContext.Current.CancellationToken
+            );
 
             // Second activation should return false because nothing changed
-            Assert.False(await _weaviate.Users.Db.Activate(randomUserName));
+            Assert.False(
+                await _weaviate.Users.Db.Activate(
+                    randomUserName,
+                    TestContext.Current.CancellationToken
+                )
+            );
 
             // Verify user is active
-            user = await _weaviate.Users.Db.Get(randomUserName);
+            user = await _weaviate.Users.Db.Get(
+                randomUserName,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
             Assert.NotNull(user);
             Assert.True(user!.Active);
         }
@@ -221,7 +248,11 @@ public class TestRbacUsers : IntegrationTests
             );
 
             // Deactivate with revoke_key=true
-            await _weaviate.Users.Db.Deactivate(randomUserName, revokeKey: true);
+            await _weaviate.Users.Db.Deactivate(
+                randomUserName,
+                revokeKey: true,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
 
             // Old key should not work anymore (capture exception from client construction + call)
             await Assert.ThrowsAnyAsync<WeaviateException>(async () =>
@@ -237,7 +268,10 @@ public class TestRbacUsers : IntegrationTests
             });
 
             // Re-activate
-            await _weaviate.Users.Db.Activate(randomUserName);
+            await _weaviate.Users.Db.Activate(
+                randomUserName,
+                TestContext.Current.CancellationToken
+            );
 
             // Old key still shouldn't work (revoked)
             await Assert.ThrowsAnyAsync<WeaviateException>(async () =>

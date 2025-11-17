@@ -480,6 +480,6 @@ internal partial class WeaviateGrpcClient
                 throw new ArgumentException("Unsupported media type for aggregate near media.");
         }
 
-        return await Aggregate(request);
+        return await Aggregate(request, cancellationToken);
     }
 }
