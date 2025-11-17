@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 namespace Weaviate.Client.Models;
 
 public record BackupsResource(string? Collection);

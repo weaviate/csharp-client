@@ -9,6 +9,7 @@ using Xunit;
 /// Integration tests for Users client operations against RBAC-enabled Weaviate.
 /// Requires Weaviate with RBAC running on port defined in RBAC_PORT.
 /// </summary>
+[Trait("Category", "RBAC")]
 public class TestRbacUsers : IntegrationTests
 {
     public override ushort RestPort => 8092;
@@ -23,7 +24,7 @@ public class TestRbacUsers : IntegrationTests
         RequireVersion("1.30.0");
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task Test_OwnUser()
     {
         RequireVersion("1.28.0");
@@ -34,7 +35,7 @@ public class TestRbacUsers : IntegrationTests
         Assert.NotEmpty(user.Roles);
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task Test_ListUsers()
     {
         RequireVersion("1.30.0");
@@ -45,7 +46,7 @@ public class TestRbacUsers : IntegrationTests
         Assert.Contains(userList, u => u.UserId == "admin-user");
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task Test_CreateUserAndGet()
     {
         RequireVersion("1.30.0");
@@ -84,7 +85,7 @@ public class TestRbacUsers : IntegrationTests
         }
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task Test_DeleteUser()
     {
         RequireVersion("1.30.0");
@@ -94,15 +95,17 @@ public class TestRbacUsers : IntegrationTests
         await _weaviate.Users.Db.Create(randomUserName);
 
         // Delete user
-        var deleted = await _weaviate.Users.Db.Delete(randomUserName);
-        Assert.True(deleted);
+        await _weaviate.Users.Db.Delete(randomUserName);
+        // No exception means success
 
-        // Verify delete of non-existent user returns false
-        var deletedAgain = await _weaviate.Users.Db.Delete("i-do-not-exist");
-        Assert.False(deletedAgain);
+        // Verify delete of non-existent user throws exception
+        await Assert.ThrowsAsync<WeaviateNotFoundException>(async () =>
+        {
+            await _weaviate.Users.Db.Delete(randomUserName);
+        });
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task Test_RotateUserKey()
     {
         RequireVersion("1.30.0");
@@ -149,7 +152,7 @@ public class TestRbacUsers : IntegrationTests
         }
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task Test_ActivateDeactivate()
     {
         RequireVersion("1.30.0");
@@ -161,12 +164,14 @@ public class TestRbacUsers : IntegrationTests
             await _weaviate.Users.Db.Create(randomUserName);
 
             // Deactivate
-            var deactivated = await _weaviate.Users.Db.Deactivate(randomUserName);
-            Assert.True(deactivated);
+            await _weaviate.Users.Db.Deactivate(randomUserName);
+            // Not throwing means success
 
-            // Second deactivation returns conflict (false)
-            var deactivatedAgain = await _weaviate.Users.Db.Deactivate(randomUserName);
-            Assert.False(deactivatedAgain);
+            // Second deactivation should throw a conflict exception
+            await Assert.ThrowsAsync<WeaviateConflictException>(async () =>
+            {
+                await _weaviate.Users.Db.Deactivate(randomUserName);
+            });
 
             // Verify user is inactive
             var user = await _weaviate.Users.Db.Get(randomUserName);
@@ -174,12 +179,13 @@ public class TestRbacUsers : IntegrationTests
             Assert.False(user!.Active);
 
             // Activate
-            var activated = await _weaviate.Users.Db.Activate(randomUserName);
-            Assert.True(activated);
+            await _weaviate.Users.Db.Activate(randomUserName);
 
-            // Second activation returns conflict (false)
-            var activatedAgain = await _weaviate.Users.Db.Activate(randomUserName);
-            Assert.False(activatedAgain);
+            // Second activation should throw a conflict exception
+            await Assert.ThrowsAsync<WeaviateConflictException>(async () =>
+            {
+                await _weaviate.Users.Db.Activate(randomUserName);
+            });
 
             // Verify user is active
             user = await _weaviate.Users.Db.Get(randomUserName);
@@ -192,7 +198,7 @@ public class TestRbacUsers : IntegrationTests
         }
     }
 
-    [Fact, Trait("Category", "RBAC")]
+    [Fact]
     public async Task Test_DeactivateAndRevokeKey()
     {
         RequireVersion("1.30.0");
@@ -204,8 +210,7 @@ public class TestRbacUsers : IntegrationTests
             var apiKeyOld = await _weaviate.Users.Db.Create(randomUserName);
 
             // Deactivate with revoke_key=true
-            var deactivated = await _weaviate.Users.Db.Deactivate(randomUserName, revokeKey: true);
-            Assert.True(deactivated);
+            await _weaviate.Users.Db.Deactivate(randomUserName, revokeKey: true);
 
             // Old key should not work anymore (capture exception from client construction + call)
             await Assert.ThrowsAnyAsync<WeaviateException>(async () =>

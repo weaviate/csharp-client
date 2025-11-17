@@ -47,38 +47,39 @@ public class UsersDatabaseClient
     /// <summary>
     /// Deletes a database user.
     /// </summary>
-    public Task<bool> Delete(string userId) => _client.RestClient.UserDbDelete(userId);
+    public Task Delete(string userId) => _client.RestClient.UserDbDelete(userId);
 
     /// <summary>
     /// Rotates the API key for a database user.
     /// </summary>
-    public async Task<string?> RotateApiKey(string userId)
+    public async Task<string> RotateApiKey(string userId)
     {
         var apiKey = await _client.RestClient.UserDbRotateKey(userId);
-        return apiKey?.Apikey;
+
+        return apiKey.Apikey;
     }
 
     /// <summary>
     /// Activates a database user.
     /// </summary>
-    public Task<bool> Activate(string userId) => _client.RestClient.UserDbActivate(userId);
+    public Task Activate(string userId) => _client.RestClient.UserDbActivate(userId);
 
     /// <summary>
     /// Deactivates a database user, optionally revoking their API key.
     /// </summary>
-    public Task<bool> Deactivate(string userId, bool? revokeKey = null) =>
+    public Task Deactivate(string userId, bool? revokeKey = null) =>
         _client.RestClient.UserDbDeactivate(userId, revokeKey);
 
     /// <summary>
     /// Assigns roles to a database user.
     /// </summary>
-    public Task<bool> AssignRoles(string userId, IEnumerable<string> roles) =>
+    public Task<bool> AssignRoles(string userId, params string[] roles) =>
         _client.RestClient.UserAssignRoles(userId, UserType.ToEnumMemberString(), roles);
 
     /// <summary>
     /// Revokes roles from a database user.
     /// </summary>
-    public Task<bool> RevokeRoles(string userId, IEnumerable<string> roles) =>
+    public Task<bool> RevokeRoles(string userId, params string[] roles) =>
         _client.RestClient.UserRevokeRoles(userId, UserType.ToEnumMemberString(), roles);
 
     /// <summary>
