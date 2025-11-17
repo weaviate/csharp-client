@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
-using Weaviate.Client.Rest.Dto;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Weaviate.Client.Tests")]
 
