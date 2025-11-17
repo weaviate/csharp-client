@@ -16,7 +16,7 @@ public class GroupsOidcClient
     /// <summary>
     /// Lists all OIDC groups.
     /// </summary>
-    public Task<IEnumerable<string>> List() =>
+    public Task<IEnumerable<string>> GetKnownGroupNames() =>
         _client.RestClient.GroupsList(GroupType.ToEnumMemberString());
 
     /// <summary>

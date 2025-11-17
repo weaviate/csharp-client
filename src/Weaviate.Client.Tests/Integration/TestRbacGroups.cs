@@ -25,7 +25,7 @@ public class TestRbacGroups : IntegrationTests
     public async Task ListGroups()
     {
         RequireVersion("1.30.0");
-        var groups = await _weaviate.Groups.Oidc.List();
+        var groups = await _weaviate.Groups.Oidc.GetKnownGroupNames();
         // Enumeration should not throw; emptiness is acceptable depending on environment configuration.
         _ = groups.ToList();
     }
