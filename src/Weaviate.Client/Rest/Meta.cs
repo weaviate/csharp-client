@@ -14,7 +14,16 @@ internal partial class WeaviateRestClient
 
         var response = await _httpClient.GetAsync(path, cancellationToken);
 
-        await response.EnsureExpectedStatusCodeAsync([200], "get meta endpoint");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK, // 200
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "get meta endpoint"
+        );
 
         var meta = await response.Content.ReadFromJsonAsync<Meta>(
             options: RestJsonSerializerOptions,

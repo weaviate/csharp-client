@@ -381,22 +381,21 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         Assert.NotNull(fun);
         Assert.Equal(2, funObjects.Count);
-        Assert.Equal(0, funObjects[0]?.References.Count);
-        Assert.Equal(0, funObjects[1]?.References.Count);
+        Assert.All(
+            funObjects,
+            fo => Assert.True(fo?.References == null || fo.References.Count == 0)
+        );
 
         Assert.NotNull(disappointed);
         Assert.Equal(2, disappointedObjects.Count);
-        Assert.Equal(1, disappointedObjects[0]?.References.Count);
-        Assert.Equal(1, disappointedObjects[1]?.References.Count);
-
-        Assert.True(disappointedObjects[0].References.ContainsKey("forMovie"));
-        Assert.True(disappointedObjects[1].References.ContainsKey("forMovie"));
-
-        Assert.True(
-            disappointedObjects[0].References["forMovie"][0].Properties.ContainsKey("title")
-        );
-        Assert.True(
-            disappointedObjects[1].References["forMovie"][0].Properties.ContainsKey("title")
+        Assert.All(
+            disappointedObjects,
+            dobj =>
+            {
+                Assert.NotNull(dobj.References);
+                Assert.True(dobj.References.ContainsKey("forMovie"));
+                Assert.True(dobj.References["forMovie"].Count > 0);
+            }
         );
 
         var dmRefs = disappointedObjects

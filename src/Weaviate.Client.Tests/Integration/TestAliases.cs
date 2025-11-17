@@ -156,13 +156,14 @@ public class TestAliases : IntegrationTests
         // Act
         await _weaviate.Alias.Delete(aliasName);
 
-        // Assert - Getting deleted alias should return null
-        var deletedAlias = await _weaviate.Alias.Get(aliasName);
-        Assert.Null(deletedAlias);
+        // Assert - Getting deleted alias should throw exception
+        await Assert.ThrowsAnyAsync<WeaviateNotFoundException>(async () =>
+            await _weaviate.Alias.Get(aliasName)
+        );
     }
 
     [Fact]
-    public async Task Test_Get_Nonexistent_Alias_DoesNotThrow_Exception()
+    public async Task Test_Get_Nonexistent_Alias_Throws_Exception()
     {
         // Arrange
         var collection = await CollectionFactory(
@@ -173,10 +174,10 @@ public class TestAliases : IntegrationTests
         var nonexistentAliasName = MakeUniqueCollectionName<object>("NonexistentAlias");
 
         // Act
-        var result = await _weaviate.Alias.Get(nonexistentAliasName);
-
         // Assert
-        Assert.Null(result);
+        await Assert.ThrowsAnyAsync<WeaviateNotFoundException>(async () =>
+            await _weaviate.Alias.Get(nonexistentAliasName)
+        );
     }
 
     [Fact]
