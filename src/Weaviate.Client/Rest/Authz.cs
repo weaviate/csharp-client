@@ -216,11 +216,7 @@ internal partial class WeaviateRestClient
     }
 
     // User role operations
-    internal async Task<bool> UserAssignRoles(
-        string userId,
-        string userType,
-        IEnumerable<string> roles
-    )
+    internal async Task UserAssignRoles(string userId, string userType, IEnumerable<string> roles)
     {
         var body = new { roles = roles, userType };
         var response = await _httpClient.PostAsJsonAsync(
@@ -237,14 +233,9 @@ internal partial class WeaviateRestClient
         {
             throw new WeaviateNotFoundException(ex, ResourceType.User);
         }
-        return true;
     }
 
-    internal async Task<bool> UserRevokeRoles(
-        string userId,
-        string userType,
-        IEnumerable<string> roles
-    )
+    internal async Task UserRevokeRoles(string userId, string userType, IEnumerable<string> roles)
     {
         var body = new { roles = roles, userType };
         var response = await _httpClient.PostAsJsonAsync(
@@ -261,7 +252,6 @@ internal partial class WeaviateRestClient
         {
             throw new WeaviateNotFoundException(ex, ResourceType.User);
         }
-        return true;
     }
 
     internal async Task<IEnumerable<Dto.Role>> UserRolesGet(
@@ -289,7 +279,7 @@ internal partial class WeaviateRestClient
     }
 
     // Group role operations
-    internal async Task<bool> GroupAssignRoles(
+    internal async Task GroupAssignRoles(
         string groupId,
         string groupType,
         IEnumerable<string> roles
@@ -310,10 +300,9 @@ internal partial class WeaviateRestClient
         {
             throw new WeaviateNotFoundException(ex, ResourceType.Group);
         }
-        return true;
     }
 
-    internal async Task<bool> GroupRevokeRoles(
+    internal async Task GroupRevokeRoles(
         string groupId,
         string groupType,
         IEnumerable<string> roles
@@ -334,7 +323,6 @@ internal partial class WeaviateRestClient
         {
             throw new WeaviateNotFoundException(ex, ResourceType.Group);
         }
-        return true;
     }
 
     internal async Task<IEnumerable<Dto.Role>> GroupRolesGet(

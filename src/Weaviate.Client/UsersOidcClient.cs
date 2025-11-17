@@ -16,13 +16,13 @@ public class UsersOidcClient
     /// <summary>
     /// Assigns roles to an OIDC user.
     /// </summary>
-    public Task<bool> AssignRoles(string userId, IEnumerable<string> roles) =>
+    public Task AssignRoles(string userId, IEnumerable<string> roles) =>
         _client.RestClient.UserAssignRoles(userId, UserType.ToEnumMemberString(), roles);
 
     /// <summary>
     /// Revokes roles from an OIDC user.
     /// </summary>
-    public Task<bool> RevokeRoles(string userId, IEnumerable<string> roles) =>
+    public Task RevokeRoles(string userId, IEnumerable<string> roles) =>
         _client.RestClient.UserRevokeRoles(userId, UserType.ToEnumMemberString(), roles);
 
     /// <summary>

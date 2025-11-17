@@ -73,13 +73,13 @@ public class UsersDatabaseClient
     /// <summary>
     /// Assigns roles to a database user.
     /// </summary>
-    public Task<bool> AssignRoles(string userId, params string[] roles) =>
+    public Task AssignRoles(string userId, params string[] roles) =>
         _client.RestClient.UserAssignRoles(userId, UserType.ToEnumMemberString(), roles);
 
     /// <summary>
     /// Revokes roles from a database user.
     /// </summary>
-    public Task<bool> RevokeRoles(string userId, params string[] roles) =>
+    public Task RevokeRoles(string userId, params string[] roles) =>
         _client.RestClient.UserRevokeRoles(userId, UserType.ToEnumMemberString(), roles);
 
     /// <summary>
