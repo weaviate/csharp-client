@@ -272,8 +272,8 @@ public class TestRbacRoles : IntegrationTests
 
             await _weaviate.Users.Db.AssignRoles(
                 userName,
-                TestContext.Current.CancellationToken,
-                roleName
+                new[] { roleName },
+                TestContext.Current.CancellationToken
             );
             var assignments = (
                 await _weaviate.Roles.GetUserAssignments(
@@ -283,7 +283,11 @@ public class TestRbacRoles : IntegrationTests
             ).ToList();
             Assert.Contains(assignments, a => a.UserId == userName);
 
-            await _weaviate.Users.Db.RevokeRoles(userName, roleName);
+            await _weaviate.Users.Db.RevokeRoles(
+                userName,
+                new[] { roleName },
+                TestContext.Current.CancellationToken
+            );
             var after = (
                 await _weaviate.Roles.GetUserAssignments(
                     roleName,
@@ -328,8 +332,8 @@ public class TestRbacRoles : IntegrationTests
             );
             await _weaviate.Users.Db.AssignRoles(
                 userName,
-                cancellationToken: TestContext.Current.CancellationToken,
-                roleName
+                new[] { roleName },
+                cancellationToken: TestContext.Current.CancellationToken
             );
             var roles = (
                 await _weaviate.Users.Db.GetRoles(
@@ -382,8 +386,8 @@ public class TestRbacRoles : IntegrationTests
             // Assign role to user
             await _weaviate.Users.Db.AssignRoles(
                 randomUserName,
-                cancellationToken: TestContext.Current.CancellationToken,
-                roleName
+                new[] { roleName },
+                cancellationToken: TestContext.Current.CancellationToken
             );
 
             // Get user and check merged permissions
@@ -444,8 +448,8 @@ public class TestRbacRoles : IntegrationTests
             // Assign role to user
             await _weaviate.Users.Db.AssignRoles(
                 randomUserName,
-                TestContext.Current.CancellationToken,
-                roleName
+                new[] { roleName },
+                TestContext.Current.CancellationToken
             );
 
             // Get user and check merged permissions
