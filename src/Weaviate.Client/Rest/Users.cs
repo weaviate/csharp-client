@@ -13,16 +13,19 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.UsersOwnInfo(),
             cancellationToken
         );
-        var status = await response.EnsureExpectedStatusCodeAsync(
-            [200, 401, 403, 500],
-            "get own user info"
-        );
-        return status == HttpStatusCode.OK
-            ? await response.Content.ReadFromJsonAsync<Dto.UserOwnInfo>(
+        try
+        {
+            await response.ManageStatusCode([HttpStatusCode.OK], "get own user info");
+            return await response.Content.ReadFromJsonAsync<Dto.UserOwnInfo>(
                 RestJsonSerializerOptions,
                 cancellationToken
-            )
-            : null;
+            );
+        }
+        catch (WeaviateUnexpectedStatusCodeException)
+            when (response.StatusCode != HttpStatusCode.OK)
+        {
+            return null;
+        }
     }
 
     internal async Task<IEnumerable<Dto.DBUserInfo>> UsersDbList(
@@ -34,7 +37,7 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.UsersDb(includeLastUsedTime),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "list db users");
+        await response.ManageStatusCode([HttpStatusCode.OK], "list db users");
         var users = await response.Content.ReadFromJsonAsync<IEnumerable<Dto.DBUserInfo>>(
             RestJsonSerializerOptions,
             cancellationToken
@@ -54,7 +57,7 @@ internal partial class WeaviateRestClient
         );
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "get db user");
+            await response.ManageStatusCode([HttpStatusCode.OK], "get db user");
             return await response.Content.ReadFromJsonAsync<Dto.DBUserInfo>(
                     RestJsonSerializerOptions,
                     cancellationToken
@@ -95,7 +98,7 @@ internal partial class WeaviateRestClient
                 null,
                 cancellationToken
             );
-        await response.EnsureExpectedStatusCodeAsync([201], "create db user");
+        await response.ManageStatusCode([HttpStatusCode.Created], "create db user");
         return await response.Content.ReadFromJsonAsync<Dto.UserApiKey>(
                 RestJsonSerializerOptions,
                 cancellationToken
@@ -111,7 +114,14 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.UserDb(userId),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([204, 404], "delete db user");
+        try
+        {
+            await response.ManageStatusCode([HttpStatusCode.NoContent], "delete db user");
+        }
+        catch (WeaviateNotFoundException)
+        {
+            return false;
+        }
 
         return response.StatusCode == HttpStatusCode.NoContent;
     }
@@ -128,7 +138,7 @@ internal partial class WeaviateRestClient
         );
         try
         {
-            await response.EnsureExpectedStatusCodeAsync([200], "rotate user api key");
+            await response.ManageStatusCode([HttpStatusCode.OK], "rotate user api key");
             return await response.Content.ReadFromJsonAsync<Dto.UserApiKey>(
                     RestJsonSerializerOptions,
                     cancellationToken
@@ -152,7 +162,14 @@ internal partial class WeaviateRestClient
             cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200, 409], "activate user");
+        try
+        {
+            await response.ManageStatusCode([HttpStatusCode.OK], "activate user");
+        }
+        catch (WeaviateConflictException)
+        {
+            return false;
+        }
 
         return response.StatusCode == HttpStatusCode.OK;
     }
@@ -182,8 +199,19 @@ internal partial class WeaviateRestClient
                 cancellationToken
             );
         }
-
-        await response.EnsureExpectedStatusCodeAsync([200, 409], "deactivate user");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                HttpStatusCode.Conflict,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "deactivate user",
+            ResourceType.User
+        );
 
         return response.StatusCode == HttpStatusCode.OK;
     }
