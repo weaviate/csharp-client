@@ -404,6 +404,6 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
             .Select(r => r.ID)
             .ToHashSet();
         Assert.Contains(movieIds[2], dmRefs);
-        Assert.Contains(movieIds[1], dmRefs);
+        Assert.Contains(movieIds[3], dmRefs);
     }
 }
