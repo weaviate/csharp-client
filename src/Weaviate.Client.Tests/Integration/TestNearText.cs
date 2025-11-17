@@ -78,7 +78,7 @@ public partial class SearchTests : IntegrationTests
         Assert.NotNull(retrieved.Objects);
         Assert.NotNull(retrieved.Groups);
 
-        var retrievedObjects = retrieved.Objects.ToArray();
+        var retrievedObjects = retrieved.Objects.OrderBy(o => o.BelongsToGroup).ToArray();
 
         Assert.Equal(2, retrieved.Objects.Count());
         Assert.Equal(2, retrieved.Groups.Count());
@@ -92,11 +92,12 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(guids[3], obj.ID);
         Assert.Contains("default", obj.Vectors.Keys);
 
-        Assert.Equal(guids[3], retrievedObjects[0].ID);
+        Assert.Equal("apple cake", retrievedObjects[0].BelongsToGroup);
+        Assert.Equal(guids[2], retrievedObjects[0].ID);
         Assert.Contains("default", retrievedObjects[0].Vectors.Keys);
-        Assert.Equal("cake", retrievedObjects[0].BelongsToGroup);
-        Assert.Equal(guids[2], retrievedObjects[1].ID);
+
+        Assert.Equal("cake", retrievedObjects[1].BelongsToGroup);
+        Assert.Equal(guids[3], retrievedObjects[1].ID);
         Assert.Contains("default", retrievedObjects[1].Vectors.Keys);
-        Assert.Equal("apple cake", retrievedObjects[1].BelongsToGroup);
     }
 }
