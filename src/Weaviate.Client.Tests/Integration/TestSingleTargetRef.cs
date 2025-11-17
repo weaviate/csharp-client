@@ -402,7 +402,7 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
         var dmRefs = disappointedObjects
             .SelectMany(x => x.References["forMovie"])
             .Select(r => r.ID)
-            .ToHashSet()
+            .ToHashSet();
         Assert.Contains(movieIds[2], dmRefs);
         Assert.Contains(movieIds[1], dmRefs);
     }
