@@ -305,4 +305,101 @@ public class TestRbacRoles : IntegrationTests
             await _weaviate.Users.Db.Delete(userName);
         }
     }
+
+    [Fact]
+    public async Task Test_RoleWithDataPermissions_MergesCorrectly()
+    {
+        RequireVersion("1.30.0");
+        var randomUserName = $"multi-perm-user-{Random.Shared.Next(1, 10000)}";
+        var roleName = $"multi-perm-role-{Random.Shared.Next(1, 10000)}";
+        var collection = "Cats";
+        try
+        {
+            // Create user
+            await _weaviate.Users.Db.Create(randomUserName);
+
+            // Create role with multiple Data permissions
+            var permissions = new[]
+            {
+                new Permissions.Data(collection, null, null)
+                {
+                    Read = true,
+                    Update = true,
+                    Delete = true,
+                },
+            };
+            await _weaviate.Roles.Create(roleName, permissions);
+
+            // Assign role to user
+            await _weaviate.Users.Db.AssignRoles(randomUserName, roleName);
+
+            // Get user and check merged permissions
+            var roles = await _weaviate.Users.Db.GetRoles(randomUserName, includeFullRoles: true);
+
+            var role = Assert.Single(roles);
+
+            Assert.Equal(roleName, role.Name);
+            Assert.NotNull(role);
+
+            var dataPerm = role
+                .Permissions.OfType<Permissions.Data>()
+                .FirstOrDefault(p => p.Resource.Collection == collection);
+            Assert.NotNull(dataPerm);
+            Assert.True(dataPerm.Read);
+            Assert.True(dataPerm.Update);
+            Assert.True(dataPerm.Delete);
+        }
+        finally
+        {
+            await _weaviate.Users.Db.Delete(randomUserName);
+            await _weaviate.Roles.Delete(roleName);
+        }
+    }
+
+    [Fact]
+    public async Task Test_RoleWithMultipleDataPermissions_MergesCorrectly()
+    {
+        RequireVersion("1.30.0");
+        var randomUserName = $"multi-perm-user-{Random.Shared.Next(1, 10000)}";
+        var roleName = $"multi-perm-role-{Random.Shared.Next(1, 10000)}";
+        var collection = "Cats";
+        try
+        {
+            // Create user
+            await _weaviate.Users.Db.Create(randomUserName);
+
+            // Create role with multiple Data permissions
+            var permissions = new[]
+            {
+                new Permissions.Data(collection, null, null) { Read = true },
+                new Permissions.Data(collection, null, null) { Update = true },
+                new Permissions.Data(collection, null, null) { Delete = true },
+            };
+            await _weaviate.Roles.Create(roleName, permissions);
+
+            // Assign role to user
+            await _weaviate.Users.Db.AssignRoles(randomUserName, roleName);
+
+            // Get user and check merged permissions
+            var roles = await _weaviate.Users.Db.GetRoles(randomUserName, includeFullRoles: true);
+
+            var role = Assert.Single(roles);
+
+            Assert.Equal(roleName, role.Name);
+            Assert.NotNull(role);
+
+            var dataPerm = role
+                .Permissions.OfType<Permissions.Data>()
+                .FirstOrDefault(p => p.Resource.Collection == collection);
+            Assert.NotNull(dataPerm);
+            Assert.True(dataPerm.Read);
+            Assert.True(dataPerm.Update);
+            Assert.True(dataPerm.Delete);
+        }
+        finally
+        {
+            await _weaviate.Users.Db.Delete(randomUserName);
+            await _weaviate.Roles.Delete(roleName);
+        }
+    }
 }
