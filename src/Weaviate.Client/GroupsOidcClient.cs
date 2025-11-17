@@ -22,13 +22,13 @@ public class GroupsOidcClient
     /// <summary>
     /// Assigns roles to an OIDC group.
     /// </summary>
-    public Task<bool> AssignRoles(string groupId, IEnumerable<string> roles) =>
+    public Task AssignRoles(string groupId, IEnumerable<string> roles) =>
         _client.RestClient.GroupAssignRoles(groupId, GroupType.ToEnumMemberString(), roles);
 
     /// <summary>
     /// Revokes roles from an OIDC group.
     /// </summary>
-    public Task<bool> RevokeRoles(string groupId, IEnumerable<string> roles) =>
+    public Task RevokeRoles(string groupId, IEnumerable<string> roles) =>
         _client.RestClient.GroupRevokeRoles(groupId, GroupType.ToEnumMemberString(), roles);
 
     /// <summary>
