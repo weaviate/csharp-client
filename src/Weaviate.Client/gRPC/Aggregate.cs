@@ -120,11 +120,17 @@ internal partial class WeaviateGrpcClient
         return r;
     }
 
-    private async Task<AggregateReply> Aggregate(AggregateRequest request)
+    private async Task<AggregateReply> Aggregate(
+        AggregateRequest request,
+        CancellationToken cancellationToken = default
+    )
     {
         try
         {
-            var reply = await _grpcClient.AggregateAsync(request, CreateCallOptions());
+            var reply = await _grpcClient.AggregateAsync(
+                request,
+                CreateCallOptions(cancellationToken)
+            );
             reply.Collection = request.Collection;
             return reply;
         }
@@ -149,7 +155,8 @@ internal partial class WeaviateGrpcClient
         Aggregate.GroupBy? groupBy,
         bool totalCount,
         string? tenant,
-        params Aggregate.Metric[] metrics
+        Aggregate.Metric[] metrics,
+        CancellationToken cancellationToken = default
     )
     {
         var request = BaseAggregateRequest(
@@ -162,7 +169,7 @@ internal partial class WeaviateGrpcClient
             metrics
         );
 
-        return await Aggregate(request);
+        return await Aggregate(request, cancellationToken);
     }
 
     internal async Task<AggregateReply> AggregateNearText(
@@ -178,7 +185,8 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
-        Aggregate.Metric[] metrics
+        Aggregate.Metric[] metrics,
+        CancellationToken cancellationToken = default
     )
     {
         var request = BaseAggregateRequest(
@@ -224,7 +232,7 @@ internal partial class WeaviateGrpcClient
             };
         }
 
-        return await Aggregate(request);
+        return await Aggregate(request, cancellationToken);
     }
 
     internal async Task<AggregateReply> AggregateNearVector(
@@ -238,7 +246,8 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
-        Aggregate.Metric[] metrics
+        Aggregate.Metric[] metrics,
+        CancellationToken cancellationToken = default
     )
     {
         var request = BaseAggregateRequest(
@@ -253,7 +262,7 @@ internal partial class WeaviateGrpcClient
 
         request.NearVector = BuildNearVector(vector, certainty, distance, targetVector);
 
-        return await Aggregate(request);
+        return await Aggregate(request, cancellationToken);
     }
 
     internal async Task<AggregateReply> AggregateHybrid(
@@ -270,7 +279,8 @@ internal partial class WeaviateGrpcClient
         uint? objectLimit,
         bool totalCount,
         string? tenant,
-        Aggregate.Metric[] metrics
+        Aggregate.Metric[] metrics,
+        CancellationToken cancellationToken = default
     )
     {
         var request = BaseAggregateRequest(
@@ -317,7 +327,7 @@ internal partial class WeaviateGrpcClient
             };
         }
 
-        return await Aggregate(request);
+        return await Aggregate(request, cancellationToken);
     }
 
     internal async Task<AggregateReply> AggregateNearObject(
@@ -331,7 +341,8 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
-        Aggregate.Metric[] metrics
+        Aggregate.Metric[] metrics,
+        CancellationToken cancellationToken = default
     )
     {
         var request = BaseAggregateRequest(
@@ -359,7 +370,7 @@ internal partial class WeaviateGrpcClient
             request.NearObject.Distance = distance.Value;
         }
 
-        return await Aggregate(request);
+        return await Aggregate(request, cancellationToken);
     }
 
     internal async Task<AggregateReply> AggregateNearMedia(
@@ -374,7 +385,8 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
-        Aggregate.Metric[] metrics
+        Aggregate.Metric[] metrics,
+        CancellationToken cancellationToken = default
     )
     {
         var request = BaseAggregateRequest(
@@ -468,6 +480,6 @@ internal partial class WeaviateGrpcClient
                 throw new ArgumentException("Unsupported media type for aggregate near media.");
         }
 
-        return await Aggregate(request);
+        return await Aggregate(request, cancellationToken);
     }
 }

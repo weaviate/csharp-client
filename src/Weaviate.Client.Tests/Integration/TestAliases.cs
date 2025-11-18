@@ -354,7 +354,7 @@ public class TestAliases : IntegrationTests
         Assert.Equal(collection.Name, retrievedAlias.TargetClass);
 
         // Act - Delete the collection
-        await _weaviate.Collections.Delete(collection.Name);
+        await _weaviate.Collections.Delete(collection.Name, TestContext.Current.CancellationToken);
 
         // Assert - List aliases to confirm the alias still exists
         var allAliases = await _weaviate.Alias.List();
@@ -380,7 +380,10 @@ public class TestAliases : IntegrationTests
         );
 
         // Check if Collection.Exists with the alias name returns false
-        var exists = await _weaviate.Collections.Exists(aliasName);
+        var exists = await _weaviate.Collections.Exists(
+            aliasName,
+            TestContext.Current.CancellationToken
+        );
         Assert.False(
             exists,
             "Collection.Exists should return false for alias to deleted collection"

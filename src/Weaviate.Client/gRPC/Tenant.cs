@@ -4,7 +4,11 @@ namespace Weaviate.Client.Grpc;
 
 internal partial class WeaviateGrpcClient
 {
-    internal async Task<IEnumerable<V1.Tenant>> TenantsGet(string name, string[] tenantNames)
+    internal async Task<IEnumerable<V1.Tenant>> TenantsGet(
+        string name,
+        string[] tenantNames,
+        CancellationToken cancellationToken = default
+    )
     {
         var request = new TenantsGetRequest { Collection = name };
 
@@ -13,7 +17,10 @@ internal partial class WeaviateGrpcClient
             request.Names = new TenantNames { Values = { tenantNames } };
         }
 
-        TenantsGetReply reply = await _grpcClient.TenantsGetAsync(request, CreateCallOptions());
+        TenantsGetReply reply = await _grpcClient.TenantsGetAsync(
+            request,
+            CreateCallOptions(cancellationToken)
+        );
 
         return reply.Tenants;
     }

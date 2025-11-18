@@ -6,13 +6,18 @@ namespace Weaviate.Client.Grpc;
 
 internal partial class WeaviateGrpcClient
 {
-    private async Task<SearchReply> Search(V1.SearchRequest request)
+    private async Task<SearchReply> Search(
+        V1.SearchRequest request,
+        CancellationToken cancellationToken = default
+    )
     {
         try
         {
-            var reply = await _grpcClient.SearchAsync(request, CreateCallOptions());
+            var reply = await _grpcClient.SearchAsync(
+                request,
+                CreateCallOptions(cancellationToken)
+            );
             reply.Collection = request.Collection;
-
             return reply;
         }
         catch (global::Grpc.Core.RpcException ex)
@@ -36,7 +41,8 @@ internal partial class WeaviateGrpcClient
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     )
     {
         var req = BaseSearchRequest(
@@ -53,11 +59,11 @@ internal partial class WeaviateGrpcClient
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
-            includeVectors: includeVectors,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            includeVectors: includeVectors
         );
 
-        return await Search(req);
+        return await Search(req, cancellationToken);
     }
 
     internal async Task<SearchReply> SearchNearVector(
@@ -79,7 +85,8 @@ internal partial class WeaviateGrpcClient
         MetadataQuery? returnMetadata = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     )
     {
         var request = BaseSearchRequest(
@@ -103,7 +110,7 @@ internal partial class WeaviateGrpcClient
 
         request.NearVector = BuildNearVector(vector, certainty, distance, targetVector);
 
-        return await Search(request);
+        return await Search(request, cancellationToken);
     }
 
     internal async Task<SearchReply> SearchNearText(
@@ -127,7 +134,8 @@ internal partial class WeaviateGrpcClient
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     )
     {
         var request = BaseSearchRequest(
@@ -144,8 +152,8 @@ internal partial class WeaviateGrpcClient
             singlePrompt: singlePrompt,
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
-            returnReferences: returnReferences,
             returnMetadata: returnMetadata,
+            returnReferences: returnReferences,
             includeVectors: includeVectors
         );
 
@@ -158,7 +166,7 @@ internal partial class WeaviateGrpcClient
             targetVector
         );
 
-        return await Search(request);
+        return await Search(request, cancellationToken);
     }
 
     internal async Task<SearchReply> SearchBM25(
@@ -177,9 +185,10 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
-        IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        IList<QueryReference>? returnReferences = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     )
     {
         var request = BaseSearchRequest(
@@ -196,15 +205,15 @@ internal partial class WeaviateGrpcClient
             after: after,
             tenant: tenant,
             consistencyLevel: consistencyLevel,
-            returnProperties: returnProperties,
-            returnReferences: returnReferences,
             returnMetadata: returnMetadata,
+            returnReferences: returnReferences,
+            returnProperties: returnProperties,
             includeVectors: includeVectors
         );
 
         BuildBM25(request, query, properties: searchFields);
 
-        return await Search(request);
+        return await Search(request, cancellationToken);
     }
 
     internal async Task<SearchReply> SearchHybrid(
@@ -230,9 +239,10 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
-        IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        IList<QueryReference>? returnReferences = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     )
     {
         if (
@@ -260,8 +270,8 @@ internal partial class WeaviateGrpcClient
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
-            includeVectors: includeVectors,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            includeVectors: includeVectors
         );
 
         BuildHybrid(
@@ -278,7 +288,7 @@ internal partial class WeaviateGrpcClient
             targetVector
         );
 
-        return await Search(request);
+        return await Search(request, cancellationToken);
     }
 
     internal async Task<SearchReply> SearchNearObject(
@@ -296,11 +306,12 @@ internal partial class WeaviateGrpcClient
         GroupedPrompt? groupedPrompt,
         TargetVectors? targetVector,
         MetadataQuery? returnMetadata,
-        VectorQuery? includeVectors,
         OneOrManyOf<string>? returnProperties,
         IList<QueryReference>? returnReferences,
         string? tenant = null,
-        ConsistencyLevels? consistencyLevel = null
+        ConsistencyLevels? consistencyLevel = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     )
     {
         var request = BaseSearchRequest(
@@ -318,13 +329,13 @@ internal partial class WeaviateGrpcClient
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
-            includeVectors: includeVectors,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            includeVectors: includeVectors
         );
 
         BuildNearObject(request, objectID, certainty, distance, targetVector);
 
-        return await Search(request);
+        return await Search(request, cancellationToken);
     }
 
     internal async Task<SearchReply> SearchNearMedia(
@@ -346,8 +357,9 @@ internal partial class WeaviateGrpcClient
         ConsistencyLevels? consistencyLevel,
         OneOrManyOf<string>? returnProperties,
         MetadataQuery? returnMetadata,
-        VectorQuery? includeVectors,
-        IList<QueryReference>? returnReferences
+        IList<QueryReference>? returnReferences,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     )
     {
         var request = BaseSearchRequest(
@@ -365,8 +377,8 @@ internal partial class WeaviateGrpcClient
             groupedPrompt: groupedPrompt,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
-            includeVectors: includeVectors,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            includeVectors: includeVectors
         );
 
         switch (mediaType)
@@ -463,6 +475,6 @@ internal partial class WeaviateGrpcClient
                 throw new ArgumentException("Unsupported media type for near media search.");
         }
 
-        return await Search(request);
+        return await Search(request, cancellationToken);
     }
 }
