@@ -138,7 +138,10 @@ internal partial class WeaviateRestClient
             ) ?? throw new WeaviateRestClientException();
     }
 
-    internal async Task AliasDelete(string aliasName, CancellationToken cancellationToken = default)
+    internal async Task<bool> AliasDelete(
+        string aliasName,
+        CancellationToken cancellationToken = default
+    )
     {
         var response = await _httpClient.DeleteAsync(
             WeaviateEndpoints.Alias(aliasName),
@@ -148,15 +151,21 @@ internal partial class WeaviateRestClient
         await response.ManageStatusCode(
             [
                 HttpStatusCode.NoContent,
+                HttpStatusCode.NotFound, // 404
                 // HttpStatusCode.BadRequest, // 400
                 // HttpStatusCode.Unauthorized, // 401
                 // HttpStatusCode.Forbidden, // 403
-                // HttpStatusCode.NotFound, // 404
                 // HttpStatusCode.Conflict, // 409
                 // HttpStatusCode.InternalServerError, // 500
             ],
             "delete alias",
             ResourceType.Alias
         );
+
+        return response.StatusCode switch
+        {
+            HttpStatusCode.NoContent => true,
+            _ => false,
+        };
     }
 }
