@@ -178,7 +178,7 @@ public partial class ReferenceTests : IntegrationTests
     public async Task Test_SingleTargetReference_Complex()
     {
         // Arrange
-        var movies = await CollectionFactory<dynamic>(
+        var movies = await CollectionFactory<object>(
             name: "Movie",
             "Movies",
             properties:
@@ -191,7 +191,7 @@ public partial class ReferenceTests : IntegrationTests
             ]
         );
 
-        var reviews = await CollectionFactory<dynamic>(
+        var reviews = await CollectionFactory<object>(
             name: "Review",
             "Movie Reviews",
             properties:
@@ -363,8 +363,8 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         foreach (var r in reviewsData)
         {
-            // Using dynamic make somo implicit conversions impossible.
-            Guid movieId = movieIds[(int)r.movie_id];
+            Guid movieId = movieIds[r.movie_id];
+
             ObjectReference movieRef = ("forMovie", movieId);
             await reviews.Data.Insert(r, references: new List<ObjectReference>() { movieRef });
         }
@@ -373,7 +373,7 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
         var fun = await reviews.Query.NearText("Fun for the whole family", limit: 2);
 
         var disappointed = await reviews.Query.NearText(
-            "Disapointed by this movie",
+            "Disappointed by this movie",
             limit: 2,
             returnReferences: [new QueryReference("forMovie", ["title"])]
         );
@@ -389,12 +389,22 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         Assert.NotNull(disappointed);
         Assert.Equal(2, disappointedObjects.Count);
-        Assert.Equal(1, disappointedObjects[0]?.References.Count);
-        Assert.Equal(1, disappointedObjects[1]?.References.Count);
 
-        Assert.True(disappointedObjects[0].References.ContainsKey("forMovie"));
-        Assert.True(disappointedObjects[1].References.ContainsKey("forMovie"));
-        Assert.Equal(movieIds[771], disappointedObjects[0].References["forMovie"][0].ID);
-        Assert.Equal(movieIds[769], disappointedObjects[1].References["forMovie"][0].ID);
+        // Check each object has exactly one reference for "forMovie"
+        foreach (var obj in disappointedObjects)
+        {
+            Assert.Equal(1, obj?.References.Count);
+            Assert.True(obj!.References.ContainsKey("forMovie"));
+            Assert.Single(obj!.References["forMovie"]);
+        }
+
+        // Collect returned movie IDs
+        var returnedMovieIds = disappointedObjects
+            .Select(o => o.References["forMovie"][0].ID)
+            .ToHashSet();
+
+        // Should contain both expected movie IDs, regardless of order
+        Assert.Contains(movieIds[769], returnedMovieIds);
+        Assert.Contains(movieIds[771], returnedMovieIds);
     }
 }

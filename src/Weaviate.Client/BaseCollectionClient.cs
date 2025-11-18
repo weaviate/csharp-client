@@ -31,7 +31,7 @@ public abstract class BaseCollectionClient
     /// <summary>
     /// Gets the REST client for making REST API calls.
     /// </summary>
-    protected Rest.WeaviateRestClient Rest => Client.RestClient;
+    internal Rest.WeaviateRestClient Rest => Client.RestClient;
 
     /// <summary>
     /// Gets the gRPC client for making gRPC calls.

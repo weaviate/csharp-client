@@ -57,7 +57,7 @@ public abstract record VectorizerConfig : IEquatable<VectorizerConfig>
             && _sourceProperties.SetEquals(other._sourceProperties);
     }
 
-    public virtual Dictionary<string, object?> ToDto()
+    public virtual Dictionary<string, object> ToDto()
     {
         return new() { [_identifier] = this };
     }

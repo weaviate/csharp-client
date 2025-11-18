@@ -12,7 +12,8 @@ public static class Connect
         HttpMessageHandler? httpMessageHandler = null
     )
     {
-        return Local(
+        // Delegate directly to builder to avoid recursive overload call stack overflow.
+        return WeaviateClientBuilder.Local(
             credentials,
             hostname,
             restPort,

@@ -126,11 +126,19 @@ internal partial class WeaviateGrpcClient
         {
             var reply = await _grpcClient.AggregateAsync(request, headers: _defaultHeaders);
             reply.Collection = request.Collection;
-
             return reply;
         }
         catch (global::Grpc.Core.RpcException ex)
         {
+            // Provide clearer diagnostics if the server does not implement the Aggregate RPC yet.
+            if (ex.StatusCode == global::Grpc.Core.StatusCode.Unimplemented)
+            {
+                throw new WeaviateFeatureNotSupportedException(
+                    "gRPC Aggregate method is not implemented on the connected Weaviate server.",
+                    ex
+                );
+            }
+
             throw new WeaviateServerException("Aggregate request failed", ex);
         }
     }

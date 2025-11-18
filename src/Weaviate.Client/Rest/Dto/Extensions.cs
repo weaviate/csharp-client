@@ -1,6 +1,50 @@
+
 namespace Weaviate.Client.Rest.Dto;
 
-internal partial class NestedProperty
+// Role assignment mapping for user
+internal static class RoleUserAssignmentExtensions
+{
+    public static Models.UserRoleAssignment ToModel(this UserTypeOutput userType, string userId)
+    {
+        return new Models.UserRoleAssignment(userId, userType switch
+        {
+            UserTypeOutput.Db_user => Models.RbacUserType.Database,
+            UserTypeOutput.Db_env_user => Models.RbacUserType.Database, // treat env user as database
+            UserTypeOutput.Oidc => Models.RbacUserType.Oidc,
+            _ => throw new ArgumentOutOfRangeException(nameof(userType), $"Unknown UserTypeOutput: {userType}")
+        });
+    }
+}
+
+// Role assignment mapping for group
+internal static class RoleGroupAssignmentExtensions
+{
+    public static Models.GroupRoleAssignment ToModel(this GroupType groupType, string groupId)
+    {
+        return new Models.GroupRoleAssignment(groupId, groupType switch
+        {
+            GroupType.Oidc => Models.RbacGroupType.Oidc,
+            _ => throw new ArgumentOutOfRangeException(nameof(groupType), $"Unknown GroupType: {groupType}")
+        });
+    }
+}
+
+// RBAC Role mapping
+internal partial record Role
+{
+    /// <summary>
+    /// Converts a REST DTO Role to a strongly-typed RoleInfo, parsing permissions and handling errors.
+    /// </summary>
+    public Models.RoleInfo ToModel()
+    {
+        return new Models.RoleInfo(
+            Name ?? string.Empty,
+            Models.Permissions.Parse(Permissions ?? [])
+        );
+    }
+}
+
+internal partial record NestedProperty
 {
     public Models.Property ToModel()
     {
@@ -18,7 +62,7 @@ internal partial class NestedProperty
     }
 }
 
-internal partial class Property {
+internal partial record Property {
     public  Models.Property ToModel()
     {
         return new Models.Property
@@ -38,7 +82,7 @@ internal partial class Property {
     }
 }
 
-internal partial class GeoCoordinates
+internal partial record GeoCoordinates
 {
     public Models.GeoCoordinate ToModel()
     {
@@ -46,14 +90,14 @@ internal partial class GeoCoordinates
     }
 }
 
-internal partial class PhoneNumber
+internal partial record PhoneNumber
 {
     public Models.PhoneNumber ToModel()
     {
         return new Models.PhoneNumber(Input!)
         {
             DefaultCountry = DefaultCountry,
-            CountryCode = CountryCode is null ? null :Convert.ToUInt64(CountryCode),
+            CountryCode = CountryCode is null ? null : Convert.ToUInt64(CountryCode),
             National = National is null ? null : Convert.ToUInt64(National),
             InternationalFormatted = InternationalFormatted,
             NationalFormatted = NationalFormatted,
@@ -61,4 +105,3 @@ internal partial class PhoneNumber
         };
     }
 }
-

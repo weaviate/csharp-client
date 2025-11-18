@@ -299,14 +299,14 @@ internal class ObjectHelper
         return fallbackItems.ToArray();
     }
 
-    internal static IDictionary<string, object?> BuildDataTransferObject(object? data)
+    internal static IDictionary<string, object> BuildDataTransferObject(object? data)
     {
         var obj = new ExpandoObject();
         var propDict = obj as IDictionary<string, object?>;
 
         if (data is null)
         {
-            return propDict;
+            return propDict!;
         }
 
         foreach (var propertyInfo in data.GetType().GetProperties())
@@ -426,7 +426,7 @@ internal class ObjectHelper
             );
         }
 
-        return obj;
+        return propDict!;
     }
 
     internal static V1.BatchObject.Types.Properties BuildBatchProperties<TProps>(TProps data)

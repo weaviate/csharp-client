@@ -6,7 +6,7 @@ using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client.Rest;
 
-public partial class WeaviateRestClient : IDisposable
+internal partial class WeaviateRestClient : IDisposable
 {
     private readonly bool _ownershipClient;
 

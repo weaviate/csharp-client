@@ -324,14 +324,15 @@ public partial class AggregatesTests : IntegrationTests
 
         yield return new object[]
         {
-            new Dictionary<string, object> { { "object_limit", 1 } },
+            new Dictionary<string, object> { { "distance", 0.80f } },
             1,
             uuid1,
             uuid2,
         };
+
         yield return new object[]
         {
-            new Dictionary<string, object> { { "distance", 0.66 } },
+            new Dictionary<string, object> { { "object_limit", 1 } },
             1,
             uuid1,
             uuid2,

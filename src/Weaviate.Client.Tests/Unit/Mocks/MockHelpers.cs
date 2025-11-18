@@ -42,7 +42,11 @@ public static class MockWeaviateClient
             );
         });
 
-        var client = WeaviateClientBuilder.Local(httpMessageHandler: handler).Build();
+        // Create a no-op gRPC channel to avoid connecting to the gRPC port
+        var noOpChannel = NoOpGrpcChannel.Create();
+        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+
+        var client = new WeaviateClient(httpMessageHandler: handler, grpcClient: grpcClient);
 
         return (client, handler);
     }
@@ -57,7 +61,10 @@ public static class MockWeaviateClient
         var handler = new MockHttpMessageHandler();
         handler.SetHandler(handlerFunc);
 
-        return WeaviateClientBuilder.Local(httpMessageHandler: handler).Build();
+        var noOpChannel = NoOpGrpcChannel.Create();
+        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+
+        return new WeaviateClient(httpMessageHandler: handler, grpcClient: grpcClient);
     }
 
     /// <summary>
@@ -70,7 +77,10 @@ public static class MockWeaviateClient
         var handler = new MockHttpMessageHandler();
         handler.SetHandler(handlerFunc);
 
-        return WeaviateClientBuilder.Local(httpMessageHandler: handler).Build();
+        var noOpChannel = NoOpGrpcChannel.Create();
+        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+
+        return new WeaviateClient(httpMessageHandler: handler, grpcClient: grpcClient);
     }
 }
 
@@ -251,7 +261,7 @@ public static class MockResponses
         {
             Hostname = "localhost",
             Version = version,
-            Modules = new { },
+            Modules = new Dictionary<string, object>(),
         };
 
         return new MockHttpResponse

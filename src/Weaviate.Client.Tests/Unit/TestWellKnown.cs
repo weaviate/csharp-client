@@ -2,6 +2,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using Weaviate.Client.Rest;
+using Weaviate.Client.Tests.Unit.Mocks;
 
 namespace Weaviate.Client.Tests.Unit;
 
@@ -54,7 +55,9 @@ public class TestWellKnown
     public async Task Live_ReturnsTrue_On200()
     {
         var handler = new FakeHandler(req => new HttpResponseMessage(HttpStatusCode.OK));
-        var client = new WeaviateClient(new ClientConfiguration(), handler);
+        var noOpChannel = NoOpGrpcChannel.Create();
+        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+        var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         Assert.True(await client.Live());
         Assert.Equal(
             "v1/.well-known/live",
@@ -73,7 +76,9 @@ public class TestWellKnown
             }
             return new HttpResponseMessage(HttpStatusCode.OK);
         });
-        var client = new WeaviateClient(new ClientConfiguration(), handler);
+        var noOpChannel = NoOpGrpcChannel.Create();
+        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+        var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         Assert.True(await client.IsReady());
     }
 
@@ -94,7 +99,9 @@ public class TestWellKnown
             }
             return new HttpResponseMessage(HttpStatusCode.OK);
         });
-        var client = new WeaviateClient(new ClientConfiguration(), handler);
+        var noOpChannel = NoOpGrpcChannel.Create();
+        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+        var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         var result = await client.WaitUntilReady(
             TimeSpan.FromSeconds(2),
             CancellationToken.None,
@@ -110,7 +117,9 @@ public class TestWellKnown
         var handler = new FakeHandler(req => new HttpResponseMessage(
             HttpStatusCode.ServiceUnavailable
         ));
-        var client = new WeaviateClient(new ClientConfiguration(), handler);
+        var noOpChannel = NoOpGrpcChannel.Create();
+        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+        var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         var result = await client.WaitUntilReady(
             TimeSpan.FromMilliseconds(100),
             CancellationToken.None,
@@ -129,7 +138,9 @@ public class TestWellKnown
             calls++;
             return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
         });
-        var client = new WeaviateClient(new ClientConfiguration(), handler);
+        var noOpChannel = NoOpGrpcChannel.Create();
+        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+        var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         var task = client.WaitUntilReady(
             TimeSpan.FromSeconds(5),
             cts.Token,

@@ -41,7 +41,12 @@ public class EnumMemberJsonConverter<T> : JsonConverter<T>
             return enumValue;
         }
 
-        throw new JsonException($"Unable to convert \"{stringValue}\" to enum {typeof(T)}");
+        throw new WeaviateClientException(
+            $"Unable to deserialize \"{stringValue}\" to enum {typeof(T).Name}. "
+                + $"This may indicate the Weaviate server returned a value not yet supported by this client version. "
+                + $"Consider upgrading the Weaviate C# client library.",
+            new JsonException($"Unable to convert \"{stringValue}\" to enum {typeof(T)}")
+        );
     }
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
