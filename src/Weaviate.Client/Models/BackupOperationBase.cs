@@ -107,7 +107,7 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
         var effectiveTimeout = timeout ?? BackupClient.Config.Timeout;
         var start = DateTime.UtcNow;
 
-        while (!_isCompleted)
+        while (!_isCompleted && !_cts.Token.IsCancellationRequested)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (DateTime.UtcNow - start > effectiveTimeout)
@@ -116,7 +116,14 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
                     $"Backup operation did not complete within {effectiveTimeout} (last status={_current.Status})."
                 );
             }
-            await Task.Delay(BackupClient.Config.PollInterval, _cts.Token);
+            try
+            {
+                await Task.Delay(BackupClient.Config.PollInterval, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
         }
         return _current;
     }

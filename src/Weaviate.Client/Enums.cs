@@ -1,5 +1,6 @@
 namespace Weaviate.Client;
 
+[Flags]
 public enum ResourceType
 {
     Alias,

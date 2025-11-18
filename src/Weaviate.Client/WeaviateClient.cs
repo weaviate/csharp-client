@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
-using Weaviate.Client.Rest.Dto;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Weaviate.Client.Tests")]
 
@@ -98,7 +96,7 @@ public sealed record ClientConfiguration(
         }.Uri;
 
     public WeaviateClient Client(HttpMessageHandler? messageHandler = null) =>
-        new(this, httpMessageHandler: messageHandler);
+        new(configuration: this, httpMessageHandler: messageHandler, logger: null);
 };
 
 public partial class WeaviateClient : IDisposable
@@ -126,10 +124,7 @@ public partial class WeaviateClient : IDisposable
             Version =
                 Models.MetaInfo.ParseWeaviateVersion(meta?.Version ?? string.Empty)
                 ?? new System.Version(0, 0),
-            Modules =
-                (meta?.Modules as JsonElement?)
-                    ?.EnumerateObject()
-                    .ToDictionary(k => k.Name, k => (object)k.Value) ?? [],
+            Modules = meta?.Modules?.ToDictionary() ?? [],
         };
     }
 
@@ -217,6 +212,9 @@ public partial class WeaviateClient : IDisposable
     public ClusterClient Cluster { get; }
 
     public AliasClient Alias { get; }
+    public UsersClient Users { get; }
+    public RolesClient Roles { get; }
+    public GroupsClient Groups { get; }
 
     static bool IsWeaviateDomain(string url)
     {
@@ -229,6 +227,14 @@ public partial class WeaviateClient : IDisposable
         ClientConfiguration? configuration = null,
         HttpMessageHandler? httpMessageHandler = null,
         ILogger<WeaviateClient>? logger = null
+    )
+        : this(configuration, httpMessageHandler, logger, grpcClient: null) { }
+
+    internal WeaviateClient(
+        ClientConfiguration? configuration = null,
+        HttpMessageHandler? httpMessageHandler = null,
+        ILogger<WeaviateClient>? logger = null,
+        WeaviateGrpcClient? grpcClient = null
     )
     {
         _logger = logger ?? _logger;
@@ -272,18 +278,24 @@ public partial class WeaviateClient : IDisposable
 
         RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
 
-        GrpcClient = new WeaviateGrpcClient(
-            Configuration.GrpcUri,
-            wcdHost,
-            _tokenService,
-            Configuration.Headers,
-            null,
-            Meta?.GrpcMaxMessageSize ?? null
-        );
+        // Use injected gRPC client if provided (for testing), otherwise create a real one
+        GrpcClient =
+            grpcClient
+            ?? WeaviateGrpcClient.Create(
+                Configuration.GrpcUri,
+                wcdHost,
+                _tokenService,
+                Configuration.Headers,
+                null,
+                Meta?.GrpcMaxMessageSize ?? null
+            );
 
         Cluster = new ClusterClient(RestClient);
         Collections = new CollectionsClient(this);
         Alias = new AliasClient(this);
+        Users = new UsersClient(this);
+        Roles = new RolesClient(this);
+        Groups = new GroupsClient(this);
     }
 
     private async Task<ITokenService?> InitializeTokenService()

@@ -14,6 +14,12 @@ public class WeaviateRestClientException : WeaviateClientException
         : base(
             message != DefaultMessage ? string.Join(" ", DefaultMessage, message) : DefaultMessage
         ) { }
+
+    public WeaviateRestClientException(string message, Exception innerException)
+        : base(
+            message != DefaultMessage ? string.Join(" ", DefaultMessage, message) : DefaultMessage,
+            innerException
+        ) { }
 }
 
 public class WeaviateRestServerException : WeaviateServerException
@@ -38,4 +44,13 @@ public class WeaviateRestServerException : WeaviateServerException
 
         return $"Server-Side Error: {base.ToString()}{status}";
     }
+}
+
+/// <summary>
+/// Exception thrown for invalid enum wire-format values.
+/// </summary>
+public class InvalidEnumWireFormatException : WeaviateClientException
+{
+    public InvalidEnumWireFormatException(string message)
+        : base(message) { }
 }

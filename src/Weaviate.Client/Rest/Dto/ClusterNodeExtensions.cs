@@ -5,7 +5,7 @@ namespace Weaviate.Client.Rest.Dto;
 /// <summary>
 /// Extension methods for NodeStatus DTO to convert to model objects.
 /// </summary>
-internal partial class NodeStatus
+internal partial record NodeStatus
 {
     /// <summary>
     /// Converts this NodeStatus DTO to a ClusterNode model.
@@ -54,7 +54,7 @@ internal partial class NodeStatus
 /// <summary>
 /// Extension methods for NodeStats DTO to convert to model objects.
 /// </summary>
-internal partial class NodeStats
+internal partial record NodeStats
 {
     /// <summary>
     /// Converts this NodeStats DTO to a NodeStats model.
@@ -73,7 +73,7 @@ internal partial class NodeStats
 /// <summary>
 /// Extension methods for NodeShardStatus DTO to convert to model objects.
 /// </summary>
-internal partial class NodeShardStatus
+internal partial record NodeShardStatus
 {
     /// <summary>
     /// Converts this NodeShardStatus DTO to a Shard model.
