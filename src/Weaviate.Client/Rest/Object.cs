@@ -34,10 +34,7 @@ internal partial class WeaviateRestClient
             ResourceType.Object
         );
 
-        return await response.Content.ReadFromJsonAsync<Dto.Object>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.Object>(cancellationToken);
     }
 
     internal async Task<Dto.Object> ObjectReplace(
@@ -69,10 +66,7 @@ internal partial class WeaviateRestClient
             ResourceType.Object
         );
 
-        return await response.Content.ReadFromJsonAsync<Dto.Object>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.Object>(cancellationToken);
     }
 
     internal async Task DeleteObject(

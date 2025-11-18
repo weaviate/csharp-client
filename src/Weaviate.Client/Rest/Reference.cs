@@ -155,9 +155,6 @@ internal partial class WeaviateRestClient
             ResourceType.Reference
         );
 
-        return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>(
-                RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<BatchReferenceResponse[]>(cancellationToken);
     }
 }

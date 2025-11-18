@@ -14,10 +14,7 @@ internal partial class WeaviateRestClient
 
         await response.ManageStatusCode([HttpStatusCode.OK], "list roles", ResourceType.Role);
 
-        var list = await response.Content.ReadFromJsonAsync<List<Dto.Role>>(
-            RestJsonSerializerOptions,
-            cancellationToken
-        );
+        var list = await response.DecodeAsync<List<Dto.Role>>(cancellationToken);
         return list is null ? Array.Empty<Dto.Role>() : list;
     }
 
@@ -27,10 +24,7 @@ internal partial class WeaviateRestClient
 
         await response.ManageStatusCode([HttpStatusCode.OK], "get role", ResourceType.Role);
 
-        return await response.Content.ReadFromJsonAsync<Dto.Role>(
-            RestJsonSerializerOptions,
-            cancellationToken
-        );
+        return await response.DecodeAsync<Dto.Role>(cancellationToken);
     }
 
     internal async Task RoleDelete(string id, CancellationToken cancellationToken = default)
@@ -151,10 +145,7 @@ internal partial class WeaviateRestClient
 
         await response.ManageStatusCode([HttpStatusCode.OK], "has permission", ResourceType.Role);
 
-        var result = await response.Content.ReadFromJsonAsync<bool>(
-            RestJsonSerializerOptions,
-            cancellationToken
-        );
+        var result = await response.DecodeAsync<bool>(cancellationToken);
         return result;
     }
 
@@ -219,10 +210,7 @@ internal partial class WeaviateRestClient
             throw new WeaviateNotFoundException(ex, ResourceType.Role);
         }
 
-        var list = await response.Content.ReadFromJsonAsync<IEnumerable<RoleUserAssignment>>(
-            RestJsonSerializerOptions,
-            cancellationToken
-        );
+        var list = await response.DecodeAsync<IEnumerable<RoleUserAssignment>>(cancellationToken);
         return list ?? Array.Empty<RoleUserAssignment>();
     }
 
@@ -246,10 +234,7 @@ internal partial class WeaviateRestClient
             throw new WeaviateNotFoundException(ex, ResourceType.Role);
         }
 
-        var list = await response.Content.ReadFromJsonAsync<IEnumerable<RoleGroupAssignment>>(
-            RestJsonSerializerOptions,
-            cancellationToken
-        );
+        var list = await response.DecodeAsync<IEnumerable<RoleGroupAssignment>>(cancellationToken);
         return list ?? Array.Empty<RoleGroupAssignment>();
     }
 
@@ -324,10 +309,7 @@ internal partial class WeaviateRestClient
         {
             throw new WeaviateNotFoundException(ex, ResourceType.User);
         }
-        var list = await response.Content.ReadFromJsonAsync<List<Dto.Role>>(
-            RestJsonSerializerOptions,
-            cancellationToken
-        );
+        var list = await response.DecodeAsync<List<Dto.Role>>(cancellationToken);
         return list ?? [];
     }
 
@@ -402,10 +384,7 @@ internal partial class WeaviateRestClient
         {
             throw new WeaviateNotFoundException(ex, ResourceType.Group);
         }
-        var list = await response.Content.ReadFromJsonAsync<List<Dto.Role>>(
-            RestJsonSerializerOptions,
-            cancellationToken
-        );
+        var list = await response.DecodeAsync<List<Dto.Role>>(cancellationToken);
         return list ?? [];
     }
 
@@ -421,10 +400,7 @@ internal partial class WeaviateRestClient
 
         await response.ManageStatusCode([HttpStatusCode.OK], "list groups", ResourceType.Group);
 
-        var list = await response.Content.ReadFromJsonAsync<IEnumerable<string>>(
-            RestJsonSerializerOptions,
-            cancellationToken
-        );
+        var list = await response.DecodeAsync<IEnumerable<string>>(cancellationToken);
         return list ?? Array.Empty<string>();
     }
 }

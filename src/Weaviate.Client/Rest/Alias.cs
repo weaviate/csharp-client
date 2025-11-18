@@ -29,11 +29,7 @@ internal partial class WeaviateRestClient
             ResourceType.Alias
         );
 
-        var aliasesResponse =
-            await response.Content.ReadFromJsonAsync<Dto.AliasResponse>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        var aliasesResponse = await response.DecodeAsync<Dto.AliasResponse>(cancellationToken);
 
         return aliasesResponse.Aliases ?? Array.Empty<Dto.Alias>();
     }
@@ -64,10 +60,7 @@ internal partial class WeaviateRestClient
             ResourceType.Alias
         );
 
-        return await response.Content.ReadFromJsonAsync<Dto.Alias>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.Alias>(cancellationToken);
     }
 
     internal async Task<Dto.Alias?> AliasGet(
@@ -99,10 +92,7 @@ internal partial class WeaviateRestClient
             return null;
         }
 
-        return await response.Content.ReadFromJsonAsync<Dto.Alias>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.Alias>(cancellationToken);
     }
 
     internal async Task<Dto.Alias> AliasPut(
@@ -132,10 +122,7 @@ internal partial class WeaviateRestClient
             ResourceType.Alias
         );
 
-        return await response.Content.ReadFromJsonAsync<Dto.Alias>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.Alias>(cancellationToken);
     }
 
     internal async Task<bool> AliasDelete(

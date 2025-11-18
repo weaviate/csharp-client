@@ -33,9 +33,7 @@ internal partial class WeaviateRestClient
                 "create backup",
                 ResourceType.Backup
             );
-            return await response.Content.ReadFromJsonAsync<Dto.BackupCreateResponse>(
-                    WeaviateRestClient.RestJsonSerializerOptions
-                ) ?? throw new WeaviateRestClientException();
+            return await response.DecodeAsync<Dto.BackupCreateResponse>(cancellationToken);
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.UnprocessableEntity
@@ -68,9 +66,7 @@ internal partial class WeaviateRestClient
             "list backups",
             ResourceType.Backup
         );
-        return await response.Content.ReadFromJsonAsync<List<Dto.Anonymous3>>(
-                WeaviateRestClient.RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<List<Dto.Anonymous3>>(cancellationToken);
     }
 
     internal async Task<Dto.BackupCreateStatusResponse> BackupStatus(
@@ -98,9 +94,7 @@ internal partial class WeaviateRestClient
             "backup status",
             ResourceType.Backup
         );
-        return await response.Content.ReadFromJsonAsync<Dto.BackupCreateStatusResponse>(
-                WeaviateRestClient.RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.BackupCreateStatusResponse>(cancellationToken);
     }
 
     internal async Task BackupCancel(
@@ -159,9 +153,7 @@ internal partial class WeaviateRestClient
                 "backup restore",
                 ResourceType.Backup
             );
-            return await response.Content.ReadFromJsonAsync<Dto.BackupRestoreResponse>(
-                    WeaviateRestClient.RestJsonSerializerOptions
-                ) ?? throw new WeaviateRestClientException();
+            return await response.DecodeAsync<Dto.BackupRestoreResponse>(cancellationToken);
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.UnprocessableEntity
@@ -197,8 +189,6 @@ internal partial class WeaviateRestClient
             "backup restore status",
             ResourceType.Backup
         );
-        return await response.Content.ReadFromJsonAsync<Dto.BackupRestoreStatusResponse>(
-                WeaviateRestClient.RestJsonSerializerOptions
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.BackupRestoreStatusResponse>(cancellationToken);
     }
 }

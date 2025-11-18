@@ -25,10 +25,7 @@ internal partial class WeaviateRestClient
             "get meta endpoint"
         );
 
-        var meta = await response.Content.ReadFromJsonAsync<Meta>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
-        );
+        var meta = await response.DecodeAsync<Meta>(cancellationToken);
 
         return meta;
     }
