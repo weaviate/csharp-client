@@ -28,10 +28,7 @@ internal partial class WeaviateGrpcClient
             request.ConsistencyLevel = MapConsistencyLevel(consistencyLevel.Value);
         }
 
-        BatchDeleteReply reply = await _grpcClient.BatchDeleteAsync(
-            request,
-            headers: _defaultHeaders
-        );
+        BatchDeleteReply reply = await _grpcClient.BatchDeleteAsync(request, CreateCallOptions());
 
         return reply;
     }
@@ -40,10 +37,7 @@ internal partial class WeaviateGrpcClient
     {
         var request = new BatchObjectsRequest { Objects = { objects } };
 
-        BatchObjectsReply reply = await _grpcClient.BatchObjectsAsync(
-            request,
-            headers: _defaultHeaders
-        );
+        BatchObjectsReply reply = await _grpcClient.BatchObjectsAsync(request, CreateCallOptions());
 
         return reply;
     }
