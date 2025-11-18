@@ -73,18 +73,12 @@ internal partial class WeaviateRestClient
             ?? throw new WeaviateRestClientException();
     }
 
-    internal async Task UserDbDelete(string userId)
+    internal async Task<bool> UserDbDelete(string userId)
     {
         var response = await _httpClient.DeleteAsync(WeaviateEndpoints.UserDb(userId));
-        try
-        {
-            await response.EnsureExpectedStatusCodeAsync([204], "delete db user");
-        }
-        catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.NotFound)
-        {
-            throw new WeaviateNotFoundException(ex, ResourceType.User);
-        }
+        await response.EnsureExpectedStatusCodeAsync([204, 404], "delete db user");
+
+        return response.StatusCode == HttpStatusCode.NoContent;
     }
 
     internal async Task<Dto.UserApiKey> UserDbRotateKey(string userId)
@@ -104,26 +98,16 @@ internal partial class WeaviateRestClient
         }
     }
 
-    internal async Task UserDbActivate(string userId)
+    internal async Task<bool> UserDbActivate(string userId)
     {
         var response = await _httpClient.PostAsync(WeaviateEndpoints.UserDbActivate(userId), null);
-        try
-        {
-            await response.EnsureExpectedStatusCodeAsync([200], "activate user");
-        }
-        catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.NotFound)
-        {
-            throw new WeaviateNotFoundException(ex, ResourceType.User);
-        }
-        catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.Conflict)
-        {
-            throw new WeaviateConflictException("user already activated", ex);
-        }
+
+        await response.EnsureExpectedStatusCodeAsync([200, 409], "activate user");
+
+        return response.StatusCode == HttpStatusCode.OK;
     }
 
-    internal async Task UserDbDeactivate(string userId, bool? revokeKey = null)
+    internal async Task<bool> UserDbDeactivate(string userId, bool? revokeKey = null)
     {
         object? body = revokeKey.HasValue ? new { revoke_key = revokeKey.Value } : null;
         HttpResponseMessage response;
@@ -142,19 +126,9 @@ internal partial class WeaviateRestClient
                 null
             );
         }
-        try
-        {
-            await response.EnsureExpectedStatusCodeAsync([200], "deactivate user");
-        }
-        catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.NotFound)
-        {
-            throw new WeaviateNotFoundException(ex, ResourceType.User);
-        }
-        catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.Conflict)
-        {
-            throw new WeaviateConflictException("user already deactivated", ex);
-        }
+
+        await response.EnsureExpectedStatusCodeAsync([200, 409], "deactivate user");
+
+        return response.StatusCode == HttpStatusCode.OK;
     }
 }
