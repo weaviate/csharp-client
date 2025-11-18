@@ -36,10 +36,7 @@ internal partial class WeaviateRestClient
             "tenants add",
             ResourceType.Tenant
         );
-        var result = await response.Content.ReadFromJsonAsync<IEnumerable<Rest.Dto.Tenant>>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
-        );
+        var result = await response.DecodeAsync<IEnumerable<Rest.Dto.Tenant>>(cancellationToken);
         return result ?? Enumerable.Empty<Rest.Dto.Tenant>();
     }
 
@@ -75,10 +72,7 @@ internal partial class WeaviateRestClient
             ResourceType.Tenant
         );
 
-        var result = await response.Content.ReadFromJsonAsync<Rest.Dto.Tenant[]>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
-        );
+        var result = await response.DecodeAsync<Rest.Dto.Tenant[]>(cancellationToken);
 
         return result ?? Enumerable.Empty<Rest.Dto.Tenant>();
     }

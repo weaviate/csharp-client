@@ -32,10 +32,9 @@ internal partial class WeaviateRestClient
             "replicate",
             ResourceType.Replication
         );
-        return await response.Content.ReadFromJsonAsync<Dto.ReplicationReplicateReplicaResponse>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.ReplicationReplicateReplicaResponse>(
+            cancellationToken
+        );
     }
 
     /// <summary>
@@ -65,10 +64,9 @@ internal partial class WeaviateRestClient
             ResourceType.Replication
         );
 
-        return await response.Content.ReadFromJsonAsync<Dto.ReplicationReplicateDetailsReplicaResponse>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.ReplicationReplicateDetailsReplicaResponse>(
+            cancellationToken
+        );
     }
 
     /// <summary>
@@ -101,10 +99,9 @@ internal partial class WeaviateRestClient
             "list replications",
             ResourceType.Replication
         );
-        return await response.Content.ReadFromJsonAsync<
-                IEnumerable<Dto.ReplicationReplicateDetailsReplicaResponse>
-            >(WeaviateRestClient.RestJsonSerializerOptions, cancellationToken)
-            ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<
+            IEnumerable<Dto.ReplicationReplicateDetailsReplicaResponse>
+        >(cancellationToken);
     }
 
     /// <summary>

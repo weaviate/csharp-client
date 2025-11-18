@@ -29,12 +29,7 @@ internal partial class WeaviateRestClient
             ResourceType.Collection
         );
 
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Schema>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
-        );
-
-        return contents;
+        return await response.DecodeAsync<Dto.Schema>(cancellationToken);
     }
 
     internal async Task<Dto.Class?> CollectionGet(
@@ -66,17 +61,7 @@ internal partial class WeaviateRestClient
             return default;
         }
 
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
-        );
-
-        if (contents is null)
-        {
-            throw new WeaviateRestClientException();
-        }
-
-        return contents;
+        return await response.DecodeAsync<Dto.Class>(cancellationToken);
     }
 
     internal async Task CollectionDelete(string name, CancellationToken cancellationToken = default)
@@ -127,17 +112,7 @@ internal partial class WeaviateRestClient
             ResourceType.Collection
         );
 
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
-        );
-
-        if (contents is null)
-        {
-            throw new WeaviateRestClientException();
-        }
-
-        return contents;
+        return await response.DecodeAsync<Dto.Class>(cancellationToken);
     }
 
     internal async Task<Dto.Class> CollectionUpdate(
@@ -167,13 +142,7 @@ internal partial class WeaviateRestClient
             ResourceType.Collection
         );
 
-        var contents =
-            await response.Content.ReadFromJsonAsync<Dto.Class>(
-                options: RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestServerException();
-
-        return contents;
+        return await response.DecodeAsync<Dto.Class>(cancellationToken);
     }
 
     internal async Task CollectionAddProperty(
@@ -229,10 +198,7 @@ internal partial class WeaviateRestClient
             ResourceType.Collection
         );
 
-        var schema = await response.Content.ReadFromJsonAsync<Schema>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
-        );
+        var schema = await response.DecodeAsync<Schema>(cancellationToken);
 
         return schema?.Classes?.Any(c => c.Class1 is not null && c.Class1!.Equals(collectionName))
             ?? false;
