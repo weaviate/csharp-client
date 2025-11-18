@@ -29,13 +29,8 @@ internal partial class WeaviateRestClient
             ? await response.Content.ReadFromJsonAsync<Dto.UserOwnInfo>(
                 RestJsonSerializerOptions,
                 cancellationToken
-            );
-        }
-        catch (WeaviateUnexpectedStatusCodeException)
-            when (response.StatusCode != HttpStatusCode.OK)
-        {
-            return null;
-        }
+            )
+            : null;
     }
 
     internal async Task<IEnumerable<Dto.DBUserInfo>> UsersDbList(
@@ -170,7 +165,11 @@ internal partial class WeaviateRestClient
             cancellationToken
         );
 
-        await response.ManageStatusCode([HttpStatusCode.OK, HttpStatusCode.Conflict], "activate user", ResourceType.User);
+        await response.ManageStatusCode(
+            [HttpStatusCode.OK, HttpStatusCode.Conflict],
+            "activate user",
+            ResourceType.User
+        );
 
         return response.StatusCode == HttpStatusCode.OK;
     }
