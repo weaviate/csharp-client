@@ -3,9 +3,9 @@ using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client.Rest;
 
-public partial class WeaviateRestClient
+internal partial class WeaviateRestClient
 {
-    internal async Task<Dto.NodeStatus[]> Nodes(string? collection, string verbosity)
+    internal async Task<IList<Dto.NodeStatus>> Nodes(string? collection, string verbosity)
     {
         var path = WeaviateEndpoints.Nodes(collection, verbosity);
         var response = await _httpClient.GetAsync(path);
@@ -16,6 +16,6 @@ public partial class WeaviateRestClient
             options: RestJsonSerializerOptions
         );
 
-        return nodes?.Nodes?.ToArray() ?? Array.Empty<Dto.NodeStatus>();
+        return nodes?.Nodes ?? Array.Empty<Dto.NodeStatus>();
     }
 }

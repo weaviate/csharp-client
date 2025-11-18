@@ -40,6 +40,22 @@ public class WeaviateServerException : WeaviateException
 }
 
 /// <summary>
+/// Exception thrown when a requested server feature or RPC method is not supported by the connected
+/// Weaviate instance (e.g. gRPC Aggregate method missing on older versions / builds).
+/// </summary>
+public class WeaviateFeatureNotSupportedException : WeaviateServerException
+{
+    public const string DefaultMessage =
+        "The requested feature is not supported by the connected Weaviate server version.";
+
+    public WeaviateFeatureNotSupportedException(
+        string? message = null,
+        Exception? innerException = null
+    )
+        : base(message ?? DefaultMessage, innerException) { }
+}
+
+/// <summary>
 /// Exception thrown when a backup or restore operation cannot be started because another one is already in progress.
 /// The Weaviate server only allows one backup or restore operation at a time.
 /// </summary>
@@ -50,6 +66,15 @@ public class WeaviateBackupConflictException : WeaviateServerException
 
     public WeaviateBackupConflictException(Exception innerException)
         : base(DefaultMessage, innerException) { }
+}
+
+/// <summary>
+/// Exception thrown when attempting to create a resource that already exists (HTTP 409 Conflict).
+/// </summary>
+public class WeaviateConflictException : WeaviateServerException
+{
+    public WeaviateConflictException(string message, Exception? innerException = null)
+        : base(message, innerException) { }
 }
 
 public class WeaviateNotFoundException : WeaviateServerException
@@ -72,6 +97,15 @@ public class WeaviateNotFoundException : WeaviateServerException
         ResourceType resourceType = Client.ResourceType.Unknown
     )
         : base(DefaultMessage, grpcException)
+    {
+        ResourceType = resourceType;
+    }
+
+    internal WeaviateNotFoundException(
+        Rest.WeaviateUnexpectedStatusCodeException restException,
+        ResourceType resourceType = Client.ResourceType.Unknown
+    )
+        : base(DefaultMessage, restException)
     {
         ResourceType = resourceType;
     }

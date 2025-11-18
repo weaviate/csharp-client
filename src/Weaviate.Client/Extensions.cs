@@ -9,6 +9,22 @@ namespace Weaviate.Client;
 
 public static class WeaviateExtensions
 {
+    static Func<object?, IDictionary<string, object>?> _objectToDict = (object? v) =>
+        v is null
+            ? null
+            : JsonSerializer.Deserialize<IDictionary<string, object>>(
+                JsonSerializer.Serialize(v, WeaviateRestClient.RestJsonSerializerOptions),
+                WeaviateRestClient.RestJsonSerializerOptions
+            );
+
+    static T? _dictToObject<T>(IDictionary<string, object>? v) =>
+        v is null
+            ? default(T)
+            : JsonSerializer.Deserialize<T>(
+                JsonSerializer.Serialize(v, WeaviateRestClient.RestJsonSerializerOptions),
+                WeaviateRestClient.RestJsonSerializerOptions
+            );
+
     internal static Rest.Dto.Class ToDto(this CollectionConfig collection)
     {
         var moduleConfig = new ModuleConfigList();
@@ -23,6 +39,18 @@ public static class WeaviateExtensions
             moduleConfig[collection.RerankerConfig.Type] = collection.RerankerConfig;
         }
 
+        var vectorConfig = collection.VectorConfig?.Values.ToDictionary(
+            e => e.Name,
+            e => new Rest.Dto.VectorConfig
+            {
+                VectorIndexConfig = e.VectorIndexConfig is not null
+                    ? _objectToDict(VectorIndexSerialization.ToDto(e.VectorIndexConfig))
+                    : new Dictionary<string, object>(),
+                VectorIndexType = e.VectorIndexType ?? "hnsw",
+                Vectorizer = e.Vectorizer?.ToDto(),
+            }
+        );
+
         var data = new Rest.Dto.Class()
         {
             Class1 = collection.Name,
@@ -35,16 +63,8 @@ public static class WeaviateExtensions
                     .Select(p => p.ToDto())
                     .ToList()
                 : null,
-            VectorConfig = collection.VectorConfig?.Values.ToDictionary(
-                e => e.Name,
-                e => new Rest.Dto.VectorConfig
-                {
-                    VectorIndexConfig = VectorIndexSerialization.ToDto(e.VectorIndexConfig),
-                    VectorIndexType = e.VectorIndexType ?? "hnsw",
-                    Vectorizer = e.Vectorizer?.ToDto(),
-                }
-            ),
-            ShardingConfig = collection.ShardingConfig,
+            VectorConfig = vectorConfig,
+            ShardingConfig = _objectToDict(collection.ShardingConfig),
             ModuleConfig = moduleConfig.Any() ? moduleConfig : null,
         };
 
@@ -112,24 +132,13 @@ public static class WeaviateExtensions
 
             Weaviate.Client.Models.VectorizerConfig? vc = null;
 
-            if (vectorizer is Dictionary<string, object> vecAsDict)
+            if (vectorizer is IDictionary<string, object> vecAsDict)
             {
                 if (vecAsDict.Count > 0)
                 {
                     var key = vecAsDict.Keys.First();
 
                     vc = VectorizerConfigFactory.Create(key, vecAsDict.Values.First());
-                }
-            }
-            else if (vectorizer is JsonElement vecAsJson)
-            {
-                var vec = JsonSerializer.Deserialize<Dictionary<string, object>>(vecAsJson) ?? [];
-
-                if (vec.Count > 0)
-                {
-                    var item = vec.First();
-
-                    vc = VectorizerConfigFactory.Create(item.Key, item.Value);
                 }
             }
 
@@ -140,49 +149,38 @@ public static class WeaviateExtensions
             [.. collection.VectorConfig?.Select(e => makeVectorConfig(e.Key, e.Value)) ?? []]
         );
 
-        ShardingConfig? shardingConfig = (
-            collection.ShardingConfig as JsonElement?
-        )?.Deserialize<ShardingConfig>(WeaviateRestClient.RestJsonSerializerOptions);
+        ShardingConfig? shardingConfig = _dictToObject<ShardingConfig>(collection?.ShardingConfig);
 
         IGenerativeConfig? generative = null;
         IRerankerConfig? reranker = null;
 
-        var moduleConfigJE = collection.ModuleConfig as JsonElement?;
+        var moduleConfigJE = collection?.ModuleConfig;
         if (moduleConfigJE is not null)
         {
-            var objectEnumerator = moduleConfigJE
-                .Value.EnumerateObject()
-                .Cast<JsonProperty?>()
-                .ToList();
+            var objectEnumerator = moduleConfigJE.Keys.ToList();
 
-            var generativeJE = objectEnumerator.SingleOrDefault(p =>
-                p!.Value.Name.StartsWith("generative-")
-            );
+            var generativeJE = objectEnumerator.SingleOrDefault(p => p!.StartsWith("generative-"));
 
             if (generativeJE is not null)
             {
                 generative = GenerativeConfigSerialization.Factory(
-                    generativeJE!.Value.Name,
-                    generativeJE!.Value.Value
+                    generativeJE,
+                    moduleConfigJE[generativeJE]
                 );
             }
 
-            var rerankerJE = objectEnumerator.SingleOrDefault(p =>
-                p!.Value.Name.StartsWith("reranker-")
-            );
+            var rerankerJE = objectEnumerator.SingleOrDefault(p => p!.StartsWith("reranker-"));
 
             if (rerankerJE is not null)
             {
                 reranker = RerankerConfigSerialization.Factory(
-                    rerankerJE!.Value.Name,
-                    rerankerJE!.Value.Value
+                    rerankerJE,
+                    moduleConfigJE[rerankerJE]
                 );
             }
         }
 
-        var moduleConfig = (
-            collection.ModuleConfig as JsonElement?
-        )?.Deserialize<ModuleConfigList?>(WeaviateRestClient.RestJsonSerializerOptions);
+        var moduleConfig = _dictToObject<ModuleConfigList>(collection?.ModuleConfig);
 
         var invertedIndexConfig =
             (collection?.InvertedIndexConfig is Rest.Dto.InvertedIndexConfig iic)
@@ -459,43 +457,76 @@ public static class WeaviateExtensions
         return Google.Protobuf.ByteString.FromStream(stream);
     }
 
-    internal static string? ToEnumMemberString(this Enum? enumValue)
+    /// <summary>
+    /// Converts an enum value to its wire-format string using EnumMemberAttribute.
+    /// </summary>
+    internal static T ToEquivalentEnum<T>(this Enum value)
+        where T : struct, Enum
     {
-        if (enumValue == null)
-        {
-            return null;
-        }
+        var str = value.ToEnumMemberString();
+        if (!str.IsValidEnumMemberString<T>())
+            throw new InvalidEnumWireFormatException($"Can't translate Enum value: {str}");
 
-        return enumValue
-                .GetType()
-                .GetMember(enumValue.ToString())
-                .First()
-                .GetCustomAttribute<EnumMemberAttribute>()
-                ?.Value ?? enumValue.ToString();
+        return value.ToEnumMemberString().FromEnumMemberString<T>();
     }
 
-    internal static T? FromEnumMemberString<T>(this string? str)
+    /// <summary>
+    /// Converts an enum value to its wire-format string using EnumMemberAttribute.
+    /// </summary>
+    internal static string ToEnumMemberString<T>(this T value)
+        where T : Enum
     {
-        if (str is null)
+        var type = typeof(T);
+        var member = type.GetMember(value.ToString()).FirstOrDefault();
+        var attr = member?.GetCustomAttribute<EnumMemberAttribute>();
+        return attr?.Value ?? value.ToString();
+    }
+
+    /// <summary>
+    /// Converts an enum value to its wire-format string using EnumMemberAttribute.
+    /// </summary>
+    internal static string ToEnumMemberString<T>(this Nullable<T> value)
+        where T : struct, Enum
+    {
+        if (!value.HasValue)
+            throw new ArgumentNullException(nameof(value));
+
+        return ToEnumMemberString(value!.Value);
+    }
+
+    /// <summary>
+    /// Parses a wire-format string to an enum value using EnumMemberAttribute.
+    /// Throws ArgumentException if no match is found.
+    /// </summary>
+    internal static T FromEnumMemberString<T>(this string value)
+        where T : struct, Enum
+    {
+        var type = typeof(T);
+        foreach (var field in type.GetFields())
         {
-            return default(T);
+            var attr = field.GetCustomAttribute<EnumMemberAttribute>();
+            if ((attr?.Value ?? field.Name).Equals(value, StringComparison.OrdinalIgnoreCase))
+                return (T)field.GetValue(null)!;
         }
+        throw new ArgumentException($"Value '{value}' is not valid for enum {type.Name}");
+    }
 
-        var enumType = typeof(T);
-        foreach (var name in Enum.GetNames(enumType))
-        {
-            var enumMemberAttribute = (EnumMemberAttribute)(
-                enumType
-                    .GetField(name)!
-                    .GetCustomAttributes(typeof(EnumMemberAttribute), true)
-                    .Single()
-            );
-
-            if (enumMemberAttribute.Value == str)
-                return (T)Enum.Parse(enumType, name);
-        }
-
-        return default(T);
+    /// <summary>
+    /// Validates if a string is a valid wire-format value for the enum.
+    /// </summary>
+    internal static bool IsValidEnumMemberString<T>(this string value)
+        where T : Enum
+    {
+        var type = typeof(T);
+        return type.GetFields()
+            .Any(field =>
+            {
+                var attr = field.GetCustomAttribute<EnumMemberAttribute>();
+                return (attr?.Value ?? field.Name).Equals(
+                    value,
+                    StringComparison.OrdinalIgnoreCase
+                );
+            });
     }
 
     internal static string Capitalize(this string str)

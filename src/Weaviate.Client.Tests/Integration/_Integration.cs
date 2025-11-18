@@ -49,8 +49,20 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
             builder.WithOpenAI(openaiKey);
         }
 
+        builder.WithRestPort(RestPort);
+        builder.WithGrpcPort(GrpcPort);
+        if (Credentials != null)
+        {
+            builder.WithCredentials(Credentials);
+        }
+
         _weaviate = builder.Build();
     }
+
+    public virtual ICredentials? Credentials => null;
+
+    public virtual ushort RestPort => 8080;
+    public virtual ushort GrpcPort => 50051; // default local gRPC port
 
     public virtual async ValueTask DisposeAsync()
     {
@@ -61,10 +73,32 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         _weaviate.Dispose();
     }
 
-    public virtual ValueTask InitializeAsync()
+    public virtual async ValueTask InitializeAsync()
     {
-        // Default: do nothing. Override in derived classes for per-test setup.
-        return ValueTask.CompletedTask;
+        // Global readiness gate: ensure the constructed client can reach a ready Weaviate instance.
+        // Fail fast so tests surface environment issues instead of producing cascading failures.
+        var ready = false;
+        try
+        {
+            ready = await _weaviate.IsReady();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException(
+                "Weaviate readiness check failed during test initialization",
+                ex
+            );
+        }
+
+        if (!ready)
+        {
+            throw new InvalidOperationException(
+                $"Weaviate not ready on REST:{RestPort} gRPC:{GrpcPort}. Expected a running instance for integration tests."
+            );
+        }
+
+        // Enforce minimum supported version globally for integration tests.
+        RequireVersion(Weaviate.Client.Tests.Common.ServerVersions.MinSupported);
     }
 
     public string MakeUniqueCollectionName<TData>(
