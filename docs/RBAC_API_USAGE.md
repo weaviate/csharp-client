@@ -45,8 +45,8 @@ client.Groups;  // GroupsClient - queries OIDC groups
 ```
 
 - `UsersClient`: Provides specialized sub-clients for database and OIDC user management:
-  - `Users.Database`: Create, list, get, delete database users; rotate API keys; activate/deactivate
-  - `Users.Oidc`: List OIDC users and retrieve user details
+  - `Users.Db`: Create, list, get, delete database users; rotate API keys; activate/deactivate; manage role assignments
+  - `Users.Oidc`: Manage role assignments for OIDC users
 - `RolesClient`: Create/list/get/delete roles, manage permissions, assign/revoke roles to users or groups, query assignments
 - `GroupsClient`: Provides specialized sub-client for OIDC group management:
   - `Groups.Oidc`: List OIDC groups and retrieve role assignments
@@ -80,8 +80,8 @@ if (!await client.IsReady()) throw new Exception("Weaviate not ready");
 
 The `UsersClient` provides specialized sub-clients for managing database and OIDC users:
 
-- `client.Users.Database`: Database user management (create, delete, activate, deactivate, rotate keys)
-- `client.Users.Oidc`: OIDC user queries (list, get details)
+- `client.Users.Db`: Database user management (create, list, get, delete, activate, deactivate, rotate keys, assign/revoke roles)
+- `client.Users.Oidc`: OIDC user role management (assign/revoke roles, get roles)
 
 ### Own User Info
 
@@ -97,17 +97,9 @@ Console.WriteLine($"Me: {me.Username}, Active={me.Active}, Roles={string.Join(",
 List all database users:
 
 ```csharp
-var users = await client.Users.Database.List();
+var users = await client.Users.Db.List();
 foreach (var u in users)
     Console.WriteLine($"User: {u.UserId}, Active={u.Active}");
-```
-
-List all OIDC users:
-
-```csharp
-var oidcUsers = await client.Users.Oidc.List();
-foreach (var u in oidcUsers)
-    Console.WriteLine($"OIDC User: {u.Username}");
 ```
 
 ### Create & Get User
@@ -116,15 +108,15 @@ Database users only (OIDC users are managed by the identity provider):
 
 ```csharp
 var newUserId = $"user-{Random.Shared.Next(1, 10_000)}";
-var apiKey = await client.Users.Database.Create(newUserId);
-var user = await client.Users.Database.Get(newUserId);
+var apiKey = await client.Users.Db.Create(newUserId);
+var user = await client.Users.Db.Get(newUserId);
 Console.WriteLine($"Created {user.UserId}, Active={user.Active}");
 ```
 
 ### Delete User
 
 ```csharp
-await client.Users.Database.Delete(newUserId);
+await client.Users.Db.Delete(newUserId);
 ```
 
 ### Rotate User API Key
@@ -132,7 +124,7 @@ await client.Users.Database.Delete(newUserId);
 Database users only:
 
 ```csharp
-var rotatedKey = await client.Users.Database.RotateApiKey(newUserId);
+var rotatedKey = await client.Users.Db.RotateApiKey(newUserId);
 // Use rotatedKey to create a secondary client if needed
 ```
 
@@ -141,28 +133,46 @@ var rotatedKey = await client.Users.Database.RotateApiKey(newUserId);
 Database users only:
 
 ```csharp
-await client.Users.Database.Deactivate(newUserId);
-await client.Users.Database.Activate(newUserId);
+await client.Users.Db.Deactivate(newUserId);
+await client.Users.Db.Activate(newUserId);
 ```
 
 ### Assign / Revoke Roles
 
+For database users:
+
 ```csharp
-await client.Roles.AssignToUser(newUserId, scope: "db", roles: new[] { "viewer" });
-await client.Roles.RevokeFromUser(newUserId, scope: "db", roles: new[] { "viewer" });
+await client.Users.Db.AssignRoles(newUserId, "viewer", "custom-role");
+await client.Users.Db.RevokeRoles(newUserId, "viewer");
+```
+
+For OIDC users:
+
+```csharp
+await client.Users.Oidc.AssignRoles(oidcUserId, new[] { "viewer", "custom-role" });
+await client.Users.Oidc.RevokeRoles(oidcUserId, new[] { "viewer" });
 ```
 
 ### List Roles For User
 
+For database users:
+
 ```csharp
-var rolesForUser = await client.Roles.RolesForUser(newUserId, scope: "db");
+var rolesForUser = await client.Users.Db.GetRoles(newUserId);
+foreach (var r in rolesForUser) Console.WriteLine(r.Name);
+```
+
+For OIDC users:
+
+```csharp
+var rolesForUser = await client.Users.Oidc.GetRoles(oidcUserId);
 foreach (var r in rolesForUser) Console.WriteLine(r.Name);
 ```
 
 ### Check Role For User (Indirect)
 
 ```csharp
-var hasViewer = (await client.Roles.RolesForUser(newUserId, "db")).Any(r => r.Name == "viewer");
+var hasViewer = (await client.Users.Db.GetRoles(newUserId)).Any(r => r.Name == "viewer");
 ```
 
 ## Roles
@@ -170,7 +180,7 @@ var hasViewer = (await client.Roles.RolesForUser(newUserId, "db")).Any(r => r.Na
 ### List Roles
 
 ```csharp
-var roles = await client.Roles.List();
+var roles = await client.Roles.ListAll();
 foreach (var r in roles) Console.WriteLine(r.Name);
 ```
 
@@ -187,7 +197,7 @@ Creates a new role with optional initial permissions. Returns the created role d
 
 ```csharp
 var roleName = $"role-{Guid.NewGuid():N}";
-var createdRole = await client.Roles.Create(roleName, new[] { new PermissionInfo("read_roles") });
+var createdRole = await client.Roles.Create(roleName, new[] { new Permissions.Roles { Read = true } });
 Console.WriteLine($"Created role: {createdRole.Name}");
 ```
 
@@ -202,8 +212,8 @@ await client.Roles.Delete(roleName);
 ### Add / Remove Permissions
 
 ```csharp
-await client.Roles.AddPermissions(roleName, new[] { new PermissionInfo("create_roles") });
-await client.Roles.RemovePermissions(roleName, new[] { new PermissionInfo("create_roles") });
+await client.Roles.AddPermissions(roleName, new[] { new Permissions.Roles { Create = true } });
+await client.Roles.RemovePermissions(roleName, new[] { new Permissions.Roles { Create = true } });
 ```
 
 ### Check Permission
@@ -211,7 +221,7 @@ await client.Roles.RemovePermissions(roleName, new[] { new PermissionInfo("creat
 Returns `true` if the role has the specified permission, `false` otherwise (including when the role doesn't exist):
 
 ```csharp
-var has = await client.Roles.HasPermission(roleName, new PermissionInfo("read_roles"));
+var has = await client.Roles.HasPermission(roleName, new Permissions.Roles { Read = true });
 Console.WriteLine($"Has permission: {has}");
 ```
 
@@ -220,7 +230,7 @@ Console.WriteLine($"Has permission: {has}");
 ### User Assignments For Role
 
 ```csharp
-var assignments = await client.Roles.UserAssignments(roleName);
+var assignments = await client.Roles.GetUserAssignments(roleName);
 foreach (var a in assignments) Console.WriteLine(a.UserId);
 ```
 
@@ -233,16 +243,16 @@ Groups originate from identity providers (e.g., OIDC) and cannot be created via 
 ### List Groups
 
 ```csharp
-var groups = await client.Groups.Oidc.List();
+var groups = await client.Groups.Oidc.GetKnownGroupNames();
 foreach (var g in groups)
-    Console.WriteLine($"Group: {g.Name}");
+    Console.WriteLine($"Group: {g}");
 ```
 
 ### Roles For Group
 
 ```csharp
 var groupId = "/example-group";
-var groupRoles = await client.Groups.Oidc.Roles(groupId);
+var groupRoles = await client.Groups.Oidc.GetRoles(groupId);
 foreach (var r in groupRoles)
     Console.WriteLine($"Role: {r.Name}");
 ```
@@ -299,7 +309,7 @@ await client.Roles.Delete("role-name");
 
 ```csharp
 // Returns false instead of throwing for non-existent roles
-var hasPermission = await client.Roles.HasPermission("unknown-role-name", permission);
+var hasPermission = await client.Roles.HasPermission("unknown-role-name", new Permissions.Roles { Read = true });
 ```
 
 **Conflict Handling:**
@@ -307,7 +317,7 @@ var hasPermission = await client.Roles.HasPermission("unknown-role-name", permis
 ```csharp
 try
 {
-    await client.Roles.Create("existing-role", permissions);
+    await client.Roles.Create("existing-role", new[] { new Permissions.Roles { Read = true } });
 }
 catch (WeaviateConflictException ex)
 {
@@ -352,15 +362,15 @@ Console.WriteLine($"Created role: {role.Name}");
 
 // Create a database user
 var userId = $"demo-user-{Guid.NewGuid():N}";
-var userKey = await client.Users.Database.Create(userId);
+var userKey = await client.Users.Db.Create(userId);
 Console.WriteLine($"Created user {userId} with API key");
 
 // Assign role to user
-await client.Roles.AssignToUser(userId, "db", new[] { roleName });
+await client.Users.Db.AssignRoles(userId, roleName);
 Console.WriteLine($"Assigned role {roleName} to user {userId}");
 
 // Verify role assignment
-var userRoles = await client.Roles.RolesForUser(userId, "db");
+var userRoles = await client.Users.Db.GetRoles(userId);
 Console.WriteLine($"User roles: {string.Join(", ", userRoles.Select(r => r.Name))}");
 
 // Check specific permission
@@ -368,13 +378,13 @@ var hasPermission = await client.Roles.HasPermission(roleName, new Permissions.R
 Console.WriteLine($"Role has read_roles permission: {hasPermission}");
 
 // List all role assignments for this user
-var assignments = await client.Roles.UserAssignments(roleName);
-Console.WriteLine($"Users with role {roleName}: {assignments.Count}");
+var assignments = await client.Roles.GetUserAssignments(roleName);
+Console.WriteLine($"Users with role {roleName}: {assignments.Count()}");
 
 // Cleanup
-await client.Roles.RevokeFromUser(userId, "db", new[] { roleName });
+await client.Users.Db.RevokeRoles(userId, roleName);
 await client.Roles.Delete(roleName);
-await client.Users.Database.Delete(userId);
+await client.Users.Db.Delete(userId);
 Console.WriteLine("Cleanup complete");
 ```
 
