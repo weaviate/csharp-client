@@ -231,7 +231,7 @@ internal partial class WeaviateRestClient
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
         {
-            throw new WeaviateNotFoundException(ex, ResourceType.User);
+            throw new WeaviateNotFoundException(ex, ResourceType.User | ResourceType.Role);
         }
     }
 
@@ -250,7 +250,7 @@ internal partial class WeaviateRestClient
         catch (WeaviateUnexpectedStatusCodeException ex)
             when (ex.StatusCode == HttpStatusCode.NotFound)
         {
-            throw new WeaviateNotFoundException(ex, ResourceType.User);
+            throw new WeaviateNotFoundException(ex, ResourceType.User | ResourceType.Role);
         }
     }
 
