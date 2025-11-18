@@ -57,7 +57,7 @@ public partial class ClientTests : IntegrationTests
     }
 
     [Fact]
-    public async Task TestNodesVerbose()
+    public async Task TestNodesListVerbose()
     {
         var nodesVerbose = await _weaviate.Cluster.Nodes.ListVerbose();
         Assert.Single(nodesVerbose);
@@ -71,9 +71,9 @@ public partial class ClientTests : IntegrationTests
     }
 
     [Fact]
-    public async Task TestNodesVerboseWithCollection()
+    public async Task TestNodesListVerboseWithCollection()
     {
-        var collectionName = "TestNodesVerboseWithCollection";
+        var collectionName = "TestNodesListVerboseWithCollection";
         var collection = await CollectionFactory(collectionName);
 
         var nodesVerbose = await _weaviate.Cluster.Nodes.ListVerbose(collection.Name);

@@ -1,65 +1,59 @@
 namespace Weaviate.Client.Models;
 
 /// <summary>
-/// Abstract base for backup/restore operations, with status polling and cancellation.
+/// Represents a replication operation with status polling and cancellation.
 /// Implements automatic resource cleanup when the operation completes.
 /// </summary>
-public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
+public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
 {
-    private readonly Func<Task<Backup>> _statusFetcher;
+    private readonly Func<Task<ReplicationOperation>> _statusFetcher;
     private readonly Func<Task> _operationCancel;
     private readonly CancellationTokenSource _cts = new();
     private readonly Task _backgroundRefreshTask;
-    private Backup _current;
-    private bool _isCompleted;
-    private bool _isSuccessful;
-    private bool _isCanceled;
+    private ReplicationOperation _current;
     private bool _disposed;
 
-    protected BackupOperationBase(
-        Backup initial,
-        Func<Task<Backup>> statusFetcher,
+    internal ReplicationOperationTracker(
+        ReplicationOperation initial,
+        Func<Task<ReplicationOperation>> statusFetcher,
         Func<Task> operationCancel
     )
     {
         _current = initial;
         _statusFetcher = statusFetcher;
         _operationCancel = operationCancel;
-        _isCompleted = IsTerminalStatus(initial.Status);
-        _isSuccessful = initial.Status == BackupStatus.Success;
-        _isCanceled = initial.Status == BackupStatus.Canceled;
         _backgroundRefreshTask = StartBackgroundRefresh();
     }
 
     /// <summary>
-    /// Gets the latest backup state for this operation.
+    /// Gets the latest replication operation state.
     /// </summary>
-    public Backup Current => _current;
+    public ReplicationOperation Current => _current;
 
     /// <summary>
-    /// True if the operation has completed (success, failure, or cancellation).
+    /// True if the operation has completed (success or cancellation).
     /// </summary>
-    public bool IsCompleted => _isCompleted;
+    public bool IsCompleted => _current.IsCompleted;
 
     /// <summary>
     /// True if the operation completed successfully.
     /// </summary>
-    public bool IsSuccessful => _isSuccessful;
+    public bool IsSuccessful => _current.IsSuccessful;
 
     /// <summary>
-    /// True if the operation was canceled.
+    /// True if the operation was cancelled.
     /// </summary>
-    public bool IsCanceled => _isCanceled;
+    public bool IsCancelled => _current.IsCancelled;
 
     private Task StartBackgroundRefresh()
     {
         return Task.Run(async () =>
         {
-            while (!_isCompleted && !_cts.IsCancellationRequested)
+            while (!_current.IsCompleted && !_cts.IsCancellationRequested)
             {
                 try
                 {
-                    await Task.Delay(BackupClient.Config.PollInterval, _cts.Token);
+                    await Task.Delay(ReplicationClientConfig.Default.PollInterval, _cts.Token);
                     await RefreshStatusInternal();
                 }
                 catch (OperationCanceledException)
@@ -76,15 +70,14 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
 
     private async Task RefreshStatusInternal()
     {
-        if (_isCompleted)
+        if (_current.IsCompleted)
             return;
+
         var status = await _statusFetcher();
         _current = status;
-        if (IsTerminalStatus(status.Status))
+
+        if (_current.IsCompleted)
         {
-            _isCompleted = true;
-            _isSuccessful = status.Status == BackupStatus.Success;
-            _isCanceled = status.Status == BackupStatus.Canceled;
             await _cts.CancelAsync(); // Stop background polling
 
             // Auto-dispose resources now that operation is complete
@@ -94,37 +87,45 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
     }
 
     /// <summary>
+    /// Manually refresh the operation status from the server.
+    /// </summary>
+    public async Task RefreshStatus()
+    {
+        await RefreshStatusInternal();
+    }
+
+    /// <summary>
     /// Waits for the operation to complete.
     /// Throws <see cref="TimeoutException"/> if it does not finish within the provided timeout.
     /// </summary>
-    /// <param name="timeout">Optional timeout; if null uses <see cref="BackupClient.Config"/> default.</param>
+    /// <param name="timeout">Optional timeout; if null uses <see cref="ReplicationClientConfig.Default"/> timeout.</param>
     /// <param name="cancellationToken">Optional cancellation token to abort waiting.</param>
-    public async Task<Backup> WaitForCompletion(
+    public async Task<ReplicationOperation> WaitForCompletion(
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default
     )
     {
-        var effectiveTimeout = timeout ?? BackupClient.Config.Timeout;
+        var effectiveTimeout = timeout ?? ReplicationClientConfig.Default.Timeout;
         var start = DateTime.UtcNow;
 
         var effectiveToken = CancellationTokenSource
             .CreateLinkedTokenSource(_cts.Token, cancellationToken)
             .Token;
 
-        while (!_isCompleted && !effectiveToken.IsCancellationRequested)
+        while (!_current.IsCompleted && !effectiveToken.IsCancellationRequested)
         {
             effectiveToken.ThrowIfCancellationRequested();
             if (DateTime.UtcNow - start > effectiveTimeout)
             {
                 throw new TimeoutException(
-                    $"Backup operation did not complete within {effectiveTimeout} (last status={_current.Status})."
+                    $"Replication operation did not complete within {effectiveTimeout} (last status={_current.Status.State})."
                 );
             }
             try
             {
-                await Task.Delay(BackupClient.Config.PollInterval, effectiveToken);
+                await Task.Delay(ReplicationClientConfig.Default.PollInterval, effectiveToken);
             }
-            catch (OperationCanceledException) when (_isCompleted)
+            catch (OperationCanceledException) when (_current.IsCompleted)
             {
                 // Operation completed while waiting
             }
@@ -144,6 +145,22 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
     }
 
     /// <summary>
+    /// Cancels the operation and waits synchronously for cancellation to complete.
+    /// This method blocks until the operation reaches a terminal state (cancelled or ready).
+    /// </summary>
+    /// <param name="timeout">Optional timeout; if null uses default of 10 seconds.</param>
+    /// <param name="cancellationToken">Optional cancellation token to abort waiting.</param>
+    /// <returns>The final operation state after cancellation.</returns>
+    public async Task<ReplicationOperation> CancelSync(
+        TimeSpan? timeout = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        await Cancel();
+        return await WaitForCompletion(timeout ?? TimeSpan.FromSeconds(10), cancellationToken);
+    }
+
+    /// <summary>
     /// Dispose the operation and cancel background polling.
     /// </summary>
     protected virtual void Dispose(bool disposing)
@@ -155,7 +172,7 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
             _cts.Cancel();
             try
             {
-                _backgroundRefreshTask.Wait(BackupClient.Config.PollInterval);
+                _backgroundRefreshTask.Wait(ReplicationClientConfig.Default.PollInterval);
             }
             catch (Exception)
             {
@@ -177,7 +194,7 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
         try
         {
             // Wait for background task to complete (should be immediate since we just canceled)
-            _backgroundRefreshTask.Wait(BackupClient.Config.PollInterval);
+            _backgroundRefreshTask.Wait(ReplicationClientConfig.Default.PollInterval);
         }
         catch (Exception)
         {
@@ -191,6 +208,7 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
     public void Dispose()
     {
         Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>
@@ -217,12 +235,5 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
         _disposed = true;
 
         GC.SuppressFinalize(this);
-    }
-
-    private static bool IsTerminalStatus(BackupStatus? status)
-    {
-        return status == BackupStatus.Success
-            || status == BackupStatus.Failed
-            || status == BackupStatus.Canceled;
     }
 }

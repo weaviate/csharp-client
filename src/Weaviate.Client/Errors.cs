@@ -84,6 +84,22 @@ public class WeaviateNotFoundException : WeaviateServerException
     public ResourceType? ResourceType { get; }
 
     internal WeaviateNotFoundException(
+        ResourceType resourceType = Client.ResourceType.Unknown,
+        IDictionary<string, object>? data = null
+    )
+        : base(DefaultMessage)
+    {
+        ResourceType = resourceType;
+        if (data != null)
+        {
+            foreach (var kvp in data)
+            {
+                this.Data.Add(kvp.Key, kvp.Value);
+            }
+        }
+    }
+
+    internal WeaviateNotFoundException(
         WeaviateRestServerException restException,
         ResourceType resourceType = Client.ResourceType.Unknown
     )

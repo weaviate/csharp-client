@@ -80,24 +80,31 @@ public partial class SearchTests : IntegrationTests
 
         var retrievedObjects = retrieved.Objects.OrderBy(o => o.BelongsToGroup).ToArray();
 
-        Assert.Equal(2, retrieved.Objects.Count());
+        Assert.Equal(2, retrievedObjects.Length);
         Assert.Equal(2, retrieved.Groups.Count());
 
+        // Verify the expected GUIDs are present (order-independent)
+        var retrievedIds = retrievedObjects.Select(o => o.ID).ToHashSet();
+        Assert.Contains(guids[2], retrievedIds); // "apple cake"
+        Assert.Contains(guids[3], retrievedIds); // "cake"
+
+        // Verify each object has the default vector
+        Assert.All(retrievedObjects, obj => Assert.Contains("default", obj.Vectors.Keys));
+
+        // Verify BelongsToGroup matches the value property for each object
+        var cakeObject = retrievedObjects.First(o => o.ID == guids[3]);
+        Assert.Equal("cake", cakeObject.BelongsToGroup);
+
+        var appleCakeObject = retrievedObjects.First(o => o.ID == guids[2]);
+        Assert.Equal("apple cake", appleCakeObject.BelongsToGroup);
+
+        // Optional: Verify the separate fetch still works
         var obj = await collectionClient.Query.FetchObjectByID(
             guids[3],
             includeVectors: new[] { "default" }
         );
-
         Assert.NotNull(obj);
         Assert.Equal(guids[3], obj.ID);
         Assert.Contains("default", obj.Vectors.Keys);
-
-        Assert.Equal("apple cake", retrievedObjects[0].BelongsToGroup);
-        Assert.Equal(guids[2], retrievedObjects[0].ID);
-        Assert.Contains("default", retrievedObjects[0].Vectors.Keys);
-
-        Assert.Equal("cake", retrievedObjects[1].BelongsToGroup);
-        Assert.Equal(guids[3], retrievedObjects[1].ID);
-        Assert.Contains("default", retrievedObjects[1].Vectors.Keys);
     }
 }
