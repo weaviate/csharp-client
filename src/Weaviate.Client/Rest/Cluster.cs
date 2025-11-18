@@ -5,15 +5,20 @@ namespace Weaviate.Client.Rest;
 
 internal partial class WeaviateRestClient
 {
-    internal async Task<IList<Dto.NodeStatus>> Nodes(string? collection, string verbosity)
+    internal async Task<IList<Dto.NodeStatus>> Nodes(
+        string? collection,
+        string verbosity,
+        CancellationToken cancellationToken = default
+    )
     {
         var path = WeaviateEndpoints.Nodes(collection, verbosity);
-        var response = await _httpClient.GetAsync(path);
+        var response = await _httpClient.GetAsync(path, cancellationToken);
 
         await response.EnsureExpectedStatusCodeAsync([200], "get nodes");
 
         var nodes = await response.Content.ReadFromJsonAsync<NodesStatusResponse>(
-            options: RestJsonSerializerOptions
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
         );
 
         return nodes?.Nodes ?? Array.Empty<Dto.NodeStatus>();

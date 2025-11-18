@@ -8,7 +8,8 @@ internal partial class WeaviateRestClient
 {
     internal async Task<Dto.BackupCreateResponse> BackupCreate(
         BackupStorageProvider backend,
-        Dto.BackupCreateRequest request
+        Dto.BackupCreateRequest request,
+        CancellationToken cancellationToken = default
     )
     {
         try
@@ -16,7 +17,8 @@ internal partial class WeaviateRestClient
             var response = await _httpClient.PostAsJsonAsync(
                 WeaviateEndpoints.Backups(backend.ToEnumMemberString()!),
                 request,
-                options: RestJsonSerializerOptions
+                options: RestJsonSerializerOptions,
+                cancellationToken: cancellationToken
             );
             await response.EnsureExpectedStatusCodeAsync([200], "create backup");
             return await response.Content.ReadFromJsonAsync<Dto.BackupCreateResponse>(
@@ -32,10 +34,14 @@ internal partial class WeaviateRestClient
         }
     }
 
-    internal async Task<List<Dto.Anonymous3>> BackupList(BackupStorageProvider backend)
+    internal async Task<List<Dto.Anonymous3>> BackupList(
+        BackupStorageProvider backend,
+        CancellationToken cancellationToken = default
+    )
     {
         var response = await _httpClient.GetAsync(
-            WeaviateEndpoints.Backups(backend.ToEnumMemberString()!)
+            WeaviateEndpoints.Backups(backend.ToEnumMemberString()!),
+            cancellationToken
         );
         await response.EnsureExpectedStatusCodeAsync([200], "list backups");
         return await response.Content.ReadFromJsonAsync<List<Dto.Anonymous3>>(
@@ -47,11 +53,13 @@ internal partial class WeaviateRestClient
         BackupStorageProvider backend,
         string id,
         string? bucket = null,
-        string? path = null
+        string? path = null,
+        CancellationToken cancellationToken = default
     )
     {
         var response = await _httpClient.GetAsync(
-            WeaviateEndpoints.BackupStatus(backend.ToEnumMemberString()!, id, bucket, path)
+            WeaviateEndpoints.BackupStatus(backend.ToEnumMemberString()!, id, bucket, path),
+            cancellationToken
         );
         await response.EnsureExpectedStatusCodeAsync([200], "backup status");
         return await response.Content.ReadFromJsonAsync<Dto.BackupCreateStatusResponse>(
@@ -63,11 +71,13 @@ internal partial class WeaviateRestClient
         BackupStorageProvider backend,
         string id,
         string? bucket = null,
-        string? path = null
+        string? path = null,
+        CancellationToken cancellationToken = default
     )
     {
         var response = await _httpClient.DeleteAsync(
-            WeaviateEndpoints.BackupStatus(backend.ToEnumMemberString()!, id, bucket, path)
+            WeaviateEndpoints.BackupStatus(backend.ToEnumMemberString()!, id, bucket, path),
+            cancellationToken
         );
         await response.EnsureExpectedStatusCodeAsync([200, 204], "backup cancel");
     }
@@ -75,7 +85,8 @@ internal partial class WeaviateRestClient
     internal async Task<Dto.BackupRestoreResponse> BackupRestore(
         BackupStorageProvider backend,
         string id,
-        Dto.BackupRestoreRequest request
+        Dto.BackupRestoreRequest request,
+        CancellationToken cancellationToken = default
     )
     {
         try
@@ -83,7 +94,8 @@ internal partial class WeaviateRestClient
             var response = await _httpClient.PostAsJsonAsync(
                 WeaviateEndpoints.BackupRestore(backend.ToEnumMemberString()!, id),
                 request,
-                options: RestJsonSerializerOptions
+                options: RestJsonSerializerOptions,
+                cancellationToken: cancellationToken
             );
             await response.EnsureExpectedStatusCodeAsync([200], "backup restore");
             return await response.Content.ReadFromJsonAsync<Dto.BackupRestoreResponse>(
@@ -103,11 +115,13 @@ internal partial class WeaviateRestClient
         BackupStorageProvider backend,
         string id,
         string? bucket = null,
-        string? path = null
+        string? path = null,
+        CancellationToken cancellationToken = default
     )
     {
         var response = await _httpClient.GetAsync(
-            WeaviateEndpoints.BackupRestoreStatus(backend.ToEnumMemberString()!, id, bucket, path)
+            WeaviateEndpoints.BackupRestoreStatus(backend.ToEnumMemberString()!, id, bucket, path),
+            cancellationToken
         );
         await response.EnsureExpectedStatusCodeAsync([200], "backup restore status");
         return await response.Content.ReadFromJsonAsync<Dto.BackupRestoreStatusResponse>(

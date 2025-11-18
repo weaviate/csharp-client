@@ -11,7 +11,8 @@ internal partial class WeaviateRestClient
     // Tenants API
     internal async Task<IEnumerable<Rest.Dto.Tenant>> TenantsAdd(
         string collectionName,
-        params Rest.Dto.Tenant[] tenants
+        Rest.Dto.Tenant[] tenants,
+        CancellationToken cancellationToken = default
     )
     {
         var path = WeaviateEndpoints.CollectionTenants(collectionName);
@@ -19,18 +20,21 @@ internal partial class WeaviateRestClient
         var response = await _httpClient.PostAsJsonAsync(
             path,
             tenants,
-            options: RestJsonSerializerOptions
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
         );
         await response.EnsureExpectedStatusCodeAsync([200], "tenants add");
         var result = await response.Content.ReadFromJsonAsync<IEnumerable<Rest.Dto.Tenant>>(
-            options: RestJsonSerializerOptions
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
         );
         return result ?? Enumerable.Empty<Rest.Dto.Tenant>();
     }
 
     internal async Task<IEnumerable<Rest.Dto.Tenant>> TenantUpdate(
         string collectionName,
-        params Rest.Dto.Tenant[] tenants
+        Rest.Dto.Tenant[] tenants,
+        CancellationToken cancellationToken = default
     )
     {
         if (tenants.Any(t => t.Name is null))
@@ -42,18 +46,24 @@ internal partial class WeaviateRestClient
         var response = await _httpClient.PutAsJsonAsync(
             path,
             tenants,
-            options: RestJsonSerializerOptions
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
         );
         await response.EnsureExpectedStatusCodeAsync([200], "tenant update");
 
         var result = await response.Content.ReadFromJsonAsync<Rest.Dto.Tenant[]>(
-            options: RestJsonSerializerOptions
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
         );
 
         return result ?? Enumerable.Empty<Rest.Dto.Tenant>();
     }
 
-    internal async Task TenantsDelete(string collectionName, IEnumerable<string> tenantNames)
+    internal async Task TenantsDelete(
+        string collectionName,
+        IEnumerable<string> tenantNames,
+        CancellationToken cancellationToken = default
+    )
     {
         if (tenantNames.Any(name => string.IsNullOrWhiteSpace(name)))
         {
@@ -68,7 +78,7 @@ internal partial class WeaviateRestClient
         {
             Content = JsonContent.Create(tenantNames, options: RestJsonSerializerOptions),
         };
-        var response = await _httpClient.SendAsync(request);
+        var response = await _httpClient.SendAsync(request, cancellationToken);
         await response.EnsureExpectedStatusCodeAsync([200], "tenants delete");
     }
 }

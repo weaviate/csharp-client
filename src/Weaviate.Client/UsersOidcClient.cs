@@ -16,24 +16,47 @@ public class UsersOidcClient
     /// <summary>
     /// Assigns roles to an OIDC user.
     /// </summary>
-    public Task AssignRoles(string userId, IEnumerable<string> roles) =>
-        _client.RestClient.UserAssignRoles(userId, UserType.ToEnumMemberString(), roles);
+    public Task AssignRoles(
+        string userId,
+        IEnumerable<string> roles,
+        CancellationToken cancellationToken = default
+    ) =>
+        _client.RestClient.UserAssignRoles(
+            userId,
+            UserType.ToEnumMemberString(),
+            roles,
+            cancellationToken
+        );
 
     /// <summary>
     /// Revokes roles from an OIDC user.
     /// </summary>
-    public Task RevokeRoles(string userId, IEnumerable<string> roles) =>
-        _client.RestClient.UserRevokeRoles(userId, UserType.ToEnumMemberString(), roles);
+    public Task RevokeRoles(
+        string userId,
+        IEnumerable<string> roles,
+        CancellationToken cancellationToken = default
+    ) =>
+        _client.RestClient.UserRevokeRoles(
+            userId,
+            UserType.ToEnumMemberString(),
+            roles,
+            cancellationToken
+        );
 
     /// <summary>
     /// Gets all roles assigned to an OIDC user.
     /// </summary>
-    public async Task<IEnumerable<RoleInfo>> GetRoles(string userId, bool? includeFullRoles = null)
+    public async Task<IEnumerable<RoleInfo>> GetRoles(
+        string userId,
+        bool? includeFullRoles = null,
+        CancellationToken cancellationToken = default
+    )
     {
         var roles = await _client.RestClient.UserRolesGet(
             userId,
             UserType.ToEnumMemberString(),
-            includeFullRoles
+            includeFullRoles,
+            cancellationToken
         );
         return roles.Select(r => r.ToModel());
     }

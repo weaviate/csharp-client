@@ -10,7 +10,7 @@ public partial class ClientTests : IntegrationTests
 
         var ex = await Record.ExceptionAsync(async () =>
             await client
-                .Collections.List()
+                .Collections.List(TestContext.Current.CancellationToken)
                 .ToListAsync(TestContext.Current.CancellationToken)
                 .AsTask()
         );
@@ -26,7 +26,9 @@ public partial class ClientTests : IntegrationTests
         var client = Connect.Cloud(WCS_HOST, WCS_CREDS);
 
         var ex = await Record.ExceptionAsync(async () =>
-            await client.Collections.List().ToListAsync(TestContext.Current.CancellationToken)
+            await client
+                .Collections.List(TestContext.Current.CancellationToken)
+                .ToListAsync(TestContext.Current.CancellationToken)
         );
         Assert.Null(ex);
     }
@@ -35,7 +37,7 @@ public partial class ClientTests : IntegrationTests
     public async Task TestMeta()
     {
         var client = Connect.Local();
-        var meta = await client.GetMeta();
+        var meta = await client.GetMeta(TestContext.Current.CancellationToken);
 
         // ip is different depending on the environment
         Assert.Contains("8080", meta.Hostname);
