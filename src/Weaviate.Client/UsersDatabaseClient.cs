@@ -47,7 +47,7 @@ public class UsersDatabaseClient
     /// <summary>
     /// Deletes a database user.
     /// </summary>
-    public Task Delete(string userId) => _client.RestClient.UserDbDelete(userId);
+    public Task<bool> Delete(string userId) => _client.RestClient.UserDbDelete(userId);
 
     /// <summary>
     /// Rotates the API key for a database user.
@@ -62,12 +62,12 @@ public class UsersDatabaseClient
     /// <summary>
     /// Activates a database user.
     /// </summary>
-    public Task Activate(string userId) => _client.RestClient.UserDbActivate(userId);
+    public Task<bool> Activate(string userId) => _client.RestClient.UserDbActivate(userId);
 
     /// <summary>
     /// Deactivates a database user, optionally revoking their API key.
     /// </summary>
-    public Task Deactivate(string userId, bool? revokeKey = null) =>
+    public Task<bool> Deactivate(string userId, bool? revokeKey = null) =>
         _client.RestClient.UserDbDeactivate(userId, revokeKey);
 
     /// <summary>

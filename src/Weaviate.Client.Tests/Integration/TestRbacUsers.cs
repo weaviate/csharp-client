@@ -95,14 +95,11 @@ public class TestRbacUsers : IntegrationTests
         await _weaviate.Users.Db.Create(randomUserName);
 
         // Delete user
-        await _weaviate.Users.Db.Delete(randomUserName);
+        Assert.True(await _weaviate.Users.Db.Delete(randomUserName));
         // No exception means success
 
         // Verify delete of non-existent user throws exception
-        await Assert.ThrowsAsync<WeaviateNotFoundException>(async () =>
-        {
-            await _weaviate.Users.Db.Delete(randomUserName);
-        });
+        Assert.False(await _weaviate.Users.Db.Delete(randomUserName));
     }
 
     [Fact]
@@ -167,11 +164,8 @@ public class TestRbacUsers : IntegrationTests
             await _weaviate.Users.Db.Deactivate(randomUserName);
             // Not throwing means success
 
-            // Second deactivation should throw a conflict exception
-            await Assert.ThrowsAsync<WeaviateConflictException>(async () =>
-            {
-                await _weaviate.Users.Db.Deactivate(randomUserName);
-            });
+            // Second deactivation should return false because nothing changed
+            Assert.False(await _weaviate.Users.Db.Deactivate(randomUserName));
 
             // Verify user is inactive
             var user = await _weaviate.Users.Db.Get(randomUserName);
@@ -181,11 +175,8 @@ public class TestRbacUsers : IntegrationTests
             // Activate
             await _weaviate.Users.Db.Activate(randomUserName);
 
-            // Second activation should throw a conflict exception
-            await Assert.ThrowsAsync<WeaviateConflictException>(async () =>
-            {
-                await _weaviate.Users.Db.Activate(randomUserName);
-            });
+            // Second activation should return false because nothing changed
+            Assert.False(await _weaviate.Users.Db.Activate(randomUserName));
 
             // Verify user is active
             user = await _weaviate.Users.Db.Get(randomUserName);
