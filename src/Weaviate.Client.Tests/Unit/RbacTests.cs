@@ -39,7 +39,9 @@ public class RbacTests
         );
 
         // Invoke list (consume first queued response)
-        var users = await client.Users.Db.List();
+        var users = await client.Users.Db.List(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         var list = users.ToList();
         Assert.Equal(2, list.Count);
         var alice = list.First(u => u.UserId == "alice");
@@ -94,7 +96,7 @@ public class RbacTests
             expectedEndpoint: "/v1/authz/roles"
         );
 
-        var roles = (await client.Roles.ListAll()).ToList();
+        var roles = (await client.Roles.ListAll(TestContext.Current.CancellationToken)).ToList();
         Assert.Equal(2, roles.Count);
         Assert.Contains(
             roles,

@@ -45,7 +45,7 @@ public partial class RestClientTests
         };
 
         // Act
-        var result = await client.Collections.Create(config);
+        var result = await client.Collections.Create(config, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(handler.LastRequest);
@@ -88,7 +88,10 @@ public partial class RestClientTests
         var config = new CollectionConfig { Name = "Product" };
 
         // Act
-        var result = await client.Collections.Create<ProductData>(config);
+        var result = await client.Collections.Create<ProductData>(
+            config,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         Assert.NotNull(handler.LastRequest);
@@ -143,7 +146,7 @@ public partial class RestClientTests
         };
 
         // Act
-        await client.Collections.Create(config);
+        await client.Collections.Create(config, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotEmpty(capturedRequestBody);
@@ -185,7 +188,7 @@ public partial class RestClientTests
         };
 
         // Act
-        await client.Collections.Create(config);
+        await client.Collections.Create(config, TestContext.Current.CancellationToken);
 
         // Assert
         var requestBody = await handler.LastRequest!.GetBodyAsString();
@@ -206,7 +209,7 @@ public partial class RestClientTests
         handler.AddResponse(MockResponses.Ok());
 
         // Act
-        await client.Collections.Delete("Article");
+        await client.Collections.Delete("Article", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(handler.LastRequest);
@@ -230,7 +233,10 @@ public partial class RestClientTests
         handler.AddJsonResponse(mockSchema);
 
         // Act
-        var exists = await client.Collections.Exists("Article");
+        var exists = await client.Collections.Exists(
+            "Article",
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         Assert.True(exists);
@@ -259,7 +265,7 @@ public partial class RestClientTests
 
         // Act
         var collections = await client
-            .Collections.List()
+            .Collections.List(TestContext.Current.CancellationToken)
             .ToListAsync(TestContext.Current.CancellationToken);
 
         // Assert
@@ -307,7 +313,7 @@ public partial class RestClientTests
         };
 
         // Act
-        await client.Collections.Create(config);
+        await client.Collections.Create(config, TestContext.Current.CancellationToken);
 
         // Assert
         var requestBody = await handler.LastRequest!.GetBodyAsString();
@@ -327,9 +333,18 @@ public partial class RestClientTests
         handler.AddJsonResponse(new Dto.Class { Class1 = "Third", Properties = [] });
 
         // Act
-        await client.Collections.Create(new CollectionConfig { Name = "First" });
-        await client.Collections.Create(new CollectionConfig { Name = "Second" });
-        await client.Collections.Create(new CollectionConfig { Name = "Third" });
+        await client.Collections.Create(
+            new CollectionConfig { Name = "First" },
+            TestContext.Current.CancellationToken
+        );
+        await client.Collections.Create(
+            new CollectionConfig { Name = "Second" },
+            TestContext.Current.CancellationToken
+        );
+        await client.Collections.Create(
+            new CollectionConfig { Name = "Third" },
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         Assert.Equal(3, handler.Requests.Count);

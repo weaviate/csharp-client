@@ -11,44 +11,62 @@ public record CollectionsClient
         _client = client;
     }
 
-    public async Task<CollectionClient<dynamic>> Create(Models.CollectionConfig collection)
+    public async Task<CollectionClient<dynamic>> Create(
+        Models.CollectionConfig collection,
+        CancellationToken cancellationToken = default
+    )
     {
-        var response = await _client.RestClient.CollectionCreate(collection.ToDto());
+        var response = await _client.RestClient.CollectionCreate(
+            collection.ToDto(),
+            cancellationToken
+        );
 
         return new CollectionClient<dynamic>(_client, response.ToModel());
     }
 
-    public async Task<CollectionClient<TData>> Create<TData>(Models.CollectionConfig collection)
+    public async Task<CollectionClient<TData>> Create<TData>(
+        Models.CollectionConfig collection,
+        CancellationToken cancellationToken = default
+    )
     {
-        var response = await _client.RestClient.CollectionCreate(collection.ToDto());
+        var response = await _client.RestClient.CollectionCreate(
+            collection.ToDto(),
+            cancellationToken
+        );
 
         return new CollectionClient<TData>(_client, response.ToModel());
     }
 
-    public async Task Delete(string collectionName)
+    public async Task Delete(string collectionName, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(collectionName);
 
-        await _client.RestClient.CollectionDelete(collectionName);
+        await _client.RestClient.CollectionDelete(collectionName, cancellationToken);
     }
 
-    public async Task DeleteAll()
+    public async Task DeleteAll(CancellationToken cancellationToken = default)
     {
-        var list = await List().Select(l => l.Name).ToListAsync();
+        var list = await List(cancellationToken).Select(l => l.Name).ToListAsync(cancellationToken);
 
-        var tasks = list.Select(Delete);
+        var tasks = list.Select(name => Delete(name, cancellationToken));
 
         await Task.WhenAll(tasks);
     }
 
-    public async Task<bool> Exists(string collectionName)
+    public async Task<bool> Exists(
+        string collectionName,
+        CancellationToken cancellationToken = default
+    )
     {
-        return await _client.RestClient.CollectionExists(collectionName);
+        return await _client.RestClient.CollectionExists(collectionName, cancellationToken);
     }
 
-    public async Task<CollectionConfig?> Export(string collectionName)
+    public async Task<CollectionConfig?> Export(
+        string collectionName,
+        CancellationToken cancellationToken = default
+    )
     {
-        var response = await _client.RestClient.CollectionGet(collectionName);
+        var response = await _client.RestClient.CollectionGet(collectionName, cancellationToken);
 
         if (response is null)
         {
@@ -58,9 +76,12 @@ public record CollectionsClient
         return response.ToModel();
     }
 
-    public async IAsyncEnumerable<Models.CollectionConfig> List()
+    public async IAsyncEnumerable<Models.CollectionConfig> List(
+        [System.Runtime.CompilerServices.EnumeratorCancellation]
+            CancellationToken cancellationToken = default
+    )
     {
-        var response = await _client.RestClient.CollectionList();
+        var response = await _client.RestClient.CollectionList(cancellationToken);
 
         foreach (var c in response?.Classes ?? Enumerable.Empty<Rest.Dto.Class>())
         {
