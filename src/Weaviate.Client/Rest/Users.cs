@@ -26,10 +26,7 @@ internal partial class WeaviateRestClient
         );
 
         return response.StatusCode == HttpStatusCode.OK
-            ? await response.Content.ReadFromJsonAsync<Dto.UserOwnInfo>(
-                RestJsonSerializerOptions,
-                cancellationToken
-            )
+            ? await response.DecodeAsync<Dto.UserOwnInfo>(cancellationToken)
             : null;
     }
 
@@ -45,10 +42,7 @@ internal partial class WeaviateRestClient
 
         await response.ManageStatusCode([HttpStatusCode.OK], "list db users", ResourceType.User);
 
-        var users = await response.Content.ReadFromJsonAsync<IEnumerable<Dto.DBUserInfo>>(
-            RestJsonSerializerOptions,
-            cancellationToken
-        );
+        var users = await response.DecodeAsync<IEnumerable<Dto.DBUserInfo>>(cancellationToken);
         return users ?? Array.Empty<Dto.DBUserInfo>();
     }
 
@@ -65,10 +59,7 @@ internal partial class WeaviateRestClient
 
         await response.ManageStatusCode([HttpStatusCode.OK], "get db user", ResourceType.User);
 
-        return await response.Content.ReadFromJsonAsync<Dto.DBUserInfo>(
-                RestJsonSerializerOptions,
-                cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.DBUserInfo>(cancellationToken);
     }
 
     internal async Task<Dto.UserApiKey> UserDbCreate(
@@ -106,10 +97,7 @@ internal partial class WeaviateRestClient
             ResourceType.User
         );
 
-        return await response.Content.ReadFromJsonAsync<Dto.UserApiKey>(
-                RestJsonSerializerOptions,
-                cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.UserApiKey>(cancellationToken);
     }
 
     internal async Task<bool> UserDbDelete(
@@ -148,10 +136,7 @@ internal partial class WeaviateRestClient
             ResourceType.User
         );
 
-        return await response.Content.ReadFromJsonAsync<Dto.UserApiKey>(
-                RestJsonSerializerOptions,
-                cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.UserApiKey>(cancellationToken);
     }
 
     internal async Task<bool> UserDbActivate(

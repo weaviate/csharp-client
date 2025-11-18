@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
 
@@ -77,6 +78,25 @@ public static class HttpResponseMessageExtensions
         {
             throw new WeaviateConflictException($"Conflict accessing {resourceType}", ex);
         }
+    }
+
+    /// <summary>
+    /// Deserializes the HTTP response content to the specified DTO type using Weaviate's standard serializer options.
+    /// </summary>
+    /// <typeparam name="TDto">The DTO type to deserialize to.</typeparam>
+    /// <param name="response">The HTTP response message to deserialize.</param>
+    /// <param name="cancellationToken">The cancellation token for the operation.</param>
+    /// <returns>The deserialized DTO, or throws if deserialization fails.</returns>
+    /// <exception cref="WeaviateRestClientException">Thrown when deserialization results in null.</exception>
+    internal static async Task<TDto> DecodeAsync<TDto>(
+        this HttpResponseMessage response,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await response.Content.ReadFromJsonAsync<TDto>(
+                WeaviateRestClient.RestJsonSerializerOptions,
+                cancellationToken: cancellationToken
+            ) ?? throw new WeaviateRestClientException();
     }
 }
 

@@ -26,10 +26,7 @@ internal partial class WeaviateRestClient
             "get nodes"
         );
 
-        var nodes = await response.Content.ReadFromJsonAsync<NodesStatusResponse>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
-        );
+        var nodes = await response.DecodeAsync<NodesStatusResponse>(cancellationToken);
 
         return nodes?.Nodes ?? Array.Empty<Dto.NodeStatus>();
     }
