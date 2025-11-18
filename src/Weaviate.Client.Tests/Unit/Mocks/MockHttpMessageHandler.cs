@@ -13,6 +13,11 @@ public class MockHttpMessageHandler : HttpMessageHandler
     private readonly Queue<MockHttpResponse> _responses = new();
     private readonly List<HttpRequestMessage> _requests = new();
     private Func<HttpRequestMessage, Task<HttpResponseMessage>>? _requestHandler;
+    private Func<
+        HttpRequestMessage,
+        CancellationToken,
+        Task<HttpResponseMessage>
+    >? _requestHandlerWithToken;
 
     /// <summary>
     /// Gets all intercepted requests.
@@ -90,6 +95,18 @@ public class MockHttpMessageHandler : HttpMessageHandler
     }
 
     /// <summary>
+    /// Sets a custom handler function that receives the cancellation token from SendAsync.
+    /// Use this when the mock needs to simulate delays that respect cancellation.
+    /// </summary>
+    public MockHttpMessageHandler SetHandler(
+        Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler
+    )
+    {
+        _requestHandlerWithToken = handler;
+        return this;
+    }
+
+    /// <summary>
     /// Clears all queued responses and recorded requests.
     /// </summary>
     public void Reset()
@@ -108,6 +125,16 @@ public class MockHttpMessageHandler : HttpMessageHandler
         if (request.RequestUri?.PathAndQuery.Contains("/v1/meta") != true)
         {
             _requests.Add(request);
+        }
+
+        // Handler with cancellation token support has priority
+        if (_requestHandlerWithToken != null)
+        {
+            var tokenResponse = await _requestHandlerWithToken(request, cancellationToken);
+            if (tokenResponse != null)
+            {
+                return tokenResponse;
+            }
         }
 
         // If a custom handler is set, use it
