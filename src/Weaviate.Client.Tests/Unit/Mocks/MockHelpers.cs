@@ -1,6 +1,8 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Weaviate.Client.Tests.Unit.Mocks;
 
@@ -10,78 +12,104 @@ namespace Weaviate.Client.Tests.Unit.Mocks;
 public static class MockWeaviateClient
 {
     /// <summary>
-    /// Creates a WeaviateClient with a mock HTTP handler.
-    /// Automatically includes a MetaInfo handler for the /v1/meta endpoint.
+    /// Unified mock client factory. Supports optional handler chain, meta auto-response, and providing a custom request handler
+    /// (sync, async, or cancellation-aware). If no handler is provided and autoMeta=true, a default /v1/meta handler is installed.
+    /// Order of precedence for handler selection: handlerWithToken -> asyncHandler -> syncHandler -> meta auto handler.
+    /// If autoMeta=true and a custom handler is provided, meta responses are injected when the custom handler returns null for /v1/meta.
     /// </summary>
+    public static (WeaviateClient Client, MockHttpMessageHandler Handler) CreateWithMockHandler(
+        Func<MockHttpMessageHandler, HttpMessageHandler>? handlerChainFactory = null,
+        bool autoMeta = true,
+        Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>? handlerWithToken =
+            null,
+        Func<HttpRequestMessage, Task<HttpResponseMessage>>? asyncHandler = null,
+        Func<HttpRequestMessage, HttpResponseMessage>? syncHandler = null
+    )
+    {
+        var leaf = new MockHttpMessageHandler();
+
+        // Local helpers to reduce duplication.
+        static bool IsMeta(HttpRequestMessage req) =>
+            req.RequestUri?.PathAndQuery.Contains("/v1/meta") == true;
+        static HttpResponseMessage BuildMeta()
+        {
+            var metaResponse = MockResponses.MetaInfo();
+            return new HttpResponseMessage(metaResponse.StatusCode)
+            {
+                Content = new System.Net.Http.StringContent(
+                    metaResponse.Content ?? string.Empty,
+                    Encoding.UTF8,
+                    metaResponse.ContentType ?? "application/json"
+                ),
+            };
+        }
+
+        // Install appropriate handler with meta fallback if requested.
+        if (handlerWithToken is not null)
+        {
+            leaf.SetHandler(
+                async (req, ct) =>
+                {
+                    if (autoMeta && IsMeta(req))
+                    {
+                        return BuildMeta();
+                    }
+                    return await handlerWithToken(req, ct);
+                }
+            );
+        }
+        else if (asyncHandler is not null)
+        {
+            leaf.SetHandler(async req =>
+            {
+                if (autoMeta && IsMeta(req))
+                {
+                    return BuildMeta();
+                }
+                return await asyncHandler(req);
+            });
+        }
+        else if (syncHandler is not null)
+        {
+            leaf.SetHandler(req =>
+            {
+                if (autoMeta && IsMeta(req))
+                {
+                    return BuildMeta();
+                }
+                return syncHandler(req);
+            });
+        }
+        else if (autoMeta)
+        {
+            leaf.SetHandler(req => IsMeta(req) ? BuildMeta() : null!);
+        }
+
+        var topHandler = handlerChainFactory != null ? handlerChainFactory(leaf) : leaf;
+        var channel = NoOpGrpcChannel.Create();
+        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(channel);
+        var client = new WeaviateClient(httpMessageHandler: topHandler, grpcClient: grpcClient);
+        return (client, leaf);
+    }
+
     public static (WeaviateClient Client, MockHttpMessageHandler Handler) CreateWithMockHandler()
     {
-        var handler = new MockHttpMessageHandler();
-
-        // Set a handler that returns MetaInfo for /v1/meta, otherwise uses the queue
-        handler.SetHandler(req =>
-        {
-            if (req.RequestUri?.PathAndQuery.Contains("/v1/meta") == true)
-            {
-                var metaResponse = MockResponses.MetaInfo();
-                return new HttpResponseMessage(metaResponse.StatusCode)
-                {
-                    Content = new System.Net.Http.StringContent(
-                        metaResponse.Content ?? string.Empty,
-                        Encoding.UTF8,
-                        metaResponse.ContentType ?? "application/json"
-                    ),
-                };
-            }
-
-            // For all other requests, let SendAsync use the queued responses
-            return null!;
-
-            throw new InvalidOperationException(
-                $"No mock response configured for {req.Method} {req.RequestUri?.PathAndQuery}. "
-                    + "Use handler.AddResponse() or handler.SetHandler() to configure responses."
-            );
-        });
-
-        // Create a no-op gRPC channel to avoid connecting to the gRPC port
-        var noOpChannel = NoOpGrpcChannel.Create();
-        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
-
-        var client = new WeaviateClient(httpMessageHandler: handler, grpcClient: grpcClient);
-
-        return (client, handler);
+        return CreateWithMockHandler(handlerChainFactory: null, autoMeta: true);
     }
 
     /// <summary>
-    /// Creates a WeaviateClient with a pre-configured handler function.
+    /// Convenience method for creating a client with a simple async handler.
+    /// Returns only the client (not the handler) for backward compatibility.
     /// </summary>
     public static WeaviateClient CreateWithHandler(
-        Func<HttpRequestMessage, HttpResponseMessage> handlerFunc
+        Func<HttpRequestMessage, Task<HttpResponseMessage>> asyncHandler
     )
     {
-        var handler = new MockHttpMessageHandler();
-        handler.SetHandler(handlerFunc);
-
-        var noOpChannel = NoOpGrpcChannel.Create();
-        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
-
-        return new WeaviateClient(httpMessageHandler: handler, grpcClient: grpcClient);
+        var (client, _) = CreateWithMockHandler(asyncHandler: asyncHandler);
+        return client;
     }
 
-    /// <summary>
-    /// Creates a WeaviateClient with a pre-configured async handler function.
-    /// </summary>
-    public static WeaviateClient CreateWithHandler(
-        Func<HttpRequestMessage, Task<HttpResponseMessage>> handlerFunc
-    )
-    {
-        var handler = new MockHttpMessageHandler();
-        handler.SetHandler(handlerFunc);
-
-        var noOpChannel = NoOpGrpcChannel.Create();
-        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
-
-        return new WeaviateClient(httpMessageHandler: handler, grpcClient: grpcClient);
-    }
+    // Legacy CreateWithHandler overloads consolidated into unified factory above.
 }
 
 /// <summary>

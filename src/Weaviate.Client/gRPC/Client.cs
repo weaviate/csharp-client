@@ -1,5 +1,6 @@
 using System.Security.Authentication;
 using Grpc.Core;
+using Grpc.Core.Interceptors;
 using Grpc.Health.V1;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,8 @@ internal partial class WeaviateGrpcClient : IDisposable
     internal Metadata? _defaultHeaders = null;
     private readonly V1.Weaviate.WeaviateClient _grpcClient;
     private readonly ILogger<WeaviateGrpcClient> _logger;
+    private readonly TimeSpan? _timeout;
+    private readonly RetryPolicy? _retryPolicy;
 
     /// <summary>
     /// Internal constructor for testing. Accepts a pre-configured GrpcChannel to bypass network initialization.
@@ -19,6 +22,8 @@ internal partial class WeaviateGrpcClient : IDisposable
     internal WeaviateGrpcClient(
         GrpcChannel channel,
         string? wcdHost = null,
+        TimeSpan? timeout = null,
+        RetryPolicy? retryPolicy = null,
         Dictionary<string, string>? headers = null,
         ILogger<WeaviateGrpcClient>? logger = null
     )
@@ -29,6 +34,8 @@ internal partial class WeaviateGrpcClient : IDisposable
                 .Create(builder => builder.AddConsole())
                 .CreateLogger<WeaviateGrpcClient>();
 
+        _timeout = timeout;
+        _retryPolicy = retryPolicy;
         _channel = channel;
 
         // Create default headers
@@ -49,10 +56,36 @@ internal partial class WeaviateGrpcClient : IDisposable
             }
         }
 
-        // Perform health check
-        PerformHealthCheck(channel);
+        if (_retryPolicy is not null && _retryPolicy.MaxRetries > 0)
+        {
+            var invoker = _channel.Intercept(new RetryInterceptor(_retryPolicy, _logger));
+            _grpcClient = new V1.Weaviate.WeaviateClient(invoker);
+        }
+        else
+        {
+            _grpcClient = new V1.Weaviate.WeaviateClient(_channel);
+        }
+    }
 
-        _grpcClient = new V1.Weaviate.WeaviateClient(_channel);
+    static AsyncAuthInterceptor _AuthInterceptorFactory(ITokenService tokenService, ILogger logger)
+    {
+        return async (context, metadata) =>
+        {
+            try
+            {
+                var token = await tokenService.GetAccessTokenAsync();
+
+                if (tokenService.IsAuthenticated())
+                {
+                    metadata.Add("Authorization", $"Bearer {token}");
+                }
+            }
+            catch (AuthenticationException ex)
+            {
+                logger.LogError(ex, "Failed to retrieve access token");
+                return;
+            }
+        };
     }
 
     /// <summary>
@@ -62,9 +95,11 @@ internal partial class WeaviateGrpcClient : IDisposable
         Uri grpcUri,
         string? wcdHost,
         ITokenService? tokenService,
+        TimeSpan? timeout = null,
+        ulong? maxMessageSize = null,
+        RetryPolicy? retryPolicy = null,
         Dictionary<string, string>? headers = null,
-        ILogger<WeaviateGrpcClient>? logger = null,
-        ulong? maxMessageSize = null
+        ILogger<WeaviateGrpcClient>? logger = null
     )
     {
         var loggerInstance =
@@ -75,7 +110,10 @@ internal partial class WeaviateGrpcClient : IDisposable
 
         var channel = CreateChannel(grpcUri, tokenService, maxMessageSize, loggerInstance);
 
-        return new WeaviateGrpcClient(channel, wcdHost, headers, logger);
+        // Perform health check
+        PerformHealthCheck(channel);
+
+        return new WeaviateGrpcClient(channel, wcdHost, timeout, retryPolicy, headers, logger);
     }
 
     private static GrpcChannel CreateChannel(
@@ -96,23 +134,7 @@ internal partial class WeaviateGrpcClient : IDisposable
         if (tokenService != null)
         {
             var credentials = CallCredentials.FromInterceptor(
-                async (context, metadata) =>
-                {
-                    try
-                    {
-                        var token = await tokenService.GetAccessTokenAsync();
-
-                        if (tokenService.IsAuthenticated())
-                        {
-                            metadata.Add("Authorization", $"Bearer {token}");
-                        }
-                    }
-                    catch (AuthenticationException ex)
-                    {
-                        logger.LogError(ex, "Failed to retrieve access token");
-                        return;
-                    }
-                }
+                _AuthInterceptorFactory(tokenService, logger)
             );
 
             if (grpcUri.Scheme == Uri.UriSchemeHttps)
@@ -139,7 +161,7 @@ internal partial class WeaviateGrpcClient : IDisposable
         return GrpcChannel.ForAddress(grpcUri, options);
     }
 
-    private void PerformHealthCheck(GrpcChannel channel)
+    private static void PerformHealthCheck(GrpcChannel channel)
     {
         var healthClient = new Health.HealthClient(channel);
         var request = new HealthCheckRequest();
@@ -170,6 +192,24 @@ internal partial class WeaviateGrpcClient : IDisposable
                 ex
             );
         }
+    }
+
+    /// <summary>
+    /// Creates CallOptions with timeout and default headers.
+    /// </summary>
+    internal CallOptions CreateCallOptions(CancellationToken cancellationToken = default)
+    {
+        var options = new CallOptions(
+            headers: _defaultHeaders,
+            cancellationToken: cancellationToken
+        );
+
+        if (_timeout.HasValue)
+        {
+            options = options.WithDeadline(DateTime.UtcNow.Add(_timeout.Value));
+        }
+
+        return options;
     }
 
     public void Dispose()

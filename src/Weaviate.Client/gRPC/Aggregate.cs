@@ -124,7 +124,7 @@ internal partial class WeaviateGrpcClient
     {
         try
         {
-            var reply = await _grpcClient.AggregateAsync(request, headers: _defaultHeaders);
+            var reply = await _grpcClient.AggregateAsync(request, CreateCallOptions());
             reply.Collection = request.Collection;
             return reply;
         }
