@@ -15,14 +15,21 @@ internal partial class WeaviateRestClient
             cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "collection list");
-
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Schema>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "collection list",
+            ResourceType.Collection
         );
 
-        return contents;
+        return await response.DecodeAsync<Dto.Schema>(cancellationToken);
     }
 
     internal async Task<Dto.Class?> CollectionGet(
@@ -35,24 +42,26 @@ internal partial class WeaviateRestClient
             cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "collection get");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "collection get",
+            ResourceType.Collection
+        );
 
         if (response.Content.Headers.ContentLength == 0)
         {
             return default;
         }
 
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
-        );
-
-        if (contents is null)
-        {
-            throw new WeaviateRestClientException();
-        }
-
-        return contents;
+        return await response.DecodeAsync<Dto.Class>(cancellationToken);
     }
 
     internal async Task CollectionDelete(string name, CancellationToken cancellationToken = default)
@@ -62,7 +71,19 @@ internal partial class WeaviateRestClient
             cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "collection delete");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "collection delete",
+            ResourceType.Collection
+        );
     }
 
     internal async Task<Dto.Class> CollectionCreate(
@@ -77,19 +98,21 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "collection create");
-
-        var contents = await response.Content.ReadFromJsonAsync<Dto.Class>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "collection create",
+            ResourceType.Collection
         );
 
-        if (contents is null)
-        {
-            throw new WeaviateRestClientException();
-        }
-
-        return contents;
+        return await response.DecodeAsync<Dto.Class>(cancellationToken);
     }
 
     internal async Task<Dto.Class> CollectionUpdate(
@@ -105,15 +128,21 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "collection update");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "collection update",
+            ResourceType.Collection
+        );
 
-        var contents =
-            await response.Content.ReadFromJsonAsync<Dto.Class>(
-                options: RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestServerException();
-
-        return contents;
+        return await response.DecodeAsync<Dto.Class>(cancellationToken);
     }
 
     internal async Task CollectionAddProperty(
@@ -131,7 +160,19 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "collection property add");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "collection property add",
+            ResourceType.Collection
+        );
     }
 
     internal async Task<bool> CollectionExists(
@@ -143,12 +184,21 @@ internal partial class WeaviateRestClient
 
         var response = await _httpClient.GetAsync(path, cancellationToken);
 
-        await response.EnsureExpectedStatusCodeAsync([200], "collection property add");
-
-        var schema = await response.Content.ReadFromJsonAsync<Schema>(
-            options: RestJsonSerializerOptions,
-            cancellationToken: cancellationToken
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "collection exists",
+            ResourceType.Collection
         );
+
+        var schema = await response.DecodeAsync<Schema>(cancellationToken);
 
         return schema?.Classes?.Any(c => c.Class1 is not null && c.Class1!.Equals(collectionName))
             ?? false;

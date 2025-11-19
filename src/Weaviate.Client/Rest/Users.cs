@@ -13,15 +13,20 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.UsersOwnInfo(),
             cancellationToken
         );
-        var status = await response.EnsureExpectedStatusCodeAsync(
-            [200, 401, 403, 500],
-            "get own user info"
+
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "get own user info",
+            ResourceType.User
         );
-        return status == HttpStatusCode.OK
-            ? await response.Content.ReadFromJsonAsync<Dto.UserOwnInfo>(
-                RestJsonSerializerOptions,
-                cancellationToken
-            )
+
+        return response.StatusCode == HttpStatusCode.OK
+            ? await response.DecodeAsync<Dto.UserOwnInfo>(cancellationToken)
             : null;
     }
 
@@ -34,11 +39,10 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.UsersDb(includeLastUsedTime),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "list db users");
-        var users = await response.Content.ReadFromJsonAsync<IEnumerable<Dto.DBUserInfo>>(
-            RestJsonSerializerOptions,
-            cancellationToken
-        );
+
+        await response.ManageStatusCode([HttpStatusCode.OK], "list db users", ResourceType.User);
+
+        var users = await response.DecodeAsync<IEnumerable<Dto.DBUserInfo>>(cancellationToken);
         return users ?? Array.Empty<Dto.DBUserInfo>();
     }
 
@@ -52,19 +56,10 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.UserDb(userId, includeLastUsedTime),
             cancellationToken
         );
-        try
-        {
-            await response.EnsureExpectedStatusCodeAsync([200], "get db user");
-            return await response.Content.ReadFromJsonAsync<Dto.DBUserInfo>(
-                    RestJsonSerializerOptions,
-                    cancellationToken
-                ) ?? throw new WeaviateRestClientException();
-        }
-        catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.NotFound)
-        {
-            throw new WeaviateNotFoundException(ex, ResourceType.User);
-        }
+
+        await response.ManageStatusCode([HttpStatusCode.OK], "get db user", ResourceType.User);
+
+        return await response.DecodeAsync<Dto.DBUserInfo>(cancellationToken);
     }
 
     internal async Task<Dto.UserApiKey> UserDbCreate(
@@ -95,11 +90,14 @@ internal partial class WeaviateRestClient
                 null,
                 cancellationToken
             );
-        await response.EnsureExpectedStatusCodeAsync([201], "create db user");
-        return await response.Content.ReadFromJsonAsync<Dto.UserApiKey>(
-                RestJsonSerializerOptions,
-                cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+
+        await response.ManageStatusCode(
+            [HttpStatusCode.Created],
+            "create db user",
+            ResourceType.User
+        );
+
+        return await response.DecodeAsync<Dto.UserApiKey>(cancellationToken);
     }
 
     internal async Task<bool> UserDbDelete(
@@ -111,7 +109,12 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.UserDb(userId),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([204, 404], "delete db user");
+
+        await response.ManageStatusCode(
+            [HttpStatusCode.NoContent, HttpStatusCode.NotFound],
+            "delete db user",
+            ResourceType.User
+        );
 
         return response.StatusCode == HttpStatusCode.NoContent;
     }
@@ -126,19 +129,14 @@ internal partial class WeaviateRestClient
             null,
             cancellationToken
         );
-        try
-        {
-            await response.EnsureExpectedStatusCodeAsync([200], "rotate user api key");
-            return await response.Content.ReadFromJsonAsync<Dto.UserApiKey>(
-                    RestJsonSerializerOptions,
-                    cancellationToken
-                ) ?? throw new WeaviateRestClientException();
-        }
-        catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.NotFound)
-        {
-            throw new WeaviateNotFoundException(ex, ResourceType.User);
-        }
+
+        await response.ManageStatusCode(
+            [HttpStatusCode.OK],
+            "rotate user api key",
+            ResourceType.User
+        );
+
+        return await response.DecodeAsync<Dto.UserApiKey>(cancellationToken);
     }
 
     internal async Task<bool> UserDbActivate(
@@ -152,7 +150,11 @@ internal partial class WeaviateRestClient
             cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200, 409], "activate user");
+        await response.ManageStatusCode(
+            [HttpStatusCode.OK, HttpStatusCode.Conflict],
+            "activate user",
+            ResourceType.User
+        );
 
         return response.StatusCode == HttpStatusCode.OK;
     }
@@ -182,8 +184,19 @@ internal partial class WeaviateRestClient
                 cancellationToken
             );
         }
-
-        await response.EnsureExpectedStatusCodeAsync([200, 409], "deactivate user");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                HttpStatusCode.Conflict,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "deactivate user",
+            ResourceType.User
+        );
 
         return response.StatusCode == HttpStatusCode.OK;
     }

@@ -20,12 +20,21 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "insert object");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "insert object",
+            ResourceType.Object
+        );
 
-        return await response.Content.ReadFromJsonAsync<Dto.Object>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.Object>(cancellationToken);
     }
 
     internal async Task<Dto.Object> ObjectReplace(
@@ -43,12 +52,21 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "replace object");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "replace object",
+            ResourceType.Object
+        );
 
-        return await response.Content.ReadFromJsonAsync<Dto.Object>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.Object>(cancellationToken);
     }
 
     internal async Task DeleteObject(
@@ -61,6 +79,18 @@ internal partial class WeaviateRestClient
         var url = WeaviateEndpoints.CollectionObject(collectionName, id, tenant);
         var response = await _httpClient.DeleteAsync(url, cancellationToken);
 
-        await response.EnsureExpectedStatusCodeAsync([204, 404], "delete object");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.NoContent,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "delete object",
+            ResourceType.Object
+        );
     }
 }

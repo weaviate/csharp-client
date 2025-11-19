@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
@@ -18,11 +19,22 @@ internal partial class WeaviateRestClient
             options: RestJsonSerializerOptions,
             cancellationToken: cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "replicate");
-        return await response.Content.ReadFromJsonAsync<Dto.ReplicationReplicateReplicaResponse>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        await response.ManageStatusCode(
+            [
+                System.Net.HttpStatusCode.OK,
+                // System.Net.HttpStatusCode.BadRequest,
+                // System.Net.HttpStatusCode.Unauthorized,
+                // System.Net.HttpStatusCode.Forbidden,
+                // System.Net.HttpStatusCode.NotFound,
+                // System.Net.HttpStatusCode.Conflict,
+                // System.Net.HttpStatusCode.InternalServerError,
+            ],
+            "replicate",
+            ResourceType.Replication
+        );
+        return await response.DecodeAsync<Dto.ReplicationReplicateReplicaResponse>(
+            cancellationToken
+        );
     }
 
     /// <summary>
@@ -38,15 +50,23 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.ReplicationDetails(id, includeHistory),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200, 404], "replication details");
+        await response.ManageStatusCode(
+            [
+                System.Net.HttpStatusCode.OK,
+                // System.Net.HttpStatusCode.BadRequest,
+                // System.Net.HttpStatusCode.Unauthorized,
+                // System.Net.HttpStatusCode.Forbidden,
+                // System.Net.HttpStatusCode.NotFound,
+                // System.Net.HttpStatusCode.Conflict,
+                // System.Net.HttpStatusCode.InternalServerError,
+            ],
+            "replication details",
+            ResourceType.Replication
+        );
 
-        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            return null;
-
-        return await response.Content.ReadFromJsonAsync<Dto.ReplicationReplicateDetailsReplicaResponse>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.ReplicationReplicateDetailsReplicaResponse>(
+            cancellationToken
+        );
     }
 
     /// <summary>
@@ -66,11 +86,22 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.ReplicationList(collection, shard, targetNode, includeHistory),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([200], "list replications");
-        return await response.Content.ReadFromJsonAsync<
-                IEnumerable<Dto.ReplicationReplicateDetailsReplicaResponse>
-            >(WeaviateRestClient.RestJsonSerializerOptions, cancellationToken)
-            ?? throw new WeaviateRestClientException();
+        await response.ManageStatusCode(
+            [
+                System.Net.HttpStatusCode.OK,
+                // System.Net.HttpStatusCode.BadRequest,
+                // System.Net.HttpStatusCode.Unauthorized,
+                // System.Net.HttpStatusCode.Forbidden,
+                // System.Net.HttpStatusCode.NotFound,
+                // System.Net.HttpStatusCode.Conflict,
+                // System.Net.HttpStatusCode.InternalServerError,
+            ],
+            "list replications",
+            ResourceType.Replication
+        );
+        return await response.DecodeAsync<
+            IEnumerable<Dto.ReplicationReplicateDetailsReplicaResponse>
+        >(cancellationToken);
     }
 
     /// <summary>
@@ -86,7 +117,19 @@ internal partial class WeaviateRestClient
             content: null,
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([204], "cancel replication");
+        await response.ManageStatusCode(
+            [
+                System.Net.HttpStatusCode.NoContent,
+                // System.Net.HttpStatusCode.BadRequest,
+                // System.Net.HttpStatusCode.Unauthorized,
+                // System.Net.HttpStatusCode.Forbidden,
+                // System.Net.HttpStatusCode.NotFound,
+                // System.Net.HttpStatusCode.Conflict,
+                // System.Net.HttpStatusCode.InternalServerError,
+            ],
+            "cancel replication",
+            ResourceType.Replication
+        );
     }
 
     /// <summary>
@@ -101,7 +144,19 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.ReplicationDelete(id),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([204], "delete replication");
+        await response.ManageStatusCode(
+            [
+                System.Net.HttpStatusCode.NoContent,
+                // System.Net.HttpStatusCode.BadRequest,
+                // System.Net.HttpStatusCode.Unauthorized,
+                // System.Net.HttpStatusCode.Forbidden,
+                // System.Net.HttpStatusCode.NotFound,
+                // System.Net.HttpStatusCode.Conflict,
+                // System.Net.HttpStatusCode.InternalServerError,
+            ],
+            "delete replication",
+            ResourceType.Replication
+        );
     }
 
     /// <summary>
@@ -113,6 +168,18 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.Replicate(),
             cancellationToken
         );
-        await response.EnsureExpectedStatusCodeAsync([204], "delete all replications");
+        await response.ManageStatusCode(
+            [
+                System.Net.HttpStatusCode.NoContent,
+                // System.Net.HttpStatusCode.BadRequest,
+                // System.Net.HttpStatusCode.Unauthorized,
+                // System.Net.HttpStatusCode.Forbidden,
+                // System.Net.HttpStatusCode.NotFound,
+                // System.Net.HttpStatusCode.Conflict,
+                // System.Net.HttpStatusCode.InternalServerError,
+            ],
+            "delete all replications",
+            ResourceType.Replication
+        );
     }
 }

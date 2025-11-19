@@ -285,11 +285,14 @@ public class TestReplication : IntegrationTests
         for (int i = 0; i < 20; i++) // Try for up to 10 seconds
         {
             await Task.Delay(500, TestContext.Current.CancellationToken);
-            var retrieved = await _weaviate.Cluster.Replications.Get(
-                operationId,
-                cancellationToken: TestContext.Current.CancellationToken
-            );
-            if (retrieved == null)
+            try
+            {
+                await _weaviate.Cluster.Replications.Get(
+                    operationId,
+                    cancellationToken: TestContext.Current.CancellationToken
+                );
+            }
+            catch (WeaviateNotFoundException)
             {
                 deleted = true;
                 break;
