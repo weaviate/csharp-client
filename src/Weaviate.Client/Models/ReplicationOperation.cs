@@ -6,8 +6,8 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
 {
-    private readonly Func<Task<ReplicationOperation>> _statusFetcher;
-    private readonly Func<Task> _operationCancel;
+    private readonly Func<CancellationToken, Task<ReplicationOperation>> _statusFetcher;
+    private readonly Func<CancellationToken, Task> _operationCancel;
     private readonly CancellationTokenSource _cts = new();
     private readonly Task _backgroundRefreshTask;
     private ReplicationOperation _current;
@@ -15,8 +15,8 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
 
     internal ReplicationOperationTracker(
         ReplicationOperation initial,
-        Func<Task<ReplicationOperation>> statusFetcher,
-        Func<Task> operationCancel
+        Func<CancellationToken, Task<ReplicationOperation>> statusFetcher,
+        Func<CancellationToken, Task> operationCancel
     )
     {
         _current = initial;
@@ -54,7 +54,7 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
                 try
                 {
                     await Task.Delay(ReplicationClientConfig.Default.PollInterval, _cts.Token);
-                    await RefreshStatusInternal();
+                    await RefreshStatusInternal(_cts.Token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -68,12 +68,12 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
         });
     }
 
-    private async Task RefreshStatusInternal()
+    private async Task RefreshStatusInternal(CancellationToken cancellationToken = default)
     {
         if (_current.IsCompleted)
             return;
 
-        var status = await _statusFetcher();
+        var status = await _statusFetcher(cancellationToken);
         _current = status;
 
         if (_current.IsCompleted)
@@ -89,9 +89,9 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
     /// <summary>
     /// Manually refresh the operation status from the server.
     /// </summary>
-    public async Task RefreshStatus()
+    public async Task RefreshStatus(CancellationToken cancellationToken = default)
     {
-        await RefreshStatusInternal();
+        await RefreshStatusInternal(cancellationToken);
     }
 
     /// <summary>
@@ -136,12 +136,12 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
     /// <summary>
     /// Requests cancellation of the operation.
     /// </summary>
-    public async Task Cancel()
+    public async Task Cancel(CancellationToken cancellationToken = default)
     {
         // Call server-side Cancel
-        await _operationCancel();
+        await _operationCancel(cancellationToken);
 
-        await RefreshStatusInternal();
+        await RefreshStatusInternal(cancellationToken);
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
         CancellationToken cancellationToken = default
     )
     {
-        await Cancel();
+        await Cancel(cancellationToken);
         return await WaitForCompletion(timeout ?? TimeSpan.FromSeconds(10), cancellationToken);
     }
 

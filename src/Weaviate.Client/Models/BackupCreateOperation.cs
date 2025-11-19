@@ -7,8 +7,8 @@ public class BackupCreateOperation : BackupOperationBase
 {
     internal BackupCreateOperation(
         Backup initial,
-        Func<Task<Backup>> statusFetcher,
-        Func<Task> operationCancel
+        Func<CancellationToken, Task<Backup>> statusFetcher,
+        Func<CancellationToken, Task> operationCancel
     )
         : base(initial, statusFetcher, operationCancel) { }
 }

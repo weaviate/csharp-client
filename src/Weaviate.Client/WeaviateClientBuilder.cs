@@ -14,7 +14,10 @@ public partial class WeaviateClientBuilder
     private Dictionary<string, string> _headers = new();
     private ICredentials? _credentials = null;
     private HttpMessageHandler? _httpMessageHandler = null;
-    private TimeSpan? _requestTimeout = null;
+    private TimeSpan? _defaultTimeout = null;
+    private TimeSpan? _initTimeout = null;
+    private TimeSpan? _dataTimeout = null;
+    private TimeSpan? _queryTimeout = null;
     private RetryPolicy? _retryPolicy = null;
     private readonly List<DelegatingHandler> _customHandlers = new();
 
@@ -163,9 +166,39 @@ public partial class WeaviateClientBuilder
     /// If not set, defaults to WeaviateDefaults.DefaultTimeout (30 seconds).
     /// </summary>
     /// <param name="timeout">The timeout duration for requests.</param>
-    public WeaviateClientBuilder WithTimeout(TimeSpan timeout)
+    /// <summary>
+    /// Sets the default timeout for all requests.
+    /// </summary>
+    public WeaviateClientBuilder WithDefaultTimeout(TimeSpan timeout)
     {
-        _requestTimeout = timeout;
+        _defaultTimeout = timeout;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the timeout for client initialization operations (GetMeta, Live, IsReady).
+    /// </summary>
+    public WeaviateClientBuilder WithInitTimeout(TimeSpan timeout)
+    {
+        _initTimeout = timeout;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the timeout for data operations.
+    /// </summary>
+    public WeaviateClientBuilder WithDataTimeout(TimeSpan timeout)
+    {
+        _dataTimeout = timeout;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the timeout for query/search operations.
+    /// </summary>
+    public WeaviateClientBuilder WithQueryTimeout(TimeSpan timeout)
+    {
+        _queryTimeout = timeout;
         return this;
     }
 
@@ -216,7 +249,10 @@ public partial class WeaviateClientBuilder
             _useSsl,
             _headers.Count > 0 ? new Dictionary<string, string>(_headers) : null,
             _credentials,
-            _requestTimeout,
+            _defaultTimeout,
+            _initTimeout,
+            _dataTimeout,
+            _queryTimeout,
             _retryPolicy,
             _customHandlers.Count > 0 ? _customHandlers.ToArray() : null
         ).Client(_httpMessageHandler);

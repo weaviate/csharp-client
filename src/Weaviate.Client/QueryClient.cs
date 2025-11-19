@@ -14,6 +14,17 @@ public class QueryClient<TData>
         _collectionClient = collectionClient;
     }
 
+    /// <summary>
+    /// Creates a cancellation token with query-specific timeout configuration.
+    /// Uses QueryTimeout if configured, falls back to DefaultTimeout, then to WeaviateDefaults.QueryTimeout.
+    /// </summary>
+    private CancellationToken CreateTimeoutCancellationToken(CancellationToken userToken = default)
+    {
+        var effectiveTimeout =
+            _client.QueryTimeout ?? _client.DefaultTimeout ?? WeaviateDefaults.QueryTimeout;
+        return TimeoutHelper.GetCancellationToken(effectiveTimeout, userToken);
+    }
+
     #region Objects
     public async Task<GroupByResult> FetchObjects(
         Models.GroupByRequest groupBy,
@@ -25,9 +36,11 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
-    ) =>
-        await _grpc.FetchObjects(
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _grpc.FetchObjects(
             _collectionName,
             limit: limit,
             rerank: rerank,
@@ -39,8 +52,10 @@ public class QueryClient<TData>
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
-            includeVectors: includeVectors
+            includeVectors: includeVectors,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
+    }
 
     public async Task<WeaviateResult> FetchObjects(
         uint? limit = null,
@@ -51,7 +66,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.FetchObjects(
             _collectionName,
@@ -63,7 +79,8 @@ public class QueryClient<TData>
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty),
-            includeVectors: includeVectors
+            includeVectors: includeVectors,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<WeaviateObject?> FetchObjectByID(
@@ -72,7 +89,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     )
     {
         var searchReply = await _grpc.FetchObjects(
@@ -82,7 +100,8 @@ public class QueryClient<TData>
             tenant: tenant ?? _collectionClient.Tenant,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty),
-            includeVectors: includeVectors
+            includeVectors: includeVectors,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
         WeaviateResult? result = searchReply;
@@ -102,7 +121,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.FetchObjects(
             _collectionName,
@@ -114,7 +134,8 @@ public class QueryClient<TData>
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty),
-            includeVectors: includeVectors
+            includeVectors: includeVectors,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
     #endregion
 
@@ -135,7 +156,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchNearText(
             _collectionClient.Name,
@@ -155,7 +177,8 @@ public class QueryClient<TData>
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
-            includeVectors: includeVectors
+            includeVectors: includeVectors,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<GroupByResult> NearText(
@@ -175,7 +198,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchNearText(
             _collectionClient.Name,
@@ -196,7 +220,8 @@ public class QueryClient<TData>
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
-            includeVectors: includeVectors
+            includeVectors: includeVectors,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<WeaviateResult> NearVector(
@@ -213,7 +238,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchNearVector(
             _collectionClient.Name,
@@ -231,7 +257,8 @@ public class QueryClient<TData>
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
-            includeVectors: includeVectors
+            includeVectors: includeVectors,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<GroupByResult> NearVector(
@@ -249,7 +276,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchNearVector(
             _collectionClient.Name,
@@ -268,7 +296,8 @@ public class QueryClient<TData>
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
-            includeVectors: includeVectors
+            includeVectors: includeVectors,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<GroupByResult> BM25(
@@ -286,7 +315,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
-        IList<QueryReference>? returnReferences = null
+        IList<QueryReference>? returnReferences = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchBM25(
             _collectionClient.Name,
@@ -304,7 +334,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnReferences: returnReferences,
-            returnProperties: returnProperties
+            returnProperties: returnProperties,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<WeaviateResult> BM25(
@@ -321,7 +352,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
-        IList<QueryReference>? returnReferences = null
+        IList<QueryReference>? returnReferences = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchBM25(
             _collectionClient.Name,
@@ -339,7 +371,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnReferences: returnReferences,
-            returnProperties: returnProperties
+            returnProperties: returnProperties,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<WeaviateResult> Hybrid(
@@ -360,7 +393,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchHybrid(
             _collectionClient.Name,
@@ -384,7 +418,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<WeaviateResult> Hybrid(
@@ -405,7 +440,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchHybrid(
             _collectionClient.Name,
@@ -429,7 +465,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<GroupByResult> Hybrid(
@@ -451,7 +488,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchHybrid(
             _collectionClient.Name,
@@ -476,7 +514,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<GroupByResult> Hybrid(
@@ -498,7 +537,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchHybrid(
             _collectionClient.Name,
@@ -523,7 +563,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<WeaviateResult> NearObject(
@@ -540,7 +581,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchNearObject(
             _collectionClient.Name,
@@ -561,7 +603,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<GroupByResult> NearObject(
@@ -579,7 +622,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchNearObject(
             _collectionClient.Name,
@@ -600,7 +644,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<WeaviateResult> NearImage(
@@ -617,7 +662,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     )
     {
         var result = await NearMedia(
@@ -635,7 +681,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            cancellationToken: cancellationToken
         );
 
         return result;
@@ -656,7 +703,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await NearMedia(
             media: nearImage,
@@ -674,7 +722,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            cancellationToken: cancellationToken
         );
 
     public async Task<WeaviateResult> NearMedia(
@@ -692,7 +741,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchNearMedia(
             _collectionClient.Name,
@@ -714,7 +764,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     public async Task<GroupByResult> NearMedia(
@@ -733,7 +784,8 @@ public class QueryClient<TData>
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
-        VectorQuery? includeVectors = null
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
     ) =>
         await _grpc.SearchNearMedia(
             _collectionClient.Name,
@@ -755,7 +807,8 @@ public class QueryClient<TData>
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             returnProperties: returnProperties,
-            returnReferences: returnReferences
+            returnReferences: returnReferences,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
     #endregion
