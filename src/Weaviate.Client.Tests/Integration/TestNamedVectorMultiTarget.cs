@@ -28,7 +28,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             {
                 { "first", new[] { 1f, 0f } },
                 { "second", new[] { 0f, 1f, 0f } },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid2 = await collection.Data.Insert(
             new { },
@@ -36,12 +37,14 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             {
                 { "first", new[] { 0f, 1f } },
                 { "second", new[] { 1f, 0f, 0f } },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var objs = await collection.Query.NearVector(
             new Vectors { { "first", new[] { 1f, 0f } }, { "second", new[] { 1f, 0f, 0f } } },
-            targetVector: ["first", "second"]
+            targetVector: ["first", "second"],
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var ids = objs.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
         var expected = new[] { uuid1, uuid2 }.OrderBy(x => x).ToList();
@@ -165,7 +168,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             {
                 { "first", new[] { 1f, 0f } },
                 { "second", new[] { 0f, 1f, 0f } },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid2 = await collection.Data.Insert(
             new { },
@@ -173,10 +177,15 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             {
                 { "first", new[] { 0f, 1f } },
                 { "second", new[] { 1f, 0f, 0f } },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
-        var objs = await collection.Query.NearVector(nearVector, targetVector: targetVector);
+        var objs = await collection.Query.NearVector(
+            nearVector,
+            targetVector: targetVector,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         var ids = objs.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
         var expected = new[] { uuid2, uuid1 }.OrderBy(x => x).ToList();
         Assert.Equal(expected, ids);
@@ -330,7 +339,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             {
                 { "first", new[] { 1f, 0f } },
                 { "second", new[] { 0f, 1f, 0f } },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid2 = await collection.Data.Insert(
             new { },
@@ -338,14 +348,16 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             {
                 { "first", new[] { 0f, 1f } },
                 { "second", new[] { 1f, 0f, 0f } },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var objs = await collection.Query.Hybrid(
             query: null,
             vectors: nearVector,
             targetVector: targetVector,
-            returnMetadata: MetadataOptions.All
+            returnMetadata: MetadataOptions.All,
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var ids = objs.Objects.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
         var expected = new[] { uuid2, uuid1 }.OrderBy(x => x).ToList();
@@ -393,27 +405,33 @@ public class TestNamedVectorMultiTarget : IntegrationTests
 
         var inserts = (
             await collection.Data.InsertMany(
-                new BatchInsertRequest<object>(
-                    Data: new { },
-                    Vectors: new Vectors
-                    {
-                        { "first", new[] { 1f, 0f } },
-                        { "second", new[] { 0f, 1f, 0f } },
-                    }
-                ),
-                new BatchInsertRequest<object>(
-                    Data: new { },
-                    Vectors: new Vectors
-                    {
-                        { "first", new[] { 0f, 1f } },
-                        { "second", new[] { 1f, 0f, 0f } },
-                    }
-                )
+                [
+                    new BatchInsertRequest<object>(
+                        Data: new { },
+                        Vectors: new Vectors
+                        {
+                            { "first", new[] { 1f, 0f } },
+                            { "second", new[] { 0f, 1f, 0f } },
+                        }
+                    ),
+                    new BatchInsertRequest<object>(
+                        Data: new { },
+                        Vectors: new Vectors
+                        {
+                            { "first", new[] { 0f, 1f } },
+                            { "second", new[] { 1f, 0f, 0f } },
+                        }
+                    ),
+                ],
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).ToList();
 
         var results = (
-            await collection.Query.FetchObjects(returnMetadata: MetadataOptions.All)
+            await collection.Query.FetchObjects(
+                returnMetadata: MetadataOptions.All,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
         ).ToList();
 
         var uuid1 = results[0].ID!.Value;
@@ -433,7 +451,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
                 },
             },
             targetVector: targetVector,
-            returnMetadata: MetadataOptions.All
+            returnMetadata: MetadataOptions.All,
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var ids = objs.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
         var expected = new[] { uuid1, uuid2 }.OrderBy(x => x).ToList();
@@ -475,7 +494,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             {
                 { "first", new[] { 1f, 0f, 0f } },
                 { "second", new[] { 0f, 1f, 0f } },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid2 = await collection.Data.Insert(
             new { },
@@ -483,12 +503,14 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             {
                 { "first", new[] { 0f, 1f, 0f } },
                 { "second", new[] { 1f, 0f, 0f } },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var objs = await collection.Query.NearVector(
             new[] { 1f, 0f, 0f },
-            targetVector: targetVector
+            targetVector: targetVector,
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var ids = objs.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
         var expected = new[] { uuid1, uuid2 }.OrderBy(x => x).ToList();

@@ -20,7 +20,7 @@ public partial class CollectionsTests : IntegrationTests
 
         // Assert
         var collection = _weaviate.Collections.Use(collectionClient.Name);
-        var config = await collection.Config.Get();
+        var config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
         Assert.Equal(
             $"CollectionClient_Creates_And_Retrieves_Collection_{TestContext.Current.Test?.UniqueID}_Object_RandomCollectionName",
@@ -125,7 +125,7 @@ public partial class CollectionsTests : IntegrationTests
         // Act
         var collection = await _weaviate
             .Collections.Use<dynamic>(collectionClient.Name)
-            .Config.Get();
+            .Config.Get(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(collection);
@@ -149,7 +149,7 @@ public partial class CollectionsTests : IntegrationTests
         // Act
         var collection = await _weaviate
             .Collections.Use<dynamic>(collectionClient.Name)
-            .Config.Get();
+            .Config.Get(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(collection);
@@ -619,7 +619,7 @@ public partial class CollectionsTests : IntegrationTests
             Configure.Vectors.Text2VecTransformers().New("nondefault")
         );
 
-        var c = await collection.Config.Get();
+        var c = await collection.Config.Get(TestContext.Current.CancellationToken);
 
         Assert.NotNull(c);
         Assert.Equal(2, c.VectorConfig.Count);
@@ -671,7 +671,7 @@ public partial class CollectionsTests : IntegrationTests
 
         await collection.Config.AddProperty(Property.Text("description"));
 
-        var config = await collection.Config.Get();
+        var config = await collection.Config.Get(TestContext.Current.CancellationToken);
 
         Assert.NotNull(config);
         Assert.Contains(config.Properties, p => p.Name == "description");
@@ -694,7 +694,9 @@ public partial class CollectionsTests : IntegrationTests
         );
 
         // Act & Assert - Initial state
-        CollectionConfig config = (await collection.Config.Get())!;
+        CollectionConfig config = (
+            await collection.Config.Get(TestContext.Current.CancellationToken)
+        )!;
 
         Assert.Equal(1, config.ReplicationConfig!.Factor);
         Assert.False(config.ReplicationConfig.AsyncEnabled);
@@ -768,7 +770,7 @@ public partial class CollectionsTests : IntegrationTests
         });
 
         // Assert - After first update
-        config = (await collection.Config.Get())!;
+        config = (await collection.Config.Get(TestContext.Current.CancellationToken))!;
 
         // Description assertion with version check
         if (ServerVersionIsInRange("1.25.2") || !ServerVersionIsInRange("1.25.0"))
@@ -918,7 +920,7 @@ public partial class CollectionsTests : IntegrationTests
         });
 
         // Assert - After second update
-        config = (await collection.Config.Get())!;
+        config = (await collection.Config.Get(TestContext.Current.CancellationToken))!;
 
         // Description should persist
         if (ServerVersionIsInRange("1.25.2") || !ServerVersionIsInRange("1.25.0"))
@@ -1029,7 +1031,7 @@ public partial class CollectionsTests : IntegrationTests
                     ),
             }
         );
-        var config = await collection.Config.Get();
+        var config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
         var vcSQ = config.VectorConfig["hnswSq"];
         Assert.NotNull(vcSQ);
@@ -1072,7 +1074,7 @@ public partial class CollectionsTests : IntegrationTests
             });
         });
 
-        config = await collection.Config.Get();
+        config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
         vcSQ = config.VectorConfig["hnswSq"];
         Assert.NotNull(vcSQ);
@@ -1117,7 +1119,7 @@ public partial class CollectionsTests : IntegrationTests
                     ),
             }
         );
-        var config = await collection.Config.Get();
+        var config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
         var vcRQ = config.VectorConfig["flatRq"];
         Assert.NotNull(vcRQ);
@@ -1141,7 +1143,7 @@ public partial class CollectionsTests : IntegrationTests
             });
         });
 
-        config = await collection.Config.Get();
+        config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
         vcRQ = config.VectorConfig["flatRq"];
         Assert.NotNull(vcRQ);
@@ -1161,7 +1163,10 @@ public partial class CollectionsTests : IntegrationTests
         var collection = await CollectionFactory(properties: [Property.Blob("blob")]);
 
         // Insert single object
-        var uuid = await collection.Data.Insert(new { blob = blobData });
+        var uuid = await collection.Data.Insert(
+            new { blob = blobData },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Insert many
         await collection.Data.InsertMany(
@@ -1169,11 +1174,18 @@ public partial class CollectionsTests : IntegrationTests
         );
 
         // Fetch by id
-        var obj = await collection.Query.FetchObjectByID(uuid, returnProperties: new[] { "blob" });
+        var obj = await collection.Query.FetchObjectByID(
+            uuid,
+            returnProperties: new[] { "blob" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Fetch all
         var objs = (
-            await collection.Query.FetchObjects(returnProperties: new[] { "blob" })
+            await collection.Query.FetchObjects(
+                returnProperties: new[] { "blob" },
+                cancellationToken: TestContext.Current.CancellationToken
+            )
         ).Objects.ToList();
 
         Assert.Equal(2, objs.Count());
@@ -1221,12 +1233,29 @@ public partial class CollectionsTests : IntegrationTests
         };
 
         // Insert data
-        var id1 = await collection.Data.Insert(data[0], id: _reusableUuids[0]);
-        var id2 = await collection.Data.Insert(data[1], id: _reusableUuids[1]);
-        var id3 = await collection.Data.Insert(data[2], id: _reusableUuids[2]);
+        var id1 = await collection.Data.Insert(
+            data[0],
+            id: _reusableUuids[0],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var id2 = await collection.Data.Insert(
+            data[1],
+            id: _reusableUuids[1],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var id3 = await collection.Data.Insert(
+            data[2],
+            id: _reusableUuids[2],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Act
-        var results = (await collection.Query.FetchObjects(returnMetadata: MetadataOptions.Score))
+        var results = (
+            await collection.Query.FetchObjects(
+                returnMetadata: MetadataOptions.Score,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        )
             .Objects.Select(r => new
             {
                 r.ID,
@@ -1238,7 +1267,8 @@ public partial class CollectionsTests : IntegrationTests
         var resultsReranked = (
             await collection.Query.FetchObjects(
                 rerank: new Rerank { Property = "bio" },
-                returnMetadata: MetadataOptions.Score
+                returnMetadata: MetadataOptions.Score,
+                cancellationToken: TestContext.Current.CancellationToken
             )
         )
             .Objects.Select(r => new
