@@ -49,9 +49,13 @@ public partial class CollectionClient
         _pinnedConsistencyLevel = consistencyLevel;
     }
 
-    public async Task Delete()
+    /// <summary>
+    /// Deletes this collection from Weaviate.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+    public async Task Delete(CancellationToken cancellationToken = default)
     {
-        await _client.RestClient.CollectionDelete(Name);
+        await _client.RestClient.CollectionDelete(Name, cancellationToken);
     }
 
     public async IAsyncEnumerable<WeaviateObject> Iterator(
@@ -77,7 +81,8 @@ public partial class CollectionClient
                 returnMetadata: returnMetadata,
                 includeVectors: includeVectors,
                 returnProperties: returnProperties,
-                returnReferences: returnReferences
+                returnReferences: returnReferences,
+                cancellationToken: cancellationToken
             );
 
             if (!page.Objects.Any())
@@ -93,9 +98,17 @@ public partial class CollectionClient
         }
     }
 
-    public async Task<ulong> Count()
+    /// <summary>
+    /// Returns the total count of objects in this collection.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+    /// <returns>The total number of objects in the collection.</returns>
+    public async Task<ulong> Count(CancellationToken cancellationToken = default)
     {
-        var result = await Aggregate.OverAll(totalCount: true);
+        var result = await Aggregate.OverAll(
+            totalCount: true,
+            cancellationToken: cancellationToken
+        );
         return Convert.ToUInt64(result.TotalCount);
     }
 

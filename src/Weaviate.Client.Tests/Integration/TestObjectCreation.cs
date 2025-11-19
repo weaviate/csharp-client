@@ -14,13 +14,17 @@ public partial class BasicTests : IntegrationTests
         var id = Guid.NewGuid();
         var obj = await collectionClient.Data.Insert(
             new TestData() { Name = "TestObject" },
-            id: id
+            id: id,
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
 
         // Assert object exists
-        var retrieved = await collectionClient.Query.FetchObjectByID(id);
+        var retrieved = await collectionClient.Query.FetchObjectByID(
+            id,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Assert.NotNull(retrieved);
         Assert.Equal(id, retrieved.ID);
@@ -28,8 +32,11 @@ public partial class BasicTests : IntegrationTests
         Assert.Equal("TestObject", retrieved.As<TestData>()?.Name);
 
         // Delete after usage
-        await collectionClient.Data.DeleteByID(id);
-        retrieved = await collectionClient.Query.FetchObjectByID(id);
+        await collectionClient.Data.DeleteByID(id, TestContext.Current.CancellationToken);
+        retrieved = await collectionClient.Query.FetchObjectByID(
+            id,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Null(retrieved);
     }
 }

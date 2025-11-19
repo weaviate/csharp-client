@@ -19,6 +19,24 @@ public static class WeaviateDefaults
     public static TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
+    /// Default timeout for initialization operations (GetMeta, Live, IsReady). Default is 2 seconds.
+    /// This can be overridden per client via ClientConfiguration.WithInitTimeout().
+    /// </summary>
+    public static TimeSpan InitTimeout { get; set; } = TimeSpan.FromSeconds(2);
+
+    /// <summary>
+    /// Default timeout for data operations (Insert, Delete, Update, Reference management). Default is 120 seconds.
+    /// This can be overridden per client via ClientConfiguration.WithDataTimeout().
+    /// </summary>
+    public static TimeSpan DataTimeout { get; set; } = TimeSpan.FromSeconds(120);
+
+    /// <summary>
+    /// Default timeout for query/search operations (FetchObjects, NearText, BM25, Hybrid, etc.). Default is 60 seconds.
+    /// This can be overridden per client via ClientConfiguration.WithQueryTimeout().
+    /// </summary>
+    public static TimeSpan QueryTimeout { get; set; } = TimeSpan.FromSeconds(60);
+
+    /// <summary>
     /// Default retry policy applied when a client does not specify one explicitly.
     /// </summary>
     public static RetryPolicy DefaultRetryPolicy { get; set; } = RetryPolicy.Default;
@@ -92,7 +110,10 @@ public sealed record ClientConfiguration(
     bool UseSsl = false,
     Dictionary<string, string>? Headers = null,
     ICredentials? Credentials = null,
-    TimeSpan? RequestTimeout = null,
+    TimeSpan? DefaultTimeout = null,
+    TimeSpan? InitTimeout = null,
+    TimeSpan? DataTimeout = null,
+    TimeSpan? QueryTimeout = null,
     RetryPolicy? RetryPolicy = null,
     DelegatingHandler[]? CustomHandlers = null
 )
@@ -133,7 +154,7 @@ public partial class WeaviateClient : IDisposable
 
     public async Task<Models.MetaInfo> GetMeta(CancellationToken cancellationToken = default)
     {
-        var meta = await RestClient.GetMeta(cancellationToken);
+        var meta = await RestClient.GetMeta(CreateInitCancellationToken(cancellationToken));
 
         return new Models.MetaInfo
         {
@@ -162,7 +183,7 @@ public partial class WeaviateClient : IDisposable
         {
             if (_metaCache == null)
             {
-                var meta = await GetMeta(cancellationToken);
+                var meta = await GetMeta(CreateInitCancellationToken(cancellationToken));
                 _metaCache = meta;
             }
         }
@@ -183,7 +204,7 @@ public partial class WeaviateClient : IDisposable
     /// </summary>
     public Task<bool> Live(CancellationToken cancellationToken = default)
     {
-        return RestClient.LiveAsync(cancellationToken);
+        return RestClient.LiveAsync(CreateInitCancellationToken(cancellationToken));
     }
 
     /// <summary>
@@ -191,7 +212,7 @@ public partial class WeaviateClient : IDisposable
     /// </summary>
     public Task<bool> IsReady(CancellationToken cancellationToken = default)
     {
-        return RestClient.ReadyAsync(cancellationToken);
+        return RestClient.ReadyAsync(CreateInitCancellationToken(cancellationToken));
     }
 
     /// <summary>
@@ -223,6 +244,19 @@ public partial class WeaviateClient : IDisposable
 
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
 
+    /// <summary>
+    /// Creates a cancellation token with init-specific timeout configuration.
+    /// Uses InitTimeout if configured, falls back to DefaultTimeout.
+    /// </summary>
+    private CancellationToken CreateInitCancellationToken(CancellationToken userToken = default)
+    {
+        return TimeoutHelper.GetCancellationToken(
+            Configuration.InitTimeout,
+            Configuration.DefaultTimeout,
+            userToken
+        );
+    }
+
     private bool _isDisposed = false;
     private readonly ILogger<WeaviateClient> _logger = LoggerFactory
         .Create(builder => builder.AddConsole())
@@ -250,6 +284,11 @@ public partial class WeaviateClient : IDisposable
             || url.ToLower().Contains("semi.technology")
             || url.ToLower().Contains("weaviate.cloud");
     }
+
+    public TimeSpan? DefaultTimeout => Configuration.DefaultTimeout;
+    public TimeSpan? InitTimeout => Configuration.InitTimeout;
+    public TimeSpan? DataTimeout => Configuration.DataTimeout;
+    public TimeSpan? QueryTimeout => Configuration.QueryTimeout;
 
     public WeaviateClient(
         ClientConfiguration? configuration = null,
@@ -308,9 +347,9 @@ public partial class WeaviateClient : IDisposable
 
         var httpClient = new HttpClient(effectiveHandler);
 
-        // Set request timeout
-        var timeout = Configuration.RequestTimeout ?? WeaviateDefaults.DefaultTimeout;
-        httpClient.Timeout = timeout;
+        // Set default timeout for all requests
+        var defaultTimeout = Configuration.DefaultTimeout ?? WeaviateDefaults.DefaultTimeout;
+        httpClient.Timeout = defaultTimeout;
 
         var wcdHost = IsWeaviateDomain(Configuration.RestAddress)
             ? Configuration.RestAddress
@@ -341,7 +380,7 @@ public partial class WeaviateClient : IDisposable
                 Configuration.GrpcUri,
                 wcdHost,
                 _tokenService,
-                timeout,
+                Configuration.QueryTimeout ?? defaultTimeout,
                 Meta?.GrpcMaxMessageSize ?? null,
                 retryPolicy,
                 Configuration.Headers,

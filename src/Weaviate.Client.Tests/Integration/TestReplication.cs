@@ -639,7 +639,7 @@ public class TestReplication : IntegrationTests
         Assert.Equal(ReplicationType.Copy, operation.Current.Type);
 
         // Test RefreshStatus
-        await operation.RefreshStatus();
+        await operation.RefreshStatus(cancellationToken: TestContext.Current.CancellationToken);
         Assert.NotNull(operation.Current);
 
         // Cleanup

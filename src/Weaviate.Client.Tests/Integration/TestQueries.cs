@@ -46,14 +46,19 @@ public class TestQueries : IntegrationTests
             },
         };
 
-        await collection.Data.InsertMany(BatchInsertRequest.Create(testData));
+        await collection.Data.InsertMany(
+            BatchInsertRequest.Create(testData),
+            TestContext.Current.CancellationToken
+        );
 
         // Act
         var dataDesc = await collection.Query.FetchObjects(
-            sort: Sort.ByProperty(propertyName).Descending()
+            sort: Sort.ByProperty(propertyName).Descending(),
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var dataAsc = await collection.Query.FetchObjects(
-            sort: Sort.ByProperty(propertyName).Ascending()
+            sort: Sort.ByProperty(propertyName).Ascending(),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var namesDesc = dataDesc.Select(d => d.Properties["testText"]);
@@ -92,7 +97,10 @@ public class TestQueries : IntegrationTests
             },
         };
 
-        await collection.Data.InsertMany(BatchInsertRequest.Create<object>(testData));
+        await collection.Data.InsertMany(
+            BatchInsertRequest.Create<object>(testData),
+            TestContext.Current.CancellationToken
+        );
 
         // Act
         var groupBy = new GroupByRequest
@@ -115,7 +123,8 @@ public class TestQueries : IntegrationTests
             {
                 Task =
                     "What is the biggest and what is the smallest? Only write the names separated by a space",
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -156,13 +165,19 @@ public class TestQueries : IntegrationTests
         await collection.Data.InsertMany(
             BatchInsertRequest.Create<object>(
                 new[] { new { text = "John Doe" }, new { text = "Jane Doe" } }
-            )
+            ),
+            TestContext.Current.CancellationToken
         );
 
         // Act: generative fetch
         var res = await collection.Generate.FetchObjects(
             prompt: new SinglePrompt { Prompt = "Who is this? {text}" },
-            groupedPrompt: new GroupedPrompt { Task = "Who are these people?", Properties = "text" }
+            groupedPrompt: new GroupedPrompt
+            {
+                Task = "Who are these people?",
+                Properties = "text",
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -237,9 +252,13 @@ public class TestQueries : IntegrationTests
         );
 
         var result = await collection.Data.InsertMany(
-            (new { text = "John Doe" }, id: _reusableUuids[0]),
-            (new { text = "Jane Doe" }, id: _reusableUuids[1]),
-            (new { text = "J. Doe" }, id: _reusableUuids[2])
+            new[]
+            {
+                (new { text = "John Doe" }, id: _reusableUuids[0]),
+                (new { text = "Jane Doe" }, id: _reusableUuids[1]),
+                (new { text = "J. Doe" }, id: _reusableUuids[2]),
+            },
+            TestContext.Current.CancellationToken
         );
 
         var res = await collection.Generate.FetchObjectsByIDs(
@@ -249,7 +268,8 @@ public class TestQueries : IntegrationTests
             {
                 Task = "Who are these people?",
                 Properties = new List<string> { "text" },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         Assert.NotNull(res);

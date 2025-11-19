@@ -14,17 +14,30 @@ public class TestNearQueries : IntegrationTests
             vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers { })
         );
 
-        var uuidBanana = await collectionClient.Data.Insert(new { Name = "Banana" });
-        await collectionClient.Data.Insert(new { Name = "Fruit" });
-        await collectionClient.Data.Insert(new { Name = "car" });
-        await collectionClient.Data.Insert(new { Name = "Mountain" });
+        var uuidBanana = await collectionClient.Data.Insert(
+            new { Name = "Banana" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { Name = "Fruit" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { Name = "car" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { Name = "Mountain" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var fullObjects = (
             await collectionClient.Query.NearObject(
                 uuidBanana,
                 returnMetadata: new MetadataQuery(
                     MetadataOptions.Distance | MetadataOptions.Certainty
-                )
+                ),
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects.ToList();
 
@@ -33,7 +46,8 @@ public class TestNearQueries : IntegrationTests
         var objectsDistance = (
             await collectionClient.Query.NearObject(
                 uuidBanana,
-                distance: fullObjects[2].Metadata.Distance
+                distance: fullObjects[2].Metadata.Distance,
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects.ToList();
 
@@ -42,7 +56,8 @@ public class TestNearQueries : IntegrationTests
         var objectsCertainty = (
             await collectionClient.Query.NearObject(
                 uuidBanana,
-                certainty: fullObjects[2].Metadata.Certainty
+                certainty: fullObjects[2].Metadata.Certainty,
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects.ToList();
 
@@ -59,16 +74,35 @@ public class TestNearQueries : IntegrationTests
             vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers { })
         );
 
-        var uuidBanana = await collectionClient.Data.Insert(new { Name = "Banana" });
-        var uuidFruit = await collectionClient.Data.Insert(new { Name = "Fruit" });
-        await collectionClient.Data.Insert(new { Name = "car" });
-        await collectionClient.Data.Insert(new { Name = "Mountain" });
+        var uuidBanana = await collectionClient.Data.Insert(
+            new { Name = "Banana" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuidFruit = await collectionClient.Data.Insert(
+            new { Name = "Fruit" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { Name = "car" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { Name = "Mountain" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var banana = await collectionClient.Query.FetchObjectByID(uuidBanana);
+        var banana = await collectionClient.Query.FetchObjectByID(
+            uuidBanana,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(banana);
 
         var objs = (
-            await collectionClient.Query.NearObject(banana.ID!.Value, limit: 2)
+            await collectionClient.Query.NearObject(
+                banana.ID!.Value,
+                limit: 2,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
         ).Objects.ToList();
 
         Assert.Equal(2, objs.Count);
@@ -86,16 +120,35 @@ public class TestNearQueries : IntegrationTests
             vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers { })
         );
 
-        var uuidBanana = await collectionClient.Data.Insert(new { Name = "Banana" });
-        var uuidFruit = await collectionClient.Data.Insert(new { Name = "Fruit" });
-        await collectionClient.Data.Insert(new { Name = "car" });
-        await collectionClient.Data.Insert(new { Name = "Mountain" });
+        var uuidBanana = await collectionClient.Data.Insert(
+            new { Name = "Banana" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuidFruit = await collectionClient.Data.Insert(
+            new { Name = "Fruit" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { Name = "car" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { Name = "Mountain" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var banana = await collectionClient.Query.FetchObjectByID(uuidBanana);
+        var banana = await collectionClient.Query.FetchObjectByID(
+            uuidBanana,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(banana);
 
         var objs = (
-            await collectionClient.Query.NearObject(banana.ID!.Value, offset: 1)
+            await collectionClient.Query.NearObject(
+                banana.ID!.Value,
+                offset: 1,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
         ).Objects.ToList();
 
         Assert.Equal(3, objs.Count);
@@ -112,10 +165,22 @@ public class TestNearQueries : IntegrationTests
             vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers { })
         );
 
-        var uuidBanana1 = await collectionClient.Data.Insert(new { Name = "Banana", Count = 51 });
-        await collectionClient.Data.Insert(new { Name = "Banana", Count = 72 });
-        await collectionClient.Data.Insert(new { Name = "car", Count = 12 });
-        await collectionClient.Data.Insert(new { Name = "Mountain", Count = 1 });
+        var uuidBanana1 = await collectionClient.Data.Insert(
+            new { Name = "Banana", Count = 51 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { Name = "Banana", Count = 72 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { Name = "car", Count = 12 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { Name = "Mountain", Count = 1 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var ret = await collectionClient.Query.NearObject(
             uuidBanana1,
@@ -125,7 +190,8 @@ public class TestNearQueries : IntegrationTests
                 NumberOfGroups = 4,
                 ObjectsPerGroup = 10,
             },
-            returnMetadata: new MetadataQuery(MetadataOptions.Distance | MetadataOptions.Certainty)
+            returnMetadata: new MetadataQuery(MetadataOptions.Distance | MetadataOptions.Certainty),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var objects = ret.Objects.ToList();

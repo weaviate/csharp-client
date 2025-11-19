@@ -13,9 +13,18 @@ public partial class ReferenceTests : IntegrationTests
     {
         var cA = await CollectionFactory<TestData>("A", "Collection A");
 
-        var uuid_A1 = await cA.Data.Insert(new TestData() { Name = "A1" });
-        var uuid_A2 = await cA.Data.Insert(new TestData() { Name = "A2" });
-        var uuid_A3 = await cA.Data.Insert(new TestData() { Name = "A3" });
+        var uuid_A1 = await cA.Data.Insert(
+            new TestData() { Name = "A1" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuid_A2 = await cA.Data.Insert(
+            new TestData() { Name = "A2" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuid_A3 = await cA.Data.Insert(
+            new TestData() { Name = "A3" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var cB = await CollectionFactory<TestData>(
             name: "B",
@@ -23,13 +32,23 @@ public partial class ReferenceTests : IntegrationTests
             references: new Reference("a", cA.Name)
         );
 
-        var uuid_B = await cB.Data.Insert(new() { Name = "B" }, references: [("a", uuid_A1)]);
+        var uuid_B = await cB.Data.Insert(
+            new() { Name = "B" },
+            references: [("a", uuid_A1)],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        await cB.Data.ReferenceAdd(from: uuid_B, fromProperty: "a", to: uuid_A2);
+        await cB.Data.ReferenceAdd(
+            from: uuid_B,
+            fromProperty: "a",
+            to: uuid_A2,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var result = await cB.Query.FetchObjectByID(
             uuid_B,
-            returnReferences: [new QueryReference("a", ["name"])]
+            returnReferences: [new QueryReference("a", ["name"])],
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.NotNull(result);
 
@@ -38,10 +57,16 @@ public partial class ReferenceTests : IntegrationTests
         Assert.Contains(refs, r => r.ID == uuid_A2);
         Assert.Contains(refs, r => r.ID == uuid_A1);
 
-        await cB.Data.ReferenceDelete(from: uuid_B, fromProperty: "a", to: uuid_A2);
+        await cB.Data.ReferenceDelete(
+            from: uuid_B,
+            fromProperty: "a",
+            to: uuid_A2,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         var resultAfterDelete = await cB.Query.FetchObjectByID(
             uuid_B,
-            returnReferences: [new QueryReference("a", ["name"])]
+            returnReferences: [new QueryReference("a", ["name"])],
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.NotNull(resultAfterDelete);
         var refsAfterDelete = resultAfterDelete.References["a"].ToList();
@@ -51,11 +76,13 @@ public partial class ReferenceTests : IntegrationTests
         await cB.Data.ReferenceReplace(
             from: uuid_B,
             fromProperty: "a",
-            to: new[] { uuid_A1, uuid_A2, uuid_A3 }
+            to: new[] { uuid_A1, uuid_A2, uuid_A3 },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var resultAfterReplace = await cB.Query.FetchObjectByID(
             uuid_B,
-            returnReferences: [new QueryReference("a", ["name"])]
+            returnReferences: [new QueryReference("a", ["name"])],
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.NotNull(resultAfterReplace);
         var refsAfterReplace = resultAfterReplace.References["a"].ToList();
@@ -64,7 +91,10 @@ public partial class ReferenceTests : IntegrationTests
         Assert.Contains(refsAfterReplace, r => r.ID == uuid_A1);
         Assert.Contains(refsAfterReplace, r => r.ID == uuid_A3);
 
-        var uuid_B2 = await cB.Data.Insert(new() { Name = "B" });
+        var uuid_B2 = await cB.Data.Insert(
+            new() { Name = "B" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         await cB.Data.ReferenceAddMany(
             new[]
@@ -72,12 +102,14 @@ public partial class ReferenceTests : IntegrationTests
                 new DataReference(uuid_B2, "a", uuid_A1),
                 new DataReference(uuid_B2, "a", uuid_A2),
                 new DataReference(uuid_B2, "a", uuid_A3),
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var resultB2 = await cB.Query.FetchObjectByID(
             uuid_B2,
-            returnReferences: [new QueryReference("a", ["name"])]
+            returnReferences: [new QueryReference("a", ["name"])],
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.NotNull(resultB2);
         var refsB2 = resultB2.References["a"].ToList();
@@ -94,8 +126,14 @@ public partial class ReferenceTests : IntegrationTests
 
         var cA = await CollectionFactory<TestData>("A", "Collection A");
 
-        var uuid_A1 = await cA.Data.Insert(new TestData() { Name = "A1" });
-        var uuid_A2 = await cA.Data.Insert(new TestData() { Name = "A2" });
+        var uuid_A1 = await cA.Data.Insert(
+            new TestData() { Name = "A1" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuid_A2 = await cA.Data.Insert(
+            new TestData() { Name = "A2" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var cB = await CollectionFactory<TestData>(
             name: "B",
@@ -103,9 +141,18 @@ public partial class ReferenceTests : IntegrationTests
             references: new Reference("a", cA.Name)
         );
 
-        var uuid_B = await cB.Data.Insert(new() { Name = "B" }, references: [("a", uuid_A1)]);
+        var uuid_B = await cB.Data.Insert(
+            new() { Name = "B" },
+            references: [("a", uuid_A1)],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        await cB.Data.ReferenceAdd(from: uuid_B, fromProperty: "a", to: uuid_A2);
+        await cB.Data.ReferenceAdd(
+            from: uuid_B,
+            fromProperty: "a",
+            to: uuid_A2,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var cC = await CollectionFactory<TestData>(
             "C",
@@ -115,15 +162,21 @@ public partial class ReferenceTests : IntegrationTests
 
         var uuid_C = await cC.Data.Insert(
             new TestData { Name = "find me" },
-            references: [("b", uuid_B)]
+            references: [("b", uuid_B)],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Act
-        var aObjs = await cA.Query.BM25(query: "A1", ["name"]);
+        var aObjs = await cA.Query.BM25(
+            query: "A1",
+            ["name"],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var bObjs = await cB.Query.BM25(
             query: "B",
-            returnReferences: [new QueryReference(linkOn: "a", fields: ["name"])]
+            returnReferences: [new QueryReference(linkOn: "a", fields: ["name"])],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var cObjs = await cC.Query.BM25(
@@ -137,7 +190,8 @@ public partial class ReferenceTests : IntegrationTests
                     metadata: MetadataOptions.LastUpdateTime,
                     references: [new QueryReference(linkOn: "a", fields: ["name"])]
                 ),
-            ]
+            ],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -237,7 +291,10 @@ public partial class ReferenceTests : IntegrationTests
         var movieIds = new Dictionary<int, Guid>();
         foreach (var m in moviesData)
         {
-            var uuid = await movies.Data.Insert(m);
+            var uuid = await movies.Data.Insert(
+                m,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
             movieIds.Add(m.movie_id, uuid);
         }
 
@@ -363,16 +420,25 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         foreach (var r in reviewsData)
         {
-            await reviews.Data.Insert(r, references: [("forMovie", movieIds[r.movie_id])]);
+            await reviews.Data.Insert(
+                r,
+                references: [("forMovie", movieIds[r.movie_id])],
+                cancellationToken: TestContext.Current.CancellationToken
+            );
         }
 
         // Act
-        var fun = await reviews.Query.NearText("Fun for the whole family", limit: 2);
+        var fun = await reviews.Query.NearText(
+            "Fun for the whole family",
+            limit: 2,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var disappointed = await reviews.Query.NearText(
             "Disappointed by this movie",
             limit: 2,
-            returnReferences: [new QueryReference("forMovie", ["title"])]
+            returnReferences: [new QueryReference("forMovie", ["title"])],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
