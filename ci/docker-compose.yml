@@ -1,3 +1,8 @@
+include:
+  - docker-compose-cluster.yml
+  - docker-compose-okta-cc.yml
+  - docker-compose-okta-users.yml
+  - docker-compose-rbac.yml
 services:
   weaviate:
     command:

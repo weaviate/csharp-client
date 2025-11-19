@@ -14,10 +14,6 @@ on:
   pull_request:
 
 env:
-  WEAVIATE_131: 1.31.16
-  WEAVIATE_132: 1.32.11
-  WEAVIATE_133: 1.33.0
-  WEAVIATE_134: 1.34.0-rc.0
   DOTNET_VERSION: '8.x'
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -54,12 +50,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        server: [
-          $WEAVIATE_131,
-          $WEAVIATE_132,
-          $WEAVIATE_133,
-          $WEAVIATE_134
-        ]
+        server: 
+          - 1.31.16
+          - 1.32.11
+          - 1.33.0
+          - 1.34.0-rc.0
 
     steps:
       - name: Check for required secrets
@@ -87,6 +82,9 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      - name: Run unit tests
+        run: dotnet test --no-restore --filter "FullyQualifiedName~Weaviate.Client.Tests.Unit" --logger "trx;LogFileName=./TestResults/test-unit-results.trx"
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ !github.event.pull_request.head.repo.fork && github.triggering_actor != 'dependabot[bot]' }}
@@ -98,11 +96,18 @@ jobs:
         run: /bin/bash ci/start_weaviate.sh ${{ matrix.server }}
 
       - name: Run integration tests
-        run: dotnet test --no-restore
-        
+        run: dotnet test --no-restore --filter "FullyQualifiedName~Weaviate.Client.Tests.Integration" --logger "trx;LogFileName=test-integration-results.trx" 
+
       - name: stop weaviate
         if: always()
         run: /bin/bash ci/stop_weaviate.sh ${{ matrix.server }}
+
+      - name: Test Report
+        continue-on-error: true
+        if: always()
+        run: |
+          dotnet tool update -g dotnet-trx
+          trx
 
   build-and-publish:
     name: Build and Publish to NuGet
