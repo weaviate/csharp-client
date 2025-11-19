@@ -47,13 +47,17 @@ public class BackupClient
     )
     {
         var restRequest = BuildBackupCreateRequest(request);
-        var response = await _client.RestClient.BackupCreate(request.Backend.Provider, restRequest);
+        var response = await _client.RestClient.BackupCreate(
+            request.Backend.Provider,
+            restRequest,
+            cancellationToken
+        );
         var model = ToModel(response);
 
         return new BackupCreateOperation(
             model,
-            async () => await GetStatus(request.Backend, model.Id),
-            async () => await Cancel(request.Backend, model.Id)
+            async (ct) => await GetStatus(request.Backend, model.Id, ct),
+            async (ct) => await Cancel(request.Backend, model.Id, ct)
         );
     }
 
@@ -114,33 +118,63 @@ public class BackupClient
     /// <summary>
     /// List existing backups for a backend provider
     /// </summary>
-    public async Task<IEnumerable<Backup>> List(BackupStorageProvider provider)
+    /// <param name="provider">The backup storage provider to list backups from.</param>
+    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+    /// <returns>An enumerable collection of backups.</returns>
+    public async Task<IEnumerable<Backup>> List(
+        BackupStorageProvider provider,
+        CancellationToken cancellationToken = default
+    )
     {
-        var list = await _client.RestClient.BackupList(provider);
+        var list = await _client.RestClient.BackupList(provider, cancellationToken);
         return list.Select(ToModelListItem) ?? Array.Empty<Backup>();
     }
 
     /// <summary>
     /// Get creation status for a backup
     /// </summary>
-    public async Task<Backup> GetStatus(BackupBackend backend, string id)
+    /// <param name="backend">The backup backend to check status from.</param>
+    /// <param name="id">The backup ID to check status for.</param>
+    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+    /// <returns>The backup status information.</returns>
+    public async Task<Backup> GetStatus(
+        BackupBackend backend,
+        string id,
+        CancellationToken cancellationToken = default
+    )
     {
         var bucket = backend is ObjectStorageBackend osb ? osb.Bucket : null;
         var path = backend.Path;
 
-        var status = await _client.RestClient.BackupStatus(backend.Provider, id, bucket, path);
+        var status = await _client.RestClient.BackupStatus(
+            backend.Provider,
+            id,
+            bucket,
+            path,
+            cancellationToken
+        );
         return ToModel(status, backend);
     }
 
     /// <summary>
     /// Cancel a running backup
     /// </summary>
-    public Task Cancel(BackupBackend backend, string id)
+    public Task Cancel(
+        BackupBackend backend,
+        string id,
+        CancellationToken cancellationToken = default
+    )
     {
         var bucket = backend is ObjectStorageBackend osb ? osb.Bucket : null;
         var path = backend.Path;
 
-        return _client.RestClient.BackupCancel(backend.Provider, id, bucket, path);
+        return _client.RestClient.BackupCancel(
+            backend.Provider,
+            id,
+            bucket,
+            path,
+            cancellationToken
+        );
     }
 
     /// <summary>
@@ -170,14 +204,15 @@ public class BackupClient
         var response = await _client.RestClient.BackupRestore(
             request.Backend.Provider,
             request.Id,
-            restRequest
+            restRequest,
+            cancellationToken
         );
         var model = ToModel(response);
 
         return new BackupRestoreOperation(
             model,
-            async () => await GetRestoreStatus(request.Backend, model.Id),
-            async () => await Cancel(request.Backend, model.Id)
+            async (ct) => await GetRestoreStatus(request.Backend, model.Id, ct),
+            async (ct) => await Cancel(request.Backend, model.Id, ct)
         );
     }
 
@@ -236,7 +271,15 @@ public class BackupClient
     /// <summary>
     /// Get status for a restore operation
     /// </summary>
-    public async Task<Backup> GetRestoreStatus(BackupBackend backend, string id)
+    /// <param name="backend">The backup backend to check restore status from.</param>
+    /// <param name="id">The backup ID to check restore status for.</param>
+    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+    /// <returns>The backup restore status information.</returns>
+    public async Task<Backup> GetRestoreStatus(
+        BackupBackend backend,
+        string id,
+        CancellationToken cancellationToken = default
+    )
     {
         var bucket = backend is ObjectStorageBackend osb ? osb.Bucket : null;
         var path = backend.Path;
@@ -245,7 +288,8 @@ public class BackupClient
             backend.Provider,
             id,
             bucket,
-            path
+            path,
+            cancellationToken
         );
         return ToModel(status, backend);
     }

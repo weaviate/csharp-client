@@ -180,13 +180,21 @@ public partial class PropertyTests : IntegrationTests
             properties: props
         );
 
-        var id = await c.Data.Insert(obj);
+        var id = await c.Data.Insert(obj, cancellationToken: TestContext.Current.CancellationToken);
         var idb = (await cb.Data.InsertMany(BatchInsertRequest.Create(new[] { obj })))
             .First()
             .ID!.Value;
 
-        var retrieved = await c.Query.FetchObjectByID(id, returnProperties: propertyName);
-        var retrievedBatch = await cb.Query.FetchObjectByID(idb, returnProperties: propertyName);
+        var retrieved = await c.Query.FetchObjectByID(
+            id,
+            returnProperties: propertyName,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var retrievedBatch = await cb.Query.FetchObjectByID(
+            idb,
+            returnProperties: propertyName,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Assert.NotNull(retrieved);
         Assert.NotNull(retrievedBatch);
@@ -334,10 +342,16 @@ public partial class PropertyTests : IntegrationTests
             },
         };
 
-        var id = await c.Data.Insert(testData);
+        var id = await c.Data.Insert(
+            testData,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // 3. Retrieve the object and confirm all properties match
-        var obj = await c.Query.FetchObjectByID(id);
+        var obj = await c.Query.FetchObjectByID(
+            id,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var concreteObj = obj?.As<TestProperties>();
 
@@ -380,7 +394,11 @@ public partial class PropertyTests : IntegrationTests
         foreach (var r in response)
         {
             // Blobs must be explicitly requested in returnProperties
-            var obj = await c.Query.FetchObjectByID(r.ID!.Value, returnProperties: "testBlob");
+            var obj = await c.Query.FetchObjectByID(
+                r.ID!.Value,
+                returnProperties: "testBlob",
+                cancellationToken: TestContext.Current.CancellationToken
+            );
 
             Assert.NotNull(obj);
 
@@ -536,7 +554,10 @@ public partial class PropertyTests : IntegrationTests
         // 3. Retrieve the object and confirm all properties match
         foreach (var r in response)
         {
-            var obj = await c.Query.FetchObjectByID(r.ID!.Value);
+            var obj = await c.Query.FetchObjectByID(
+                r.ID!.Value,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
 
             Assert.NotNull(obj);
 
@@ -677,8 +698,14 @@ public partial class PropertyTests : IntegrationTests
 
         foreach (var testData in testCases)
         {
-            var id = await c.Data.Insert(testData);
-            var obj = await c.Query.FetchObjectByID(id);
+            var id = await c.Data.Insert(
+                testData,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+            var obj = await c.Query.FetchObjectByID(
+                id,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
 
             Assert.NotNull(obj);
 
@@ -720,8 +747,14 @@ public partial class PropertyTests : IntegrationTests
             measurements = new[] { 0.1, 0.01, 0.001, 100.5, 1000.001 },
         };
 
-        var id = await c.Data.Insert(testData);
-        var obj = await c.Query.FetchObjectByID(id);
+        var id = await c.Data.Insert(
+            testData,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var obj = await c.Query.FetchObjectByID(
+            id,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Assert.NotNull(obj);
 
@@ -777,7 +810,10 @@ public partial class PropertyTests : IntegrationTests
         // Verify each inserted object
         foreach (var r in response)
         {
-            var obj = await c.Query.FetchObjectByID(r.ID!.Value);
+            var obj = await c.Query.FetchObjectByID(
+                r.ID!.Value,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
             Assert.NotNull(obj);
 
             var retrievedAmount = (double)obj.Properties["amount"]!;
@@ -830,8 +866,14 @@ public partial class PropertyTests : IntegrationTests
 
         foreach (var testValue in edgeCases)
         {
-            var id = await c.Data.Insert(new { value = testValue });
-            var obj = await c.Query.FetchObjectByID(id);
+            var id = await c.Data.Insert(
+                new { value = testValue },
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+            var obj = await c.Query.FetchObjectByID(
+                id,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
 
             Assert.NotNull(obj);
 

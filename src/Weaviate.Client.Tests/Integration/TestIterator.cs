@@ -69,7 +69,10 @@ public partial class BasicTests
         var insertData = Enumerable
             .Range(0, 10)
             .Select(i => BatchInsertRequest.Create<object>(new { data = i, text = "hi" }));
-        await collection.Data.InsertMany(insertData);
+        await collection.Data.InsertMany(
+            insertData,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Build metadata query
         MetadataQuery? metadata = null;
@@ -284,7 +287,10 @@ public partial class BasicTests
             .FirstAsync(TestContext.Current.CancellationToken);
 
         // Fetch the object at index 6 to compare
-        var expectedObject = await collection.Query.FetchObjectByID(allUuids[6]);
+        var expectedObject = await collection.Query.FetchObjectByID(
+            allUuids[6],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Assert.Equal(expectedObject!.Properties["data"]!, firstAfterObject.Properties["data"]!);
     }

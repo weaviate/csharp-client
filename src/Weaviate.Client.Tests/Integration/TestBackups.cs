@@ -40,7 +40,7 @@ public class TestBackups : IntegrationTests
             if (DateTime.UtcNow - startTime > timeout)
             {
                 // Cancel any remaining backups and break
-                var remainingBackups = await _weaviate.Backups.List(_backend.Provider);
+                var remainingBackups = await _weaviate.Backups.List(_backend.Provider, ct);
                 foreach (var backup in remainingBackups)
                 {
                     if (
@@ -52,7 +52,7 @@ public class TestBackups : IntegrationTests
                     {
                         try
                         {
-                            await _weaviate.Backups.Cancel(_backend, backup.Id);
+                            await _weaviate.Backups.Cancel(_backend, backup.Id, ct);
                         }
                         catch
                         {
@@ -63,7 +63,7 @@ public class TestBackups : IntegrationTests
                 break;
             }
 
-            var backups = await _weaviate.Backups.List(_backend.Provider);
+            var backups = await _weaviate.Backups.List(_backend.Provider, ct);
             var runningBackups = backups
                 .Where(b =>
                     b.Status
@@ -85,7 +85,7 @@ public class TestBackups : IntegrationTests
                 {
                     try
                     {
-                        await _weaviate.Backups.Cancel(_backend, backup.Id);
+                        await _weaviate.Backups.Cancel(_backend, backup.Id, ct);
                     }
                     catch
                     {
@@ -109,7 +109,10 @@ public class TestBackups : IntegrationTests
         var dummyCollectionName = dummyCollection.Name;
 
         // Insert a sample object into the dummy collection
-        await dummyCollection.Data.Insert(new { dummyField = "sample data" });
+        await dummyCollection.Data.Insert(
+            new { dummyField = "sample data" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var id = Helpers.GenerateUniqueIdentifier(dummyCollectionName);
         var request = new BackupCreateRequest(id, _backend);
@@ -122,15 +125,22 @@ public class TestBackups : IntegrationTests
             );
             Assert.Equal(id, operation.Current.Id);
 
-            var list = await _weaviate.Backups.List(_backend.Provider);
+            var list = await _weaviate.Backups.List(
+                _backend.Provider,
+                TestContext.Current.CancellationToken
+            );
             Assert.Contains(list, b => b.Id == id);
 
             // Test GetStatus is available
-            var status = await _weaviate.Backups.GetStatus(_backend, id);
+            var status = await _weaviate.Backups.GetStatus(
+                _backend,
+                id,
+                TestContext.Current.CancellationToken
+            );
             Assert.Equal(id, status.Id);
 
             // Test Cancel is available
-            await _weaviate.Backups.Cancel(_backend, id);
+            await _weaviate.Backups.Cancel(_backend, id, TestContext.Current.CancellationToken);
         }
         finally
         {
@@ -164,10 +174,16 @@ public class TestBackups : IntegrationTests
         {
             articleIds.Add(
                 await articles.Data.Insert(
-                    new { title = $"article {i}", datePublished = DateTime.UtcNow }
+                    new { title = $"article {i}", datePublished = DateTime.UtcNow },
+                    cancellationToken: TestContext.Current.CancellationToken
                 )
             );
-            paragraphIds.Add(await paragraphs.Data.Insert(new { contents = $"paragraph {i}" }));
+            paragraphIds.Add(
+                await paragraphs.Data.Insert(
+                    new { contents = $"paragraph {i}" },
+                    cancellationToken: TestContext.Current.CancellationToken
+                )
+            );
         }
 
         // Act - create backup and wait for completion
@@ -182,8 +198,12 @@ public class TestBackups : IntegrationTests
         Assert.Equal(BackupStatus.Success, createResp.Status);
 
         // Verify data before deletion
-        var articlesBefore = await articles.Query.FetchObjects();
-        var paragraphsBefore = await paragraphs.Query.FetchObjects();
+        var articlesBefore = await articles.Query.FetchObjects(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var paragraphsBefore = await paragraphs.Query.FetchObjects(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Equal(5, articlesBefore.Objects.Count);
         Assert.Equal(5, paragraphsBefore.Objects.Count);
 
@@ -205,8 +225,12 @@ public class TestBackups : IntegrationTests
         var articlesRestored = _weaviate.Collections.Use(articlesName);
         var paragraphsRestored = _weaviate.Collections.Use(paragraphsName);
 
-        var articlesAfter = await articlesRestored.Query.FetchObjects();
-        var paragraphsAfter = await paragraphsRestored.Query.FetchObjects();
+        var articlesAfter = await articlesRestored.Query.FetchObjects(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var paragraphsAfter = await paragraphsRestored.Query.FetchObjects(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Equal(5, articlesAfter.Objects.Count);
         Assert.Equal(5, paragraphsAfter.Objects.Count);
     }
@@ -228,7 +252,10 @@ public class TestBackups : IntegrationTests
         // insert objects
         for (int i = 1; i <= 3; i++)
         {
-            await article.Data.Insert(new { title = $"article {i}" });
+            await article.Data.Insert(
+                new { title = $"article {i}" },
+                cancellationToken: TestContext.Current.CancellationToken
+            );
         }
 
         // Act - create without waiting
@@ -264,7 +291,9 @@ public class TestBackups : IntegrationTests
         // Verify data restored
         var articleRestored = _weaviate.Collections.Use(articleName);
 
-        var objectsAfter = await articleRestored.Query.FetchObjects();
+        var objectsAfter = await articleRestored.Query.FetchObjects(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Equal(3, objectsAfter.Objects.Count);
     }
 
@@ -282,7 +311,10 @@ public class TestBackups : IntegrationTests
 
         for (int i = 1; i <= 4; i++)
         {
-            await article.Data.Insert(new { title = $"article {i}" });
+            await article.Data.Insert(
+                new { title = $"article {i}" },
+                cancellationToken: TestContext.Current.CancellationToken
+            );
         }
 
         // Create backup for only ArticleSingle
@@ -293,7 +325,9 @@ public class TestBackups : IntegrationTests
         Assert.Equal(BackupStatus.Success, createResp.Status);
 
         // Verify count before deletion
-        var before = await article.Query.FetchObjects();
+        var before = await article.Query.FetchObjects(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Equal(4, before.Objects.Count);
 
         // Delete collection
@@ -307,7 +341,9 @@ public class TestBackups : IntegrationTests
         Assert.Equal(BackupStatus.Success, restoreResp.Status);
 
         var articleRestored = _weaviate.Collections.Use(articleName);
-        var after = await articleRestored.Query.FetchObjects();
+        var after = await articleRestored.Query.FetchObjects(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Equal(4, after.Objects.Count);
     }
 
@@ -351,7 +387,10 @@ public class TestBackups : IntegrationTests
         );
         var collectionName = collection.Name;
 
-        await collection.Data.Insert(new { title = "one" });
+        await collection.Data.Insert(
+            new { title = "one" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var first = await _weaviate.Backups.CreateSync(
             new BackupCreateRequest(backupId, _backend, Include: new[] { collectionName }),
@@ -380,7 +419,10 @@ public class TestBackups : IntegrationTests
         );
         var collectionName = collection.Name;
 
-        await collection.Data.Insert(new { title = "alpha" });
+        await collection.Data.Insert(
+            new { title = "alpha" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var create = await _weaviate.Backups.CreateSync(
             new BackupCreateRequest(backupId, _backend, Include: new[] { collectionName }),
@@ -411,7 +453,10 @@ public class TestBackups : IntegrationTests
 
         for (int i = 0; i < 40; i++)
         {
-            await collection.Data.Insert(new { title = $"t{i}", body = new string('x', 500) });
+            await collection.Data.Insert(
+                new { title = $"t{i}", body = new string('x', 500) },
+                cancellationToken: TestContext.Current.CancellationToken
+            );
         }
 
         // Start backup without waiting
@@ -422,7 +467,7 @@ public class TestBackups : IntegrationTests
         Assert.Equal(backupId, operation.Current.Id);
 
         // Immediately request cancel via operation
-        await operation.Cancel();
+        await operation.Cancel(TestContext.Current.CancellationToken);
 
         // Wait and verify it's canceled
         var status = await operation.WaitForCompletion(
@@ -442,7 +487,10 @@ public class TestBackups : IntegrationTests
         var dummyCollectionName = dummyCollection.Name;
 
         // Insert a sample object into the dummy collection
-        await dummyCollection.Data.Insert(new { dummyField = "sample data" });
+        await dummyCollection.Data.Insert(
+            new { dummyField = "sample data" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Match Python test: create backup, list it, poll until success
         var collectionSeed = "bkp_list";
@@ -456,11 +504,14 @@ public class TestBackups : IntegrationTests
         Assert.Equal(BackupStatus.Started, operation.Current.Status);
 
         // List backups and verify our backup is present
-        var backups = await _weaviate.Backups.List(_backend.Provider);
+        var backups = await _weaviate.Backups.List(
+            _backend.Provider,
+            TestContext.Current.CancellationToken
+        );
         Assert.Contains(backups, b => b.Id.Equals(backupId, StringComparison.OrdinalIgnoreCase));
 
         // Cancel via operation
-        await operation.Cancel();
+        await operation.Cancel(cancellationToken: TestContext.Current.CancellationToken);
 
         // Verify canceled
         await operation.WaitForCompletion(cancellationToken: TestContext.Current.CancellationToken);
@@ -492,17 +543,23 @@ public class TestBackups : IntegrationTests
         );
         paragraphName = paragraphClient.Name;
 
-        await articleClient.Data.Insert(new { title = "original" });
-        await paragraphClient.Data.Insert(new { contents = "p1" });
+        await articleClient.Data.Insert(
+            new { title = "original" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await paragraphClient.Data.Insert(
+            new { contents = "p1" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Create alias pointing to the Article collection
         // Delete alias if it already exists
         try
         {
-            await _weaviate.Alias.Delete(aliasName);
+            await _weaviate.Alias.Delete(aliasName, TestContext.Current.CancellationToken);
         }
         catch { }
-        await articleClient.Alias.Add(aliasName);
+        await articleClient.Alias.Add(aliasName, TestContext.Current.CancellationToken);
 
         // Create backup including only Article
         var createResp = await _weaviate.Backups.CreateSync(
@@ -513,7 +570,7 @@ public class TestBackups : IntegrationTests
 
         // Delete Article and repoint alias to Paragraph (conflict scenario for restore)
         await _weaviate.Collections.Delete(articleName, TestContext.Current.CancellationToken);
-        await paragraphClient.Alias.Claim(aliasName);
+        await paragraphClient.Alias.Claim(aliasName, TestContext.Current.CancellationToken);
 
         // Attempt restore with overwriteAlias = false -> expect failure & alias unchanged
         var restoreResp = await _weaviate.Backups.RestoreSync(
@@ -530,12 +587,17 @@ public class TestBackups : IntegrationTests
         Assert.Null(restoreResp.Error);
 
         // Alias should still point to Paragraph
-        var aliasAfter = await _weaviate.Alias.Get(aliasName);
+        var aliasAfter = await _weaviate.Alias.Get(
+            aliasName,
+            TestContext.Current.CancellationToken
+        );
         Assert.NotNull(aliasAfter);
         Assert.Equal(paragraphName, aliasAfter.TargetClass);
 
         // Article should have been restored (attempting to use should NOT raise)
-        await _weaviate.Collections.Use(articleName).Query.FetchObjects();
+        await _weaviate
+            .Collections.Use(articleName)
+            .Query.FetchObjects(cancellationToken: TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -562,10 +624,16 @@ public class TestBackups : IntegrationTests
         );
         paragraphName = paragraphClient.Name;
 
-        await articleClient.Data.Insert(new { title = "original" });
-        await paragraphClient.Data.Insert(new { contents = "p1" });
+        await articleClient.Data.Insert(
+            new { title = "original" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await paragraphClient.Data.Insert(
+            new { contents = "p1" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        await articleClient.Alias.Add(aliasName);
+        await articleClient.Alias.Add(aliasName, TestContext.Current.CancellationToken);
 
         var createResp = await _weaviate.Backups.CreateSync(
             new BackupCreateRequest(backupId, _backend, Include: new[] { articleName }),
@@ -575,7 +643,10 @@ public class TestBackups : IntegrationTests
 
         // Delete original, repoint alias to Paragraph to simulate conflicting alias
         await _weaviate.Collections.Delete(articleName, TestContext.Current.CancellationToken);
-        await paragraphClient.Alias.Claim(aliasName);
+        await paragraphClient.Alias.Claim(
+            aliasName,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Restore with overwriteAlias = true should repoint alias back & recreate Article
         var restoreResp = await _weaviate.Backups.RestoreSync(
@@ -591,13 +662,18 @@ public class TestBackups : IntegrationTests
         Assert.Null(restoreResp.Error);
 
         // Alias should now target recreated Article collection
-        var aliasAfter = await _weaviate.Alias.Get(aliasName);
+        var aliasAfter = await _weaviate.Alias.Get(
+            aliasName,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(aliasAfter);
         Assert.Equal(articleName, aliasAfter.TargetClass);
 
         // Article collection should exist with restored data (1 object)
         var restoredArticle = _weaviate.Collections.Use(articleName);
-        var objects = await restoredArticle.Query.FetchObjects();
+        var objects = await restoredArticle.Query.FetchObjects(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Single(objects.Objects);
         Assert.Equal("original", objects.Objects.First().Properties["title"]);
     }
@@ -617,7 +693,10 @@ public class TestBackups : IntegrationTests
         // Insert some data to make backup take a bit longer
         for (int i = 0; i < 10; i++)
         {
-            await collection.Data.Insert(new { content = $"test content {i}" });
+            await collection.Data.Insert(
+                new { content = $"test content {i}" },
+                cancellationToken: TestContext.Current.CancellationToken
+            );
         }
 
         try
@@ -681,7 +760,10 @@ public class TestBackups : IntegrationTests
             properties: [Property.Text("content")]
         );
 
-        await collection.Data.Insert(new { content = "test data" });
+        await collection.Data.Insert(
+            new { content = "test data" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         try
         {

@@ -6,8 +6,8 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
 {
-    private readonly Func<Task<Backup>> _statusFetcher;
-    private readonly Func<Task> _operationCancel;
+    private readonly Func<CancellationToken, Task<Backup>> _statusFetcher;
+    private readonly Func<CancellationToken, Task> _operationCancel;
     private readonly CancellationTokenSource _cts = new();
     private readonly Task _backgroundRefreshTask;
     private Backup _current;
@@ -18,8 +18,8 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
 
     protected BackupOperationBase(
         Backup initial,
-        Func<Task<Backup>> statusFetcher,
-        Func<Task> operationCancel
+        Func<CancellationToken, Task<Backup>> statusFetcher,
+        Func<CancellationToken, Task> operationCancel
     )
     {
         _current = initial;
@@ -74,11 +74,13 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
         });
     }
 
-    private async Task RefreshStatusInternal()
+    private async Task RefreshStatusInternal(CancellationToken cancellationToken = default)
     {
         if (_isCompleted)
             return;
-        var status = await _statusFetcher();
+        var status = await _statusFetcher(
+            cancellationToken == default ? _cts.Token : cancellationToken
+        );
         _current = status;
         if (IsTerminalStatus(status.Status))
         {
@@ -135,12 +137,12 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
     /// <summary>
     /// Requests cancellation of the operation.
     /// </summary>
-    public async Task Cancel()
+    public async Task Cancel(CancellationToken cancellationToken = default)
     {
         // Call server-side Cancel
-        await _operationCancel();
+        await _operationCancel(cancellationToken);
 
-        await RefreshStatusInternal();
+        await RefreshStatusInternal(cancellationToken);
     }
 
     /// <summary>
