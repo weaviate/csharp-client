@@ -1,8 +1,5 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client.Rest;
 
@@ -18,13 +15,21 @@ internal partial class WeaviateRestClient
             cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "get aliases");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "get aliases",
+            ResourceType.Alias
+        );
 
-        var aliasesResponse =
-            await response.Content.ReadFromJsonAsync<Dto.AliasResponse>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        var aliasesResponse = await response.DecodeAsync<Dto.AliasResponse>(cancellationToken);
 
         return aliasesResponse.Aliases ?? Array.Empty<Dto.Alias>();
     }
@@ -41,12 +46,21 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "create alias");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "create alias",
+            ResourceType.Alias
+        );
 
-        return await response.Content.ReadFromJsonAsync<Dto.Alias>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<Dto.Alias>(cancellationToken);
     }
 
     internal async Task<Dto.Alias?> AliasGet(
@@ -59,14 +73,26 @@ internal partial class WeaviateRestClient
             cancellationToken
         );
 
-        return await response.EnsureExpectedStatusCodeAsync([200, 404], "get alias") switch
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "get alias",
+            ResourceType.Alias
+        );
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            HttpStatusCode.NotFound => null,
-            _ => await response.Content.ReadFromJsonAsync<Dto.Alias>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException(),
-        };
+            return null;
+        }
+
+        return await response.DecodeAsync<Dto.Alias>(cancellationToken);
     }
 
     internal async Task<Dto.Alias> AliasPut(
@@ -82,19 +108,21 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        var statusCode = await response.EnsureExpectedStatusCodeAsync([200, 404], "update alias");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "update alias",
+            ResourceType.Alias
+        );
 
-        return statusCode switch
-        {
-            HttpStatusCode.NotFound => throw new WeaviateNotFoundException(
-                new WeaviateRestServerException(statusCode),
-                resourceType: ResourceType.Alias
-            ),
-            _ => await response.Content.ReadFromJsonAsync<Dto.Alias>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException(),
-        };
+        return await response.DecodeAsync<Dto.Alias>(cancellationToken);
     }
 
     internal async Task<bool> AliasDelete(
@@ -107,8 +135,24 @@ internal partial class WeaviateRestClient
             cancellationToken
         );
 
-        var statusCode = await response.EnsureExpectedStatusCodeAsync([204], "delete alias");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.NoContent,
+                HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "delete alias",
+            ResourceType.Alias
+        );
 
-        return statusCode == HttpStatusCode.NoContent;
+        return response.StatusCode switch
+        {
+            HttpStatusCode.NoContent => true,
+            _ => false,
+        };
     }
 }
