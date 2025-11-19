@@ -1,7 +1,5 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client.Rest;
@@ -29,7 +27,17 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "reference add");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "reference add",
+            ResourceType.Reference
+        );
     }
 
     internal async Task ReferenceReplace(
@@ -53,7 +61,17 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "reference replace");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "reference replace",
+            ResourceType.Reference
+        );
     }
 
     internal async Task ReferenceDelete(
@@ -79,7 +97,17 @@ internal partial class WeaviateRestClient
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        await response.EnsureExpectedStatusCodeAsync([204], "reference delete");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.NoContent,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "reference delete",
+            ResourceType.Reference
+        );
     }
 
     internal async Task<BatchReferenceResponse[]> ReferenceAddMany(
@@ -113,11 +141,20 @@ internal partial class WeaviateRestClient
             cancellationToken: cancellationToken
         );
 
-        await response.EnsureExpectedStatusCodeAsync([200], "reference add many");
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "reference add many",
+            ResourceType.Reference
+        );
 
-        return await response.Content.ReadFromJsonAsync<BatchReferenceResponse[]>(
-                RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        return await response.DecodeAsync<BatchReferenceResponse[]>(cancellationToken);
     }
 }
