@@ -50,6 +50,16 @@ var client = await Connect.Local(
     grpcPort: 50051,
     useSsl: false
 );
+
+// Connect with custom timeouts
+var client = await Connect.Local(
+    credentials: Auth.ApiKey("your-api-key"),
+    hostname: "localhost",
+    defaultTimeout: TimeSpan.FromSeconds(30),
+    initTimeout: TimeSpan.FromSeconds(5),
+    dataTimeout: TimeSpan.FromSeconds(60),
+    queryTimeout: TimeSpan.FromSeconds(120)
+);
 ```
 
 **Weaviate Cloud:**
@@ -58,6 +68,14 @@ var client = await Connect.Local(
 var client = await Connect.Cloud(
     restEndpoint: "your-cluster.weaviate.cloud",
     apiKey: "your-api-key"
+);
+
+// With custom timeouts
+var client = await Connect.Cloud(
+    restEndpoint: "your-cluster.weaviate.cloud",
+    apiKey: "your-api-key",
+    defaultTimeout: TimeSpan.FromSeconds(30),
+    queryTimeout: TimeSpan.FromSeconds(120)
 );
 ```
 
