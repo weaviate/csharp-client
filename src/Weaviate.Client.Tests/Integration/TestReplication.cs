@@ -10,13 +10,6 @@ using Weaviate.Client.Models;
 [CollectionDefinition("TestReplication", DisableParallelization = true)]
 public class TestReplication : IntegrationTests
 {
-    public TestReplication()
-        : base()
-    {
-        // Replication operations are available starting from version 1.32.0
-        RequireVersion("1.32.0");
-    }
-
     // Use dedicated ports for replication test suite to avoid clashes with other running instances
     public override ushort RestPort => 8087;
     public override ushort GrpcPort => 50058;
@@ -24,6 +17,9 @@ public class TestReplication : IntegrationTests
     public override async ValueTask InitializeAsync()
     {
         await base.InitializeAsync();
+
+        RequireVersion("1.32.0");
+
         // Cleanup any existing replication operations before each test
         await CleanupReplicationOperations();
     }

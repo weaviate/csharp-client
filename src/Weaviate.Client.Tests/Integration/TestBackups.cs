@@ -12,14 +12,12 @@ public class TestBackups : IntegrationTests
     static readonly BackupBackend _backend = new FilesystemBackend(); // typical default backend
     static readonly TimeSpan _pollingTimeout = TimeSpan.FromSeconds(5);
 
-    public TestBackups()
-        : base()
-    {
-        RequireVersion("1.32.0");
-    }
-
     public override async ValueTask InitializeAsync()
     {
+        await base.InitializeAsync();
+
+        RequireVersion("1.32.0");
+
         // Wait for any running backups to complete before each test
         await WaitForNoRunningBackups(TestContext.Current.CancellationToken);
     }
