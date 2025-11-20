@@ -1,6 +1,6 @@
 namespace Weaviate.Client.Models;
 
-public record DataReference(Guid From, string FromProperty, params Guid[] To);
+public record DataReference(Guid From, string FromProperty, IEnumerable<Guid> To);
 
 public record BatchReferenceReturn
 {

@@ -38,11 +38,12 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(
+            new (object, Guid)[]
+            {
                 (new { age = 10, name = "Timmy" }, Guid.NewGuid()),
                 (new { age = 20, name = "Tim" }, Guid.NewGuid()),
-                (new { age = 30, name = "Timothy" }, Guid.NewGuid())
-            ),
+                (new { age = 30, name = "Timothy" }, Guid.NewGuid()),
+            },
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -73,10 +74,11 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(
+            new (object, Guid)[]
+            {
                 (new { age = 10, name = "Timmy" }, Guid.NewGuid()),
-                (new { age = 10, name = "Tommy" }, Guid.NewGuid())
-            ),
+                (new { age = 10, name = "Tommy" }, Guid.NewGuid()),
+            },
             cancellationToken: TestContext.Current.CancellationToken
         );
 

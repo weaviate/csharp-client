@@ -121,15 +121,17 @@ public partial class TenantTests : IntegrationTests
 
         var result = (
             await tenant1Collection.Data.InsertMany(
-                BatchInsertRequest.Create<object>(
-                    new { Name = "some name" },
-                    null,
-                    new float[] { 1, 2, 3 }
-                ),
-                BatchInsertRequest.Create<object>(
-                    new { Name = "some other name" },
-                    _reusableUuids[0]
-                )
+                [
+                    BatchInsertRequest.Create<object>(
+                        new { Name = "some name" },
+                        null,
+                        new float[] { 1, 2, 3 }
+                    ),
+                    BatchInsertRequest.Create<object>(
+                        new { Name = "some other name" },
+                        _reusableUuids[0]
+                    ),
+                ]
             )
         ).ToList();
 
