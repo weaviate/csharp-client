@@ -108,11 +108,6 @@ public class DataClient<TData>
         );
     }
 
-    public async Task<BatchInsertResponse> InsertMany(params TData[] data)
-    {
-        return await InsertMany(data.AsEnumerable());
-    }
-
     public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<TData> data,
         CancellationToken cancellationToken = default
@@ -127,44 +122,17 @@ public class DataClient<TData>
     public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<(TData, Guid id)> requests,
         CancellationToken cancellationToken = default
-    ) =>
-        await InsertMany(
-            requests.Select(r => BatchInsertRequest.Create<TData>(r)),
-            cancellationToken
-        );
+    ) => await InsertMany(BatchInsertRequest.Create<TData>(requests), cancellationToken);
 
     public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<(TData, Models.Vectors vectors)> requests,
         CancellationToken cancellationToken = default
-    ) =>
-        await InsertMany(
-            requests.Select(r => BatchInsertRequest.Create<TData>(r)),
-            cancellationToken
-        );
+    ) => await InsertMany(BatchInsertRequest.Create<TData>(requests), cancellationToken);
 
     public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<(TData data, IEnumerable<ObjectReference>? references)> requests,
         CancellationToken cancellationToken = default
-    ) =>
-        await InsertMany(
-            requests.Select(r => BatchInsertRequest.Create<TData>(r)),
-            cancellationToken
-        );
-
-    public async Task<BatchInsertResponse> InsertMany(params (TData, Guid id)[] requests) =>
-        await InsertMany(requests.AsEnumerable());
-
-    public async Task<BatchInsertResponse> InsertMany(
-        params (TData, Models.Vectors vectors)[] requests
-    ) => await InsertMany(requests.AsEnumerable());
-
-    public async Task<BatchInsertResponse> InsertMany(
-        params (TData data, IEnumerable<ObjectReference>? references)[] requests
-    ) => await InsertMany(requests.AsEnumerable());
-
-    public async Task<BatchInsertResponse> InsertMany(
-        params BatchInsertRequest<TData>[] requests
-    ) => await InsertMany(requests.AsEnumerable());
+    ) => await InsertMany(BatchInsertRequest.Create<TData>(requests), cancellationToken);
 
     public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<BatchInsertRequest<TData>[]> requestBatches,
