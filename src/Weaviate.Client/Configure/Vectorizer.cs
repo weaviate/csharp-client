@@ -496,6 +496,7 @@ public static partial class Configure
             string? baseURL = null,
             string? model = null,
             bool? truncate = null,
+            int? dimensions = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
@@ -504,6 +505,7 @@ public static partial class Configure
                     BaseURL = baseURL,
                     Model = model,
                     Truncate = truncate,
+                    Dimensions = dimensions,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
