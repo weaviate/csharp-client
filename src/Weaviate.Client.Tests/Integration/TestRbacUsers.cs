@@ -19,7 +19,12 @@ public class TestRbacUsers : IntegrationTests
 
     public override ICredentials? Credentials => Auth.ApiKey(ADMIN_API_KEY);
 
-    public TestRbacUsers() => RequireVersion("1.30.0");
+    public override async ValueTask InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        RequireVersion("1.30.0");
+    }
 
     [Fact]
     public async Task Test_OwnUser()

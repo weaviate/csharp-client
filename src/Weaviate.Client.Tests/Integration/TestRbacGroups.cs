@@ -14,8 +14,10 @@ public class TestRbacGroups : IntegrationTests
     public override ushort GrpcPort => 50063;
     private const string ADMIN_API_KEY = "admin-key";
 
-    public TestRbacGroups()
+    public override async ValueTask InitializeAsync()
     {
+        await base.InitializeAsync();
+
         RequireVersion("1.32.0");
     }
 

@@ -17,8 +17,10 @@ public class TestRbacRoles : IntegrationTests
     private static string MakeRoleName(string suffix) =>
         $"test-role-{suffix}-{Random.Shared.Next(1, 1_000_000)}";
 
-    public TestRbacRoles()
+    public override async ValueTask InitializeAsync()
     {
+        await base.InitializeAsync();
+
         RequireVersion("1.30.0");
     }
 
