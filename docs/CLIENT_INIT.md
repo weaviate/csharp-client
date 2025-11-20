@@ -13,15 +13,15 @@ This guide covers how to initialize and configure a Weaviate client in C#, inclu
 
 ## Basic Client Creation
 
-The simplest way to create a client is to use the `WeaviateClientBuilder`:
+The simplest way to create a client is to use the `WeaviateClientBuilder` with the async `BuildAsync()` method:
 
 ```csharp
 using Weaviate.Client;
 
 // Create a client connecting to a local Weaviate instance
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
-    .Build();
+    .BuildAsync();
 ```
 
 This creates a client with default settings:
@@ -29,6 +29,8 @@ This creates a client with default settings:
 - REST endpoint: `http://localhost:8080`
 - gRPC endpoint: `localhost:50051`
 - Default timeout: 30 seconds
+
+**Important:** Client initialization is asynchronous. Metadata is fetched during initialization to properly configure the gRPC client and validate authentication. Always use `await` with `BuildAsync()`.
 
 ### Quick Connection Helpers
 
@@ -38,10 +40,10 @@ For the most common connection scenarios, the `Connect` helper class provides co
 
 ```csharp
 // Connect to local Weaviate with defaults
-var client = Connect.Local();
+var client = await Connect.Local();
 
 // Connect to local with custom credentials
-var client = Connect.Local(
+var client = await Connect.Local(
     credentials: Auth.ApiKey("your-api-key"),
     hostname: "localhost",
     restPort: 8080,
@@ -53,7 +55,7 @@ var client = Connect.Local(
 **Weaviate Cloud:**
 
 ```csharp
-var client = Connect.Cloud(
+var client = await Connect.Cloud(
     restEndpoint: "your-cluster.weaviate.cloud",
     apiKey: "your-api-key"
 );
@@ -63,13 +65,22 @@ var client = Connect.Cloud(
 
 ```csharp
 // Load configuration from environment variables (WEAVIATE_REST_ENDPOINT, WEAVIATE_GRPC_ENDPOINT, etc.)
-var client = Connect.FromEnvironment();
+var client = await Connect.FromEnvironment();
 
 // Use a custom prefix for environment variables
-var client = Connect.FromEnvironment(prefix: "MY_WEAVIATE_");
+var client = await Connect.FromEnvironment(prefix: "MY_WEAVIATE_");
 ```
 
 The `Connect` class wraps the builder pattern, making it ideal for quick prototyping and simple applications. For more advanced configuration needs, use `WeaviateClientBuilder` directly.
+
+### Why Async Initialization?
+
+Client initialization is asynchronous because:
+
+1. **Metadata Fetching**: Server metadata (including gRPC max message size) is fetched during initialization
+2. **Authentication Validation**: Credentials are validated immediately, catching auth errors early
+3. **Thread Safety**: Async operations don't block thread pool threads, improving application responsiveness
+4. **Error Handling**: Connection and authentication issues surface immediately during client creation, not later during operations
 
 ## Connection Configuration
 
@@ -78,14 +89,14 @@ The `Connect` class wraps the builder pattern, making it ideal for quick prototy
 For connecting to a local Weaviate instance:
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .Local(
         hostname: "localhost",
         restPort: 8080,
         grpcPort: 50051,
         useSsl: false
     )
-    .Build();
+    .BuildAsync();
 ```
 
 ### Custom Configuration
@@ -93,7 +104,7 @@ var client = new WeaviateClientBuilder()
 For more control over connection parameters:
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .Custom(
         restEndpoint: "192.168.1.100",
         restPort: "8080",
@@ -101,7 +112,7 @@ var client = new WeaviateClientBuilder()
         grpcPort: "50051",
         useSsl: false
     )
-    .Build();
+    .BuildAsync();
 ```
 
 ### Weaviate Cloud
@@ -109,12 +120,12 @@ var client = new WeaviateClientBuilder()
 For connecting to a Weaviate Cloud instance:
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .Cloud(
         restEndpoint: "your-cluster-id.weaviate.cloud",
         apiKey: "your-api-key"
     )
-    .Build();
+    .BuildAsync();
 ```
 
 ## Authentication
@@ -124,10 +135,10 @@ var client = new WeaviateClientBuilder()
 For Weaviate Cloud or self-hosted instances with API key authentication:
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("your-cluster.weaviate.cloud")
     .WithCredentials(Auth.ApiKey("your-api-key"))
-    .Build();
+    .BuildAsync();
 ```
 
 ### Bearer Token Authentication
@@ -135,14 +146,14 @@ var client = new WeaviateClientBuilder()
 For OAuth 2.0 bearer token authentication:
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .WithCredentials(Auth.BearerToken(
         accessToken: "your-access-token",
         expiresIn: 3600,
         refreshToken: "your-refresh-token"
     ))
-    .Build();
+    .BuildAsync();
 ```
 
 ### OAuth 2.0 Client Credentials Flow
@@ -150,13 +161,13 @@ var client = new WeaviateClientBuilder()
 For service-to-service authentication:
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .WithCredentials(Auth.ClientCredentials(
         clientSecret: "your-client-secret",
         scope: "openid profile email"
     ))
-    .Build();
+    .BuildAsync();
 ```
 
 ### OAuth 2.0 Resource Owner Password Flow
@@ -164,14 +175,14 @@ var client = new WeaviateClientBuilder()
 For user credential-based authentication:
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .WithCredentials(Auth.ClientPassword(
         username: "username",
         password: "password",
         scope: "openid profile email"
     ))
-    .Build();
+    .BuildAsync();
 ```
 
 ## Timeout Management
@@ -190,10 +201,10 @@ The client supports four timeout categories:
 ### Basic Timeout Configuration
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .WithDefaultTimeout(TimeSpan.FromSeconds(30))  // Fallback for all operations
-    .Build();
+    .BuildAsync();
 ```
 
 ### Differentiated Timeout Strategy
@@ -201,13 +212,13 @@ var client = new WeaviateClientBuilder()
 For optimal performance, configure different timeouts based on operation characteristics:
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .WithDefaultTimeout(TimeSpan.FromSeconds(30))   // Fallback timeout
     .WithInitTimeout(TimeSpan.FromSeconds(5))       // Fast init timeout
     .WithDataTimeout(TimeSpan.FromSeconds(60))      // Longer for writes
     .WithQueryTimeout(TimeSpan.FromSeconds(120))    // Longest for searches
-    .Build();
+    .BuildAsync();
 ```
 
 ### Timeout Strategy Rationale
@@ -253,10 +264,10 @@ var httpHandler = new HttpClientHandler
     UseProxy = true
 };
 
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .WithHttpMessageHandler(httpHandler)
-    .Build();
+    .BuildAsync();
 ```
 
 ### Custom Headers
@@ -264,7 +275,7 @@ var client = new WeaviateClientBuilder()
 Add custom headers to all requests:
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .WithHeader("X-Custom-Header", "custom-value")
     .WithHeaders(new Dictionary<string, string>
@@ -272,7 +283,7 @@ var client = new WeaviateClientBuilder()
         { "X-Request-ID", "request-123" },
         { "X-Custom-Header", "custom-value" }
     })
-    .Build();
+    .BuildAsync();
 ```
 
 ### Retry Policy
@@ -286,19 +297,19 @@ var retryPolicy = new RetryPolicy(
     maxBackoff: TimeSpan.FromSeconds(5)
 );
 
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .WithRetryPolicy(retryPolicy)
-    .Build();
+    .BuildAsync();
 ```
 
 Disable retries:
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .WithoutRetries()
-    .Build();
+    .BuildAsync();
 ```
 
 ### Custom Delegating Handlers
@@ -319,10 +330,10 @@ public class LoggingHandler : DelegatingHandler
     }
 }
 
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .AddHandler(new LoggingHandler())
-    .Build();
+    .BuildAsync();
 ```
 
 ## Examples
@@ -339,7 +350,7 @@ class Program
     static async Task Main(string[] args)
     {
         // Create a configured client
-        var client = new WeaviateClientBuilder()
+        var client = await new WeaviateClientBuilder()
             .Cloud(
                 restEndpoint: "my-cluster.weaviate.cloud",
                 apiKey: Environment.GetEnvironmentVariable("WEAVIATE_API_KEY")
@@ -349,7 +360,7 @@ class Program
             .WithDataTimeout(TimeSpan.FromSeconds(60))
             .WithQueryTimeout(TimeSpan.FromSeconds(120))
             .WithRetryPolicy(new RetryPolicy(maxRetries: 3))
-            .Build();
+            .BuildAsync();
 
         try
         {
@@ -393,13 +404,13 @@ class Program
 ### Example: Local Development Setup
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .Local(hostname: "localhost")
     .WithDefaultTimeout(TimeSpan.FromSeconds(30))
     .WithInitTimeout(TimeSpan.FromSeconds(10))
     .WithDataTimeout(TimeSpan.FromSeconds(60))
     .WithQueryTimeout(TimeSpan.FromSeconds(120))
-    .Build();
+    .BuildAsync();
 ```
 
 ### Example: Custom Configuration with Proxy
@@ -411,7 +422,7 @@ var httpHandler = new HttpClientHandler
     UseProxy = true
 };
 
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .Custom(
         restEndpoint: "weaviate.example.com",
         restPort: "443"
@@ -423,17 +434,17 @@ var client = new WeaviateClientBuilder()
     .WithInitTimeout(TimeSpan.FromSeconds(5))
     .WithDataTimeout(TimeSpan.FromSeconds(90))
     .WithQueryTimeout(TimeSpan.FromSeconds(180))
-    .Build();
+    .BuildAsync();
 ```
 
 ### Example: Per-Operation Timeout Override
 
 ```csharp
-var client = new WeaviateClientBuilder()
+var client = await new WeaviateClientBuilder()
     .Local()
     .WithDefaultTimeout(TimeSpan.FromSeconds(30))
     .WithQueryTimeout(TimeSpan.FromSeconds(120))
-    .Build();
+    .BuildAsync();
 
 var articleCollection = client.Collections.Get("Article");
 
