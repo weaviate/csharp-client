@@ -14,7 +14,7 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         await collection.Data.InsertMany(
-            [BatchInsertRequest.Create(new { name = "delet me" }, Guid.NewGuid())],
+            [BatchInsertRequest.Create<object>(new { name = "delet me" }, Guid.NewGuid())],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
