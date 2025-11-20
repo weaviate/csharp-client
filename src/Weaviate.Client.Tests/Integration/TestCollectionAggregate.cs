@@ -18,7 +18,7 @@ public partial class AggregatesTests : IntegrationTests
         );
 
         await collectionClient.Data.InsertMany(
-            Enumerable.Repeat(BatchInsertRequest.Create<object>(new { }), howMany)
+            [.. Enumerable.Repeat(BatchInsertRequest.Create<object>(new { }), howMany)]
         );
 
         var count = await collectionClient.Count();
@@ -555,7 +555,7 @@ public partial class AggregatesTests : IntegrationTests
             _ => throw new ArgumentException("Unknown property type"),
         };
 
-        await collectionClient.Data.InsertMany(BatchInsertRequest.Create(insertObj));
+        await collectionClient.Data.InsertMany([BatchInsertRequest.Create(insertObj)]);
 
         Aggregate.Metric metric = propertyType switch
         {

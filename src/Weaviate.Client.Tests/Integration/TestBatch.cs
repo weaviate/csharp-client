@@ -60,7 +60,7 @@ public partial class BatchTests : IntegrationTests
 
         // Insert objects into the referenced collection and get their UUIDs
         var refInsertResult = await refCollection.Data.InsertMany(
-            Enumerable.Range(0, numObjects).Select(i => new { Number = i })
+            [.. Enumerable.Range(0, numObjects).Select(i => new { Number = i })]
         );
 
         Guid[] uuidsTo = [.. refInsertResult.Select(r => r.ID!.Value)];
@@ -75,7 +75,7 @@ public partial class BatchTests : IntegrationTests
 
         // Insert objects into the main collection and get their UUIDs
         var fromInsertResult = await collection.Data.InsertMany(
-            Enumerable.Range(0, numObjects).Select(i => new { Num = i })
+            [.. Enumerable.Range(0, numObjects).Select(i => new { Num = i })]
         );
 
         Guid[] uuidsFrom = [.. fromInsertResult.Select(r => r.ID!.Value)];

@@ -24,32 +24,33 @@ public static class BatchInsertRequest
         return new BatchInsertRequest<TData>(data, id, vectors, references, tenant);
     }
 
-    public static BatchInsertRequest<TData>[] Create<TData>(params TData[] data)
+    public static IEnumerable<BatchInsertRequest<TData>> Create<TData>(IEnumerable<TData> data)
     {
-        return data.Select(d => new BatchInsertRequest<TData>(d)).ToArray();
+        return data.Select(d => new BatchInsertRequest<TData>(d));
     }
 
-    public static BatchInsertRequest<TData>[] Create<TData>(params (TData data, Guid id)[] requests)
-    {
-        return requests.Select(r => new BatchInsertRequest<TData>(r.data, r.id)).ToArray();
-    }
-
-    public static BatchInsertRequest<TData>[] Create<TData>(
-        params (TData data, IEnumerable<ObjectReference>? references)[] requests
+    public static IEnumerable<BatchInsertRequest<TData>> Create<TData>(
+        IEnumerable<(TData data, Guid id)> requests
     )
     {
-        return requests
-            .Select(r => new BatchInsertRequest<TData>(r.data, References: r.references))
-            .ToArray();
+        return requests.Select(r => new BatchInsertRequest<TData>(r.data, r.id));
     }
 
-    public static BatchInsertRequest<TData>[] Create<TData>(
-        params (TData data, Vectors vectors)[] requests
+    public static IEnumerable<BatchInsertRequest<TData>> Create<TData>(
+        IEnumerable<(TData data, IEnumerable<ObjectReference>? references)> requests
     )
     {
-        return requests
-            .Select(r => new BatchInsertRequest<TData>(r.data, Vectors: r.vectors))
-            .ToArray();
+        return requests.Select(r => new BatchInsertRequest<TData>(
+            r.data,
+            References: r.references
+        ));
+    }
+
+    public static IEnumerable<BatchInsertRequest<TData>> Create<TData>(
+        IEnumerable<(TData data, Vectors vectors)> requests
+    )
+    {
+        return requests.Select(r => new BatchInsertRequest<TData>(r.data, Vectors: r.vectors));
     }
 }
 

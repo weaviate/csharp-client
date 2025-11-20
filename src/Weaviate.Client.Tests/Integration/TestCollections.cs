@@ -1165,7 +1165,7 @@ public partial class CollectionsTests : IntegrationTests
 
         // Insert many
         await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(new { blob = blobData })
+            [BatchInsertRequest.Create<object>(new { blob = blobData })]
         );
 
         // Fetch by id

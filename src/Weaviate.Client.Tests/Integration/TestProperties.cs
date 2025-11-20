@@ -181,7 +181,7 @@ public partial class PropertyTests : IntegrationTests
         );
 
         var id = await c.Data.Insert(obj);
-        var idb = (await cb.Data.InsertMany(BatchInsertRequest.Create(new[] { obj })))
+        var idb = (await cb.Data.InsertMany([BatchInsertRequest.Create(new[] { obj })]))
             .First()
             .ID!.Value;
 
@@ -372,9 +372,7 @@ public partial class PropertyTests : IntegrationTests
             properties: props
         );
 
-        var requests = BatchInsertRequest.Create(testData);
-
-        var response = await c.Data.InsertMany(requests);
+        var response = await c.Data.InsertMany(testData);
 
         // 3. Retrieve the object and confirm all properties match
         foreach (var r in response)
@@ -531,7 +529,7 @@ public partial class PropertyTests : IntegrationTests
 
         var requests = BatchInsertRequest.Create<object>(testData);
 
-        var response = await c.Data.InsertMany(requests);
+        var response = await c.Data.InsertMany([.. requests]);
 
         // 3. Retrieve the object and confirm all properties match
         foreach (var r in response)
@@ -772,7 +770,7 @@ public partial class PropertyTests : IntegrationTests
             new { amount = 999.99, values = new[] { 7.77, 8.88, 9.99 } },
         };
 
-        var response = await c.Data.InsertMany(BatchInsertRequest.Create<object>(testData));
+        var response = await c.Data.InsertMany([BatchInsertRequest.Create<object>(testData)]);
 
         // Verify each inserted object
         foreach (var r in response)

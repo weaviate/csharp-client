@@ -46,7 +46,7 @@ public class TestQueries : IntegrationTests
             },
         };
 
-        await collection.Data.InsertMany(BatchInsertRequest.Create(testData));
+        await collection.Data.InsertMany(testData);
 
         // Act
         var dataDesc = await collection.Query.FetchObjects(
@@ -92,7 +92,7 @@ public class TestQueries : IntegrationTests
             },
         };
 
-        await collection.Data.InsertMany(BatchInsertRequest.Create<object>(testData));
+        await collection.Data.InsertMany([BatchInsertRequest.Create<object>(testData)]);
 
         // Act
         var groupBy = new GroupByRequest
@@ -154,9 +154,11 @@ public class TestQueries : IntegrationTests
 
         // Insert data
         await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(
-                new[] { new { text = "John Doe" }, new { text = "Jane Doe" } }
-            )
+            [
+                BatchInsertRequest.Create<object>(
+                    new[] { new { text = "John Doe" }, new { text = "Jane Doe" } }
+                ),
+            ]
         );
 
         // Act: generative fetch
@@ -237,9 +239,11 @@ public class TestQueries : IntegrationTests
         );
 
         var result = await collection.Data.InsertMany(
-            (new { text = "John Doe" }, id: _reusableUuids[0]),
-            (new { text = "Jane Doe" }, id: _reusableUuids[1]),
-            (new { text = "J. Doe" }, id: _reusableUuids[2])
+            [
+                BatchInsertRequest.Create(new { text = "John Doe" }, _reusableUuids[0]),
+                BatchInsertRequest.Create(new { text = "Jane Doe" }, _reusableUuids[1]),
+                BatchInsertRequest.Create(new { text = "J. Doe" }, _reusableUuids[2]),
+            ]
         );
 
         var res = await collection.Generate.FetchObjectsByIDs(

@@ -13,7 +13,7 @@ public partial class BatchDeleteTests : IntegrationTests
             vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
         );
 
-        await collection.Data.InsertMany((new { name = "delet me" }, Guid.NewGuid()));
+        await collection.Data.InsertMany([new { name = "delet me" }]);
 
         var result = await collection.Data.DeleteMany(
             where: Filter.Property("name").Equal("delet me")
@@ -34,9 +34,11 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         await collection.Data.InsertMany(
-            (new { age = 10, name = "Timmy" }, Guid.NewGuid()),
-            (new { age = 20, name = "Tim" }, Guid.NewGuid()),
-            (new { age = 30, name = "Timothy" }, Guid.NewGuid())
+            [
+                new { age = 10, name = "Timmy" },
+                new { age = 20, name = "Tim" },
+                new { age = 30, name = "Timothy" },
+            ]
         );
 
         var objects = await collection.Query.FetchObjects();
@@ -61,8 +63,7 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         await collection.Data.InsertMany(
-            (new { age = 10, name = "Timmy" }, Guid.NewGuid()),
-            (new { age = 10, name = "Tommy" }, Guid.NewGuid())
+            [new { age = 10, name = "Timmy" }, new { age = 10, name = "Tommy" }]
         );
 
         var objects = await collection.Query.FetchObjects();

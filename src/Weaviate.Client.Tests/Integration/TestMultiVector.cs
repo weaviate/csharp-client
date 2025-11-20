@@ -130,22 +130,24 @@ public class TestMultiVector : IntegrationTests
         );
 
         var result = await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(
-                new { },
-                null,
-                new Vectors()
-                {
-                    { "regular", new[] { 1f, 2f } },
+            [
+                BatchInsertRequest.Create<object>(
+                    new { },
+                    null,
+                    new Vectors()
                     {
-                        "colbert",
-                        new[,]
+                        { "regular", new[] { 1f, 2f } },
                         {
-                            { 1f, 2f },
-                            { 4f, 5f },
-                        }
-                    },
-                }
-            )
+                            "colbert",
+                            new[,]
+                            {
+                                { 1f, 2f },
+                                { 4f, 5f },
+                            }
+                        },
+                    }
+                ),
+            ]
         );
 
         Assert.Equal(0, result.Count(r => r.Error != null));

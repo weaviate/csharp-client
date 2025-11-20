@@ -114,11 +114,7 @@ public partial class SearchTests : IntegrationTests
         );
 
         var res = await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(
-                new { Name = "test" },
-                new { Name = "another" },
-                new { Name = "test" }
-            )
+            [new { Name = "test" }, new { Name = "another" }, new { Name = "test" }]
         );
 
         Assert.Equal(0, res.Count(r => r.Error is not null));
@@ -140,11 +136,7 @@ public partial class SearchTests : IntegrationTests
         );
 
         var res = await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(
-                new { Name = "test" },
-                new { Name = "another" },
-                new { Name = "test" }
-            )
+            [new { Name = "test" }, new { Name = "another" }, new { Name = "test" }]
         );
 
         Assert.Equal(0, res.Count(r => r.Error is not null));
@@ -163,11 +155,7 @@ public partial class SearchTests : IntegrationTests
         );
 
         var res = await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(
-                new { name = "banana" },
-                new { name = "fruit" },
-                new { name = "car" }
-            )
+            [new { name = "banana" }, new { name = "fruit" }, new { name = "car" }]
         );
         Assert.Equal(0, res.Count(r => r.Error is not null));
 

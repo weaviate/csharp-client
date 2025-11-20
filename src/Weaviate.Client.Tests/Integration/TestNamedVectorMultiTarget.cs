@@ -393,22 +393,24 @@ public class TestNamedVectorMultiTarget : IntegrationTests
 
         var inserts = (
             await collection.Data.InsertMany(
-                new BatchInsertRequest<object>(
-                    Data: new { },
-                    Vectors: new Vectors
-                    {
-                        { "first", new[] { 1f, 0f } },
-                        { "second", new[] { 0f, 1f, 0f } },
-                    }
-                ),
-                new BatchInsertRequest<object>(
-                    Data: new { },
-                    Vectors: new Vectors
-                    {
-                        { "first", new[] { 0f, 1f } },
-                        { "second", new[] { 1f, 0f, 0f } },
-                    }
-                )
+                [
+                    new BatchInsertRequest<object>(
+                        Data: new { },
+                        Vectors: new Vectors
+                        {
+                            { "first", new[] { 1f, 0f } },
+                            { "second", new[] { 0f, 1f, 0f } },
+                        }
+                    ),
+                    new BatchInsertRequest<object>(
+                        Data: new { },
+                        Vectors: new Vectors
+                        {
+                            { "first", new[] { 0f, 1f } },
+                            { "second", new[] { 1f, 0f, 0f } },
+                        }
+                    ),
+                ]
             )
         ).ToList();
 
