@@ -5,16 +5,16 @@ on:
     branches:
       - main
     tags:
-      - '**'
+      - "**"
     paths-ignore:
-      - 'docs/**'
-      - 'README.rst'
-      - 'LICENSE.md'
-      - 'publishing.md'
+      - "docs/**"
+      - "README.rst"
+      - "LICENSE.md"
+      - "publishing.md"
   pull_request:
 
 env:
-  DOTNET_VERSION: '8.x'
+  DOTNET_VERSION: "8.x"
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
@@ -50,7 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        server: 
+        server:
           - 1.31.16
           - 1.32.11
           - 1.33.0
@@ -83,7 +83,15 @@ jobs:
         run: dotnet restore
 
       - name: Run unit tests
-        run: dotnet test --no-restore --filter "FullyQualifiedName~Weaviate.Client.Tests.Unit" --logger "trx;LogFileName=./TestResults/test-unit-results.trx"
+        run: dotnet test --no-restore --filter "FullyQualifiedName~Weaviate.Client.Tests.Unit" --logger "trx;LogFileName=test-unit-results.trx"
+
+      - name: Upload unit test results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-unit-${{ matrix.server }}
+          path: TestResults/test-unit-results.trx
+          retention-days: 3
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -96,8 +104,16 @@ jobs:
         run: /bin/bash ci/start_weaviate.sh ${{ matrix.server }}
 
       - name: Run integration tests
-        run: dotnet test --no-restore --filter "FullyQualifiedName~Weaviate.Client.Tests.Integration" --logger "trx;LogFileName=test-integration-results.trx" 
+        run: dotnet test --no-restore --filter "FullyQualifiedName~Weaviate.Client.Tests.Integration" --logger "trx;LogFileName=test-integration-results.trx"
 
+      - name: Upload integration test results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-integration-${{ matrix.server }}
+          path: TestResults/test-integration-results.trx
+          retention-days: 3
+          
       - name: stop weaviate
         if: always()
         run: /bin/bash ci/stop_weaviate.sh ${{ matrix.server }}
