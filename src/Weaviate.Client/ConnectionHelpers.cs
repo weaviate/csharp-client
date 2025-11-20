@@ -1,30 +1,31 @@
 namespace Weaviate.Client;
 
+/// <summary>
+/// Connection helpers for creating WeaviateClient instances with common configurations.
+/// All methods are now async to ensure proper initialization without blocking.
+/// </summary>
 public static class Connect
 {
-    public static WeaviateClient Local(
-        Auth.ApiKeyCredentials credentials, // ApiKeyCredentials is constructed implicitly from a string.
+    /// <summary>
+    /// Creates a WeaviateClient connecting to a local Weaviate instance.
+    /// </summary>
+    public static Task<WeaviateClient> Local(
+        Auth.ApiKeyCredentials credentials,
         string hostname = "localhost",
         ushort restPort = 8080,
         ushort grpcPort = 50051,
         bool useSsl = false,
         Dictionary<string, string>? headers = null,
         HttpMessageHandler? httpMessageHandler = null
-    )
-    {
-        // Delegate directly to builder to avoid recursive overload call stack overflow.
-        return WeaviateClientBuilder.Local(
-            credentials,
-            hostname,
-            restPort,
-            grpcPort,
-            useSsl,
-            headers,
-            httpMessageHandler
-        );
-    }
+    ) =>
+        WeaviateClientBuilder
+            .Local(credentials, hostname, restPort, grpcPort, useSsl, headers, httpMessageHandler)
+            .BuildAsync();
 
-    public static WeaviateClient Local(
+    /// <summary>
+    /// Creates a WeaviateClient connecting to a local Weaviate instance.
+    /// </summary>
+    public static Task<WeaviateClient> Local(
         ICredentials? credentials = null,
         string hostname = "localhost",
         ushort restPort = 8080,
@@ -33,24 +34,26 @@ public static class Connect
         Dictionary<string, string>? headers = null,
         HttpMessageHandler? httpMessageHandler = null
     ) =>
-        WeaviateClientBuilder.Local(
-            credentials,
-            hostname,
-            restPort,
-            grpcPort,
-            useSsl,
-            headers,
-            httpMessageHandler
-        );
+        WeaviateClientBuilder
+            .Local(credentials, hostname, restPort, grpcPort, useSsl, headers, httpMessageHandler)
+            .BuildAsync();
 
-    public static WeaviateClient Cloud(
+    /// <summary>
+    /// Creates a WeaviateClient connecting to Weaviate Cloud.
+    /// </summary>
+    public static Task<WeaviateClient> Cloud(
         string restEndpoint,
         string? apiKey = null,
         Dictionary<string, string>? headers = null,
         HttpMessageHandler? httpMessageHandler = null
-    ) => WeaviateClientBuilder.Cloud(restEndpoint, apiKey, headers, httpMessageHandler);
+    ) =>
+        WeaviateClientBuilder.Cloud(restEndpoint, apiKey, headers, httpMessageHandler).BuildAsync();
 
-    public static WeaviateClient FromEnvironment(string prefix = "WEAVIATE_")
+    /// <summary>
+    /// Creates a WeaviateClient from environment variables.
+    /// Supports environment variables prefixed with WEAVIATE_ (or custom prefix).
+    /// </summary>
+    public static Task<WeaviateClient> FromEnvironment(string prefix = "WEAVIATE_")
     {
         var restEndpoint = Environment.GetEnvironmentVariable($"{prefix}REST_ENDPOINT");
         var grpcEndpoint = Environment.GetEnvironmentVariable($"{prefix}GRPC_ENDPOINT");
@@ -87,6 +90,6 @@ public static class Connect
             builder.WithOpenAI(openaiKey);
         }
 
-        return builder.Build();
+        return builder.BuildAsync();
     }
 }
