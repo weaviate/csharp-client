@@ -13,7 +13,8 @@ public partial class BasicTests
         );
 
         await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>([new { Name = "Name 1" }, new { Name = "Name 2" }])
+            BatchInsertRequest.Create<object>([new { Name = "Name 1" }, new { Name = "Name 2" }]),
+            TestContext.Current.CancellationToken
         );
 
         var names = new List<string>();
@@ -174,7 +175,7 @@ public partial class BasicTests
             .Range(0, 10)
             .Select(_ => BatchInsertRequest.Create<object>(new { @this = "this", that = "that" }))
             .ToArray();
-        await collection.Data.InsertMany(insertData);
+        await collection.Data.InsertMany(insertData, TestContext.Current.CancellationToken);
 
         // Test with all properties
         var allPropsIter = collection.Iterator(
@@ -224,7 +225,7 @@ public partial class BasicTests
                 .Range(0, (int)count)
                 .Select(i => BatchInsertRequest.Create<object>(new { data = i }))
                 .ToArray();
-            await collection.Data.InsertMany(insertData);
+            await collection.Data.InsertMany(insertData, TestContext.Current.CancellationToken);
         }
 
         var expected = Enumerable.Range(0, (int)count).Select(x => Convert.ToInt64(x)).ToList();
@@ -268,7 +269,7 @@ public partial class BasicTests
             .Range(0, 10)
             .Select(i => BatchInsertRequest.Create<object>(new { data = i }))
             .ToArray();
-        await collection.Data.InsertMany(insertData);
+        await collection.Data.InsertMany(insertData, TestContext.Current.CancellationToken);
 
         // Get all UUIDs first
         var allUuids = new List<Guid>();
