@@ -16,10 +16,15 @@ public static class Connect
         ushort grpcPort = 50051,
         bool useSsl = false,
         Dictionary<string, string>? headers = null,
-        HttpMessageHandler? httpMessageHandler = null
+        HttpMessageHandler? httpMessageHandler = null,
+        TimeSpan? defaultTimeout = null,
+        TimeSpan? initTimeout = null,
+        TimeSpan? dataTimeout = null,
+        TimeSpan? queryTimeout = null
     ) =>
         WeaviateClientBuilder
             .Local(credentials, hostname, restPort, grpcPort, useSsl, headers, httpMessageHandler)
+            .ApplyTimeouts(defaultTimeout, initTimeout, dataTimeout, queryTimeout)
             .BuildAsync();
 
     /// <summary>
@@ -32,10 +37,15 @@ public static class Connect
         ushort grpcPort = 50051,
         bool useSsl = false,
         Dictionary<string, string>? headers = null,
-        HttpMessageHandler? httpMessageHandler = null
+        HttpMessageHandler? httpMessageHandler = null,
+        TimeSpan? defaultTimeout = null,
+        TimeSpan? initTimeout = null,
+        TimeSpan? dataTimeout = null,
+        TimeSpan? queryTimeout = null
     ) =>
         WeaviateClientBuilder
             .Local(credentials, hostname, restPort, grpcPort, useSsl, headers, httpMessageHandler)
+            .ApplyTimeouts(defaultTimeout, initTimeout, dataTimeout, queryTimeout)
             .BuildAsync();
 
     /// <summary>
@@ -45,15 +55,28 @@ public static class Connect
         string restEndpoint,
         string? apiKey = null,
         Dictionary<string, string>? headers = null,
-        HttpMessageHandler? httpMessageHandler = null
+        HttpMessageHandler? httpMessageHandler = null,
+        TimeSpan? defaultTimeout = null,
+        TimeSpan? initTimeout = null,
+        TimeSpan? dataTimeout = null,
+        TimeSpan? queryTimeout = null
     ) =>
-        WeaviateClientBuilder.Cloud(restEndpoint, apiKey, headers, httpMessageHandler).BuildAsync();
+        WeaviateClientBuilder
+            .Cloud(restEndpoint, apiKey, headers, httpMessageHandler)
+            .ApplyTimeouts(defaultTimeout, initTimeout, dataTimeout, queryTimeout)
+            .BuildAsync();
 
     /// <summary>
     /// Creates a WeaviateClient from environment variables.
     /// Supports environment variables prefixed with WEAVIATE_ (or custom prefix).
     /// </summary>
-    public static Task<WeaviateClient> FromEnvironment(string prefix = "WEAVIATE_")
+    public static Task<WeaviateClient> FromEnvironment(
+        string prefix = "WEAVIATE_",
+        TimeSpan? defaultTimeout = null,
+        TimeSpan? initTimeout = null,
+        TimeSpan? dataTimeout = null,
+        TimeSpan? queryTimeout = null
+    )
     {
         var restEndpoint = Environment.GetEnvironmentVariable($"{prefix}REST_ENDPOINT");
         var grpcEndpoint = Environment.GetEnvironmentVariable($"{prefix}GRPC_ENDPOINT");
@@ -90,6 +113,8 @@ public static class Connect
             builder.WithOpenAI(openaiKey);
         }
 
-        return builder.BuildAsync();
+        return builder
+            .ApplyTimeouts(defaultTimeout, initTimeout, dataTimeout, queryTimeout)
+            .BuildAsync();
     }
 }

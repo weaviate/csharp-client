@@ -205,6 +205,27 @@ public partial class WeaviateClientBuilder
     }
 
     /// <summary>
+    /// Sets all timeout values at once. Any null values are skipped.
+    /// </summary>
+    public WeaviateClientBuilder ApplyTimeouts(
+        TimeSpan? defaultTimeout = null,
+        TimeSpan? initTimeout = null,
+        TimeSpan? dataTimeout = null,
+        TimeSpan? queryTimeout = null
+    )
+    {
+        if (defaultTimeout.HasValue)
+            WithDefaultTimeout(defaultTimeout.Value);
+        if (initTimeout.HasValue)
+            WithInitTimeout(initTimeout.Value);
+        if (dataTimeout.HasValue)
+            WithDataTimeout(dataTimeout.Value);
+        if (queryTimeout.HasValue)
+            WithQueryTimeout(queryTimeout.Value);
+        return this;
+    }
+
+    /// <summary>
     /// Sets the retry policy for transient failures.
     /// </summary>
     public WeaviateClientBuilder WithRetryPolicy(RetryPolicy policy)
