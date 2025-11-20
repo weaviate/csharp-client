@@ -157,26 +157,29 @@ public sealed record ClientConfiguration(
             logger
         );
 
-        // Fetch metadata from REST client to get gRPC max message size
-        ulong? maxMessageSize = null;
-        try
+        // Fetch metadata eagerly with init timeout - this will throw if authentication fails
+        var initTimeout = InitTimeout ?? DefaultTimeout ?? WeaviateDefaults.DefaultTimeout;
+        var metaCts = new CancellationTokenSource(initTimeout);
+        var metaDto = await restClient.GetMeta(metaCts.Token);
+        var meta = new Models.MetaInfo
         {
-            var metaDto = await restClient.GetMeta(CancellationToken.None);
-            if (metaDto?.GrpcMaxMessageSize is not null)
-            {
-                maxMessageSize = Convert.ToUInt64(metaDto.GrpcMaxMessageSize);
-            }
-        }
-        catch
-        {
-            // If metadata fetch fails, use defaults
-        }
+            GrpcMaxMessageSize = metaDto?.GrpcMaxMessageSize is not null
+                ? Convert.ToUInt64(metaDto.GrpcMaxMessageSize)
+                : null,
+            Hostname = metaDto?.Hostname ?? string.Empty,
+            Version =
+                Models.MetaInfo.ParseWeaviateVersion(metaDto?.Version ?? string.Empty)
+                ?? new System.Version(0, 0),
+            Modules = metaDto?.Modules?.ToDictionary() ?? [],
+        };
+
+        var maxMessageSize = meta.GrpcMaxMessageSize;
 
         // Create gRPC client with metadata
         var grpcClient = WeaviateClient.CreateGrpcClient(this, tokenService, maxMessageSize);
 
         // Create and return the client with pre-built services
-        return new WeaviateClient(this, restClient, grpcClient, logger);
+        return new WeaviateClient(this, restClient, grpcClient, logger, meta);
     }
 
     /// <summary>
@@ -364,32 +367,15 @@ public partial class WeaviateClient : IDisposable
 
     private Models.MetaInfo? _metaCache;
 
-    private async Task<Models.MetaInfo?> GetMetaCached(
-        CancellationToken cancellationToken = default
-    )
-    {
-        if (_metaCache != null)
-            return _metaCache.Value;
+    /// <summary>
+    /// Gets the server metadata that was fetched during client initialization.
+    /// This is always available and does not require network calls.
+    /// </summary>
+    public Models.MetaInfo? Meta => _metaCache;
 
-        await _metaCacheSemaphore.WaitAsync();
-        try
-        {
-            if (_metaCache == null)
-            {
-                var meta = await GetMeta(CreateInitCancellationToken(cancellationToken));
-                _metaCache = meta;
-            }
-        }
-        finally
-        {
-            _metaCacheSemaphore.Release();
-        }
-
-        return _metaCache.Value;
-    }
-
-    private readonly SemaphoreSlim _metaCacheSemaphore = new(1, 1);
-    public Models.MetaInfo? Meta => GetMetaCached().GetAwaiter().GetResult(); // Synchronous accessor unchanged; advanced usage should call GetMeta directly with a token.
+    /// <summary>
+    /// Gets the Weaviate server version from cached metadata.
+    /// </summary>
     public System.Version? WeaviateVersion => Meta?.Version;
 
     /// <summary>
@@ -489,13 +475,15 @@ public partial class WeaviateClient : IDisposable
         ClientConfiguration configuration,
         WeaviateRestClient restClient,
         WeaviateGrpcClient grpcClient,
-        ILogger<WeaviateClient>? logger = null
+        ILogger<WeaviateClient>? logger = null,
+        Models.MetaInfo? meta = null
     )
     {
         _logger = logger ?? _logger;
         Configuration = configuration;
         RestClient = restClient;
         GrpcClient = grpcClient;
+        _metaCache = meta;
 
         Cluster = new ClusterClient(RestClient);
         Collections = new CollectionsClient(this);
