@@ -19,11 +19,11 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 source compose.sh
 
 echo "Stop existing session if running"
-compose_down_all
+compose_down
 rm -rf weaviate-data || true
 
 echo "Run Docker compose (Weaviate $WEAVIATE_VERSION)"
-compose_up_all
+compose_up
 
 echo "Wait until all containers are up"
 
