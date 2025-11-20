@@ -1,6 +1,8 @@
 namespace Weaviate.Client;
 
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 public partial class WeaviateClientBuilder
 {
@@ -66,7 +68,7 @@ public partial class WeaviateClientBuilder
             .WithHttpMessageHandler(httpMessageHandler)
             .WithHeaders(headers);
 
-    public static WeaviateClient Cloud(
+    public static WeaviateClientBuilder Cloud(
         string restEndpoint,
         string? apiKey = null,
         Dictionary<string, string>? headers = null,
@@ -237,9 +239,13 @@ public partial class WeaviateClientBuilder
         return this;
     }
 
-    public WeaviateClient Build()
+    /// <summary>
+    /// Builds a WeaviateClient asynchronously with all services properly initialized.
+    /// This is the recommended way to create clients.
+    /// </summary>
+    public async Task<WeaviateClient> BuildAsync()
     {
-        return new ClientConfiguration(
+        var config = new ClientConfiguration(
             _restEndpoint,
             _restPath,
             _grpcEndpoint,
@@ -255,9 +261,74 @@ public partial class WeaviateClientBuilder
             _queryTimeout,
             _retryPolicy,
             _customHandlers.Count > 0 ? _customHandlers.ToArray() : null
-        ).Client(_httpMessageHandler);
+        );
+
+        return await config.BuildAsync(_httpMessageHandler);
     }
 
-    public static implicit operator WeaviateClient(WeaviateClientBuilder builder) =>
-        builder.Build();
+    /// <summary>
+    /// Synchronous build method - deprecated. Use BuildAsync() instead.
+    /// </summary>
+    [Obsolete(
+        "Use BuildAsync() instead. Synchronous initialization can cause blocking issues.",
+        false
+    )]
+    public WeaviateClient Build()
+    {
+        var loggerFactory = LoggerFactory.Create(builder => builder.AddSimpleConsole());
+        var logger = loggerFactory.CreateLogger<WeaviateClient>();
+
+        var config = new ClientConfiguration(
+            _restEndpoint,
+            _restPath,
+            _grpcEndpoint,
+            _grpcPath,
+            _restPort,
+            _grpcPort,
+            _useSsl,
+            _headers.Count > 0 ? new Dictionary<string, string>(_headers) : null,
+            _credentials,
+            _defaultTimeout,
+            _initTimeout,
+            _dataTimeout,
+            _queryTimeout,
+            _retryPolicy,
+            _customHandlers.Count > 0 ? _customHandlers.ToArray() : null
+        );
+
+        // Initialize token service synchronously
+        var tokenService = ClientConfiguration.InitializeTokenServiceSync(config);
+
+        // Create REST client
+        var restClient = WeaviateClient.CreateRestClient(
+            config,
+            _httpMessageHandler,
+            tokenService,
+            logger
+        );
+
+        // Fetch metadata synchronously (blocking)
+        ulong? maxMessageSize = null;
+        try
+        {
+            var metaDto = restClient.GetMeta(CancellationToken.None).GetAwaiter().GetResult();
+            if (metaDto?.GrpcMaxMessageSize is not null)
+            {
+                maxMessageSize = Convert.ToUInt64(metaDto.GrpcMaxMessageSize);
+            }
+        }
+        catch
+        {
+            // If metadata fetch fails, use defaults
+        }
+
+        // Create gRPC client with metadata
+        var grpcClient = WeaviateClient.CreateGrpcClient(config, tokenService, maxMessageSize);
+
+        // Return the client with pre-built services
+        return new WeaviateClient(config, restClient, grpcClient, logger);
+    }
+
+    public static implicit operator Task<WeaviateClient>(WeaviateClientBuilder builder) =>
+        builder.BuildAsync();
 }

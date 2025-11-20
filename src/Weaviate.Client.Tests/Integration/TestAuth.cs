@@ -74,9 +74,9 @@ public class TestAuth : IntegrationTests
     {
         Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_CC}"));
 
-        var client = Assert.ThrowsAny<WeaviateServerException>(() =>
+        await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
         {
-            Connect.Local(hostname: "localhost", restPort: OKTA_PORT_CC);
+            await Connect.Local(hostname: "localhost", restPort: OKTA_PORT_CC);
         });
     }
 
@@ -91,7 +91,7 @@ public class TestAuth : IntegrationTests
 
         Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_CC}"));
 
-        var client = Connect.Local(
+        var client = await Connect.Local(
             hostname: "localhost",
             restPort: OKTA_PORT_CC,
             credentials: Auth.ClientCredentials(clientSecret, "some_scope"),
@@ -114,7 +114,7 @@ public class TestAuth : IntegrationTests
 
         Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_USERS}"));
 
-        var client = Connect.Local(
+        var client = await Connect.Local(
             hostname: "localhost",
             restPort: OKTA_PORT_USERS,
             credentials: Auth.ClientPassword(
@@ -135,7 +135,7 @@ public class TestAuth : IntegrationTests
     {
         Assert.False(await IsAuthEnabled($"localhost:{ANON_PORT}"));
 
-        var client = Connect.Local(
+        var client = await Connect.Local(
             hostname: "localhost",
             restPort: ANON_PORT,
             credentials: Auth.ClientPassword(
@@ -167,7 +167,7 @@ public class TestAuth : IntegrationTests
             refreshToken: token.RefreshToken ?? ""
         );
 
-        var client = Connect.Local(
+        var client = await Connect.Local(
             hostname: "localhost",
             restPort: OKTA_PORT_USERS,
             credentials: auth,
@@ -195,7 +195,7 @@ public class TestAuth : IntegrationTests
             refreshToken: "" // No refresh token provided
         );
 
-        var client = Connect.Local(
+        var client = await Connect.Local(
             hostname: "localhost",
             restPort: OKTA_PORT_USERS,
             credentials: auth,

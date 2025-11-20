@@ -54,7 +54,7 @@ class Program
         // Use the C# client to store all cats with a cat class
         Console.WriteLine("Cats to store: " + cats.Count);
 
-        WeaviateClient weaviate = Connect.Local();
+        WeaviateClient weaviate = await Connect.Local();
 
         var collection = weaviate.Collections.Use<Cat>("Cat");
 
