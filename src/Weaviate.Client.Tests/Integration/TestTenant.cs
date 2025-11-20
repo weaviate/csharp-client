@@ -35,7 +35,8 @@ public partial class TenantTests : IntegrationTests
         var tenant2Collection = collectionClient.WithTenant("tenant2");
         var items = Enumerable.Range(0, (int)(howMany * 2)).Select(x => new { }).ToArray();
         var result = await tenant2Collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(items)
+            BatchInsertRequest.Create<object>(items),
+            TestContext.Current.CancellationToken
         );
 
         Assert.Equal(0, result.Count(r => r.Error != null));
@@ -131,7 +132,8 @@ public partial class TenantTests : IntegrationTests
                         new { Name = "some other name" },
                         _reusableUuids[0]
                     ),
-                ]
+                ],
+                TestContext.Current.CancellationToken
             )
         ).ToList();
 

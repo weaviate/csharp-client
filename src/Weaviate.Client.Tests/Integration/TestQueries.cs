@@ -249,7 +249,7 @@ public class TestQueries : IntegrationTests
         );
 
         var result = await collection.Data.InsertMany(
-            new (object, Guid)[]
+            new (object, Guid id)[]
             {
                 (new { text = "John Doe" }, id: _reusableUuids[0]),
                 (new { text = "Jane Doe" }, id: _reusableUuids[1]),

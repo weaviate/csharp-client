@@ -155,7 +155,7 @@ internal partial class WeaviateGrpcClient
         Aggregate.GroupBy? groupBy,
         bool totalCount,
         string? tenant,
-        IEnumerable<Aggregate.Metric> metrics,
+        IEnumerable<Aggregate.Metric>? metrics = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -185,7 +185,7 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
-        IEnumerable<Aggregate.Metric> metrics,
+        IEnumerable<Aggregate.Metric>? metrics,
         CancellationToken cancellationToken = default
     )
     {
@@ -246,7 +246,7 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
-        IEnumerable<Aggregate.Metric> metrics,
+        IEnumerable<Aggregate.Metric>? metrics,
         CancellationToken cancellationToken = default
     )
     {
@@ -279,7 +279,7 @@ internal partial class WeaviateGrpcClient
         uint? objectLimit,
         bool totalCount,
         string? tenant,
-        IEnumerable<Aggregate.Metric> metrics,
+        IEnumerable<Aggregate.Metric>? metrics,
         CancellationToken cancellationToken = default
     )
     {
@@ -341,7 +341,7 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
-        IEnumerable<Aggregate.Metric> metrics,
+        IEnumerable<Aggregate.Metric>? metrics,
         CancellationToken cancellationToken = default
     )
     {
@@ -385,7 +385,7 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
-        IEnumerable<Aggregate.Metric> metrics,
+        IEnumerable<Aggregate.Metric>? metrics,
         CancellationToken cancellationToken = default
     )
     {
