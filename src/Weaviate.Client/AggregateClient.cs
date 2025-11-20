@@ -52,7 +52,7 @@ public partial class AggregateClient
             null, // No GroupByRequest for OverAll
             totalCount,
             tenant ?? _collectionClient.Tenant,
-            metrics,
+            metrics ?? [],
             cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
