@@ -51,7 +51,7 @@ public partial class AggregatesTests : IntegrationTests
         );
 
         var result = await collectionClient.Aggregate.OverAll(
-            metrics: new[] { Metrics.ForProperty("text").Text(count: true) },
+            metrics: [Metrics.ForProperty("text").Text(count: true)],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -79,7 +79,7 @@ public partial class AggregatesTests : IntegrationTests
         );
 
         var result = await collectionClient.Aggregate.OverAll(
-            metrics: new[] { Metrics.ForProperty("text").Text(minOccurrences: 1) },
+            metrics: [Metrics.ForProperty("text").Text(minOccurrences: 1)],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -109,7 +109,7 @@ public partial class AggregatesTests : IntegrationTests
 
         var result = await collectionClient.Aggregate.OverAll(
             groupBy: new Aggregate.GroupBy("text", 2),
-            metrics: Metrics.ForProperty("text").Text(count: true),
+            metrics: [Metrics.ForProperty("text").Text(count: true)],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -129,7 +129,7 @@ public partial class AggregatesTests : IntegrationTests
 
         var result = await collectionClient.Aggregate.OverAll(
             groupBy: new Aggregate.GroupBy("text", 2),
-            metrics: Metrics.ForProperty("text").Text(count: true),
+            metrics: [Metrics.ForProperty("text").Text(count: true)],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -228,10 +228,7 @@ public partial class AggregatesTests : IntegrationTests
 
         var result = await collectionClient.Aggregate.OverAll(
             filters: filter,
-            metrics: new[]
-            {
-                Metrics.ForProperty("text").Text(count: true, topOccurrencesValue: true),
-            },
+            metrics: [Metrics.ForProperty("text").Text(count: true, topOccurrencesValue: true)],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -537,11 +534,11 @@ public partial class AggregatesTests : IntegrationTests
         // Group by "text"
         var resultByText = await collectionClient.Aggregate.OverAll(
             groupBy: "text", // shorthand for new Aggregate.GroupBy("text")
-            metrics: new[]
-            {
+            metrics:
+            [
                 Metrics.ForProperty("text").Text(count: true),
                 Metrics.ForProperty("int").Integer(count: true),
-            },
+            ],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -557,11 +554,11 @@ public partial class AggregatesTests : IntegrationTests
         // Group by "int"
         var resultByInt = await collectionClient.Aggregate.OverAll(
             groupBy: "int", // shorthand for new Aggregate.GroupBy("int")
-            metrics: new[]
-            {
+            metrics:
+            [
                 Metrics.ForProperty("text").Text(count: true),
                 Metrics.ForProperty("int").Integer(count: true),
-            },
+            ],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -624,7 +621,7 @@ public partial class AggregatesTests : IntegrationTests
         };
 
         await collectionClient.Data.InsertMany(
-            BatchInsertRequest.Create(insertObj),
+            insertObj,
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -661,7 +658,7 @@ public partial class AggregatesTests : IntegrationTests
         };
 
         var result = await collectionClient.Aggregate.OverAll(
-            metrics: metric,
+            metrics: [metric],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -776,7 +773,7 @@ public partial class AggregatesTests : IntegrationTests
         };
 
         var result = await collectionClient.Aggregate.OverAll(
-            metrics: new[] { metric },
+            metrics: [metric],
             cancellationToken: TestContext.Current.CancellationToken
         );
 

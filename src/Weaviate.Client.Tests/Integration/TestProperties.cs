@@ -181,9 +181,7 @@ public partial class PropertyTests : IntegrationTests
         );
 
         var id = await c.Data.Insert(obj, cancellationToken: TestContext.Current.CancellationToken);
-        var idb = (await cb.Data.InsertMany(BatchInsertRequest.Create(new[] { obj })))
-            .First()
-            .ID!.Value;
+        var idb = (await cb.Data.InsertMany(BatchInsertRequest.Create([obj]))).First().ID!.Value;
 
         var retrieved = await c.Query.FetchObjectByID(
             id,
@@ -386,9 +384,7 @@ public partial class PropertyTests : IntegrationTests
             properties: props
         );
 
-        var requests = BatchInsertRequest.Create(testData);
-
-        var response = await c.Data.InsertMany(requests);
+        var response = await c.Data.InsertMany(testData);
 
         // 3. Retrieve the object and confirm all properties match
         foreach (var r in response)

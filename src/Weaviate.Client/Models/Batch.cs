@@ -23,18 +23,20 @@ public static class BatchInsertRequest
         return new BatchInsertRequest<TData>(data, id, vectors, references, tenant);
     }
 
-    public static BatchInsertRequest<TData>[] Create<TData>(params TData[] data)
+    public static BatchInsertRequest<TData>[] Create<TData>(IEnumerable<TData> data)
     {
         return data.Select(d => new BatchInsertRequest<TData>(d)).ToArray();
     }
 
-    public static BatchInsertRequest<TData>[] Create<TData>(params (TData data, Guid id)[] requests)
+    public static BatchInsertRequest<TData>[] Create<TData>(
+        IEnumerable<(TData data, Guid id)> requests
+    )
     {
         return requests.Select(r => new BatchInsertRequest<TData>(r.data, r.id)).ToArray();
     }
 
     public static BatchInsertRequest<TData>[] Create<TData>(
-        params (TData data, IEnumerable<ObjectReference>? references)[] requests
+        IEnumerable<(TData data, IEnumerable<ObjectReference>? references)> requests
     )
     {
         return requests
@@ -43,7 +45,7 @@ public static class BatchInsertRequest
     }
 
     public static BatchInsertRequest<TData>[] Create<TData>(
-        params (TData data, Vectors vectors)[] requests
+        IEnumerable<(TData data, Vectors vectors)> requests
     )
     {
         return requests

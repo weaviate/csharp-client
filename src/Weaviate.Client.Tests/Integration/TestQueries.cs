@@ -46,10 +46,7 @@ public class TestQueries : IntegrationTests
             },
         };
 
-        await collection.Data.InsertMany(
-            BatchInsertRequest.Create(testData),
-            TestContext.Current.CancellationToken
-        );
+        await collection.Data.InsertMany(testData, TestContext.Current.CancellationToken);
 
         // Act
         var dataDesc = await collection.Query.FetchObjects(
@@ -164,7 +161,7 @@ public class TestQueries : IntegrationTests
         // Insert data
         await collection.Data.InsertMany(
             BatchInsertRequest.Create<object>(
-                new[] { new { text = "John Doe" }, new { text = "Jane Doe" } }
+                [new { text = "John Doe" }, new { text = "Jane Doe" }]
             ),
             TestContext.Current.CancellationToken
         );
@@ -252,7 +249,7 @@ public class TestQueries : IntegrationTests
         );
 
         var result = await collection.Data.InsertMany(
-            new[]
+            new (object, Guid)[]
             {
                 (new { text = "John Doe" }, id: _reusableUuids[0]),
                 (new { text = "Jane Doe" }, id: _reusableUuids[1]),

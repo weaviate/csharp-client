@@ -147,9 +147,7 @@ public partial class SearchTests : IntegrationTests
 
         var res = await collection.Data.InsertMany(
             BatchInsertRequest.Create<object>(
-                new { Name = "test" },
-                new { Name = "another" },
-                new { Name = "test" }
+                [new { Name = "test" }, new { Name = "another" }, new { Name = "test" }]
             ),
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -181,9 +179,7 @@ public partial class SearchTests : IntegrationTests
 
         var res = await collection.Data.InsertMany(
             BatchInsertRequest.Create<object>(
-                new { Name = "test" },
-                new { Name = "another" },
-                new { Name = "test" }
+                [new { Name = "test" }, new { Name = "another" }, new { Name = "test" }]
             ),
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -212,9 +208,7 @@ public partial class SearchTests : IntegrationTests
 
         var res = await collection.Data.InsertMany(
             BatchInsertRequest.Create<object>(
-                new { name = "banana" },
-                new { name = "fruit" },
-                new { name = "car" }
+                [new { name = "banana" }, new { name = "fruit" }, new { name = "car" }]
             ),
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -814,7 +808,7 @@ public partial class SearchTests : IntegrationTests
             vectors: new[] { 1f, 0f, 0f, 0f },
             maxVectorDistance: 0.5f,
             targetVector: "default",
-            metrics: Metrics.ForProperty("name").Text(count: true),
+            metrics: [Metrics.ForProperty("name").Text(count: true)],
             cancellationToken: TestContext.Current.CancellationToken
         );
 

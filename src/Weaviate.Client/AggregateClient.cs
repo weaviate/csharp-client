@@ -43,7 +43,7 @@ public partial class AggregateClient
         Filter? filters = null,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateOverAll(
@@ -75,7 +75,7 @@ public partial class AggregateClient
         Filter? filters = null,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateOverAll(
@@ -117,7 +117,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearVector(
@@ -162,7 +162,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearVector(
@@ -213,7 +213,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearText(
@@ -264,7 +264,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearText(
@@ -317,7 +317,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateHybrid(
@@ -373,7 +373,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateHybrid(
@@ -421,7 +421,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearObject(
@@ -468,7 +468,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearObject(
@@ -513,7 +513,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearMedia(
@@ -561,7 +561,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearMedia(
@@ -609,7 +609,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearMedia(
@@ -659,7 +659,7 @@ public partial class AggregateClient
         bool totalCount = true,
         string? tenant = null,
         CancellationToken cancellationToken = default,
-        params Aggregate.Metric[] metrics
+        IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearMedia(

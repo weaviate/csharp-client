@@ -89,7 +89,7 @@ public partial class BatchTests : IntegrationTests
         var batchReturn1 = await collection.Data.ReferenceAddMany(
             Enumerable
                 .Range(0, numObjects)
-                .Select(i => new DataReference(uuidsFrom[i], "ref", uuidsTo[i]))
+                .Select(i => new DataReference(uuidsFrom[i], "ref", [uuidsTo[i]]))
                 .ToArray(),
             TestContext.Current.CancellationToken
         );
@@ -99,7 +99,7 @@ public partial class BatchTests : IntegrationTests
         var batchReturn2 = await collection.Data.ReferenceAddMany(
             Enumerable
                 .Range(0, numObjects)
-                .Select(i => new DataReference(uuidsFrom[i], "ref", uuidsTo.Take(3).ToArray()))
+                .Select(i => new DataReference(uuidsFrom[i], "ref", [.. uuidsTo.Take(3)]))
                 .ToArray(),
             TestContext.Current.CancellationToken
         );

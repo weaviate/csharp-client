@@ -17,7 +17,7 @@ internal partial class WeaviateRestClient
     {
         var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
 
-        var beacons = ObjectHelper.MakeBeacons(to);
+        var beacons = ObjectHelper.MakeBeacons([to]);
         var reference = beacons.First();
 
         var response = await _httpClient.PostAsJsonAsync(
@@ -85,7 +85,7 @@ internal partial class WeaviateRestClient
     {
         var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
 
-        var beacons = ObjectHelper.MakeBeacons(to);
+        var beacons = ObjectHelper.MakeBeacons([to]);
         var reference = beacons.First();
 
         var request = new HttpRequestMessage(HttpMethod.Delete, path);

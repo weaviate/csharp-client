@@ -344,7 +344,7 @@ public partial class BatchTests
                         [
                             BatchInsertRequest.Create<object>(
                                 new { Name = "Name 5" },
-                                references: [new("ref", _reusableUuids[1])]
+                                references: [new("ref", [_reusableUuids[1]])]
                             ),
                         ],
                     ]
@@ -376,7 +376,7 @@ public partial class BatchTests
                         [
                             BatchInsertRequest.Create<object>(
                                 new { Name = "Name 5" },
-                                references: [new("ref", _reusableUuids[1], _reusableUuids[2])]
+                                references: [new("ref", [_reusableUuids[1], _reusableUuids[2]])]
                             ),
                         ],
                     ]
@@ -408,18 +408,18 @@ public partial class BatchTests
                         [
                             BatchInsertRequest.Create<object>(
                                 new { Name = "Name 5" },
-                                references: [new("ref", _reusableUuids[1])]
+                                references: [new("ref", [_reusableUuids[1]])]
                             ),
                             BatchInsertRequest.Create<object>(
                                 new { Name = "Name 6" },
-                                references: [new("ref2", _reusableUuids[2])]
+                                references: [new("ref2", [_reusableUuids[2]])]
                             ),
                             BatchInsertRequest.Create<object>(
                                 new { Name = "Name 7" },
                                 references:
                                 [
-                                    new("ref", _reusableUuids[1]),
-                                    new("ref2", _reusableUuids[2]),
+                                    new("ref", [_reusableUuids[1]]),
+                                    new("ref2", [_reusableUuids[2]]),
                                 ]
                             ),
                         ],

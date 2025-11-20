@@ -13,7 +13,7 @@ public partial class BasicTests
         );
 
         await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(new { Name = "Name 1" }, new { Name = "Name 2" })
+            BatchInsertRequest.Create<object>([new { Name = "Name 1" }, new { Name = "Name 2" }])
         );
 
         var names = new List<string>();
