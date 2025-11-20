@@ -5,14 +5,14 @@ using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 
-public class DataClient<TData>
+public class DataClient
 {
-    private readonly CollectionClient<TData> _collectionClient;
+    private readonly CollectionClient _collectionClient;
 
     private WeaviateClient _client => _collectionClient.Client;
     private string _collectionName => _collectionClient.Name;
 
-    internal DataClient(CollectionClient<TData> collectionClient)
+    internal DataClient(CollectionClient collectionClient)
     {
         _collectionClient = collectionClient;
     }
@@ -44,7 +44,7 @@ public class DataClient<TData>
     }
 
     public async Task<Guid> Insert(
-        TData data,
+        object data,
         Guid? id = null,
         Models.Vectors? vectors = null,
         OneOrManyOf<ObjectReference>? references = null,
@@ -78,7 +78,7 @@ public class DataClient<TData>
 
     public async Task Replace(
         Guid id,
-        TData data,
+        object data,
         Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         string? tenant = null,
@@ -109,33 +109,33 @@ public class DataClient<TData>
     }
 
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<TData> data,
+        IEnumerable<object> data,
         CancellationToken cancellationToken = default
     )
     {
         return await InsertMany(
-            data.Select(r => BatchInsertRequest.Create<TData>(r)),
+            data.Select(r => BatchInsertRequest.Create(r)),
             cancellationToken
         );
     }
 
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(TData, Guid id)> requests,
+        IEnumerable<(object, Guid id)> requests,
         CancellationToken cancellationToken = default
-    ) => await InsertMany(BatchInsertRequest.Create<TData>(requests), cancellationToken);
+    ) => await InsertMany(BatchInsertRequest.Create(requests), cancellationToken);
 
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(TData, Models.Vectors vectors)> requests,
+        IEnumerable<(object, Models.Vectors vectors)> requests,
         CancellationToken cancellationToken = default
-    ) => await InsertMany(BatchInsertRequest.Create<TData>(requests), cancellationToken);
+    ) => await InsertMany(BatchInsertRequest.Create(requests), cancellationToken);
 
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(TData data, IEnumerable<ObjectReference>? references)> requests,
+        IEnumerable<(object data, IEnumerable<ObjectReference>? references)> requests,
         CancellationToken cancellationToken = default
-    ) => await InsertMany(BatchInsertRequest.Create<TData>(requests), cancellationToken);
+    ) => await InsertMany(BatchInsertRequest.Create(requests), cancellationToken);
 
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<BatchInsertRequest<TData>[]> requestBatches,
+        IEnumerable<BatchInsertRequest<object>[]> requestBatches,
         CancellationToken cancellationToken = default
     )
     {
@@ -151,7 +151,7 @@ public class DataClient<TData>
     }
 
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<BatchInsertRequest<TData>> requests,
+        IEnumerable<BatchInsertRequest<object>> requests,
         CancellationToken cancellationToken = default
     )
     {
