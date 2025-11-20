@@ -22,6 +22,18 @@ function compose_down_all {
   exec_all down --remove-orphans
 }
 
+function exec_dc {
+	docker compose -f "docker-compose.yml" "$@"
+}
+
+function compose_up {
+  exec_dc up -d --quiet-pull
+}
+
+function compose_down {
+  exec_dc down --remove-orphans
+}
+
 function all_weaviate_ports {
   # Include single-node default and multi-node cluster compose exposed REST ports
   echo "8080 8087 8088 8089"

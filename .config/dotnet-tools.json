@@ -15,6 +15,13 @@
         "nswag"
       ],
       "rollForward": false
+    },
+    "dotnet-trx": {
+      "version": "1.0.1",
+      "commands": [
+        "trx"
+      ],
+      "rollForward": false
     }
   }
 }

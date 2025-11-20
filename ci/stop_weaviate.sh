@@ -9,5 +9,5 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 # shellcheck disable=SC1091
 source compose.sh
 
-compose_down_all
+compose_down
 rm -rf weaviate-data || true
