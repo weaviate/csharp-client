@@ -9,8 +9,12 @@ using Xunit;
 public class TestAliases : IntegrationTests
 {
     public TestAliases()
-        : base()
+        : base() { }
+
+    public override async ValueTask InitializeAsync()
     {
+        await base.InitializeAsync();
+
         RequireVersion("1.32.0");
     }
 
@@ -24,6 +28,9 @@ public class TestAliases : IntegrationTests
         );
 
         var aliasName = MakeUniqueCollectionName<object>("TestAlias");
+
+        // In case the alias already exists, delete it
+        await _weaviate.Alias.Delete(aliasName, TestContext.Current.CancellationToken);
 
         // Act
         var createdAlias = await collection.Alias.Add(
