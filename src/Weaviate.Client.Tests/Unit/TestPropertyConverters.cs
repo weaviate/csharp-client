@@ -48,7 +48,8 @@ public class TestPropertyConverters
         var input = new object?[] { "a", "b", "c" };
 
         var rest = converter.ToRestArray(input);
-        Assert.IsType<object?[]>(rest);
+        Assert.IsType<string?[]>(rest);
+        Assert.Equal(3, ((string?[])rest).Length);
 
         var grpc = converter.ToGrpcArray(input);
         Assert.Equal(3, grpc.Values.Count);
@@ -59,13 +60,13 @@ public class TestPropertyConverters
     #region IntPropertyConverter Tests
 
     [Fact]
-    public void IntConverter_ToRest_HandlesVariousIntTypes()
+    public void IntConverter_ToRest_ConvertsAllToLong()
     {
         var converter = new IntPropertyConverter();
-        Assert.Equal(42, converter.ToRest(42));
+        Assert.Equal(42L, converter.ToRest(42));
         Assert.Equal(42L, converter.ToRest(42L));
-        Assert.Equal(42, converter.ToRest((short)42));
-        Assert.Equal(42, converter.ToRest((byte)42));
+        Assert.Equal(42L, converter.ToRest((short)42));
+        Assert.Equal(42L, converter.ToRest((byte)42));
     }
 
     [Fact]
@@ -78,22 +79,36 @@ public class TestPropertyConverters
     }
 
     [Fact]
-    public void IntConverter_FromRest_ReturnsLong()
+    public void IntConverter_FromRest_ReturnsCorrectType()
     {
         var converter = new IntPropertyConverter();
-        var result = converter.FromRest(42.0, typeof(int));
-        Assert.IsType<long>(result);
-        Assert.Equal(42L, result);
+
+        // When target type is int, returns int
+        var resultInt = converter.FromRest(42.0, typeof(int));
+        Assert.IsType<int>(resultInt);
+        Assert.Equal(42, resultInt);
+
+        // When target type is long, returns long
+        var resultLong = converter.FromRest(42.0, typeof(long));
+        Assert.IsType<long>(resultLong);
+        Assert.Equal(42L, resultLong);
     }
 
     [Fact]
-    public void IntConverter_FromGrpc_ReturnsLong()
+    public void IntConverter_FromGrpc_ReturnsCorrectType()
     {
         var converter = new IntPropertyConverter();
         var grpcValue = Value.ForNumber(42);
-        var result = converter.FromGrpc(grpcValue, typeof(int));
-        Assert.IsType<long>(result);
-        Assert.Equal(42L, result);
+
+        // When target type is int, returns int
+        var resultInt = converter.FromGrpc(grpcValue, typeof(int));
+        Assert.IsType<int>(resultInt);
+        Assert.Equal(42, resultInt);
+
+        // When target type is long, returns long
+        var resultLong = converter.FromGrpc(grpcValue, typeof(long));
+        Assert.IsType<long>(resultLong);
+        Assert.Equal(42L, resultLong);
     }
 
     #endregion
@@ -152,12 +167,12 @@ public class TestPropertyConverters
     #region DatePropertyConverter Tests
 
     [Fact]
-    public void DateConverter_ToRest_ReturnsIso8601String()
+    public void DateConverter_ToRest_ReturnsRoundTripFormat()
     {
         var converter = new DatePropertyConverter();
         var date = new DateTime(2024, 1, 15, 10, 30, 0, DateTimeKind.Utc);
         var result = converter.ToRest(date);
-        Assert.Equal("2024-01-15T10:30:00Z", result);
+        Assert.Equal("2024-01-15T10:30:00.0000000Z", result);
     }
 
     [Fact]
@@ -238,16 +253,16 @@ public class TestPropertyConverters
     #region GeoPropertyConverter Tests
 
     [Fact]
-    public void GeoConverter_ToRest_ReturnsDictionary()
+    public void GeoConverter_ToRest_ReturnsDto()
     {
         var converter = new GeoPropertyConverter();
         var geo = new GeoCoordinate(52.52f, 13.405f);
         var result = converter.ToRest(geo);
 
-        Assert.IsType<Dictionary<string, object>>(result);
-        var dict = (Dictionary<string, object>)result!;
-        Assert.Equal(52.52f, dict["latitude"]);
-        Assert.Equal(13.405f, dict["longitude"]);
+        Assert.IsType<Rest.Dto.GeoCoordinates>(result);
+        var dto = (Rest.Dto.GeoCoordinates)result!;
+        Assert.Equal(52.52, dto.Latitude!.Value, 2);
+        Assert.Equal(13.405, dto.Longitude!.Value, 2);
     }
 
     [Fact]
@@ -275,16 +290,16 @@ public class TestPropertyConverters
     #region PhonePropertyConverter Tests
 
     [Fact]
-    public void PhoneConverter_ToRest_ReturnsDictionary()
+    public void PhoneConverter_ToRest_ReturnsDto()
     {
         var converter = new PhonePropertyConverter();
         var phone = new PhoneNumber("+49 123 456789") { DefaultCountry = "DE" };
         var result = converter.ToRest(phone);
 
-        Assert.IsType<Dictionary<string, object?>>(result);
-        var dict = (Dictionary<string, object?>)result!;
-        Assert.Equal("+49 123 456789", dict["input"]);
-        Assert.Equal("DE", dict["defaultCountry"]);
+        Assert.IsType<Rest.Dto.PhoneNumber>(result);
+        var dto = (Rest.Dto.PhoneNumber)result!;
+        Assert.Equal("+49 123 456789", dto.Input);
+        Assert.Equal("DE", dto.DefaultCountry);
     }
 
     [Fact]
@@ -406,10 +421,10 @@ public class TestPropertyConverters
         var result = registry.SerializeToRest(obj);
 
         Assert.Equal("Test", result["name"]);
-        Assert.Equal(30, result["age"]);
+        Assert.Equal(30L, result["age"]);
         Assert.Equal(95.5, result["score"]);
         Assert.Equal(true, result["isActive"]);
-        Assert.Equal("2024-01-15T00:00:00Z", result["createdAt"]);
+        Assert.Equal("2024-01-15T00:00:00.0000000Z", result["createdAt"]);
         Assert.Equal("12345678-1234-1234-1234-123456789012", result["id"]);
     }
 
