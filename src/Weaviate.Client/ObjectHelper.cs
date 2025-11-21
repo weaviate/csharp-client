@@ -58,7 +58,7 @@ internal class ObjectHelper
     public static string MakeBeaconSource(string collection, Guid fromUuid, string fromProperty) =>
         $"weaviate://localhost/{collection}/{fromUuid}/{fromProperty}";
 
-    public static IDictionary<string, string>[] MakeBeacons(params Guid[] guids)
+    public static IDictionary<string, string>[] MakeBeacons(IEnumerable<Guid> guids)
     {
         return
         [
@@ -431,11 +431,31 @@ internal class ObjectHelper
 
     internal static V1.BatchObject.Types.Properties BuildBatchProperties<TProps>(TProps data)
     {
+        return BuildBatchProperties(data, []);
+    }
+
+    internal static V1.BatchObject.Types.Properties BuildBatchProperties<TProps>(
+        TProps data,
+        HashSet<int> visitedObjects
+    )
+    {
         var props = new V1.BatchObject.Types.Properties();
 
         if (data is null)
         {
             return props;
+        }
+
+        // Check for circular references
+        if (!data.GetType().IsValueType)
+        {
+            var objectHash = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(data);
+            if (visitedObjects.Contains(objectHash))
+            {
+                // Circular reference detected, return empty properties
+                return props;
+            }
+            visitedObjects.Add(objectHash);
         }
 
         Google.Protobuf.WellKnownTypes.Struct? nonRefProps = null;
@@ -511,7 +531,10 @@ internal class ObjectHelper
                                 else
                                 {
                                     structValue.Fields[nestedPropName] = ConvertToProtoValue(
-                                        BuildBatchProperties(nestedVal).NonRefProperties
+                                        BuildBatchProperties(
+                                            nestedVal,
+                                            visitedObjects
+                                        ).NonRefProperties
                                     );
                                 }
                             }
@@ -708,7 +731,7 @@ internal class ObjectHelper
             if (!propType.IsNativeType())
             {
                 nonRefProps ??= new();
-                var nestedStruct = BuildBatchProperties(value).NonRefProperties;
+                var nestedStruct = BuildBatchProperties(value, visitedObjects).NonRefProperties;
                 if (nestedStruct != null)
                 {
                     nonRefProps.Fields.Add(

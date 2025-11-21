@@ -19,7 +19,12 @@ public class TestRbacUsers : IntegrationTests
 
     public override ICredentials? Credentials => Auth.ApiKey(ADMIN_API_KEY);
 
-    public TestRbacUsers() => RequireVersion("1.30.0");
+    public override async ValueTask InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        RequireVersion("1.30.0");
+    }
 
     [Fact]
     public async Task Test_OwnUser()
@@ -71,7 +76,7 @@ public class TestRbacUsers : IntegrationTests
             Assert.True(user.Active);
 
             // Verify we can connect with the new user's API key
-            var newUserClient = Connect.Local(
+            var newUserClient = await Connect.Local(
                 hostname: "localhost",
                 restPort: RestPort,
                 grpcPort: GrpcPort,
@@ -128,7 +133,7 @@ public class TestRbacUsers : IntegrationTests
             );
 
             // Verify old key works
-            var oldKeyClient = Connect.Local(
+            var oldKeyClient = await Connect.Local(
                 hostname: "localhost",
                 restPort: RestPort,
                 grpcPort: GrpcPort,
@@ -149,7 +154,7 @@ public class TestRbacUsers : IntegrationTests
             Assert.NotEqual(apiKeyOld, apiKeyNew);
 
             // Verify new key works
-            var newKeyClient = Connect.Local(
+            var newKeyClient = await Connect.Local(
                 hostname: "localhost",
                 restPort: RestPort,
                 grpcPort: GrpcPort,
@@ -257,7 +262,7 @@ public class TestRbacUsers : IntegrationTests
             // Old key should not work anymore (capture exception from client construction + call)
             await Assert.ThrowsAnyAsync<WeaviateException>(async () =>
             {
-                var oldKeyClient = Connect.Local(
+                var oldKeyClient = await Connect.Local(
                     hostname: "localhost",
                     restPort: RestPort,
                     grpcPort: GrpcPort,
@@ -276,7 +281,7 @@ public class TestRbacUsers : IntegrationTests
             // Old key still shouldn't work (revoked)
             await Assert.ThrowsAnyAsync<WeaviateException>(async () =>
             {
-                var oldKeyClient = Connect.Local(
+                var oldKeyClient = await Connect.Local(
                     hostname: "localhost",
                     restPort: RestPort,
                     grpcPort: GrpcPort,
@@ -293,7 +298,7 @@ public class TestRbacUsers : IntegrationTests
             );
 
             // New key should work
-            var newKeyClient = Connect.Local(
+            var newKeyClient = await Connect.Local(
                 hostname: "localhost",
                 restPort: RestPort,
                 grpcPort: GrpcPort,

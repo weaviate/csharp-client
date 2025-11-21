@@ -1,5 +1,4 @@
 using Weaviate.Client.Models;
-using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
 
@@ -52,7 +51,10 @@ public class ClusterClient
         var operationId = response.Id;
 
         // Fetch initial status
-        var initialDetails = await _client.ReplicationDetailsAsync(operationId);
+        var initialDetails = await _client.ReplicationDetailsAsync(
+            operationId,
+            cancellationToken: cancellationToken
+        );
         if (initialDetails is null)
         {
             throw new WeaviateClientException(
@@ -64,9 +66,12 @@ public class ClusterClient
 
         return new ReplicationOperationTracker(
             initialOperation,
-            async () =>
+            async (ct) =>
             {
-                var details = await _client.ReplicationDetailsAsync(operationId);
+                var details = await _client.ReplicationDetailsAsync(
+                    operationId,
+                    cancellationToken: ct == default ? cancellationToken : ct
+                );
                 return details is null
                     ? throw new WeaviateNotFoundException(
                         ResourceType.Replication,
@@ -74,7 +79,11 @@ public class ClusterClient
                     )
                     : ReplicationsClient.ToModel(details);
             },
-            async () => await _client.CancelReplicationAsync(operationId)
+            async (ct) =>
+                await _client.CancelReplicationAsync(
+                    operationId,
+                    ct == default ? cancellationToken : ct
+                )
         );
     }
 

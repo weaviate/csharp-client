@@ -20,29 +20,32 @@ public partial class CollectionAliasClient : BaseCollectionClient
     /// Create a new alias pointing to this collection
     /// </summary>
     /// <param name="aliasName">The name of the alias to create</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>The created alias</returns>
-    public async Task<Alias> Add(string aliasName)
+    public async Task<Alias> Add(string aliasName, CancellationToken cancellationToken = default)
     {
         var alias = new Alias(aliasName, CollectionName);
-        return await Client.Alias.Add(alias);
+        return await Client.Alias.Add(alias, cancellationToken);
     }
 
     /// <summary>
     /// List all aliases pointing to this collection
     /// </summary>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>Enumerable of all aliases pointing to this collection</returns>
-    public async Task<IEnumerable<Alias>> List()
+    public async Task<IEnumerable<Alias>> List(CancellationToken cancellationToken = default)
     {
-        return await Client.Alias.List(CollectionName);
+        return await Client.Alias.List(CollectionName, cancellationToken);
     }
 
     /// <summary>
     /// Claim an existing alias by updating it to point to this collection
     /// </summary>
     /// <param name="aliasName">The name of the alias to claim</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>The updated alias</returns>
-    public async Task<Alias> Claim(string aliasName)
+    public async Task<Alias> Claim(string aliasName, CancellationToken cancellationToken = default)
     {
-        return await Client.Alias.Update(aliasName, CollectionName);
+        return await Client.Alias.Update(aliasName, CollectionName, cancellationToken);
     }
 }

@@ -1,8 +1,3 @@
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace Weaviate.Client.Tests.Integration
 {
     public class WellKnownIntegrationTests : IntegrationTests
@@ -40,7 +35,10 @@ namespace Weaviate.Client.Tests.Integration
             var client = _weaviate;
 
             // Act
-            await client.WaitUntilReady(TimeSpan.FromSeconds(10), CancellationToken.None);
+            await client.WaitUntilReady(
+                TimeSpan.FromSeconds(10),
+                TestContext.Current.CancellationToken
+            );
 
             // Assert
             // If no exception is thrown, the test passes.

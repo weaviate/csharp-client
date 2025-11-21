@@ -19,6 +19,24 @@ public static class WeaviateDefaults
     public static TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
+    /// Default timeout for initialization operations (GetMeta, Live, IsReady). Default is 2 seconds.
+    /// This can be overridden per client via ClientConfiguration.WithInitTimeout().
+    /// </summary>
+    public static TimeSpan InitTimeout { get; set; } = TimeSpan.FromSeconds(2);
+
+    /// <summary>
+    /// Default timeout for data operations (Insert, Delete, Update, Reference management). Default is 120 seconds.
+    /// This can be overridden per client via ClientConfiguration.WithDataTimeout().
+    /// </summary>
+    public static TimeSpan DataTimeout { get; set; } = TimeSpan.FromSeconds(120);
+
+    /// <summary>
+    /// Default timeout for query/search operations (FetchObjects, NearText, BM25, Hybrid, etc.). Default is 60 seconds.
+    /// This can be overridden per client via ClientConfiguration.WithQueryTimeout().
+    /// </summary>
+    public static TimeSpan QueryTimeout { get; set; } = TimeSpan.FromSeconds(60);
+
+    /// <summary>
     /// Default retry policy applied when a client does not specify one explicitly.
     /// </summary>
     public static RetryPolicy DefaultRetryPolicy { get; set; } = RetryPolicy.Default;
@@ -92,7 +110,10 @@ public sealed record ClientConfiguration(
     bool UseSsl = false,
     Dictionary<string, string>? Headers = null,
     ICredentials? Credentials = null,
-    TimeSpan? RequestTimeout = null,
+    TimeSpan? DefaultTimeout = null,
+    TimeSpan? InitTimeout = null,
+    TimeSpan? DataTimeout = null,
+    TimeSpan? QueryTimeout = null,
     RetryPolicy? RetryPolicy = null,
     DelegatingHandler[]? CustomHandlers = null
 )
@@ -115,8 +136,205 @@ public sealed record ClientConfiguration(
             Path = GrpcPath,
         }.Uri;
 
-    public WeaviateClient Client(HttpMessageHandler? messageHandler = null) =>
-        new(configuration: this, httpMessageHandler: messageHandler, logger: null);
+    /// <summary>
+    /// Builds a WeaviateClient asynchronously, initializing all services in the correct order.
+    /// This is the recommended way to create clients.
+    /// </summary>
+    internal async Task<WeaviateClient> BuildAsync(HttpMessageHandler? messageHandler = null)
+    {
+        var logger = LoggerFactory
+            .Create(builder => builder.AddConsole())
+            .CreateLogger<WeaviateClient>();
+
+        // Initialize token service asynchronously
+        var tokenService = await InitializeTokenService(this);
+
+        // Create REST client
+        var restClient = WeaviateClient.CreateRestClient(
+            this,
+            messageHandler,
+            tokenService,
+            logger
+        );
+
+        // Fetch metadata eagerly with init timeout - this will throw if authentication fails
+        var initTimeout = InitTimeout ?? DefaultTimeout ?? WeaviateDefaults.DefaultTimeout;
+        var metaCts = new CancellationTokenSource(initTimeout);
+        var metaDto = await restClient.GetMeta(metaCts.Token);
+        var meta = new Models.MetaInfo
+        {
+            GrpcMaxMessageSize = metaDto?.GrpcMaxMessageSize is not null
+                ? Convert.ToUInt64(metaDto.GrpcMaxMessageSize)
+                : null,
+            Hostname = metaDto?.Hostname ?? string.Empty,
+            Version =
+                Models.MetaInfo.ParseWeaviateVersion(metaDto?.Version ?? string.Empty)
+                ?? new System.Version(0, 0),
+            Modules = metaDto?.Modules?.ToDictionary() ?? [],
+        };
+
+        var maxMessageSize = meta.GrpcMaxMessageSize;
+
+        // Create gRPC client with metadata
+        var grpcClient = WeaviateClient.CreateGrpcClient(this, tokenService, maxMessageSize);
+
+        // Create and return the client with pre-built services
+        return new WeaviateClient(this, restClient, grpcClient, logger, meta);
+    }
+
+    /// <summary>
+    /// Asynchronous token service initialization.
+    /// </summary>
+    private static async Task<ITokenService?> InitializeTokenService(
+        ClientConfiguration configuration
+    )
+    {
+        if (configuration.Credentials is null)
+        {
+            return null;
+        }
+
+        if (configuration.Credentials is Auth.ApiKeyCredentials apiKey)
+        {
+            return new ApiKeyTokenService(apiKey);
+        }
+
+        var openIdConfig = await OAuthTokenService.GetOpenIdConfig(
+            configuration.RestUri.ToString()
+        );
+
+        if (!openIdConfig.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        var tokenEndpoint = openIdConfig.TokenEndpoint!;
+        var clientId = openIdConfig.ClientID!;
+
+        OAuthConfig oauthConfig = new()
+        {
+            TokenEndpoint = tokenEndpoint,
+            ClientId = clientId,
+            GrantType = configuration.Credentials switch
+            {
+                Auth.ClientCredentialsFlow => "client_credentials",
+                Auth.ClientPasswordFlow => "password",
+                Auth.BearerTokenCredentials => "bearer",
+                _ => throw new NotSupportedException("Unsupported credentials type"),
+            },
+            Scope = configuration.Credentials?.GetScopes() ?? "",
+        };
+
+        var httpClient = new HttpClient();
+
+        if (configuration.Credentials is Auth.BearerTokenCredentials bearerToken)
+        {
+            return new OAuthTokenService(httpClient, oauthConfig)
+            {
+                CurrentToken = new(
+                    bearerToken.AccessToken,
+                    bearerToken.ExpiresIn,
+                    bearerToken.RefreshToken
+                ),
+            };
+        }
+
+        if (configuration.Credentials is Auth.ClientCredentialsFlow clientCreds)
+        {
+            oauthConfig = oauthConfig with { ClientSecret = clientCreds.ClientSecret };
+        }
+        else if (configuration.Credentials is Auth.ClientPasswordFlow clientPass)
+        {
+            oauthConfig = oauthConfig with
+            {
+                Username = clientPass.Username,
+                Password = clientPass.Password,
+            };
+        }
+
+        return new OAuthTokenService(httpClient, oauthConfig);
+    }
+
+    /// <summary>
+    /// Synchronous wrapper for InitializeTokenService for use in the builder pattern.
+    /// </summary>
+    internal static ITokenService? InitializeTokenServiceSync(ClientConfiguration configuration)
+    {
+        if (configuration.Credentials is null)
+        {
+            return null;
+        }
+
+        if (configuration.Credentials is Auth.ApiKeyCredentials apiKey)
+        {
+            return new ApiKeyTokenService(apiKey);
+        }
+
+        // For OAuth credentials, we need to fetch the OpenID config synchronously
+        // This is acceptable here since it's only during initial construction
+        try
+        {
+            var openIdConfig = OAuthTokenService
+                .GetOpenIdConfig(configuration.RestUri.ToString())
+                .GetAwaiter()
+                .GetResult();
+
+            if (!openIdConfig.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var tokenEndpoint = openIdConfig.TokenEndpoint!;
+            var clientId = openIdConfig.ClientID!;
+
+            OAuthConfig oauthConfig = new()
+            {
+                TokenEndpoint = tokenEndpoint,
+                ClientId = clientId,
+                GrantType = configuration.Credentials switch
+                {
+                    Auth.ClientCredentialsFlow => "client_credentials",
+                    Auth.ClientPasswordFlow => "password",
+                    Auth.BearerTokenCredentials => "bearer",
+                    _ => throw new NotSupportedException("Unsupported credentials type"),
+                },
+                Scope = configuration.Credentials?.GetScopes() ?? "",
+            };
+
+            var httpClient = new HttpClient();
+
+            if (configuration.Credentials is Auth.BearerTokenCredentials bearerToken)
+            {
+                return new OAuthTokenService(httpClient, oauthConfig)
+                {
+                    CurrentToken = new(
+                        bearerToken.AccessToken,
+                        bearerToken.ExpiresIn,
+                        bearerToken.RefreshToken
+                    ),
+                };
+            }
+
+            if (configuration.Credentials is Auth.ClientCredentialsFlow clientCreds)
+            {
+                oauthConfig = oauthConfig with { ClientSecret = clientCreds.ClientSecret };
+            }
+            else if (configuration.Credentials is Auth.ClientPasswordFlow clientPass)
+            {
+                oauthConfig = oauthConfig with
+                {
+                    Username = clientPass.Username,
+                    Password = clientPass.Password,
+                };
+            }
+
+            return new OAuthTokenService(httpClient, oauthConfig);
+        }
+        catch
+        {
+            return null;
+        }
+    }
 };
 
 public partial class WeaviateClient : IDisposable
@@ -129,11 +347,10 @@ public partial class WeaviateClient : IDisposable
             GrpcPort = 50051,
         }
     );
-    private readonly ITokenService? _tokenService;
 
     public async Task<Models.MetaInfo> GetMeta(CancellationToken cancellationToken = default)
     {
-        var meta = await RestClient.GetMeta(cancellationToken);
+        var meta = await RestClient.GetMeta(CreateInitCancellationToken(cancellationToken));
 
         return new Models.MetaInfo
         {
@@ -150,32 +367,15 @@ public partial class WeaviateClient : IDisposable
 
     private Models.MetaInfo? _metaCache;
 
-    private async Task<Models.MetaInfo?> GetMetaCached(
-        CancellationToken cancellationToken = default
-    )
-    {
-        if (_metaCache != null)
-            return _metaCache.Value;
+    /// <summary>
+    /// Gets the server metadata that was fetched during client initialization.
+    /// This is always available and does not require network calls.
+    /// </summary>
+    public Models.MetaInfo? Meta => _metaCache;
 
-        await _metaCacheSemaphore.WaitAsync();
-        try
-        {
-            if (_metaCache == null)
-            {
-                var meta = await GetMeta(cancellationToken);
-                _metaCache = meta;
-            }
-        }
-        finally
-        {
-            _metaCacheSemaphore.Release();
-        }
-
-        return _metaCache.Value;
-    }
-
-    private readonly SemaphoreSlim _metaCacheSemaphore = new(1, 1);
-    public Models.MetaInfo? Meta => GetMetaCached().GetAwaiter().GetResult(); // Synchronous accessor unchanged; advanced usage should call GetMeta directly with a token.
+    /// <summary>
+    /// Gets the Weaviate server version from cached metadata.
+    /// </summary>
     public System.Version? WeaviateVersion => Meta?.Version;
 
     /// <summary>
@@ -183,7 +383,7 @@ public partial class WeaviateClient : IDisposable
     /// </summary>
     public Task<bool> Live(CancellationToken cancellationToken = default)
     {
-        return RestClient.LiveAsync(cancellationToken);
+        return RestClient.LiveAsync(CreateInitCancellationToken(cancellationToken));
     }
 
     /// <summary>
@@ -191,7 +391,7 @@ public partial class WeaviateClient : IDisposable
     /// </summary>
     public Task<bool> IsReady(CancellationToken cancellationToken = default)
     {
-        return RestClient.ReadyAsync(cancellationToken);
+        return RestClient.ReadyAsync(CreateInitCancellationToken(cancellationToken));
     }
 
     /// <summary>
@@ -223,16 +423,27 @@ public partial class WeaviateClient : IDisposable
 
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
 
+    /// <summary>
+    /// Creates a cancellation token with init-specific timeout configuration.
+    /// Uses InitTimeout if configured, falls back to DefaultTimeout.
+    /// </summary>
+    private CancellationToken CreateInitCancellationToken(CancellationToken userToken = default)
+    {
+        return TimeoutHelper.GetCancellationToken(
+            Configuration.InitTimeout,
+            Configuration.DefaultTimeout,
+            userToken
+        );
+    }
+
     private bool _isDisposed = false;
     private readonly ILogger<WeaviateClient> _logger = LoggerFactory
         .Create(builder => builder.AddConsole())
         .CreateLogger<WeaviateClient>();
 
-    [NotNull]
-    internal WeaviateRestClient RestClient { get; init; }
+    internal WeaviateRestClient RestClient { get; private set; } = null!;
 
-    [NotNull]
-    internal WeaviateGrpcClient GrpcClient { get; init; }
+    internal WeaviateGrpcClient GrpcClient { get; private set; } = null!;
 
     public ClientConfiguration Configuration { get; }
 
@@ -251,13 +462,72 @@ public partial class WeaviateClient : IDisposable
             || url.ToLower().Contains("weaviate.cloud");
     }
 
+    public TimeSpan? DefaultTimeout => Configuration.DefaultTimeout;
+    public TimeSpan? InitTimeout => Configuration.InitTimeout;
+    public TimeSpan? DataTimeout => Configuration.DataTimeout;
+    public TimeSpan? QueryTimeout => Configuration.QueryTimeout;
+
+    /// <summary>
+    /// Creates a WeaviateClient with the given configuration and services.
+    /// Internal method used by the builder pattern.
+    /// </summary>
+    internal WeaviateClient(
+        ClientConfiguration configuration,
+        WeaviateRestClient restClient,
+        WeaviateGrpcClient grpcClient,
+        ILogger<WeaviateClient>? logger = null,
+        Models.MetaInfo? meta = null
+    )
+    {
+        _logger = logger ?? _logger;
+        Configuration = configuration;
+        RestClient = restClient;
+        GrpcClient = grpcClient;
+        _metaCache = meta;
+
+        Cluster = new ClusterClient(RestClient);
+        Collections = new CollectionsClient(this);
+        Alias = new AliasClient(this);
+        Users = new UsersClient(this);
+        Roles = new RolesClient(this);
+        Groups = new GroupsClient(this);
+    }
+
+    /// <summary>
+    /// Creates a WeaviateClient from configuration and optional HTTP message handler.
+    /// For backward compatibility with existing code that creates clients directly.
+    /// </summary>
     public WeaviateClient(
         ClientConfiguration? configuration = null,
         HttpMessageHandler? httpMessageHandler = null,
         ILogger<WeaviateClient>? logger = null
     )
-        : this(configuration, httpMessageHandler, logger, grpcClient: null) { }
+    {
+        var config = configuration ?? DefaultOptions;
+        var loggerInstance =
+            logger
+            ?? LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<WeaviateClient>();
 
+        var restClient = CreateRestClientForPublic(config, httpMessageHandler, loggerInstance);
+        var grpcClientInstance = CreateGrpcClientForPublic(config);
+
+        // Initialize like the internal constructor
+        _logger = loggerInstance;
+        Configuration = config;
+        RestClient = restClient;
+        GrpcClient = grpcClientInstance;
+
+        Cluster = new ClusterClient(RestClient);
+        Collections = new CollectionsClient(this);
+        Alias = new AliasClient(this);
+        Users = new UsersClient(this);
+        Roles = new RolesClient(this);
+        Groups = new GroupsClient(this);
+    }
+
+    /// <summary>
+    /// Internal constructor for testing with injected gRPC client.
+    /// </summary>
     internal WeaviateClient(
         ClientConfiguration? configuration = null,
         HttpMessageHandler? httpMessageHandler = null,
@@ -265,19 +535,71 @@ public partial class WeaviateClient : IDisposable
         WeaviateGrpcClient? grpcClient = null
     )
     {
-        _logger = logger ?? _logger;
+        var config = configuration ?? DefaultOptions;
+        var loggerInstance =
+            logger
+            ?? LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<WeaviateClient>();
 
-        Configuration = configuration ?? DefaultOptions;
+        var restClient = CreateRestClientForPublic(config, httpMessageHandler, loggerInstance);
+        var grpcClientInstance = grpcClient ?? CreateGrpcClientForPublic(config);
 
-        _tokenService = InitializeTokenService().GetAwaiter().GetResult();
+        // Initialize like the internal constructor
+        _logger = loggerInstance;
+        Configuration = config;
+        RestClient = restClient;
+        GrpcClient = grpcClientInstance;
 
+        Cluster = new ClusterClient(RestClient);
+        Collections = new CollectionsClient(this);
+        Alias = new AliasClient(this);
+        Users = new UsersClient(this);
+        Roles = new RolesClient(this);
+        Groups = new GroupsClient(this);
+    }
+
+    /// <summary>
+    /// Helper to create REST client for the public constructor.
+    /// </summary>
+    private static WeaviateRestClient CreateRestClientForPublic(
+        ClientConfiguration config,
+        HttpMessageHandler? httpMessageHandler,
+        ILogger<WeaviateClient>? logger
+    )
+    {
+        var loggerInstance =
+            logger
+            ?? LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<WeaviateClient>();
+
+        var tokenService = ClientConfiguration.InitializeTokenServiceSync(config);
+        return CreateRestClient(config, httpMessageHandler, tokenService, loggerInstance);
+    }
+
+    /// <summary>
+    /// Helper to create gRPC client for the public constructor.
+    /// </summary>
+    private static WeaviateGrpcClient CreateGrpcClientForPublic(ClientConfiguration config)
+    {
+        var tokenService = ClientConfiguration.InitializeTokenServiceSync(config);
+        return CreateGrpcClient(config, tokenService);
+    }
+
+    /// <summary>
+    /// Creates a WeaviateRestClient from the given configuration.
+    /// </summary>
+    internal static WeaviateRestClient CreateRestClient(
+        ClientConfiguration config,
+        HttpMessageHandler? httpMessageHandler,
+        ITokenService? tokenService,
+        ILogger<WeaviateClient> logger
+    )
+    {
         // Base handler
         var effectiveHandler = httpMessageHandler ?? new HttpClientHandler();
 
         // Attach user-provided custom handlers (inner-most first so added order preserves intuitive wrapping)
-        if (Configuration.CustomHandlers is { Length: > 0 })
+        if (config.CustomHandlers is { Length: > 0 })
         {
-            foreach (var handler in Configuration.CustomHandlers)
+            foreach (var handler in config.CustomHandlers)
             {
                 if (handler.InnerHandler == null)
                 {
@@ -288,19 +610,19 @@ public partial class WeaviateClient : IDisposable
         }
 
         // Auth handler (inner-most before base handler) so each retry re-runs auth logic
-        if (_tokenService != null)
+        if (tokenService != null)
         {
-            effectiveHandler = new AuthenticatedHttpHandler(_tokenService)
+            effectiveHandler = new AuthenticatedHttpHandler(tokenService)
             {
                 InnerHandler = effectiveHandler,
             };
         }
 
         // Retry handler (outer-most)
-        var retryPolicy = Configuration.RetryPolicy ?? WeaviateDefaults.DefaultRetryPolicy;
+        var retryPolicy = config.RetryPolicy ?? WeaviateDefaults.DefaultRetryPolicy;
         if (retryPolicy is not null && retryPolicy.MaxRetries > 0)
         {
-            effectiveHandler = new RetryHandler(retryPolicy, _logger)
+            effectiveHandler = new RetryHandler(retryPolicy, logger)
             {
                 InnerHandler = effectiveHandler,
             };
@@ -308,121 +630,55 @@ public partial class WeaviateClient : IDisposable
 
         var httpClient = new HttpClient(effectiveHandler);
 
-        // Set request timeout
-        var timeout = Configuration.RequestTimeout ?? WeaviateDefaults.DefaultTimeout;
-        httpClient.Timeout = timeout;
+        // Set default timeout for all requests
+        var defaultTimeout = config.DefaultTimeout ?? WeaviateDefaults.DefaultTimeout;
+        httpClient.Timeout = defaultTimeout;
 
-        var wcdHost = IsWeaviateDomain(Configuration.RestAddress)
-            ? Configuration.RestAddress
-            : null;
+        var wcdHost = IsWeaviateDomain(config.RestAddress) ? config.RestAddress : null;
 
         if (wcdHost != null)
         {
             httpClient.DefaultRequestHeaders.Add(
                 "X-Weaviate-Cluster-URL",
-                Configuration.RestUri.ToString()
+                config.RestUri.ToString()
             );
         }
 
-        if (Configuration.Headers != null)
+        if (config.Headers != null)
         {
-            foreach (var header in Configuration.Headers)
+            foreach (var header in config.Headers)
             {
                 httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
             }
         }
 
-        RestClient = new WeaviateRestClient(Configuration.RestUri, httpClient);
-
-        // Use injected gRPC client if provided (for testing), otherwise create a real one
-        GrpcClient =
-            grpcClient
-            ?? WeaviateGrpcClient.Create(
-                Configuration.GrpcUri,
-                wcdHost,
-                _tokenService,
-                timeout,
-                Meta?.GrpcMaxMessageSize ?? null,
-                retryPolicy,
-                Configuration.Headers,
-                null
-            );
-
-        Cluster = new ClusterClient(RestClient);
-        Collections = new CollectionsClient(this);
-        Alias = new AliasClient(this);
-        Users = new UsersClient(this);
-        Roles = new RolesClient(this);
-        Groups = new GroupsClient(this);
+        return new WeaviateRestClient(config.RestUri, httpClient);
     }
 
-    private async Task<ITokenService?> InitializeTokenService()
+    /// <summary>
+    /// Creates a WeaviateGrpcClient from the given configuration.
+    /// </summary>
+    internal static WeaviateGrpcClient CreateGrpcClient(
+        ClientConfiguration config,
+        ITokenService? tokenService,
+        ulong? maxMessageSize = null
+    )
     {
-        if (Configuration.Credentials is null)
-        {
-            return null;
-        }
+        var wcdHost = IsWeaviateDomain(config.RestAddress) ? config.RestAddress : null;
 
-        if (Configuration.Credentials is Auth.ApiKeyCredentials apiKey)
-        {
-            return new ApiKeyTokenService(apiKey);
-        }
+        var retryPolicy = config.RetryPolicy ?? WeaviateDefaults.DefaultRetryPolicy;
+        var defaultTimeout = config.DefaultTimeout ?? WeaviateDefaults.DefaultTimeout;
 
-        var openIdConfig = await OAuthTokenService.GetOpenIdConfig(
-            Configuration.RestUri.ToString()
+        return WeaviateGrpcClient.Create(
+            config.GrpcUri,
+            wcdHost,
+            tokenService,
+            config.QueryTimeout ?? defaultTimeout,
+            maxMessageSize,
+            retryPolicy,
+            config.Headers,
+            null // Logger is not needed here, gRPC client creates its own
         );
-
-        if (!openIdConfig.IsSuccessStatusCode)
-        {
-            _logger?.LogWarning("Failed to retrieve OpenID configuration");
-            return null;
-        }
-
-        var tokenEndpoint = openIdConfig.TokenEndpoint!;
-        var clientId = openIdConfig.ClientID!;
-
-        OAuthConfig oauthConfig = new()
-        {
-            TokenEndpoint = tokenEndpoint,
-            ClientId = clientId,
-            GrantType = Configuration.Credentials switch
-            {
-                Auth.ClientCredentialsFlow => "client_credentials",
-                Auth.ClientPasswordFlow => "password",
-                Auth.BearerTokenCredentials => "bearer",
-                _ => throw new NotSupportedException("Unsupported credentials type"),
-            },
-            Scope = Configuration.Credentials?.GetScopes() ?? "",
-        };
-
-        var httpClient = new HttpClient();
-
-        if (Configuration.Credentials is Auth.BearerTokenCredentials bearerToken)
-        {
-            return new OAuthTokenService(httpClient, oauthConfig)
-            {
-                CurrentToken = new(
-                    bearerToken.AccessToken,
-                    bearerToken.ExpiresIn,
-                    bearerToken.RefreshToken
-                ),
-            };
-        }
-
-        if (Configuration.Credentials is Auth.ClientCredentialsFlow clientCreds)
-        {
-            oauthConfig = oauthConfig with { ClientSecret = clientCreds.ClientSecret };
-        }
-        else if (Configuration.Credentials is Auth.ClientPasswordFlow clientPass)
-        {
-            oauthConfig = oauthConfig with
-            {
-                Username = clientPass.Username,
-                Password = clientPass.Password,
-            };
-        }
-
-        return new OAuthTokenService(httpClient, oauthConfig);
     }
 
     public void Dispose()

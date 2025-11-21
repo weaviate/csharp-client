@@ -102,7 +102,9 @@ public class LoggingHandler : DelegatingHandler
 
         if (request.Content != null)
         {
-            var requestContent = await request.Content.ReadAsStringAsync(CancellationToken.None);
+            var requestContent = await request.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken
+            );
             _log($"Request Content: {requestContent}");
 
             // Buffer the content so it can be read again.
@@ -132,7 +134,7 @@ public class LoggingHandler : DelegatingHandler
             string responseContent = "";
 
             var responseContentJson = await response.Content.ReadAsStringAsync(
-                CancellationToken.None
+                TestContext.Current.CancellationToken
             );
 
             if (responseContentJson.Length > 0)

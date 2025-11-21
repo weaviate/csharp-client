@@ -13,7 +13,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
     const bool _deleteCollectionsAfterTest = true;
     List<string> _collections = new();
 
-    protected WeaviateClient _weaviate;
+    protected WeaviateClient _weaviate = null!;
     protected HttpMessageHandler? _httpMessageHandler;
 
     protected static readonly Guid[] _reusableUuids =
@@ -38,25 +38,6 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         {
             InnerHandler = new HttpClientHandler(),
         };
-
-        var builder = WeaviateClientBuilder.Local(httpMessageHandler: _httpMessageHandler);
-
-        if (
-            Environment.GetEnvironmentVariable("WEAVIATE_OPENAI_API_KEY") is { } openaiKey
-            && !string.IsNullOrEmpty(openaiKey)
-        )
-        {
-            builder.WithOpenAI(openaiKey);
-        }
-
-        builder.WithRestPort(RestPort);
-        builder.WithGrpcPort(GrpcPort);
-        if (Credentials != null)
-        {
-            builder.WithCredentials(Credentials);
-        }
-
-        _weaviate = builder.Build();
     }
 
     public virtual ICredentials? Credentials => null;
@@ -75,6 +56,26 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
 
     public virtual async ValueTask InitializeAsync()
     {
+        // Build the client asynchronously
+        var builder = WeaviateClientBuilder.Local(httpMessageHandler: _httpMessageHandler);
+
+        if (
+            Environment.GetEnvironmentVariable("WEAVIATE_OPENAI_API_KEY") is { } openaiKey
+            && !string.IsNullOrEmpty(openaiKey)
+        )
+        {
+            builder.WithOpenAI(openaiKey);
+        }
+
+        builder.WithRestPort(RestPort);
+        builder.WithGrpcPort(GrpcPort);
+        if (Credentials != null)
+        {
+            builder.WithCredentials(Credentials);
+        }
+
+        _weaviate = await builder.BuildAsync();
+
         // Global readiness gate: ensure the constructed client can reach a ready Weaviate instance.
         // Fail fast so tests surface environment issues instead of producing cascading failures.
         var ready = false;

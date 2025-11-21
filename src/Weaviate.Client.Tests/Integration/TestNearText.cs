@@ -22,7 +22,12 @@ public partial class SearchTests : IntegrationTests
         string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
         var tasks = values
             .Select(s => new TestDataValue { Value = s })
-            .Select(d => collectionClient.Data.Insert(d));
+            .Select(d =>
+                collectionClient.Data.Insert(
+                    d,
+                    cancellationToken: TestContext.Current.CancellationToken
+                )
+            );
         Guid[] guids = await Task.WhenAll(tasks);
         var concepts = new[] { "hiking" };
 
@@ -32,7 +37,8 @@ public partial class SearchTests : IntegrationTests
             moveTo: new Move(1.0f, objects: [guids[0]]),
             moveAway: new Move(0.5f, concepts: concepts),
             returnProperties: ["value"],
-            includeVectors: "default"
+            includeVectors: "default",
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var retrieved = retriever.Objects.ToList();
 
@@ -59,7 +65,12 @@ public partial class SearchTests : IntegrationTests
         string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
         var tasks = values
             .Select(s => new { Value = s })
-            .Select(d => collectionClient.Data.Insert(d));
+            .Select(d =>
+                collectionClient.Data.Insert(
+                    d,
+                    cancellationToken: TestContext.Current.CancellationToken
+                )
+            );
         Guid[] guids = await Task.WhenAll(tasks);
 
         // Act
@@ -71,7 +82,8 @@ public partial class SearchTests : IntegrationTests
                 NumberOfGroups = 2,
                 ObjectsPerGroup = 100,
             },
-            includeVectors: new[] { "default" }
+            includeVectors: new[] { "default" },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -101,7 +113,8 @@ public partial class SearchTests : IntegrationTests
         // Optional: Verify the separate fetch still works
         var obj = await collectionClient.Query.FetchObjectByID(
             guids[3],
-            includeVectors: new[] { "default" }
+            includeVectors: new[] { "default" },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.NotNull(obj);
         Assert.Equal(guids[3], obj.ID);

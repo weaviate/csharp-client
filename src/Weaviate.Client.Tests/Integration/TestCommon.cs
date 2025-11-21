@@ -1,7 +1,5 @@
 namespace Weaviate.Client.Tests.Integration;
 
-using Weaviate.Client.Models;
-
 [Collection("TestCommon")]
 public class TestCommon : IntegrationTests
 {

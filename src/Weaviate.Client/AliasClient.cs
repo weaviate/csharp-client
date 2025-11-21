@@ -18,10 +18,11 @@ public class AliasClient
     /// Get an alias by name
     /// </summary>
     /// <param name="aliasName">The name of the alias to retrieve</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>The alias with its target collection</returns>
-    public async Task<Alias?> Get(string aliasName)
+    public async Task<Alias?> Get(string aliasName, CancellationToken cancellationToken = default)
     {
-        var dto = await _client.RestClient.AliasGet(aliasName);
+        var dto = await _client.RestClient.AliasGet(aliasName, cancellationToken);
         return dto != null ? ToModel(dto) : null;
     }
 
@@ -29,11 +30,12 @@ public class AliasClient
     /// Create a new alias pointing to a collection
     /// </summary>
     /// <param name="alias">The alias to create</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>The created alias</returns>
-    public async Task<Alias> Add(Alias alias)
+    public async Task<Alias> Add(Alias alias, CancellationToken cancellationToken = default)
     {
         var dto = ToDto(alias);
-        var result = await _client.RestClient.CollectionAliasesPost(dto);
+        var result = await _client.RestClient.CollectionAliasesPost(dto, cancellationToken);
         return ToModel(result);
     }
 
@@ -41,10 +43,14 @@ public class AliasClient
     /// List all aliases, optionally filtered by collection name
     /// </summary>
     /// <param name="collectionName">Optional collection name to filter aliases</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>Enumerable of all aliases (or aliases pointing to the specified collection)</returns>
-    public async Task<IEnumerable<Alias>> List(string? collectionName = null)
+    public async Task<IEnumerable<Alias>> List(
+        string? collectionName = null,
+        CancellationToken cancellationToken = default
+    )
     {
-        var dtos = await _client.RestClient.CollectionAliasesGet(collectionName);
+        var dtos = await _client.RestClient.CollectionAliasesGet(collectionName, cancellationToken);
         return dtos.Select(ToModel);
     }
 
@@ -53,10 +59,15 @@ public class AliasClient
     /// </summary>
     /// <param name="aliasName">The name of the alias to update</param>
     /// <param name="targetCollection">The new target collection name</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>The updated alias</returns>
-    public async Task<Alias> Update(string aliasName, string targetCollection)
+    public async Task<Alias> Update(
+        string aliasName,
+        string targetCollection,
+        CancellationToken cancellationToken = default
+    )
     {
-        var dto = await _client.RestClient.AliasPut(aliasName, targetCollection);
+        var dto = await _client.RestClient.AliasPut(aliasName, targetCollection, cancellationToken);
         return ToModel(dto);
     }
 
@@ -64,9 +75,10 @@ public class AliasClient
     /// Delete an alias
     /// </summary>
     /// <param name="aliasName">The name of the alias to delete</param>
-    public async Task<bool> Delete(string aliasName)
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
+    public async Task<bool> Delete(string aliasName, CancellationToken cancellationToken = default)
     {
-        return await _client.RestClient.AliasDelete(aliasName);
+        return await _client.RestClient.AliasDelete(aliasName, cancellationToken);
     }
 
     private static Alias ToModel(Rest.Dto.Alias dto)

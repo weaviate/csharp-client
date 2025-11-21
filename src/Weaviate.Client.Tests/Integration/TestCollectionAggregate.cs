@@ -18,10 +18,13 @@ public partial class AggregatesTests : IntegrationTests
         );
 
         await collectionClient.Data.InsertMany(
-            Enumerable.Repeat(BatchInsertRequest.Create<object>(new { }), howMany)
+            Enumerable.Repeat(BatchInsertRequest.Create<object>(new { }), howMany),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
-        var count = await collectionClient.Count();
+        var count = await collectionClient.Count(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Assert.Equal(howMany, Convert.ToInt64(count));
     }
@@ -31,7 +34,9 @@ public partial class AggregatesTests : IntegrationTests
     {
         var collectionClient = await CollectionFactory(properties: Property.Text("text"));
 
-        var result = await collectionClient.Aggregate.OverAll();
+        var result = await collectionClient.Aggregate.OverAll(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Equal(0, result.TotalCount);
     }
 
@@ -40,10 +45,14 @@ public partial class AggregatesTests : IntegrationTests
     {
         var collectionClient = await CollectionFactory(properties: Property.Text("text"));
 
-        await collectionClient.Data.Insert(new { text = "some text" });
+        await collectionClient.Data.Insert(
+            new { text = "some text" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var result = await collectionClient.Aggregate.OverAll(
-            metrics: new[] { Metrics.ForProperty("text").Text(count: true) }
+            metrics: [Metrics.ForProperty("text").Text(count: true)],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var text = result.Properties["text"] as Aggregate.Text;
@@ -56,12 +65,22 @@ public partial class AggregatesTests : IntegrationTests
     {
         var collectionClient = await CollectionFactory(properties: Property.Text("text"));
 
-        await collectionClient.Data.Insert(new { text = "one" });
-        await collectionClient.Data.Insert(new { text = "one" });
-        await collectionClient.Data.Insert(new { text = "two" });
+        await collectionClient.Data.Insert(
+            new { text = "one" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { text = "one" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { text = "two" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var result = await collectionClient.Aggregate.OverAll(
-            metrics: new[] { Metrics.ForProperty("text").Text(minOccurrences: 1) }
+            metrics: [Metrics.ForProperty("text").Text(minOccurrences: 1)],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var text = result.Properties["text"] as Aggregate.Text;
@@ -75,13 +94,23 @@ public partial class AggregatesTests : IntegrationTests
     {
         var collectionClient = await CollectionFactory(properties: Property.Text("text"));
 
-        await collectionClient.Data.Insert(new { text = "one" });
-        await collectionClient.Data.Insert(new { text = "two" });
-        await collectionClient.Data.Insert(new { text = "three" });
+        await collectionClient.Data.Insert(
+            new { text = "one" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { text = "two" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { text = "three" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var result = await collectionClient.Aggregate.OverAll(
             groupBy: new Aggregate.GroupBy("text", 2),
-            metrics: Metrics.ForProperty("text").Text(count: true)
+            metrics: [Metrics.ForProperty("text").Text(count: true)],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         Assert.Equal(2, result.Groups.Count);
@@ -100,7 +129,8 @@ public partial class AggregatesTests : IntegrationTests
 
         var result = await collectionClient.Aggregate.OverAll(
             groupBy: new Aggregate.GroupBy("text", 2),
-            metrics: Metrics.ForProperty("text").Text(count: true)
+            metrics: [Metrics.ForProperty("text").Text(count: true)],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         Assert.Empty(result.Groups);
@@ -173,7 +203,8 @@ public partial class AggregatesTests : IntegrationTests
                 bools = new[] { true },
                 dates = new[] { date1 },
                 uuids = new[] { uuid1 },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         await collectionClient.Data.Insert(
@@ -191,15 +222,14 @@ public partial class AggregatesTests : IntegrationTests
                 bools = new[] { false },
                 dates = new[] { date2 },
                 uuids = new[] { uuid2 },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var result = await collectionClient.Aggregate.OverAll(
             filters: filter,
-            metrics: new[]
-            {
-                Metrics.ForProperty("text").Text(count: true, topOccurrencesValue: true),
-            }
+            metrics: [Metrics.ForProperty("text").Text(count: true, topOccurrencesValue: true)],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var text = result.Properties["text"] as Aggregate.Text;
@@ -258,12 +288,21 @@ public partial class AggregatesTests : IntegrationTests
         var text2 = "nothing like the other one at all, not even a little bit";
         var uuid = await collectionClient.Data.Insert(
             new { text = text1 },
-            vectors: new[] { 1.0f, 0f, 0f }
+            vectors: new[] { 1.0f, 0f, 0f },
+            cancellationToken: TestContext.Current.CancellationToken
         );
-        var obj = await collectionClient.Query.FetchObjectByID(uuid, includeVectors: true);
+        var obj = await collectionClient.Query.FetchObjectByID(
+            uuid,
+            includeVectors: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(obj);
         Assert.True(obj.Vectors.ContainsKey("default"));
-        await collectionClient.Data.Insert(new { text = text2 }, vectors: new[] { 0f, 0.0f, 0f });
+        await collectionClient.Data.Insert(
+            new { text = text2 },
+            vectors: new[] { 0f, 0.0f, 0f },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var nearVector = obj.Vectors["default"];
         var metrics = new[]
@@ -280,7 +319,8 @@ public partial class AggregatesTests : IntegrationTests
             result = await collectionClient.Aggregate.NearVector(
                 nearVector,
                 metrics: metrics,
-                limit: Convert.ToUInt32(option["objectLimit"])
+                limit: Convert.ToUInt32(option["objectLimit"]),
+                cancellationToken: TestContext.Current.CancellationToken
             );
         }
         else if (option.ContainsKey("certainty"))
@@ -288,7 +328,8 @@ public partial class AggregatesTests : IntegrationTests
             result = await collectionClient.Aggregate.NearVector(
                 nearVector,
                 metrics: metrics,
-                certainty: Convert.ToDouble(option["certainty"])
+                certainty: Convert.ToDouble(option["certainty"]),
+                cancellationToken: TestContext.Current.CancellationToken
             );
         }
         else if (option.ContainsKey("distance"))
@@ -296,7 +337,8 @@ public partial class AggregatesTests : IntegrationTests
             result = await collectionClient.Aggregate.NearVector(
                 nearVector,
                 metrics: metrics,
-                distance: Convert.ToDouble(option["distance"])
+                distance: Convert.ToDouble(option["distance"]),
+                cancellationToken: TestContext.Current.CancellationToken
             );
         }
 
@@ -392,9 +434,20 @@ public partial class AggregatesTests : IntegrationTests
         );
         var text1 = "some text";
         var text2 = "nothing like the other one at all, not even a little bit";
-        await collectionClient.Data.Insert(new { text = text1 }, id: uuid1);
-        await collectionClient.Data.Insert(new { text = text2 }, id: uuid2);
-        Assert.Equal(2UL, await collectionClient.Count());
+        await collectionClient.Data.Insert(
+            new { text = text1 },
+            id: uuid1,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { text = text2 },
+            id: uuid2,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(
+            2UL,
+            await collectionClient.Count(cancellationToken: TestContext.Current.CancellationToken)
+        );
 
         // Act
         AggregateResult? res = null;
@@ -410,7 +463,8 @@ public partial class AggregatesTests : IntegrationTests
             res = await collectionClient.Aggregate.NearText(
                 text1,
                 metrics: metrics,
-                limit: Convert.ToUInt32(option["object_limit"])
+                limit: Convert.ToUInt32(option["object_limit"]),
+                cancellationToken: TestContext.Current.CancellationToken
             );
         }
         else if (option.ContainsKey("certainty"))
@@ -418,7 +472,8 @@ public partial class AggregatesTests : IntegrationTests
             res = await collectionClient.Aggregate.NearText(
                 [text1],
                 metrics: metrics,
-                certainty: Convert.ToDouble(option["certainty"])
+                certainty: Convert.ToDouble(option["certainty"]),
+                cancellationToken: TestContext.Current.CancellationToken
             );
         }
         else if (option.ContainsKey("distance"))
@@ -426,7 +481,8 @@ public partial class AggregatesTests : IntegrationTests
             res = await collectionClient.Aggregate.NearText(
                 new[] { text1 }!,
                 metrics: metrics,
-                distance: Convert.ToDouble(option["distance"])
+                distance: Convert.ToDouble(option["distance"]),
+                cancellationToken: TestContext.Current.CancellationToken
             );
         }
         else
@@ -438,7 +494,8 @@ public partial class AggregatesTests : IntegrationTests
                 new[] { text1 }!,
                 metrics: metrics,
                 moveTo: moveTo,
-                moveAway: moveAway
+                moveAway: moveAway,
+                cancellationToken: TestContext.Current.CancellationToken
             );
         }
 
@@ -465,17 +522,24 @@ public partial class AggregatesTests : IntegrationTests
             properties: new[] { Property.Text("text"), Property.Int("int") }
         );
 
-        await collectionClient.Data.Insert(new { text = "some text", @int = 1 });
-        await collectionClient.Data.Insert(new { text = "some text", @int = 2 });
+        await collectionClient.Data.Insert(
+            new { text = "some text", @int = 1 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collectionClient.Data.Insert(
+            new { text = "some text", @int = 2 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Group by "text"
         var resultByText = await collectionClient.Aggregate.OverAll(
             groupBy: "text", // shorthand for new Aggregate.GroupBy("text")
-            metrics: new[]
-            {
+            metrics:
+            [
                 Metrics.ForProperty("text").Text(count: true),
                 Metrics.ForProperty("int").Integer(count: true),
-            }
+            ],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         Assert.Single(resultByText.Groups);
@@ -490,11 +554,12 @@ public partial class AggregatesTests : IntegrationTests
         // Group by "int"
         var resultByInt = await collectionClient.Aggregate.OverAll(
             groupBy: "int", // shorthand for new Aggregate.GroupBy("int")
-            metrics: new[]
-            {
+            metrics:
+            [
                 Metrics.ForProperty("text").Text(count: true),
                 Metrics.ForProperty("int").Integer(count: true),
-            }
+            ],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         Assert.Equal(2, resultByInt.Groups.Count);
@@ -555,7 +620,10 @@ public partial class AggregatesTests : IntegrationTests
             _ => throw new ArgumentException("Unknown property type"),
         };
 
-        await collectionClient.Data.InsertMany(BatchInsertRequest.Create(insertObj));
+        await collectionClient.Data.InsertMany(
+            insertObj,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Aggregate.Metric metric = propertyType switch
         {
@@ -589,7 +657,10 @@ public partial class AggregatesTests : IntegrationTests
             _ => throw new ArgumentException("Unknown property type"),
         };
 
-        var result = await collectionClient.Aggregate.OverAll(metrics: metric);
+        var result = await collectionClient.Aggregate.OverAll(
+            metrics: [metric],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         switch (propertyType)
         {
@@ -678,7 +749,10 @@ public partial class AggregatesTests : IntegrationTests
             _ => throw new ArgumentException("Unknown property type"),
         };
 
-        await collectionClient.Data.Insert(insertObj);
+        await collectionClient.Data.Insert(
+            insertObj,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Aggregate.Metric metric = propertyType switch
         {
@@ -698,7 +772,10 @@ public partial class AggregatesTests : IntegrationTests
             _ => throw new ArgumentException("Unknown property type"),
         };
 
-        var result = await collectionClient.Aggregate.OverAll(metrics: new[] { metric });
+        var result = await collectionClient.Aggregate.OverAll(
+            metrics: [metric],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         switch (propertyType)
         {
