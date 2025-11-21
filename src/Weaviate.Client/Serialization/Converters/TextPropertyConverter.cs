@@ -15,6 +15,11 @@ public class TextPropertyConverter : PropertyConverterBase
         return value?.ToString();
     }
 
+    public override IEnumerable<object?> ToRestArray(IEnumerable<object?> values)
+    {
+        return values.Select(v => v?.ToString()).ToArray();
+    }
+
     public override Value ToGrpc(object? value)
     {
         if (value is null)
