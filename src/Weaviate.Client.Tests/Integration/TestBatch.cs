@@ -32,12 +32,15 @@ public partial class BatchTests : IntegrationTests
         await client.Config.AddReference(new Reference("ref", client.Name));
         await client.Config.AddReference(new Reference("ref2", client.Name));
 
-        var result = await client.Data.InsertMany(requests);
+        var result = await client.Data.InsertMany(requests, TestContext.Current.CancellationToken);
         Assert.Equal(expectedErrors, result.Count(r => r.Error != null));
         Assert.Equal(expectedErrors > 0, result.HasErrors);
         Assert.Equal(expectedObjects + expectedErrors, result.Count);
 
-        var data = await client.Query.FetchObjects(returnReferences: [new("ref"), new("ref2")]);
+        var data = await client.Query.FetchObjects(
+            returnReferences: [new("ref"), new("ref2")],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Assert.Equal(expectedObjects, data.Count());
         Assert.Equal(expectedReferences, data.Count(r => r.References.Any()));
@@ -60,7 +63,8 @@ public partial class BatchTests : IntegrationTests
 
         // Insert objects into the referenced collection and get their UUIDs
         var refInsertResult = await refCollection.Data.InsertMany(
-            Enumerable.Range(0, numObjects).Select(i => new { Number = i })
+            Enumerable.Range(0, numObjects).Select(i => new { Number = i }),
+            TestContext.Current.CancellationToken
         );
 
         Guid[] uuidsTo = [.. refInsertResult.Select(r => r.ID!.Value)];
@@ -75,7 +79,8 @@ public partial class BatchTests : IntegrationTests
 
         // Insert objects into the main collection and get their UUIDs
         var fromInsertResult = await collection.Data.InsertMany(
-            Enumerable.Range(0, numObjects).Select(i => new { Num = i })
+            Enumerable.Range(0, numObjects).Select(i => new { Num = i }),
+            TestContext.Current.CancellationToken
         );
 
         Guid[] uuidsFrom = [.. fromInsertResult.Select(r => r.ID!.Value)];
@@ -84,8 +89,9 @@ public partial class BatchTests : IntegrationTests
         var batchReturn1 = await collection.Data.ReferenceAddMany(
             Enumerable
                 .Range(0, numObjects)
-                .Select(i => new DataReference(uuidsFrom[i], "ref", uuidsTo[i]))
-                .ToArray()
+                .Select(i => new DataReference(uuidsFrom[i], "ref", [uuidsTo[i]]))
+                .ToArray(),
+            TestContext.Current.CancellationToken
         );
         Assert.False(batchReturn1.HasErrors);
 
@@ -93,15 +99,17 @@ public partial class BatchTests : IntegrationTests
         var batchReturn2 = await collection.Data.ReferenceAddMany(
             Enumerable
                 .Range(0, numObjects)
-                .Select(i => new DataReference(uuidsFrom[i], "ref", uuidsTo.Take(3).ToArray()))
-                .ToArray()
+                .Select(i => new DataReference(uuidsFrom[i], "ref", [.. uuidsTo.Take(3)]))
+                .ToArray(),
+            TestContext.Current.CancellationToken
         );
         Assert.False(batchReturn2.HasErrors);
 
         // Fetch objects with references
         var objects = await collection.Query.FetchObjects(
             returnProperties: ["num"],
-            returnReferences: [new QueryReference(linkOn: "ref")]
+            returnReferences: [new QueryReference(linkOn: "ref")],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         foreach (var obj in objects)

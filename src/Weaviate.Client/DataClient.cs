@@ -1,6 +1,5 @@
 using System.Collections.Frozen;
 using System.Diagnostics;
-using System.Text.Json;
 using Weaviate.Client.Models;
 using Weaviate.Client.Rest.Dto;
 
@@ -16,6 +15,17 @@ public class DataClient<TData>
     internal DataClient(CollectionClient<TData> collectionClient)
     {
         _collectionClient = collectionClient;
+    }
+
+    /// <summary>
+    /// Creates a cancellation token with data-specific timeout configuration.
+    /// Uses DataTimeout if configured, falls back to DefaultTimeout, then to WeaviateDefaults.DataTimeout.
+    /// </summary>
+    private CancellationToken CreateTimeoutCancellationToken(CancellationToken userToken = default)
+    {
+        var effectiveTimeout =
+            _client.DataTimeout ?? _client.DefaultTimeout ?? WeaviateDefaults.DataTimeout;
+        return TimeoutHelper.GetCancellationToken(effectiveTimeout, userToken);
     }
 
     public IDictionary<string, object>? VectorsToDto(Models.Vectors? vectors)
@@ -38,7 +48,8 @@ public class DataClient<TData>
         Guid? id = null,
         Models.Vectors? vectors = null,
         OneOrManyOf<ObjectReference>? references = null,
-        string? tenant = null
+        string? tenant = null,
+        CancellationToken cancellationToken = default
     )
     {
         var propDict = ObjectHelper.BuildDataTransferObject(data);
@@ -57,7 +68,10 @@ public class DataClient<TData>
             Tenant = tenant ?? _collectionClient.Tenant,
         };
 
-        var response = await _client.RestClient.ObjectInsert(dto);
+        var response = await _client.RestClient.ObjectInsert(
+            dto,
+            CreateTimeoutCancellationToken(cancellationToken)
+        );
 
         return response.Id!.Value;
     }
@@ -67,7 +81,8 @@ public class DataClient<TData>
         TData data,
         Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
-        string? tenant = null
+        string? tenant = null,
+        CancellationToken cancellationToken = default
     )
     {
         var propDict = ObjectHelper.BuildDataTransferObject(data);
@@ -86,54 +101,49 @@ public class DataClient<TData>
             Tenant = tenant ?? _collectionClient.Tenant,
         };
 
-        var response = await _client.RestClient.ObjectReplace(_collectionName, dto);
+        await _client.RestClient.ObjectReplace(
+            _collectionName,
+            dto,
+            CreateTimeoutCancellationToken(cancellationToken)
+        );
     }
 
-    public async Task<BatchInsertResponse> InsertMany(params TData[] data)
+    public async Task<BatchInsertResponse> InsertMany(
+        IEnumerable<TData> data,
+        CancellationToken cancellationToken = default
+    )
     {
-        return await InsertMany(data.AsEnumerable());
+        return await InsertMany(
+            data.Select(r => BatchInsertRequest.Create<TData>(r)),
+            cancellationToken
+        );
     }
 
-    public async Task<BatchInsertResponse> InsertMany(IEnumerable<TData> data)
-    {
-        return await InsertMany(data.Select(r => BatchInsertRequest.Create<TData>(r)));
-    }
-
-    public async Task<BatchInsertResponse> InsertMany(IEnumerable<(TData, Guid id)> requests) =>
-        await InsertMany(requests.Select(r => BatchInsertRequest.Create<TData>(r)));
+    public async Task<BatchInsertResponse> InsertMany(
+        IEnumerable<(TData, Guid id)> requests,
+        CancellationToken cancellationToken = default
+    ) => await InsertMany(BatchInsertRequest.Create<TData>(requests), cancellationToken);
 
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(TData, Models.Vectors vectors)> requests
-    ) => await InsertMany(requests.Select(r => BatchInsertRequest.Create<TData>(r)));
+        IEnumerable<(TData, Models.Vectors vectors)> requests,
+        CancellationToken cancellationToken = default
+    ) => await InsertMany(BatchInsertRequest.Create<TData>(requests), cancellationToken);
 
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(TData data, IEnumerable<ObjectReference>? references)> requests
-    ) => await InsertMany(requests.Select(r => BatchInsertRequest.Create<TData>(r)));
-
-    public async Task<BatchInsertResponse> InsertMany(params (TData, Guid id)[] requests) =>
-        await InsertMany(requests.AsEnumerable());
+        IEnumerable<(TData data, IEnumerable<ObjectReference>? references)> requests,
+        CancellationToken cancellationToken = default
+    ) => await InsertMany(BatchInsertRequest.Create<TData>(requests), cancellationToken);
 
     public async Task<BatchInsertResponse> InsertMany(
-        params (TData, Models.Vectors vectors)[] requests
-    ) => await InsertMany(requests.AsEnumerable());
-
-    public async Task<BatchInsertResponse> InsertMany(
-        params (TData data, IEnumerable<ObjectReference>? references)[] requests
-    ) => await InsertMany(requests.AsEnumerable());
-
-    public async Task<BatchInsertResponse> InsertMany(
-        params BatchInsertRequest<TData>[] requests
-    ) => await InsertMany(requests.AsEnumerable());
-
-    public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<BatchInsertRequest<TData>[]> requestBatches
+        IEnumerable<BatchInsertRequest<TData>[]> requestBatches,
+        CancellationToken cancellationToken = default
     )
     {
         var results = new List<BatchInsertResponseEntry>();
 
         foreach (var batch in requestBatches)
         {
-            var batchResults = await InsertMany(batch);
+            var batchResults = await InsertMany(batch, cancellationToken);
             results.AddRange(batchResults);
         }
 
@@ -141,7 +151,8 @@ public class DataClient<TData>
     }
 
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<BatchInsertRequest<TData>> requests
+        IEnumerable<BatchInsertRequest<TData>> requests,
+        CancellationToken cancellationToken = default
     )
     {
         var objects = requests
@@ -191,7 +202,10 @@ public class DataClient<TData>
             )
             .ToList();
 
-        var inserts = await _client.GrpcClient.InsertMany(objects.Select(o => o.BatchObject));
+        var inserts = await _client.GrpcClient.InsertMany(
+            objects.Select(o => o.BatchObject),
+            CreateTimeoutCancellationToken(cancellationToken)
+        );
 
         var dictErr = inserts.Errors.ToFrozenDictionary(kv => kv.Index, kv => kv.Error);
         var dictUuid = objects
@@ -217,34 +231,52 @@ public class DataClient<TData>
         return new BatchInsertResponse(results);
     }
 
-    public async Task DeleteByID(Guid id)
+    public async Task DeleteByID(Guid id, CancellationToken cancellationToken = default)
     {
-        await _client.RestClient.DeleteObject(_collectionName, id, _collectionClient.Tenant);
+        await _client.RestClient.DeleteObject(
+            _collectionName,
+            id,
+            _collectionClient.Tenant,
+            CreateTimeoutCancellationToken(cancellationToken)
+        );
     }
 
-    public async Task ReferenceAdd(DataReference reference)
+    public async Task ReferenceAdd(
+        DataReference reference,
+        CancellationToken cancellationToken = default
+    )
     {
         await _client.RestClient.ReferenceAdd(
             _collectionName,
             reference.From,
             reference.FromProperty,
             reference.To.Single(),
-            _collectionClient.Tenant
+            _collectionClient.Tenant,
+            CreateTimeoutCancellationToken(cancellationToken)
         );
     }
 
-    public async Task ReferenceAdd(Guid from, string fromProperty, Guid to)
+    public async Task ReferenceAdd(
+        Guid from,
+        string fromProperty,
+        Guid to,
+        CancellationToken cancellationToken = default
+    )
     {
         await _client.RestClient.ReferenceAdd(
             _collectionName,
             from,
             fromProperty,
             to,
-            _collectionClient.Tenant
+            _collectionClient.Tenant,
+            CreateTimeoutCancellationToken(cancellationToken)
         );
     }
 
-    public async Task<BatchReferenceReturn> ReferenceAddMany(params DataReference[] references)
+    public async Task<BatchReferenceReturn> ReferenceAddMany(
+        DataReference[] references,
+        CancellationToken cancellationToken = default
+    )
     {
         var stopwatch = Stopwatch.StartNew();
 
@@ -252,7 +284,8 @@ public class DataClient<TData>
             _collectionName,
             references,
             _collectionClient.Tenant,
-            _collectionClient.ConsistencyLevel
+            _collectionClient.ConsistencyLevel,
+            CreateTimeoutCancellationToken(cancellationToken)
         );
 
         stopwatch.Stop();
@@ -278,25 +311,37 @@ public class DataClient<TData>
         return new BatchReferenceReturn(elapsedSeconds, errorsByIndex);
     }
 
-    public async Task ReferenceReplace(Guid from, string fromProperty, Guid[] to)
+    public async Task ReferenceReplace(
+        Guid from,
+        string fromProperty,
+        Guid[] to,
+        CancellationToken cancellationToken = default
+    )
     {
         await _client.RestClient.ReferenceReplace(
             _collectionName,
             from,
             fromProperty,
             to,
-            _collectionClient.Tenant
+            _collectionClient.Tenant,
+            CreateTimeoutCancellationToken(cancellationToken)
         );
     }
 
-    public async Task ReferenceDelete(Guid from, string fromProperty, Guid to)
+    public async Task ReferenceDelete(
+        Guid from,
+        string fromProperty,
+        Guid to,
+        CancellationToken cancellationToken = default
+    )
     {
         await _client.RestClient.ReferenceDelete(
             _collectionName,
             from,
             fromProperty,
             to,
-            _collectionClient.Tenant
+            _collectionClient.Tenant,
+            CreateTimeoutCancellationToken(cancellationToken)
         );
     }
 
@@ -304,7 +349,8 @@ public class DataClient<TData>
         Filter where,
         bool dryRun = false,
         bool verbose = false,
-        string? tenant = null
+        string? tenant = null,
+        CancellationToken cancellationToken = default
     )
     {
         var reply = await _client.GrpcClient.DeleteMany(
@@ -312,7 +358,9 @@ public class DataClient<TData>
             where,
             dryRun,
             verbose,
-            tenant
+            tenant,
+            _collectionClient.ConsistencyLevel,
+            CreateTimeoutCancellationToken(cancellationToken)
         );
 
         var result = new DeleteManyResult

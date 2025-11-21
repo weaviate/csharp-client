@@ -11,11 +11,20 @@ public partial class FilterTests : IntegrationTests
         // Arrange
         var cA = await CollectionFactory<TestData>("A", "Collection A");
 
-        var uuid_A1 = await cA.Data.Insert(new() { Name = "A1", Size = 3 });
-        var uuid_A2 = await cA.Data.Insert(new() { Name = "A2", Size = 5 });
+        var uuid_A1 = await cA.Data.Insert(
+            new() { Name = "A1", Size = 3 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuid_A2 = await cA.Data.Insert(
+            new() { Name = "A2", Size = 5 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Act
-        var list = await cA.Query.FetchObjects(filters: Filter.Property("name").Equal("A1"));
+        var list = await cA.Query.FetchObjects(
+            filters: Filter.Property("name").Equal("A1"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var objs = list.Objects.ToList();
 
@@ -34,12 +43,19 @@ public partial class FilterTests : IntegrationTests
             invertedIndexConfig: new InvertedIndexConfig { IndexTimestamps = true }
         );
 
-        var uuid_A1 = await cA.Data.Insert(new() { Name = "A1", Size = 3 });
-        var uuid_A2 = await cA.Data.Insert(new() { Name = "A2", Size = 5 });
+        var uuid_A1 = await cA.Data.Insert(
+            new() { Name = "A1", Size = 3 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuid_A2 = await cA.Data.Insert(
+            new() { Name = "A2", Size = 5 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var objsA1 = await cA.Query.FetchObjectByID(
             uuid_A1,
-            returnMetadata: MetadataOptions.CreationTime
+            returnMetadata: MetadataOptions.CreationTime,
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Act
@@ -48,7 +64,10 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(DateTimeKind.Utc, objA1.Metadata.CreationTime.Value.Kind);
 
         var filter = Filter.CreationTime.Equal(objA1.Metadata.CreationTime.Value);
-        var list = await cA.Query.FetchObjects(filters: filter);
+        var list = await cA.Query.FetchObjects(
+            filters: filter,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Assert.NotEmpty(list);
 
@@ -64,12 +83,19 @@ public partial class FilterTests : IntegrationTests
         // Arrange
         var cA = await CollectionFactory<TestData>("A", "Collection A");
 
-        var uuid_A1 = await cA.Data.Insert(new() { Name = "A1", Size = 3 });
-        var uuid_A2 = await cA.Data.Insert(new() { Name = "A2", Size = 5 });
+        var uuid_A1 = await cA.Data.Insert(
+            new() { Name = "A1", Size = 3 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuid_A2 = await cA.Data.Insert(
+            new() { Name = "A2", Size = 5 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Act
         var list = await cA.Query.FetchObjects(
-            filters: Filter<TestData>.Property(x => x.Size).GreaterThan(3)
+            filters: Filter<TestData>.Property(x => x.Size).GreaterThan(3),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var objs = list.ToList();
@@ -94,8 +120,16 @@ public partial class FilterTests : IntegrationTests
 
         var uuidsTo = new[]
         {
-            await cTarget.Data.Insert(new() { Name = "first", Size = 0 }, id: _reusableUuids[0]),
-            await cTarget.Data.Insert(new() { Name = "second", Size = 15 }, id: _reusableUuids[1]),
+            await cTarget.Data.Insert(
+                new() { Name = "first", Size = 0 },
+                id: _reusableUuids[0],
+                cancellationToken: TestContext.Current.CancellationToken
+            ),
+            await cTarget.Data.Insert(
+                new() { Name = "second", Size = 15 },
+                id: _reusableUuids[1],
+                cancellationToken: TestContext.Current.CancellationToken
+            ),
         };
 
         var cFrom = await CollectionFactory(
@@ -108,24 +142,37 @@ public partial class FilterTests : IntegrationTests
 
         var uuidsFrom = new List<Guid>
         {
-            await cFrom.Data.Insert(new { Name = "first" }, references: [("ref", uuidsTo[0])]),
-            await cFrom.Data.Insert(new { Name = "second" }, references: [("ref", uuidsTo[1])]),
+            await cFrom.Data.Insert(
+                new { Name = "first" },
+                references: [("ref", uuidsTo[0])],
+                cancellationToken: TestContext.Current.CancellationToken
+            ),
+            await cFrom.Data.Insert(
+                new { Name = "second" },
+                references: [("ref", uuidsTo[1])],
+                cancellationToken: TestContext.Current.CancellationToken
+            ),
         };
 
         var third = await cFrom.Data.Insert(
             new { Name = "third" },
-            references: [("ref2", uuidsFrom[0])]
+            references: [("ref2", uuidsFrom[0])],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var fourth = await cFrom.Data.Insert(
             new { Name = "fourth" },
-            references: [("ref2", uuidsFrom[1])]
+            references: [("ref2", uuidsFrom[1])],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         uuidsFrom.AddRange([third, fourth]);
 
         // Act
-        var objects = await cFrom.Query.FetchObjects(filters: filter);
+        var objects = await cFrom.Query.FetchObjects(
+            filters: filter,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var objs = objects.ToList();
 
@@ -145,11 +192,24 @@ public partial class FilterTests : IntegrationTests
 
         var uuids = new[]
         {
-            await c.Data.Insert(new { Name = "first" }, _reusableUuids[0]),
-            await c.Data.Insert(new { Name = "second" }, _reusableUuids[1]),
+            await c.Data.Insert(
+                new { Name = "first" },
+                _reusableUuids[0],
+                cancellationToken: TestContext.Current.CancellationToken
+            ),
+            await c.Data.Insert(
+                new { Name = "second" },
+                _reusableUuids[1],
+                cancellationToken: TestContext.Current.CancellationToken
+            ),
         };
 
-        var objects = (await c.Query.FetchObjects(filters: filter)).ToList();
+        var objects = (
+            await c.Query.FetchObjects(
+                filters: filter,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
 
         Assert.Single(objects);
         Assert.Equal(_reusableUuids[0], objects[0].ID);
@@ -168,21 +228,30 @@ public partial class FilterTests : IntegrationTests
 
         var uuids = new List<Guid>
         {
-            await collection.Data.Insert(new { }, id: _reusableUuids[0]),
+            await collection.Data.Insert(
+                new { },
+                id: _reusableUuids[0],
+                cancellationToken: TestContext.Current.CancellationToken
+            ),
             await collection.Data.Insert(
                 new { },
                 id: _reusableUuids[1],
-                references: [("ref", _reusableUuids[0])]
+                references: [("ref", _reusableUuids[0])],
+                cancellationToken: TestContext.Current.CancellationToken
             ),
             await collection.Data.Insert(
                 new { },
                 id: _reusableUuids[2],
-                references: [("ref", new[] { _reusableUuids[0], _reusableUuids[1] })]
+                references: [("ref", new[] { _reusableUuids[0], _reusableUuids[1] })],
+                cancellationToken: TestContext.Current.CancellationToken
             ),
         };
 
         // Act
-        var objects = await collection.Query.FetchObjects(filters: filter);
+        var objects = await collection.Query.FetchObjects(
+            filters: filter,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         var objs = objects.ToList();
 
         // Assert
@@ -204,16 +273,32 @@ public partial class FilterTests : IntegrationTests
 
         await one.Config.AddReference(new Reference("ref1", one.Name));
 
-        var uuid11 = await one.Data.Insert(new { });
-        var uuid12 = await one.Data.Insert(new { }, references: [("ref1", uuid11)]);
+        var uuid11 = await one.Data.Insert(
+            new { },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuid12 = await one.Data.Insert(
+            new { },
+            references: [("ref1", uuid11)],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         var uuid13 = await one.Data.Insert(
             new { },
-            references: [("ref1", new[] { uuid11, uuid12 })]
+            references: [("ref1", new[] { uuid11, uuid12 })],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
-        await two.Data.Insert(new { });
-        var uuid21 = await two.Data.Insert(new { }, references: [("ref2", uuid12)]);
-        await two.Data.Insert(new { }, references: [("ref2", uuid13)]);
+        await two.Data.Insert(new { }, cancellationToken: TestContext.Current.CancellationToken);
+        var uuid21 = await two.Data.Insert(
+            new { },
+            references: [("ref2", uuid12)],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await two.Data.Insert(
+            new { },
+            references: [("ref2", uuid13)],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Act
         var objects = await two.Query.FetchObjects(
@@ -221,7 +306,8 @@ public partial class FilterTests : IntegrationTests
             returnReferences:
             [
                 new QueryReference("ref2", [], references: [new QueryReference("ref1", [])]),
-            ]
+            ],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var objs = objects.ToList();
@@ -239,28 +325,40 @@ public partial class FilterTests : IntegrationTests
             invertedIndexConfig: new InvertedIndexConfig() { IndexTimestamps = true }
         );
 
-        await collection.Data.Insert(new { });
+        await collection.Data.Insert(
+            new { },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         await Task.Delay(10, TestContext.Current.CancellationToken);
 
-        var uuid2 = await collection.Data.Insert(new { });
+        var uuid2 = await collection.Data.Insert(
+            new { },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         await Task.Delay(10, TestContext.Current.CancellationToken);
 
-        var uuid3 = await collection.Data.Insert(new { });
+        var uuid3 = await collection.Data.Insert(
+            new { },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var obj2 = await collection.Query.FetchObjectByID(
             uuid2,
-            returnMetadata: MetadataOptions.CreationTime
+            returnMetadata: MetadataOptions.CreationTime,
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var obj3 = await collection.Query.FetchObjectByID(
             uuid3,
-            returnMetadata: MetadataOptions.CreationTime
+            returnMetadata: MetadataOptions.CreationTime,
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Act
         var objects = await collection.Query.FetchObjects(
             filters: Filter.CreationTime.ContainsAny(
                 [obj2!.Metadata.CreationTime!.Value, obj3!.Metadata.CreationTime!.Value]
-            )
+            ),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var objs = objects.ToList();
@@ -282,15 +380,25 @@ public partial class FilterTests : IntegrationTests
             invertedIndexConfig: new InvertedIndexConfig() { IndexTimestamps = true }
         );
 
-        await collection.Data.Insert(new { });
+        await collection.Data.Insert(
+            new { },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         await Task.Delay(10, TestContext.Current.CancellationToken);
-        await collection.Data.Insert(new { });
+        await collection.Data.Insert(
+            new { },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         await Task.Delay(10, TestContext.Current.CancellationToken);
-        await collection.Data.Insert(new { });
+        await collection.Data.Insert(
+            new { },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var allObjects = await collection.Query.FetchObjects(
             sort: [Sort.ByCreationTime()],
-            returnMetadata: MetadataOptions.CreationTime
+            returnMetadata: MetadataOptions.CreationTime,
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var allObjectsList = allObjects.ToList();
 
@@ -299,7 +407,10 @@ public partial class FilterTests : IntegrationTests
         var weaviateFilter = filterFunc(referenceTime);
 
         // Act
-        var objects = await collection.Query.FetchObjects(filters: weaviateFilter);
+        var objects = await collection.Query.FetchObjects(
+            filters: weaviateFilter,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         var objs = objects.ToList();
 
         // Assert
@@ -336,7 +447,8 @@ public partial class FilterTests : IntegrationTests
                     texts = new[] { "an", "apple" },
                     ints = new[] { 1, 2 },
                     floats = new[] { 1.0, 2.0 },
-                }
+                },
+                cancellationToken: TestContext.Current.CancellationToken
             ),
             await collection.Data.Insert(
                 new
@@ -344,7 +456,8 @@ public partial class FilterTests : IntegrationTests
                     texts = new[] { "a", "banana" },
                     ints = new[] { 2, 3 },
                     floats = new[] { 2.0, 3.0 },
-                }
+                },
+                cancellationToken: TestContext.Current.CancellationToken
             ),
             await collection.Data.Insert(
                 new
@@ -352,12 +465,16 @@ public partial class FilterTests : IntegrationTests
                     texts = new[] { "a", "text" },
                     ints = new[] { 4, 5 },
                     floats = new[] { 4.0, 5.0 },
-                }
+                },
+                cancellationToken: TestContext.Current.CancellationToken
             ),
         };
 
         // Act
-        var objects = await collection.Query.FetchObjects(filters: filter);
+        var objects = await collection.Query.FetchObjects(
+            filters: filter,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Assert
         Assert.Equal(results.Length, objects.Count());
@@ -410,7 +527,8 @@ public partial class FilterTests : IntegrationTests
                     uuids = new[] { UUID1, UUID3, UUID2 },
                     uuid = UUID1,
                 },
-                id: UUID1
+                id: UUID1,
+                cancellationToken: TestContext.Current.CancellationToken
             ),
             await collection.Data.Insert(
                 new
@@ -428,7 +546,8 @@ public partial class FilterTests : IntegrationTests
                     uuids = new[] { UUID2, UUID2 },
                     uuid = UUID2,
                 },
-                id: UUID2
+                id: UUID2,
+                cancellationToken: TestContext.Current.CancellationToken
             ),
             await collection.Data.Insert(
                 new
@@ -443,7 +562,8 @@ public partial class FilterTests : IntegrationTests
                     dates = new DateTime[0],
                     uuids = new Guid[0],
                 },
-                id: UUID3
+                id: UUID3,
+                cancellationToken: TestContext.Current.CancellationToken
             ),
             await collection.Data.Insert(
                 new
@@ -460,12 +580,16 @@ public partial class FilterTests : IntegrationTests
                     date = MUCH_LATER,
                     uuids = new[] { UUID1, UUID2 },
                     uuid = UUID2,
-                }
+                },
+                cancellationToken: TestContext.Current.CancellationToken
             ),
         };
 
         // Act
-        var objects = await collection.Query.FetchObjects(filters: filter);
+        var objects = await collection.Query.FetchObjects(
+            filters: filter,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Assert
         Assert.Equal(results.Length, objects.Count());
@@ -488,14 +612,29 @@ public partial class FilterTests : IntegrationTests
         var uuid3 = Guid.NewGuid();
         var uuid4 = Guid.NewGuid();
 
-        var idA = await collection.Data.Insert(new { name = "A", uuids = new[] { uuid1, uuid2 } });
-        var idB = await collection.Data.Insert(new { name = "B", uuids = new[] { uuid3 } });
-        var idC = await collection.Data.Insert(new { name = "C", uuids = new[] { uuid4 } });
-        var idD = await collection.Data.Insert(new { name = "D", uuids = new Guid[0] });
+        var idA = await collection.Data.Insert(
+            new { name = "A", uuids = new[] { uuid1, uuid2 } },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var idB = await collection.Data.Insert(
+            new { name = "B", uuids = new[] { uuid3 } },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var idC = await collection.Data.Insert(
+            new { name = "C", uuids = new[] { uuid4 } },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var idD = await collection.Data.Insert(
+            new { name = "D", uuids = new Guid[0] },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Act
         var filter = Filter.Property("uuids").ContainsNone(new[] { uuid1, uuid2 });
-        var objects = await collection.Query.FetchObjects(filters: filter);
+        var objects = await collection.Query.FetchObjects(
+            filters: filter,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         var ids = objects.Select(o => o.ID).ToHashSet();
 
         // Assert
@@ -516,13 +655,28 @@ public partial class FilterTests : IntegrationTests
         var uuid2 = Guid.NewGuid();
         var uuid3 = Guid.NewGuid();
 
-        var idA = await collection.Data.Insert(new { name = "A" }, id: uuid1);
-        var idB = await collection.Data.Insert(new { name = "B" }, id: uuid2);
-        var idC = await collection.Data.Insert(new { name = "C" }, id: uuid3);
+        var idA = await collection.Data.Insert(
+            new { name = "A" },
+            id: uuid1,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var idB = await collection.Data.Insert(
+            new { name = "B" },
+            id: uuid2,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var idC = await collection.Data.Insert(
+            new { name = "C" },
+            id: uuid3,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Act
         var filter = Filter.Not(Filter.ID.ContainsAny(new[] { uuid1, uuid2 }));
-        var objects = await collection.Query.FetchObjects(filters: filter);
+        var objects = await collection.Query.FetchObjects(
+            filters: filter,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         var ids = objects.Select(o => o.ID).ToHashSet();
 
         // Assert
