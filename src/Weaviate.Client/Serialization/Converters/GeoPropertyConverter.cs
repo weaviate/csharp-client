@@ -18,11 +18,7 @@ public class GeoPropertyConverter : PropertyConverterBase
         if (value is not GeoCoordinate geo)
             return null;
 
-        return new Dictionary<string, object>
-        {
-            ["latitude"] = geo.Latitude,
-            ["longitude"] = geo.Longitude,
-        };
+        return geo.ToDto();
     }
 
     public override Value ToGrpc(object? value)
@@ -52,7 +48,7 @@ public class GeoPropertyConverter : PropertyConverterBase
         // Handle REST DTO type
         if (value is Rest.Dto.GeoCoordinates dtoGeo)
         {
-            return new GeoCoordinate((float)dtoGeo.Latitude, (float)dtoGeo.Longitude);
+            return dtoGeo.ToModel();
         }
 
         return null;

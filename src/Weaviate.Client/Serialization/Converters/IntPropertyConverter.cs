@@ -24,15 +24,16 @@ public class IntPropertyConverter : PropertyConverterBase
 
     public override object? ToRest(object? value)
     {
-        return value switch
-        {
-            null => null,
-            int i => i,
-            long l => l,
-            short s => (int)s,
-            byte b => (int)b,
-            _ => Convert.ToInt64(value),
-        };
+        if (value is null)
+            return null;
+
+        // Always convert to long for consistency with Weaviate int type
+        return Convert.ToInt64(value);
+    }
+
+    public override IEnumerable<object?> ToRestArray(IEnumerable<object?> values)
+    {
+        return values.Select(v => (object?)(v is null ? 0L : Convert.ToInt64(v))).ToArray();
     }
 
     public override Value ToGrpc(object? value)
@@ -52,14 +53,23 @@ public class IntPropertyConverter : PropertyConverterBase
         var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
         var longValue = Convert.ToInt64(value);
 
-        return underlying switch
-        {
-            System.Type t when t == typeof(int) => (int)longValue,
-            System.Type t when t == typeof(long) => longValue,
-            System.Type t when t == typeof(short) => (short)longValue,
-            System.Type t when t == typeof(byte) => (byte)longValue,
-            _ => (int)longValue,
-        };
+        if (underlying == typeof(int))
+            return (int)longValue;
+        if (underlying == typeof(long))
+            return longValue;
+        if (underlying == typeof(short))
+            return (short)longValue;
+        if (underlying == typeof(byte))
+            return (byte)longValue;
+
+        return (int)longValue;
+    }
+
+    public override object? FromRestArray(IEnumerable<object?> values, System.Type elementType)
+    {
+        var underlying = Nullable.GetUnderlyingType(elementType) ?? elementType;
+        var items = values.Select(v => FromRest(v, underlying)).ToList();
+        return CreateTypedArray(items, underlying);
     }
 
     public override object? FromGrpc(Value value, System.Type targetType)
@@ -70,13 +80,15 @@ public class IntPropertyConverter : PropertyConverterBase
         var longValue = (long)value.NumberValue;
         var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
 
-        return underlying switch
-        {
-            System.Type t when t == typeof(int) => (int)longValue,
-            System.Type t when t == typeof(long) => longValue,
-            System.Type t when t == typeof(short) => (short)longValue,
-            System.Type t when t == typeof(byte) => (byte)longValue,
-            _ => (int)longValue,
-        };
+        if (underlying == typeof(int))
+            return (int)longValue;
+        if (underlying == typeof(long))
+            return longValue;
+        if (underlying == typeof(short))
+            return (short)longValue;
+        if (underlying == typeof(byte))
+            return (byte)longValue;
+
+        return (int)longValue;
     }
 }

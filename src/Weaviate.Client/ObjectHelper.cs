@@ -8,6 +8,7 @@ using Google.Protobuf;
 using Google.Protobuf.Reflection;
 using Google.Protobuf.WellKnownTypes;
 using Weaviate.Client.Models;
+using Weaviate.Client.Serialization;
 
 namespace Weaviate.Client;
 
@@ -74,70 +75,67 @@ internal class ObjectHelper
     {
         ArgumentNullException.ThrowIfNull(dict);
 
-        // Create an instance of T using the default constructor
-        var instance = new T();
-
-        if (instance is IDictionary<string, object?> target)
+        // Handle ExpandoObject specially to preserve dynamic behavior
+        if (typeof(T) == typeof(ExpandoObject))
         {
+            var expando = new ExpandoObject();
+            var target = (IDictionary<string, object?>)expando;
             foreach (var kvp in dict)
             {
-                if (kvp.Value?.GetType() == typeof(Rest.Dto.GeoCoordinates))
-                {
-                    var value = (Rest.Dto.GeoCoordinates)kvp.Value;
-                    target[kvp.Key.Capitalize()] = value.ToModel();
-                }
-                if (kvp.Value?.GetType() == typeof(Rest.Dto.PhoneNumber))
-                {
-                    var value = (Rest.Dto.PhoneNumber)kvp.Value;
-                    target[kvp.Key.Capitalize()] = value.ToModel();
-                }
-                else if (kvp.Value is IDictionary<string, object?> subDict)
-                {
-                    object? nestedValue = UnmarshallProperties<ExpandoObject>(subDict);
+                var key = kvp.Key.Capitalize();
+                var value = kvp.Value;
 
-                    target[kvp.Key.Capitalize()] = nestedValue ?? subDict;
+                if (value?.GetType() == typeof(Rest.Dto.GeoCoordinates))
+                {
+                    target[key] = ((Rest.Dto.GeoCoordinates)value).ToModel();
+                }
+                else if (value?.GetType() == typeof(Rest.Dto.PhoneNumber))
+                {
+                    target[key] = ((Rest.Dto.PhoneNumber)value).ToModel();
+                }
+                else if (value is IDictionary<string, object?> subDict)
+                {
+                    target[key] = UnmarshallProperties<ExpandoObject>(subDict) ?? subDict;
                 }
                 else
                 {
-                    target[kvp.Key.Capitalize()] = kvp.Value;
+                    target[key] = value;
                 }
             }
-            return instance;
+            return (T)(object)expando;
         }
 
-        var type = typeof(T);
-        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.CanWrite)
-            .ToArray();
-
-        foreach (var property in properties)
+        // For PropertyBag and other IDictionary targets
+        if (typeof(IDictionary<string, object?>).IsAssignableFrom(typeof(T)))
         {
-            var matchingKey = dict.Keys.FirstOrDefault(k =>
-                string.Equals(k, property.Name, StringComparison.OrdinalIgnoreCase)
-            );
-
-            if (matchingKey is null)
+            var bag = new PropertyBag();
+            foreach (var kvp in dict)
             {
-                continue;
-            }
+                var key = kvp.Key.Capitalize();
+                var value = kvp.Value;
 
-            var value = dict[matchingKey];
-
-            try
-            {
-                // Convert the value to the target property type
-                var convertedValue = ConvertValue(value, property.PropertyType);
-                property.SetValue(instance, convertedValue);
+                if (value?.GetType() == typeof(Rest.Dto.GeoCoordinates))
+                {
+                    bag[key] = ((Rest.Dto.GeoCoordinates)value).ToModel();
+                }
+                else if (value?.GetType() == typeof(Rest.Dto.PhoneNumber))
+                {
+                    bag[key] = ((Rest.Dto.PhoneNumber)value).ToModel();
+                }
+                else if (value is IDictionary<string, object?> subDict)
+                {
+                    bag[key] = UnmarshallProperties<PropertyBag>(subDict) ?? subDict;
+                }
+                else
+                {
+                    bag[key] = value;
+                }
             }
-            catch (Exception ex)
-            {
-                // Skip if conversion fails
-                Debug.WriteLine($"Failed to convert property {property.Name}: {ex.Message}");
-                continue;
-            }
+            return (T)(object)bag;
         }
 
-        return instance;
+        // For typed objects, use the registry
+        return (T?)PropertyConverterRegistry.Default.DeserializeFromRest(dict, typeof(T));
     }
 
     private static object? ConvertValue(object? value, System.Type targetType)
@@ -301,132 +299,12 @@ internal class ObjectHelper
 
     internal static IDictionary<string, object> BuildDataTransferObject(object? data)
     {
-        var obj = new ExpandoObject();
-        var propDict = obj as IDictionary<string, object?>;
-
         if (data is null)
         {
-            return propDict!;
+            return new Dictionary<string, object>();
         }
 
-        foreach (var propertyInfo in data.GetType().GetProperties())
-        {
-            if (!propertyInfo.CanRead)
-                continue; // skip non-readable properties
-
-            var value = propertyInfo.GetValue(data);
-            var propertyName = propertyInfo.Name.Decapitalize();
-
-            if (value is null)
-                continue;
-
-            var dataType = PropertyHelper.DataTypeForType(propertyInfo.PropertyType);
-
-            if (dataType == DataType.GeoCoordinate && value is GeoCoordinate geoValue)
-            {
-                propDict[propertyName] = geoValue.ToDto();
-                continue;
-            }
-            if (dataType == DataType.PhoneNumber && value is Models.PhoneNumber phoneValue)
-            {
-                propDict[propertyName] = phoneValue.ToDto();
-                continue;
-            }
-            if (dataType == DataType.Date && value is DateTime dateValue)
-            {
-                propDict[propertyName] = dateValue.ToUniversalTime().ToString("o");
-                continue;
-            }
-            if (dataType == DataType.DateArray && value is IEnumerable<DateTime> dateValues)
-            {
-                propDict[propertyName] = dateValues
-                    .Select(d => d.ToUniversalTime().ToString("o"))
-                    .ToArray();
-                continue;
-            }
-            if (dataType == DataType.Uuid && value is Guid guidValue)
-            {
-                propDict[propertyName] = guidValue.ToString();
-                continue;
-            }
-            if (dataType == DataType.UuidArray && value is IEnumerable<Guid> guidValues)
-            {
-                propDict[propertyName] = guidValues.Select(g => g.ToString()).ToArray();
-                continue;
-            }
-            if (dataType == DataType.Text && value is string stringValue)
-            {
-                propDict[propertyName] = stringValue;
-                continue;
-            }
-            if (dataType == DataType.TextArray && value is IEnumerable<string> stringValues)
-            {
-                propDict[propertyName] = stringValues.ToArray();
-                continue;
-            }
-            if (dataType == DataType.Bool && value is bool boolValue)
-            {
-                propDict[propertyName] = boolValue;
-                continue;
-            }
-            if (dataType == DataType.BoolArray && value is IEnumerable<bool> boolValues)
-            {
-                propDict[propertyName] = boolValues.ToArray();
-                continue;
-            }
-            // For numeric types, check both int/long/float/double as needed
-            if (dataType == DataType.Int)
-            {
-                propDict[propertyName] = Convert.ToInt64(value);
-                continue;
-            }
-            if (dataType == DataType.IntArray)
-            {
-                var values = (IEnumerable)value;
-                propDict[propertyName] = values.Cast<object>().Select(Convert.ToInt64).ToArray();
-                continue;
-            }
-            if (dataType == DataType.Number)
-            {
-                propDict[propertyName] = Convert.ToDouble(value);
-                continue;
-            }
-            if (dataType == DataType.NumberArray)
-            {
-                var values = (IEnumerable)value;
-                propDict[propertyName] = values.Cast<object>().Select(Convert.ToDouble).ToArray();
-                continue;
-            }
-            if (dataType == DataType.Number)
-            {
-                propDict[propertyName] = Convert.ToDouble(value);
-                continue;
-            }
-            if (dataType == DataType.Blob && value is byte[] blobValue)
-            {
-                propDict[propertyName] = Convert.ToBase64String(blobValue);
-                continue;
-            }
-            if (dataType == DataType.ObjectArray && value is Array array)
-            {
-                var arrayList = new List<object?>();
-                foreach (var item in array)
-                    arrayList.Add(BuildDataTransferObject(item));
-                propDict[propertyName] = arrayList;
-                continue;
-            }
-            if (dataType == DataType.Object)
-            {
-                propDict[propertyName] = BuildDataTransferObject(value);
-                continue;
-            }
-
-            throw new WeaviateClientException(
-                $"Unsupported property type '{propertyInfo.PropertyType.Name}' for property '{propertyInfo.Name}'. Check the documentation for supported value types."
-            );
-        }
-
-        return propDict!;
+        return PropertyConverterRegistry.Default.SerializeToRest(data)!;
     }
 
     internal static V1.BatchObject.Types.Properties BuildBatchProperties<TProps>(TProps data)

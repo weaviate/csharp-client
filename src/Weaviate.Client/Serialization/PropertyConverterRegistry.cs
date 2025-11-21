@@ -13,7 +13,8 @@ public class PropertyConverterRegistry
 {
     private readonly Dictionary<string, IPropertyConverter> _byDataType = new();
     private readonly Dictionary<Type, IPropertyConverter> _byType = new();
-    private readonly ConcurrentDictionary<Type, PropertyInfo[]> _propertyCache = new();
+    private readonly ConcurrentDictionary<Type, PropertyInfo[]> _readablePropertyCache = new();
+    private readonly ConcurrentDictionary<Type, PropertyInfo[]> _writablePropertyCache = new();
 
     private static readonly Lazy<PropertyConverterRegistry> _default = new(() => CreateDefault());
 
@@ -122,7 +123,7 @@ public class PropertyConverterRegistry
     public IDictionary<string, object?> SerializeToRest(object obj)
     {
         var result = new Dictionary<string, object?>();
-        var properties = GetCachedProperties(obj.GetType());
+        var properties = GetReadableProperties(obj.GetType());
 
         foreach (var prop in properties)
         {
@@ -131,7 +132,6 @@ public class PropertyConverterRegistry
 
             if (value is null)
             {
-                result[propName] = null;
                 continue;
             }
 
@@ -149,8 +149,8 @@ public class PropertyConverterRegistry
                 && value is not string
             )
             {
-                var items = enumerable.Cast<object?>().ToList();
-                result[propName] = converter.ToRestArray(items!);
+                // Preserve typed arrays for primitive types
+                result[propName] = ConvertArrayToRest(enumerable, converter);
             }
             else
             {
@@ -188,7 +188,7 @@ public class PropertyConverterRegistry
         if (instance is null)
             return null;
 
-        var properties = GetCachedProperties(targetType);
+        var properties = GetWritableProperties(targetType);
         var dictLower = dict.ToDictionary(kvp => kvp.Key.ToLowerInvariant(), kvp => kvp.Value);
 
         foreach (var prop in properties)
@@ -214,8 +214,43 @@ public class PropertyConverterRegistry
             )
             {
                 var elementType = GetElementType(prop.PropertyType);
-                var items = enumerable.Cast<object?>().ToList();
-                converted = converter.FromRestArray(items!, elementType);
+
+                // For object/class arrays, convert each dictionary item directly
+                // Check if element type is a class (excluding string) that needs object deserialization
+                var isObjectArray =
+                    elementType.IsClass
+                    && elementType != typeof(string)
+                    && elementType != typeof(object)
+                    && !typeof(System.Collections.IEnumerable).IsAssignableFrom(elementType);
+                if (isObjectArray)
+                {
+                    var items = new List<object?>();
+                    foreach (var item in enumerable)
+                    {
+                        if (item is IDictionary<string, object?> itemDict)
+                        {
+                            items.Add(DeserializeFromRest(itemDict, elementType));
+                        }
+                        else if (item is IDictionary<string, object> dictNonNullable)
+                        {
+                            var dictNullable = dictNonNullable.ToDictionary(
+                                kvp => kvp.Key,
+                                kvp => (object?)kvp.Value
+                            );
+                            items.Add(DeserializeFromRest(dictNullable, elementType));
+                        }
+                        else
+                        {
+                            items.Add(item);
+                        }
+                    }
+                    converted = CreateTypedArray(items, elementType);
+                }
+                else
+                {
+                    var items = enumerable.Cast<object?>().ToList();
+                    converted = converter.FromRestArray(items!, elementType);
+                }
             }
             else
             {
@@ -228,9 +263,20 @@ public class PropertyConverterRegistry
         return instance;
     }
 
-    private PropertyInfo[] GetCachedProperties(Type type)
+    private PropertyInfo[] GetReadableProperties(Type type)
     {
-        return _propertyCache.GetOrAdd(
+        return _readablePropertyCache.GetOrAdd(
+            type,
+            t =>
+                t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                    .Where(p => p.CanRead)
+                    .ToArray()
+        );
+    }
+
+    private PropertyInfo[] GetWritableProperties(Type type)
+    {
+        return _writablePropertyCache.GetOrAdd(
             type,
             t =>
                 t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -306,6 +352,45 @@ public class PropertyConverterRegistry
             return collectionType.GetGenericArguments()[0];
 
         return typeof(object);
+    }
+
+    private static object ConvertArrayToRest(
+        System.Collections.IEnumerable enumerable,
+        IPropertyConverter converter
+    )
+    {
+        // Preserve typed arrays for common primitive types
+        return enumerable switch
+        {
+            string[] arr => arr.Select(s => converter.ToRest(s)?.ToString()).ToArray(),
+            int[] arr => arr.Select(i => Convert.ToInt64(i)).ToArray(),
+            long[] arr => arr,
+            double[] arr => arr,
+            float[] arr => arr.Select(f => (double)f).ToArray(),
+            bool[] arr => arr,
+            DateTime[] arr => arr.Select(d => converter.ToRest(d)).ToArray(),
+            Guid[] arr => arr.Select(g => g.ToString()).ToArray(),
+            IEnumerable<string> strings => strings
+                .Select(s => converter.ToRest(s)?.ToString())
+                .ToArray(),
+            IEnumerable<int> ints => ints.Select(i => Convert.ToInt64(i)).ToArray(),
+            IEnumerable<long> longs => longs.ToArray(),
+            IEnumerable<double> doubles => doubles.ToArray(),
+            IEnumerable<bool> bools => bools.ToArray(),
+            IEnumerable<DateTime> dates => dates.Select(d => converter.ToRest(d)).ToArray(),
+            IEnumerable<Guid> guids => guids.Select(g => g.ToString()).ToArray(),
+            _ => enumerable.Cast<object?>().Select(v => converter.ToRest(v)).ToArray(),
+        };
+    }
+
+    private static Array CreateTypedArray(IList<object?> items, Type elementType)
+    {
+        var array = Array.CreateInstance(elementType, items.Count);
+        for (int i = 0; i < items.Count; i++)
+        {
+            array.SetValue(items[i], i);
+        }
+        return array;
     }
 
     private static string DecapitalizeName(string name)

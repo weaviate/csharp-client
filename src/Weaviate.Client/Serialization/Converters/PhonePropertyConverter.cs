@@ -18,12 +18,7 @@ public class PhonePropertyConverter : PropertyConverterBase
         if (value is not PhoneNumber phone)
             return null;
 
-        var dict = new Dictionary<string, object?> { ["input"] = phone.Input };
-
-        if (!string.IsNullOrEmpty(phone.DefaultCountry))
-            dict["defaultCountry"] = phone.DefaultCountry;
-
-        return dict;
+        return phone.ToDto();
     }
 
     public override Value ToGrpc(object? value)
@@ -53,17 +48,7 @@ public class PhonePropertyConverter : PropertyConverterBase
         // Handle REST DTO type
         if (value is Rest.Dto.PhoneNumber dtoPhone)
         {
-            return new PhoneNumber(dtoPhone.Input ?? "")
-            {
-                DefaultCountry = dtoPhone.DefaultCountry,
-                InternationalFormatted = dtoPhone.InternationalFormatted,
-                NationalFormatted = dtoPhone.NationalFormatted,
-                CountryCode = dtoPhone.CountryCode.HasValue
-                    ? (ulong)dtoPhone.CountryCode.Value
-                    : null,
-                National = dtoPhone.National.HasValue ? (ulong)dtoPhone.National.Value : null,
-                Valid = dtoPhone.Valid,
-            };
+            return dtoPhone.ToModel();
         }
 
         return null;
