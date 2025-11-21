@@ -182,6 +182,7 @@ public static partial class Configure
             string? baseURL = null,
             string[]? imageFields = null,
             string? model = null,
+            int? dimensions = null,
             string[]? textFields = null,
             string? truncate = null,
             bool? vectorizeCollectionName = null,
@@ -193,6 +194,7 @@ public static partial class Configure
                     BaseURL = baseURL,
                     ImageFields = imageFields,
                     Model = model,
+                    Dimensions = dimensions,
                     TextFields = textFields,
                     Truncate = truncate,
                     VectorizeCollectionName = vectorizeCollectionName,
@@ -325,6 +327,7 @@ public static partial class Configure
         public static VectorConfigBuilder Text2VecCohere(
             string? baseURL = null,
             string? model = null,
+            int? dimensions = null,
             string? truncate = null,
             bool? vectorizeCollectionName = null
         ) =>
@@ -333,6 +336,7 @@ public static partial class Configure
                 {
                     BaseURL = baseURL,
                     Model = model,
+                    Dimensions = dimensions,
                     Truncate = truncate,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
