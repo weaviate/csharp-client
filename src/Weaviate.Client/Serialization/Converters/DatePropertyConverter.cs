@@ -61,7 +61,7 @@ public class DatePropertyConverter : PropertyConverterBase
             !DateTime.TryParse(
                 dateString,
                 CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeUniversal | DateTimeStyles.AllowWhiteSpaces,
+                DateTimeStyles.RoundtripKind, // Preserves timezone info from the string
                 out parsed
             )
         )
@@ -70,7 +70,11 @@ public class DatePropertyConverter : PropertyConverterBase
             parsed = DateTime.Parse(dateString);
         }
 
-        var utc = DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
+        // Convert to UTC if not already
+        var utc =
+            parsed.Kind == DateTimeKind.Utc
+                ? parsed
+                : DateTime.SpecifyKind(parsed.ToUniversalTime(), DateTimeKind.Utc);
 
         if (underlying == typeof(DateTimeOffset))
             return new DateTimeOffset(utc);
@@ -95,7 +99,7 @@ public class DatePropertyConverter : PropertyConverterBase
             !DateTime.TryParse(
                 dateString,
                 CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeUniversal | DateTimeStyles.AllowWhiteSpaces,
+                DateTimeStyles.RoundtripKind, // Preserves timezone info from the string
                 out parsed
             )
         )
@@ -104,7 +108,11 @@ public class DatePropertyConverter : PropertyConverterBase
             parsed = DateTime.Parse(dateString);
         }
 
-        var utc = DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
+        // Convert to UTC if not already
+        var utc =
+            parsed.Kind == DateTimeKind.Utc
+                ? parsed
+                : DateTime.SpecifyKind(parsed.ToUniversalTime(), DateTimeKind.Utc);
 
         if (underlying == typeof(DateTimeOffset))
             return new DateTimeOffset(utc);
