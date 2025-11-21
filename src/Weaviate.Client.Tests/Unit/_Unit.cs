@@ -1,6 +1,4 @@
-using System.Dynamic;
 using Weaviate.Client.Models;
-using Weaviate.Client.Tests.Common;
 
 namespace Weaviate.Client.Tests.Unit;
 

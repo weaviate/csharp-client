@@ -31,8 +31,9 @@ public class TestMultiVector : IntegrationTests
         );
 
         var vic =
-            (await collection.Config.Get())?.VectorConfig["colbert"].VectorIndexConfig
-            as VectorIndex.HNSW;
+            (await collection.Config.Get(cancellationToken: TestContext.Current.CancellationToken))
+                ?.VectorConfig["colbert"]
+                .VectorIndexConfig as VectorIndex.HNSW;
 
         Assert.NotNull(vic);
         Assert.NotNull(vic.MultiVector);
@@ -53,7 +54,9 @@ public class TestMultiVector : IntegrationTests
 
         Assert.NotNull(client);
 
-        var collection = await client.Config.Get();
+        var collection = await client.Config.Get(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Assert.NotNull(collection);
         Assert.Contains(collection.VectorConfig.Keys, k => k == "regular");
@@ -72,7 +75,9 @@ public class TestMultiVector : IntegrationTests
             }
         );
 
-        var config = await collection.Config.Get();
+        var config = await collection.Config.Get(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(config);
         Assert.NotNull(config.VectorConfig);
         Assert.True(config.VectorConfig.ContainsKey("regular"));
@@ -115,7 +120,9 @@ public class TestMultiVector : IntegrationTests
             }
         );
 
-        var config = await collection.Config.Get();
+        var config = await collection.Config.Get(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(config);
         Assert.NotNull(config.VectorConfig);
         Assert.IsType<VectorIndex.HNSW>(config.VectorConfig["colbert"].VectorIndexConfig);
@@ -130,29 +137,36 @@ public class TestMultiVector : IntegrationTests
         );
 
         var result = await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(
-                new { },
-                null,
-                new Vectors()
-                {
-                    { "regular", new[] { 1f, 2f } },
+            [
+                BatchInsertRequest.Create<object>(
+                    new { },
+                    null,
+                    new Vectors()
                     {
-                        "colbert",
-                        new[,]
+                        { "regular", new[] { 1f, 2f } },
                         {
-                            { 1f, 2f },
-                            { 4f, 5f },
-                        }
-                    },
-                }
-            )
+                            "colbert",
+                            new[,]
+                            {
+                                { 1f, 2f },
+                                { 4f, 5f },
+                            }
+                        },
+                    }
+                ),
+            ],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         Assert.Equal(0, result.Count(r => r.Error != null));
 
-        Assert.Equal(1UL, await collection.Count());
+        Assert.Equal(1UL, await collection.Count(TestContext.Current.CancellationToken));
 
-        var objs = await collection.Query.NearVector(new[] { 1f, 2f }, targetVector: ["regular"]);
+        var objs = await collection.Query.NearVector(
+            new[] { 1f, 2f },
+            targetVector: ["regular"],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Single(objs);
 
         objs = await collection.Query.NearVector(
@@ -161,7 +175,8 @@ public class TestMultiVector : IntegrationTests
                 { 1f, 2f },
                 { 3f, 4f },
             },
-            targetVector: ["colbert"]
+            targetVector: ["colbert"],
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Single(objs);
 
@@ -181,14 +196,16 @@ public class TestMultiVector : IntegrationTests
                     { 3f, 4f },
                 }
             ),
-            targetVector: ["colbert"]
+            targetVector: ["colbert"],
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Single(objs);
 
         objs = await collection.Query.Hybrid(
             query: null,
             vectors: Vector.Create(1f, 2f),
-            targetVector: ["regular"]
+            targetVector: ["regular"],
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Single(objs);
 
@@ -202,7 +219,8 @@ public class TestMultiVector : IntegrationTests
                     { 3f, 4f },
                 }
             ),
-            targetVector: ["colbert"]
+            targetVector: ["colbert"],
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Single(objs);
 
@@ -216,7 +234,8 @@ public class TestMultiVector : IntegrationTests
                     { 3f, 4f },
                 }
             ),
-            targetVector: ["colbert"]
+            targetVector: ["colbert"],
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Single(objs);
 

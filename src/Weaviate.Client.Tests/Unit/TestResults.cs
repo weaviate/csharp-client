@@ -1,6 +1,4 @@
-using System.Text.Json;
 using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;

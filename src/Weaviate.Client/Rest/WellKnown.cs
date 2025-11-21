@@ -1,5 +1,4 @@
 using System.Net;
-using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Rest;
 

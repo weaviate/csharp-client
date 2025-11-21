@@ -104,7 +104,7 @@ public class TestWellKnown
         var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         var result = await client.WaitUntilReady(
             TimeSpan.FromSeconds(2),
-            CancellationToken.None,
+            TestContext.Current.CancellationToken,
             TimeSpan.FromMilliseconds(10)
         );
         Assert.True(result);
@@ -122,7 +122,7 @@ public class TestWellKnown
         var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         var result = await client.WaitUntilReady(
             TimeSpan.FromMilliseconds(100),
-            CancellationToken.None,
+            TestContext.Current.CancellationToken,
             TimeSpan.FromMilliseconds(10)
         );
         Assert.False(result);

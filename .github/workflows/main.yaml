@@ -17,6 +17,8 @@ env:
   DOTNET_VERSION: "8.x"
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+  OKTA_CLIENT_SECRET: ${{ secrets.OKTA_CLIENT_SECRET }}
+  OKTA_DUMMY_CI_PW: ${{ secrets.OKTA_DUMMY_CI_PW }}
 
 jobs:
   check_formatting:

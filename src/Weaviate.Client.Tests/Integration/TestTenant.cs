@@ -35,14 +35,19 @@ public partial class TenantTests : IntegrationTests
         var tenant2Collection = collectionClient.WithTenant("tenant2");
         var items = Enumerable.Range(0, (int)(howMany * 2)).Select(x => new { }).ToArray();
         var result = await tenant2Collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(items)
+            BatchInsertRequest.Create<object>(items),
+            TestContext.Current.CancellationToken
         );
 
         Assert.Equal(0, result.Count(r => r.Error != null));
 
         // Act
-        var tenant2Count = await tenant2Collection.Count();
-        var tenant3Count = await collectionClient.WithTenant("tenant3").Count();
+        var tenant2Count = await tenant2Collection.Count(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var tenant3Count = await collectionClient
+            .WithTenant("tenant3")
+            .Count(cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(howMany * 2, tenant2Count);
@@ -69,15 +74,29 @@ public partial class TenantTests : IntegrationTests
         );
 
         var tenant1Collection = collectionClient.WithTenant(tenantObj.Name);
-        var uuid = await tenant1Collection.Data.Insert(new { });
+        var uuid = await tenant1Collection.Data.Insert(
+            new { },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var fetched = await tenant1Collection.Query.FetchObjectByID(uuid);
+        var fetched = await tenant1Collection.Query.FetchObjectByID(
+            uuid,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(fetched);
 
-        var ex = await Record.ExceptionAsync(() => tenant1Collection.Data.DeleteByID(uuid));
+        var ex = await Record.ExceptionAsync(() =>
+            tenant1Collection.Data.DeleteByID(
+                uuid,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
         Assert.Null(ex);
 
-        var fetchedAfterDelete = await tenant1Collection.Query.FetchObjectByID(uuid);
+        var fetchedAfterDelete = await tenant1Collection.Query.FetchObjectByID(
+            uuid,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Null(fetchedAfterDelete);
     }
 
@@ -103,30 +122,49 @@ public partial class TenantTests : IntegrationTests
 
         var result = (
             await tenant1Collection.Data.InsertMany(
-                BatchInsertRequest.Create<object>(
-                    new { Name = "some name" },
-                    null,
-                    new float[] { 1, 2, 3 }
-                ),
-                BatchInsertRequest.Create<object>(
-                    new { Name = "some other name" },
-                    _reusableUuids[0]
-                )
+                [
+                    BatchInsertRequest.Create<object>(
+                        new { Name = "some name" },
+                        null,
+                        new float[] { 1, 2, 3 }
+                    ),
+                    BatchInsertRequest.Create<object>(
+                        new { Name = "some other name" },
+                        _reusableUuids[0]
+                    ),
+                ],
+                TestContext.Current.CancellationToken
             )
         ).ToList();
 
         Assert.Equal(0, result.Count(r => r.Error != null));
 
-        var obj1 = await tenant1Collection.Query.FetchObjectByID(result[0].ID!.Value);
-        var obj2 = await tenant1Collection.Query.FetchObjectByID(result[1].ID!.Value);
+        var obj1 = await tenant1Collection.Query.FetchObjectByID(
+            result[0].ID!.Value,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var obj2 = await tenant1Collection.Query.FetchObjectByID(
+            result[1].ID!.Value,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Assert.NotNull(obj1);
         Assert.NotNull(obj2);
         Assert.Equal("some name", obj1.Properties["name"]);
         Assert.Equal("some other name", obj2.Properties["name"]);
 
-        Assert.Null(await tenant2Collection.Query.FetchObjectByID(result[0].ID!.Value));
-        Assert.Null(await tenant2Collection.Query.FetchObjectByID(result[1].ID!.Value));
+        Assert.Null(
+            await tenant2Collection.Query.FetchObjectByID(
+                result[0].ID!.Value,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
+        Assert.Null(
+            await tenant2Collection.Query.FetchObjectByID(
+                result[1].ID!.Value,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
     }
 
     [Fact]
@@ -153,15 +191,30 @@ public partial class TenantTests : IntegrationTests
         var tenant1Collection = collectionClient.WithTenant("tenant1");
         var tenant2Collection = collectionClient.WithTenant("tenant2");
 
-        var uuid = await tenant1Collection.Data.Insert(new { Name = "some name" });
+        var uuid = await tenant1Collection.Data.Insert(
+            new { Name = "some name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        await tenant1Collection.Data.Replace(uuid, new { Name = "other name" });
+        await tenant1Collection.Data.Replace(
+            uuid,
+            new { Name = "other name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var obj = await tenant1Collection.Query.FetchObjectByID(uuid);
+        var obj = await tenant1Collection.Query.FetchObjectByID(
+            uuid,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(obj);
         Assert.Equal("other name", obj.Properties["name"]);
 
-        Assert.Null(await tenant2Collection.Query.FetchObjectByID(uuid));
+        Assert.Null(
+            await tenant2Collection.Query.FetchObjectByID(
+                uuid,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
     }
 
     [Fact]
@@ -174,11 +227,21 @@ public partial class TenantTests : IntegrationTests
             vectorConfig: Configure.Vectors.SelfProvided().New()
         );
 
-        var uuid = await collectionClient.Data.Insert(new { Name = "some name" });
+        var uuid = await collectionClient.Data.Insert(
+            new { Name = "some name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        await collectionClient.Data.Replace(uuid, new { Name = "other name" });
+        await collectionClient.Data.Replace(
+            uuid,
+            new { Name = "other name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var obj = await collectionClient.Query.FetchObjectByID(uuid);
+        var obj = await collectionClient.Query.FetchObjectByID(
+            uuid,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(obj);
         Assert.Equal("other name", obj.Properties["name"]);
     }
@@ -206,15 +269,30 @@ public partial class TenantTests : IntegrationTests
         var tenant1Collection = collectionClient.WithTenant("tenant1");
         var tenant2Collection = collectionClient.WithTenant("tenant2");
 
-        var uuid = await tenant1Collection.Data.Insert(new { Name = "some name" });
+        var uuid = await tenant1Collection.Data.Insert(
+            new { Name = "some name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        await tenant1Collection.Data.Replace(uuid, new { Name = "other name" });
+        await tenant1Collection.Data.Replace(
+            uuid,
+            new { Name = "other name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var obj = await tenant1Collection.Query.FetchObjectByID(uuid);
+        var obj = await tenant1Collection.Query.FetchObjectByID(
+            uuid,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(obj);
         Assert.Equal("other name", obj.Properties["name"]);
 
-        Assert.Null(await tenant2Collection.Query.FetchObjectByID(uuid));
+        Assert.Null(
+            await tenant2Collection.Query.FetchObjectByID(
+                uuid,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
     }
 
     [Fact]
@@ -285,13 +363,26 @@ public partial class TenantTests : IntegrationTests
         var tenant1Collection = collectionClient.WithTenant("Tenant1");
         var tenant2Collection = collectionClient.WithTenant("Tenant2");
 
-        var uuid1 = await tenant1Collection.Data.Insert(new { name = "some name" });
+        var uuid1 = await tenant1Collection.Data.Insert(
+            new { name = "some name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var objects1 = (await tenant1Collection.Query.BM25(query: "some")).ToList();
+        var objects1 = (
+            await tenant1Collection.Query.BM25(
+                query: "some",
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Single(objects1);
         Assert.Equal(uuid1, objects1[0].ID);
 
-        var objects2 = (await tenant2Collection.Query.BM25(query: "some")).ToList();
+        var objects2 = (
+            await tenant2Collection.Query.BM25(
+                query: "some",
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Empty(objects2);
     }
 
@@ -314,20 +405,38 @@ public partial class TenantTests : IntegrationTests
         var tenant1Collection = collectionClient.WithTenant("Tenant1");
         var tenant2Collection = collectionClient.WithTenant("Tenant2");
 
-        var uuid1 = await tenant1Collection.Data.Insert(new { name = "some name" });
-        var obj1 = await tenant1Collection.Query.FetchObjectByID(uuid1);
+        var uuid1 = await tenant1Collection.Data.Insert(
+            new { name = "some name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var obj1 = await tenant1Collection.Query.FetchObjectByID(
+            uuid1,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(obj1);
         Assert.Equal("some name", obj1.Properties["name"]);
 
-        var obj2 = await tenant2Collection.Query.FetchObjectByID(uuid1);
+        var obj2 = await tenant2Collection.Query.FetchObjectByID(
+            uuid1,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Null(obj2);
 
-        var uuid2 = await tenant2Collection.Data.Insert(new { name = "some other name" });
-        var obj3 = await tenant2Collection.Query.FetchObjectByID(uuid2);
+        var uuid2 = await tenant2Collection.Data.Insert(
+            new { name = "some other name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var obj3 = await tenant2Collection.Query.FetchObjectByID(
+            uuid2,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(obj3);
         Assert.Equal("some other name", obj3.Properties["name"]);
 
-        var obj4 = await tenant1Collection.Query.FetchObjectByID(uuid2);
+        var obj4 = await tenant1Collection.Query.FetchObjectByID(
+            uuid2,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Null(obj4);
     }
 
@@ -350,18 +459,36 @@ public partial class TenantTests : IntegrationTests
         var tenant1Collection = collectionClient.WithTenant("Tenant1");
         var tenant2Collection = collectionClient.WithTenant("Tenant2");
 
-        await tenant1Collection.Data.Insert(new { name = "some name" });
+        await tenant1Collection.Data.Insert(
+            new { name = "some name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var objects1 = (await tenant1Collection.Query.FetchObjects()).ToList();
+        var objects1 = (
+            await tenant1Collection.Query.FetchObjects(
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Single(objects1);
         Assert.Equal("some name", objects1[0].Properties["name"]);
 
-        var objects2 = (await tenant2Collection.Query.FetchObjects()).ToList();
+        var objects2 = (
+            await tenant2Collection.Query.FetchObjects(
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Empty(objects2);
 
-        await tenant2Collection.Data.Insert(new { name = "some other name" });
+        await tenant2Collection.Data.Insert(
+            new { name = "some other name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var objects3 = (await tenant2Collection.Query.FetchObjects()).ToList();
+        var objects3 = (
+            await tenant2Collection.Query.FetchObjects(
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Single(objects3);
         Assert.Equal("some other name", objects3[0].Properties["name"]);
     }
@@ -385,13 +512,39 @@ public partial class TenantTests : IntegrationTests
         var tenant1Collection = collectionClient.WithTenant("Tenant1");
         var tenant2Collection = collectionClient.WithTenant("Tenant2");
 
-        var uuid1 = await tenant1Collection.Data.Insert(new { });
-        var uuid2 = await tenant2Collection.Data.Insert(new { });
+        var uuid1 = await tenant1Collection.Data.Insert(
+            new { },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuid2 = await tenant2Collection.Data.Insert(
+            new { },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        Assert.NotNull(await tenant1Collection.Query.FetchObjectByID(uuid1));
-        Assert.Null(await tenant2Collection.Query.FetchObjectByID(uuid1));
-        Assert.NotNull(await tenant2Collection.Query.FetchObjectByID(uuid2));
-        Assert.Null(await tenant1Collection.Query.FetchObjectByID(uuid2));
+        Assert.NotNull(
+            await tenant1Collection.Query.FetchObjectByID(
+                uuid1,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
+        Assert.Null(
+            await tenant2Collection.Query.FetchObjectByID(
+                uuid1,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
+        Assert.NotNull(
+            await tenant2Collection.Query.FetchObjectByID(
+                uuid2,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
+        Assert.Null(
+            await tenant1Collection.Query.FetchObjectByID(
+                uuid2,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
     }
 
     [Fact]
@@ -554,7 +707,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        var collection = await collectionClient.Config.Get();
+        var collection = await collectionClient.Config.Get(TestContext.Current.CancellationToken);
 
         Assert.NotNull(collection);
 
@@ -721,7 +874,10 @@ public partial class TenantTests : IntegrationTests
         var objects = Enumerable
             .Range(0, 101)
             .Select(_ => BatchInsertRequest.Create<object>(new { name = "some name" }));
-        var result = await tenantCollection.Data.InsertMany(objects);
+        var result = await tenantCollection.Data.InsertMany(
+            objects,
+            TestContext.Current.CancellationToken
+        );
         Assert.Equal(0, result.Count(r => r.Error != null));
 
         // Batch insert 101 objects for tenants "tenant-0" to "tenant-100"
@@ -733,7 +889,8 @@ public partial class TenantTests : IntegrationTests
                         new { name = "some name" },
                         tenant: $"tenant-{i}"
                     )
-                )
+                ),
+            TestContext.Current.CancellationToken
         );
 
         Assert.Equal(0, batchResult.Count(r => r.Error != null));
@@ -755,9 +912,16 @@ public partial class TenantTests : IntegrationTests
 
         var tenant1Collection = collectionClient.WithTenant(tenant.Name);
 
-        await tenant1Collection.Data.Insert(new { name = "some name" });
+        await tenant1Collection.Data.Insert(
+            new { name = "some name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var objects = (await tenant1Collection.Query.FetchObjects()).ToList();
+        var objects = (
+            await tenant1Collection.Query.FetchObjects(
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Single(objects);
         Assert.Equal("some name", objects[0].Properties["name"]);
 
@@ -770,7 +934,11 @@ public partial class TenantTests : IntegrationTests
 
         await collectionClient.Tenants.Activate([tenant], TestContext.Current.CancellationToken);
 
-        objects = (await tenant1Collection.Query.FetchObjects()).ToList();
+        objects = (
+            await tenant1Collection.Query.FetchObjects(
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Single(objects);
         Assert.Equal("some name", objects[0].Properties["name"]);
     }
@@ -798,16 +966,33 @@ public partial class TenantTests : IntegrationTests
 
         // Act
         var tenantAClient = collectionClient.WithTenant("TenantA");
-        await tenantAClient.Data.Insert(new { name = "some A name" });
-        await tenantAClient.Data.Insert(new { name = "another A name" });
+        await tenantAClient.Data.Insert(
+            new { name = "some A name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await tenantAClient.Data.Insert(
+            new { name = "another A name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var tenantBClient = tenantAClient.WithTenant("TenantB");
-        await tenantBClient.Data.Insert(new { name = "some B name" });
+        await tenantBClient.Data.Insert(
+            new { name = "some B name" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var objectsA = (await tenantAClient.Query.FetchObjects()).ToList();
+        var objectsA = (
+            await tenantAClient.Query.FetchObjects(
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Equal(2, objectsA.Count);
 
-        var objectsB = (await tenantBClient.Query.FetchObjects()).ToList();
+        var objectsB = (
+            await tenantBClient.Query.FetchObjects(
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
         Assert.Single(objectsB);
         Assert.Equal("some B name", objectsB[0].Properties["name"]);
 

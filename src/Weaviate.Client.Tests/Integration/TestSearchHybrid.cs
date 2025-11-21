@@ -17,15 +17,24 @@ public partial class SearchTests : IntegrationTests
         var uuid1 = Guid.NewGuid();
         var uuid2 = Guid.NewGuid();
 
-        await collection.Data.Insert(new { Name = "some name" }, id: uuid1);
-        await collection.Data.Insert(new { Name = "other word" }, id: uuid2);
+        await collection.Data.Insert(
+            new { Name = "some name" },
+            id: uuid1,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { Name = "other word" },
+            id: uuid2,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var objs = (
             await collection.Query.Hybrid(
                 alpha: 0,
                 query: "name",
                 fusionType: fusionType,
-                includeVectors: true
+                includeVectors: true,
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -36,7 +45,8 @@ public partial class SearchTests : IntegrationTests
                 alpha: 1,
                 query: "name",
                 fusionType: fusionType,
-                vectors: objs.First().Vectors["default"]
+                vectors: objs.First().Vectors["default"],
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -54,8 +64,16 @@ public partial class SearchTests : IntegrationTests
         var uuid1 = Guid.NewGuid();
         var uuid2 = Guid.NewGuid();
 
-        await collection.Data.Insert(new { Name = "some name" }, id: uuid1);
-        await collection.Data.Insert(new { Name = "other word" }, id: uuid2);
+        await collection.Data.Insert(
+            new { Name = "some name" },
+            id: uuid1,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { Name = "other word" },
+            id: uuid2,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var objs = (
             await collection.Query.Hybrid(
@@ -67,7 +85,8 @@ public partial class SearchTests : IntegrationTests
                     ObjectsPerGroup = 1,
                     NumberOfGroups = 2,
                 },
-                includeVectors: true
+                includeVectors: true,
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -86,18 +105,31 @@ public partial class SearchTests : IntegrationTests
         );
 
         var uuid = Guid.NewGuid();
-        await collection.Data.Insert(new { Name = "some name" }, id: uuid);
+        await collection.Data.Insert(
+            new { Name = "some name" },
+            id: uuid,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var obj = await collection.Query.FetchObjectByID(uuid, includeVectors: true);
+        var obj = await collection.Query.FetchObjectByID(
+            uuid,
+            includeVectors: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(obj);
         Assert.NotEmpty(obj.Vectors);
 
-        await collection.Data.Insert(new { Name = "other word" }, id: Guid.NewGuid());
+        await collection.Data.Insert(
+            new { Name = "other word" },
+            id: Guid.NewGuid(),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var objs = await collection.Query.Hybrid(
             alpha: 1,
             query: query,
-            vectors: obj.Vectors["default"]
+            vectors: obj.Vectors["default"],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         Assert.Equal(2, objs.Count());
@@ -115,15 +147,21 @@ public partial class SearchTests : IntegrationTests
 
         var res = await collection.Data.InsertMany(
             BatchInsertRequest.Create<object>(
-                new { Name = "test" },
-                new { Name = "another" },
-                new { Name = "test" }
-            )
+                [new { Name = "test" }, new { Name = "another" }, new { Name = "test" }]
+            ),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         Assert.Equal(0, res.Count(r => r.Error is not null));
 
-        var objs = (await collection.Query.Hybrid(query: "test", alpha: 0, limit: limit)).Objects;
+        var objs = (
+            await collection.Query.Hybrid(
+                query: "test",
+                alpha: 0,
+                limit: limit,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).Objects;
 
         Assert.Equal(limit, (uint)objs.Count());
     }
@@ -141,15 +179,21 @@ public partial class SearchTests : IntegrationTests
 
         var res = await collection.Data.InsertMany(
             BatchInsertRequest.Create<object>(
-                new { Name = "test" },
-                new { Name = "another" },
-                new { Name = "test" }
-            )
+                [new { Name = "test" }, new { Name = "another" }, new { Name = "test" }]
+            ),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         Assert.Equal(0, res.Count(r => r.Error is not null));
 
-        var objs = (await collection.Query.Hybrid(query: "test", alpha: 0, offset: offset)).Objects;
+        var objs = (
+            await collection.Query.Hybrid(
+                query: "test",
+                alpha: 0,
+                offset: offset,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).Objects;
 
         Assert.Equal(expected, objs.Count());
     }
@@ -164,20 +208,41 @@ public partial class SearchTests : IntegrationTests
 
         var res = await collection.Data.InsertMany(
             BatchInsertRequest.Create<object>(
-                new { name = "banana" },
-                new { name = "fruit" },
-                new { name = "car" }
-            )
+                [new { name = "banana" }, new { name = "fruit" }, new { name = "car" }]
+            ),
+            cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(0, res.Count(r => r.Error is not null));
 
-        var hybridRes = (await collection.Query.Hybrid(query: "fruit", alpha: 0)).Objects;
-        var bm25Res = (await collection.Query.BM25(query: "fruit")).Objects;
+        var hybridRes = (
+            await collection.Query.Hybrid(
+                query: "fruit",
+                alpha: 0,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).Objects;
+        var bm25Res = (
+            await collection.Query.BM25(
+                query: "fruit",
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).Objects;
         Assert.Equal(hybridRes.Count(), bm25Res.Count());
         Assert.True(hybridRes.Zip(bm25Res).All(pair => pair.First.ID == pair.Second.ID));
 
-        hybridRes = (await collection.Query.Hybrid(query: "fruit", alpha: 1)).Objects;
-        var textRes = (await collection.Query.NearText(text: "fruit")).Objects;
+        hybridRes = (
+            await collection.Query.Hybrid(
+                query: "fruit",
+                alpha: 1,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).Objects;
+        var textRes = (
+            await collection.Query.NearText(
+                text: "fruit",
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).Objects;
         Assert.Equal(hybridRes.Count(), textRes.Count());
         Assert.True(hybridRes.Zip(textRes).All(pair => pair.First.ID == pair.Second.ID));
     }
@@ -191,17 +256,32 @@ public partial class SearchTests : IntegrationTests
         );
 
         var uuidBanana = Guid.NewGuid();
-        await collection.Data.Insert(new { text = "banana" }, id: uuidBanana);
-        var obj = await collection.Query.FetchObjectByID(uuidBanana, includeVectors: true);
+        await collection.Data.Insert(
+            new { text = "banana" },
+            id: uuidBanana,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var obj = await collection.Query.FetchObjectByID(
+            uuidBanana,
+            includeVectors: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.NotNull(obj);
 
-        await collection.Data.Insert(new { text = "dog" });
-        await collection.Data.Insert(new { text = "different concept" });
+        await collection.Data.Insert(
+            new { text = "dog" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { text = "different concept" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearVector(obj.Vectors["default"])
+                vectors: new HybridNearVector(obj.Vectors["default"]),
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -211,7 +291,8 @@ public partial class SearchTests : IntegrationTests
         var nearVec = (
             await collection.Query.NearVector(
                 vector: obj.Vectors["default"],
-                returnMetadata: MetadataOptions.Distance
+                returnMetadata: MetadataOptions.Distance,
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -224,7 +305,8 @@ public partial class SearchTests : IntegrationTests
                 Certainty: null,
                 Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
             ),
-            returnMetadata: MetadataOptions.All
+            returnMetadata: MetadataOptions.All,
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         Assert.Equal(uuidBanana, hybridObjs2.First().ID);
@@ -244,11 +326,25 @@ public partial class SearchTests : IntegrationTests
         );
 
         var uuidBanana = Guid.NewGuid();
-        await collection.Data.Insert(new { text = "banana" }, id: uuidBanana);
-        await collection.Data.Insert(new { text = "dog" });
-        await collection.Data.Insert(new { text = "different concept" });
+        await collection.Data.Insert(
+            new { text = "banana" },
+            id: uuidBanana,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { text = "dog" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { text = "different concept" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        var obj = await collection.Query.FetchObjectByID(uuidBanana, includeVectors: true);
+        var obj = await collection.Query.FetchObjectByID(
+            uuidBanana,
+            includeVectors: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Assert.NotNull(obj);
 
@@ -256,7 +352,8 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 query: null,
                 vectors: new HybridNearVector(obj.Vectors["text"]),
-                targetVector: ["text"]
+                targetVector: ["text"],
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -267,7 +364,8 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.NearVector(
                 vector: obj.Vectors["text"],
                 targetVector: ["text"],
-                returnMetadata: MetadataOptions.Distance
+                returnMetadata: MetadataOptions.Distance,
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -282,7 +380,8 @@ public partial class SearchTests : IntegrationTests
                     Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
                 ),
                 targetVector: ["text"],
-                returnMetadata: MetadataOptions.All
+                returnMetadata: MetadataOptions.All,
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -299,14 +398,25 @@ public partial class SearchTests : IntegrationTests
         );
 
         var uuidBananaPudding = Guid.NewGuid();
-        await collection.Data.Insert(new { text = "banana pudding" }, id: uuidBananaPudding);
-        await collection.Data.Insert(new { text = "apple smoothie" });
-        await collection.Data.Insert(new { text = "different concept" });
+        await collection.Data.Insert(
+            new { text = "banana pudding" },
+            id: uuidBananaPudding,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { text = "apple smoothie" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { text = "different concept" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearText("banana pudding")
+                vectors: new HybridNearText("banana pudding"),
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -323,7 +433,8 @@ public partial class SearchTests : IntegrationTests
                     MoveTo: new Move(force: 0.1f, concepts: ["pudding"]),
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
                 ),
-                returnMetadata: MetadataOptions.All
+                returnMetadata: MetadataOptions.All,
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -343,15 +454,26 @@ public partial class SearchTests : IntegrationTests
         );
 
         var uuidBananaPudding = Guid.NewGuid();
-        await collection.Data.Insert(new { text = "banana pudding" }, id: uuidBananaPudding);
-        await collection.Data.Insert(new { text = "apple smoothie" });
-        await collection.Data.Insert(new { text = "different concept" });
+        await collection.Data.Insert(
+            new { text = "banana pudding" },
+            id: uuidBananaPudding,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { text = "apple smoothie" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { text = "different concept" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
                 vectors: new HybridNearText("banana pudding"),
-                targetVector: ["text"]
+                targetVector: ["text"],
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -369,7 +491,8 @@ public partial class SearchTests : IntegrationTests
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
                 ),
                 targetVector: ["text"],
-                returnMetadata: MetadataOptions.All
+                returnMetadata: MetadataOptions.All,
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
@@ -400,7 +523,8 @@ public partial class SearchTests : IntegrationTests
             {
                 { "first", new float[] { 1, 0 } },
                 { "second", new float[] { 1, 0, 0 } },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid2 = await collection.Data.Insert(
             new { },
@@ -408,14 +532,16 @@ public partial class SearchTests : IntegrationTests
             {
                 { "first", new float[] { 0, 1 } },
                 { "second", new float[] { 0, 0, 1 } },
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var objs = (
             await collection.Query.Hybrid(
                 query: null,
                 vectors: new HybridNearVector(vector),
-                targetVector: ["first", "second"]
+                targetVector: ["first", "second"],
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).ToList();
 
@@ -427,7 +553,8 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 query: null,
                 vectors: new HybridNearVector(vector, Certainty: null, Distance: 0.1f),
-                targetVector: new[] { "first", "second" }
+                targetVector: new[] { "first", "second" },
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects.ToList();
 
@@ -557,12 +684,29 @@ public partial class SearchTests : IntegrationTests
             vectorConfig: Configure.Vectors.Text2VecTransformers().New("default")
         );
 
-        var uuid1 = await collection.Data.Insert(new { }, vectors: new float[] { 1, 0, 0 });
-        await collection.Data.Insert(new { }, vectors: new float[] { 0, 1, 0 });
-        await collection.Data.Insert(new { }, vectors: new float[] { 0, 0, 1 });
+        var uuid1 = await collection.Data.Insert(
+            new { },
+            vectors: new float[] { 1, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { },
+            vectors: new float[] { 0, 1, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { },
+            vectors: new float[] { 0, 0, 1 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var objs = (
-            await collection.Query.Hybrid("name", vectors: Vector.Create(1f, 0f, 0f), alpha: 0.7f)
+            await collection.Query.Hybrid(
+                "name",
+                vectors: Vector.Create(1f, 0f, 0f),
+                alpha: 0.7f,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
         ).ToList();
         Assert.Equal(3, objs.Count);
         Assert.Equal(uuid1, objs[0].ID);
@@ -572,7 +716,8 @@ public partial class SearchTests : IntegrationTests
                 "name",
                 vectors: Vectors.Create(1f, 0f, 0f),
                 maxVectorDistance: 0.1f,
-                alpha: 0.7f
+                alpha: 0.7f,
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).ToList();
         Assert.Single(objs);
@@ -589,26 +734,31 @@ public partial class SearchTests : IntegrationTests
 
         var uuid1 = await collection.Data.Insert(
             new { name = "banana one" },
-            vectors: new float[] { 1, 0, 0, 0 }
+            vectors: new float[] { 1, 0, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid2 = await collection.Data.Insert(
             new { name = "banana two" },
-            vectors: new float[] { 0, 1, 0, 0 }
+            vectors: new float[] { 0, 1, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid3 = await collection.Data.Insert(
             new { name = "banana three" },
-            vectors: new float[] { 0, 1, 0, 0 }
+            vectors: new float[] { 0, 1, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid4 = await collection.Data.Insert(
             new { name = "banana four" },
-            vectors: new float[] { 1, 0, 0, 0 }
+            vectors: new float[] { 1, 0, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var objs = (
             await collection.Query.Hybrid(
                 "banana two",
                 alpha: 0.0f,
-                bm25Operator: new BM25Operator.Or(MinimumMatch: 1)
+                bm25Operator: new BM25Operator.Or(MinimumMatch: 1),
+                cancellationToken: TestContext.Current.CancellationToken
             )
         ).ToList();
 
@@ -634,19 +784,23 @@ public partial class SearchTests : IntegrationTests
 
         await collection.Data.Insert(
             new { name = "banana one" },
-            vectors: new float[] { 1, 0, 0, 0 }
+            vectors: new float[] { 1, 0, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(
             new { name = "banana two" },
-            vectors: new float[] { 0, 1, 0, 0 }
+            vectors: new float[] { 0, 1, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(
             new { name = "banana three" },
-            vectors: new float[] { 0, 1, 0, 0 }
+            vectors: new float[] { 0, 1, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(
             new { name = "banana four" },
-            vectors: new float[] { 1, 0, 0, 0 }
+            vectors: new float[] { 1, 0, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var res = await collection.Aggregate.Hybrid(
@@ -654,7 +808,8 @@ public partial class SearchTests : IntegrationTests
             vectors: new[] { 1f, 0f, 0f, 0f },
             maxVectorDistance: 0.5f,
             targetVector: "default",
-            metrics: Metrics.ForProperty("name").Text(count: true)
+            metrics: [Metrics.ForProperty("name").Text(count: true)],
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         Assert.Equal(2, res.TotalCount);

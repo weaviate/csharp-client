@@ -6,7 +6,7 @@ public partial class ClientTests : IntegrationTests
     [Fact]
     public async Task ConnectToLocal()
     {
-        var client = Connect.Local();
+        var client = await Connect.Local();
 
         var ex = await Record.ExceptionAsync(async () =>
             await client
@@ -23,7 +23,7 @@ public partial class ClientTests : IntegrationTests
         var WCS_HOST = "piblpmmdsiknacjnm1ltla.c1.europe-west3.gcp.weaviate.cloud";
         var WCS_CREDS = "cy4ua772mBlMdfw3YnclqAWzFhQt0RLIN0sl";
 
-        var client = Connect.Cloud(WCS_HOST, WCS_CREDS);
+        var client = await Connect.Cloud(WCS_HOST, WCS_CREDS);
 
         var ex = await Record.ExceptionAsync(async () =>
             await client
@@ -36,7 +36,7 @@ public partial class ClientTests : IntegrationTests
     [Fact]
     public async Task TestMeta()
     {
-        var client = Connect.Local();
+        var client = await Connect.Local();
         var meta = await client.GetMeta(TestContext.Current.CancellationToken);
 
         // ip is different depending on the environment
@@ -47,7 +47,9 @@ public partial class ClientTests : IntegrationTests
     [Fact]
     public async Task TestNodesMinimal()
     {
-        var nodesMinimal = await _weaviate.Cluster.Nodes.List();
+        var nodesMinimal = await _weaviate.Cluster.Nodes.List(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // ip is different depending on the environment
         Assert.Single(nodesMinimal);
@@ -61,7 +63,9 @@ public partial class ClientTests : IntegrationTests
     [Fact]
     public async Task TestNodesListVerbose()
     {
-        var nodesVerbose = await _weaviate.Cluster.Nodes.ListVerbose();
+        var nodesVerbose = await _weaviate.Cluster.Nodes.ListVerbose(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Single(nodesVerbose);
         var nodeV = nodesVerbose[0];
         Assert.NotNull(nodeV);
@@ -78,7 +82,10 @@ public partial class ClientTests : IntegrationTests
         var collectionName = "TestNodesListVerboseWithCollection";
         var collection = await CollectionFactory(collectionName);
 
-        var nodesVerbose = await _weaviate.Cluster.Nodes.ListVerbose(collection.Name);
+        var nodesVerbose = await _weaviate.Cluster.Nodes.ListVerbose(
+            collection.Name,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         Assert.Single(nodesVerbose);
         var nodeV = nodesVerbose[0];
         Assert.NotNull(nodeV);

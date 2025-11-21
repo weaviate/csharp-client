@@ -1,11 +1,7 @@
-using System.Collections.Generic;
-using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Weaviate.Client.Models;
 using Weaviate.Client.Rest.Dto;
 using Weaviate.Client.Tests.Unit.Mocks;
-using Xunit;
 
 namespace Weaviate.Client.Tests.Unit;
 
@@ -58,7 +54,9 @@ public partial class RestClientTests
         handler.AddJsonResponse(dto!);
 
         // Act
-        var result = await client.Cluster.Nodes.ListVerbose();
+        var result = await client.Cluster.Nodes.ListVerbose(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Assert
         Assert.NotNull(result);
