@@ -45,16 +45,31 @@ public class DatePropertyConverter : PropertyConverterBase
         if (value is null)
             return null;
 
+        // If already a DateTime, just ensure it's UTC
+        if (value is DateTime dt)
+            return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+
         var dateString = value.ToString();
         if (string.IsNullOrEmpty(dateString))
             return null;
 
         var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
-        var parsed = DateTime.Parse(
-            dateString,
-            CultureInfo.InvariantCulture,
-            DateTimeStyles.AssumeUniversal
-        );
+
+        // Try parsing with multiple formats for compatibility
+        DateTime parsed;
+        if (
+            !DateTime.TryParse(
+                dateString,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AllowWhiteSpaces,
+                out parsed
+            )
+        )
+        {
+            // Fall back to current culture parsing (for formats like "20/11/2025 20:19:52")
+            parsed = DateTime.Parse(dateString);
+        }
+
         var utc = DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
 
         if (underlying == typeof(DateTimeOffset))
@@ -73,11 +88,22 @@ public class DatePropertyConverter : PropertyConverterBase
             return null;
 
         var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
-        var parsed = DateTime.Parse(
-            dateString,
-            CultureInfo.InvariantCulture,
-            DateTimeStyles.AssumeUniversal
-        );
+
+        // Try parsing with multiple formats for compatibility
+        DateTime parsed;
+        if (
+            !DateTime.TryParse(
+                dateString,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AllowWhiteSpaces,
+                out parsed
+            )
+        )
+        {
+            // Fall back to current culture parsing
+            parsed = DateTime.Parse(dateString);
+        }
+
         var utc = DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
 
         if (underlying == typeof(DateTimeOffset))

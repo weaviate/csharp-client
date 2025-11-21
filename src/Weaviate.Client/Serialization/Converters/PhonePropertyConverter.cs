@@ -40,15 +40,26 @@ public class PhonePropertyConverter : PropertyConverterBase
         if (value is null)
             return null;
 
-        if (value is IDictionary<string, object?> dict)
-        {
-            return CreatePhoneFromDict(dict);
-        }
+        // If already a PhoneNumber model, return it
+        if (value is PhoneNumber phone)
+            return phone;
 
         // Handle REST DTO type
         if (value is Rest.Dto.PhoneNumber dtoPhone)
         {
             return dtoPhone.ToModel();
+        }
+
+        // Handle dictionary (both nullable and non-nullable)
+        if (value is IDictionary<string, object?> dictNullable)
+        {
+            return CreatePhoneFromDict(dictNullable);
+        }
+
+        if (value is IDictionary<string, object> dict)
+        {
+            var converted = dict.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value);
+            return CreatePhoneFromDict(converted);
         }
 
         return null;
