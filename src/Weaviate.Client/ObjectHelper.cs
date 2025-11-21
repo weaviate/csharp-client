@@ -789,41 +789,14 @@ internal class ObjectHelper
     }
 
     // Helper method to convert C# objects to protobuf Values
-    internal static Value ConvertToProtoValue(object obj)
+    internal static Value ConvertToProtoValue(object? obj)
     {
+        // Handle special cases that aren't covered by converters
         return obj switch
         {
             null => Value.ForNull(),
-            // byte[] ba => Value.ForString(Convert.ToBase64String(ba)),
-            bool b => Value.ForBool(b),
-            int i => Value.ForNumber(i),
-            long l => Value.ForNumber(l),
-            float f => Value.ForNumber(f),
-            double d => Value.ForNumber(d),
-            decimal dec => Value.ForNumber((double)dec),
-            string s => Value.ForString(s),
-            DateTime dt => Value.ForString(dt.ToUniversalTime().ToString("o")),
-            Guid uuid => Value.ForString(uuid.ToString()),
-            GeoCoordinate v => Value.ForStruct(
-                ToStruct(new V1.GeoCoordinate() { Latitude = v.Latitude, Longitude = v.Longitude })
-            ),
-            Models.PhoneNumber pn => Value.ForStruct(
-                ToStruct(
-                    new V1.PhoneNumber()
-                    {
-                        CountryCode = pn.CountryCode ?? 0,
-                        DefaultCountry = pn.DefaultCountry,
-                        Input = pn.Input,
-                        InternationalFormatted = pn.InternationalFormatted,
-                        National = pn.National ?? 0,
-                        NationalFormatted = pn.NationalFormatted,
-                        Valid = pn.Valid ?? false,
-                    }
-                )
-            ),
             Google.Protobuf.WellKnownTypes.Struct s => Value.ForStruct(s),
-            byte[] ba => Value.ForString(Convert.ToBase64String(ba)),
-            _ => throw new ArgumentException($"Unsupported type: {obj.GetType()}"),
+            _ => PropertyConverterRegistry.Default.ToGrpcValue(obj),
         };
     }
 
