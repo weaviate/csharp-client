@@ -118,6 +118,18 @@ public class PropertyConverterRegistry
     }
 
     /// <summary>
+    /// Converts a value to a gRPC Value using the appropriate converter.
+    /// </summary>
+    public Google.Protobuf.WellKnownTypes.Value ToGrpcValue(object? value)
+    {
+        if (value is null)
+            return Google.Protobuf.WellKnownTypes.Value.ForNull();
+
+        var converter = GetConverterForType(value.GetType());
+        return converter?.ToGrpc(value) ?? Google.Protobuf.WellKnownTypes.Value.ForNull();
+    }
+
+    /// <summary>
     /// Serializes an object's properties to a dictionary suitable for REST API.
     /// </summary>
     public IDictionary<string, object?> SerializeToRest(object obj)
