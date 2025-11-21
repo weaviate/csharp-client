@@ -9,8 +9,6 @@ namespace Weaviate.Client.Serialization.Converters;
 /// </summary>
 public class DatePropertyConverter : PropertyConverterBase
 {
-    private const string Iso8601Format = "yyyy-MM-ddTHH:mm:ssZ";
-
     public override string DataType => "date";
 
     public override IReadOnlyList<System.Type> SupportedTypes =>
@@ -21,12 +19,8 @@ public class DatePropertyConverter : PropertyConverterBase
         return value switch
         {
             null => null,
-            DateTime dt => dt.ToUniversalTime()
-                .ToString(Iso8601Format, CultureInfo.InvariantCulture),
-            DateTimeOffset dto => dto.UtcDateTime.ToString(
-                Iso8601Format,
-                CultureInfo.InvariantCulture
-            ),
+            DateTime dt => dt.ToUniversalTime().ToString("o"),
+            DateTimeOffset dto => dto.UtcDateTime.ToString("o"),
             _ => null,
         };
     }
@@ -38,12 +32,8 @@ public class DatePropertyConverter : PropertyConverterBase
 
         var dateString = value switch
         {
-            DateTime dt => dt.ToUniversalTime()
-                .ToString(Iso8601Format, CultureInfo.InvariantCulture),
-            DateTimeOffset dto => dto.UtcDateTime.ToString(
-                Iso8601Format,
-                CultureInfo.InvariantCulture
-            ),
+            DateTime dt => dt.ToUniversalTime().ToString("o"),
+            DateTimeOffset dto => dto.UtcDateTime.ToString("o"),
             _ => throw new ArgumentException($"Cannot convert {value.GetType()} to date"),
         };
 

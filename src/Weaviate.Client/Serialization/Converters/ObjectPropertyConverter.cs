@@ -57,12 +57,47 @@ public class ObjectPropertyConverter : PropertyConverterBase
 
         var registry = _registryFactory();
 
+        // Handle both nullable and non-nullable dictionary types
         if (value is IDictionary<string, object?> dict)
         {
             return registry.DeserializeFromRest(dict, targetType);
         }
 
+        if (value is IDictionary<string, object> dictNonNullable)
+        {
+            var converted = dictNonNullable.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value);
+            return registry.DeserializeFromRest(converted, targetType);
+        }
+
         return null;
+    }
+
+    public override object? FromRestArray(IEnumerable<object?> values, System.Type elementType)
+    {
+        var registry = _registryFactory();
+        var items = new List<object?>();
+
+        foreach (var value in values)
+        {
+            if (value is IDictionary<string, object?> dict)
+            {
+                items.Add(registry.DeserializeFromRest(dict, elementType));
+            }
+            else if (value is IDictionary<string, object> dictNonNullable)
+            {
+                var converted = dictNonNullable.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => (object?)kvp.Value
+                );
+                items.Add(registry.DeserializeFromRest(converted, elementType));
+            }
+            else
+            {
+                items.Add(value);
+            }
+        }
+
+        return CreateTypedArray(items, elementType);
     }
 
     public override object? FromGrpc(Value value, System.Type targetType)
