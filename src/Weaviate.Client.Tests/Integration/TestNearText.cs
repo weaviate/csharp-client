@@ -55,7 +55,7 @@ public partial class SearchTests : IntegrationTests
     public async Task Test_Search_NearText_GroupBy()
     {
         // Arrange
-        CollectionClient<dynamic>? collectionClient = await CollectionFactory(
+        CollectionClient? collectionClient = await CollectionFactory(
             "",
             "Test collection description",
             [Property.Text("value")],

@@ -2,14 +2,14 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
-public class QueryClient<TData>
+public class QueryClient
 {
-    private readonly CollectionClient<TData> _collectionClient;
+    private readonly CollectionClient _collectionClient;
     private string _collectionName => _collectionClient.Name;
     private WeaviateClient _client => _collectionClient.Client;
     private Grpc.WeaviateGrpcClient _grpc => _client.GrpcClient;
 
-    public QueryClient(CollectionClient<TData> collectionClient)
+    public QueryClient(CollectionClient collectionClient)
     {
         _collectionClient = collectionClient;
     }

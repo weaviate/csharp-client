@@ -2,55 +2,47 @@ using System.Collections;
 
 namespace Weaviate.Client.Models;
 
-public record BatchInsertRequest<TData>(
-    TData Data,
+public record BatchInsertRequest(
+    object Data,
     Guid? ID = null,
     Vectors? Vectors = null,
     IEnumerable<ObjectReference>? References = null,
     string? Tenant = null
-);
-
-public static class BatchInsertRequest
+)
 {
-    public static BatchInsertRequest<TData> Create<TData>(
-        TData data,
+    public static BatchInsertRequest Create(
+        object data,
         Guid? id = null,
         Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         string? tenant = null
     )
     {
-        return new BatchInsertRequest<TData>(data, id, vectors, references, tenant);
+        return new BatchInsertRequest(data, id, vectors, references, tenant);
     }
 
-    public static BatchInsertRequest<TData>[] Create<TData>(IEnumerable<TData> data)
+    public static BatchInsertRequest[] Create(IEnumerable<object> data)
     {
-        return data.Select(d => new BatchInsertRequest<TData>(d)).ToArray();
+        return data.Select(d => new BatchInsertRequest(d)).ToArray();
     }
 
-    public static BatchInsertRequest<TData>[] Create<TData>(
-        IEnumerable<(TData data, Guid id)> requests
-    )
+    public static BatchInsertRequest[] Create(IEnumerable<(object data, Guid id)> requests)
     {
-        return requests.Select(r => new BatchInsertRequest<TData>(r.data, r.id)).ToArray();
+        return requests.Select(r => new BatchInsertRequest(r.data, r.id)).ToArray();
     }
 
-    public static BatchInsertRequest<TData>[] Create<TData>(
-        IEnumerable<(TData data, IEnumerable<ObjectReference>? references)> requests
-    )
-    {
-        return requests
-            .Select(r => new BatchInsertRequest<TData>(r.data, References: r.references))
-            .ToArray();
-    }
-
-    public static BatchInsertRequest<TData>[] Create<TData>(
-        IEnumerable<(TData data, Vectors vectors)> requests
+    public static BatchInsertRequest[] Create(
+        IEnumerable<(object data, IEnumerable<ObjectReference>? references)> requests
     )
     {
         return requests
-            .Select(r => new BatchInsertRequest<TData>(r.data, Vectors: r.vectors))
+            .Select(r => new BatchInsertRequest(r.data, References: r.references))
             .ToArray();
+    }
+
+    public static BatchInsertRequest[] Create(IEnumerable<(object data, Vectors vectors)> requests)
+    {
+        return requests.Select(r => new BatchInsertRequest(r.data, Vectors: r.vectors)).ToArray();
     }
 }
 

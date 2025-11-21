@@ -13,7 +13,7 @@ public partial class BasicTests
         );
 
         await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>([new { Name = "Name 1" }, new { Name = "Name 2" }]),
+            BatchInsertRequest.Create([new { Name = "Name 1" }, new { Name = "Name 2" }]),
             TestContext.Current.CancellationToken
         );
 
@@ -69,7 +69,7 @@ public partial class BasicTests
         // Insert test data
         var insertData = Enumerable
             .Range(0, 10)
-            .Select(i => BatchInsertRequest.Create<object>(new { data = i, text = "hi" }));
+            .Select(i => BatchInsertRequest.Create(new { data = i, text = "hi" }));
         await collection.Data.InsertMany(
             insertData,
             cancellationToken: TestContext.Current.CancellationToken
@@ -173,7 +173,7 @@ public partial class BasicTests
 
         var insertData = Enumerable
             .Range(0, 10)
-            .Select(_ => BatchInsertRequest.Create<object>(new { @this = "this", that = "that" }))
+            .Select(_ => BatchInsertRequest.Create(new { @this = "this", that = "that" }))
             .ToArray();
         await collection.Data.InsertMany(insertData, TestContext.Current.CancellationToken);
 
@@ -205,13 +205,13 @@ public partial class BasicTests
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(2)]
-    [InlineData(CollectionClient<int>.ITERATOR_CACHE_SIZE - 1)]
-    [InlineData(CollectionClient<int>.ITERATOR_CACHE_SIZE)]
-    [InlineData(CollectionClient<int>.ITERATOR_CACHE_SIZE + 1)]
-    [InlineData(2 * CollectionClient<int>.ITERATOR_CACHE_SIZE - 1)]
-    [InlineData(2 * CollectionClient<int>.ITERATOR_CACHE_SIZE)]
-    [InlineData(2 * CollectionClient<int>.ITERATOR_CACHE_SIZE + 1)]
-    [InlineData(20 * CollectionClient<int>.ITERATOR_CACHE_SIZE)]
+    [InlineData(CollectionClient.ITERATOR_CACHE_SIZE - 1)]
+    [InlineData(CollectionClient.ITERATOR_CACHE_SIZE)]
+    [InlineData(CollectionClient.ITERATOR_CACHE_SIZE + 1)]
+    [InlineData(2 * CollectionClient.ITERATOR_CACHE_SIZE - 1)]
+    [InlineData(2 * CollectionClient.ITERATOR_CACHE_SIZE)]
+    [InlineData(2 * CollectionClient.ITERATOR_CACHE_SIZE + 1)]
+    [InlineData(20 * CollectionClient.ITERATOR_CACHE_SIZE)]
     public async Task Test_Iterator_Basic(uint count)
     {
         var collection = await CollectionFactory(
@@ -223,7 +223,7 @@ public partial class BasicTests
         {
             var insertData = Enumerable
                 .Range(0, (int)count)
-                .Select(i => BatchInsertRequest.Create<object>(new { data = i }))
+                .Select(i => BatchInsertRequest.Create(new { data = i }))
                 .ToArray();
             await collection.Data.InsertMany(insertData, TestContext.Current.CancellationToken);
         }
@@ -267,7 +267,7 @@ public partial class BasicTests
 
         var insertData = Enumerable
             .Range(0, 10)
-            .Select(i => BatchInsertRequest.Create<object>(new { data = i }))
+            .Select(i => BatchInsertRequest.Create(new { data = i }))
             .ToArray();
         await collection.Data.InsertMany(insertData, TestContext.Current.CancellationToken);
 

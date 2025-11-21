@@ -88,10 +88,7 @@ public partial class RestClientTests
         var config = new CollectionConfig { Name = "Product" };
 
         // Act
-        var result = await client.Collections.Create<ProductData>(
-            config,
-            TestContext.Current.CancellationToken
-        );
+        var result = await client.Collections.Create(config, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(handler.LastRequest);

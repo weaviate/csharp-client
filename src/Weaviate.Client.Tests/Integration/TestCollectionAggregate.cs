@@ -18,7 +18,7 @@ public partial class AggregatesTests : IntegrationTests
         );
 
         await collectionClient.Data.InsertMany(
-            Enumerable.Repeat(BatchInsertRequest.Create<object>(new { }), howMany),
+            Enumerable.Repeat(BatchInsertRequest.Create(new { }), howMany),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
