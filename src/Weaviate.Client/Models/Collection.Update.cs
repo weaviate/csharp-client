@@ -323,7 +323,7 @@ public class MultiTenancyConfigUpdate(MultiTenancyConfig WrappedMultiTenancyConf
     }
 }
 
-public class CollectionConfigClient<T>
+public class CollectionConfigClient
 {
     private readonly WeaviateClient _client;
     private readonly string _collectionName;

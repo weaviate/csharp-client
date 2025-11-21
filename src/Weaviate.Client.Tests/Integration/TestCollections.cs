@@ -124,7 +124,7 @@ public partial class CollectionsTests : IntegrationTests
 
         // Act
         var collection = await _weaviate
-            .Collections.Use<dynamic>(collectionClient.Name)
+            .Collections.Use(collectionClient.Name)
             .Config.Get(TestContext.Current.CancellationToken);
 
         // Assert
@@ -148,7 +148,7 @@ public partial class CollectionsTests : IntegrationTests
 
         // Act
         var collection = await _weaviate
-            .Collections.Use<dynamic>(collectionClient.Name)
+            .Collections.Use(collectionClient.Name)
             .Config.Get(TestContext.Current.CancellationToken);
 
         // Assert
@@ -1170,7 +1170,7 @@ public partial class CollectionsTests : IntegrationTests
 
         // Insert many
         await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>([new { blob = blobData }]),
+            BatchInsertRequest.Create([new { blob = blobData }]),
             TestContext.Current.CancellationToken
         );
 

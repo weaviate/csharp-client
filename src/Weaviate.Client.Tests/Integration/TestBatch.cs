@@ -14,7 +14,7 @@ public partial class BatchTests : IntegrationTests
             int expectedErrors,
             int expectedReferences,
             int expectedReferencedObjects,
-            IEnumerable<BatchInsertRequest<object>[]> requests
+            IEnumerable<BatchInsertRequest[]> requests
         ) = DatasetBatchInsertMany.Cases[key];
 
         var client = await CollectionFactory(

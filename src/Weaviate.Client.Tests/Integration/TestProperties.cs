@@ -550,7 +550,7 @@ public partial class PropertyTests : IntegrationTests
             },
         };
 
-        var requests = BatchInsertRequest.Create<object>(testData);
+        var requests = BatchInsertRequest.Create(testData);
 
         var response = await c.Data.InsertMany(requests, TestContext.Current.CancellationToken);
 
@@ -809,7 +809,7 @@ public partial class PropertyTests : IntegrationTests
         };
 
         var response = await c.Data.InsertMany(
-            BatchInsertRequest.Create<object>(testData),
+            BatchInsertRequest.Create(testData),
             TestContext.Current.CancellationToken
         );
 

@@ -438,14 +438,14 @@ public class TestAliases : IntegrationTests
         // Try to fetch objects using the alias as the collection name - should fail
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
             await _weaviate
-                .Collections.Use<object>(aliasName)
+                .Collections.Use(aliasName)
                 .Query.FetchObjects(cancellationToken: TestContext.Current.CancellationToken)
         );
 
         // Try to fetch a specific object by ID using the alias - should also fail
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
             await _weaviate
-                .Collections.Use<object>(aliasName)
+                .Collections.Use(aliasName)
                 .Query.FetchObjectByID(
                     id1,
                     cancellationToken: TestContext.Current.CancellationToken

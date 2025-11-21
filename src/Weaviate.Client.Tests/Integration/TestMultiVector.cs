@@ -138,7 +138,7 @@ public class TestMultiVector : IntegrationTests
 
         var result = await collection.Data.InsertMany(
             [
-                BatchInsertRequest.Create<object>(
+                BatchInsertRequest.Create(
                     new { },
                     null,
                     new Vectors()

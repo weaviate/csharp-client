@@ -33,7 +33,7 @@ public partial class ReferenceTests : IntegrationTests
         );
 
         var uuid_B = await cB.Data.Insert(
-            new() { Name = "B" },
+            new TestData { Name = "B" },
             references: [("a", uuid_A1)],
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -92,7 +92,7 @@ public partial class ReferenceTests : IntegrationTests
         Assert.Contains(refsAfterReplace, r => r.ID == uuid_A3);
 
         var uuid_B2 = await cB.Data.Insert(
-            new() { Name = "B" },
+            new TestData { Name = "B" },
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -141,7 +141,7 @@ public partial class ReferenceTests : IntegrationTests
         );
 
         var uuid_B = await cB.Data.Insert(
-            new() { Name = "B" },
+            new TestData { Name = "B" },
             references: [("a", uuid_A1)],
             cancellationToken: TestContext.Current.CancellationToken
         );
