@@ -35,7 +35,7 @@ public partial class TenantTests : IntegrationTests
         var tenant2Collection = collectionClient.WithTenant("tenant2");
         var items = Enumerable.Range(0, (int)(howMany * 2)).Select(x => new { }).ToArray();
         var result = await tenant2Collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(items),
+            BatchInsertRequest.Create(items),
             TestContext.Current.CancellationToken
         );
 
@@ -123,15 +123,12 @@ public partial class TenantTests : IntegrationTests
         var result = (
             await tenant1Collection.Data.InsertMany(
                 [
-                    BatchInsertRequest.Create<object>(
+                    BatchInsertRequest.Create(
                         new { Name = "some name" },
                         null,
                         new float[] { 1, 2, 3 }
                     ),
-                    BatchInsertRequest.Create<object>(
-                        new { Name = "some other name" },
-                        _reusableUuids[0]
-                    ),
+                    BatchInsertRequest.Create(new { Name = "some other name" }, _reusableUuids[0]),
                 ],
                 TestContext.Current.CancellationToken
             )
@@ -873,7 +870,7 @@ public partial class TenantTests : IntegrationTests
         var tenantCollection = collectionClient.WithTenant("tenant");
         var objects = Enumerable
             .Range(0, 101)
-            .Select(_ => BatchInsertRequest.Create<object>(new { name = "some name" }));
+            .Select(_ => BatchInsertRequest.Create(new { name = "some name" }));
         var result = await tenantCollection.Data.InsertMany(
             objects,
             TestContext.Current.CancellationToken
@@ -885,10 +882,7 @@ public partial class TenantTests : IntegrationTests
             Enumerable
                 .Range(0, 101)
                 .Select(i =>
-                    BatchInsertRequest.Create<object>(
-                        new { name = "some name" },
-                        tenant: $"tenant-{i}"
-                    )
+                    BatchInsertRequest.Create(new { name = "some name" }, tenant: $"tenant-{i}")
                 ),
             TestContext.Current.CancellationToken
         );
