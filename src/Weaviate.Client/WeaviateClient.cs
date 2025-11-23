@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
 
@@ -348,8 +349,13 @@ public partial class WeaviateClient : IDisposable
         }
     );
 
+    // Async initialization support
+    private readonly Lazy<Task>? _initializationTask;
+    private readonly ClientConfiguration? _configForAsyncInit;
+
     public async Task<Models.MetaInfo> GetMeta(CancellationToken cancellationToken = default)
     {
+        await EnsureInitializedAsync();
         var meta = await RestClient.GetMeta(CreateInitCancellationToken(cancellationToken));
 
         return new Models.MetaInfo
@@ -381,17 +387,19 @@ public partial class WeaviateClient : IDisposable
     /// <summary>
     /// Returns true if the Weaviate process is live.
     /// </summary>
-    public Task<bool> Live(CancellationToken cancellationToken = default)
+    public async Task<bool> Live(CancellationToken cancellationToken = default)
     {
-        return RestClient.LiveAsync(CreateInitCancellationToken(cancellationToken));
+        await EnsureInitializedAsync();
+        return await RestClient.LiveAsync(CreateInitCancellationToken(cancellationToken));
     }
 
     /// <summary>
     /// Returns true if the Weaviate instance is ready to accept requests.
     /// </summary>
-    public Task<bool> IsReady(CancellationToken cancellationToken = default)
+    public async Task<bool> IsReady(CancellationToken cancellationToken = default)
     {
-        return RestClient.ReadyAsync(CreateInitCancellationToken(cancellationToken));
+        await EnsureInitializedAsync();
+        return await RestClient.ReadyAsync(CreateInitCancellationToken(cancellationToken));
     }
 
     /// <summary>
@@ -555,6 +563,119 @@ public partial class WeaviateClient : IDisposable
         Users = new UsersClient(this);
         Roles = new RolesClient(this);
         Groups = new GroupsClient(this);
+    }
+
+    /// <summary>
+    /// Constructor for dependency injection scenarios.
+    /// Uses async initialization pattern - call InitializeAsync() or ensure IHostedService runs.
+    /// </summary>
+    public WeaviateClient(IOptions<DependencyInjection.WeaviateOptions> options)
+        : this(options, null)
+    {
+    }
+
+    /// <summary>
+    /// Constructor for dependency injection scenarios with logger.
+    /// Uses async initialization pattern - call InitializeAsync() or ensure IHostedService runs.
+    /// </summary>
+    public WeaviateClient(
+        IOptions<DependencyInjection.WeaviateOptions> options,
+        ILogger<WeaviateClient>? logger)
+    {
+        var weaviateOptions = options.Value;
+        _configForAsyncInit = weaviateOptions.ToClientConfiguration();
+        Configuration = _configForAsyncInit;
+        _logger = logger ?? LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<WeaviateClient>();
+
+        // Initialize Lazy task that will run initialization on first access
+        _initializationTask = new Lazy<Task>(() => PerformInitializationAsync(_configForAsyncInit));
+
+        // Initialize sub-clients - they will be properly set up after async initialization
+        Collections = new CollectionsClient(this);
+        Cluster = new ClusterClient(null!); // Will be set after init
+        Alias = new AliasClient(this);
+        Users = new UsersClient(this);
+        Roles = new RolesClient(this);
+        Groups = new GroupsClient(this);
+    }
+
+    /// <summary>
+    /// Performs the actual async initialization.
+    /// This follows the same flow as ClientConfiguration.BuildAsync().
+    /// </summary>
+    private async Task PerformInitializationAsync(ClientConfiguration config)
+    {
+        _logger.LogDebug("Starting Weaviate client initialization...");
+
+        // Initialize token service asynchronously
+        var tokenService = await ClientConfiguration.InitializeTokenService(config);
+
+        // Create REST client
+        RestClient = CreateRestClient(config, null, tokenService, _logger);
+
+        // Fetch metadata eagerly with init timeout - this will throw if authentication fails
+        var initTimeout = config.InitTimeout ?? config.DefaultTimeout ?? WeaviateDefaults.DefaultTimeout;
+        var metaCts = new CancellationTokenSource(initTimeout);
+        var metaDto = await RestClient.GetMeta(metaCts.Token);
+        _metaCache = new Models.MetaInfo
+        {
+            GrpcMaxMessageSize = metaDto?.GrpcMaxMessageSize is not null
+                ? Convert.ToUInt64(metaDto.GrpcMaxMessageSize)
+                : null,
+            Hostname = metaDto?.Hostname ?? string.Empty,
+            Version =
+                Models.MetaInfo.ParseWeaviateVersion(metaDto?.Version ?? string.Empty)
+                ?? new System.Version(0, 0),
+            Modules = metaDto?.Modules?.ToDictionary() ?? [],
+        };
+
+        var maxMessageSize = _metaCache.GrpcMaxMessageSize;
+
+        // Create gRPC client with metadata
+        GrpcClient = CreateGrpcClient(config, tokenService, maxMessageSize);
+
+        // Update Cluster client with the REST client
+        Cluster = new ClusterClient(RestClient);
+
+        _logger.LogDebug("Weaviate client initialization completed");
+    }
+
+    /// <summary>
+    /// Explicitly initializes the client asynchronously.
+    /// This is called automatically by IHostedService when using DI with eager initialization.
+    /// Can be called manually for lazy initialization scenarios.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A task representing the initialization.</returns>
+    public Task InitializeAsync(CancellationToken cancellationToken = default)
+    {
+        if (_initializationTask == null)
+        {
+            // Client was created with non-DI constructor, already initialized
+            return Task.CompletedTask;
+        }
+
+        // Lazy<T> ensures this only runs once even if called multiple times
+        return _initializationTask.Value;
+    }
+
+    /// <summary>
+    /// Checks if the client is fully initialized.
+    /// </summary>
+    public bool IsInitialized =>
+        _initializationTask == null || // Non-DI constructor, always ready
+        (_initializationTask.IsValueCreated && _initializationTask.Value.IsCompletedSuccessfully);
+
+    /// <summary>
+    /// Helper to ensure initialization before using the client.
+    /// Throws if initialization failed.
+    /// </summary>
+    private async Task EnsureInitializedAsync()
+    {
+        if (_initializationTask != null)
+        {
+            await _initializationTask.Value; // Will throw if initialization failed
+        }
     }
 
     /// <summary>
