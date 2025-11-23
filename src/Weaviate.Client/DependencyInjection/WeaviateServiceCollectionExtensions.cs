@@ -93,7 +93,8 @@ public static class WeaviateServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds Weaviate client services with connection helpers.
+    /// Adds Weaviate client services for a local Weaviate instance.
+    /// Similar to Connect.Local() but for dependency injection.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="hostname">Hostname for local Weaviate instance. Default is "localhost".</param>
@@ -101,6 +102,11 @@ public static class WeaviateServiceCollectionExtensions
     /// <param name="grpcPort">gRPC port. Default is 50051.</param>
     /// <param name="useSsl">Whether to use SSL/TLS. Default is false.</param>
     /// <param name="credentials">Authentication credentials.</param>
+    /// <param name="headers">Additional HTTP headers to include in requests.</param>
+    /// <param name="defaultTimeout">Default timeout for all operations.</param>
+    /// <param name="initTimeout">Timeout for initialization operations.</param>
+    /// <param name="dataTimeout">Timeout for data operations.</param>
+    /// <param name="queryTimeout">Timeout for query operations.</param>
     /// <param name="eagerInitialization">Whether to initialize the client eagerly on application startup. Default is true.</param>
     /// <returns>The service collection for method chaining.</returns>
     public static IServiceCollection AddWeaviateLocal(
@@ -110,6 +116,11 @@ public static class WeaviateServiceCollectionExtensions
         ushort grpcPort = 50051,
         bool useSsl = false,
         ICredentials? credentials = null,
+        Dictionary<string, string>? headers = null,
+        TimeSpan? defaultTimeout = null,
+        TimeSpan? initTimeout = null,
+        TimeSpan? dataTimeout = null,
+        TimeSpan? queryTimeout = null,
         bool eagerInitialization = true)
     {
         services.AddWeaviate(options =>
@@ -120,6 +131,11 @@ public static class WeaviateServiceCollectionExtensions
             options.GrpcPort = grpcPort;
             options.UseSsl = useSsl;
             options.Credentials = credentials;
+            options.Headers = headers;
+            options.DefaultTimeout = defaultTimeout;
+            options.InitTimeout = initTimeout;
+            options.DataTimeout = dataTimeout;
+            options.QueryTimeout = queryTimeout;
         }, eagerInitialization);
 
         return services;
@@ -127,16 +143,27 @@ public static class WeaviateServiceCollectionExtensions
 
     /// <summary>
     /// Adds Weaviate client services configured for Weaviate Cloud.
+    /// Similar to Connect.Cloud() but for dependency injection.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="clusterEndpoint">The Weaviate Cloud cluster endpoint (e.g., "my-cluster.weaviate.cloud").</param>
     /// <param name="apiKey">API key for authentication.</param>
+    /// <param name="headers">Additional HTTP headers to include in requests.</param>
+    /// <param name="defaultTimeout">Default timeout for all operations.</param>
+    /// <param name="initTimeout">Timeout for initialization operations.</param>
+    /// <param name="dataTimeout">Timeout for data operations.</param>
+    /// <param name="queryTimeout">Timeout for query operations.</param>
     /// <param name="eagerInitialization">Whether to initialize the client eagerly on application startup. Default is true.</param>
     /// <returns>The service collection for method chaining.</returns>
     public static IServiceCollection AddWeaviateCloud(
         this IServiceCollection services,
         string clusterEndpoint,
         string? apiKey = null,
+        Dictionary<string, string>? headers = null,
+        TimeSpan? defaultTimeout = null,
+        TimeSpan? initTimeout = null,
+        TimeSpan? dataTimeout = null,
+        TimeSpan? queryTimeout = null,
         bool eagerInitialization = true)
     {
         services.AddWeaviate(options =>
@@ -147,6 +174,11 @@ public static class WeaviateServiceCollectionExtensions
             options.GrpcPort = 443;
             options.UseSsl = true;
             options.Credentials = string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey);
+            options.Headers = headers;
+            options.DefaultTimeout = defaultTimeout;
+            options.InitTimeout = initTimeout;
+            options.DataTimeout = dataTimeout;
+            options.QueryTimeout = queryTimeout;
         }, eagerInitialization);
 
         return services;
