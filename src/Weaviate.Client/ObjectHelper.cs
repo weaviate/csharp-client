@@ -165,31 +165,6 @@ internal class ObjectHelper
             return ConvertValue(value, underlyingType);
         }
 
-        if (targetType == typeof(GeoCoordinate) && value is Rest.Dto.GeoCoordinates geo)
-        {
-            return geo.ToModel();
-        }
-
-        if (targetType == typeof(Models.PhoneNumber) && value is Rest.Dto.PhoneNumber phoneNumber)
-        {
-            return phoneNumber.ToModel();
-        }
-
-        if (targetType == typeof(byte[]) && value is string base64String)
-        {
-            return Convert.FromBase64String(base64String);
-        }
-
-        if (targetType == typeof(DateTime) && value is string dateString)
-        {
-            return DateTime.SpecifyKind(DateTime.Parse(dateString), DateTimeKind.Utc);
-        }
-
-        if (targetType == typeof(DateTime) && value is DateTime dateTime)
-        {
-            return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
-        }
-
         // Handle nested objects (dictionaries -> custom types)
         if (
             value is IDictionary<string, object?> nestedDict
