@@ -432,15 +432,16 @@ public class TestReplication : IntegrationTests
         var allDeleted = false;
         for (int i = 0; i < 20; i++) // Try for up to 10 seconds
         {
-            await Task.Delay(500, TestContext.Current.CancellationToken);
             var operations = await _weaviate.Cluster.Replications.ListAll(
                 TestContext.Current.CancellationToken
             );
+            Trace.WriteLine($"Remaining operations: {operations.Count()}");
             if (!operations.Any())
             {
                 allDeleted = true;
                 break;
             }
+            await Task.Delay(500, TestContext.Current.CancellationToken);
         }
         Assert.True(allDeleted, "All operations should be deleted after waiting");
     }
