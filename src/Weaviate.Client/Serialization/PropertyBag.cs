@@ -98,12 +98,8 @@ public class PropertyBag : IDictionary<string, object?>
         if (!TryGetValue(name, out var value) || value is null)
             return null;
 
-        return value switch
-        {
-            DateTime dt => dt,
-            string s => DateTime.Parse(s),
-            _ => null,
-        };
+        var converter = PropertyConverterRegistry.Default.GetConverterForType(typeof(DateTime));
+        return (DateTime?)converter?.FromRest(value, typeof(DateTime));
     }
 
     /// <summary>
@@ -130,17 +126,10 @@ public class PropertyBag : IDictionary<string, object?>
         if (!TryGetValue(name, out var value) || value is null)
             return null;
 
-        if (value is GeoCoordinate geo)
-            return geo;
-
-        if (value is IDictionary<string, object?> dict)
-        {
-            var lat = dict.TryGetValue("latitude", out var latVal) ? Convert.ToSingle(latVal) : 0f;
-            var lon = dict.TryGetValue("longitude", out var lonVal) ? Convert.ToSingle(lonVal) : 0f;
-            return new GeoCoordinate(lat, lon);
-        }
-
-        return null;
+        var converter = PropertyConverterRegistry.Default.GetConverterForType(
+            typeof(GeoCoordinate)
+        );
+        return (GeoCoordinate?)converter?.FromRest(value, typeof(GeoCoordinate));
     }
 
     /// <summary>
@@ -151,23 +140,8 @@ public class PropertyBag : IDictionary<string, object?>
         if (!TryGetValue(name, out var value) || value is null)
             return null;
 
-        if (value is PhoneNumber phone)
-            return phone;
-
-        if (value is IDictionary<string, object?> dict)
-        {
-            var input = dict.TryGetValue("input", out var inputVal)
-                ? inputVal?.ToString() ?? ""
-                : "";
-            return new PhoneNumber(input)
-            {
-                DefaultCountry = dict.TryGetValue("defaultCountry", out var dc)
-                    ? dc?.ToString()
-                    : null,
-            };
-        }
-
-        return null;
+        var converter = PropertyConverterRegistry.Default.GetConverterForType(typeof(PhoneNumber));
+        return (PhoneNumber?)converter?.FromRest(value, typeof(PhoneNumber));
     }
 
     /// <summary>
@@ -178,12 +152,8 @@ public class PropertyBag : IDictionary<string, object?>
         if (!TryGetValue(name, out var value) || value is null)
             return null;
 
-        return value switch
-        {
-            byte[] bytes => bytes,
-            string s => Convert.FromBase64String(s),
-            _ => null,
-        };
+        var converter = PropertyConverterRegistry.Default.GetConverterForType(typeof(byte[]));
+        return (byte[]?)converter?.FromRest(value, typeof(byte[]));
     }
 
     /// <summary>
