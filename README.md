@@ -80,6 +80,21 @@ Run the tests:
 dotnet test src/Weaviate.Client.Tests/Weaviate.Client.Tests.csproj
 ```
 
+### Filtering Slow Tests
+
+Some tests (backups and replication) are marked as slow and can take several minutes. You can control which tests run using the `--filter` option:
+
+```bash
+# Run all tests including slow ones (default)
+dotnet test src/Weaviate.Client.Tests/Weaviate.Client.Tests.csproj
+
+# Exclude slow tests (recommended for quick feedback during development)
+dotnet test src/Weaviate.Client.Tests/Weaviate.Client.Tests.csproj --filter "Category!=Slow"
+
+# Run ONLY slow tests
+dotnet test src/Weaviate.Client.Tests/Weaviate.Client.Tests.csproj --filter "Category=Slow"
+```
+
 Stop the environment when finished:
 
 ```bash
@@ -87,7 +102,6 @@ Stop the environment when finished:
 ```
 
 If the server version is below 1.31.0 the integration tests will be skipped automatically.
-
 
 Connect with the Weaviate community and the team through our online channels.
 

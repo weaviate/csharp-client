@@ -5,6 +5,7 @@ using Weaviate.Client;
 using Weaviate.Client.Models;
 using Xunit;
 
+[Trait("Category", "Slow")]
 [Collection("TestBackups")]
 [CollectionDefinition("TestBackups", DisableParallelization = true)]
 public class TestBackups : IntegrationTests

@@ -174,18 +174,23 @@ public class PropertyConverterRegistry
     }
 
     /// <summary>
-    /// Deserializes a dictionary from REST API to a typed object.
+    /// Builds a concrete typed object from a properties dictionary.
+    /// Works with dictionaries from both REST and gRPC sources.
     /// </summary>
-    public T? DeserializeFromRest<T>(IDictionary<string, object?> dict)
+    internal T? BuildConcreteTypeFromProperties<T>(IDictionary<string, object?> dict)
         where T : class, new()
     {
-        return (T?)DeserializeFromRest(dict, typeof(T));
+        return (T?)BuildConcreteTypeFromProperties(dict, typeof(T));
     }
 
     /// <summary>
-    /// Deserializes a dictionary from REST API to a typed object.
+    /// Builds a concrete typed object from a properties dictionary.
+    /// Works with dictionaries from both REST and gRPC sources.
     /// </summary>
-    public object? DeserializeFromRest(IDictionary<string, object?> dict, System.Type targetType)
+    internal object? BuildConcreteTypeFromProperties(
+        IDictionary<string, object?> dict,
+        System.Type targetType
+    )
     {
         if (dict is null)
             return null;
@@ -241,7 +246,7 @@ public class PropertyConverterRegistry
                     {
                         if (item is IDictionary<string, object?> itemDict)
                         {
-                            items.Add(DeserializeFromRest(itemDict, elementType));
+                            items.Add(BuildConcreteTypeFromProperties(itemDict, elementType));
                         }
                         else if (item is IDictionary<string, object> dictNonNullable)
                         {
@@ -249,7 +254,7 @@ public class PropertyConverterRegistry
                                 kvp => kvp.Key,
                                 kvp => (object?)kvp.Value
                             );
-                            items.Add(DeserializeFromRest(dictNullable, elementType));
+                            items.Add(BuildConcreteTypeFromProperties(dictNullable, elementType));
                         }
                         else
                         {

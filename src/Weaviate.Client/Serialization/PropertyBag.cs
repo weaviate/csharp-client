@@ -251,7 +251,7 @@ public class PropertyBag : IDictionary<string, object?>
 
         if (value is IDictionary<string, object?> dict)
         {
-            return PropertyConverterRegistry.Default.DeserializeFromRest<T>(dict);
+            return PropertyConverterRegistry.Default.BuildConcreteTypeFromProperties<T>(dict);
         }
 
         return null;
