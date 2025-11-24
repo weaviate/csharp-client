@@ -182,10 +182,13 @@ public class TestPropertyConverters
         var result = converter.FromRest("2024-01-15T10:30:00Z", typeof(DateTime));
         Assert.IsType<DateTime>(result);
         var dt = (DateTime)result!;
+        // Date is parsed and returned as UTC
+        Assert.Equal(DateTimeKind.Utc, dt.Kind);
         Assert.Equal(2024, dt.Year);
         Assert.Equal(1, dt.Month);
         Assert.Equal(15, dt.Day);
-        Assert.Equal(DateTimeKind.Utc, dt.Kind);
+        Assert.Equal(10, dt.Hour);
+        Assert.Equal(30, dt.Minute);
     }
 
     [Fact]
@@ -429,7 +432,7 @@ public class TestPropertyConverters
     }
 
     [Fact]
-    public void Registry_DeserializeFromRest_DeserializesAllProperties()
+    public void Registry_BuildConcreteTypeFromProperties_DeserializesAllProperties()
     {
         var registry = PropertyConverterRegistry.Default;
         var dict = new Dictionary<string, object?>
@@ -442,7 +445,7 @@ public class TestPropertyConverters
             ["id"] = "12345678-1234-1234-1234-123456789012",
         };
 
-        var result = registry.DeserializeFromRest<TestDataClass>(dict);
+        var result = registry.BuildConcreteTypeFromProperties<TestDataClass>(dict);
 
         Assert.NotNull(result);
         Assert.Equal("Test", result.Name);
