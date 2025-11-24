@@ -60,13 +60,13 @@ public class ObjectPropertyConverter : PropertyConverterBase
         // Handle both nullable and non-nullable dictionary types
         if (value is IDictionary<string, object?> dict)
         {
-            return registry.DeserializeFromRest(dict, targetType);
+            return registry.BuildConcreteTypeFromProperties(dict, targetType);
         }
 
         if (value is IDictionary<string, object> dictNonNullable)
         {
             var converted = dictNonNullable.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value);
-            return registry.DeserializeFromRest(converted, targetType);
+            return registry.BuildConcreteTypeFromProperties(converted, targetType);
         }
 
         return null;
@@ -81,7 +81,7 @@ public class ObjectPropertyConverter : PropertyConverterBase
         {
             if (value is IDictionary<string, object?> dict)
             {
-                items.Add(registry.DeserializeFromRest(dict, elementType));
+                items.Add(registry.BuildConcreteTypeFromProperties(dict, elementType));
             }
             else if (value is IDictionary<string, object> dictNonNullable)
             {
@@ -89,7 +89,7 @@ public class ObjectPropertyConverter : PropertyConverterBase
                     kvp => kvp.Key,
                     kvp => (object?)kvp.Value
                 );
-                items.Add(registry.DeserializeFromRest(converted, elementType));
+                items.Add(registry.BuildConcreteTypeFromProperties(converted, elementType));
             }
             else
             {
@@ -110,7 +110,7 @@ public class ObjectPropertyConverter : PropertyConverterBase
 
         var registry = _registryFactory();
         var dict = ConvertStructToDict(value.StructValue);
-        return registry.DeserializeFromRest(dict, targetType);
+        return registry.BuildConcreteTypeFromProperties(dict, targetType);
     }
 
     private static Value ConvertToProtoValue(object? value, PropertyConverterRegistry registry)

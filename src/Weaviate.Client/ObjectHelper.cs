@@ -135,7 +135,8 @@ internal class ObjectHelper
         }
 
         // For typed objects, use the registry
-        return (T?)PropertyConverterRegistry.Default.DeserializeFromRest(dict, typeof(T));
+        return (T?)
+            PropertyConverterRegistry.Default.BuildConcreteTypeFromProperties(dict, typeof(T));
     }
 
     private static object? ConvertValue(object? value, System.Type targetType)
