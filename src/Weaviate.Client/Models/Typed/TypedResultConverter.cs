@@ -72,18 +72,7 @@ public static class TypedResultConverter
     public static GenerativeWeaviateObject<T> ToTyped<T>(this GenerativeWeaviateObject obj)
         where T : class, new()
     {
-        var typed = WeaviateObject<T>.FromUntyped(obj);
-        return new GenerativeWeaviateObject<T>
-        {
-            ID = typed.ID,
-            Collection = typed.Collection,
-            Metadata = typed.Metadata,
-            Tenant = typed.Tenant,
-            Properties = typed.Properties,
-            References = typed.References,
-            Vectors = typed.Vectors,
-            Generative = obj.Generative,
-        };
+        return GenerativeWeaviateObject<T>.FromUntyped(obj);
     }
 
     /// <summary>
