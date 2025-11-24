@@ -7,7 +7,6 @@ using System.Text.Json;
 using Google.Protobuf;
 using Google.Protobuf.Reflection;
 using Google.Protobuf.WellKnownTypes;
-using Weaviate.Client.Models;
 using Weaviate.Client.Serialization;
 
 namespace Weaviate.Client;
@@ -22,37 +21,35 @@ internal class ObjectHelper
         }
 
         var element = e.Value;
-
         if (element.ValueKind == JsonValueKind.Object)
         {
             var expando = new ExpandoObject();
-            var dictionary = (IDictionary<string, object?>)expando;
-
-            foreach (var property in element.EnumerateObject())
+            var dict = (IDictionary<string, object?>)expando;
+            foreach (var prop in element.EnumerateObject())
             {
-                dictionary[property.Name] = ConvertJsonElement(property.Value);
+                dict[prop.Name] = ConvertJsonElement(prop.Value);
             }
-
             return expando;
         }
-
         if (element.ValueKind == JsonValueKind.Array)
         {
-            return element
-                .EnumerateArray()
-                .OfType<JsonElement?>()
-                .Select(ConvertJsonElement)
-                .ToArray();
+            var list = new List<object?>();
+            foreach (var item in element.EnumerateArray())
+            {
+                list.Add(ConvertJsonElement(item));
+            }
+            return list;
         }
-
         return element.ValueKind switch
         {
             JsonValueKind.String => element.GetString(),
-            JsonValueKind.Number => element.TryGetInt32(out int i) ? i : element.GetDouble(),
+            JsonValueKind.Number => element.TryGetInt64(out var l) ? l
+            : element.TryGetDouble(out var d) ? d
+            : element.GetDecimal(),
             JsonValueKind.True => true,
             JsonValueKind.False => false,
-            JsonValueKind.Null => null,
-            _ => element.ToString(),
+            JsonValueKind.Null or JsonValueKind.Undefined => null,
+            _ => element.GetRawText(),
         };
     }
 
