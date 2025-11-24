@@ -45,9 +45,16 @@ public class DatePropertyConverter : PropertyConverterBase
         if (value is null)
             return null;
 
-        // If already a DateTime, just ensure it's UTC
+        // If already a DateTime, ensure it's marked as UTC
         if (value is DateTime dt)
+        {
+            // If already UTC, return as-is
+            if (dt.Kind == DateTimeKind.Utc)
+                return dt;
+
+            // Otherwise, mark as UTC (server always sends UTC)
             return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+        }
 
         var dateString = value.ToString();
         if (string.IsNullOrEmpty(dateString))
@@ -55,30 +62,29 @@ public class DatePropertyConverter : PropertyConverterBase
 
         var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
 
-        // Try parsing with multiple formats for compatibility
+        // Server always returns dates in UTC, so parse as UTC
         DateTime parsed;
         if (
             !DateTime.TryParse(
                 dateString,
                 CultureInfo.InvariantCulture,
-                DateTimeStyles.RoundtripKind, // Preserves timezone info from the string
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
                 out parsed
             )
         )
         {
-            // Fall back to current culture parsing (for formats like "20/11/2025 20:19:52")
-            parsed = DateTime.Parse(dateString);
+            // Fall back to current culture parsing and mark as UTC
+            parsed = DateTime.Parse(dateString, CultureInfo.InvariantCulture);
+            parsed = DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
         }
 
-        // Convert to UTC if not already
-        var utc =
-            parsed.Kind == DateTimeKind.Utc
-                ? parsed
-                : DateTime.SpecifyKind(parsed.ToUniversalTime(), DateTimeKind.Utc);
+        // Ensure the result is UTC
+        var utc = DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
 
         if (underlying == typeof(DateTimeOffset))
             return new DateTimeOffset(utc);
 
+        // Return as UTC - server always sends UTC, application can convert if needed
         return utc;
     }
 
@@ -93,30 +99,29 @@ public class DatePropertyConverter : PropertyConverterBase
 
         var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
 
-        // Try parsing with multiple formats for compatibility
+        // Server always returns dates in UTC, so parse as UTC
         DateTime parsed;
         if (
             !DateTime.TryParse(
                 dateString,
                 CultureInfo.InvariantCulture,
-                DateTimeStyles.RoundtripKind, // Preserves timezone info from the string
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
                 out parsed
             )
         )
         {
-            // Fall back to current culture parsing
-            parsed = DateTime.Parse(dateString);
+            // Fall back to current culture parsing and mark as UTC
+            parsed = DateTime.Parse(dateString, CultureInfo.InvariantCulture);
+            parsed = DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
         }
 
-        // Convert to UTC if not already
-        var utc =
-            parsed.Kind == DateTimeKind.Utc
-                ? parsed
-                : DateTime.SpecifyKind(parsed.ToUniversalTime(), DateTimeKind.Utc);
+        // Ensure the result is UTC
+        var utc = DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
 
         if (underlying == typeof(DateTimeOffset))
             return new DateTimeOffset(utc);
 
+        // Return as UTC - server always sends UTC, application can convert if needed
         return utc;
     }
 }

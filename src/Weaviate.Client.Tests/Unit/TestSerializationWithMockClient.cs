@@ -237,7 +237,10 @@ public class SerializationWithMockClientTests
 
         // Act - Deserialize using the converter registry
         var registry = Serialization.PropertyConverterRegistry.Default;
-        var result = registry.DeserializeFromRest(propertyDict, typeof(AllPropertiesModel));
+        var result = registry.BuildConcreteTypeFromProperties(
+            propertyDict,
+            typeof(AllPropertiesModel)
+        );
 
         // Assert
         Assert.NotNull(result);

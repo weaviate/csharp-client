@@ -37,8 +37,12 @@ public partial class ObjectHelperTests
             TestBoolArray = new[] { true, false },
             TestNumber = 456.789,
             TestNumberArray = new[] { 4.5, 6.7 },
-            TestDate = DateTime.Now.AddDays(-1),
-            TestDateArray = new[] { DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-3) },
+            TestDate = DateTime.Now.AddDays(-1).ToUniversalTime(),
+            TestDateArray = new[]
+            {
+                DateTime.Now.AddDays(-2).ToUniversalTime(),
+                DateTime.Now.AddDays(-3).ToUniversalTime(),
+            },
             TestUuid = Guid.NewGuid(),
             TestUuidArray = new[] { Guid.NewGuid(), Guid.NewGuid() },
             TestGeo = new GeoCoordinate(12.345f, 67.890f),
