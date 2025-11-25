@@ -80,4 +80,18 @@ public record CollectionsClient
     {
         return new CollectionClient(_client, name);
     }
+
+    /// <summary>
+    /// Creates a strongly-typed collection client for accessing a specific collection.
+    /// The collection client provides type-safe data and query operations.
+    /// </summary>
+    /// <typeparam name="T">The C# type representing objects in this collection.</typeparam>
+    /// <param name="name">The name of the collection.</param>
+    /// <returns>A TypedCollectionClient that provides strongly-typed operations.</returns>
+    public Typed.TypedCollectionClient<T> Use<T>(string name)
+        where T : class, new()
+    {
+        var innerClient = Use(name);
+        return new Typed.TypedCollectionClient<T>(innerClient);
+    }
 }

@@ -200,19 +200,6 @@ public record GroupByResult<T>(
 ) : GroupByResult<GroupByObject<T>, WeaviateGroup<T>>(Objects, Groups)
     where T : class, new() { }
 
-/// <summary>
-/// Strongly-typed query result containing a collection of objects.
-/// </summary>
-/// <typeparam name="T">The C# type of objects in the result.</typeparam>
-public record WeaviateResult<T>
-    where T : class, new()
-{
-    /// <summary>
-    /// The collection of objects returned by the query.
-    /// </summary>
-    public ICollection<WeaviateObject<T>> Objects { get; init; } = Array.Empty<WeaviateObject<T>>();
-}
-
 #region Generative Query Results
 
 /// <summary>
@@ -315,7 +302,7 @@ public record GenerativeGroupByResult<T>(
 /// Supports both object-level and result-set level generative data.
 /// </summary>
 /// <typeparam name="T">The C# type of objects in the result.</typeparam>
-public record GenerativeWeaviateResult<T> : WeaviateResult<T>
+public record GenerativeWeaviateResult<T> : Models.WeaviateResult<GenerativeWeaviateObject<T>>
     where T : class, new()
 {
     private static readonly GenerativeWeaviateResult<T> _empty = new()
