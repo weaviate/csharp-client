@@ -103,27 +103,18 @@ public class TestQueries : IntegrationTests
         );
 
         // Act
-        var groupBy = new GroupByRequest
-        {
-            PropertyName = "text",
-            NumberOfGroups = 2,
-            ObjectsPerGroup = 1,
-        };
+        var groupBy = new GroupByRequest("text") { NumberOfGroups = 2, ObjectsPerGroup = 1 };
 
         var res = await collection.Generate.BM25(
             query: "Teddy",
             groupBy: groupBy,
             searchFields: new[] { "content" },
-            prompt: new SinglePrompt
-            {
-                Prompt =
-                    "Is there something to eat in {text}? Only answer yes if there is something to eat or no if not without punctuation",
-            },
-            groupedPrompt: new GroupedPrompt
-            {
-                Task =
-                    "What is the biggest and what is the smallest? Only write the names separated by a space",
-            },
+            prompt: new SinglePrompt(
+                "Is there something to eat in {text}? Only answer yes if there is something to eat or no if not without punctuation"
+            ),
+            groupedPrompt: new GroupedPrompt(
+                "What is the biggest and what is the smallest? Only write the names separated by a space"
+            ),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -169,12 +160,8 @@ public class TestQueries : IntegrationTests
 
         // Act: generative fetch
         var res = await collection.Generate.FetchObjects(
-            prompt: new SinglePrompt { Prompt = "Who is this? {text}" },
-            groupedPrompt: new GroupedPrompt
-            {
-                Task = "Who are these people?",
-                Properties = "text",
-            },
+            prompt: new SinglePrompt("Who is this? {text}"),
+            groupedPrompt: new GroupedPrompt("Who are these people?", "text"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -261,12 +248,8 @@ public class TestQueries : IntegrationTests
 
         var res = await collection.Generate.FetchObjectsByIDs(
             [.. ids],
-            prompt: new SinglePrompt { Prompt = "Who is this? {text}" },
-            groupedPrompt: new GroupedPrompt
-            {
-                Task = "Who are these people?",
-                Properties = new List<string> { "text" },
-            },
+            prompt: new SinglePrompt("Who is this? {text}"),
+            groupedPrompt: new GroupedPrompt("Who are these people?", "text"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
