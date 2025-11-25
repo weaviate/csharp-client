@@ -1,6 +1,8 @@
 using System.Runtime.CompilerServices;
+using Weaviate.Client.Cache;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Typed;
+using Weaviate.Client.Validation;
 
 namespace Weaviate.Client.Typed;
 
@@ -15,6 +17,7 @@ public class TypedCollectionClient<T>
     private readonly CollectionClient _collectionClient;
     private readonly TypedDataClient<T> _dataClient;
     private readonly TypedQueryClient<T> _queryClient;
+    private readonly TypedGenerateClient<T> _generateClient;
 
     /// <summary>
     /// Creates a new typed collection client wrapping an untyped CollectionClient.
@@ -25,6 +28,7 @@ public class TypedCollectionClient<T>
         _collectionClient = collectionClient;
         _dataClient = new TypedDataClient<T>(collectionClient.Data);
         _queryClient = new TypedQueryClient<T>(collectionClient.Query);
+        _generateClient = new TypedGenerateClient<T>(collectionClient.Generate);
     }
 
     /// <summary>
@@ -56,6 +60,12 @@ public class TypedCollectionClient<T>
     /// Strongly-typed query operations (search, filter, etc.).
     /// </summary>
     public TypedQueryClient<T> Query => _queryClient;
+
+    /// <summary>
+    /// Strongly-typed generative AI query operations (RAG - Retrieval-Augmented Generation).
+    /// Combines search with LLM-generated content for each result or the entire result set.
+    /// </summary>
+    public TypedGenerateClient<T> Generate => _generateClient;
 
     /// <summary>
     /// Aggregate operations. Returns untyped AggregateClient since aggregates return metrics, not objects.
@@ -151,4 +161,58 @@ public class TypedCollectionClient<T>
             yield return obj.ToTyped<T>();
         }
     }
+
+    #region Validation
+
+    /// <summary>
+    /// Gets the collection schema from the server, using a cache to avoid redundant fetches.
+    /// Uses the default SchemaCache with a 5-minute TTL.
+    /// </summary>
+    /// <param name="schemaCache">Optional schema cache instance. If null, uses SchemaCache.Default.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The collection configuration, or null if the collection doesn't exist.</returns>
+    public async Task<CollectionConfig?> GetCachedConfig(
+        SchemaCache? schemaCache = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var cache = schemaCache ?? SchemaCache.Default;
+        return await cache.GetOrFetch(
+            Name,
+            async () =>
+            {
+                var client = _collectionClient.Client;
+                return await client.Collections.Export(Name, cancellationToken);
+            }
+        );
+    }
+
+    /// <summary>
+    /// Validates that the C# type T is compatible with this collection's schema.
+    /// Checks property names, types, and array handling.
+    /// </summary>
+    /// <param name="typeValidator">Optional type validator instance. If null, uses TypeValidator.Default.</param>
+    /// <param name="schemaCache">Optional schema cache instance. If null, uses SchemaCache.Default.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A validation result containing any errors and warnings.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the collection schema cannot be fetched.</exception>
+    public async Task<ValidationResult> ValidateType(
+        TypeValidator? typeValidator = null,
+        SchemaCache? schemaCache = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var schema = await GetCachedConfig(schemaCache, cancellationToken);
+        if (schema == null)
+        {
+            throw new InvalidOperationException(
+                $"Cannot validate type {typeof(T).Name}: collection '{Name}' does not exist or schema could not be fetched."
+            );
+        }
+
+        var validator = typeValidator ?? TypeValidator.Default;
+        return validator.ValidateType<T>(schema);
+    }
+
+    #endregion
 }
