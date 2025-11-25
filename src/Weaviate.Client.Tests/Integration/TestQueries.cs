@@ -46,7 +46,10 @@ public class TestQueries : IntegrationTests
             },
         };
 
-        await collection.Data.InsertMany(testData, TestContext.Current.CancellationToken);
+        await collection.Data.InsertMany(
+            testData,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Act
         var dataDesc = await collection.Query.FetchObjects(
