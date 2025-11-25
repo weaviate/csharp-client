@@ -56,7 +56,7 @@ class Program
 
         WeaviateClient weaviate = await Connect.Local();
 
-        var collection = weaviate.Collections.Use<Cat>("Cat");
+        var collection = weaviate.Collections.Use("Cat");
 
         // Should throw CollectionNotFound
         try
@@ -87,7 +87,7 @@ class Program
             VectorConfig = new VectorConfig("default", new Vectorizer.Text2VecWeaviate()),
         };
 
-        collection = await weaviate.Collections.Create<Cat>(catCollection);
+        collection = await weaviate.Collections.Create(catCollection);
 
         await foreach (var c in weaviate.Collections.List())
         {

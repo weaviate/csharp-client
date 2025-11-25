@@ -406,7 +406,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         var inserts = (
             await collection.Data.InsertMany(
                 [
-                    new BatchInsertRequest<object>(
+                    new BatchInsertRequest(
                         Data: new { },
                         Vectors: new Vectors
                         {
@@ -414,7 +414,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
                             { "second", new[] { 0f, 1f, 0f } },
                         }
                     ),
-                    new BatchInsertRequest<object>(
+                    new BatchInsertRequest(
                         Data: new { },
                         Vectors: new Vectors
                         {

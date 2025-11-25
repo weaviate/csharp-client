@@ -95,7 +95,7 @@ public class TestQueries : IntegrationTests
         };
 
         await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(testData),
+            BatchInsertRequest.Create(testData),
             TestContext.Current.CancellationToken
         );
 
@@ -160,9 +160,7 @@ public class TestQueries : IntegrationTests
 
         // Insert data
         await collection.Data.InsertMany(
-            BatchInsertRequest.Create<object>(
-                [new { text = "John Doe" }, new { text = "Jane Doe" }]
-            ),
+            BatchInsertRequest.Create([new { text = "John Doe" }, new { text = "Jane Doe" }]),
             TestContext.Current.CancellationToken
         );
 

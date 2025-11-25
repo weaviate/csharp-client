@@ -12,11 +12,11 @@ public partial class FilterTests : IntegrationTests
         var cA = await CollectionFactory<TestData>("A", "Collection A");
 
         var uuid_A1 = await cA.Data.Insert(
-            new() { Name = "A1", Size = 3 },
+            new TestData { Name = "A1", Size = 3 },
             cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid_A2 = await cA.Data.Insert(
-            new() { Name = "A2", Size = 5 },
+            new TestData { Name = "A2", Size = 5 },
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -44,11 +44,11 @@ public partial class FilterTests : IntegrationTests
         );
 
         var uuid_A1 = await cA.Data.Insert(
-            new() { Name = "A1", Size = 3 },
+            new TestData { Name = "A1", Size = 3 },
             cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid_A2 = await cA.Data.Insert(
-            new() { Name = "A2", Size = 5 },
+            new TestData { Name = "A2", Size = 5 },
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -84,11 +84,11 @@ public partial class FilterTests : IntegrationTests
         var cA = await CollectionFactory<TestData>("A", "Collection A");
 
         var uuid_A1 = await cA.Data.Insert(
-            new() { Name = "A1", Size = 3 },
+            new TestData { Name = "A1", Size = 3 },
             cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid_A2 = await cA.Data.Insert(
-            new() { Name = "A2", Size = 5 },
+            new TestData { Name = "A2", Size = 5 },
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -121,12 +121,12 @@ public partial class FilterTests : IntegrationTests
         var uuidsTo = new[]
         {
             await cTarget.Data.Insert(
-                new() { Name = "first", Size = 0 },
+                new TestData { Name = "first", Size = 0 },
                 id: _reusableUuids[0],
                 cancellationToken: TestContext.Current.CancellationToken
             ),
             await cTarget.Data.Insert(
-                new() { Name = "second", Size = 15 },
+                new TestData { Name = "second", Size = 15 },
                 id: _reusableUuids[1],
                 cancellationToken: TestContext.Current.CancellationToken
             ),

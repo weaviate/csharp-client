@@ -11,7 +11,7 @@ public record CollectionsClient
         _client = client;
     }
 
-    public async Task<CollectionClient<dynamic>> Create(
+    public async Task<CollectionClient> Create(
         Models.CollectionConfig collection,
         CancellationToken cancellationToken = default
     )
@@ -21,20 +21,7 @@ public record CollectionsClient
             cancellationToken
         );
 
-        return new CollectionClient<dynamic>(_client, response.ToModel());
-    }
-
-    public async Task<CollectionClient<TData>> Create<TData>(
-        Models.CollectionConfig collection,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var response = await _client.RestClient.CollectionCreate(
-            collection.ToDto(),
-            cancellationToken
-        );
-
-        return new CollectionClient<TData>(_client, response.ToModel());
+        return new CollectionClient(_client, response.ToModel());
     }
 
     public async Task Delete(string collectionName, CancellationToken cancellationToken = default)
@@ -89,15 +76,8 @@ public record CollectionsClient
         }
     }
 
-    public CollectionClient<dynamic> Use(string name)
+    public CollectionClient Use(string name)
     {
-        return new CollectionClient<dynamic>(_client, name);
-    }
-
-    public CollectionClient<TData> Use<TData>(string? name = null)
-    {
-        name = name ?? typeof(TData).Name;
-
-        return new CollectionClient<TData>(_client, name);
+        return new CollectionClient(_client, name);
     }
 }

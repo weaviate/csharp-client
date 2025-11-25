@@ -120,18 +120,18 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         return string.Join(collectionNamePartSeparator, strings);
     }
 
-    public async Task<CollectionClient<TData>> CollectionFactory<TData>(CollectionConfig c)
+    public async Task<CollectionClient> CollectionFactory<TData>(CollectionConfig c)
     {
         await _weaviate.Collections.Delete(c.Name);
 
-        var collectionClient = await _weaviate.Collections.Create<TData>(c);
+        var collectionClient = await _weaviate.Collections.Create(c);
 
         _collections.Add(collectionClient.Name);
 
         return collectionClient;
     }
 
-    public async Task<CollectionClient<TData>> CollectionFactory<TData>(
+    public async Task<CollectionClient> CollectionFactory<TData>(
         string? name = null,
         string? description = null,
         OneOrManyOf<Property>? properties = null,
@@ -176,7 +176,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         return await CollectionFactory<TData>(c);
     }
 
-    protected async Task<CollectionClient<object>> CollectionFactory(
+    protected async Task<CollectionClient> CollectionFactory(
         string? name = null,
         string? description = null,
         OneOrManyOf<Property>? properties = null,
