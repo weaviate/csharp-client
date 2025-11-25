@@ -30,7 +30,14 @@ public class TypedDataClient<T>
         CancellationToken cancellationToken = default
     )
     {
-        return await _dataClient.Insert(data, id, vectors, references, tenant, cancellationToken);
+        return await _dataClient.Insert(
+            data,
+            id,
+            vectors,
+            references,
+            tenant,
+            cancellationToken: cancellationToken
+        );
     }
 
     /// <summary>
@@ -56,7 +63,10 @@ public class TypedDataClient<T>
         CancellationToken cancellationToken = default
     )
     {
-        return await _dataClient.InsertMany((IEnumerable)data, cancellationToken);
+        return await _dataClient.InsertMany(
+            (IEnumerable)data,
+            cancellationToken: cancellationToken
+        );
     }
 
     /// <summary>
