@@ -184,12 +184,7 @@ public class TestNearQueries : IntegrationTests
 
         var ret = await collectionClient.Query.NearObject(
             uuidBanana1,
-            groupBy: new GroupByRequest
-            {
-                PropertyName = "Name",
-                NumberOfGroups = 4,
-                ObjectsPerGroup = 10,
-            },
+            groupBy: new GroupByRequest("Name") { NumberOfGroups = 4, ObjectsPerGroup = 10 },
             returnMetadata: new MetadataQuery(MetadataOptions.Distance | MetadataOptions.Certainty),
             cancellationToken: TestContext.Current.CancellationToken
         );
