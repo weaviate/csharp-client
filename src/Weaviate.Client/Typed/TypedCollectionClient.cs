@@ -162,31 +162,6 @@ public class TypedCollectionClient<T>
         }
     }
 
-    #region Validation
-
-    /// <summary>
-    /// Gets the collection schema from the server, using a cache to avoid redundant fetches.
-    /// Uses the default SchemaCache with a 5-minute TTL.
-    /// </summary>
-    /// <param name="schemaCache">Optional schema cache instance. If null, uses SchemaCache.Default.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>The collection configuration, or null if the collection doesn't exist.</returns>
-    public async Task<CollectionConfig?> GetCachedConfig(
-        SchemaCache? schemaCache = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var cache = schemaCache ?? SchemaCache.Default;
-        return await cache.GetOrFetch(
-            Name,
-            async () =>
-            {
-                var client = _collectionClient.Client;
-                return await client.Collections.Export(Name, cancellationToken);
-            }
-        );
-    }
-
     /// <summary>
     /// Validates that the C# type T is compatible with this collection's schema.
     /// Checks property names, types, and array handling.
@@ -202,17 +177,8 @@ public class TypedCollectionClient<T>
         CancellationToken cancellationToken = default
     )
     {
-        var schema = await GetCachedConfig(schemaCache, cancellationToken);
-        if (schema == null)
-        {
-            throw new InvalidOperationException(
-                $"Cannot validate type {typeof(T).Name}: collection '{Name}' does not exist or schema could not be fetched."
-            );
-        }
+        var schema = await Config.GetCachedConfig(schemaCache, cancellationToken);
 
-        var validator = typeValidator ?? TypeValidator.Default;
-        return validator.ValidateType<T>(schema);
+        return schema.ValidateType<T>(typeValidator);
     }
-
-    #endregion
 }

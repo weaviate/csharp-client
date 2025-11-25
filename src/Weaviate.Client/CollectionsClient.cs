@@ -80,39 +80,4 @@ public record CollectionsClient
     {
         return new CollectionClient(_client, name);
     }
-
-    /// <summary>
-    /// Creates a strongly-typed collection client for accessing a specific collection.
-    /// The collection client provides type-safe data and query operations.
-    /// </summary>
-    /// <typeparam name="T">The C# type representing objects in this collection.</typeparam>
-    /// <param name="name">The name of the collection.</param>
-    /// <param name="validateType">If true, validates that type T is compatible with the collection schema on construction. Default is false for performance.</param>
-    /// <returns>A TypedCollectionClient that provides strongly-typed operations.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if validateType is true and validation fails with errors.</exception>
-    public Typed.TypedCollectionClient<T> Use<T>(string name, bool validateType = false)
-        where T : class, new()
-    {
-        var innerClient = Use(name);
-        var typedClient = new Typed.TypedCollectionClient<T>(innerClient);
-
-        if (validateType)
-        {
-            // Perform synchronous validation by running async task
-            var validationResult = typedClient.ValidateType().GetAwaiter().GetResult();
-
-            if (!validationResult.IsValid)
-            {
-                var errorMessages = string.Join(
-                    ", ",
-                    validationResult.Errors.Select(e => e.Message)
-                );
-                throw new InvalidOperationException(
-                    $"Type {typeof(T).Name} is not compatible with collection '{name}': {errorMessages}"
-                );
-            }
-        }
-
-        return typedClient;
-    }
 }
