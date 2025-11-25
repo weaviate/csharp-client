@@ -45,8 +45,8 @@ public class PropertyBag : IDictionary<string, object?>
         return value switch
         {
             int i => i,
-            long l => (int)l,
-            double d => (int)d,
+            long l => Convert.ToInt32(l),
+            double d => Convert.ToInt32(d),
             _ => Convert.ToInt32(value),
         };
     }
@@ -63,7 +63,7 @@ public class PropertyBag : IDictionary<string, object?>
         {
             long l => l,
             int i => i,
-            double d => (long)d,
+            double d => Convert.ToInt64(d),
             _ => Convert.ToInt64(value),
         };
     }

@@ -45,7 +45,7 @@ public class ValidationResult
             lines.Add($"Validation failed with {Errors.Count} error(s):");
             foreach (var error in Errors)
             {
-                lines.Add($"  ❌ {error.PropertyName}: {error.Message}");
+                lines.Add($"  [ERROR] {error.PropertyName}: {error.Message}");
                 if (
                     !string.IsNullOrEmpty(error.ExpectedType)
                     && !string.IsNullOrEmpty(error.ActualType)
@@ -63,7 +63,7 @@ public class ValidationResult
             lines.Add($"{Warnings.Count} warning(s):");
             foreach (var warning in Warnings)
             {
-                lines.Add($"  ⚠️  {warning.PropertyName}: {warning.Message}");
+                lines.Add($"  [WARNING]  {warning.PropertyName}: {warning.Message}");
             }
         }
 
