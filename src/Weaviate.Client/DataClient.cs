@@ -3,6 +3,7 @@ using System.Collections.Frozen;
 using System.Diagnostics;
 using Weaviate.Client.Models;
 using Weaviate.Client.Rest.Dto;
+using Weaviate.Client.Validation;
 
 namespace Weaviate.Client;
 
@@ -50,9 +51,22 @@ public class DataClient
         Models.Vectors? vectors = null,
         OneOrManyOf<ObjectReference>? references = null,
         string? tenant = null,
+        bool validate = false,
         CancellationToken cancellationToken = default
     )
     {
+        if (validate)
+        {
+            var schema = await _collectionClient.Config.GetCachedConfig();
+            var validationResult = TypeValidator.Default.ValidateType(data.GetType(), schema!);
+            if (!validationResult.IsValid)
+            {
+                throw new InvalidOperationException(
+                    $"Object of type '{data.GetType().Name}' does not conform to schema of collection '{_collectionName}':\n"
+                        + validationResult.GetDetailedMessage()
+                );
+            }
+        }
         var propDict = ObjectHelper.BuildDataTransferObject(data);
 
         foreach (var kvp in references ?? [])
@@ -111,11 +125,30 @@ public class DataClient
 
     public async Task<BatchInsertResponse> InsertMany(
         IEnumerable data,
+        bool validate = false,
         CancellationToken cancellationToken = default
     )
     {
+        var objects = data.Cast<object>().ToList();
+        if (validate)
+        {
+            var schema = await _collectionClient.Config.GetCachedConfig(
+                cancellationToken: cancellationToken
+            );
+            foreach (var obj in objects)
+            {
+                var validationResult = TypeValidator.Default.ValidateType(obj.GetType(), schema!);
+                if (!validationResult.IsValid)
+                {
+                    throw new InvalidOperationException(
+                        $"Object of type '{obj.GetType().Name}' does not conform to schema of collection '{_collectionName}':\n"
+                            + validationResult.GetDetailedMessage()
+                    );
+                }
+            }
+        }
         return await InsertMany(
-            data.Cast<object>().Select(r => BatchInsertRequest.Create(r)),
+            objects.Select(r => BatchInsertRequest.Create(r)),
             cancellationToken
         );
     }

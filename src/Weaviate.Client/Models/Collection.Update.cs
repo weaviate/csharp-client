@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Weaviate.Client.Cache;
 
 namespace Weaviate.Client.Models;
 
@@ -332,6 +333,28 @@ public class CollectionConfigClient
     {
         _client = client;
         _collectionName = collectionName;
+    }
+
+    /// <summary>
+    /// Gets the cached collection config, fetching from server if needed.
+    /// </summary>
+    /// <param name="schemaCache">Optional schema cache. If null, uses SchemaCache.Default.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The collection config, or null if not found.</returns>
+    public async Task<CollectionConfig?> GetCachedConfig(
+        SchemaCache? schemaCache = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var cache = schemaCache ?? Cache.SchemaCache.Default;
+        return await cache.GetOrFetch(
+            _collectionName,
+            async () =>
+            {
+                var client = _client;
+                return await client.Collections.Export(_collectionName, cancellationToken);
+            }
+        );
     }
 
     internal async Task AddReference(Reference referenceProperty)
