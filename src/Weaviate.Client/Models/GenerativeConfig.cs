@@ -20,11 +20,11 @@ public static class GenerativeConfig
     public abstract record OpenAIBase : IGenerativeConfig
     {
         public string? BaseURL { get; set; }
-        public int? FrequencyPenaltyProperty { get; set; }
-        public int? MaxTokensProperty { get; set; }
-        public int? PresencePenaltyProperty { get; set; }
-        public double? TemperatureProperty { get; set; }
-        public double? TopPProperty { get; set; }
+        public int? FrequencyPenalty { get; set; }
+        public int? MaxTokens { get; set; }
+        public int? PresencePenalty { get; set; }
+        public double? Temperature { get; set; }
+        public double? TopP { get; set; }
         public abstract string Type { get; }
     }
 
@@ -68,12 +68,12 @@ public static class GenerativeConfig
         public const string TypeValue = "generative-cohere";
         public string Type => TypeValue;
 
-        public int? KProperty { get; set; }
+        public int? K { get; set; }
         public string? Model { get; set; }
-        public int? MaxTokensProperty { get; set; }
-        public string? ReturnLikelihoodsProperty { get; set; }
-        public string[]? StopSequencesProperty { get; set; }
-        public double? TemperatureProperty { get; set; }
+        public int? MaxTokens { get; set; }
+        public string? ReturnLikelihoods { get; set; }
+        public string[]? StopSequences { get; set; }
+        public double? Temperature { get; set; }
     }
 
     public record Databricks : IGenerativeConfig
