@@ -181,8 +181,6 @@ public class TypedDataClientTests
 
     private static WeaviateClient CreateWeaviateClient()
     {
-        return MockWeaviateClient
-            .CreateWithMockHandler(handlerChainFactory: null, autoMeta: true)
-            .Client;
+        return Mocks.MockWeaviateClient.CreateWithMockHandler().Client;
     }
 }
