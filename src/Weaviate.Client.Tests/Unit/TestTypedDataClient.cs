@@ -19,7 +19,7 @@ public class TypedDataClientTests
     }
 
     [Fact]
-    public void Constructor_WithValidDataClient_InitializesCorrectly()
+    public async Task Constructor_WithValidDataClient_InitializesCorrectly()
     {
         // Arrange
         var client = CreateWeaviateClient();
@@ -31,6 +31,7 @@ public class TypedDataClientTests
 
         // Assert
         Assert.NotNull(typedDataClient);
+        await Task.CompletedTask;
     }
 
     [Fact]
@@ -61,6 +62,7 @@ public class TypedDataClientTests
         // Actual insertion would require a mock/fake HTTP client
         // For now, we just verify the method signature is correct
         Assert.NotNull(typedDataClient);
+        await Task.CompletedTask;
     }
 
     [Fact]
@@ -91,6 +93,7 @@ public class TypedDataClientTests
         // Verify the method accepts IEnumerable<T>
         Assert.NotNull(typedDataClient);
         Assert.Equal(2, articles.Count);
+        await Task.CompletedTask;
     }
 
     [Fact]
@@ -111,6 +114,7 @@ public class TypedDataClientTests
         // Verify the method accepts tuples of (T, Guid)
         Assert.NotNull(typedDataClient);
         Assert.Equal(2, requests.Count);
+        await Task.CompletedTask;
     }
 
     [Fact]
@@ -131,6 +135,7 @@ public class TypedDataClientTests
         // Verify the method accepts tuples of (T, Vectors)
         Assert.NotNull(typedDataClient);
         Assert.Single(requests);
+        await Task.CompletedTask;
     }
 
     [Fact]
@@ -154,10 +159,11 @@ public class TypedDataClientTests
         // Verify the method accepts tuples of (T, IEnumerable<ObjectReference>)
         Assert.NotNull(typedDataClient);
         Assert.Single(requests);
+        await Task.CompletedTask;
     }
 
     [Fact]
-    public void TypedDataClient_WrapsDataClient_MaintainsTypeConstraints()
+    public async Task TypedDataClient_WrapsDataClient_MaintainsTypeConstraints()
     {
         // Arrange
         var client = CreateWeaviateClient();
@@ -170,6 +176,7 @@ public class TypedDataClientTests
         // Verify that TypedDataClient enforces type constraints
         // The fact that this compiles and accepts TestArticle proves type safety
         Assert.NotNull(typedDataClient);
+        await Task.CompletedTask;
     }
 
     private static WeaviateClient CreateWeaviateClient()
