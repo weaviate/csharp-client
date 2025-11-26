@@ -36,6 +36,7 @@ public class ClusterClient
         CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         var dto = new Rest.Dto.ReplicationReplicateReplicaRequest
         {
             Collection = request.Collection,
