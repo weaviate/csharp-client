@@ -14,7 +14,8 @@ internal class WeaviateInitializationService : IHostedService
 
     public WeaviateInitializationService(
         WeaviateClient client,
-        ILogger<WeaviateInitializationService> logger)
+        ILogger<WeaviateInitializationService> logger
+    )
     {
         _client = client;
         _logger = logger;
@@ -32,7 +33,8 @@ internal class WeaviateInitializationService : IHostedService
             var version = _client.WeaviateVersion;
             _logger.LogInformation(
                 "Weaviate client initialized successfully. Server version: {Version}",
-                version);
+                version
+            );
         }
         catch (Exception ex)
         {
