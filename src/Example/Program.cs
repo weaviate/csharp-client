@@ -35,7 +35,7 @@ class Program
                 await TraditionalExample.Run();
                 break;
             case "2":
-                await DependencyInjectionExample.Main([]);
+                await DependencyInjectionExample.Run();
                 break;
             case "3":
                 await MultipleClientsExample.Run();
@@ -68,7 +68,7 @@ class Program
                 break;
             case "di":
             case "dependency-injection":
-                await DependencyInjectionExample.Main([]);
+                await DependencyInjectionExample.Run();
                 break;
             case "multiple":
             case "multiple-clients":
@@ -91,7 +91,9 @@ class Program
                 break;
             default:
                 Console.WriteLine($"Unknown example: {name}");
-                Console.WriteLine("Available examples: traditional, di, multiple, configs, configuration, lazy, connect");
+                Console.WriteLine(
+                    "Available examples: traditional, di, multiple, configs, configuration, lazy, connect"
+                );
                 break;
         }
     }

@@ -31,7 +31,8 @@ public static class WeaviateServiceCollectionExtensions
     public static IServiceCollection AddWeaviateClient(
         this IServiceCollection services,
         string name,
-        Action<WeaviateOptions> configureOptions)
+        Action<WeaviateOptions> configureOptions
+    )
     {
         // Ensure factory is registered
         if (!services.Any(x => x.ServiceType == typeof(IWeaviateClientFactory)))
@@ -56,7 +57,8 @@ public static class WeaviateServiceCollectionExtensions
     public static IServiceCollection AddWeaviate(
         this IServiceCollection services,
         Action<WeaviateOptions> configureOptions,
-        bool eagerInitialization = true)
+        bool eagerInitialization = true
+    )
     {
         services.Configure(configureOptions);
         services.AddSingleton<WeaviateClient>();
@@ -79,7 +81,8 @@ public static class WeaviateServiceCollectionExtensions
     public static IServiceCollection AddWeaviate(
         this IServiceCollection services,
         IConfiguration configuration,
-        bool eagerInitialization = true)
+        bool eagerInitialization = true
+    )
     {
         services.Configure<WeaviateOptions>(configuration);
         services.AddSingleton<WeaviateClient>();
@@ -121,22 +124,26 @@ public static class WeaviateServiceCollectionExtensions
         TimeSpan? initTimeout = null,
         TimeSpan? dataTimeout = null,
         TimeSpan? queryTimeout = null,
-        bool eagerInitialization = true)
+        bool eagerInitialization = true
+    )
     {
-        services.AddWeaviate(options =>
-        {
-            options.RestEndpoint = hostname;
-            options.GrpcEndpoint = hostname;
-            options.RestPort = restPort;
-            options.GrpcPort = grpcPort;
-            options.UseSsl = useSsl;
-            options.Credentials = credentials;
-            options.Headers = headers;
-            options.DefaultTimeout = defaultTimeout;
-            options.InitTimeout = initTimeout;
-            options.DataTimeout = dataTimeout;
-            options.QueryTimeout = queryTimeout;
-        }, eagerInitialization);
+        services.AddWeaviate(
+            options =>
+            {
+                options.RestEndpoint = hostname;
+                options.GrpcEndpoint = hostname;
+                options.RestPort = restPort;
+                options.GrpcPort = grpcPort;
+                options.UseSsl = useSsl;
+                options.Credentials = credentials;
+                options.Headers = headers;
+                options.DefaultTimeout = defaultTimeout;
+                options.InitTimeout = initTimeout;
+                options.DataTimeout = dataTimeout;
+                options.QueryTimeout = queryTimeout;
+            },
+            eagerInitialization
+        );
 
         return services;
     }
@@ -164,22 +171,26 @@ public static class WeaviateServiceCollectionExtensions
         TimeSpan? initTimeout = null,
         TimeSpan? dataTimeout = null,
         TimeSpan? queryTimeout = null,
-        bool eagerInitialization = true)
+        bool eagerInitialization = true
+    )
     {
-        services.AddWeaviate(options =>
-        {
-            options.RestEndpoint = clusterEndpoint;
-            options.GrpcEndpoint = $"grpc-{clusterEndpoint}";
-            options.RestPort = 443;
-            options.GrpcPort = 443;
-            options.UseSsl = true;
-            options.Credentials = string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey);
-            options.Headers = headers;
-            options.DefaultTimeout = defaultTimeout;
-            options.InitTimeout = initTimeout;
-            options.DataTimeout = dataTimeout;
-            options.QueryTimeout = queryTimeout;
-        }, eagerInitialization);
+        services.AddWeaviate(
+            options =>
+            {
+                options.RestEndpoint = clusterEndpoint;
+                options.GrpcEndpoint = $"grpc-{clusterEndpoint}";
+                options.RestPort = 443;
+                options.GrpcPort = 443;
+                options.UseSsl = true;
+                options.Credentials = string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey);
+                options.Headers = headers;
+                options.DefaultTimeout = defaultTimeout;
+                options.InitTimeout = initTimeout;
+                options.DataTimeout = dataTimeout;
+                options.QueryTimeout = queryTimeout;
+            },
+            eagerInitialization
+        );
 
         return services;
     }
@@ -193,18 +204,19 @@ public static class WeaviateServiceCollectionExtensions
     /// <param name="services">The service collection.</param>
     /// <param name="name">The logical name of the client.</param>
     /// <returns>The service collection for method chaining.</returns>
-    public static IServiceCollection AddWeaviateLocal(
-        this IServiceCollection services,
-        string name)
+    public static IServiceCollection AddWeaviateLocal(this IServiceCollection services, string name)
     {
-        return services.AddWeaviateClient(name, options =>
-        {
-            options.RestEndpoint = "localhost";
-            options.GrpcEndpoint = "localhost";
-            options.RestPort = 8080;
-            options.GrpcPort = 50051;
-            options.UseSsl = false;
-        });
+        return services.AddWeaviateClient(
+            name,
+            options =>
+            {
+                options.RestEndpoint = "localhost";
+                options.GrpcEndpoint = "localhost";
+                options.RestPort = 8080;
+                options.GrpcPort = 50051;
+                options.UseSsl = false;
+            }
+        );
     }
 
     /// <summary>
@@ -217,7 +229,8 @@ public static class WeaviateServiceCollectionExtensions
     public static IServiceCollection AddWeaviateLocal(
         this IServiceCollection services,
         string name,
-        Action<WeaviateOptions> configureOptions)
+        Action<WeaviateOptions> configureOptions
+    )
     {
         return services.AddWeaviateClient(name, configureOptions);
     }
@@ -250,22 +263,26 @@ public static class WeaviateServiceCollectionExtensions
         TimeSpan? defaultTimeout = null,
         TimeSpan? initTimeout = null,
         TimeSpan? dataTimeout = null,
-        TimeSpan? queryTimeout = null)
+        TimeSpan? queryTimeout = null
+    )
     {
-        return services.AddWeaviateClient(name, options =>
-        {
-            options.RestEndpoint = hostname;
-            options.GrpcEndpoint = hostname;
-            options.RestPort = restPort;
-            options.GrpcPort = grpcPort;
-            options.UseSsl = useSsl;
-            options.Credentials = credentials;
-            options.Headers = headers;
-            options.DefaultTimeout = defaultTimeout;
-            options.InitTimeout = initTimeout;
-            options.DataTimeout = dataTimeout;
-            options.QueryTimeout = queryTimeout;
-        });
+        return services.AddWeaviateClient(
+            name,
+            options =>
+            {
+                options.RestEndpoint = hostname;
+                options.GrpcEndpoint = hostname;
+                options.RestPort = restPort;
+                options.GrpcPort = grpcPort;
+                options.UseSsl = useSsl;
+                options.Credentials = credentials;
+                options.Headers = headers;
+                options.DefaultTimeout = defaultTimeout;
+                options.InitTimeout = initTimeout;
+                options.DataTimeout = dataTimeout;
+                options.QueryTimeout = queryTimeout;
+            }
+        );
     }
 
     /// <summary>
@@ -278,7 +295,8 @@ public static class WeaviateServiceCollectionExtensions
     public static IServiceCollection AddWeaviateCloud(
         this IServiceCollection services,
         string name,
-        Action<WeaviateOptions> configureOptions)
+        Action<WeaviateOptions> configureOptions
+    )
     {
         return services.AddWeaviateClient(name, configureOptions);
     }
@@ -305,79 +323,25 @@ public static class WeaviateServiceCollectionExtensions
         TimeSpan? defaultTimeout = null,
         TimeSpan? initTimeout = null,
         TimeSpan? dataTimeout = null,
-        TimeSpan? queryTimeout = null)
+        TimeSpan? queryTimeout = null
+    )
     {
-        return services.AddWeaviateClient(name, options =>
-        {
-            options.RestEndpoint = clusterEndpoint;
-            options.GrpcEndpoint = $"grpc-{clusterEndpoint}";
-            options.RestPort = 443;
-            options.GrpcPort = 443;
-            options.UseSsl = true;
-            options.Credentials = string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey);
-            options.Headers = headers;
-            options.DefaultTimeout = defaultTimeout;
-            options.InitTimeout = initTimeout;
-            options.DataTimeout = dataTimeout;
-            options.QueryTimeout = queryTimeout;
-        });
-    }
-
-    /// <summary>
-    /// Adds a named Weaviate client configured for a local instance.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="name">The logical name of the client.</param>
-    /// <param name="hostname">Hostname for local Weaviate instance. Default is "localhost".</param>
-    /// <param name="restPort">REST port. Default is 8080.</param>
-    /// <param name="grpcPort">gRPC port. Default is 50051.</param>
-    /// <param name="useSsl">Whether to use SSL/TLS. Default is false.</param>
-    /// <param name="credentials">Authentication credentials.</param>
-    /// <returns>The service collection for method chaining.</returns>
-    [Obsolete("Use AddWeaviateLocal(name, hostname, ...) instead for better API consistency.")]
-    public static IServiceCollection AddWeaviateClient(
-        this IServiceCollection services,
-        string name,
-        string hostname = "localhost",
-        ushort restPort = 8080,
-        ushort grpcPort = 50051,
-        bool useSsl = false,
-        ICredentials? credentials = null)
-    {
-        return services.AddWeaviateClient(name, options =>
-        {
-            options.RestEndpoint = hostname;
-            options.GrpcEndpoint = hostname;
-            options.RestPort = restPort;
-            options.GrpcPort = grpcPort;
-            options.UseSsl = useSsl;
-            options.Credentials = credentials;
-        });
-    }
-
-    /// <summary>
-    /// Adds a named Weaviate client configured for Weaviate Cloud.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="name">The logical name of the client.</param>
-    /// <param name="clusterEndpoint">The Weaviate Cloud cluster endpoint (e.g., "my-cluster.weaviate.cloud").</param>
-    /// <param name="apiKey">API key for authentication.</param>
-    /// <returns>The service collection for method chaining.</returns>
-    [Obsolete("Use AddWeaviateCloud(name, clusterEndpoint, apiKey) instead for better API consistency.")]
-    public static IServiceCollection AddWeaviateCloudClient(
-        this IServiceCollection services,
-        string name,
-        string clusterEndpoint,
-        string? apiKey = null)
-    {
-        return services.AddWeaviateClient(name, options =>
-        {
-            options.RestEndpoint = clusterEndpoint;
-            options.GrpcEndpoint = $"grpc-{clusterEndpoint}";
-            options.RestPort = 443;
-            options.GrpcPort = 443;
-            options.UseSsl = true;
-            options.Credentials = string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey);
-        });
+        return services.AddWeaviateClient(
+            name,
+            options =>
+            {
+                options.RestEndpoint = clusterEndpoint;
+                options.GrpcEndpoint = $"grpc-{clusterEndpoint}";
+                options.RestPort = 443;
+                options.GrpcPort = 443;
+                options.UseSsl = true;
+                options.Credentials = string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey);
+                options.Headers = headers;
+                options.DefaultTimeout = defaultTimeout;
+                options.InitTimeout = initTimeout;
+                options.DataTimeout = dataTimeout;
+                options.QueryTimeout = queryTimeout;
+            }
+        );
     }
 }

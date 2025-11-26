@@ -104,14 +104,23 @@ public record CollectionsClient
     /// </summary>
     /// <typeparam name="T">The C# type representing objects in this collection.</typeparam>
     /// <param name="name">The name of the collection.</param>
-    /// <param name="validateType">If true, validates that type T is compatible with the collection schema on construction. Default is false for performance.</param>
     /// <returns>A TypedCollectionClient that provides strongly-typed operations.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if validateType is true and validation fails with errors.</exception>
-    public async Task<Typed.TypedCollectionClient<T>> Use<T>(string name, bool validateType = false)
+    public Typed.TypedCollectionClient<T> Use<T>(string name)
         where T : class, new()
     {
-        var innerClient = Use(name);
+        return Use(name).AsTyped<T>();
+    }
 
-        return await innerClient.AsTyped<T>(validateType);
+    /// <summary>
+    /// Creates a strongly-typed collection client for accessing a specific collection.
+    /// The collection client provides type-safe data and query operations.
+    /// </summary>
+    /// <typeparam name="T">The C# type representing objects in this collection.</typeparam>
+    /// <param name="name">The name of the collection.</param>
+    /// <returns>A TypedCollectionClient that provides strongly-typed operations.</returns>
+    public async Task<Typed.TypedCollectionClient<T>> Use<T>(string name, bool validateType)
+        where T : class, new()
+    {
+        return await Use(name).AsTyped<T>(validateType: validateType);
     }
 }
