@@ -11,23 +11,25 @@ namespace Example;
 /// </summary>
 public class DependencyInjectionExample
 {
-    public static async Task Main(string[] args)
+    public static async Task Run()
     {
         // Build host with dependency injection
-        var host = Host.CreateDefaultBuilder(args)
-            .ConfigureServices((context, services) =>
-            {
-                // Register Weaviate client
-                services.AddWeaviateLocal(
-                    hostname: "localhost",
-                    restPort: 8080,
-                    grpcPort: 50051,
-                    eagerInitialization: true // Client initializes on startup
-                );
+        var host = Host.CreateDefaultBuilder()
+            .ConfigureServices(
+                (context, services) =>
+                {
+                    // Register Weaviate client
+                    services.AddWeaviateLocal(
+                        hostname: "localhost",
+                        restPort: 8080,
+                        grpcPort: 50051,
+                        eagerInitialization: true // Client initializes on startup
+                    );
 
-                // Register your services that use Weaviate
-                services.AddSingleton<CatService>();
-            })
+                    // Register your services that use Weaviate
+                    services.AddSingleton<CatService>();
+                }
+            )
             .Build();
 
         // Run the host - this triggers eager initialization
@@ -61,7 +63,8 @@ public class CatService
         // Client is already initialized!
         _logger.LogInformation(
             "CatService created. Weaviate version: {Version}",
-            _weaviate.WeaviateVersion);
+            _weaviate.WeaviateVersion
+        );
     }
 
     public async Task DemonstrateUsageAsync()
@@ -70,7 +73,11 @@ public class CatService
         _logger.LogInformation("Client initialized: {IsInitialized}", _weaviate.IsInitialized);
 
         // Create or get collection
-        var collection = _weaviate.Collections.Use<Cat>("Cat");
+        var collection = await _weaviate.Collections.Use<Cat>("Cat").ValidateTypeOrThrow();
+        // or also:
+        // var collection = await _weaviate.Collections.Use<Cat>("Cat", validateType: true);
+        // or the yolo way:
+        // var collection = _weaviate.Collections.Use<Cat>("Cat");
 
         try
         {
@@ -82,26 +89,31 @@ public class CatService
         {
             // Create collection
             _logger.LogInformation("Creating Cat collection...");
-            await _weaviate.Collections.Create<Cat>(new Weaviate.Client.Models.CollectionConfig
-            {
-                Name = "Cat",
-                Description = "Example cat collection for DI demo",
-                Properties = Weaviate.Client.Models.Property.FromClass<Cat>(),
-                VectorConfig = new Weaviate.Client.Models.VectorConfig(
-                    "default",
-                    new Weaviate.Client.Models.Vectorizer.Text2VecWeaviate())
-            });
+            await _weaviate.Collections.Create<Cat>(
+                new Weaviate.Client.Models.CollectionConfig
+                {
+                    Name = "Cat",
+                    Description = "Example cat collection for DI demo",
+                    Properties = Weaviate.Client.Models.Property.FromClass<Cat>(),
+                    VectorConfig = new Weaviate.Client.Models.VectorConfig(
+                        "default",
+                        new Weaviate.Client.Models.Vectorizer.Text2VecWeaviate()
+                    ),
+                }
+            );
         }
 
         // Insert a cat
         _logger.LogInformation("Inserting a cat...");
-        var catId = await collection.Data.Insert(new Cat
-        {
-            Name = "Fluffy",
-            Breed = "Persian",
-            Color = "white",
-            Counter = 1
-        });
+        var catId = await collection.Data.Insert(
+            new Cat
+            {
+                Name = "Fluffy",
+                Breed = "Persian",
+                Color = "white",
+                Counter = 1,
+            }
+        );
 
         _logger.LogInformation("Inserted cat with ID: {Id}", catId);
 
@@ -113,8 +125,12 @@ public class CatService
 
         foreach (var obj in results.Objects)
         {
-            var cat = obj.As<Cat>();
-            _logger.LogInformation("  - {Name} ({Breed}, {Color})", cat?.Name, cat?.Breed, cat?.Color);
+            _logger.LogInformation(
+                "  - {Name} ({Breed}, {Color})",
+                obj.Object?.Name,
+                obj.Object?.Breed,
+                obj.Object?.Color
+            );
         }
 
         // Cleanup
@@ -131,16 +147,18 @@ public class ConfigurationExample
     public static async Task RunAsync()
     {
         var host = Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) =>
-            {
-                // Register from configuration section
-                services.AddWeaviate(
-                    context.Configuration.GetSection("Weaviate"),
-                    eagerInitialization: true
-                );
+            .ConfigureServices(
+                (context, services) =>
+                {
+                    // Register from configuration section
+                    services.AddWeaviate(
+                        context.Configuration.GetSection("Weaviate"),
+                        eagerInitialization: true
+                    );
 
-                services.AddSingleton<CatService>();
-            })
+                    services.AddSingleton<CatService>();
+                }
+            )
             .Build();
 
         await host.StartAsync();
@@ -160,11 +178,13 @@ public class LazyInitializationExample
     public static async Task RunAsync()
     {
         var host = Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) =>
-            {
-                // Lazy initialization - client initializes on first use
-                services.AddWeaviateLocal(eagerInitialization: false);
-            })
+            .ConfigureServices(
+                (context, services) =>
+                {
+                    // Lazy initialization - client initializes on first use
+                    services.AddWeaviateLocal(eagerInitialization: false);
+                }
+            )
             .Build();
 
         await host.StartAsync();

@@ -17,7 +17,8 @@ internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
 
     public WeaviateClientFactory(
         IOptionsMonitor<WeaviateOptions> optionsMonitor,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory
+    )
     {
         _optionsMonitor = optionsMonitor;
         _loggerFactory = loggerFactory;
@@ -33,8 +34,10 @@ internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
         if (_disposed)
             throw new ObjectDisposedException(nameof(WeaviateClientFactory));
 
-        var lazyClient = _clients.GetOrAdd(name, n => new Lazy<Task<WeaviateClient>>(
-            () => CreateClientAsync(n)));
+        var lazyClient = _clients.GetOrAdd(
+            name,
+            n => new Lazy<Task<WeaviateClient>>(() => CreateClientAsync(n))
+        );
 
         // This will block if the client is still initializing
         // For non-blocking behavior, use GetClientAsync()
@@ -45,13 +48,18 @@ internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
     /// Gets or creates a client asynchronously.
     /// Ensures the client is fully initialized before returning.
     /// </summary>
-    public async Task<WeaviateClient> GetClientAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<WeaviateClient> GetClientAsync(
+        string name,
+        CancellationToken cancellationToken = default
+    )
     {
         if (_disposed)
             throw new ObjectDisposedException(nameof(WeaviateClientFactory));
 
-        var lazyClient = _clients.GetOrAdd(name, n => new Lazy<Task<WeaviateClient>>(
-            () => CreateClientAsync(n)));
+        var lazyClient = _clients.GetOrAdd(
+            name,
+            n => new Lazy<Task<WeaviateClient>>(() => CreateClientAsync(n))
+        );
 
         return await lazyClient.Value;
     }
@@ -62,7 +70,7 @@ internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
         var logger = _loggerFactory.CreateLogger<WeaviateClient>();
 
         var clientOptions = Options.Create(options);
-        var client = new WeaviateClient(clientOptions, logger);
+        var client = new WeaviateClient(clientOptions, null, logger);
 
         // Initialize the client
         await client.InitializeAsync();

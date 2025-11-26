@@ -14,88 +14,105 @@ public class DifferentConfigsExample
     public static async Task Run()
     {
         var host = Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) =>
-            {
-                // Client 1: Production cloud with SSL and API key
-                services.AddWeaviateClient("production", options =>
+            .ConfigureServices(
+                (context, services) =>
                 {
-                    options.RestEndpoint = "prod.weaviate.cloud";
-                    options.GrpcEndpoint = "grpc-prod.weaviate.cloud";
-                    options.RestPort = 443;
-                    options.GrpcPort = 443;
-                    options.UseSsl = true;
-                    options.Credentials = Auth.ApiKey("prod-api-key-here");
-                    options.DefaultTimeout = TimeSpan.FromSeconds(60);
-                    options.QueryTimeout = TimeSpan.FromSeconds(30);
-                    options.Headers = new Dictionary<string, string>
-                    {
-                        ["X-Environment"] = "production"
-                    };
-                });
-
-                // Client 2: Local development, no SSL, no auth, longer timeouts
-                services.AddWeaviateClient("local", options =>
-                {
-                    options.RestEndpoint = "localhost";
-                    options.GrpcEndpoint = "localhost";
-                    options.RestPort = 8080;
-                    options.GrpcPort = 50051;
-                    options.UseSsl = false;
-                    options.Credentials = null; // No auth for local
-                    options.DefaultTimeout = TimeSpan.FromSeconds(120); // Longer for debugging
-                    options.QueryTimeout = TimeSpan.FromSeconds(300); // Very long for local testing
-                });
-
-                // Client 3: Staging with OAuth credentials
-                services.AddWeaviateClient("staging", options =>
-                {
-                    options.RestEndpoint = "staging.weaviate.cloud";
-                    options.GrpcEndpoint = "grpc-staging.weaviate.cloud";
-                    options.RestPort = 443;
-                    options.GrpcPort = 443;
-                    options.UseSsl = true;
-                    options.Credentials = Auth.ClientCredentials(
-                        "staging-client-secret",
-                        "weaviate.read",
-                        "weaviate.write"
+                    // Client 1: Production cloud with SSL and API key
+                    services.AddWeaviateClient(
+                        "production",
+                        options =>
+                        {
+                            options.RestEndpoint = "prod.weaviate.cloud";
+                            options.GrpcEndpoint = "grpc-prod.weaviate.cloud";
+                            options.RestPort = 443;
+                            options.GrpcPort = 443;
+                            options.UseSsl = true;
+                            options.Credentials = Auth.ApiKey("prod-api-key-here");
+                            options.DefaultTimeout = TimeSpan.FromSeconds(60);
+                            options.QueryTimeout = TimeSpan.FromSeconds(30);
+                            options.Headers = new Dictionary<string, string>
+                            {
+                                ["X-Environment"] = "production",
+                            };
+                        }
                     );
-                    options.DefaultTimeout = TimeSpan.FromSeconds(45);
-                });
 
-                // Client 4: Analytics cluster with custom ports and retry policy
-                services.AddWeaviateClient("analytics", options =>
-                {
-                    options.RestEndpoint = "analytics.internal.company.com";
-                    options.GrpcEndpoint = "analytics.internal.company.com";
-                    options.RestPort = 9090; // Custom port
-                    options.GrpcPort = 9091; // Custom port
-                    options.UseSsl = true;
-                    options.Credentials = Auth.ApiKey("analytics-key");
-                    options.QueryTimeout = TimeSpan.FromSeconds(120); // Slow analytics queries
-                    options.RetryPolicy = new RetryPolicy
-                    {
-                        MaxRetries = 5, // More retries for unreliable network
-                        RetryDelay = TimeSpan.FromSeconds(2)
-                    };
-                });
-
-                // Client 5: Legacy system with password auth
-                services.AddWeaviateClient("legacy", options =>
-                {
-                    options.RestEndpoint = "legacy.oldserver.com";
-                    options.GrpcEndpoint = "legacy.oldserver.com";
-                    options.RestPort = 8081;
-                    options.GrpcPort = 50052;
-                    options.UseSsl = false; // Old server doesn't support SSL
-                    options.Credentials = Auth.ClientPassword(
-                        "legacy-username",
-                        "legacy-password"
+                    // Client 2: Local development, no SSL, no auth, longer timeouts
+                    services.AddWeaviateClient(
+                        "local",
+                        options =>
+                        {
+                            options.RestEndpoint = "localhost";
+                            options.GrpcEndpoint = "localhost";
+                            options.RestPort = 8080;
+                            options.GrpcPort = 50051;
+                            options.UseSsl = false;
+                            options.Credentials = null; // No auth for local
+                            options.DefaultTimeout = TimeSpan.FromSeconds(120); // Longer for debugging
+                            options.QueryTimeout = TimeSpan.FromSeconds(300); // Very long for local testing
+                        }
                     );
-                    options.InitTimeout = TimeSpan.FromSeconds(10); // Slow to start
-                });
 
-                services.AddSingleton<MultiConfigService>();
-            })
+                    // Client 3: Staging with OAuth credentials
+                    services.AddWeaviateClient(
+                        "staging",
+                        options =>
+                        {
+                            options.RestEndpoint = "staging.weaviate.cloud";
+                            options.GrpcEndpoint = "grpc-staging.weaviate.cloud";
+                            options.RestPort = 443;
+                            options.GrpcPort = 443;
+                            options.UseSsl = true;
+                            options.Credentials = Auth.ClientCredentials(
+                                "staging-client-secret",
+                                "weaviate.read",
+                                "weaviate.write"
+                            );
+                            options.DefaultTimeout = TimeSpan.FromSeconds(45);
+                        }
+                    );
+
+                    // Client 4: Analytics cluster with custom ports and retry policy
+                    services.AddWeaviateClient(
+                        "analytics",
+                        options =>
+                        {
+                            options.RestEndpoint = "analytics.internal.company.com";
+                            options.GrpcEndpoint = "analytics.internal.company.com";
+                            options.RestPort = 9090; // Custom port
+                            options.GrpcPort = 9091; // Custom port
+                            options.UseSsl = true;
+                            options.Credentials = Auth.ApiKey("analytics-key");
+                            options.QueryTimeout = TimeSpan.FromSeconds(120); // Slow analytics queries
+                            options.RetryPolicy = new RetryPolicy
+                            {
+                                MaxRetries = 5, // More retries for unreliable network
+                                InitialDelay = TimeSpan.FromSeconds(2),
+                            };
+                        }
+                    );
+
+                    // Client 5: Legacy system with password auth
+                    services.AddWeaviateClient(
+                        "legacy",
+                        options =>
+                        {
+                            options.RestEndpoint = "legacy.oldserver.com";
+                            options.GrpcEndpoint = "legacy.oldserver.com";
+                            options.RestPort = 8081;
+                            options.GrpcPort = 50052;
+                            options.UseSsl = false; // Old server doesn't support SSL
+                            options.Credentials = Auth.ClientPassword(
+                                "legacy-username",
+                                "legacy-password"
+                            );
+                            options.InitTimeout = TimeSpan.FromSeconds(10); // Slow to start
+                        }
+                    );
+
+                    services.AddSingleton<MultiConfigService>();
+                }
+            )
             .Build();
 
         await host.StartAsync();
@@ -129,33 +146,45 @@ public class MultiConfigService
 
         // Show each client's configuration
         Console.WriteLine($"Production:");
-        Console.WriteLine($"  - Endpoint: {prodClient.Configuration.RestAddress}:{prodClient.Configuration.RestPort}");
+        Console.WriteLine(
+            $"  - Endpoint: {prodClient.Configuration.RestAddress}:{prodClient.Configuration.RestPort}"
+        );
         Console.WriteLine($"  - SSL: {prodClient.Configuration.UseSsl}");
         Console.WriteLine($"  - Version: {prodClient.WeaviateVersion}");
         Console.WriteLine($"  - Query Timeout: {prodClient.QueryTimeout}");
         Console.WriteLine();
 
         Console.WriteLine($"Local:");
-        Console.WriteLine($"  - Endpoint: {localClient.Configuration.RestAddress}:{localClient.Configuration.RestPort}");
+        Console.WriteLine(
+            $"  - Endpoint: {localClient.Configuration.RestAddress}:{localClient.Configuration.RestPort}"
+        );
         Console.WriteLine($"  - SSL: {localClient.Configuration.UseSsl}");
         Console.WriteLine($"  - Version: {localClient.WeaviateVersion}");
         Console.WriteLine($"  - Query Timeout: {localClient.QueryTimeout}");
         Console.WriteLine();
 
         Console.WriteLine($"Staging:");
-        Console.WriteLine($"  - Endpoint: {stagingClient.Configuration.RestAddress}:{stagingClient.Configuration.RestPort}");
+        Console.WriteLine(
+            $"  - Endpoint: {stagingClient.Configuration.RestAddress}:{stagingClient.Configuration.RestPort}"
+        );
         Console.WriteLine($"  - SSL: {stagingClient.Configuration.UseSsl}");
         Console.WriteLine($"  - Version: {stagingClient.WeaviateVersion}");
         Console.WriteLine();
 
         Console.WriteLine($"Analytics:");
-        Console.WriteLine($"  - Endpoint: {analyticsClient.Configuration.RestAddress}:{analyticsClient.Configuration.RestPort}");
-        Console.WriteLine($"  - Custom Ports: REST={analyticsClient.Configuration.RestPort}, gRPC={analyticsClient.Configuration.GrpcPort}");
+        Console.WriteLine(
+            $"  - Endpoint: {analyticsClient.Configuration.RestAddress}:{analyticsClient.Configuration.RestPort}"
+        );
+        Console.WriteLine(
+            $"  - Custom Ports: REST={analyticsClient.Configuration.RestPort}, gRPC={analyticsClient.Configuration.GrpcPort}"
+        );
         Console.WriteLine($"  - Version: {analyticsClient.WeaviateVersion}");
         Console.WriteLine();
 
         Console.WriteLine($"Legacy:");
-        Console.WriteLine($"  - Endpoint: {legacyClient.Configuration.RestAddress}:{legacyClient.Configuration.RestPort}");
+        Console.WriteLine(
+            $"  - Endpoint: {legacyClient.Configuration.RestAddress}:{legacyClient.Configuration.RestPort}"
+        );
         Console.WriteLine($"  - SSL: {legacyClient.Configuration.UseSsl}");
         Console.WriteLine($"  - Version: {legacyClient.WeaviateVersion}");
 

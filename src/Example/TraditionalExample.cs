@@ -62,7 +62,7 @@ public class TraditionalExample
 
         WeaviateClient weaviate = await Connect.Local();
 
-        var collection = await weaviate.Collections.Use<Cat>("Cat");
+        var collection = weaviate.Collections.Use<Cat>("Cat");
 
         // Should throw CollectionNotFound
         try
