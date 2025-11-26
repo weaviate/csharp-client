@@ -18,7 +18,7 @@ public sealed record ClientConfiguration(
     TimeSpan? QueryTimeout = null,
     RetryPolicy? RetryPolicy = null,
     DelegatingHandler[]? CustomHandlers = null,
-    ITokenServiceFactory? TokenServiceFactory = null
+    HttpMessageHandler? HttpMessageHandler = null
 )
 {
     public Uri RestUri =>
@@ -43,47 +43,18 @@ public sealed record ClientConfiguration(
     /// Builds a WeaviateClient asynchronously, initializing all services in the correct order.
     /// This is the recommended way to create clients.
     /// </summary>
-    internal async Task<WeaviateClient> BuildAsync(HttpMessageHandler? messageHandler = null)
+    internal async Task<WeaviateClient> BuildAsync()
     {
         var logger = LoggerFactory
             .Create(builder => builder.AddConsole())
             .CreateLogger<WeaviateClient>();
 
-        // Use factory to create token service
-        var tokenService = await (
-            TokenServiceFactory ?? new DefaultTokenServiceFactory()
-        ).CreateAsync(this);
+        // Create client - it will initialize itself via PerformInitializationAsync
+        var client = new WeaviateClient(this, logger);
 
-        // Create REST client
-        var restClient = WeaviateClient.CreateRestClient(
-            this,
-            messageHandler,
-            tokenService,
-            logger
-        );
+        // Wait for initialization to complete
+        await client.InitializeAsync();
 
-        // Fetch metadata eagerly with init timeout - this will throw if authentication fails
-        var initTimeout = InitTimeout ?? DefaultTimeout ?? WeaviateDefaults.DefaultTimeout;
-        var metaCts = new CancellationTokenSource(initTimeout);
-        var metaDto = await restClient.GetMeta(metaCts.Token);
-        var meta = new Models.MetaInfo
-        {
-            GrpcMaxMessageSize = metaDto?.GrpcMaxMessageSize is not null
-                ? Convert.ToUInt64(metaDto.GrpcMaxMessageSize)
-                : null,
-            Hostname = metaDto?.Hostname ?? string.Empty,
-            Version =
-                Models.MetaInfo.ParseWeaviateVersion(metaDto?.Version ?? string.Empty)
-                ?? new System.Version(0, 0),
-            Modules = metaDto?.Modules?.ToDictionary() ?? [],
-        };
-
-        var maxMessageSize = meta.GrpcMaxMessageSize;
-
-        // Create gRPC client with metadata
-        var grpcClient = WeaviateClient.CreateGrpcClient(this, tokenService, maxMessageSize);
-
-        // Create and return the client with pre-built services
-        return new WeaviateClient(this, restClient, grpcClient, logger, meta);
+        return client;
     }
 };
