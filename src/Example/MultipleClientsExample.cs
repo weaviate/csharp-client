@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,37 +15,49 @@ public class MultipleClientsExample
     public static async Task Run()
     {
         var host = Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) =>
-            {
-                // Register multiple named Weaviate clients
-                services.AddWeaviateClient("production", options =>
+            .ConfigureServices(
+                (context, services) =>
                 {
-                    options.RestEndpoint = "prod.weaviate.cloud";
-                    options.GrpcEndpoint = "grpc-prod.weaviate.cloud";
-                    options.RestPort = 443;
-                    options.GrpcPort = 443;
-                    options.UseSsl = true;
-                    options.Credentials = Auth.ApiKey("prod-api-key");
-                });
+                    // Register multiple named Weaviate clients
+                    services.AddWeaviateClient(
+                        "production",
+                        options =>
+                        {
+                            options.RestEndpoint = "prod.weaviate.cloud";
+                            options.GrpcEndpoint = "grpc-prod.weaviate.cloud";
+                            options.RestPort = 443;
+                            options.GrpcPort = 443;
+                            options.UseSsl = true;
+                            options.Credentials = Auth.ApiKey("prod-api-key");
+                        }
+                    );
 
-                services.AddWeaviateClient("staging", options =>
-                {
-                    options.RestEndpoint = "staging.weaviate.cloud";
-                    options.GrpcEndpoint = "grpc-staging.weaviate.cloud";
-                    options.RestPort = 443;
-                    options.GrpcPort = 443;
-                    options.UseSsl = true;
-                    options.Credentials = Auth.ApiKey("staging-api-key");
-                });
+                    services.AddWeaviateClient(
+                        "staging",
+                        options =>
+                        {
+                            options.RestEndpoint = "staging.weaviate.cloud";
+                            options.GrpcEndpoint = "grpc-staging.weaviate.cloud";
+                            options.RestPort = 443;
+                            options.GrpcPort = 443;
+                            options.UseSsl = true;
+                            options.Credentials = Auth.ApiKey("staging-api-key");
+                        }
+                    );
 
-                services.AddWeaviateClient("local", "localhost", 8080, 50051);
+                    services.AddWeaviateLocal("local", "localhost", 8080, 50051);
 
-                // Or use helper methods
-                services.AddWeaviateCloudClient("analytics", "analytics.weaviate.cloud", "analytics-key");
+                    // Or use helper methods
+                    services.AddWeaviateCloud(
+                        "analytics",
+                        "analytics.weaviate.cloud",
+                        "analytics-key"
+                    );
 
-                // Register services that use multiple clients
-                services.AddSingleton<MultiDatabaseService>();
-            })
+                    // Register services that use multiple clients
+                    services.AddSingleton<MultiDatabaseService>();
+                }
+            )
             .Build();
 
         await host.StartAsync();
@@ -66,7 +79,8 @@ public class MultiDatabaseService
 
     public MultiDatabaseService(
         IWeaviateClientFactory clientFactory,
-        ILogger<MultiDatabaseService> logger)
+        ILogger<MultiDatabaseService> logger
+    )
     {
         _clientFactory = clientFactory;
         _logger = logger;
@@ -92,19 +106,22 @@ public class MultiDatabaseService
 
     private async Task SyncDataBetweenEnvironmentsAsync(
         WeaviateClient prodClient,
-        WeaviateClient stagingClient)
+        WeaviateClient stagingClient
+    )
     {
         _logger.LogInformation("\nSyncing data from production to staging...");
 
-        var prodCollection = prodClient.Collections.Use<Cat>("Cat");
-        var stagingCollection = stagingClient.Collections.Use<Cat>("Cat");
+        var prodCollection = await prodClient.Collections.Use<Cat>("Cat").ValidateTypeOrThrow();
+        var stagingCollection = await stagingClient
+            .Collections.Use<Cat>("Cat")
+            .ValidateTypeOrThrow();
 
         // Fetch from production
         var prodResults = await prodCollection.Query.FetchObjects(limit: 100);
         _logger.LogInformation("Found {Count} cats in production", prodResults.Objects.Count());
 
         // Insert into staging
-        var cats = prodResults.Objects.Select(o => o.As<Cat>()!);
+        var cats = prodResults.Objects.Select(o => o.Object!);
         foreach (var cat in cats)
         {
             await stagingCollection.Data.Insert(cat);
@@ -173,21 +190,23 @@ public class ConfigurationBasedMultiClientExample
          */
 
         var host = Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) =>
-            {
-                // Register clients from configuration
-                services.AddWeaviateClient(
-                    "production",
-                    context.Configuration.GetSection("Weaviate:Production")
-                        .Get<WeaviateOptions>()!
-                        .RestEndpoint);
+            .ConfigureServices(
+                (context, services) =>
+                {
+                    // Register clients from configuration
+                    services.AddWeaviateClient(
+                        "production",
+                        options =>
+                            context.Configuration.GetSection("Weaviate:Production").Bind(options)
+                    );
 
-                services.AddWeaviateClient(
-                    "staging",
-                    context.Configuration.GetSection("Weaviate:Staging")
-                        .Get<WeaviateOptions>()!
-                        .RestEndpoint);
-            })
+                    services.AddWeaviateClient(
+                        "staging",
+                        options =>
+                            context.Configuration.GetSection("Weaviate:Staging").Bind(options)
+                    );
+                }
+            )
             .Build();
 
         await host.StartAsync();
