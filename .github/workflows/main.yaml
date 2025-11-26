@@ -106,7 +106,8 @@ jobs:
         run: /bin/bash ci/start_weaviate.sh ${{ matrix.server }}
 
       - name: Run quick integration tests
-        run: dotnet test --no-restore --filter "Category!=Slow" --filter "FullyQualifiedName~Weaviate.Client.Tests.Integration" --logger "trx;LogFileName=test-integration-quick-results.trx"
+        run: |
+          dotnet test --no-restore --filter "(Category!=Slow&FullyQualifiedName~Weaviate.Client.Tests.Integration)" --logger "trx;LogFileName=test-integration-quick-results.trx"
 
       - name: Upload integration test results on failure
         if: failure()
@@ -117,7 +118,8 @@ jobs:
           retention-days: 3
           
       - name: Run slow integration tests
-        run: dotnet test --no-restore --filter "Category=Slow" --filter "FullyQualifiedName~Weaviate.Client.Tests.Integration" --logger "trx;LogFileName=test-integration-slow-results.trx"
+        run: |
+          dotnet test --no-restore --filter "(Category=Slow&FullyQualifiedName~Weaviate.Client.Tests.Integration)" --logger "trx;LogFileName=test-integration-slow-results.trx"
 
       - name: Upload integration test results on failure
         if: failure()
