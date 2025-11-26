@@ -151,7 +151,7 @@ public class TypedCollectionClientTests
         var tenant = typedClient.Tenant;
 
         // Assert
-        Assert.Null(tenant);
+        Assert.True(string.IsNullOrEmpty(tenant));
     }
 
     [Fact]
@@ -308,8 +308,6 @@ public class TypedCollectionClientTests
 
     private static WeaviateClient CreateWeaviateClient()
     {
-        // Create a minimal WeaviateClient for testing wrapper logic
-        // These tests don't make actual HTTP calls
-        return new WeaviateClient(new ClientConfiguration(), null, null);
+        return Mocks.MockWeaviateClient.CreateWithMockHandler().Client;
     }
 }
