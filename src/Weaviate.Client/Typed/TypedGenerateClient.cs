@@ -19,6 +19,8 @@ public class TypedGenerateClient<T>
     /// <param name="generateClient">The underlying GenerateClient to wrap.</param>
     public TypedGenerateClient(GenerateClient generateClient)
     {
+        ArgumentNullException.ThrowIfNull(generateClient);
+
         _generateClient = generateClient;
     }
 
