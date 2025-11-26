@@ -132,4 +132,78 @@ public class WeaviateNotFoundException : WeaviateServerException
     }
 }
 
-// TODO WeaviateUnauthorizedException, WeaviateUnauthenticatedException, WeaviateBadRequestException
+/// <summary>
+/// Exception thrown when authentication fails (HTTP 401 Unauthorized or gRPC UNAUTHENTICATED).
+/// This indicates that the request lacks valid authentication credentials.
+/// </summary>
+public class WeaviateAuthenticationException : WeaviateServerException
+{
+    public const string DefaultMessage =
+        "Authentication failed. Please check your API key or authentication credentials.";
+
+    public WeaviateAuthenticationException(string? message = null, Exception? innerException = null)
+        : base(message ?? DefaultMessage, innerException) { }
+}
+
+/// <summary>
+/// Exception thrown when authorization fails (HTTP 403 Forbidden or gRPC PERMISSION_DENIED).
+/// This indicates that the authenticated user does not have permission to perform the requested operation.
+/// </summary>
+public class WeaviateAuthorizationException : WeaviateServerException
+{
+    public const string DefaultMessage =
+        "Authorization failed. You do not have permission to perform this operation.";
+
+    public WeaviateAuthorizationException(string? message = null, Exception? innerException = null)
+        : base(message ?? DefaultMessage, innerException) { }
+}
+
+/// <summary>
+/// Exception thrown when a collection limit has been reached (HTTP 422 Unprocessable Entity).
+/// This typically occurs when trying to create more collections than allowed by the server configuration.
+/// </summary>
+public class WeaviateCollectionLimitReachedException : WeaviateServerException
+{
+    public const string DefaultMessage =
+        "Collection limit reached. Cannot create more collections than allowed by the server configuration.";
+
+    public WeaviateCollectionLimitReachedException(
+        string? message = null,
+        Exception? innerException = null
+    )
+        : base(message ?? DefaultMessage, innerException) { }
+}
+
+/// <summary>
+/// Exception thrown when a required module is not available or enabled (HTTP 422 Unprocessable Entity).
+/// This occurs when attempting to use a feature that requires a module that is not configured on the server.
+/// </summary>
+public class WeaviateModuleNotAvailableException : WeaviateServerException
+{
+    public const string DefaultMessage =
+        "Required module is not available or enabled on the Weaviate server. Please check the server's module configuration.";
+
+    public WeaviateModuleNotAvailableException(
+        string? message = null,
+        Exception? innerException = null
+    )
+        : base(message ?? DefaultMessage, innerException) { }
+}
+
+/// <summary>
+/// Exception thrown when an external module encounters a problem (HTTP 500 Internal Server Error).
+/// This typically indicates an issue with a vectorizer, generative module, or other external service integration.
+/// </summary>
+public class WeaviateExternalModuleProblemException : WeaviateServerException
+{
+    public const string DefaultMessage =
+        "An external module encountered a problem. This may be related to vectorizers, generative modules, or other external service integrations.";
+
+    public WeaviateExternalModuleProblemException(
+        string? message = null,
+        Exception? innerException = null
+    )
+        : base(message ?? DefaultMessage, innerException) { }
+}
+
+// TODO WeaviateBadRequestException
