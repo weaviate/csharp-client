@@ -16,6 +16,7 @@ public record CollectionsClient
         CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         var response = await _client.RestClient.CollectionCreate(
             collection.ToDto(),
             cancellationToken
@@ -31,6 +32,7 @@ public record CollectionsClient
     )
         where T : class, new()
     {
+        await _client.EnsureInitializedAsync();
         var response = await _client.RestClient.CollectionCreate(
             collection.ToDto(),
             cancellationToken
@@ -45,6 +47,7 @@ public record CollectionsClient
     {
         ArgumentException.ThrowIfNullOrEmpty(collectionName);
 
+        await _client.EnsureInitializedAsync();
         await _client.RestClient.CollectionDelete(collectionName, cancellationToken);
     }
 
@@ -62,6 +65,7 @@ public record CollectionsClient
         CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         return await _client.RestClient.CollectionExists(collectionName, cancellationToken);
     }
 
@@ -70,6 +74,7 @@ public record CollectionsClient
         CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         var response = await _client.RestClient.CollectionGet(collectionName, cancellationToken);
 
         if (response is null)
@@ -85,6 +90,7 @@ public record CollectionsClient
             CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         var response = await _client.RestClient.CollectionList(cancellationToken);
 
         foreach (var c in response?.Classes ?? Enumerable.Empty<Rest.Dto.Class>())

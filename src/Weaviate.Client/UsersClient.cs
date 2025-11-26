@@ -32,6 +32,7 @@ public class UsersClient
     /// </summary>
     public async Task<CurrentUserInfo?> OwnInfo(CancellationToken cancellationToken = default)
     {
+        await _client.EnsureInitializedAsync();
         var dto = await _client.RestClient.UserOwnInfoGet(cancellationToken);
         if (dto is null)
             return null;

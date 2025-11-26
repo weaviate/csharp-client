@@ -308,7 +308,7 @@ public partial class WeaviateClient : IDisposable
     /// Helper to ensure initialization before using the client.
     /// Throws if initialization failed.
     /// </summary>
-    private async Task EnsureInitializedAsync()
+    internal async Task EnsureInitializedAsync()
     {
         if (_initializationTask != null)
         {
