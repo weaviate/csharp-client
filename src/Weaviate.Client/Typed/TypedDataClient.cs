@@ -15,6 +15,8 @@ public class TypedDataClient<T>
 
     internal TypedDataClient(DataClient dataClient)
     {
+        ArgumentNullException.ThrowIfNull(dataClient);
+
         _dataClient = dataClient;
     }
 
