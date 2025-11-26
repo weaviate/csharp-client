@@ -75,7 +75,6 @@ public class DatePropertyConverter : PropertyConverterBase
         {
             // Fall back to current culture parsing and mark as UTC
             parsed = DateTime.Parse(dateString, CultureInfo.InvariantCulture);
-            parsed = DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
         }
 
         // Ensure the result is UTC
