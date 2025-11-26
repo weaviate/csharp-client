@@ -19,6 +19,8 @@ public class TypedQueryClient<T>
     /// <param name="queryClient">The underlying QueryClient to wrap.</param>
     public TypedQueryClient(QueryClient queryClient)
     {
+        ArgumentNullException.ThrowIfNull(queryClient);
+
         _queryClient = queryClient;
     }
 
