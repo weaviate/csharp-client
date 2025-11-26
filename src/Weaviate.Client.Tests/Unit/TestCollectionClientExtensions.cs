@@ -24,7 +24,7 @@ public class CollectionClientExtensionsTests
         var collectionClient = new CollectionClient(client, "Articles");
 
         // Act
-        var typedClient = await collectionClient.Use<TestArticle>(
+        var typedClient = await collectionClient.AsTyped<TestArticle>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -42,7 +42,7 @@ public class CollectionClientExtensionsTests
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            await collectionClient!.Use<TestArticle>(
+            await collectionClient!.AsTyped<TestArticle>(
                 cancellationToken: TestContext.Current.CancellationToken
             )
         );
@@ -56,7 +56,7 @@ public class CollectionClientExtensionsTests
         var collectionClient = new CollectionClient(client, "Articles");
 
         // Act
-        var typedClient = await collectionClient.Use<TestArticle>(
+        var typedClient = await collectionClient.AsTyped<TestArticle>(
             validateType: false,
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -75,7 +75,7 @@ public class CollectionClientExtensionsTests
         var collectionClient = new CollectionClient(client, "Articles").WithTenant("tenant1");
 
         // Act
-        var typedClient = await collectionClient.Use<TestArticle>(
+        var typedClient = await collectionClient.AsTyped<TestArticle>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -94,7 +94,7 @@ public class CollectionClientExtensionsTests
         );
 
         // Act
-        var typedClient = await collectionClient.Use<TestArticle>(
+        var typedClient = await collectionClient.AsTyped<TestArticle>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -113,7 +113,7 @@ public class CollectionClientExtensionsTests
             .WithConsistencyLevel(ConsistencyLevels.All);
 
         // Act
-        var typedClient = await collectionClient.Use<TestArticle>(
+        var typedClient = await collectionClient.AsTyped<TestArticle>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -131,7 +131,7 @@ public class CollectionClientExtensionsTests
         var collectionClient = new CollectionClient(client, "Articles");
 
         // Act
-        var typedClient = await collectionClient.Use<TestArticle>(
+        var typedClient = await collectionClient.AsTyped<TestArticle>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -152,10 +152,10 @@ public class CollectionClientExtensionsTests
         var collectionClient = new CollectionClient(client, "Articles");
 
         // Act
-        var typedClient1 = await collectionClient.Use<TestArticle>(
+        var typedClient1 = await collectionClient.AsTyped<TestArticle>(
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var typedClient2 = await collectionClient.Use<TestArticle>(
+        var typedClient2 = await collectionClient.AsTyped<TestArticle>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -173,10 +173,10 @@ public class CollectionClientExtensionsTests
         var productsClient = new CollectionClient(client, "Products");
 
         // Act
-        var typedArticles = await articlesClient.Use<TestArticle>(
+        var typedArticles = await articlesClient.AsTyped<TestArticle>(
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var typedProducts = await productsClient.Use<TestProduct>(
+        var typedProducts = await productsClient.AsTyped<TestProduct>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -195,7 +195,7 @@ public class CollectionClientExtensionsTests
         var collectionClient = new CollectionClient(client, "Articles");
 
         // Act
-        var typedClient = await collectionClient.Use<TestArticle>(
+        var typedClient = await collectionClient.AsTyped<TestArticle>(
             cancellationToken: TestContext.Current.CancellationToken
         );
         var untypedClient = typedClient.Untyped;

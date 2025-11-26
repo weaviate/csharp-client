@@ -1,4 +1,5 @@
 using Weaviate.Client.Models;
+using Weaviate.Client.Tests.Unit.Mocks;
 using Weaviate.Client.Typed;
 
 namespace Weaviate.Client.Tests.Unit;
@@ -173,6 +174,8 @@ public class TypedDataClientTests
 
     private static WeaviateClient CreateWeaviateClient()
     {
-        return new WeaviateClient(new ClientConfiguration(), null, null);
+        return MockWeaviateClient
+            .CreateWithMockHandler(handlerChainFactory: null, autoMeta: true)
+            .Client;
     }
 }

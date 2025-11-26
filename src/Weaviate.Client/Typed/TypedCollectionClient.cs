@@ -25,6 +25,8 @@ public class TypedCollectionClient<T>
     /// <param name="collectionClient">The underlying CollectionClient to wrap.</param>
     public TypedCollectionClient(CollectionClient collectionClient)
     {
+        ArgumentNullException.ThrowIfNull(collectionClient);
+
         _collectionClient = collectionClient;
         _dataClient = new TypedDataClient<T>(collectionClient.Data);
         _queryClient = new TypedQueryClient<T>(collectionClient.Query);

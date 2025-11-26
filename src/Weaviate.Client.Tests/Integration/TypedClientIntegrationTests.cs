@@ -57,7 +57,7 @@ public class TypedClientIntegrationTests : IntegrationTests
         var collection = await CollectionFactory<Article>(_articleConfig);
 
         // Act
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             validateType: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -77,7 +77,7 @@ public class TypedClientIntegrationTests : IntegrationTests
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
         {
-            await collection.Use<IncompatibleArticle>(
+            await collection.AsTyped<IncompatibleArticle>(
                 validateType: true,
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -94,7 +94,7 @@ public class TypedClientIntegrationTests : IntegrationTests
         var collection = await CollectionFactory<Article>(_articleConfig);
 
         // Act - even with incompatible type, should not throw when validation is disabled
-        var typedClient = await collection.Use<IncompatibleArticle>(
+        var typedClient = await collection.AsTyped<IncompatibleArticle>(
             validateType: false,
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -109,7 +109,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             validateType: false,
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -130,7 +130,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<IncompatibleArticle>(
+        var typedClient = await collection.AsTyped<IncompatibleArticle>(
             validateType: false, // Skip validation on construction
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -193,7 +193,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -220,7 +220,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -249,7 +249,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -296,7 +296,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -337,7 +337,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -388,7 +388,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -435,7 +435,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -468,7 +468,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -514,7 +514,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -585,7 +585,7 @@ public class TypedClientIntegrationTests : IntegrationTests
             TestContext.Current.CancellationToken
         );
 
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -603,7 +603,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -621,7 +621,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -643,7 +643,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
-        var typedClient = await collection.Use<Article>(
+        var typedClient = await collection.AsTyped<Article>(
             cancellationToken: TestContext.Current.CancellationToken
         );
 

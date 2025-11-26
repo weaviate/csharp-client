@@ -56,7 +56,7 @@ class Program
 
         WeaviateClient weaviate = await Connect.Local();
 
-        var collection = weaviate.Collections.Use("Cat");
+        var collection = await weaviate.Collections.Use<Cat>("Cat");
 
         // Should throw CollectionNotFound
         try
@@ -83,11 +83,11 @@ class Program
         {
             Name = "Cat",
             Description = "Lots of Cats of multiple breeds",
-            Properties = [.. Property.FromClass<Cat>()],
+            Properties = Property.FromClass<Cat>(),
             VectorConfig = new VectorConfig("default", new Vectorizer.Text2VecWeaviate()),
         };
 
-        collection = await weaviate.Collections.Create(catCollection);
+        collection = await weaviate.Collections.Create<Cat>(catCollection);
 
         await foreach (var c in weaviate.Collections.List())
         {
@@ -116,7 +116,7 @@ class Program
         var result = await collection.Query.FetchObjects(limit: 250);
         var retrieved = result.Objects.ToList();
         Console.WriteLine("Cats retrieved: " + retrieved.Count());
-        var sum = retrieved.Sum(c => c.As<Cat>()?.Counter ?? 0);
+        var sum = retrieved.Sum(c => c.Object?.Counter ?? 0);
 
         // Delete object
         var firstObj = retrieved.First();
@@ -161,7 +161,7 @@ class Program
             returnMetadata: MetadataOptions.Score | MetadataOptions.Distance
         );
 
-        foreach (var cat in queryNearVector.Objects.Select(o => o.As<Cat>()))
+        foreach (var cat in queryNearVector.Objects.Select(o => o.Object))
         {
             // Console.WriteLine(
             //     JsonSerializer.Serialize(cat, new JsonSerializerOptions { WriteIndented = true })
@@ -174,7 +174,7 @@ class Program
         Console.WriteLine("Using collection iterator:");
 
         // Cursor API demo
-        var objects = collection.Iterator().Select(o => o.As<Cat>());
+        var objects = collection.Iterator().Select(o => o.Object);
         var sumWithIterator = await objects.SumAsync(c => c!.Counter);
 
         // Print all cats found

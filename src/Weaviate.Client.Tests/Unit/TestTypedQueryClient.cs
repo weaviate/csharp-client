@@ -382,6 +382,6 @@ public class TypedQueryClientTests
 
     private static WeaviateClient CreateWeaviateClient()
     {
-        return new WeaviateClient(new ClientConfiguration(), null, null);
+        return Mocks.MockWeaviateClient.CreateWithMockHandler().Client;
     }
 }
