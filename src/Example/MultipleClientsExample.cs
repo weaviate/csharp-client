@@ -11,9 +11,9 @@ namespace Example;
 /// </summary>
 public class MultipleClientsExample
 {
-    public static async Task Main(string[] args)
+    public static async Task Run()
     {
-        var host = Host.CreateDefaultBuilder(args)
+        var host = Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
             {
                 // Register multiple named Weaviate clients
