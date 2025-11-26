@@ -281,10 +281,11 @@ public partial class WeaviateClientBuilder
             _dataTimeout,
             _queryTimeout,
             _retryPolicy,
-            _customHandlers.Count > 0 ? _customHandlers.ToArray() : null
+            _customHandlers.Count > 0 ? _customHandlers.ToArray() : null,
+            _httpMessageHandler
         );
 
-        return await config.BuildAsync(_httpMessageHandler);
+        return await config.BuildAsync();
     }
 
     public static implicit operator Task<WeaviateClient>(WeaviateClientBuilder builder) =>
