@@ -70,7 +70,7 @@ internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
         var logger = _loggerFactory.CreateLogger<WeaviateClient>();
 
         var clientOptions = Options.Create(options);
-        var client = new WeaviateClient(clientOptions, logger);
+        var client = new WeaviateClient(clientOptions, null, logger);
 
         // Initialize the client
         await client.InitializeAsync();
