@@ -21,7 +21,6 @@ public partial class WeaviateClient : IDisposable
 
     // Async initialization support
     private readonly Lazy<Task>? _initializationTask;
-    private readonly ITokenServiceFactory? _tokenServiceFactory;
     private readonly ClientConfiguration? _configForAsyncInit;
 
     public async Task<Models.MetaInfo> GetMeta(CancellationToken cancellationToken = default)
@@ -146,66 +145,21 @@ public partial class WeaviateClient : IDisposable
     public TimeSpan? QueryTimeout => Configuration.QueryTimeout;
 
     /// <summary>
-    /// Creates a WeaviateClient with the given configuration and services.
-    /// Internal method used by the builder pattern.
+    /// Internal constructor for builder path with async initialization.
     /// </summary>
-    internal WeaviateClient(
-        ClientConfiguration configuration,
-        WeaviateRestClient restClient,
-        WeaviateGrpcClient grpcClient,
-        ILogger<WeaviateClient>? logger = null,
-        Models.MetaInfo? meta = null
-    )
+    internal WeaviateClient(ClientConfiguration configuration, ILogger<WeaviateClient>? logger)
     {
-        _logger = logger ?? _logger;
         Configuration = configuration;
-        RestClient = restClient;
-        GrpcClient = grpcClient;
-        _metaCache = meta;
-
-        Cluster = new ClusterClient(this);
-        Collections = new CollectionsClient(this);
-        Alias = new AliasClient(this);
-        Users = new UsersClient(this);
-        Roles = new RolesClient(this);
-        Groups = new GroupsClient(this);
-    }
-
-    /// <summary>
-    /// Creates a WeaviateClient from configuration and optional HTTP message handler.
-    /// For backward compatibility with existing code that creates clients directly.
-    /// </summary>
-    public WeaviateClient(
-        ClientConfiguration? configuration = null,
-        HttpMessageHandler? httpMessageHandler = null,
-        ITokenServiceFactory? tokenServiceFactory = null,
-        ILogger<WeaviateClient>? logger = null
-    )
-    {
-        var config = configuration ?? DefaultOptions;
-
-        var tokenService = tokenServiceFactory?.CreateSync(config);
-
-        var loggerInstance =
+        _logger =
             logger
             ?? LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<WeaviateClient>();
 
-        var restClient = CreateRestClientForPublic(
-            config,
-            httpMessageHandler,
-            tokenService,
-            loggerInstance
-        );
-        var grpcClientInstance = CreateGrpcClientForPublic(config, tokenService);
+        // Initialize Lazy task that will run initialization on first access
+        _initializationTask = new Lazy<Task>(() => PerformInitializationAsync(configuration));
 
-        // Initialize like the internal constructor
-        _logger = loggerInstance;
-        Configuration = config;
-        RestClient = restClient;
-        GrpcClient = grpcClientInstance;
-
-        Cluster = new ClusterClient(this);
+        // Initialize client facades
         Collections = new CollectionsClient(this);
+        Cluster = new ClusterClient(this);
         Alias = new AliasClient(this);
         Users = new UsersClient(this);
         Roles = new RolesClient(this);
@@ -255,7 +209,7 @@ public partial class WeaviateClient : IDisposable
     /// Uses async initialization pattern - call InitializeAsync() or ensure IHostedService runs.
     /// </summary>
     public WeaviateClient(IOptions<DependencyInjection.WeaviateOptions> options)
-        : this(options, null, null) { }
+        : this(options, null) { }
 
     /// <summary>
     /// Constructor for dependency injection scenarios with logger.
@@ -263,7 +217,6 @@ public partial class WeaviateClient : IDisposable
     /// </summary>
     public WeaviateClient(
         IOptions<DependencyInjection.WeaviateOptions> options,
-        ITokenServiceFactory? tokenServiceFactory,
         ILogger<WeaviateClient>? logger
     )
     {
@@ -273,8 +226,6 @@ public partial class WeaviateClient : IDisposable
         _logger =
             logger
             ?? LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<WeaviateClient>();
-
-        _tokenServiceFactory = tokenServiceFactory;
 
         // Initialize Lazy task that will run initialization on first access
         _initializationTask = new Lazy<Task>(() => PerformInitializationAsync(_configForAsyncInit));
@@ -295,13 +246,11 @@ public partial class WeaviateClient : IDisposable
     {
         _logger.LogDebug("Starting Weaviate client initialization...");
 
-        // Initialize token service asynchronously
-        var tokenService = await (
-            _tokenServiceFactory ?? new DefaultTokenServiceFactory()
-        ).CreateAsync(config);
+        // Initialize token service asynchronously - always use DefaultTokenServiceFactory
+        var tokenService = await new DefaultTokenServiceFactory().CreateAsync(config);
 
-        // Create REST client
-        RestClient = CreateRestClient(config, null, tokenService, _logger);
+        // Create REST client - get HttpMessageHandler from config
+        RestClient = CreateRestClient(config, config.HttpMessageHandler, tokenService, _logger);
 
         // Fetch metadata eagerly with init timeout - this will throw if authentication fails
         var initTimeout =

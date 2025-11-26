@@ -281,10 +281,11 @@ public partial class WeaviateClientBuilder
             _insertTimeout,
             _queryTimeout,
             _retryPolicy,
-            _customHandlers.Count > 0 ? _customHandlers.ToArray() : null
+            _customHandlers.Count > 0 ? _customHandlers.ToArray() : null,
+            _httpMessageHandler
         );
 
-        return await config.BuildAsync(_httpMessageHandler);
+        return await config.BuildAsync();
     }
 
     /// <summary>
