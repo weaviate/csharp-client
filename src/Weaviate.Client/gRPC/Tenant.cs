@@ -17,11 +17,19 @@ internal partial class WeaviateGrpcClient
             request.Names = new TenantNames { Values = { tenantNames } };
         }
 
-        TenantsGetReply reply = await _grpcClient.TenantsGetAsync(
-            request,
-            CreateCallOptions(cancellationToken)
-        );
+        try
+        {
+            TenantsGetReply reply = await _grpcClient.TenantsGetAsync(
+                request,
+                CreateCallOptions(cancellationToken)
+            );
 
-        return reply.Tenants;
+            return reply.Tenants;
+        }
+        catch (global::Grpc.Core.RpcException ex)
+        {
+            // Use centralized exception mapping helper
+            throw ExceptionHelper.MapGrpcException(ex, "Tenants get request failed");
+        }
     }
 }

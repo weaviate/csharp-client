@@ -29,12 +29,20 @@ internal partial class WeaviateGrpcClient
             request.ConsistencyLevel = MapConsistencyLevel(consistencyLevel.Value);
         }
 
-        BatchDeleteReply reply = await _grpcClient.BatchDeleteAsync(
-            request,
-            CreateCallOptions(cancellationToken)
-        );
+        try
+        {
+            BatchDeleteReply reply = await _grpcClient.BatchDeleteAsync(
+                request,
+                CreateCallOptions(cancellationToken)
+            );
 
-        return reply;
+            return reply;
+        }
+        catch (global::Grpc.Core.RpcException ex)
+        {
+            // Use centralized exception mapping helper
+            throw ExceptionHelper.MapGrpcException(ex, "Batch delete request failed");
+        }
     }
 
     internal async Task<BatchObjectsReply> InsertMany(
@@ -44,11 +52,19 @@ internal partial class WeaviateGrpcClient
     {
         var request = new BatchObjectsRequest { Objects = { objects } };
 
-        BatchObjectsReply reply = await _grpcClient.BatchObjectsAsync(
-            request,
-            CreateCallOptions(cancellationToken)
-        );
+        try
+        {
+            BatchObjectsReply reply = await _grpcClient.BatchObjectsAsync(
+                request,
+                CreateCallOptions(cancellationToken)
+            );
 
-        return reply;
+            return reply;
+        }
+        catch (global::Grpc.Core.RpcException ex)
+        {
+            // Use centralized exception mapping helper
+            throw ExceptionHelper.MapGrpcException(ex, "Batch insert request failed");
+        }
     }
 }

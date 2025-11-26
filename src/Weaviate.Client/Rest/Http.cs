@@ -64,19 +64,11 @@ public static class HttpResponseMessageExtensions
 
             // TODO
             // HttpStatusCode.BadRequest
-            // HttpStatusCode.Unauthorized
-            // HttpStatusCode.Forbidden
-            // HttpStatusCode.InternalServerError
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.NotFound)
         {
-            throw new WeaviateNotFoundException(ex, resourceType);
-        }
-        catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.Conflict)
-        {
-            throw new WeaviateConflictException($"Conflict accessing {resourceType}", ex);
+            // Use centralized exception mapping helper
+            throw ExceptionHelper.MapHttpException(ex.StatusCode, ex.Message, ex, resourceType);
         }
     }
 
