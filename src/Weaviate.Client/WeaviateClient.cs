@@ -21,7 +21,6 @@ public partial class WeaviateClient : IDisposable
 
     // Async initialization support
     private readonly Lazy<Task>? _initializationTask;
-    private readonly ITokenServiceFactory? _tokenServiceFactory;
     private readonly ClientConfiguration? _configForAsyncInit;
 
     public async Task<Models.MetaInfo> GetMeta(CancellationToken cancellationToken = default)
