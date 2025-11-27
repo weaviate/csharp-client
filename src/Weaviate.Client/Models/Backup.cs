@@ -234,7 +234,6 @@ public record BackupRestoreRequest(
 public record BackupConfig(
     string? Endpoint = null,
     int? CPUPercentage = null,
-    int? ChunkSize = null,
     BackupCompressionLevel? CompressionLevel = null
 );
 
