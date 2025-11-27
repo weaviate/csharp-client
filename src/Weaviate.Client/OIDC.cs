@@ -175,7 +175,7 @@ internal class OAuthTokenService : ITokenService
                 tokenResponse.Error,
                 tokenResponse.ErrorDescription
             );
-            throw new AuthenticationException(
+            throw new WeaviateAuthenticationException(
                 $"OAuth authentication failed: {tokenResponse.Error}"
             );
         }

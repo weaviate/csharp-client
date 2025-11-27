@@ -1,10 +1,8 @@
 namespace Weaviate.Client.Tests.Integration;
 
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Weaviate.Client;
-using Xunit;
 
 public class TestAuth : IntegrationTests
 {
@@ -207,5 +205,22 @@ public class TestAuth : IntegrationTests
             .ToListAsync(TestContext.Current.CancellationToken);
 
         // TODO Needs a finalized way to inject a logger and check that no warnings were logged
+    }
+
+    [Fact]
+    public async Task TestAuthenticationFailure()
+    {
+        string clientSecret = "invalid-secret";
+        Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_CC}"));
+
+        await Assert.ThrowsAsync<WeaviateAuthenticationException>(async () =>
+        {
+            await Connect.Local(
+                hostname: "localhost",
+                restPort: OKTA_PORT_CC,
+                credentials: Auth.ClientCredentials(clientSecret, "some_scope"),
+                httpMessageHandler: _httpMessageHandler
+            );
+        });
     }
 }
