@@ -62,7 +62,7 @@ internal static class ExceptionHelper
             || statusCode == HttpStatusCode.InternalServerError
         )
         {
-            var messageBasedException = MapErrorMessage(errorMessage, innerException);
+            var messageBasedException = MapErrorMessage(errorMessage, innerException, statusCode);
             if (messageBasedException != null)
             {
                 return messageBasedException;
@@ -142,11 +142,28 @@ internal static class ExceptionHelper
     /// Maps error messages to specific exceptions regardless of protocol.
     /// Returns null if no specific exception type matches.
     /// </summary>
-    private static WeaviateException? MapErrorMessage(string errorMessage, Exception innerException)
+    /// <param name="errorMessage">The error message to analyze</param>
+    /// <param name="innerException">The original exception</param>
+    /// <param name="statusCode">Optional HTTP status code for more specific matching</param>
+    private static WeaviateException? MapErrorMessage(
+        string errorMessage,
+        Exception innerException,
+        HttpStatusCode? statusCode = null
+    )
     {
         if (string.IsNullOrEmpty(errorMessage))
         {
             return null;
+        }
+
+        // Check for backup/restore conflict error (422 only)
+        if (
+            statusCode.HasValue
+            && statusCode.Value == HttpStatusCode.UnprocessableEntity
+            && errorMessage.Contains("already in progress", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return new WeaviateBackupConflictException(innerException);
         }
 
         // Check for collection limit error
