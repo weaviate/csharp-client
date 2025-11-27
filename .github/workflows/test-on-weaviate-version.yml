@@ -1,0 +1,62 @@
+name: Test on Weaviate Version
+permissions:
+  contents: read
+
+on:
+  workflow_call:
+    inputs:
+      weaviate-version:
+        description: 'Weaviate version to test against'
+        required: true
+        type: string
+      dry-run:
+        description: 'Skip actual test execution (for testing workflow)'
+        required: false
+        type: boolean
+        default: false
+      run-slow-tests:
+        description: 'Whether to run slow and RBAC tests'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  integration-quick:
+    name: Quick Integration Tests - v${{ inputs.weaviate-version }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/integration-test.yml
+    secrets: inherit
+    with:
+      test-category: "quick"
+      test-filter: "(Category!=Slow&Category!=RBAC&FullyQualifiedName~Integration)"
+      weaviate-version: ${{ inputs.weaviate-version }}
+      dry-run: ${{ inputs.dry-run }}
+
+  integration-slow:
+    name: Slow Integration Tests - v${{ inputs.weaviate-version }}
+    permissions:
+      contents: read
+    needs: [integration-rbac]
+    if: ${{ inputs.run-slow-tests }}
+    uses: ./.github/workflows/integration-test.yml
+    secrets: inherit
+    with:
+      test-category: "slow"
+      test-filter: "(Category=Slow&FullyQualifiedName~Integration)"
+      weaviate-version: ${{ inputs.weaviate-version }}
+      dry-run: ${{ inputs.dry-run }}
+
+  integration-rbac:
+    name: RBAC Integration Tests - v${{ inputs.weaviate-version }}
+    permissions:
+      contents: read
+    needs: [integration-quick]
+    if: ${{ inputs.run-slow-tests }}
+    uses: ./.github/workflows/integration-test.yml
+    secrets: inherit
+    with:
+      test-category: "rbac"
+      test-filter: "(Category=RBAC&FullyQualifiedName~Integration)"
+      weaviate-version: ${{ inputs.weaviate-version }}
+      dry-run: ${{ inputs.dry-run }}
