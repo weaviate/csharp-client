@@ -269,6 +269,17 @@ public partial class WeaviateClient : IDisposable
             Modules = metaDto?.Modules?.ToDictionary() ?? [],
         };
 
+        // Log warning if connecting to a server older than 1.31.0
+        var minSupportedVersion = new Version(1, 31, 0);
+        if (_metaCache.HasValue && _metaCache.Value.Version < minSupportedVersion)
+        {
+            _logger.LogWarning(
+                "Connected to Weaviate server version {ServerVersion}, which is earlier than the minimum supported version {MinVersion}. Some features may not work as expected.",
+                _metaCache.Value.Version,
+                minSupportedVersion
+            );
+        }
+
         var maxMessageSize = _metaCache?.GrpcMaxMessageSize;
 
         // Create gRPC client with metadata
