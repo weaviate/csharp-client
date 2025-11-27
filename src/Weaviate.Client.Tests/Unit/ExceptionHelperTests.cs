@@ -315,4 +315,70 @@ public class ExceptionHelperTests
         // Assert
         Assert.IsType<WeaviateUnprocessableEntityException>(result);
     }
+
+    [Fact]
+    public void MapHttpException_UnprocessableEntityWithBackupConflictMessage_ReturnsBackupConflictException()
+    {
+        // Arrange
+        var innerEx = new Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException(
+            HttpStatusCode.UnprocessableEntity,
+            new HashSet<HttpStatusCode> { HttpStatusCode.OK },
+            "backup concurrent-backup-123 already in progress"
+        );
+
+        // Act
+        var result = ExceptionHelper.MapHttpException(
+            HttpStatusCode.UnprocessableEntity,
+            "backup concurrent-backup-123 already in progress",
+            innerEx
+        );
+
+        // Assert
+        var backupConflictEx = Assert.IsType<WeaviateBackupConflictException>(result);
+        Assert.Contains("already in progress", backupConflictEx.Message);
+    }
+
+    [Fact]
+    public void MapHttpException_UnprocessableEntityWithRestoreConflictMessage_ReturnsBackupConflictException()
+    {
+        // Arrange
+        var innerEx = new Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException(
+            HttpStatusCode.UnprocessableEntity,
+            new HashSet<HttpStatusCode> { HttpStatusCode.OK },
+            "restoration restore-456 already in progress"
+        );
+
+        // Act
+        var result = ExceptionHelper.MapHttpException(
+            HttpStatusCode.UnprocessableEntity,
+            "restoration restore-456 already in progress",
+            innerEx
+        );
+
+        // Assert
+        var backupConflictEx = Assert.IsType<WeaviateBackupConflictException>(result);
+        Assert.Contains("already in progress", backupConflictEx.Message);
+    }
+
+    [Fact]
+    public void MapHttpException_InternalServerErrorWithConflictMessage_DoesNotReturnBackupConflictException()
+    {
+        // Arrange - 500 status code should NOT trigger backup conflict, only 422
+        var innerEx = new Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException(
+            HttpStatusCode.InternalServerError,
+            new HashSet<HttpStatusCode> { HttpStatusCode.OK },
+            "backup already in progress"
+        );
+
+        // Act & Assert
+        // Should throw the original exception since it's not recognized
+        var ex = Assert.Throws<Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException>(() =>
+            ExceptionHelper.MapHttpException(
+                HttpStatusCode.InternalServerError,
+                "backup already in progress",
+                innerEx
+            )
+        );
+        Assert.Same(innerEx, ex);
+    }
 }
