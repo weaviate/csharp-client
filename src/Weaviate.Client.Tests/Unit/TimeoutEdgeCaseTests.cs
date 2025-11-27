@@ -247,6 +247,7 @@ public class TimeoutEdgeCaseTests
         // Assert - Context should be cleared
         Assert.Null(TimeoutHelper.GetTimeout());
         Assert.Null(TimeoutHelper.GetOperation());
+        await Task.CompletedTask;
     }
 
     [Fact]
@@ -298,6 +299,7 @@ public class TimeoutEdgeCaseTests
             Assert.Equal(TimeSpan.FromMilliseconds(10 + i * 5), results[i].timeout);
             Assert.Equal($"Rapid {i}", results[i].operation);
         }
+        await Task.CompletedTask;
     }
 
     [Fact]
