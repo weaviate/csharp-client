@@ -34,6 +34,7 @@ internal static class ExceptionHelper
         // Check status code first
         WeaviateException? exception = statusCode switch
         {
+            HttpStatusCode.BadRequest => new WeaviateBadRequestException(null, innerException),
             HttpStatusCode.Unauthorized => new WeaviateAuthenticationException(
                 null,
                 innerException
@@ -66,6 +67,11 @@ internal static class ExceptionHelper
             {
                 return messageBasedException;
             }
+        }
+
+        if (statusCode == HttpStatusCode.UnprocessableEntity)
+        {
+            return new WeaviateUnprocessableEntityException(null, innerException);
         }
 
         // Re-throw the original exception if we can't map it

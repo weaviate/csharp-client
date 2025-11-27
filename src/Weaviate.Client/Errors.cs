@@ -207,12 +207,41 @@ public class WeaviateAuthorizationException : WeaviateServerException
 }
 
 /// <summary>
+/// Exception thrown when the server cannot process the request due to a client error (HTTP 400 Bad Request).
+/// This can be caused by a malformed request, invalid parameters, or a schema validation error.
+/// </summary>
+public class WeaviateBadRequestException : WeaviateServerException
+{
+    public const string DefaultMessage =
+        "The request is invalid. Please check the request parameters and schema.";
+
+    public WeaviateBadRequestException(string? message = null, Exception? innerException = null)
+        : base(message ?? DefaultMessage, innerException) { }
+}
+
+/// <summary>
+/// Exception thrown when the server understands the content type and syntax of the request,
+/// but it is unable to process the contained instructions (HTTP 422 Unprocessable Entity).
+/// </summary>
+public class WeaviateUnprocessableEntityException : WeaviateServerException
+{
+    public const string DefaultMessage =
+        "The server is unable to process the request. Please check the request content.";
+
+    public WeaviateUnprocessableEntityException(
+        string? message = null,
+        Exception? innerException = null
+    )
+        : base(message ?? DefaultMessage, innerException) { }
+}
+
+/// <summary>
 /// Exception thrown when a collection limit has been reached (HTTP 422 Unprocessable Entity).
 /// This typically occurs when trying to create more collections than allowed by the server configuration.
 /// </summary>
-public class WeaviateCollectionLimitReachedException : WeaviateServerException
+public class WeaviateCollectionLimitReachedException : WeaviateUnprocessableEntityException
 {
-    public const string DefaultMessage =
+    public new const string DefaultMessage =
         "Collection limit reached. Cannot create more collections than allowed by the server configuration.";
 
     public WeaviateCollectionLimitReachedException(
@@ -226,9 +255,9 @@ public class WeaviateCollectionLimitReachedException : WeaviateServerException
 /// Exception thrown when a required module is not available or enabled (HTTP 422 Unprocessable Entity).
 /// This occurs when attempting to use a feature that requires a module that is not configured on the server.
 /// </summary>
-public class WeaviateModuleNotAvailableException : WeaviateServerException
+public class WeaviateModuleNotAvailableException : WeaviateUnprocessableEntityException
 {
-    public const string DefaultMessage =
+    public new const string DefaultMessage =
         "Required module is not available or enabled on the Weaviate server. Please check the server's module configuration.";
 
     public WeaviateModuleNotAvailableException(
@@ -253,5 +282,3 @@ public class WeaviateExternalModuleProblemException : WeaviateServerException
     )
         : base(message ?? DefaultMessage, innerException) { }
 }
-
-// TODO WeaviateBadRequestException

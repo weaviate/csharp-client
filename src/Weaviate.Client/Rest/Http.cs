@@ -61,9 +61,6 @@ public static class HttpResponseMessageExtensions
                 new SortedSet<HttpStatusCode>(expectedCodes),
                 error
             );
-
-            // TODO
-            // HttpStatusCode.BadRequest
         }
         catch (WeaviateUnexpectedStatusCodeException ex)
         {
