@@ -1909,15 +1909,6 @@ namespace Weaviate.Client.Rest.Dto
         public int? CPUPercentage { get; set; } = 50;
 
         /// <summary>
-        /// Aimed chunk size, with a minimum of 2MB, default of 128MB, and a maximum of 512MB. The actual chunk size may vary.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("ChunkSize")]
-        [System.ComponentModel.DataAnnotations.Range(2, 512)]
-
-        public int? ChunkSize { get; set; } = 128;
-
-        /// <summary>
         /// compression level used by compression algorithm
         /// </summary>
 
