@@ -273,4 +273,46 @@ public class ExceptionHelperTests
         // Assert
         Assert.IsType<WeaviateExternalModuleProblemException>(result);
     }
+
+    [Fact]
+    public void MapHttpException_BadRequest_ReturnsBadRequestException()
+    {
+        // Arrange
+        var innerEx = new Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException(
+            HttpStatusCode.BadRequest,
+            new HashSet<HttpStatusCode> { HttpStatusCode.OK },
+            "Bad request"
+        );
+
+        // Act
+        var result = ExceptionHelper.MapHttpException(
+            HttpStatusCode.BadRequest,
+            "Bad request",
+            innerEx
+        );
+
+        // Assert
+        Assert.IsType<WeaviateBadRequestException>(result);
+    }
+
+    [Fact]
+    public void MapHttpException_UnprocessableEntity_ReturnsUnprocessableEntityException()
+    {
+        // Arrange
+        var innerEx = new Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException(
+            HttpStatusCode.UnprocessableEntity,
+            new HashSet<HttpStatusCode> { HttpStatusCode.OK },
+            "Unprocessable entity"
+        );
+
+        // Act
+        var result = ExceptionHelper.MapHttpException(
+            HttpStatusCode.UnprocessableEntity,
+            "Unprocessable entity",
+            innerEx
+        );
+
+        // Assert
+        Assert.IsType<WeaviateUnprocessableEntityException>(result);
+    }
 }
