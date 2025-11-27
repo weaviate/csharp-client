@@ -258,7 +258,7 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(100, config?.DynamicEfMin);
         Assert.Equal(-1, config?.Ef);
         Assert.Equal(128, config?.EfConstruction);
-        if (ServerVersionIsInRange("0.0.0", "1.33.0"))
+        if (ServerVersionIsInRange("0.0.0", "1.33.15"))
         {
             Assert.Equal(
                 VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
@@ -419,7 +419,7 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(100, config?.DynamicEfMin);
         Assert.Equal(-1, config?.Ef);
         Assert.Equal(128, config?.EfConstruction);
-        if (ServerVersionIsInRange("0.0.0", "1.33.0"))
+        if (ServerVersionIsInRange("0.0.0", "1.33.15"))
         {
             Assert.Equal(
                 VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
@@ -578,7 +578,7 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(100, config?.DynamicEfMin);
         Assert.Equal(-1, config?.Ef);
         Assert.Equal(128, config?.EfConstruction);
-        if (ServerVersionIsInRange("0.0.0", "1.33.0"))
+        if (ServerVersionIsInRange("0.0.0", "1.33.15"))
         {
             Assert.Equal(
                 VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
@@ -712,7 +712,7 @@ public partial class CollectionsTests : IntegrationTests
         Assert.IsType<VectorIndex.HNSW>(defaultVectorConfig.VectorIndexConfig);
         var hnswConfig = defaultVectorConfig.VectorIndexConfig as VectorIndex.HNSW;
 
-        if (ServerVersionIsInRange("0.0.0", "1.33.0"))
+        if (ServerVersionIsInRange("0.0.0", "1.33.15"))
         {
             Assert.Equal(
                 VectorIndexConfig.VectorIndexFilterStrategy.Sweeping,
