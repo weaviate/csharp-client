@@ -27,6 +27,54 @@ public class WeaviateClientException : WeaviateException
         : base(message, innerException) { }
 }
 
+/// <summary>
+/// Exception thrown when an operation times out.
+/// This indicates the operation exceeded the configured timeout duration.
+/// </summary>
+public class WeaviateTimeoutException : WeaviateClientException
+{
+    public TimeSpan? Timeout { get; }
+    public string? Operation { get; }
+
+    public const string DefaultMessage = "The operation timed out.";
+
+    public WeaviateTimeoutException(
+        TimeSpan? timeout = null,
+        string? operation = null,
+        Exception? innerException = null
+    )
+        : base(BuildMessage(timeout, operation), innerException)
+    {
+        Timeout = timeout;
+        Operation = operation;
+    }
+
+    private static string BuildMessage(TimeSpan? timeout, string? operation)
+    {
+        var parts = new List<string>();
+
+        if (!string.IsNullOrEmpty(operation))
+        {
+            parts.Add(operation);
+        }
+        else
+        {
+            parts.Add("The operation");
+        }
+
+        parts.Add("timed out");
+
+        if (timeout.HasValue)
+        {
+            parts.Add(
+                $"after {timeout.Value.TotalSeconds.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)} seconds"
+            );
+        }
+
+        return string.Join(" ", parts) + ".";
+    }
+}
+
 public class WeaviateServerException : WeaviateException
 {
     public WeaviateServerException(string message)

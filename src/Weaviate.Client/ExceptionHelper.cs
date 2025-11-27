@@ -23,6 +23,14 @@ internal static class ExceptionHelper
         ResourceType resourceType = ResourceType.Unknown
     )
     {
+        // Check for timeout first
+        if (TimeoutHelper.IsTimeoutCancellation(innerException))
+        {
+            var timeout = TimeoutHelper.GetTimeout();
+            var operation = TimeoutHelper.GetOperation();
+            return new WeaviateTimeoutException(timeout, operation, innerException);
+        }
+
         // Check status code first
         WeaviateException? exception = statusCode switch
         {
@@ -75,6 +83,28 @@ internal static class ExceptionHelper
         string defaultMessage
     )
     {
+        // Check for timeout first (gRPC wraps cancellation in RpcException)
+        if (
+            rpcException.InnerException != null
+            && TimeoutHelper.IsTimeoutCancellation(rpcException.InnerException)
+        )
+        {
+            var timeout = TimeoutHelper.GetTimeout();
+            var operation = TimeoutHelper.GetOperation();
+            return new WeaviateTimeoutException(timeout, operation, rpcException);
+        }
+
+        // gRPC also uses StatusCode.Cancelled for timeouts
+        if (
+            rpcException.StatusCode == global::Grpc.Core.StatusCode.Cancelled
+            && TimeoutHelper.IsTimeoutCancellation(rpcException)
+        )
+        {
+            var timeout = TimeoutHelper.GetTimeout();
+            var operation = TimeoutHelper.GetOperation();
+            return new WeaviateTimeoutException(timeout, operation, rpcException);
+        }
+
         // Check status code first
         switch (rpcException.StatusCode)
         {
