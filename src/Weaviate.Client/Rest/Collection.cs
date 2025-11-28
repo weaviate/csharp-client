@@ -201,4 +201,79 @@ internal partial class WeaviateRestClient
         return schema?.Classes?.Any(c => c.Class1 is not null && c.Class1!.Equals(collectionName))
             ?? false;
     }
+
+    internal async Task<IList<Dto.ShardStatusGetResponse>> CollectionGetShards(
+        string collectionName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var response = await _httpClient.GetAsync(
+            WeaviateEndpoints.CollectionShards(collectionName),
+            cancellationToken
+        );
+
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "collection get shards",
+            ResourceType.Collection
+        );
+
+        return await response.DecodeAsync<IList<Dto.ShardStatusGetResponse>>(cancellationToken)
+            ?? new List<Dto.ShardStatusGetResponse>();
+    }
+
+    internal async Task<Dto.ShardStatusGetResponse?> CollectionGetShard(
+        string collectionName,
+        string shardName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        // Note: The API doesn't support GET for a single shard.
+        // We must GET all shards and filter by name.
+        var allShards = await CollectionGetShards(collectionName, cancellationToken);
+        return allShards.FirstOrDefault(s => s.Name == shardName);
+    }
+
+    internal async Task<Dto.ShardStatusGetResponse> CollectionUpdateShard(
+        string collectionName,
+        string shardName,
+        Dto.ShardStatus status,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var response = await _httpClient.PutAsJsonAsync(
+            WeaviateEndpoints.CollectionShard(collectionName, shardName),
+            status,
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
+        );
+
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.UnprocessableEntity, // 422
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "collection update shard",
+            ResourceType.Collection
+        );
+
+        // The PUT response only returns {"status": "..."} without name or other fields.
+        // We need to fetch the full shard info by getting all shards and filtering.
+        return await CollectionGetShard(collectionName, shardName, cancellationToken)
+            ?? throw new InvalidOperationException(
+                $"Failed to retrieve shard '{shardName}' after update"
+            );
+    }
 }
