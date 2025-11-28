@@ -41,7 +41,7 @@ public class GenerateClient
     /// <param name="sort">Sort configuration</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
@@ -56,7 +56,7 @@ public class GenerateClient
         OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -69,7 +69,7 @@ public class GenerateClient
             limit: limit,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             filters: filters,
             sort: sort,
             groupBy: groupBy,
@@ -90,7 +90,7 @@ public class GenerateClient
     /// <param name="sort">Sort configuration</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
@@ -104,7 +104,7 @@ public class GenerateClient
         OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -117,7 +117,7 @@ public class GenerateClient
             limit: limit,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             filters: filters,
             sort: sort,
             tenant: tenant ?? _collectionClient.Tenant,
@@ -133,7 +133,7 @@ public class GenerateClient
     /// </summary>
     /// <param name="id">Object ID</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
@@ -144,7 +144,7 @@ public class GenerateClient
     public async Task<GenerativeWeaviateResult?> FetchObjectByID(
         Guid id,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -162,7 +162,7 @@ public class GenerateClient
             includeVectors: includeVectors,
             tenant: tenant ?? _collectionClient.Tenant,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
         return result;
@@ -178,7 +178,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -193,7 +193,7 @@ public class GenerateClient
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -220,7 +220,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -246,7 +246,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -267,7 +267,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -292,7 +292,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -318,7 +318,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -340,7 +340,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -365,7 +365,7 @@ public class GenerateClient
             tenant: _collectionClient.Tenant,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             targetVector: targetVector,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
@@ -391,7 +391,7 @@ public class GenerateClient
     /// <param name="tenant">Tenant name</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -410,7 +410,7 @@ public class GenerateClient
         string? tenant = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -431,7 +431,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -457,7 +457,7 @@ public class GenerateClient
     /// <param name="tenant">Tenant name</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -477,7 +477,7 @@ public class GenerateClient
         string? tenant = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -499,7 +499,7 @@ public class GenerateClient
             tenant: tenant ?? _collectionClient.Tenant,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -522,7 +522,7 @@ public class GenerateClient
     /// <param name="offset">Offset for pagination</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="after">Cursor for pagination</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="consistencyLevel">Consistency level</param>
@@ -542,7 +542,7 @@ public class GenerateClient
         uint? offset = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         Guid? after = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
@@ -564,7 +564,7 @@ public class GenerateClient
             groupBy: groupBy,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             after: after,
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
@@ -588,7 +588,7 @@ public class GenerateClient
     /// <param name="offset">Offset for pagination</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="after">Cursor for pagination</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="consistencyLevel">Consistency level</param>
@@ -607,7 +607,7 @@ public class GenerateClient
         uint? offset = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         Guid? after = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
@@ -629,7 +629,7 @@ public class GenerateClient
             groupBy: null,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             after: after,
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
@@ -658,7 +658,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -680,7 +680,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -704,7 +704,7 @@ public class GenerateClient
             filters: filters,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -734,7 +734,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -757,7 +757,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -782,7 +782,7 @@ public class GenerateClient
             groupBy: groupBy,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -812,7 +812,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -835,7 +835,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -858,7 +858,7 @@ public class GenerateClient
             filters,
             rerank,
             prompt,
-            groupedPrompt,
+            groupedTask,
             targetVector,
             tenant,
             returnProperties,
@@ -884,7 +884,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -907,7 +907,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -934,7 +934,7 @@ public class GenerateClient
             filters: filters,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -965,7 +965,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -989,7 +989,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -1017,7 +1017,7 @@ public class GenerateClient
             groupBy: groupBy,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -1043,7 +1043,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1062,7 +1062,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -1084,7 +1084,7 @@ public class GenerateClient
             groupBy: null,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -1111,7 +1111,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1131,7 +1131,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -1153,7 +1153,7 @@ public class GenerateClient
             groupBy: groupBy,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -1179,7 +1179,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1198,7 +1198,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -1219,7 +1219,7 @@ public class GenerateClient
             filters: filters,
             rerank: rerank,
             prompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             returnMetadata: returnMetadata,
@@ -1245,7 +1245,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1265,7 +1265,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -1287,7 +1287,7 @@ public class GenerateClient
             groupBy: groupBy,
             rerank: rerank,
             prompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             targetVector: targetVector,
             tenant: tenant ?? _collectionClient.Tenant,
             returnMetadata: returnMetadata,
@@ -1313,7 +1313,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1333,7 +1333,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -1356,7 +1356,7 @@ public class GenerateClient
             groupBy: null,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             tenant: tenant ?? _collectionClient.Tenant,
             targetVector: targetVector,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -1384,7 +1384,7 @@ public class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
-    /// <param name="groupedPrompt">Grouped prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1405,7 +1405,7 @@ public class GenerateClient
         Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
         string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -1428,7 +1428,7 @@ public class GenerateClient
             groupBy: groupBy,
             rerank: rerank,
             singlePrompt: prompt,
-            groupedPrompt: groupedPrompt,
+            groupedTask: groupedTask,
             tenant: tenant ?? _collectionClient.Tenant,
             targetVector: targetVector,
             consistencyLevel: _collectionClient.ConsistencyLevel,

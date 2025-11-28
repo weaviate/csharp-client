@@ -57,7 +57,7 @@ var client = await Connect.Local(
     hostname: "localhost",
     defaultTimeout: TimeSpan.FromSeconds(30),
     initTimeout: TimeSpan.FromSeconds(5),
-    dataTimeout: TimeSpan.FromSeconds(60),
+    insertTimeout: TimeSpan.FromSeconds(60),
     queryTimeout: TimeSpan.FromSeconds(120)
 );
 ```
@@ -213,7 +213,7 @@ The client supports four timeout categories:
 
 1. **DefaultTimeout**: Applied to all operations (fallback timeout) - **Default: 30 seconds**
 2. **InitTimeout**: Applied to initialization operations (GetMeta, Live, IsReady) - **Default: 2 seconds**
-3. **DataTimeout**: Applied to data operations (Insert, Delete, Update, Reference management) - **Default: 120 seconds**
+3. **InsertTimeout**: Applied to data operations (Insert, Delete, Update, Reference management) - **Default: 120 seconds**
 4. **QueryTimeout**: Applied to query/search operations (FetchObjects, NearText, BM25, Hybrid, Aggregate) and generative operations (Generate.*) - **Default: 60 seconds**
 
 ### Basic Timeout Configuration
@@ -234,7 +234,7 @@ var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .WithDefaultTimeout(TimeSpan.FromSeconds(30))   // Fallback timeout
     .WithInitTimeout(TimeSpan.FromSeconds(5))       // Fast init timeout
-    .WithDataTimeout(TimeSpan.FromSeconds(60))      // Longer for writes
+    .WithInsertTimeout(TimeSpan.FromSeconds(60))      // Longer for writes
     .WithQueryTimeout(TimeSpan.FromSeconds(120))    // Longest for searches
     .BuildAsync();
 ```
@@ -243,7 +243,7 @@ var client = await new WeaviateClientBuilder()
 
 - **InitTimeout (2s)**: Initialization operations are quick health checks. A very short timeout quickly detects network connectivity issues during client startup without blocking for long.
 
-- **DataTimeout (120s)**: Write operations (inserts, deletes, updates, references) may take longer due to indexing and consistency guarantees. The 120-second default allows time for moderate-to-large batch operations.
+- **InsertTimeout (120s)**: Write operations (inserts, deletes, updates, references) may take longer due to indexing and consistency guarantees. The 120-second default allows time for moderate-to-large batch operations.
 
 - **QueryTimeout (60s)**: Search and retrieval operations (queries, aggregations, generative operations) can be computationally intensive, especially with complex filters, reranking, large result sets, or LLM processing. The 60-second default balances responsiveness with allowing complex queries and generative operations to complete.
 
@@ -375,7 +375,7 @@ class Program
             )
             .WithDefaultTimeout(TimeSpan.FromSeconds(30))
             .WithInitTimeout(TimeSpan.FromSeconds(5))
-            .WithDataTimeout(TimeSpan.FromSeconds(60))
+            .WithInsertTimeout(TimeSpan.FromSeconds(60))
             .WithQueryTimeout(TimeSpan.FromSeconds(120))
             .WithRetryPolicy(new RetryPolicy(maxRetries: 3))
             .BuildAsync();
@@ -426,7 +426,7 @@ var client = await new WeaviateClientBuilder()
     .Local(hostname: "localhost")
     .WithDefaultTimeout(TimeSpan.FromSeconds(30))
     .WithInitTimeout(TimeSpan.FromSeconds(10))
-    .WithDataTimeout(TimeSpan.FromSeconds(60))
+    .WithInsertTimeout(TimeSpan.FromSeconds(60))
     .WithQueryTimeout(TimeSpan.FromSeconds(120))
     .BuildAsync();
 ```
@@ -450,7 +450,7 @@ var client = await new WeaviateClientBuilder()
     .WithHeader("X-API-Key", "secret-key")
     .WithDefaultTimeout(TimeSpan.FromSeconds(30))
     .WithInitTimeout(TimeSpan.FromSeconds(5))
-    .WithDataTimeout(TimeSpan.FromSeconds(90))
+    .WithInsertTimeout(TimeSpan.FromSeconds(90))
     .WithQueryTimeout(TimeSpan.FromSeconds(180))
     .BuildAsync();
 ```
