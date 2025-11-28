@@ -343,7 +343,7 @@ public record PropertyFilter : Filter
 
     public Filter Like<T>(T value) => WithOperator(Filters.Types.Operator.Like).WithValue(value);
 
-    public Filter IsNull() => WithOperator(Filters.Types.Operator.IsNull);
+    public Filter IsNull(bool value = true) => WithOperator(Filters.Types.Operator.IsNull).WithValue(value);
 }
 
 public record ReferenceFilter : Filter
