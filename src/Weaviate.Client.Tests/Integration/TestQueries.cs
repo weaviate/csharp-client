@@ -116,7 +116,7 @@ public class TestQueries : IntegrationTests
                 Prompt =
                     "Is there something to eat in {text}? Only answer yes if there is something to eat or no if not without punctuation",
             },
-            groupedPrompt: new GroupedPrompt
+            groupedTask: new GroupedTask
             {
                 Task =
                     "What is the biggest and what is the smallest? Only write the names separated by a space",
@@ -167,7 +167,7 @@ public class TestQueries : IntegrationTests
         // Act: generative fetch
         var res = await collection.Generate.FetchObjects(
             prompt: new SinglePrompt { Prompt = "Who is this? {text}" },
-            groupedPrompt: new GroupedPrompt
+            groupedTask: new GroupedTask
             {
                 Task = "Who are these people?",
                 Properties = "text",
@@ -259,7 +259,7 @@ public class TestQueries : IntegrationTests
         var res = await collection.Generate.FetchObjectsByIDs(
             [.. ids],
             prompt: new SinglePrompt { Prompt = "Who is this? {text}" },
-            groupedPrompt: new GroupedPrompt
+            groupedTask: new GroupedTask
             {
                 Task = "Who are these people?",
                 Properties = new List<string> { "text" },
