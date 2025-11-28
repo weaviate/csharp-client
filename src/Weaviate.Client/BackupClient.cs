@@ -96,7 +96,6 @@ public class BackupClient
                     Bucket = bucket,
                     Path = path,
                     CPUPercentage = request.Config.CPUPercentage,
-                    ChunkSize = request.Config.ChunkSize,
                     CompressionLevel = request.Config.CompressionLevel switch
                     {
                         Models.BackupCompressionLevel.BestSpeed => Rest.Dto
