@@ -10,7 +10,7 @@ internal partial class WeaviateGrpcClient
         string collection,
         Filter? filters = null,
         IEnumerable<Sort>? sort = null,
-        uint? autoCut = null,
+        uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
         GroupByRequest? groupBy = null,
@@ -120,9 +120,9 @@ internal partial class WeaviateGrpcClient
         {
             request.SortBy.AddRange(sort.Select(s => s.InternalSort));
         }
-        if (autoCut.HasValue)
+        if (autoLimit.HasValue)
         {
-            request.Autocut = autoCut.Value;
+            request.Autocut = autoLimit.Value;
         }
         if (offset.HasValue)
         {
