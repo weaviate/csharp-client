@@ -107,6 +107,18 @@ public class BackupClient
                         Models.BackupCompressionLevel.DefaultCompression => Rest.Dto
                             .BackupConfigCompressionLevel
                             .DefaultCompression,
+                        Models.BackupCompressionLevel.ZstdDefaultCompression => Rest.Dto
+                            .BackupConfigCompressionLevel
+                            .ZstdDefaultCompression,
+                        Models.BackupCompressionLevel.ZstdBestSpeed => Rest.Dto
+                            .BackupConfigCompressionLevel
+                            .ZstdBestSpeed,
+                        Models.BackupCompressionLevel.ZstdBestCompression => Rest.Dto
+                            .BackupConfigCompressionLevel
+                            .ZstdBestCompression,
+                        Models.BackupCompressionLevel.NoCompression => Rest.Dto
+                            .BackupConfigCompressionLevel
+                            .NoCompression,
                         null => Rest.Dto.BackupConfigCompressionLevel.DefaultCompression,
                         _ => Rest.Dto.BackupConfigCompressionLevel.DefaultCompression,
                     },

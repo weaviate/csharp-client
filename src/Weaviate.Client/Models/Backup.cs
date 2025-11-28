@@ -30,6 +30,26 @@ public enum BackupCompressionLevel
     /// Optimized for compression ratio
     /// </summary>
     BestCompression,
+
+    /// <summary>
+    /// Zstd compressed with default (balanced) parameters
+    /// </summary>
+    ZstdDefaultCompression,
+
+    /// <summary>
+    /// Zstd compressed optimized for best speed
+    /// </summary>
+    ZstdBestSpeed,
+
+    /// <summary>
+    /// Zstd compressed optimized for best compression ratio
+    /// </summary>
+    ZstdBestCompression,
+
+    /// <summary>
+    /// No compression
+    /// </summary>
+    NoCompression,
 }
 
 /// <summary>
