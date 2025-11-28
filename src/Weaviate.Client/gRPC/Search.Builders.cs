@@ -540,6 +540,7 @@ internal partial class WeaviateGrpcClient
         SearchRequest request,
         string query,
         string[]? properties = null,
+        BM25Operator? searchOperator = null,
         BM25Operator? searchOperator = null
     )
     {
