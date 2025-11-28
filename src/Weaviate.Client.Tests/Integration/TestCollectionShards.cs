@@ -29,8 +29,8 @@ public class TestCollectionShards : IntegrationTests
             {
                 Assert.NotNull(shard.Name);
                 Assert.NotEmpty(shard.Name);
-                Assert.NotNull(shard.Status);
-                Assert.NotEmpty(shard.Status);
+                // Status is an enum, so it always has a value
+                Assert.True(Enum.IsDefined(typeof(ShardStatus), shard.Status));
             }
         );
     }
@@ -60,8 +60,7 @@ public class TestCollectionShards : IntegrationTests
         // Assert
         Assert.NotNull(shard);
         Assert.Equal(firstShardName, shard.Name);
-        Assert.NotNull(shard.Status);
-        Assert.NotEmpty(shard.Status);
+        Assert.True(Enum.IsDefined(typeof(ShardStatus), shard.Status));
     }
 
     [Fact]
@@ -90,8 +89,7 @@ public class TestCollectionShards : IntegrationTests
         Assert.NotNull(updatedShards);
         Assert.Single(updatedShards);
         Assert.Equal(firstShardName, updatedShards[0].Name);
-        Assert.Equal("READONLY", updatedShards[0].Status);
-        Assert.Equal(ShardStatus.ReadOnly, updatedShards[0].StatusValue);
+        Assert.Equal(ShardStatus.ReadOnly, updatedShards[0].Status);
 
         // Cleanup: Set it back to READY
         await collection.Config.UpdateShardStatus(ShardStatus.Ready, firstShardName);
@@ -126,8 +124,7 @@ public class TestCollectionShards : IntegrationTests
         Assert.NotNull(updatedShards);
         Assert.Single(updatedShards);
         Assert.Equal(firstShardName, updatedShards[0].Name);
-        Assert.Equal("READY", updatedShards[0].Status);
-        Assert.Equal(ShardStatus.Ready, updatedShards[0].StatusValue);
+        Assert.Equal(ShardStatus.Ready, updatedShards[0].Status);
     }
 
     [Fact]
@@ -156,7 +153,7 @@ public class TestCollectionShards : IntegrationTests
         // Assert
         Assert.NotNull(updatedShards);
         Assert.Equal(shardNames.Length, updatedShards.Count);
-        Assert.All(updatedShards, shard => Assert.Equal("READONLY", shard.Status));
+        Assert.All(updatedShards, shard => Assert.Equal(ShardStatus.ReadOnly, shard.Status));
 
         // Cleanup: Set them all back to READY
         await collection.Config.UpdateShardStatus(ShardStatus.Ready, shardNames);

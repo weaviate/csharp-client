@@ -117,7 +117,7 @@ internal partial record ShardStatusGetResponse
         return new Models.ShardInfo
         {
             Name = Name ?? string.Empty,
-            Status = Status ?? string.Empty,
+            Status = Models.ShardStatusExtensions.ParseStatus(Status),
             VectorQueueSize = VectorQueueSize,
         };
     }
