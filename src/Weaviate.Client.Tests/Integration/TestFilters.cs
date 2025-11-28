@@ -684,4 +684,53 @@ public partial class FilterTests : IntegrationTests
         Assert.DoesNotContain(idB, ids);
         Assert.Contains(idC, ids);
     }
+
+    [Fact]
+    public async Task Filter_IsNull_Integration()
+    {
+        // Arrange - Create collection with indexNullState enabled
+        var collection = await CollectionFactory(
+            properties: [Property.Text("name"), Property.Text("country")],
+            invertedIndexConfig: new InvertedIndexConfig { IndexNullState = true }
+        );
+
+        var idWithCountry = await collection.Data.Insert(
+            new { name = "Wine1", country = "France" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var idWithoutCountry = await collection.Data.Insert(
+            new { name = "Wine2" }, // country is null
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var idWithCountry2 = await collection.Data.Insert(
+            new { name = "Wine3", country = "Italy" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Act - Filter for objects where country IS null
+        var filterNull = Filter.Property("country").IsNull(true);
+        var objectsWithNull = await collection.Query.FetchObjects(
+            filters: filterNull,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var idsWithNull = objectsWithNull.Select(o => o.ID).ToHashSet();
+
+        // Act - Filter for objects where country IS NOT null
+        var filterNotNull = Filter.Property("country").IsNull(false);
+        var objectsWithoutNull = await collection.Query.FetchObjects(
+            filters: filterNotNull,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var idsWithoutNull = objectsWithoutNull.Select(o => o.ID).ToHashSet();
+
+        // Assert - IsNull(true) should return only objects with null country
+        Assert.Contains(idWithoutCountry, idsWithNull);
+        Assert.DoesNotContain(idWithCountry, idsWithNull);
+        Assert.DoesNotContain(idWithCountry2, idsWithNull);
+
+        // Assert - IsNull(false) should return only objects with non-null country
+        Assert.DoesNotContain(idWithoutCountry, idsWithoutNull);
+        Assert.Contains(idWithCountry, idsWithoutNull);
+        Assert.Contains(idWithCountry2, idsWithoutNull);
+    }
 }

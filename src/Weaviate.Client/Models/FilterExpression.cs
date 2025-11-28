@@ -33,7 +33,7 @@ public static class Filter<T>
 
         public Filter Like(TResult value) => _prop.Like(value);
 
-        public Filter IsNull() => _prop.IsNull();
+        public Filter IsNull(bool value = true) => _prop.IsNull(value);
     }
 
     public static PropertyFilter<TResult> Property<TResult>(Expression<Func<T, TResult>> selector)
