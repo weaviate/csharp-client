@@ -4430,6 +4430,18 @@ namespace Weaviate.Client.Rest.Dto
         [System.Runtime.Serialization.EnumMember(Value = @"BestCompression")]
         BestCompression = 2,
 
+        [System.Runtime.Serialization.EnumMember(Value = @"ZstdDefaultCompression")]
+        ZstdDefaultCompression = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ZstdBestSpeed")]
+        ZstdBestSpeed = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ZstdBestCompression")]
+        ZstdBestCompression = 5,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"NoCompression")]
+        NoCompression = 6,
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
