@@ -34,7 +34,7 @@ internal static class TimeoutHelper
     /// <summary>
     /// Creates a CancellationToken from a configuration timeout, falling back to a default timeout if needed.
     /// </summary>
-    /// <param name="configTimeout">The specific timeout from configuration (e.g., DataTimeout, QueryTimeout).</param>
+    /// <param name="configTimeout">The specific timeout from configuration (e.g., InsertTimeout, QueryTimeout).</param>
     /// <param name="defaultTimeout">The default timeout to use if configTimeout is null.</param>
     /// <param name="providedToken">An optional cancellation token to link with the timeout token.</param>
     /// <returns>A CancellationToken that will be cancelled after the effective timeout expires.</returns>

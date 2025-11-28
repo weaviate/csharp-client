@@ -26,9 +26,9 @@ public static class WeaviateDefaults
 
     /// <summary>
     /// Default timeout for data operations (Insert, Delete, Update, Reference management). Default is 120 seconds.
-    /// This can be overridden per client via ClientConfiguration.WithDataTimeout().
+    /// This can be overridden per client via ClientConfiguration.WithInsertTimeout().
     /// </summary>
-    public static TimeSpan DataTimeout { get; set; } = TimeSpan.FromSeconds(120);
+    public static TimeSpan InsertTimeout { get; set; } = TimeSpan.FromSeconds(120);
 
     /// <summary>
     /// Default timeout for query/search operations (FetchObjects, NearText, BM25, Hybrid, etc.). Default is 60 seconds.
@@ -112,7 +112,7 @@ public sealed record ClientConfiguration(
     ICredentials? Credentials = null,
     TimeSpan? DefaultTimeout = null,
     TimeSpan? InitTimeout = null,
-    TimeSpan? DataTimeout = null,
+    TimeSpan? InsertTimeout = null,
     TimeSpan? QueryTimeout = null,
     RetryPolicy? RetryPolicy = null,
     DelegatingHandler[]? CustomHandlers = null
@@ -464,7 +464,7 @@ public partial class WeaviateClient : IDisposable
 
     public TimeSpan? DefaultTimeout => Configuration.DefaultTimeout;
     public TimeSpan? InitTimeout => Configuration.InitTimeout;
-    public TimeSpan? DataTimeout => Configuration.DataTimeout;
+    public TimeSpan? InsertTimeout => Configuration.InsertTimeout;
     public TimeSpan? QueryTimeout => Configuration.QueryTimeout;
 
     /// <summary>

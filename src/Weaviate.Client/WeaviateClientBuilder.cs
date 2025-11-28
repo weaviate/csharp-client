@@ -18,7 +18,7 @@ public partial class WeaviateClientBuilder
     private HttpMessageHandler? _httpMessageHandler = null;
     private TimeSpan? _defaultTimeout = null;
     private TimeSpan? _initTimeout = null;
-    private TimeSpan? _dataTimeout = null;
+    private TimeSpan? _insertTimeout = null;
     private TimeSpan? _queryTimeout = null;
     private RetryPolicy? _retryPolicy = null;
     private readonly List<DelegatingHandler> _customHandlers = new();
@@ -189,9 +189,9 @@ public partial class WeaviateClientBuilder
     /// <summary>
     /// Sets the timeout for data operations.
     /// </summary>
-    public WeaviateClientBuilder WithDataTimeout(TimeSpan timeout)
+    public WeaviateClientBuilder WithInsertTimeout(TimeSpan timeout)
     {
-        _dataTimeout = timeout;
+        _insertTimeout = timeout;
         return this;
     }
 
@@ -210,7 +210,7 @@ public partial class WeaviateClientBuilder
     public WeaviateClientBuilder ApplyTimeouts(
         TimeSpan? defaultTimeout = null,
         TimeSpan? initTimeout = null,
-        TimeSpan? dataTimeout = null,
+        TimeSpan? insertTimeout = null,
         TimeSpan? queryTimeout = null
     )
     {
@@ -218,8 +218,8 @@ public partial class WeaviateClientBuilder
             WithDefaultTimeout(defaultTimeout.Value);
         if (initTimeout.HasValue)
             WithInitTimeout(initTimeout.Value);
-        if (dataTimeout.HasValue)
-            WithDataTimeout(dataTimeout.Value);
+        if (insertTimeout.HasValue)
+            WithInsertTimeout(insertTimeout.Value);
         if (queryTimeout.HasValue)
             WithQueryTimeout(queryTimeout.Value);
         return this;
@@ -278,7 +278,7 @@ public partial class WeaviateClientBuilder
             _credentials,
             _defaultTimeout,
             _initTimeout,
-            _dataTimeout,
+            _insertTimeout,
             _queryTimeout,
             _retryPolicy,
             _customHandlers.Count > 0 ? _customHandlers.ToArray() : null
@@ -311,7 +311,7 @@ public partial class WeaviateClientBuilder
             _credentials,
             _defaultTimeout,
             _initTimeout,
-            _dataTimeout,
+            _insertTimeout,
             _queryTimeout,
             _retryPolicy,
             _customHandlers.Count > 0 ? _customHandlers.ToArray() : null
