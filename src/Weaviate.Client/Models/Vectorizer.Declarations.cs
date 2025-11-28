@@ -231,8 +231,8 @@ public static partial class Vectorizer
 
         public Text2VecGpt4All()
             : base(IdentifierValue) { }
-    }    
-    
+    }
+
     /// <summary>
     /// The configuration for text vectorization using the HuggingFace module.
     /// See the documentation for detailed usage.
