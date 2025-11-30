@@ -1,6 +1,6 @@
 using Weaviate.Client.Grpc;
+using Weaviate.Client.Grpc.Protobuf.V1;
 using Weaviate.Client.Tests.Unit.Mocks;
-using Weaviate.V1;
 
 namespace Weaviate.Client.Tests.Unit;
 

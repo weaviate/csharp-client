@@ -1,4 +1,4 @@
-using Weaviate.Client.gRPC;
+using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
@@ -131,5 +131,3 @@ public class WeaviateNotFoundException : WeaviateServerException
         return $"{base.ToString()} ResourceType: {ResourceType}.";
     }
 }
-
-// TODO WeaviateUnauthorizedException, WeaviateUnauthenticatedException, WeaviateBadRequestException
