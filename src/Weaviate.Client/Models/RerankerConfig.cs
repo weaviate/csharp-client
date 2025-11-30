@@ -41,6 +41,11 @@ public static class Reranker
 
         public static class Models
         {
+            public const string Rerank25 = "rerank-2.5";
+            public const string Rerank25Lite = "rerank-2.5-lite";
+            public const string Rerank2 = "rerank-2";
+            public const string Rerank2Lite = "rerank-2-lite";
+            public const string Rerank1 = "rerank-1";
             public const string RerankLite1 = "rerank-lite-1";
         }
     }
