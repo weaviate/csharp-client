@@ -167,11 +167,7 @@ public class TestQueries : IntegrationTests
         // Act: generative fetch
         var res = await collection.Generate.FetchObjects(
             prompt: new SinglePrompt { Prompt = "Who is this? {text}" },
-            groupedTask: new GroupedTask
-            {
-                Task = "Who are these people?",
-                Properties = "text",
-            },
+            groupedTask: new GroupedTask { Task = "Who are these people?", Properties = "text" },
             cancellationToken: TestContext.Current.CancellationToken
         );
 

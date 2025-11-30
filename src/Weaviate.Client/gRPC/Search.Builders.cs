@@ -536,7 +536,12 @@ internal partial class WeaviateGrpcClient
         return nearVector;
     }
 
-    private static void BuildBM25(SearchRequest request, string query, string[]? properties = null, BM25Operator? searchOperator = null)
+    private static void BuildBM25(
+        SearchRequest request,
+        string query,
+        string[]? properties = null,
+        BM25Operator? searchOperator = null
+    )
     {
         request.Bm25Search = new BM25() { Query = query };
 
