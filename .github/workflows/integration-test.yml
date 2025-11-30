@@ -76,7 +76,8 @@ jobs:
               --filter "${{ inputs.test-filter }}" \
               --logger "trx;LogFileName=test-integration-${{ inputs.test-category }}-${{ inputs.weaviate-version }}.trx" \
               --collect:"XPlat Code Coverage" \
-              --results-directory ./test-results
+              --results-directory ./test-results \
+              --settings coverlet.runsettings
           fi
 
       - name: Stop Weaviate
