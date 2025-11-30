@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Weaviate.Client;
 using Weaviate.Client.Models;
+using Xunit;
 
+[Trait("Category", "Slow")]
 [Collection("TestReplication")]
 [CollectionDefinition("TestReplication", DisableParallelization = true)]
 public class TestReplication : IntegrationTests
