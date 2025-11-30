@@ -11,7 +11,7 @@ internal partial class WeaviateGrpcClient : IDisposable
 {
     private readonly GrpcChannel _channel;
     internal Metadata? _defaultHeaders = null;
-    private readonly V1.Weaviate.WeaviateClient _grpcClient;
+    private readonly Grpc.Protobuf.V1.Weaviate.WeaviateClient _grpcClient;
     private readonly ILogger<WeaviateGrpcClient> _logger;
     private readonly TimeSpan? _timeout;
     private readonly RetryPolicy? _retryPolicy;
@@ -59,11 +59,11 @@ internal partial class WeaviateGrpcClient : IDisposable
         if (_retryPolicy is not null && _retryPolicy.MaxRetries > 0)
         {
             var invoker = _channel.Intercept(new RetryInterceptor(_retryPolicy, _logger));
-            _grpcClient = new V1.Weaviate.WeaviateClient(invoker);
+            _grpcClient = new Grpc.Protobuf.V1.Weaviate.WeaviateClient(invoker);
         }
         else
         {
-            _grpcClient = new V1.Weaviate.WeaviateClient(_channel);
+            _grpcClient = new Grpc.Protobuf.V1.Weaviate.WeaviateClient(_channel);
         }
     }
 
