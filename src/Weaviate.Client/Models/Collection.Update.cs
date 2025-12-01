@@ -408,4 +408,73 @@ public class CollectionConfigClient
 
         return response?.ToModel();
     }
+
+    /// <summary>
+    /// Gets all shards for this collection.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+    /// <returns>A list of shard information for the collection.</returns>
+    public async Task<IList<ShardInfo>> GetShards(CancellationToken cancellationToken = default)
+    {
+        var shards = await _client.RestClient.CollectionGetShards(
+            _collectionName,
+            cancellationToken
+        );
+
+        return shards.Select(s => s.ToModel()).ToList();
+    }
+
+    /// <summary>
+    /// Gets information about a specific shard.
+    /// </summary>
+    /// <param name="shardName">The name of the shard to retrieve.</param>
+    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+    /// <returns>Information about the specified shard, or null if not found.</returns>
+    public async Task<ShardInfo?> GetShard(
+        string shardName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        ArgumentException.ThrowIfNullOrEmpty(shardName);
+
+        var shard = await _client.RestClient.CollectionGetShard(
+            _collectionName,
+            shardName,
+            cancellationToken
+        );
+
+        return shard?.ToModel();
+    }
+
+    /// <summary>
+    /// Updates the status of one or more shards.
+    /// </summary>
+    /// <param name="status">The new status to set for the shards.</param>
+    /// <param name="shardNames">The names of the shards to update.</param>
+    /// <returns>A list of updated shard information.</returns>
+    public async Task<IList<ShardInfo>> UpdateShardStatus(
+        ShardStatus status,
+        params string[] shardNames
+    )
+    {
+        ArgumentNullException.ThrowIfNull(shardNames);
+
+        if (shardNames.Length == 0)
+        {
+            throw new ArgumentException(
+                "At least one shard name must be provided.",
+                nameof(shardNames)
+            );
+        }
+
+        var shardStatus = new Rest.Dto.ShardStatus { Status = status.ToApiString() };
+
+        var tasks = shardNames.Select(shardName =>
+            _client.RestClient.CollectionUpdateShard(_collectionName, shardName, shardStatus)
+        );
+
+        var results = await Task.WhenAll(tasks);
+
+        return results.Select(r => r.ToModel()).ToList();
+    }
 }
