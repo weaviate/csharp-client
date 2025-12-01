@@ -14,31 +14,16 @@ namespace Weaviate.Client.Request.Transport;
 /// Mock REST transport for testing.
 /// Captures requests and allows returning pre-configured responses.
 /// </summary>
-public class MockRestTransport : IRestTransport
+public class MockRestTransport : MockTransportBase<HttpRequestDetails, HttpResponseMessage, CapturedRestRequest>, IRestTransport
 {
-    private readonly List<CapturedRestRequest> _capturedRequests = new();
-    private readonly List<RestResponseRule> _responseRules = new();
     private Func<HttpRequestDetails, HttpResponseMessage>? _defaultResponseFactory;
-
-    /// <summary>
-    /// All requests that have been captured.
-    /// </summary>
-    public IReadOnlyList<CapturedRestRequest> CapturedRequests => _capturedRequests.AsReadOnly();
-
-    /// <summary>
-    /// Clears all captured requests.
-    /// </summary>
-    public void ClearCapturedRequests()
-    {
-        _capturedRequests.Clear();
-    }
 
     /// <summary>
     /// Sets a default response factory for requests that don't match any rules.
     /// </summary>
     public void SetDefaultResponse(Func<HttpRequestDetails, HttpResponseMessage> factory)
     {
-        _defaultResponseFactory = factory;
+        _defaultResponseFactory = factory ?? throw new ArgumentNullException(nameof(factory));
     }
 
     /// <summary>
@@ -54,7 +39,10 @@ public class MockRestTransport : IRestTransport
     /// </summary>
     public void AddResponseRule(Func<HttpRequestDetails, bool> matcher, Func<HttpRequestDetails, HttpResponseMessage> responseFactory)
     {
-        _responseRules.Add(new RestResponseRule
+        if (matcher == null) throw new ArgumentNullException(nameof(matcher));
+        if (responseFactory == null) throw new ArgumentNullException(nameof(responseFactory));
+
+        AddRule(new ResponseRuleBase<HttpRequestDetails, HttpResponseMessage>
         {
             Matcher = matcher,
             ResponseFactory = responseFactory
@@ -66,6 +54,9 @@ public class MockRestTransport : IRestTransport
     /// </summary>
     public void AddResponseRule(HttpMethod method, string uriPattern, HttpStatusCode statusCode, object? body = null)
     {
+        if (method == null) throw new ArgumentNullException(nameof(method));
+        if (string.IsNullOrWhiteSpace(uriPattern)) throw new ArgumentException("URI pattern cannot be null or whitespace.", nameof(uriPattern));
+
         AddResponseRule(
             req => req.Method == method && req.Uri.Contains(uriPattern),
             _ => CreateJsonResponse(statusCode, body)
@@ -77,6 +68,8 @@ public class MockRestTransport : IRestTransport
     /// </summary>
     public void AddResponseRuleForOperation(string operationName, HttpStatusCode statusCode, object? body = null)
     {
+        if (string.IsNullOrWhiteSpace(operationName)) throw new ArgumentException("Operation name cannot be null or whitespace.", nameof(operationName));
+
         AddResponseRule(
             req => req.LogicalRequest?.OperationName == operationName,
             _ => CreateJsonResponse(statusCode, body)
@@ -85,18 +78,21 @@ public class MockRestTransport : IRestTransport
 
     public Task<HttpResponseMessage> SendAsync(HttpRequestDetails request, CancellationToken cancellationToken = default)
     {
+        if (request == null) throw new ArgumentNullException(nameof(request));
+
         // Capture the request
-        _capturedRequests.Add(new CapturedRestRequest
+        CaptureRequest(new CapturedRestRequest
         {
             Request = request,
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.UtcNow,
+            LogicalRequest = request.LogicalRequest
         });
 
         // Find matching response rule
-        var rule = _responseRules.FirstOrDefault(r => r.Matcher(request));
-        if (rule != null)
+        var response = FindMatchingResponse(request);
+        if (response != null)
         {
-            return Task.FromResult(rule.ResponseFactory(request));
+            return Task.FromResult(response);
         }
 
         // Use default response factory if set
@@ -111,6 +107,8 @@ public class MockRestTransport : IRestTransport
 
     public async Task<TResponse?> SendAsync<TResponse>(HttpRequestDetails request, CancellationToken cancellationToken = default)
     {
+        if (request == null) throw new ArgumentNullException(nameof(request));
+
         var response = await SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
@@ -156,7 +154,8 @@ public class MockRestTransport : IRestTransport
     /// </summary>
     public IEnumerable<CapturedRestRequest> GetRequests(Func<HttpRequestDetails, bool> predicate)
     {
-        return _capturedRequests.Where(cr => predicate(cr.Request));
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+        return GetCapturedRequests(cr => predicate(cr.Request));
     }
 
     /// <summary>
@@ -164,6 +163,7 @@ public class MockRestTransport : IRestTransport
     /// </summary>
     public IEnumerable<CapturedRestRequest> GetRequestsForOperation(string operationName)
     {
+        if (string.IsNullOrWhiteSpace(operationName)) throw new ArgumentException("Operation name cannot be null or whitespace.", nameof(operationName));
         return GetRequests(req => req.LogicalRequest?.OperationName == operationName);
     }
 
@@ -172,21 +172,19 @@ public class MockRestTransport : IRestTransport
     /// </summary>
     public IEnumerable<CapturedRestRequest> GetRequests(HttpMethod method, string uriPattern)
     {
+        if (method == null) throw new ArgumentNullException(nameof(method));
+        if (string.IsNullOrWhiteSpace(uriPattern)) throw new ArgumentException("URI pattern cannot be null or whitespace.", nameof(uriPattern));
         return GetRequests(req => req.Method == method && req.Uri.Contains(uriPattern));
-    }
-
-    private class RestResponseRule
-    {
-        public Func<HttpRequestDetails, bool> Matcher { get; init; } = null!;
-        public Func<HttpRequestDetails, HttpResponseMessage> ResponseFactory { get; init; } = null!;
     }
 }
 
 /// <summary>
 /// Represents a captured REST/HTTP request.
 /// </summary>
-public class CapturedRestRequest
+public class CapturedRestRequest : CapturedRequestBase
 {
-    public HttpRequestDetails Request { get; init; } = null!;
-    public DateTime Timestamp { get; init; }
+    /// <summary>
+    /// The captured HTTP request details.
+    /// </summary>
+    public required HttpRequestDetails Request { get; init; }
 }

@@ -45,6 +45,7 @@ public class MockGrpcTransport : IGrpcTransport
     /// </summary>
     public void SetDefaultResponse<TRequest, TResponse>(Func<TRequest, TResponse> factory)
     {
+        if (factory == null) throw new ArgumentNullException(nameof(factory));
         _defaultResponseFactory = req => factory((TRequest)req)!;
     }
 
@@ -55,6 +56,9 @@ public class MockGrpcTransport : IGrpcTransport
         Func<GrpcRequestDetails<TRequest>, bool> matcher,
         Func<GrpcRequestDetails<TRequest>, TResponse> responseFactory)
     {
+        if (matcher == null) throw new ArgumentNullException(nameof(matcher));
+        if (responseFactory == null) throw new ArgumentNullException(nameof(responseFactory));
+
         _responseRules.Add(new GrpcResponseRule
         {
             Matcher = req =>
@@ -67,7 +71,7 @@ public class MockGrpcTransport : IGrpcTransport
             {
                 if (req is GrpcRequestDetails<TRequest> typedReq)
                     return responseFactory(typedReq)!;
-                throw new InvalidOperationException("Request type mismatch");
+                throw new InvalidOperationException($"Request type mismatch. Expected {typeof(TRequest).Name} but got {req?.GetType().Name ?? "null"}");
             }
         });
     }
@@ -79,6 +83,8 @@ public class MockGrpcTransport : IGrpcTransport
         string method,
         TResponse response)
     {
+        if (string.IsNullOrWhiteSpace(method)) throw new ArgumentException("Method name cannot be null or whitespace.", nameof(method));
+
         AddResponseRule<TRequest, TResponse>(
             req => req.Method == method,
             _ => response
@@ -92,6 +98,8 @@ public class MockGrpcTransport : IGrpcTransport
         string operationName,
         TResponse response)
     {
+        if (string.IsNullOrWhiteSpace(operationName)) throw new ArgumentException("Operation name cannot be null or whitespace.", nameof(operationName));
+
         AddResponseRule<TRequest, TResponse>(
             req => req.LogicalRequest?.OperationName == operationName,
             _ => response
@@ -102,6 +110,8 @@ public class MockGrpcTransport : IGrpcTransport
         GrpcRequestDetails<TRequest> request,
         CancellationToken cancellationToken = default)
     {
+        if (request == null) throw new ArgumentNullException(nameof(request));
+
         // Capture the request
         _capturedRequests.Add(new CapturedGrpcRequest
         {
@@ -126,9 +136,10 @@ public class MockGrpcTransport : IGrpcTransport
             return Task.FromResult((TResponse)response);
         }
 
-        // No response configured
+        // No response configured - provide helpful error message
         throw new RpcException(new Status(StatusCode.Unimplemented,
-            $"No mock response configured for method {request.Method}"));
+            $"No mock response configured for method {request.Method}. " +
+            $"Use AddResponseRule, AddResponseRuleForMethod, or SetDefaultResponse to configure a response."));
     }
 
     public Task<bool> IsHealthyAsync(CancellationToken cancellationToken = default)
@@ -141,6 +152,7 @@ public class MockGrpcTransport : IGrpcTransport
     /// </summary>
     public IEnumerable<CapturedGrpcRequest> GetRequests(Func<CapturedGrpcRequest, bool> predicate)
     {
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
         return _capturedRequests.Where(predicate);
     }
 
@@ -149,6 +161,7 @@ public class MockGrpcTransport : IGrpcTransport
     /// </summary>
     public IEnumerable<CapturedGrpcRequest> GetRequestsForMethod(string method)
     {
+        if (string.IsNullOrWhiteSpace(method)) throw new ArgumentException("Method name cannot be null or whitespace.", nameof(method));
         return GetRequests(req => req.Method == method);
     }
 
@@ -157,6 +170,7 @@ public class MockGrpcTransport : IGrpcTransport
     /// </summary>
     public IEnumerable<CapturedGrpcRequest> GetRequestsForOperation(string operationName)
     {
+        if (string.IsNullOrWhiteSpace(operationName)) throw new ArgumentException("Operation name cannot be null or whitespace.", nameof(operationName));
         return GetRequests(req => req.LogicalRequest?.OperationName == operationName);
     }
 
@@ -181,10 +195,15 @@ public class MockGrpcTransport : IGrpcTransport
 /// <summary>
 /// Represents a captured gRPC request.
 /// </summary>
-public class CapturedGrpcRequest
+public class CapturedGrpcRequest : CapturedRequestBase
 {
-    public string Method { get; init; } = string.Empty;
+    /// <summary>
+    /// The gRPC method name.
+    /// </summary>
+    public required string Method { get; init; }
+
+    /// <summary>
+    /// The captured request object.
+    /// </summary>
     public object? Request { get; init; }
-    public IWeaviateRequest? LogicalRequest { get; init; }
-    public DateTime Timestamp { get; init; }
 }
