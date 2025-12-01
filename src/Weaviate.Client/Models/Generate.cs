@@ -9,7 +9,6 @@ public abstract record GenerativeProvider
 
     public string Name { get; }
     public bool ReturnMetadata { get; set; } = false;
-    public bool Debug { get; set; } = false;
 }
 
 public abstract record GenerativePrompt
@@ -30,11 +29,11 @@ public record SinglePrompt : GenerativePrompt
     public GenerativeProvider? Provider { get; set; }
 }
 
-public record GroupedPrompt : GenerativePrompt
+public record GroupedTask : GenerativePrompt
 {
-    public GroupedPrompt() { }
+    public GroupedTask() { }
 
-    public GroupedPrompt(string task, params string[] properties)
+    public GroupedTask(string task, params string[] properties)
     {
         Task = task;
         Properties = [.. properties];

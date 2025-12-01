@@ -10,7 +10,7 @@ internal partial class WeaviateGrpcClient
         string collection,
         Filter? filters = null,
         IEnumerable<Sort>? sort = null,
-        uint? autoCut = null,
+        uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
         GroupByRequest? groupBy = null,
@@ -19,7 +19,7 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         SinglePrompt? singlePrompt = null,
-        GroupedPrompt? groupedPrompt = null,
+        GroupedTask? groupedTask = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
@@ -71,7 +71,7 @@ internal partial class WeaviateGrpcClient
                 }
                 : null,
             Generative =
-                (singlePrompt is null && groupedPrompt is null)
+                (singlePrompt is null && groupedTask is null)
                     ? null
                     : new V1.GenerativeSearch()
                     {
@@ -88,19 +88,19 @@ internal partial class WeaviateGrpcClient
                                 },
                             }
                             : null,
-                        Grouped = groupedPrompt is not null
+                        Grouped = groupedTask is not null
                             ? new V1.GenerativeSearch.Types.Grouped()
                             {
-                                Task = groupedPrompt.Task,
-                                Properties = groupedPrompt.Properties.Any()
-                                    ? new V1.TextArray { Values = { groupedPrompt.Properties } }
+                                Task = groupedTask.Task,
+                                Properties = groupedTask.Properties.Any()
+                                    ? new V1.TextArray { Values = { groupedTask.Properties } }
                                     : null,
-                                Debug = groupedPrompt.Debug,
+                                Debug = groupedTask.Debug,
                                 Queries =
                                 {
-                                    groupedPrompt.Provider is null
+                                    groupedTask.Provider is null
                                         ? []
-                                        : [GetGenerativeProvider(groupedPrompt.Provider)],
+                                        : [GetGenerativeProvider(groupedTask.Provider)],
                                 },
                             }
                             : null,
@@ -120,9 +120,9 @@ internal partial class WeaviateGrpcClient
         {
             request.SortBy.AddRange(sort.Select(s => s.InternalSort));
         }
-        if (autoCut.HasValue)
+        if (autoLimit.HasValue)
         {
-            request.Autocut = autoCut.Value;
+            request.Autocut = autoLimit.Value;
         }
         if (offset.HasValue)
         {
@@ -536,13 +536,31 @@ internal partial class WeaviateGrpcClient
         return nearVector;
     }
 
-    private static void BuildBM25(SearchRequest request, string query, string[]? properties = null)
+    private static void BuildBM25(
+        SearchRequest request,
+        string query,
+        string[]? properties = null,
+        BM25Operator? searchOperator = null
+    )
     {
         request.Bm25Search = new BM25() { Query = query };
 
         if (properties is not null)
         {
             request.Bm25Search.Properties.AddRange(properties);
+        }
+        if (searchOperator != null)
+        {
+            request.Bm25Search.SearchOperator = new()
+            {
+                Operator = searchOperator switch
+                {
+                    BM25Operator.And => V1.SearchOperatorOptions.Types.Operator.And,
+                    BM25Operator.Or => V1.SearchOperatorOptions.Types.Operator.Or,
+                    _ => V1.SearchOperatorOptions.Types.Operator.Unspecified,
+                },
+                MinimumOrTokensMatch = (searchOperator as BM25Operator.Or)?.MinimumMatch ?? 1,
+            };
         }
     }
 
