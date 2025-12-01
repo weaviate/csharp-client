@@ -215,7 +215,7 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           header: coverage
-          path: ./coveragereport/Summary.md
+          path: ./coveragereport/SummaryGithub.md
 
       - name: Download all test results
         uses: actions/download-artifact@v4
