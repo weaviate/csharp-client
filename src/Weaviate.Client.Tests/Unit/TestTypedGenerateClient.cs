@@ -100,13 +100,13 @@ public class TypedGenerateClientTests
         var typedGenerateClient = new TypedGenerateClient<TestArticle>(collectionClient.Generate);
 
         var ids = new HashSet<Guid> { Guid.NewGuid(), Guid.NewGuid() };
-        var groupedPrompt = new GroupedPrompt("Summarize each article");
+        var groupedTask = new GroupedTask("Summarize each article");
 
         // Act & Assert
-        // Verify the method accepts HashSet<Guid> and GroupedPrompt parameters
+        // Verify the method accepts HashSet<Guid> and GroupedTask parameters
         Assert.NotNull(typedGenerateClient);
         Assert.Equal(2, ids.Count);
-        Assert.NotNull(groupedPrompt);
+        Assert.NotNull(groupedTask);
     }
 
     [Fact]
@@ -137,14 +137,14 @@ public class TypedGenerateClientTests
 
         var searchText = new OneOrManyOf<string>("test query");
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
-        var groupedPrompt = new GroupedPrompt("Summarize each group");
+        var groupedTask = new GroupedTask("Summarize each group");
 
         // Act & Assert
-        // Verify the method accepts text, groupBy, and groupedPrompt parameters
+        // Verify the method accepts text, groupBy, and groupedTask parameters
         Assert.NotNull(typedGenerateClient);
         Assert.NotNull(searchText);
         Assert.NotNull(groupBy);
-        Assert.NotNull(groupedPrompt);
+        Assert.NotNull(groupedTask);
     }
 
     [Fact]
@@ -175,14 +175,14 @@ public class TypedGenerateClientTests
 
         var vectors = new Vectors { ["default"] = new float[] { 0.1f, 0.2f, 0.3f } };
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
-        var groupedPrompt = new GroupedPrompt("Summarize groups");
+        var groupedTask = new GroupedTask("Summarize groups");
 
         // Act & Assert
-        // Verify the method accepts Vectors, GroupByRequest, and groupedPrompt parameters
+        // Verify the method accepts Vectors, GroupByRequest, and groupedTask parameters
         Assert.NotNull(typedGenerateClient);
         Assert.NotNull(vectors);
         Assert.NotNull(groupBy);
-        Assert.NotNull(groupedPrompt);
+        Assert.NotNull(groupedTask);
     }
 
     [Fact]
@@ -215,14 +215,14 @@ public class TypedGenerateClientTests
 
         var query = "search terms";
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
-        var groupedPrompt = new GroupedPrompt("Analyze groups");
+        var groupedTask = new GroupedTask("Analyze groups");
 
         // Act & Assert
-        // Verify the method accepts query, groupBy, and groupedPrompt parameters
+        // Verify the method accepts query, groupBy, and groupedTask parameters
         Assert.NotNull(typedGenerateClient);
         Assert.NotEmpty(query);
         Assert.NotNull(groupBy);
-        Assert.NotNull(groupedPrompt);
+        Assert.NotNull(groupedTask);
     }
 
     [Fact]
@@ -273,14 +273,14 @@ public class TypedGenerateClientTests
 
         var query = "hybrid search";
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
-        var groupedPrompt = new GroupedPrompt("Generate summaries");
+        var groupedTask = new GroupedTask("Generate summaries");
 
         // Act & Assert
-        // Verify the method accepts query, groupBy, and groupedPrompt parameters
+        // Verify the method accepts query, groupBy, and groupedTask parameters
         Assert.NotNull(typedGenerateClient);
         Assert.NotEmpty(query);
         Assert.NotNull(groupBy);
-        Assert.NotNull(groupedPrompt);
+        Assert.NotNull(groupedTask);
     }
 
     [Fact]
@@ -311,14 +311,14 @@ public class TypedGenerateClientTests
 
         var nearObjectId = Guid.NewGuid();
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
-        var groupedPrompt = new GroupedPrompt("Compare groups");
+        var groupedTask = new GroupedTask("Compare groups");
 
         // Act & Assert
-        // Verify the method accepts Guid, GroupByRequest, and groupedPrompt parameters
+        // Verify the method accepts Guid, GroupByRequest, and groupedTask parameters
         Assert.NotNull(typedGenerateClient);
         Assert.NotEqual(Guid.Empty, nearObjectId);
         Assert.NotNull(groupBy);
-        Assert.NotNull(groupedPrompt);
+        Assert.NotNull(groupedTask);
     }
 
     [Fact]
@@ -349,14 +349,14 @@ public class TypedGenerateClientTests
 
         var imageData = new byte[] { 0x01, 0x02, 0x03 };
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
-        var groupedPrompt = new GroupedPrompt("Describe image groups");
+        var groupedTask = new GroupedTask("Describe image groups");
 
         // Act & Assert
-        // Verify the method accepts byte[], GroupByRequest, and groupedPrompt parameters
+        // Verify the method accepts byte[], GroupByRequest, and groupedTask parameters
         Assert.NotNull(typedGenerateClient);
         Assert.NotEmpty(imageData);
         Assert.NotNull(groupBy);
-        Assert.NotNull(groupedPrompt);
+        Assert.NotNull(groupedTask);
     }
 
     [Fact]
@@ -390,15 +390,15 @@ public class TypedGenerateClientTests
         var mediaData = new byte[] { 0x01, 0x02, 0x03 };
         var mediaType = NearMediaType.Image;
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
-        var groupedPrompt = new GroupedPrompt("Analyze media groups");
+        var groupedTask = new GroupedTask("Analyze media groups");
 
         // Act & Assert
-        // Verify the method accepts byte[], NearMediaType, GroupByRequest, and groupedPrompt parameters
+        // Verify the method accepts byte[], NearMediaType, GroupByRequest, and groupedTask parameters
         Assert.NotNull(typedGenerateClient);
         Assert.NotEmpty(mediaData);
         Assert.Equal(NearMediaType.Image, mediaType);
         Assert.NotNull(groupBy);
-        Assert.NotNull(groupedPrompt);
+        Assert.NotNull(groupedTask);
     }
 
     [Fact]

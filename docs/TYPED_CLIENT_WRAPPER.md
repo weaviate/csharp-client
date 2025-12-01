@@ -169,7 +169,7 @@ foreach (var result in results.Objects)
 var groupResults = await articlesClient.Generate.NearText(
     "tutorials",
     groupBy: new GroupByRequest("tags", 10),
-    groupedPrompt: new GroupedPrompt(
+    groupedTask: new GroupedTask(
         "Create a summary of all articles with these tags"
     )
 );

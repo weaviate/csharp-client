@@ -205,7 +205,7 @@ public class TypedQueryClient<T>
     /// <param name="moveAway">Move the query vector away from these concepts.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
-    /// <param name="autoCut">Automatic result cutoff threshold.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="tenant">Tenant name for multi-tenancy.</param>
@@ -224,7 +224,7 @@ public class TypedQueryClient<T>
         Move? moveAway = null,
         uint? limit = null,
         uint? offset = null,
-        uint? autoCut = null,
+        uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
         string? tenant = null,
@@ -244,7 +244,7 @@ public class TypedQueryClient<T>
             moveAway: moveAway,
             limit: limit,
             offset: offset,
-            autoCut: autoCut,
+            autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
             tenant: tenant,
@@ -269,7 +269,7 @@ public class TypedQueryClient<T>
     /// <param name="moveAway">Move the query vector away from these concepts.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
-    /// <param name="autoCut">Automatic result cutoff threshold.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
@@ -289,7 +289,7 @@ public class TypedQueryClient<T>
         Move? moveAway = null,
         uint? limit = null,
         uint? offset = null,
-        uint? autoCut = null,
+        uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
@@ -310,7 +310,7 @@ public class TypedQueryClient<T>
             moveAway: moveAway,
             limit: limit,
             offset: offset,
-            autoCut: autoCut,
+            autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
@@ -331,7 +331,7 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="certainty">Minimum certainty threshold (0-1).</param>
     /// <param name="distance">Maximum distance threshold.</param>
-    /// <param name="autoCut">Automatic result cutoff threshold.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
@@ -348,7 +348,7 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         float? certainty = null,
         float? distance = null,
-        uint? autoCut = null,
+        uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
         TargetVectors? targetVector = null,
@@ -366,7 +366,7 @@ public class TypedQueryClient<T>
             filters: filters,
             certainty: certainty,
             distance: distance,
-            autoCut: autoCut,
+            autoLimit: autoLimit,
             limit: limit,
             offset: offset,
             targetVector: targetVector,
@@ -389,7 +389,7 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="distance">Maximum distance threshold.</param>
     /// <param name="certainty">Minimum certainty threshold (0-1).</param>
-    /// <param name="autoCut">Automatic result cutoff threshold.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
@@ -407,7 +407,7 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         float? distance = null,
         float? certainty = null,
-        uint? autoCut = null,
+        uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
         TargetVectors? targetVector = null,
@@ -426,7 +426,7 @@ public class TypedQueryClient<T>
             filters: filters,
             distance: distance,
             certainty: certainty,
-            autoCut: autoCut,
+            autoLimit: autoLimit,
             limit: limit,
             offset: offset,
             targetVector: targetVector,
@@ -448,7 +448,7 @@ public class TypedQueryClient<T>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="searchFields">Fields to search in.</param>
     /// <param name="filters">Filters to apply to the search.</param>
-    /// <param name="autoCut">Automatic result cutoff threshold.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
@@ -466,7 +466,7 @@ public class TypedQueryClient<T>
         GroupByRequest groupBy,
         string[]? searchFields = null,
         Filter? filters = null,
-        uint? autoCut = null,
+        uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
@@ -485,7 +485,7 @@ public class TypedQueryClient<T>
             groupBy: groupBy,
             searchFields: searchFields,
             filters: filters,
-            autoCut: autoCut,
+            autoLimit: autoLimit,
             limit: limit,
             offset: offset,
             rerank: rerank,
@@ -507,7 +507,7 @@ public class TypedQueryClient<T>
     /// <param name="query">The search query string.</param>
     /// <param name="searchFields">Fields to search in.</param>
     /// <param name="filters">Filters to apply to the search.</param>
-    /// <param name="autoCut">Automatic result cutoff threshold.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
@@ -524,7 +524,7 @@ public class TypedQueryClient<T>
         string query,
         string[]? searchFields = null,
         Filter? filters = null,
-        uint? autoCut = null,
+        uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
@@ -542,7 +542,7 @@ public class TypedQueryClient<T>
             query: query,
             searchFields: searchFields,
             filters: filters,
-            autoCut: autoCut,
+            autoLimit: autoLimit,
             limit: limit,
             offset: offset,
             rerank: rerank,
