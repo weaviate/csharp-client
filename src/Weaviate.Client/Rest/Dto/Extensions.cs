@@ -105,3 +105,20 @@ internal partial record PhoneNumber
         };
     }
 }
+
+// Shard status mapping
+internal partial record ShardStatusGetResponse
+{
+    /// <summary>
+    /// Converts a REST DTO ShardStatusGetResponse to a ShardInfo model.
+    /// </summary>
+    public Models.ShardInfo ToModel()
+    {
+        return new Models.ShardInfo
+        {
+            Name = Name ?? string.Empty,
+            Status = Models.ShardStatusExtensions.ParseStatus(Status),
+            VectorQueueSize = VectorQueueSize,
+        };
+    }
+}
