@@ -53,12 +53,12 @@ public static class TypedResultConverter
     }
 
     /// <summary>
-    /// Converts an untyped WeaviateResult to a typed WeaviateResult&lt;T&gt;.
+    /// Converts an untyped WeaviateResult to a typed WeaviateResult&lt;WeaviateObject&lt;T&gt;&gt;.
     /// </summary>
-    public static WeaviateResult<T> ToTyped<T>(this WeaviateResult result)
+    public static Models.WeaviateResult<WeaviateObject<T>> ToTyped<T>(this WeaviateResult result)
         where T : class, new()
     {
-        return new WeaviateResult<T>
+        return new Models.WeaviateResult<WeaviateObject<T>>
         {
             Objects = result.Objects.Select(o => o.ToTyped<T>()).ToList(),
         };
@@ -72,18 +72,7 @@ public static class TypedResultConverter
     public static GenerativeWeaviateObject<T> ToTyped<T>(this GenerativeWeaviateObject obj)
         where T : class, new()
     {
-        var typed = WeaviateObject<T>.FromUntyped(obj);
-        return new GenerativeWeaviateObject<T>
-        {
-            ID = typed.ID,
-            Collection = typed.Collection,
-            Metadata = typed.Metadata,
-            Tenant = typed.Tenant,
-            Properties = typed.Properties,
-            References = typed.References,
-            Vectors = typed.Vectors,
-            Generative = obj.Generative,
-        };
+        return GenerativeWeaviateObject<T>.FromUntyped(obj);
     }
 
     /// <summary>
@@ -132,7 +121,7 @@ public static class TypedResultConverter
     {
         return new GenerativeWeaviateResult<T>
         {
-            Objects = result.Objects.Select(o => o.ToTyped<T>()).ToList<WeaviateObject<T>>(),
+            Objects = result.Objects.Select(o => o.ToTyped<T>()).ToList(),
             Generative = result.Generative,
         };
     }

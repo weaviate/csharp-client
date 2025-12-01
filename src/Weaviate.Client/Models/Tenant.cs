@@ -1,5 +1,7 @@
 namespace Weaviate.Client.Models;
 
+using V1 = Grpc.Protobuf.V1;
+
 public enum TenantActivityStatus
 {
     [System.Runtime.Serialization.EnumMember(Value = "unspecified")]

@@ -1,0 +1,130 @@
+name: Test on Weaviate Version
+
+on:
+  workflow_call:
+    inputs:
+      weaviate-version:
+        description: 'Weaviate version to test against'
+        required: true
+        type: string
+      dry-run:
+        description: 'Skip actual test execution (for testing workflow)'
+        required: false
+        type: boolean
+        default: false
+      run-slow-tests:
+        description: 'Whether to run slow and RBAC tests'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  integration-all:
+    name: All Integration Tests - v${{ inputs.weaviate-version }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.*proj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        if: ${{ !github.event.pull_request.head.repo.fork && github.triggering_actor != 'dependabot[bot]' }}
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Start Weaviate
+        if: ${{ !inputs.dry-run }}
+        run: /bin/bash ci/start_weaviate.sh ${{ inputs.weaviate-version }}
+
+      - name: Run quick integration tests
+        run: |
+          if [[ "${{ inputs.dry-run }}" == "true" ]]; then
+            echo "🏃 DRY-RUN MODE: Skipping actual quick tests"
+            mkdir -p ./test-results ./test-results/coverage
+            echo '<?xml version="1.0" encoding="utf-8"?><coverage line-rate="0.85" branch-rate="0.75"><packages><package name="Weaviate.Client" line-rate="0.85" branch-rate="0.75"><classes></classes></package></packages></coverage>' > ./test-results/coverage/coverage.cobertura.xml
+            echo '<?xml version="1.0" encoding="utf-8"?><TestRun><ResultSummary outcome="Completed"><Counters total="42" executed="42" passed="42" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" /></ResultSummary></TestRun>' > ./test-results/test-integration-quick-${{ inputs.weaviate-version }}.trx
+          else
+            dotnet test --no-restore \
+              --filter "(Category!=Slow&Category!=RBAC&FullyQualifiedName~Integration)" \
+              --logger "trx;LogFileName=test-integration-quick-${{ inputs.weaviate-version }}.trx" \
+              --collect:"XPlat Code Coverage" \
+              --results-directory ./test-results \
+              --settings coverlet.runsettings
+          fi
+
+      - name: Run RBAC integration tests
+        if: ${{ inputs.run-slow-tests }}
+        run: |
+          if [[ "${{ inputs.dry-run }}" == "true" ]]; then
+            echo "🏃 DRY-RUN MODE: Skipping actual RBAC tests"
+            echo '<?xml version="1.0" encoding="utf-8"?><TestRun><ResultSummary outcome="Completed"><Counters total="42" executed="42" passed="42" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" /></ResultSummary></TestRun>' > ./test-results/test-integration-rbac-${{ inputs.weaviate-version }}.trx
+          else
+            dotnet test --no-restore \
+              --filter "(Category=RBAC&FullyQualifiedName~Integration)" \
+              --logger "trx;LogFileName=test-integration-rbac-${{ inputs.weaviate-version }}.trx" \
+              --collect:"XPlat Code Coverage" \
+              --results-directory ./test-results \
+              --settings coverlet.runsettings
+          fi
+
+      - name: Run slow integration tests
+        if: ${{ inputs.run-slow-tests }}
+        run: |
+          if [[ "${{ inputs.dry-run }}" == "true" ]]; then
+            echo "🏃 DRY-RUN MODE: Skipping actual slow tests"
+            echo '<?xml version="1.0" encoding="utf-8"?><TestRun><ResultSummary outcome="Completed"><Counters total="42" executed="42" passed="42" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" /></ResultSummary></TestRun>' > ./test-results/test-integration-slow-${{ inputs.weaviate-version }}.trx
+          else
+            dotnet test --no-restore \
+              --filter "(Category=Slow&FullyQualifiedName~Integration)" \
+              --logger "trx;LogFileName=test-integration-slow-${{ inputs.weaviate-version }}.trx" \
+              --collect:"XPlat Code Coverage" \
+              --results-directory ./test-results \
+              --settings coverlet.runsettings
+          fi
+
+      - name: Stop Weaviate
+        if: always() && !inputs.dry-run
+        run: /bin/bash ci/stop_weaviate.sh ${{ inputs.weaviate-version }}
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results-integration-${{ inputs.weaviate-version }}
+          path: ./test-results/*.trx
+          retention-days: 7
+
+      - name: Upload coverage data
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-integration-${{ inputs.weaviate-version }}
+          path: ./test-results/**/coverage.cobertura.xml
+          retention-days: 7
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: failure() && !inputs.dry-run
+        with:
+          name: Integration Tests - Weaviate ${{ inputs.weaviate-version }}
+          path: ./test-results/*.trx
+          reporter: dotnet-trx
+          fail-on-error: false

@@ -1,12 +1,12 @@
 using Weaviate.Client.Models;
-using Weaviate.V1;
 using Rerank = Weaviate.Client.Models.Rerank;
+using V1 = Weaviate.Client.Grpc.Protobuf.V1;
 
 namespace Weaviate.Client.Grpc;
 
 internal partial class WeaviateGrpcClient
 {
-    private async Task<SearchReply> Search(
+    private async Task<V1.SearchReply> Search(
         V1.SearchRequest request,
         CancellationToken cancellationToken = default
     )
@@ -26,7 +26,7 @@ internal partial class WeaviateGrpcClient
         }
     }
 
-    internal async Task<SearchReply> FetchObjects(
+    internal async Task<V1.SearchReply> FetchObjects(
         string collection,
         Filter? filters = null,
         IEnumerable<Sort>? sort = null,
@@ -66,7 +66,7 @@ internal partial class WeaviateGrpcClient
         return await Search(req, cancellationToken);
     }
 
-    internal async Task<SearchReply> SearchNearVector(
+    internal async Task<V1.SearchReply> SearchNearVector(
         string collection,
         Models.Vectors vector,
         GroupByRequest? groupBy = null,
@@ -113,7 +113,7 @@ internal partial class WeaviateGrpcClient
         return await Search(request, cancellationToken);
     }
 
-    internal async Task<SearchReply> SearchNearText(
+    internal async Task<V1.SearchReply> SearchNearText(
         string collection,
         string[] query,
         float? distance = null,
@@ -169,7 +169,7 @@ internal partial class WeaviateGrpcClient
         return await Search(request, cancellationToken);
     }
 
-    internal async Task<SearchReply> SearchBM25(
+    internal async Task<V1.SearchReply> SearchBM25(
         string collection,
         string query,
         string[]? searchFields,
@@ -217,7 +217,7 @@ internal partial class WeaviateGrpcClient
         return await Search(request, cancellationToken);
     }
 
-    internal async Task<SearchReply> SearchHybrid(
+    internal async Task<V1.SearchReply> SearchHybrid(
         string collection,
         string? query = null,
         float? alpha = null,
@@ -292,7 +292,7 @@ internal partial class WeaviateGrpcClient
         return await Search(request, cancellationToken);
     }
 
-    internal async Task<SearchReply> SearchNearObject(
+    internal async Task<V1.SearchReply> SearchNearObject(
         string collection,
         Guid objectID,
         double? certainty,
@@ -339,7 +339,7 @@ internal partial class WeaviateGrpcClient
         return await Search(request, cancellationToken);
     }
 
-    internal async Task<SearchReply> SearchNearMedia(
+    internal async Task<V1.SearchReply> SearchNearMedia(
         string collection,
         byte[] media,
         NearMediaType mediaType,
@@ -385,7 +385,10 @@ internal partial class WeaviateGrpcClient
         switch (mediaType)
         {
             case NearMediaType.Image:
-                request.NearImage = new NearImageSearch { Image = Convert.ToBase64String(media) };
+                request.NearImage = new V1.NearImageSearch
+                {
+                    Image = Convert.ToBase64String(media),
+                };
                 if (certainty.HasValue)
                 {
                     request.NearImage.Certainty = certainty.Value;
@@ -400,7 +403,10 @@ internal partial class WeaviateGrpcClient
 
                 break;
             case NearMediaType.Video:
-                request.NearVideo = new NearVideoSearch { Video = Convert.ToBase64String(media) };
+                request.NearVideo = new V1.NearVideoSearch
+                {
+                    Video = Convert.ToBase64String(media),
+                };
                 if (certainty.HasValue)
                 {
                     request.NearVideo.Certainty = certainty.Value;
@@ -414,7 +420,10 @@ internal partial class WeaviateGrpcClient
                 request.NearVideo.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.Audio:
-                request.NearAudio = new NearAudioSearch { Audio = Convert.ToBase64String(media) };
+                request.NearAudio = new V1.NearAudioSearch
+                {
+                    Audio = Convert.ToBase64String(media),
+                };
                 if (certainty.HasValue)
                 {
                     request.NearAudio.Certainty = certainty.Value;
@@ -428,7 +437,10 @@ internal partial class WeaviateGrpcClient
                 request.NearAudio.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.Depth:
-                request.NearDepth = new NearDepthSearch { Depth = Convert.ToBase64String(media) };
+                request.NearDepth = new V1.NearDepthSearch
+                {
+                    Depth = Convert.ToBase64String(media),
+                };
                 if (certainty.HasValue)
                 {
                     request.NearDepth.Certainty = certainty.Value;
@@ -442,7 +454,7 @@ internal partial class WeaviateGrpcClient
                 request.NearDepth.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.Thermal:
-                request.NearThermal = new NearThermalSearch
+                request.NearThermal = new V1.NearThermalSearch
                 {
                     Thermal = Convert.ToBase64String(media),
                 };
@@ -459,7 +471,7 @@ internal partial class WeaviateGrpcClient
                 request.NearThermal.Targets = BuildTargetVector(targetVector).targets;
                 break;
             case NearMediaType.IMU:
-                request.NearImu = new NearIMUSearch { Imu = Convert.ToBase64String(media) };
+                request.NearImu = new V1.NearIMUSearch { Imu = Convert.ToBase64String(media) };
                 if (certainty.HasValue)
                 {
                     request.NearImu.Certainty = certainty.Value;

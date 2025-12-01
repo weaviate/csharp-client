@@ -281,73 +281,11 @@ public partial class WeaviateClientBuilder
             _dataTimeout,
             _queryTimeout,
             _retryPolicy,
-            _customHandlers.Count > 0 ? _customHandlers.ToArray() : null
+            _customHandlers.Count > 0 ? _customHandlers.ToArray() : null,
+            _httpMessageHandler
         );
 
-        return await config.BuildAsync(_httpMessageHandler);
-    }
-
-    /// <summary>
-    /// Synchronous build method - deprecated. Use BuildAsync() instead.
-    /// </summary>
-    [Obsolete(
-        "Use BuildAsync() instead. Synchronous initialization can cause blocking issues.",
-        false
-    )]
-    public WeaviateClient Build()
-    {
-        var loggerFactory = LoggerFactory.Create(builder => builder.AddSimpleConsole());
-        var logger = loggerFactory.CreateLogger<WeaviateClient>();
-
-        var config = new ClientConfiguration(
-            _restEndpoint,
-            _restPath,
-            _grpcEndpoint,
-            _grpcPath,
-            _restPort,
-            _grpcPort,
-            _useSsl,
-            _headers.Count > 0 ? new Dictionary<string, string>(_headers) : null,
-            _credentials,
-            _defaultTimeout,
-            _initTimeout,
-            _dataTimeout,
-            _queryTimeout,
-            _retryPolicy,
-            _customHandlers.Count > 0 ? _customHandlers.ToArray() : null
-        );
-
-        // Initialize token service synchronously
-        var tokenService = ClientConfiguration.InitializeTokenServiceSync(config);
-
-        // Create REST client
-        var restClient = WeaviateClient.CreateRestClient(
-            config,
-            _httpMessageHandler,
-            tokenService,
-            logger
-        );
-
-        // Fetch metadata synchronously (blocking)
-        ulong? maxMessageSize = null;
-        try
-        {
-            var metaDto = restClient.GetMeta(CancellationToken.None).GetAwaiter().GetResult();
-            if (metaDto?.GrpcMaxMessageSize is not null)
-            {
-                maxMessageSize = Convert.ToUInt64(metaDto.GrpcMaxMessageSize);
-            }
-        }
-        catch
-        {
-            // If metadata fetch fails, use defaults
-        }
-
-        // Create gRPC client with metadata
-        var grpcClient = WeaviateClient.CreateGrpcClient(config, tokenService, maxMessageSize);
-
-        // Return the client with pre-built services
-        return new WeaviateClient(config, restClient, grpcClient, logger);
+        return await config.BuildAsync();
     }
 
     public static implicit operator Task<WeaviateClient>(WeaviateClientBuilder builder) =>

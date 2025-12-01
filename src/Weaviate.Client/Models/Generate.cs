@@ -16,30 +16,12 @@ public abstract record GenerativePrompt
     public bool Debug { get; set; } = false;
 }
 
-public record SinglePrompt : GenerativePrompt
+public record SinglePrompt(string Prompt) : GenerativePrompt
 {
-    public SinglePrompt() { }
-
-    public SinglePrompt(string prompt)
-    {
-        Prompt = prompt;
-    }
-
-    public required string Prompt { get; set; }
     public GenerativeProvider? Provider { get; set; }
 }
 
-public record GroupedTask : GenerativePrompt
+public record GroupedPrompt(string Task, params string[] Properties) : GenerativePrompt
 {
-    public GroupedTask() { }
-
-    public GroupedTask(string task, params string[] properties)
-    {
-        Task = task;
-        Properties = [.. properties];
-    }
-
-    public required string Task { get; set; }
-    public OneOrManyOf<string> Properties { get; set; } = [];
     public GenerativeProvider? Provider { get; set; }
 }
