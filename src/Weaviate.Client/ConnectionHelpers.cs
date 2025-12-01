@@ -19,12 +19,12 @@ public static class Connect
         HttpMessageHandler? httpMessageHandler = null,
         TimeSpan? defaultTimeout = null,
         TimeSpan? initTimeout = null,
-        TimeSpan? insertTimeout = null,
+        TimeSpan? dataTimeout = null,
         TimeSpan? queryTimeout = null
     ) =>
         WeaviateClientBuilder
             .Local(credentials, hostname, restPort, grpcPort, useSsl, headers, httpMessageHandler)
-            .ApplyTimeouts(defaultTimeout, initTimeout, insertTimeout, queryTimeout)
+            .ApplyTimeouts(defaultTimeout, initTimeout, dataTimeout, queryTimeout)
             .BuildAsync();
 
     /// <summary>
@@ -40,12 +40,12 @@ public static class Connect
         HttpMessageHandler? httpMessageHandler = null,
         TimeSpan? defaultTimeout = null,
         TimeSpan? initTimeout = null,
-        TimeSpan? insertTimeout = null,
+        TimeSpan? dataTimeout = null,
         TimeSpan? queryTimeout = null
     ) =>
         WeaviateClientBuilder
             .Local(credentials, hostname, restPort, grpcPort, useSsl, headers, httpMessageHandler)
-            .ApplyTimeouts(defaultTimeout, initTimeout, insertTimeout, queryTimeout)
+            .ApplyTimeouts(defaultTimeout, initTimeout, dataTimeout, queryTimeout)
             .BuildAsync();
 
     /// <summary>
@@ -58,12 +58,12 @@ public static class Connect
         HttpMessageHandler? httpMessageHandler = null,
         TimeSpan? defaultTimeout = null,
         TimeSpan? initTimeout = null,
-        TimeSpan? insertTimeout = null,
+        TimeSpan? dataTimeout = null,
         TimeSpan? queryTimeout = null
     ) =>
         WeaviateClientBuilder
             .Cloud(restEndpoint, apiKey, headers, httpMessageHandler)
-            .ApplyTimeouts(defaultTimeout, initTimeout, insertTimeout, queryTimeout)
+            .ApplyTimeouts(defaultTimeout, initTimeout, dataTimeout, queryTimeout)
             .BuildAsync();
 
     /// <summary>
@@ -74,7 +74,7 @@ public static class Connect
         string prefix = "WEAVIATE_",
         TimeSpan? defaultTimeout = null,
         TimeSpan? initTimeout = null,
-        TimeSpan? insertTimeout = null,
+        TimeSpan? dataTimeout = null,
         TimeSpan? queryTimeout = null
     )
     {
@@ -114,7 +114,7 @@ public static class Connect
         }
 
         return builder
-            .ApplyTimeouts(defaultTimeout, initTimeout, insertTimeout, queryTimeout)
+            .ApplyTimeouts(defaultTimeout, initTimeout, dataTimeout, queryTimeout)
             .BuildAsync();
     }
 }
