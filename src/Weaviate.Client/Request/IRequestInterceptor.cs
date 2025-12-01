@@ -4,10 +4,9 @@ using System.Threading.Tasks;
 namespace Weaviate.Client.Request;
 
 /// <summary>
-/// Interface for request interceptors that can inspect and modify requests
-/// before they are sent and responses after they are received.
+/// Intercepts requests before they are sent over the wire.
 /// </summary>
-public interface IRequestInterceptor
+public interface IBeforeSendInterceptor
 {
     /// <summary>
     /// Called before a request is sent over the wire.
@@ -16,7 +15,13 @@ public interface IRequestInterceptor
     /// <param name="context">The request context</param>
     /// <returns>The potentially modified request context</returns>
     Task<RequestContext> OnBeforeSendAsync(RequestContext context);
+}
 
+/// <summary>
+/// Intercepts responses after they are received.
+/// </summary>
+public interface IAfterReceiveInterceptor
+{
     /// <summary>
     /// Called after a response is received.
     /// Interceptors can inspect or modify the response.
@@ -26,7 +31,13 @@ public interface IRequestInterceptor
     /// <param name="response">The received response</param>
     /// <returns>The potentially modified response</returns>
     Task<TResponse> OnAfterReceiveAsync<TResponse>(RequestContext context, TResponse response);
+}
 
+/// <summary>
+/// Intercepts errors that occur during request execution.
+/// </summary>
+public interface IErrorInterceptor
+{
     /// <summary>
     /// Called when an error occurs during request execution.
     /// Interceptors can log, modify, or handle the error.
@@ -37,7 +48,17 @@ public interface IRequestInterceptor
 }
 
 /// <summary>
+/// Composite interface for request interceptors that handles all lifecycle hooks.
+/// Implement specific interfaces (IBeforeSendInterceptor, IAfterReceiveInterceptor, IErrorInterceptor)
+/// instead if you only need specific hooks.
+/// </summary>
+public interface IRequestInterceptor : IBeforeSendInterceptor, IAfterReceiveInterceptor, IErrorInterceptor
+{
+}
+
+/// <summary>
 /// Base class for request interceptors with default no-op implementations.
+/// Provides a convenient way to implement only the hooks you need by overriding virtual methods.
 /// </summary>
 public abstract class RequestInterceptorBase : IRequestInterceptor
 {

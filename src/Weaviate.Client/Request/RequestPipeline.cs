@@ -7,18 +7,19 @@ namespace Weaviate.Client.Request;
 
 /// <summary>
 /// Manages the request pipeline, orchestrating interceptors and request execution.
+/// Supports both composite IRequestInterceptor and individual interceptor interfaces.
 /// </summary>
 public class RequestPipeline
 {
-    private readonly List<IRequestInterceptor> _interceptors;
+    private readonly List<object> _interceptors;
 
     public RequestPipeline(IEnumerable<IRequestInterceptor>? interceptors = null)
     {
-        _interceptors = interceptors?.ToList() ?? new List<IRequestInterceptor>();
+        _interceptors = interceptors?.Cast<object>().ToList() ?? new List<object>();
     }
 
     /// <summary>
-    /// Adds an interceptor to the pipeline.
+    /// Adds a composite interceptor to the pipeline.
     /// </summary>
     public void AddInterceptor(IRequestInterceptor interceptor)
     {
@@ -29,9 +30,42 @@ public class RequestPipeline
     }
 
     /// <summary>
+    /// Adds a before-send interceptor to the pipeline.
+    /// </summary>
+    public void AddBeforeSendInterceptor(IBeforeSendInterceptor interceptor)
+    {
+        if (interceptor == null)
+            throw new ArgumentNullException(nameof(interceptor));
+
+        _interceptors.Add(interceptor);
+    }
+
+    /// <summary>
+    /// Adds an after-receive interceptor to the pipeline.
+    /// </summary>
+    public void AddAfterReceiveInterceptor(IAfterReceiveInterceptor interceptor)
+    {
+        if (interceptor == null)
+            throw new ArgumentNullException(nameof(interceptor));
+
+        _interceptors.Add(interceptor);
+    }
+
+    /// <summary>
+    /// Adds an error interceptor to the pipeline.
+    /// </summary>
+    public void AddErrorInterceptor(IErrorInterceptor interceptor)
+    {
+        if (interceptor == null)
+            throw new ArgumentNullException(nameof(interceptor));
+
+        _interceptors.Add(interceptor);
+    }
+
+    /// <summary>
     /// Removes an interceptor from the pipeline.
     /// </summary>
-    public bool RemoveInterceptor(IRequestInterceptor interceptor)
+    public bool RemoveInterceptor(object interceptor)
     {
         return _interceptors.Remove(interceptor);
     }
@@ -47,7 +81,7 @@ public class RequestPipeline
     /// <summary>
     /// Gets the current interceptors in the pipeline.
     /// </summary>
-    public IReadOnlyList<IRequestInterceptor> Interceptors => _interceptors.AsReadOnly();
+    public IReadOnlyList<object> Interceptors => _interceptors.AsReadOnly();
 
     /// <summary>
     /// Executes a request through the pipeline.
@@ -67,34 +101,57 @@ public class RequestPipeline
 
         try
         {
-            // Run all OnBeforeSend interceptors
+            // Run all OnBeforeSend interceptors in forward order
             var modifiedContext = context;
             foreach (var interceptor in _interceptors)
             {
-                modifiedContext = await interceptor.OnBeforeSendAsync(modifiedContext);
+                if (interceptor is IBeforeSendInterceptor beforeSend)
+                {
+                    modifiedContext = await beforeSend.OnBeforeSendAsync(modifiedContext);
+
+                    // Null check: interceptor should not return null
+                    if (modifiedContext == null)
+                        throw new InvalidOperationException($"Interceptor {interceptor.GetType().Name} returned null from OnBeforeSendAsync");
+                }
             }
 
             // Execute the actual request
             var response = await executor(modifiedContext);
 
-            // Run all OnAfterReceive interceptors (in reverse order)
+            // Run all OnAfterReceive interceptors in reverse order (unwinding)
             var modifiedResponse = response;
             for (var i = _interceptors.Count - 1; i >= 0; i--)
             {
-                modifiedResponse = await _interceptors[i].OnAfterReceiveAsync(modifiedContext, modifiedResponse);
+                if (_interceptors[i] is IAfterReceiveInterceptor afterReceive)
+                {
+                    modifiedResponse = await afterReceive.OnAfterReceiveAsync(modifiedContext, modifiedResponse);
+                }
             }
 
             return modifiedResponse;
         }
         catch (Exception ex)
         {
-            // Notify all interceptors of the error
+            // Notify all error interceptors
             foreach (var interceptor in _interceptors)
             {
-                await interceptor.OnErrorAsync(context, ex);
+                if (interceptor is IErrorInterceptor errorInterceptor)
+                {
+                    try
+                    {
+                        await errorInterceptor.OnErrorAsync(context, ex);
+                    }
+                    catch (Exception errorHandlerEx)
+                    {
+                        // Error handler threw an exception - log but don't let it break the pipeline
+                        // In production code, this should be logged to a proper logger
+                        System.Diagnostics.Debug.WriteLine(
+                            $"Error interceptor {interceptor.GetType().Name} threw exception: {errorHandlerEx}");
+                    }
+                }
             }
 
-            // Re-throw the exception
+            // Re-throw the original exception
             throw;
         }
     }
@@ -108,6 +165,9 @@ public class RequestPipeline
         RequestContext context,
         Func<RequestContext, Task> executor)
     {
+        if (executor == null)
+            throw new ArgumentNullException(nameof(executor));
+
         await ExecuteAsync<object?>(context, async ctx =>
         {
             await executor(ctx);
