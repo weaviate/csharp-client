@@ -12,6 +12,11 @@ namespace Weaviate.Client.Request.Interceptors;
 /// </summary>
 public class DebugInterceptor : RequestInterceptorBase
 {
+    /// <summary>
+    /// Maximum depth for JSON serialization when capturing debug information.
+    /// </summary>
+    private const int MaxSerializationDepth = 5;
+
     private readonly Dictionary<IWeaviateRequest, RequestDebugInfo> _debugInfo = new();
     private readonly Action<RequestDebugInfo>? _onRequestComplete;
 
@@ -85,7 +90,7 @@ public class DebugInterceptor : RequestInterceptorBase
                 info.ResponseDetails = JsonSerializer.Serialize(response, new JsonSerializerOptions
                 {
                     WriteIndented = true,
-                    MaxDepth = 5
+                    MaxDepth = MaxSerializationDepth
                 });
             }
             catch (Exception ex)

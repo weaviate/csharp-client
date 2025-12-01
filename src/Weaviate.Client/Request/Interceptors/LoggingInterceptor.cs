@@ -10,6 +10,16 @@ namespace Weaviate.Client.Request.Interceptors;
 /// </summary>
 public class LoggingInterceptor : RequestInterceptorBase
 {
+    /// <summary>
+    /// Maximum depth for JSON serialization to avoid excessive logging.
+    /// </summary>
+    private const int MaxSerializationDepth = 3;
+
+    /// <summary>
+    /// Maximum length of response string to log before truncating.
+    /// </summary>
+    private const int MaxResponseLength = 200;
+
     private readonly ILogger? _logger;
     private readonly Action<string>? _logAction;
     private readonly LogLevel _logLevel;
@@ -81,11 +91,11 @@ public class LoggingInterceptor : RequestInterceptorBase
                     var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
                     {
                         WriteIndented = false,
-                        MaxDepth = 3 // Limit depth to avoid huge logs
+                        MaxDepth = MaxSerializationDepth
                     });
 
-                    if (json.Length > 200)
-                        message += $"\n  Response: {json.Substring(0, 200)}...";
+                    if (json.Length > MaxResponseLength)
+                        message += $"\n  Response: {json.Substring(0, MaxResponseLength)}...";
                     else
                         message += $"\n  Response: {json}";
                 }
