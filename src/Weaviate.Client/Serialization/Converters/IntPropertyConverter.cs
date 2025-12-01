@@ -27,6 +27,12 @@ public class IntPropertyConverter : PropertyConverterBase
         if (value is null)
             return null;
 
+        // Handle enum types - convert to their underlying numeric value
+        if (value is System.Enum enumValue)
+        {
+            return Convert.ToInt64(enumValue);
+        }
+
         // Always convert to long for consistency with Weaviate int type
         return Convert.ToInt64(value);
     }
@@ -51,6 +57,13 @@ public class IntPropertyConverter : PropertyConverterBase
             return null;
 
         var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+        // Handle enum types
+        if (IsEnumType(targetType))
+        {
+            return ConvertNumberToEnum(value, targetType);
+        }
+
         var longValue = Convert.ToInt64(value);
 
         if (underlying == typeof(int))
@@ -79,6 +92,12 @@ public class IntPropertyConverter : PropertyConverterBase
 
         var longValue = (long)value.NumberValue;
         var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+        // Handle enum types
+        if (IsEnumType(targetType))
+        {
+            return ConvertNumberToEnum((int)longValue, targetType);
+        }
 
         if (underlying == typeof(int))
             return (int)longValue;
