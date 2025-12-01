@@ -166,7 +166,15 @@ public class TypeValidator
         var schemaDataType = schemaProp.DataType[0]; // Primary type
 
         // Compare expected vs actual data types
-        if (!AreTypesCompatible(expectedDataType, schemaDataType))
+        var isEnum = (csProperty.PropertyType.IsEnum);
+        var isEnumArray =
+            csProperty.PropertyType.IsArray
+            && csProperty.PropertyType.GetElementType()?.IsEnum == true;
+        var enumIntCompatible =
+            (isEnum && schemaDataType == DataType.Int)
+            || (isEnumArray && schemaDataType == DataType.IntArray);
+
+        if (!AreTypesCompatible(expectedDataType, schemaDataType) && !enumIntCompatible)
         {
             // Check if it's an array mismatch specifically
             var isArrayMismatch =

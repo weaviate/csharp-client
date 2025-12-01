@@ -66,6 +66,12 @@ internal class PropertyHelper
             return DataType.TextArray; // Assuming you have array-specific methods
         }
 
+        // Enums serialize as text by default (EnumMember or name)
+        if (elementType.IsEnum)
+        {
+            return DataType.TextArray;
+        }
+
         var tc = Type.GetTypeCode(elementType);
 
         // Handle primitive collection element types
@@ -116,6 +122,12 @@ internal class PropertyHelper
         // String must be handled early as it is also IEnumerable<char>,
         // which would be mistaken for a collection type.
         if (actualType == typeof(String))
+        {
+            return DataType.Text;
+        }
+
+        // Enums serialize as text (EnumMember or name)
+        if (actualType.IsEnum)
         {
             return DataType.Text;
         }
