@@ -4,10 +4,9 @@
     <DataCollectors>
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
-          <Exclude>
-            <Filter>[Weaviate.Client]Weaviate.Client.Rest.Dto.*</Filter>
-            <Filter>[Weaviate.Client]Weaviate.Client.Grpc.Protobuf.*</Filter>
-          </Exclude>
+          <Format>json,cobertura,lcov</Format>
+          <Exclude>[Weaviate.Client]Weaviate.Client.Rest.Dto.*,[Weaviate.Client]Weaviate.Client.Grpc.Protobuf.V1.*</Exclude>
+          <ExcludeByFile>**/Dto/*.g.cs,**/obj/Debug/**/gRPC/proto/v1/*.cs</ExcludeByFile>
         </Configuration>
       </DataCollector>
     </DataCollectors>

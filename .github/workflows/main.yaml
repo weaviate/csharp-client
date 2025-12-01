@@ -123,7 +123,8 @@ jobs:
               --filter "FullyQualifiedName~Weaviate.Client.Tests.Unit" \
               --logger "trx;LogFileName=test-unit-results.trx" \
               --collect:"XPlat Code Coverage" \
-              --results-directory ./test-results
+              --results-directory ./test-results \
+              --settings coverlet.runsettings
           fi
 
       - name: Upload test results
@@ -194,7 +195,7 @@ jobs:
           reportgenerator \
             -reports:"./all-coverage/**/coverage.cobertura.xml" \
             -targetdir:"./coveragereport" \
-            -reporttypes:"Html;MarkdownSummary;Cobertura" \
+            -reporttypes:"Html;HtmlInline_AzurePipelines;MarkdownSummaryGithub;Cobertura" \
             -title:"Weaviate C# Client Coverage"
 
       - name: Upload HTML coverage report
@@ -202,7 +203,7 @@ jobs:
         with:
           name: coverage-report-html
           path: ./coveragereport
-          retention-days: 30
+          retention-days: 7
 
       - name: Add coverage to PR comment
         uses: marocchino/sticky-pull-request-comment@v2
