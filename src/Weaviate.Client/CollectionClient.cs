@@ -88,7 +88,8 @@ public partial class CollectionClient
                 includeVectors: includeVectors,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
-                cancellationToken: cancellationToken
+                cancellationToken: cancellationToken,
+                tenant: Tenant
             );
 
             if (!page.Objects.Any())

@@ -2,8 +2,9 @@
 
 set -eou pipefail
 
+DEFAULT_VERSION="1.34.0"
 MIN_SUPPORTED="1.31.0"
-REQUESTED_VERSION="${1:-$MIN_SUPPORTED}"
+REQUESTED_VERSION="${1:-$DEFAULT_VERSION}"
 
 # Compare versions; ensure REQUESTED_VERSION >= MIN_SUPPORTED
 if [[ $(printf '%s\n' "$MIN_SUPPORTED" "$REQUESTED_VERSION" | sort -V | head -n1) != "$MIN_SUPPORTED" ]]; then
