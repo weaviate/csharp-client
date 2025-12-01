@@ -20,12 +20,12 @@ public class DataClient
 
     /// <summary>
     /// Creates a cancellation token with data-specific timeout configuration.
-    /// Uses InsertTimeout if configured, falls back to DefaultTimeout, then to WeaviateDefaults.InsertTimeout.
+    /// Uses DataTimeout if configured, falls back to DefaultTimeout, then to WeaviateDefaults.DataTimeout.
     /// </summary>
     private CancellationToken CreateTimeoutCancellationToken(CancellationToken userToken = default)
     {
         var effectiveTimeout =
-            _client.InsertTimeout ?? _client.DefaultTimeout ?? WeaviateDefaults.InsertTimeout;
+            _client.DataTimeout ?? _client.DefaultTimeout ?? WeaviateDefaults.DataTimeout;
         return TimeoutHelper.GetCancellationToken(effectiveTimeout, userToken);
     }
 
