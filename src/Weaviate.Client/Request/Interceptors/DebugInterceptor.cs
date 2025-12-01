@@ -12,14 +12,14 @@ namespace Weaviate.Client.Request.Interceptors;
 /// </summary>
 public class DebugInterceptor : RequestInterceptorBase
 {
-    private readonly Dictionary<IWeaviateRequest, DebugInfo> _debugInfo = new();
-    private readonly Action<DebugInfo>? _onRequestComplete;
+    private readonly Dictionary<IWeaviateRequest, RequestDebugInfo> _debugInfo = new();
+    private readonly Action<RequestDebugInfo>? _onRequestComplete;
 
     /// <summary>
     /// Creates a debug interceptor.
     /// </summary>
     /// <param name="onRequestComplete">Optional callback invoked when a request completes</param>
-    public DebugInterceptor(Action<DebugInfo>? onRequestComplete = null)
+    public DebugInterceptor(Action<RequestDebugInfo>? onRequestComplete = null)
     {
         _onRequestComplete = onRequestComplete;
     }
@@ -27,7 +27,7 @@ public class DebugInterceptor : RequestInterceptorBase
     /// <summary>
     /// Gets all captured debug information.
     /// </summary>
-    public IReadOnlyDictionary<IWeaviateRequest, DebugInfo> CapturedRequests => _debugInfo;
+    public IReadOnlyDictionary<IWeaviateRequest, RequestDebugInfo> CapturedRequests => _debugInfo;
 
     /// <summary>
     /// Clears all captured debug information.
@@ -39,7 +39,7 @@ public class DebugInterceptor : RequestInterceptorBase
 
     public override Task<RequestContext> OnBeforeSendAsync(RequestContext context)
     {
-        var info = new DebugInfo
+        var info = new RequestDebugInfo
         {
             Request = context.Request,
             OperationName = context.Request.OperationName,
@@ -119,7 +119,7 @@ public class DebugInterceptor : RequestInterceptorBase
 /// <summary>
 /// Debug information captured for a request.
 /// </summary>
-public class DebugInfo
+public class RequestDebugInfo
 {
     public IWeaviateRequest? Request { get; init; }
     public string OperationName { get; init; } = string.Empty;

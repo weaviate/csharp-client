@@ -16,14 +16,14 @@ namespace Weaviate.Client.Request.Transport;
 /// </summary>
 public class MockRestTransport : IRestTransport
 {
-    private readonly List<CapturedRequest> _capturedRequests = new();
-    private readonly List<ResponseRule> _responseRules = new();
+    private readonly List<CapturedRestRequest> _capturedRequests = new();
+    private readonly List<RestResponseRule> _responseRules = new();
     private Func<HttpRequestDetails, HttpResponseMessage>? _defaultResponseFactory;
 
     /// <summary>
     /// All requests that have been captured.
     /// </summary>
-    public IReadOnlyList<CapturedRequest> CapturedRequests => _capturedRequests.AsReadOnly();
+    public IReadOnlyList<CapturedRestRequest> CapturedRequests => _capturedRequests.AsReadOnly();
 
     /// <summary>
     /// Clears all captured requests.
@@ -54,7 +54,7 @@ public class MockRestTransport : IRestTransport
     /// </summary>
     public void AddResponseRule(Func<HttpRequestDetails, bool> matcher, Func<HttpRequestDetails, HttpResponseMessage> responseFactory)
     {
-        _responseRules.Add(new ResponseRule
+        _responseRules.Add(new RestResponseRule
         {
             Matcher = matcher,
             ResponseFactory = responseFactory
@@ -86,7 +86,7 @@ public class MockRestTransport : IRestTransport
     public Task<HttpResponseMessage> SendAsync(HttpRequestDetails request, CancellationToken cancellationToken = default)
     {
         // Capture the request
-        _capturedRequests.Add(new CapturedRequest
+        _capturedRequests.Add(new CapturedRestRequest
         {
             Request = request,
             Timestamp = DateTime.UtcNow
@@ -154,7 +154,7 @@ public class MockRestTransport : IRestTransport
     /// <summary>
     /// Gets requests matching a predicate.
     /// </summary>
-    public IEnumerable<CapturedRequest> GetRequests(Func<HttpRequestDetails, bool> predicate)
+    public IEnumerable<CapturedRestRequest> GetRequests(Func<HttpRequestDetails, bool> predicate)
     {
         return _capturedRequests.Where(cr => predicate(cr.Request));
     }
@@ -162,7 +162,7 @@ public class MockRestTransport : IRestTransport
     /// <summary>
     /// Gets requests for a specific operation.
     /// </summary>
-    public IEnumerable<CapturedRequest> GetRequestsForOperation(string operationName)
+    public IEnumerable<CapturedRestRequest> GetRequestsForOperation(string operationName)
     {
         return GetRequests(req => req.LogicalRequest?.OperationName == operationName);
     }
@@ -170,12 +170,12 @@ public class MockRestTransport : IRestTransport
     /// <summary>
     /// Gets requests for a specific HTTP method and URI pattern.
     /// </summary>
-    public IEnumerable<CapturedRequest> GetRequests(HttpMethod method, string uriPattern)
+    public IEnumerable<CapturedRestRequest> GetRequests(HttpMethod method, string uriPattern)
     {
         return GetRequests(req => req.Method == method && req.Uri.Contains(uriPattern));
     }
 
-    private class ResponseRule
+    private class RestResponseRule
     {
         public Func<HttpRequestDetails, bool> Matcher { get; init; } = null!;
         public Func<HttpRequestDetails, HttpResponseMessage> ResponseFactory { get; init; } = null!;
@@ -183,9 +183,9 @@ public class MockRestTransport : IRestTransport
 }
 
 /// <summary>
-/// Represents a captured HTTP request.
+/// Represents a captured REST/HTTP request.
 /// </summary>
-public class CapturedRequest
+public class CapturedRestRequest
 {
     public HttpRequestDetails Request { get; init; } = null!;
     public DateTime Timestamp { get; init; }
