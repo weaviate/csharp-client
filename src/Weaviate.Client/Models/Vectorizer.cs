@@ -33,6 +33,23 @@ public static partial class Vectorizer
         public double[]? TextFields { get; set; } = null;
     }
 
+    public partial record Multi2VecAWSWeights
+    {
+        public double[]? ImageFields { get; set; } = null;
+        public double[]? TextFields { get; set; } = null;
+    }
+
+    public partial record Multi2VecAWS
+    {
+        public string? Region { get; set; }
+        public string? Model { get; set; } = null;
+        public int? Dimensions { get; set; } = null;
+        public string[]? ImageFields { get; set; } = null;
+        public string[]? TextFields { get; set; } = null;
+        public bool? VectorizeCollectionName { get; set; } = null;
+        public Multi2VecAWSWeights? Weights { get; set; } = null;
+    }
+
     public partial record Multi2VecClip
     {
         public string[]? ImageFields { get; set; } = null;
