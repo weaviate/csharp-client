@@ -50,7 +50,7 @@ internal partial class WeaviateGrpcClient
             Vectors = { includeVectors?.Vectors ?? [] },
         };
 
-        var request = new Grpc.Protobuf.V1.SearchRequest()
+        var request = new V1.SearchRequest()
         {
             Collection = collection,
             Filters = filters?.InternalFilter,
@@ -143,14 +143,9 @@ internal partial class WeaviateGrpcClient
         return request;
     }
 
-    private static Grpc.Protobuf.V1.GenerativeProvider GetGenerativeProvider(
-        Models.GenerativeProvider provider
-    )
+    private static V1.GenerativeProvider GetGenerativeProvider(Models.GenerativeProvider provider)
     {
-        var result = new Grpc.Protobuf.V1.GenerativeProvider
-        {
-            ReturnMetadata = provider.ReturnMetadata,
-        };
+        var result = new V1.GenerativeProvider { ReturnMetadata = provider.ReturnMetadata };
 
         switch (provider)
         {
@@ -379,14 +374,14 @@ internal partial class WeaviateGrpcClient
         return result;
     }
 
-    private static Grpc.Protobuf.V1.ConsistencyLevel MapConsistencyLevel(ConsistencyLevels value)
+    private static V1.ConsistencyLevel MapConsistencyLevel(ConsistencyLevels value)
     {
         return value switch
         {
-            ConsistencyLevels.Unspecified => Grpc.Protobuf.V1.ConsistencyLevel.Unspecified,
-            ConsistencyLevels.All => Grpc.Protobuf.V1.ConsistencyLevel.All,
-            ConsistencyLevels.One => Grpc.Protobuf.V1.ConsistencyLevel.One,
-            ConsistencyLevels.Quorum => Grpc.Protobuf.V1.ConsistencyLevel.Quorum,
+            ConsistencyLevels.Unspecified => V1.ConsistencyLevel.Unspecified,
+            ConsistencyLevels.All => V1.ConsistencyLevel.All,
+            ConsistencyLevels.One => V1.ConsistencyLevel.One,
+            ConsistencyLevels.Quorum => V1.ConsistencyLevel.Quorum,
             _ => throw new NotSupportedException($"Consistency level {value} is not supported."),
         };
     }
@@ -413,12 +408,12 @@ internal partial class WeaviateGrpcClient
             // This also covers the case where no target vector is specified and only one vector is provided
             // In this case, we assume the single provided vector is the target
             vectors = vector
-                .Select(v => new Grpc.Protobuf.V1.Vectors
+                .Select(v => new V1.Vectors
                 {
                     Name = v.Key,
                     Type = v.Value.IsMultiVector
-                        ? Grpc.Protobuf.V1.Vectors.Types.VectorType.MultiFp32
-                        : Grpc.Protobuf.V1.Vectors.Types.VectorType.SingleFp32,
+                        ? V1.Vectors.Types.VectorType.MultiFp32
+                        : V1.Vectors.Types.VectorType.SingleFp32,
                     VectorBytes = v.Value.ToByteString(),
                 })
                 .ToList();
@@ -444,17 +439,17 @@ internal partial class WeaviateGrpcClient
                                 : vector.Values.ElementAt(idx),
                         }
                 )
-                .Select(v => new Grpc.Protobuf.V1.VectorForTarget()
+                .Select(v => new V1.VectorForTarget()
                 {
                     Name = v.Name,
                     Vectors =
                     {
-                        new Grpc.Protobuf.V1.Vectors
+                        new V1.Vectors
                         {
                             Name = v.Name,
                             Type = v.Vector.IsMultiVector
-                                ? Grpc.Protobuf.V1.Vectors.Types.VectorType.MultiFp32
-                                : Grpc.Protobuf.V1.Vectors.Types.VectorType.SingleFp32,
+                                ? V1.Vectors.Types.VectorType.MultiFp32
+                                : V1.Vectors.Types.VectorType.SingleFp32,
                             VectorBytes = v.Vector.ToByteString(),
                         },
                     },
@@ -464,12 +459,12 @@ internal partial class WeaviateGrpcClient
         else
         {
             vectors = vector
-                .Select(v => new Grpc.Protobuf.V1.Vectors
+                .Select(v => new V1.Vectors
                 {
                     Name = v.Key,
                     Type = v.Value.IsMultiVector
-                        ? Grpc.Protobuf.V1.Vectors.Types.VectorType.MultiFp32
-                        : Grpc.Protobuf.V1.Vectors.Types.VectorType.SingleFp32,
+                        ? V1.Vectors.Types.VectorType.MultiFp32
+                        : V1.Vectors.Types.VectorType.SingleFp32,
                     VectorBytes = v.Value.ToByteString(),
                 })
                 .ToList();
@@ -478,7 +473,7 @@ internal partial class WeaviateGrpcClient
         return (targets, vectorForTarget, vectors);
     }
 
-    private static Grpc.Protobuf.V1.NearTextSearch BuildNearText(
+    private static V1.NearTextSearch BuildNearText(
         string[] query,
         double? distance,
         double? certainty,
@@ -488,13 +483,13 @@ internal partial class WeaviateGrpcClient
     )
     {
         var (targets, _, _) = BuildTargetVector(targetVector, null);
-        var nearText = new Grpc.Protobuf.V1.NearTextSearch { Query = { query }, Targets = targets };
+        var nearText = new V1.NearTextSearch { Query = { query }, Targets = targets };
 
         if (moveTo is not null)
         {
             var uuids = moveTo.Objects is null ? [] : moveTo.Objects.Select(x => x.ToString());
             var concepts = moveTo.Concepts is null ? new string[] { } : moveTo.Concepts;
-            nearText.MoveTo = new Grpc.Protobuf.V1.NearTextSearch.Types.Move
+            nearText.MoveTo = new V1.NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
                 Concepts = { concepts },
@@ -506,7 +501,7 @@ internal partial class WeaviateGrpcClient
         {
             var uuids = moveAway.Objects is null ? [] : moveAway.Objects.Select(x => x.ToString());
             var concepts = moveAway.Concepts is null ? new string[] { } : moveAway.Concepts;
-            nearText.MoveAway = new Grpc.Protobuf.V1.NearTextSearch.Types.Move
+            nearText.MoveAway = new V1.NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
                 Concepts = { concepts },
@@ -527,14 +522,14 @@ internal partial class WeaviateGrpcClient
         return nearText;
     }
 
-    private static Grpc.Protobuf.V1.NearVector BuildNearVector(
+    private static V1.NearVector BuildNearVector(
         Models.Vectors vector,
         double? certainty,
         double? distance,
         TargetVectors? targetVector
     )
     {
-        Grpc.Protobuf.V1.NearVector nearVector = new();
+        V1.NearVector nearVector = new();
 
         if (distance.HasValue)
         {
@@ -565,7 +560,7 @@ internal partial class WeaviateGrpcClient
     }
 
     private static void BuildBM25(
-        SearchRequest request,
+        V1.SearchRequest request,
         string query,
         string[]? properties = null,
         BM25Operator? searchOperator = null
@@ -593,7 +588,7 @@ internal partial class WeaviateGrpcClient
     }
 
     private static void BuildHybrid(
-        Grpc.Protobuf.V1.SearchRequest request,
+        V1.SearchRequest request,
         string? query = null,
         float? alpha = null,
         Models.Vectors? vector = null,
