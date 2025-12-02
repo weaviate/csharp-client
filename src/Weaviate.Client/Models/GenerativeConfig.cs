@@ -148,7 +148,6 @@ public static class GenerativeConfig
         public string? Model { get; set; }
         public string? ReasoningEffort { get; set; }
         public string? Verbosity { get; set; }
-
     }
 
     public record AzureOpenAI : OpenAIBase
