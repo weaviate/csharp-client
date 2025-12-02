@@ -28,4 +28,18 @@ tar --strip-components=3 -C "${out}" -xvf "${dir}/weaviate.tar.gz" ${files}
 
 rm "${dir}/weaviate.tar.gz"
 
+for f in "${out}"/v1/*.proto; do
+    if ! grep -q 'option csharp_namespace = "Weaviate.Client.Grpc.Protobuf.V1";' "$f"; then
+        # Find line after syntax and package
+        syntax_line=$(grep -n '^syntax' "$f" | cut -d: -f1)
+        package_line=$(grep -n '^package' "$f" | cut -d: -f1)
+        insert_line=$((package_line > 0 ? package_line : syntax_line))
+        insert_line=$((insert_line+1))
+        tmpfile=$(mktemp)
+        awk -v n=$insert_line 'NR==n{print "option csharp_namespace = \"Weaviate.Client.Grpc.Protobuf.V1\";"} 1' "$f" > "$tmpfile"
+        mv "$tmpfile" "$f"
+        echo "Added csharp_namespace option to $f"
+    fi
+done
+
 echo "done"

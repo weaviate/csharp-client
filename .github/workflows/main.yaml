@@ -125,7 +125,8 @@ jobs:
               --filter "FullyQualifiedName~Weaviate.Client.Tests.Unit" \
               --logger "trx;LogFileName=test-unit-results.trx" \
               --collect:"XPlat Code Coverage" \
-              --results-directory ./test-results
+              --results-directory ./test-results \
+              --settings coverlet.runsettings
           fi
 
       - name: Upload test results
@@ -157,7 +158,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ["1.31.16", "1.32.11", "1.33.0", "1.34.0-rc.0"]
+        version: ["1.31.20", "1.32.17", "1.33.5", "1.34.0"]
     uses: ./.github/workflows/test-on-weaviate-version.yml
     secrets: inherit
     with:
@@ -199,7 +200,7 @@ jobs:
           reportgenerator \
             -reports:"./all-coverage/**/coverage.cobertura.xml" \
             -targetdir:"./coveragereport" \
-            -reporttypes:"Html;MarkdownSummary;Cobertura" \
+            -reporttypes:"Html;HtmlInline_AzurePipelines;MarkdownSummaryGithub;Cobertura" \
             -title:"Weaviate C# Client Coverage"
 
       - name: Upload HTML coverage report
@@ -207,14 +208,14 @@ jobs:
         with:
           name: coverage-report-html
           path: ./coveragereport
-          retention-days: 30
+          retention-days: 7
 
       - name: Add coverage to PR comment
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event_name == 'pull_request'
         with:
           header: coverage
-          path: ./coveragereport/Summary.md
+          path: ./coveragereport/SummaryGithub.md
 
       - name: Download all test results
         uses: actions/download-artifact@v4

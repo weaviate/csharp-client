@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package weaviate.v1;
+option csharp_namespace = "Weaviate.Client.Grpc.Protobuf.V1";
 
 import "google/protobuf/struct.proto";
 

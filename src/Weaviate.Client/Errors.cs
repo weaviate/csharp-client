@@ -1,4 +1,4 @@
-using Weaviate.Client.gRPC;
+using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;

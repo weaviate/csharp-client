@@ -1,4 +1,4 @@
-namespace Weaviate.V1;
+namespace Weaviate.Client.Grpc.Protobuf.V1;
 
 internal partial class AggregateReply
 {
