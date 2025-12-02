@@ -358,4 +358,124 @@ public class TypeValidatorTests
     {
         public string? Name { get; set; }
     }
+
+    // Models for compatibility tests
+    private class ProductFloat
+    {
+        public float Price { get; set; }
+    }
+
+    private class ProductDecimal
+    {
+        public decimal Price { get; set; }
+    }
+
+    private class OrderLong
+    {
+        public long Quantity { get; set; }
+    }
+
+    private enum TaskStatusEnum
+    {
+        Pending,
+        InProgress,
+        Completed,
+    }
+
+    private class UserTask
+    {
+        public TaskStatusEnum Status { get; set; }
+    }
+
+    [Theory]
+    [InlineData(typeof(ProductFloat))]
+    [InlineData(typeof(ProductDecimal))]
+    public void ValidateType_NumberCompatibility_IsValid(Type type)
+    {
+        // Arrange
+        var schema = new CollectionConfig
+        {
+            Name = "Product",
+            Properties = [new Property { Name = "price", DataType = [DataType.Number] }],
+        };
+        var validator = TypeValidator.Default;
+
+        // Act
+        var result = validator.ValidateType(type, schema);
+
+        // Assert
+        Assert.True(result.IsValid);
+        Assert.Empty(result.Errors);
+    }
+
+    [Fact]
+    public void ValidateType_IntCompatibility_IsValid()
+    {
+        // Arrange
+        var schema = new CollectionConfig
+        {
+            Name = "Order",
+            Properties = [new Property { Name = "quantity", DataType = [DataType.Int] }],
+        };
+        var validator = TypeValidator.Default;
+
+        // Act
+        var result = validator.ValidateType<OrderLong>(schema);
+
+        // Assert
+        Assert.True(result.IsValid);
+        Assert.Empty(result.Errors);
+    }
+
+    [Fact]
+    public void ValidateType_EnumCompatibility_IsValid()
+    {
+        // Arrange
+        var schema = new CollectionConfig
+        {
+            Name = "UserTask",
+            Properties = new[]
+            {
+                new Property
+                {
+                    Name = "status",
+                    DataType = new List<string> { DataType.Text },
+                },
+            },
+        };
+        var validator = TypeValidator.Default;
+
+        // Act
+        var result = validator.ValidateType<UserTask>(schema);
+
+        // Assert
+        Assert.True(result.IsValid);
+        Assert.Empty(result.Errors);
+    }
+
+    [Fact]
+    public void ValidateType_EnumCompatibility_WithInteger_IsValid()
+    {
+        // Arrange
+        var schema = new CollectionConfig
+        {
+            Name = "UserTask",
+            Properties = new[]
+            {
+                new Property
+                {
+                    Name = "status",
+                    DataType = new List<string> { DataType.Int },
+                },
+            },
+        };
+        var validator = TypeValidator.Default;
+
+        // Act
+        var result = validator.ValidateType<UserTask>(schema);
+
+        // Assert
+        Assert.True(result.IsValid);
+        Assert.Empty(result.Errors);
+    }
 }

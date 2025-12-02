@@ -45,10 +45,23 @@ public class TypeValidator
         var errors = new List<ValidationError>();
         var warnings = new List<ValidationWarning>();
 
-        // Get all readable and writable properties from the C# type
-        var typeProperties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.CanRead && p.CanWrite)
-            .ToList();
+        // If type is anonymous, only get readable properties; otherwise, get readable and writable
+        var isAnonymousType =
+            type.IsGenericType
+            && type.Name.Contains("AnonymousType")
+            && (
+                type.Name.StartsWith("<>", StringComparison.OrdinalIgnoreCase)
+                || type.Name.StartsWith("VB$", StringComparison.OrdinalIgnoreCase)
+            )
+            && (type.Attributes & TypeAttributes.NotPublic) == TypeAttributes.NotPublic;
+
+        var typeProperties = isAnonymousType
+            ? type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.CanRead)
+                .ToList()
+            : type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.CanRead && p.CanWrite)
+                .ToList();
 
         // Validate each C# property against schema
         foreach (var prop in typeProperties)
@@ -153,7 +166,15 @@ public class TypeValidator
         var schemaDataType = schemaProp.DataType[0]; // Primary type
 
         // Compare expected vs actual data types
-        if (!AreTypesCompatible(expectedDataType, schemaDataType))
+        var isEnum = (csProperty.PropertyType.IsEnum);
+        var isEnumArray =
+            csProperty.PropertyType.IsArray
+            && csProperty.PropertyType.GetElementType()?.IsEnum == true;
+        var enumIntCompatible =
+            (isEnum && schemaDataType == DataType.Int)
+            || (isEnumArray && schemaDataType == DataType.IntArray);
+
+        if (!AreTypesCompatible(expectedDataType, schemaDataType) && !enumIntCompatible)
         {
             // Check if it's an array mismatch specifically
             var isArrayMismatch =

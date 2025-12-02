@@ -16,6 +16,7 @@ public record CollectionsClient
         CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         var response = await _client.RestClient.CollectionCreate(
             collection.ToDto(),
             cancellationToken
@@ -24,10 +25,29 @@ public record CollectionsClient
         return new CollectionClient(_client, response.ToModel());
     }
 
+    public async Task<Typed.TypedCollectionClient<T>> Create<T>(
+        Models.CollectionConfig collection,
+        bool validateType = false,
+        CancellationToken cancellationToken = default
+    )
+        where T : class, new()
+    {
+        await _client.EnsureInitializedAsync();
+        var response = await _client.RestClient.CollectionCreate(
+            collection.ToDto(),
+            cancellationToken
+        );
+
+        var innerClient = new CollectionClient(_client, response.ToModel());
+
+        return await innerClient.AsTyped<T>(validateType, cancellationToken);
+    }
+
     public async Task Delete(string collectionName, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(collectionName);
 
+        await _client.EnsureInitializedAsync();
         await _client.RestClient.CollectionDelete(collectionName, cancellationToken);
     }
 
@@ -45,6 +65,7 @@ public record CollectionsClient
         CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         return await _client.RestClient.CollectionExists(collectionName, cancellationToken);
     }
 
@@ -53,6 +74,7 @@ public record CollectionsClient
         CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         var response = await _client.RestClient.CollectionGet(collectionName, cancellationToken);
 
         if (response is null)
@@ -68,6 +90,7 @@ public record CollectionsClient
             CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         var response = await _client.RestClient.CollectionList(cancellationToken);
 
         foreach (var c in response?.Classes ?? Enumerable.Empty<Rest.Dto.Class>())
@@ -79,5 +102,31 @@ public record CollectionsClient
     public CollectionClient Use(string name)
     {
         return new CollectionClient(_client, name);
+    }
+
+    /// <summary>
+    /// Creates a strongly-typed collection client for accessing a specific collection.
+    /// The collection client provides type-safe data and query operations.
+    /// </summary>
+    /// <typeparam name="T">The C# type representing objects in this collection.</typeparam>
+    /// <param name="name">The name of the collection.</param>
+    /// <returns>A TypedCollectionClient that provides strongly-typed operations.</returns>
+    public Typed.TypedCollectionClient<T> Use<T>(string name)
+        where T : class, new()
+    {
+        return Use(name).AsTyped<T>();
+    }
+
+    /// <summary>
+    /// Creates a strongly-typed collection client for accessing a specific collection.
+    /// The collection client provides type-safe data and query operations.
+    /// </summary>
+    /// <typeparam name="T">The C# type representing objects in this collection.</typeparam>
+    /// <param name="name">The name of the collection.</param>
+    /// <returns>A TypedCollectionClient that provides strongly-typed operations.</returns>
+    public async Task<Typed.TypedCollectionClient<T>> Use<T>(string name, bool validateType)
+        where T : class, new()
+    {
+        return await Use(name).AsTyped<T>(validateType: validateType);
     }
 }

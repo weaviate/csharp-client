@@ -79,12 +79,7 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 alpha: 0,
                 query: "name",
-                groupBy: new GroupByRequest()
-                {
-                    PropertyName = "name",
-                    ObjectsPerGroup = 1,
-                    NumberOfGroups = 2,
-                },
+                groupBy: new GroupByRequest("name") { ObjectsPerGroup = 1, NumberOfGroups = 2 },
                 includeVectors: true,
                 cancellationToken: TestContext.Current.CancellationToken
             )
