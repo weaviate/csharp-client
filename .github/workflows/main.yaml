@@ -152,6 +152,7 @@ jobs:
     name: Test on Weaviate v${{ matrix.version }}
     permissions:
       contents: read
+      checks: write
     needs: [unit-tests, setup]
     strategy:
       fail-fast: false
