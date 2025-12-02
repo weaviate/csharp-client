@@ -22,6 +22,7 @@ public class AliasClient
     /// <returns>The alias with its target collection</returns>
     public async Task<Alias?> Get(string aliasName, CancellationToken cancellationToken = default)
     {
+        await _client.EnsureInitializedAsync();
         var dto = await _client.RestClient.AliasGet(aliasName, cancellationToken);
         return dto != null ? ToModel(dto) : null;
     }
@@ -34,6 +35,7 @@ public class AliasClient
     /// <returns>The created alias</returns>
     public async Task<Alias> Add(Alias alias, CancellationToken cancellationToken = default)
     {
+        await _client.EnsureInitializedAsync();
         var dto = ToDto(alias);
         var result = await _client.RestClient.CollectionAliasesPost(dto, cancellationToken);
         return ToModel(result);
@@ -50,6 +52,7 @@ public class AliasClient
         CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         var dtos = await _client.RestClient.CollectionAliasesGet(collectionName, cancellationToken);
         return dtos.Select(ToModel);
     }
@@ -67,6 +70,7 @@ public class AliasClient
         CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         var dto = await _client.RestClient.AliasPut(aliasName, targetCollection, cancellationToken);
         return ToModel(dto);
     }
@@ -78,6 +82,7 @@ public class AliasClient
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     public async Task<bool> Delete(string aliasName, CancellationToken cancellationToken = default)
     {
+        await _client.EnsureInitializedAsync();
         return await _client.RestClient.AliasDelete(aliasName, cancellationToken);
     }
 

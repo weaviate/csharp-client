@@ -61,6 +61,7 @@ public partial class CollectionClient
     /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
     public async Task Delete(CancellationToken cancellationToken = default)
     {
+        await _client.EnsureInitializedAsync();
         await _client.RestClient.CollectionDelete(Name, cancellationToken);
     }
 
@@ -74,6 +75,7 @@ public partial class CollectionClient
         [EnumeratorCancellation] CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         Guid? cursor = after;
 
         while (true)

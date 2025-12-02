@@ -4,11 +4,12 @@ namespace Weaviate.Client;
 
 public class ClusterClient
 {
-    private readonly Rest.WeaviateRestClient _client;
+    private readonly WeaviateClient _client;
+    private Rest.WeaviateRestClient _restClient => _client.RestClient;
     private NodesClient? _nodes;
     private ReplicationsClient? _replications;
 
-    internal ClusterClient(Rest.WeaviateRestClient client)
+    internal ClusterClient(WeaviateClient client)
     {
         _client = client;
     }
@@ -16,12 +17,12 @@ public class ClusterClient
     /// <summary>
     /// Access to cluster nodes management
     /// </summary>
-    public NodesClient Nodes => _nodes ??= new NodesClient(_client);
+    public NodesClient Nodes => _nodes ??= new NodesClient(_restClient);
 
     /// <summary>
     /// Access to replication operations management
     /// </summary>
-    public ReplicationsClient Replications => _replications ??= new ReplicationsClient(_client);
+    public ReplicationsClient Replications => _replications ??= new ReplicationsClient(_restClient);
 
     /// <summary>
     /// Start a replication operation asynchronously.
@@ -35,6 +36,7 @@ public class ClusterClient
         CancellationToken cancellationToken = default
     )
     {
+        await _client.EnsureInitializedAsync();
         var dto = new Rest.Dto.ReplicationReplicateReplicaRequest
         {
             Collection = request.Collection,
@@ -47,11 +49,11 @@ public class ClusterClient
                     : Rest.Dto.ReplicationReplicateReplicaRequestType.COPY,
         };
 
-        var response = await _client.ReplicateAsync(dto);
+        var response = await _restClient.ReplicateAsync(dto);
         var operationId = response.Id;
 
         // Fetch initial status
-        var initialDetails = await _client.ReplicationDetailsAsync(
+        var initialDetails = await _restClient.ReplicationDetailsAsync(
             operationId,
             cancellationToken: cancellationToken
         );
@@ -68,7 +70,7 @@ public class ClusterClient
             initialOperation,
             async (ct) =>
             {
-                var details = await _client.ReplicationDetailsAsync(
+                var details = await _restClient.ReplicationDetailsAsync(
                     operationId,
                     cancellationToken: ct == default ? cancellationToken : ct
                 );
@@ -80,7 +82,7 @@ public class ClusterClient
                     : ReplicationsClient.ToModel(details);
             },
             async (ct) =>
-                await _client.CancelReplicationAsync(
+                await _restClient.CancelReplicationAsync(
                     operationId,
                     ct == default ? cancellationToken : ct
                 )
