@@ -295,6 +295,8 @@ public static partial class Configure
             string service,
             string? endpoint = null,
             string? model = null,
+            string? targetModel = null,
+            string? targetVariant = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
@@ -304,6 +306,8 @@ public static partial class Configure
                     Service = service,
                     Endpoint = endpoint,
                     Model = model,
+                    TargetModel = targetModel,
+                    TargetVariant = targetVariant,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
