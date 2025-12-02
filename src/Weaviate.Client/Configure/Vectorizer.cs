@@ -432,10 +432,14 @@ public static partial class Configure
                 }
             );
 
-        public static VectorConfigBuilder Text2VecModel2Vec(bool? vectorizeCollectionName = null) =>
+        public static VectorConfigBuilder Text2VecModel2Vec(
+            string? inferenceURL = null,
+            bool? vectorizeCollectionName = null
+        ) =>
             new(
                 new Vectorizer.Text2VecModel2Vec
                 {
+                    InferenceURL = inferenceURL,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
