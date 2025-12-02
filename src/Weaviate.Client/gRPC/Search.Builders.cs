@@ -586,13 +586,13 @@ internal partial class WeaviateGrpcClient
         }
         else
         {
-            alpha = 1.0f; // Default alpha if no query is provided
+            // If no query is provided, move the alpha all the way to vector search
+            alpha = 1.0f;
         }
 
-        if (alpha.HasValue)
-        {
-            request.HybridSearch.Alpha = alpha.Value;
-        }
+        alpha ??= 0.7f; // Default alpha if not provided
+
+        request.HybridSearch.Alpha = alpha.Value;
 
         if (vector is not null && nearText is null && nearVector is null)
         {
