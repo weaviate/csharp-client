@@ -358,9 +358,7 @@ internal partial class WeaviateGrpcClient
                     Model = a.Model ?? string.Empty,
                     SystemPrompt = a.SystemPrompt ?? string.Empty,
                     Knowledge =
-                        a.Knowledge != null
-                            ? new V1.TextArray { Values = { a.Knowledge } }
-                            : null,
+                        a.Knowledge != null ? new V1.TextArray { Values = { a.Knowledge } } : null,
                 };
                 SetIfNotNull(v => result.Contextualai.Temperature = (float)v, a.Temperature);
                 SetIfNotNull(v => result.Contextualai.TopP = (float)v, a.TopP);
