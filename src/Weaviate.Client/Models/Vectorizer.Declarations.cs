@@ -298,6 +298,18 @@ public static partial class Vectorizer
     }
 
     /// <summary>
+    /// The configuration for text vectorization using the Morph module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    public partial record Text2VecMorph : VectorizerConfig
+    {
+        public const string IdentifierValue = "text2vec-morph";
+
+        public Text2VecMorph()
+            : base(IdentifierValue) { }
+    }
+
+    /// <summary>
     /// The configuration for text vectorization using the Ollama module.
     /// See the documentation for detailed usage.
     /// </summary>
