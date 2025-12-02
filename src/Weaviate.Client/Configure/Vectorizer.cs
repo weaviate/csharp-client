@@ -160,6 +160,28 @@ public static partial class Configure
                 }
             );
 
+        public static VectorConfigBuilder Multi2VecAWS(
+            string? region = null,
+            string? model = null,
+            int? dimensions = null,
+            string[]? imageFields = null,
+            string[]? textFields = null,
+            bool? vectorizeCollectionName = null,
+            Vectorizer.Multi2VecAWSWeights? weights = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecAWS
+                {
+                    Region = region,
+                    Model = model,
+                    Dimensions = dimensions,
+                    ImageFields = imageFields,
+                    TextFields = textFields,
+                    VectorizeCollectionName = vectorizeCollectionName,
+                    Weights = weights,
+                }
+            );
+
         public static VectorConfigBuilder Multi2VecClip(
             string[]? imageFields = null,
             string? inferenceUrl = null,

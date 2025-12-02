@@ -45,6 +45,18 @@ public static partial class Vectorizer
     /// The configuration for multi-media vectorization using the CLIP module.
     /// See the documentation for detailed usage.
     /// </summary>
+    public partial record Multi2VecAWS : VectorizerConfig
+    {
+        public const string IdentifierValue = "multi2vec-aws";
+
+        public Multi2VecAWS()
+            : base(IdentifierValue) { }
+    }
+
+    /// <summary>
+    /// The configuration for multi-media vectorization using the CLIP module.
+    /// See the documentation for detailed usage.
+    /// </summary>
     public partial record Multi2VecClip : VectorizerConfig
     {
         public const string IdentifierValue = "multi2vec-clip";
