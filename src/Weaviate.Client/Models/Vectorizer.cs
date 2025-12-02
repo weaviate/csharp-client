@@ -190,11 +190,6 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecGpt4All
-    {
-        public bool? VectorizeCollectionName { get; set; } = null;
-    }
-
     public partial record Text2VecHuggingFace
     {
         public string? EndpointURL { get; set; } = null;
