@@ -141,7 +141,7 @@ public partial class WeaviateClient : IDisposable
 
     public TimeSpan? DefaultTimeout => Configuration.DefaultTimeout;
     public TimeSpan? InitTimeout => Configuration.InitTimeout;
-    public TimeSpan? DataTimeout => Configuration.DataTimeout;
+    public TimeSpan? InsertTimeout => Configuration.InsertTimeout;
     public TimeSpan? QueryTimeout => Configuration.QueryTimeout;
 
     /// <summary>

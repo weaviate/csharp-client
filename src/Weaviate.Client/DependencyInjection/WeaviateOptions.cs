@@ -63,7 +63,7 @@ public class WeaviateOptions
     /// <summary>
     /// Timeout for data operations (Insert, Delete, Update, Reference management).
     /// </summary>
-    public TimeSpan? DataTimeout { get; set; }
+    public TimeSpan? InsertTimeout { get; set; }
 
     /// <summary>
     /// Timeout for query/search operations (FetchObjects, NearText, BM25, Hybrid, etc.).
@@ -92,7 +92,7 @@ public class WeaviateOptions
             Credentials: Credentials,
             DefaultTimeout: DefaultTimeout,
             InitTimeout: InitTimeout,
-            DataTimeout: DataTimeout,
+            InsertTimeout: InsertTimeout,
             QueryTimeout: QueryTimeout,
             RetryPolicy: RetryPolicy
         );
