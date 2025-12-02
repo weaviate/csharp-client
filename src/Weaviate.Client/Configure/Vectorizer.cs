@@ -479,6 +479,8 @@ public static partial class Configure
             string? model = null,
             string? projectId = null,
             string? titleProperty = null,
+            int? dimensions = null,
+            string? taskType = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
@@ -488,6 +490,8 @@ public static partial class Configure
                     Model = model,
                     ProjectId = projectId,
                     TitleProperty = titleProperty,
+                    Dimensions = dimensions,
+                    TaskType = taskType,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
