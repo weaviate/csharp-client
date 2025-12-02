@@ -1,6 +1,5 @@
 using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
 using System.Text.Json;
@@ -8,6 +7,7 @@ using Google.Protobuf;
 using Google.Protobuf.Reflection;
 using Google.Protobuf.WellKnownTypes;
 using Weaviate.Client.Serialization;
+using V1 = Weaviate.Client.Grpc.Protobuf.V1;
 
 namespace Weaviate.Client;
 
@@ -292,7 +292,7 @@ internal class ObjectHelper
                         break;
                     case double[] v:
                         props.NumberArrayProperties.Add(
-                            new V1.NumberArrayProperties()
+                            new Grpc.Protobuf.V1.NumberArrayProperties()
                             {
                                 PropName = propName,
                                 ValuesBytes = v.ToByteString(),
@@ -301,7 +301,7 @@ internal class ObjectHelper
                         break;
                     case float[] v:
                         props.NumberArrayProperties.Add(
-                            new V1.NumberArrayProperties()
+                            new Grpc.Protobuf.V1.NumberArrayProperties()
                             {
                                 PropName = propName,
                                 ValuesBytes = v.Select(Convert.ToDouble).ToByteString(),
@@ -310,12 +310,16 @@ internal class ObjectHelper
                         break;
                     case string[] v:
                         props.TextArrayProperties.Add(
-                            new V1.TextArrayProperties() { PropName = propName, Values = { v } }
+                            new Grpc.Protobuf.V1.TextArrayProperties()
+                            {
+                                PropName = propName,
+                                Values = { v },
+                            }
                         );
                         break;
                     case Guid[] v:
                         props.TextArrayProperties.Add(
-                            new V1.TextArrayProperties()
+                            new Grpc.Protobuf.V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values = { v.Select(g => g.ToString()) },
@@ -324,7 +328,7 @@ internal class ObjectHelper
                         break;
                     case DateTime[] v:
                         props.TextArrayProperties.Add(
-                            new V1.TextArrayProperties()
+                            new Grpc.Protobuf.V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values = { v.Select(d => d.ToUniversalTime().ToString("o")) },
@@ -333,7 +337,7 @@ internal class ObjectHelper
                         break;
                     case DateTimeOffset[] v:
                         props.TextArrayProperties.Add(
-                            new V1.TextArrayProperties()
+                            new Grpc.Protobuf.V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values = { v.Select(dto => dto.ToUniversalTime().ToString("o")) },
@@ -369,7 +373,7 @@ internal class ObjectHelper
                     case System.Collections.IEnumerable enumerable
                         when enumerable is IEnumerable<double> doubles:
                         props.NumberArrayProperties.Add(
-                            new V1.NumberArrayProperties()
+                            new Grpc.Protobuf.V1.NumberArrayProperties()
                             {
                                 PropName = propName,
                                 ValuesBytes = doubles.ToByteString(),
@@ -379,7 +383,7 @@ internal class ObjectHelper
                     case System.Collections.IEnumerable enumerable
                         when enumerable is IEnumerable<float> floats:
                         props.NumberArrayProperties.Add(
-                            new V1.NumberArrayProperties()
+                            new Grpc.Protobuf.V1.NumberArrayProperties()
                             {
                                 PropName = propName,
                                 ValuesBytes = floats
@@ -391,7 +395,7 @@ internal class ObjectHelper
                     case System.Collections.IEnumerable enumerable
                         when enumerable is IEnumerable<string> strings:
                         props.TextArrayProperties.Add(
-                            new V1.TextArrayProperties()
+                            new Grpc.Protobuf.V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values = { strings },
@@ -401,7 +405,7 @@ internal class ObjectHelper
                     case System.Collections.IEnumerable enumerable
                         when enumerable is IEnumerable<Guid> guids:
                         props.TextArrayProperties.Add(
-                            new V1.TextArrayProperties()
+                            new Grpc.Protobuf.V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values = { guids.Select(g => g.ToString()) },
@@ -411,7 +415,7 @@ internal class ObjectHelper
                     case System.Collections.IEnumerable enumerable
                         when enumerable is IEnumerable<DateTime> dateTimes:
                         props.TextArrayProperties.Add(
-                            new V1.TextArrayProperties()
+                            new Grpc.Protobuf.V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values =
@@ -424,7 +428,7 @@ internal class ObjectHelper
                     case System.Collections.IEnumerable enumerable
                         when enumerable is IEnumerable<DateTimeOffset> dateTimeOffsets:
                         props.TextArrayProperties.Add(
-                            new V1.TextArrayProperties()
+                            new Grpc.Protobuf.V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values =

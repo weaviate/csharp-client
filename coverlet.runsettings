@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>json,cobertura,lcov</Format>
+          <Exclude>[Weaviate.Client]Weaviate.Client.Rest.Dto.*,[Weaviate.Client]Weaviate.Client.Grpc.Protobuf.V1.*</Exclude>
+          <ExcludeByFile>**/Dto/*.g.cs,**/obj/Debug/**/gRPC/proto/v1/*.cs</ExcludeByFile>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

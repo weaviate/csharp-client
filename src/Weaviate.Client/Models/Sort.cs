@@ -1,5 +1,7 @@
 namespace Weaviate.Client.Models;
 
+using V1 = Grpc.Protobuf.V1;
+
 public record Sort
 {
     private Sort() { }

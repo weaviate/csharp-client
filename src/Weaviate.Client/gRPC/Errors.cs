@@ -1,4 +1,4 @@
-namespace Weaviate.Client.gRPC;
+namespace Weaviate.Client.Grpc;
 
 public class WeaviateGrpcServerException : WeaviateServerException
 {

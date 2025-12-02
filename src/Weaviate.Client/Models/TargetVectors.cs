@@ -1,5 +1,7 @@
 namespace Weaviate.Client.Models;
 
+using V1 = Grpc.Protobuf.V1;
+
 public class TargetVectors : IEnumerable<string>
 {
     public List<string> Targets { get; } = new List<string>();
@@ -68,7 +70,6 @@ public class TargetVectors : IEnumerable<string>
     )
     {
         var dict = weights.ToDictionary(w => w.name, w => w.weight.ToList());
-
         return new TargetVectors(dict.Keys, V1.CombinationMethod.TypeManual, dict);
     }
 
@@ -78,7 +79,6 @@ public class TargetVectors : IEnumerable<string>
     )
     {
         var dict = weights.ToDictionary(w => w.name, w => w.weight.ToList());
-
         return new TargetVectors(dict.Keys, V1.CombinationMethod.TypeRelativeScore, dict);
     }
 }

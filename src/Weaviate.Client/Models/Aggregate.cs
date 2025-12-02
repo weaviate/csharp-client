@@ -1,5 +1,7 @@
 namespace Weaviate.Client.Models;
 
+using V1 = Grpc.Protobuf.V1;
+
 public partial record AggregateGroupByResult
 {
     public partial record Group
@@ -103,7 +105,7 @@ public partial record AggregateResult
     }
 
     internal static Aggregate.Property FromGrpcProperty(
-        Weaviate.V1.AggregateReply.Types.Aggregations.Types.Aggregation x
+        V1.AggregateReply.Types.Aggregations.Types.Aggregation x
     )
     {
         return x.AggregationCase switch

@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package weaviate.v1;
+option csharp_namespace = "Weaviate.Client.Grpc.Protobuf.V1";
 
 import "v1/aggregate.proto";
 import "v1/batch.proto";
@@ -19,6 +20,5 @@ service Weaviate {
   rpc BatchDelete(BatchDeleteRequest) returns (BatchDeleteReply) {};
   rpc TenantsGet(TenantsGetRequest) returns (TenantsGetReply) {};
   rpc Aggregate(AggregateRequest) returns (AggregateReply) {};
-  rpc BatchSend(BatchSendRequest) returns (BatchSendReply) {};
-  rpc BatchStream(BatchStreamRequest) returns (stream BatchStreamMessage) {};
+  rpc BatchStream(stream BatchStreamRequest) returns (stream BatchStreamReply) {};
 }

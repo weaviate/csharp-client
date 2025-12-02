@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Frozen;
-using System.Diagnostics;
 using Weaviate.Client.Models;
 using Weaviate.Client.Rest.Dto;
 using Weaviate.Client.Validation;
@@ -193,7 +192,7 @@ public class DataClient
             .Select(
                 (r, idx) =>
                 {
-                    var o = new V1.BatchObject
+                    var o = new Grpc.Protobuf.V1.BatchObject
                     {
                         Collection = _collectionName,
                         Uuid = (r.ID ?? Guid.NewGuid()).ToString(),
@@ -205,7 +204,7 @@ public class DataClient
                     {
                         foreach (var reference in r.References!)
                         {
-                            var strp = new Weaviate.V1.BatchObject.Types.SingleTargetRefProps()
+                            var strp = new Grpc.Protobuf.V1.BatchObject.Types.SingleTargetRefProps()
                             {
                                 PropName = reference.Name,
                                 Uuids = { reference.TargetID.Select(id => id.ToString()) },
@@ -218,15 +217,15 @@ public class DataClient
                     if (r.Vectors != null)
                     {
                         o.Vectors.AddRange(
-                            r.Vectors.Select(v => new V1.Vectors
+                            r.Vectors.Select(v => new Grpc.Protobuf.V1.Vectors
                             {
                                 Name = v.Key,
                                 VectorBytes = v.Value.ToByteString(),
                                 Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
                                     v.Value.ValueType
                                 )
-                                    ? V1.Vectors.Types.VectorType.MultiFp32
-                                    : V1.Vectors.Types.VectorType.SingleFp32,
+                                    ? Grpc.Protobuf.V1.Vectors.Types.VectorType.MultiFp32
+                                    : Grpc.Protobuf.V1.Vectors.Types.VectorType.SingleFp32,
                             })
                         );
                     }
@@ -312,7 +311,7 @@ public class DataClient
         CancellationToken cancellationToken = default
     )
     {
-        var stopwatch = Stopwatch.StartNew();
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         var result = await _client.RestClient.ReferenceAddMany(
             _collectionName,

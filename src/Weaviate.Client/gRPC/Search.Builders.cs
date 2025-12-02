@@ -1,6 +1,6 @@
 using Weaviate.Client.Models;
-using Weaviate.V1;
 using Rerank = Weaviate.Client.Models.Rerank;
+using V1 = Weaviate.Client.Grpc.Protobuf.V1;
 
 namespace Weaviate.Client.Grpc;
 
@@ -33,7 +33,7 @@ internal partial class WeaviateGrpcClient
         IList<QueryReference>? returnReferences = null
     )
     {
-        var metadataRequest = new V1.MetadataRequest()
+        var metadataRequest = new Protobuf.V1.MetadataRequest()
         {
             Uuid = true,
             LastUpdateTimeUnix = returnMetadata?.LastUpdateTime ?? false,
@@ -60,7 +60,7 @@ internal partial class WeaviateGrpcClient
 #pragma warning restore CS0612 // Type or member is obsolete
             Uses127Api = true,
             GroupBy = groupBy is not null
-                ? new V1.GroupBy()
+                ? new Protobuf.V1.GroupBy()
                 {
                     Path = { groupBy.PropertyName.Decapitalize() },
                     NumberOfGroups = Convert.ToInt32(groupBy.NumberOfGroups),
@@ -387,13 +387,13 @@ internal partial class WeaviateGrpcClient
     }
 
     private static (
-        Targets? targets,
-        ICollection<VectorForTarget>? vectorForTargets,
+        V1.Targets? targets,
+        ICollection<V1.VectorForTarget>? vectorForTargets,
         ICollection<V1.Vectors>? vectors
     ) BuildTargetVector(TargetVectors? targetVector, Models.Vectors? vector = null)
     {
-        Targets? targets = null;
-        ICollection<VectorForTarget>? vectorForTarget = null;
+        V1.Targets? targets = null;
+        ICollection<V1.VectorForTarget>? vectorForTarget = null;
         ICollection<V1.Vectors>? vectors = null;
 
         vector ??= new Models.Vectors();
@@ -439,7 +439,7 @@ internal partial class WeaviateGrpcClient
                                 : vector.Values.ElementAt(idx),
                         }
                 )
-                .Select(v => new VectorForTarget()
+                .Select(v => new V1.VectorForTarget()
                 {
                     Name = v.Name,
                     Vectors =
@@ -473,7 +473,7 @@ internal partial class WeaviateGrpcClient
         return (targets, vectorForTarget, vectors);
     }
 
-    private static NearTextSearch BuildNearText(
+    private static V1.NearTextSearch BuildNearText(
         string[] query,
         double? distance,
         double? certainty,
@@ -483,13 +483,13 @@ internal partial class WeaviateGrpcClient
     )
     {
         var (targets, _, _) = BuildTargetVector(targetVector, null);
-        var nearText = new NearTextSearch { Query = { query }, Targets = targets };
+        var nearText = new V1.NearTextSearch { Query = { query }, Targets = targets };
 
         if (moveTo is not null)
         {
             var uuids = moveTo.Objects is null ? [] : moveTo.Objects.Select(x => x.ToString());
             var concepts = moveTo.Concepts is null ? new string[] { } : moveTo.Concepts;
-            nearText.MoveTo = new NearTextSearch.Types.Move
+            nearText.MoveTo = new V1.NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
                 Concepts = { concepts },
@@ -501,7 +501,7 @@ internal partial class WeaviateGrpcClient
         {
             var uuids = moveAway.Objects is null ? [] : moveAway.Objects.Select(x => x.ToString());
             var concepts = moveAway.Concepts is null ? new string[] { } : moveAway.Concepts;
-            nearText.MoveAway = new NearTextSearch.Types.Move
+            nearText.MoveAway = new V1.NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
                 Concepts = { concepts },
@@ -522,14 +522,14 @@ internal partial class WeaviateGrpcClient
         return nearText;
     }
 
-    private static NearVector BuildNearVector(
+    private static V1.NearVector BuildNearVector(
         Models.Vectors vector,
         double? certainty,
         double? distance,
         TargetVectors? targetVector
     )
     {
-        NearVector nearVector = new();
+        V1.NearVector nearVector = new();
 
         if (distance.HasValue)
         {
@@ -560,13 +560,13 @@ internal partial class WeaviateGrpcClient
     }
 
     private static void BuildBM25(
-        SearchRequest request,
+        V1.SearchRequest request,
         string query,
         string[]? properties = null,
         BM25Operator? searchOperator = null
     )
     {
-        request.Bm25Search = new BM25() { Query = query };
+        request.Bm25Search = new V1.BM25() { Query = query };
 
         if (properties is not null)
         {
@@ -588,7 +588,7 @@ internal partial class WeaviateGrpcClient
     }
 
     private static void BuildHybrid(
-        SearchRequest request,
+        V1.SearchRequest request,
         string? query = null,
         float? alpha = null,
         Models.Vectors? vector = null,
@@ -601,7 +601,7 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector = null
     )
     {
-        request.HybridSearch = new Hybrid();
+        request.HybridSearch = new V1.Hybrid();
 
         if (!string.IsNullOrEmpty(query))
         {
@@ -681,9 +681,9 @@ internal partial class WeaviateGrpcClient
         {
             request.HybridSearch.FusionType = fusionType switch
             {
-                HybridFusion.Ranked => Hybrid.Types.FusionType.Ranked,
-                HybridFusion.RelativeScore => Hybrid.Types.FusionType.RelativeScore,
-                _ => Hybrid.Types.FusionType.Unspecified,
+                HybridFusion.Ranked => V1.Hybrid.Types.FusionType.Ranked,
+                HybridFusion.RelativeScore => V1.Hybrid.Types.FusionType.RelativeScore,
+                _ => V1.Hybrid.Types.FusionType.Unspecified,
             };
         }
         if (maxVectorDistance.HasValue)
@@ -706,14 +706,14 @@ internal partial class WeaviateGrpcClient
     }
 
     private void BuildNearObject(
-        SearchRequest request,
+        V1.SearchRequest request,
         Guid objectID,
         double? certainty,
         double? distance,
         TargetVectors? targetVector
     )
     {
-        request.NearObject = new NearObject { Id = objectID.ToString() };
+        request.NearObject = new V1.NearObject { Id = objectID.ToString() };
 
         if (certainty.HasValue)
         {

@@ -41,7 +41,7 @@ public class ResultTests
         JsonParser jsonParser = new JsonParser(
             JsonParser.Settings.Default.WithIgnoreUnknownFields(true)
         );
-        V1.SearchReply reply = jsonParser.Parse<V1.SearchReply>(json);
+        Grpc.Protobuf.V1.SearchReply reply = jsonParser.Parse<Grpc.Protobuf.V1.SearchReply>(json);
 
         Assert.NotNull(reply);
 

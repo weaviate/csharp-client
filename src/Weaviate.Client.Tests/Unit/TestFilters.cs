@@ -1,6 +1,6 @@
 using System.Reflection;
+using Weaviate.Client.Grpc.Protobuf.V1;
 using Weaviate.Client.Models;
-using Weaviate.V1;
 
 namespace Weaviate.Client.Tests.Unit;
 
@@ -201,11 +201,11 @@ public partial class FilterTests
         var uuid2 = Guid.NewGuid();
         var f1 = Filter.Property("uuids").ContainsNone(new[] { uuid1, uuid2 });
 
-        var expectedF1 = new V1.Filters
+        var expectedF1 = new Filters
         {
-            Target = new V1.FilterTarget() { Property = "uuids" },
-            Operator = V1.Filters.Types.Operator.ContainsNone,
-            ValueTextArray = new V1.TextArray() { Values = { uuid1.ToString(), uuid2.ToString() } },
+            Target = new FilterTarget() { Property = "uuids" },
+            Operator = Filters.Types.Operator.ContainsNone,
+            ValueTextArray = new TextArray() { Values = { uuid1.ToString(), uuid2.ToString() } },
         };
 
         // Act
@@ -222,21 +222,21 @@ public partial class FilterTests
         var uuid2 = Guid.NewGuid();
         var f1 = Filter.Not(Filter.ID.ContainsAny(new[] { uuid1, uuid2 }));
 
-        var expectedF1 = new V1.Filters
+        var expectedF1 = new Filters
         {
             Filters_ =
             {
-                new V1.Filters
+                new Filters
                 {
-                    Target = new V1.FilterTarget() { Property = "_id" },
-                    Operator = V1.Filters.Types.Operator.ContainsAny,
-                    ValueTextArray = new V1.TextArray()
+                    Target = new FilterTarget() { Property = "_id" },
+                    Operator = Filters.Types.Operator.ContainsAny,
+                    ValueTextArray = new TextArray()
                     {
                         Values = { uuid1.ToString(), uuid2.ToString() },
                     },
                 },
             },
-            Operator = V1.Filters.Types.Operator.Not,
+            Operator = Filters.Types.Operator.Not,
         };
 
         // Act

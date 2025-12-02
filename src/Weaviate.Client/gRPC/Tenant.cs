@@ -1,10 +1,10 @@
-using Weaviate.V1;
-
 namespace Weaviate.Client.Grpc;
+
+using Protobuf.V1;
 
 internal partial class WeaviateGrpcClient
 {
-    internal async Task<IEnumerable<V1.Tenant>> TenantsGet(
+    internal async Task<IEnumerable<Tenant>> TenantsGet(
         string name,
         string[] tenantNames,
         CancellationToken cancellationToken = default

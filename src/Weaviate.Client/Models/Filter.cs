@@ -1,4 +1,4 @@
-using Weaviate.V1;
+using Weaviate.Client.Grpc.Protobuf.V1;
 
 namespace Weaviate.Client.Models;
 
@@ -116,7 +116,7 @@ public record TypedValue<T>
 
 public partial record Filter
 {
-    internal V1.Filters InternalFilter { get; init; } = new V1.Filters();
+    internal Filters InternalFilter { get; init; } = new Filters();
 
     protected Filter() { }
 
@@ -269,7 +269,7 @@ public record PropertyFilter : Filter
 {
     FilterTarget? _target;
 
-    internal PropertyFilter(FilterTarget target, V1.Filters parentFilter)
+    internal PropertyFilter(FilterTarget target, Filters parentFilter)
     {
         InternalFilter = parentFilter;
         _target = target;
@@ -401,13 +401,12 @@ public abstract record NestedFilter : Filter
 }
 
 public record AndNestedFilter(params Filter[] filters)
-    : NestedFilter(V1.Filters.Types.Operator.And, filters) { }
+    : NestedFilter(Filters.Types.Operator.And, filters) { }
 
 public record OrNestedFilter(params Filter[] filters)
-    : NestedFilter(V1.Filters.Types.Operator.Or, filters) { }
+    : NestedFilter(Filters.Types.Operator.Or, filters) { }
 
-public record NotNestedFilter(Filter filter)
-    : NestedFilter(V1.Filters.Types.Operator.Not, filter) { }
+public record NotNestedFilter(Filter filter) : NestedFilter(Filters.Types.Operator.Not, filter) { }
 
 public record TimeFilter : TypedValue<DateTime>
 {
