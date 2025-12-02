@@ -171,4 +171,15 @@ public static class Providers
         public List<string>? Images { get; set; }
         public List<string>? ImageProperties { get; set; }
     }
+
+    public record ContextualAI() : Weaviate.Client.Models.GenerativeProvider("contextualai")
+    {
+        public string? Model { get; set; }
+        public double? Temperature { get; set; }
+        public double? TopP { get; set; }
+        public long? MaxNewTokens { get; set; }
+        public string? SystemPrompt { get; set; }
+        public string? AvoidCommentary { get; set; }
+        public string[]? Knowledge { get; set; }
+    }
 }
