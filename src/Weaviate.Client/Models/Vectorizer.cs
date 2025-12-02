@@ -288,6 +288,7 @@ public static partial class Vectorizer
         public string? PassageInferenceUrl { get; set; } = null;
         public string? QueryInferenceUrl { get; set; } = null;
         public string? PoolingStrategy { get; set; } = null;
+        public int? Dimensions { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 

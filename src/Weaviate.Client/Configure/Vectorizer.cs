@@ -519,6 +519,7 @@ public static partial class Configure
             string? passageInferenceUrl = null,
             string? queryInferenceUrl = null,
             string? poolingStrategy = null,
+            int? dimensions = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
@@ -528,6 +529,7 @@ public static partial class Configure
                     PassageInferenceUrl = passageInferenceUrl,
                     QueryInferenceUrl = queryInferenceUrl,
                     PoolingStrategy = poolingStrategy,
+                    Dimensions = dimensions,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
