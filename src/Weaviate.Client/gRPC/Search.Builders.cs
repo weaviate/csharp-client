@@ -6,9 +6,11 @@ namespace Weaviate.Client.Grpc;
 
 internal partial class WeaviateGrpcClient
 {
-    private static void SetIfNotNull<T>(Action<T> setter, T? value) where T : struct
+    private static void SetIfNotNull<T>(Action<T> setter, T? value)
+        where T : struct
     {
-        if (value.HasValue) setter(value.Value);
+        if (value.HasValue)
+            setter(value.Value);
     }
 
     private static V1.SearchRequest BaseSearchRequest(
@@ -303,7 +305,10 @@ internal partial class WeaviateGrpcClient
                     LogProbs = a.LogProbs ?? false,
                     Stop = a.Stop != null ? new V1.TextArray { Values = { a.Stop } } : null,
                 };
-                SetIfNotNull(v => result.Databricks.FrequencyPenalty = (float)v, a.FrequencyPenalty);
+                SetIfNotNull(
+                    v => result.Databricks.FrequencyPenalty = (float)v,
+                    a.FrequencyPenalty
+                );
                 SetIfNotNull(v => result.Databricks.TopLogProbs = v, a.TopLogProbs);
                 SetIfNotNull(v => result.Databricks.MaxTokens = v, a.MaxTokens);
                 SetIfNotNull(v => result.Databricks.N = v, a.N);
@@ -650,12 +655,7 @@ internal partial class WeaviateGrpcClient
             request.HybridSearch.Targets = request.HybridSearch.NearVector.Targets;
         }
 
-        if (
-            vector is null
-            && nearText is null
-            && nearVector is null
-            && targetVector is not null
-        )
+        if (vector is null && nearText is null && nearVector is null && targetVector is not null)
         {
             request.HybridSearch.Targets = BuildTargetVector(targetVector).targets;
         }
