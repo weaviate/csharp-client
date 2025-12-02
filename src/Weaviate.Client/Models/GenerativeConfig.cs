@@ -37,6 +37,14 @@ public static class GenerativeConfig
         public string Service { get; set; } = string.Empty;
         public string? Model { get; set; }
         public string? Endpoint { get; set; }
+        public string? TargetModel { get; set; }
+        public string? TargetVariant { get; set; }
+        public int? MaxTokenCount { get; set; }
+        public int? MaxTokensToSample { get; set; }
+        public string[]? StopSequences { get; set; }
+        public double? Temperature { get; set; }
+        public double? TopP { get; set; }
+        public double? TopK { get; set; }
     }
 
     public record Anthropic : IGenerativeConfig
