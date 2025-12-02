@@ -262,7 +262,7 @@ public static partial class Vectorizer
     public partial record Text2VecGoogle
     {
         public string? ApiEndpoint { get; set; } = null;
-        public string? ModelId { get; set; } = null;
+        public string? Model { get; set; } = null;
         public string? ProjectId { get; set; } = null;
         public string? TitleProperty { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;

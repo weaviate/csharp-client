@@ -235,7 +235,7 @@ public static partial class Configure
             string[]? textFields = null,
             string[]? videoFields = null,
             int? videoIntervalSeconds = null,
-            string? modelId = null,
+            string? model = null,
             int? dimensions = null,
             bool? vectorizeCollectionName = null,
             Vectorizer.Multi2VecGoogleWeights? weights = null
@@ -249,7 +249,7 @@ public static partial class Configure
                     TextFields = textFields,
                     VideoFields = videoFields,
                     VideoIntervalSeconds = videoIntervalSeconds,
-                    ModelId = modelId,
+                    ModelId = model,
                     Dimensions = dimensions,
                     VectorizeCollectionName = vectorizeCollectionName,
                     Weights = weights,
@@ -470,7 +470,7 @@ public static partial class Configure
 
         public static VectorConfigBuilder Text2VecGoogle(
             string? apiEndpoint = null,
-            string? modelId = null,
+            string? model = null,
             string? projectId = null,
             string? titleProperty = null,
             bool? vectorizeCollectionName = null
@@ -479,7 +479,7 @@ public static partial class Configure
                 new Vectorizer.Text2VecGoogle
                 {
                     ApiEndpoint = apiEndpoint,
-                    ModelId = modelId,
+                    Model = model,
                     ProjectId = projectId,
                     TitleProperty = titleProperty,
                     VectorizeCollectionName = vectorizeCollectionName,
