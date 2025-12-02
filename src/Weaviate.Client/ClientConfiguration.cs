@@ -14,7 +14,7 @@ public sealed record ClientConfiguration(
     ICredentials? Credentials = null,
     TimeSpan? DefaultTimeout = null,
     TimeSpan? InitTimeout = null,
-    TimeSpan? DataTimeout = null,
+    TimeSpan? InsertTimeout = null,
     TimeSpan? QueryTimeout = null,
     RetryPolicy? RetryPolicy = null,
     DelegatingHandler[]? CustomHandlers = null,

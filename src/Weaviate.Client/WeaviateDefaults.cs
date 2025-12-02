@@ -19,9 +19,9 @@ public static class WeaviateDefaults
 
     /// <summary>
     /// Default timeout for data operations (Insert, Delete, Update, Reference management). Default is 120 seconds.
-    /// This can be overridden per client via ClientConfiguration.WithDataTimeout().
+    /// This can be overridden per client via ClientConfiguration.WithInsertTimeout().
     /// </summary>
-    public static TimeSpan DataTimeout { get; set; } = TimeSpan.FromSeconds(120);
+    public static TimeSpan InsertTimeout { get; set; } = TimeSpan.FromSeconds(120);
 
     /// <summary>
     /// Default timeout for query/search operations (FetchObjects, NearText, BM25, Hybrid, etc.). Default is 60 seconds.

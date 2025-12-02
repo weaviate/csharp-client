@@ -108,7 +108,7 @@ public static class WeaviateServiceCollectionExtensions
     /// <param name="headers">Additional HTTP headers to include in requests.</param>
     /// <param name="defaultTimeout">Default timeout for all operations.</param>
     /// <param name="initTimeout">Timeout for initialization operations.</param>
-    /// <param name="dataTimeout">Timeout for data operations.</param>
+    /// <param name="insertTimeout">Timeout for data operations.</param>
     /// <param name="queryTimeout">Timeout for query operations.</param>
     /// <param name="eagerInitialization">Whether to initialize the client eagerly on application startup. Default is true.</param>
     /// <returns>The service collection for method chaining.</returns>
@@ -122,7 +122,7 @@ public static class WeaviateServiceCollectionExtensions
         Dictionary<string, string>? headers = null,
         TimeSpan? defaultTimeout = null,
         TimeSpan? initTimeout = null,
-        TimeSpan? dataTimeout = null,
+        TimeSpan? insertTimeout = null,
         TimeSpan? queryTimeout = null,
         bool eagerInitialization = true
     )
@@ -139,7 +139,7 @@ public static class WeaviateServiceCollectionExtensions
                 options.Headers = headers;
                 options.DefaultTimeout = defaultTimeout;
                 options.InitTimeout = initTimeout;
-                options.DataTimeout = dataTimeout;
+                options.InsertTimeout = insertTimeout;
                 options.QueryTimeout = queryTimeout;
             },
             eagerInitialization
@@ -158,7 +158,7 @@ public static class WeaviateServiceCollectionExtensions
     /// <param name="headers">Additional HTTP headers to include in requests.</param>
     /// <param name="defaultTimeout">Default timeout for all operations.</param>
     /// <param name="initTimeout">Timeout for initialization operations.</param>
-    /// <param name="dataTimeout">Timeout for data operations.</param>
+    /// <param name="insertTimeout">Timeout for data operations.</param>
     /// <param name="queryTimeout">Timeout for query operations.</param>
     /// <param name="eagerInitialization">Whether to initialize the client eagerly on application startup. Default is true.</param>
     /// <returns>The service collection for method chaining.</returns>
@@ -169,7 +169,7 @@ public static class WeaviateServiceCollectionExtensions
         Dictionary<string, string>? headers = null,
         TimeSpan? defaultTimeout = null,
         TimeSpan? initTimeout = null,
-        TimeSpan? dataTimeout = null,
+        TimeSpan? insertTimeout = null,
         TimeSpan? queryTimeout = null,
         bool eagerInitialization = true
     )
@@ -186,7 +186,7 @@ public static class WeaviateServiceCollectionExtensions
                 options.Headers = headers;
                 options.DefaultTimeout = defaultTimeout;
                 options.InitTimeout = initTimeout;
-                options.DataTimeout = dataTimeout;
+                options.InsertTimeout = insertTimeout;
                 options.QueryTimeout = queryTimeout;
             },
             eagerInitialization
@@ -248,7 +248,7 @@ public static class WeaviateServiceCollectionExtensions
     /// <param name="headers">Additional HTTP headers to include in requests.</param>
     /// <param name="defaultTimeout">Default timeout for all operations.</param>
     /// <param name="initTimeout">Timeout for initialization operations.</param>
-    /// <param name="dataTimeout">Timeout for data operations.</param>
+    /// <param name="insertTimeout">Timeout for data operations.</param>
     /// <param name="queryTimeout">Timeout for query operations.</param>
     /// <returns>The service collection for method chaining.</returns>
     public static IServiceCollection AddWeaviateLocal(
@@ -262,7 +262,7 @@ public static class WeaviateServiceCollectionExtensions
         Dictionary<string, string>? headers = null,
         TimeSpan? defaultTimeout = null,
         TimeSpan? initTimeout = null,
-        TimeSpan? dataTimeout = null,
+        TimeSpan? insertTimeout = null,
         TimeSpan? queryTimeout = null
     )
     {
@@ -279,7 +279,7 @@ public static class WeaviateServiceCollectionExtensions
                 options.Headers = headers;
                 options.DefaultTimeout = defaultTimeout;
                 options.InitTimeout = initTimeout;
-                options.DataTimeout = dataTimeout;
+                options.InsertTimeout = insertTimeout;
                 options.QueryTimeout = queryTimeout;
             }
         );
@@ -311,7 +311,7 @@ public static class WeaviateServiceCollectionExtensions
     /// <param name="headers">Additional HTTP headers to include in requests.</param>
     /// <param name="defaultTimeout">Default timeout for all operations.</param>
     /// <param name="initTimeout">Timeout for initialization operations.</param>
-    /// <param name="dataTimeout">Timeout for data operations.</param>
+    /// <param name="insertTimeout">Timeout for data operations.</param>
     /// <param name="queryTimeout">Timeout for query operations.</param>
     /// <returns>The service collection for method chaining.</returns>
     public static IServiceCollection AddWeaviateCloud(
@@ -322,7 +322,7 @@ public static class WeaviateServiceCollectionExtensions
         Dictionary<string, string>? headers = null,
         TimeSpan? defaultTimeout = null,
         TimeSpan? initTimeout = null,
-        TimeSpan? dataTimeout = null,
+        TimeSpan? insertTimeout = null,
         TimeSpan? queryTimeout = null
     )
     {
@@ -339,7 +339,7 @@ public static class WeaviateServiceCollectionExtensions
                 options.Headers = headers;
                 options.DefaultTimeout = defaultTimeout;
                 options.InitTimeout = initTimeout;
-                options.DataTimeout = dataTimeout;
+                options.InsertTimeout = insertTimeout;
                 options.QueryTimeout = queryTimeout;
             }
         );

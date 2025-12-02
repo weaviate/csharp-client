@@ -52,7 +52,7 @@ var app = builder.Build();
     "UseSsl": false,
     "DefaultTimeout": "00:00:30",
     "InitTimeout": "00:00:02",
-    "DataTimeout": "00:02:00",
+    "InsertTimeout": "00:02:00",
     "QueryTimeout": "00:01:00"
   }
 }
@@ -108,7 +108,7 @@ public class CatService
 | `Credentials` | `ICredentials?` | `null` | Authentication credentials |
 | `DefaultTimeout` | `TimeSpan?` | `30s` | Default timeout for all operations |
 | `InitTimeout` | `TimeSpan?` | `2s` | Timeout for initialization |
-| `DataTimeout` | `TimeSpan?` | `120s` | Timeout for data operations |
+| `InsertTimeout` | `TimeSpan?` | `120s` | Timeout for data operations |
 | `QueryTimeout` | `TimeSpan?` | `60s` | Timeout for query operations |
 | `Headers` | `Dictionary<string, string>?` | `null` | Additional HTTP headers |
 | `RetryPolicy` | `RetryPolicy?` | Default | Retry policy for failed requests |
@@ -150,11 +150,13 @@ builder.Services.AddWeaviate(options => { ... }, eagerInitialization: true);
 ```
 
 **Benefits:**
+
 - ✅ Client is ready when first request arrives
 - ✅ Fails fast if connection issues exist
 - ✅ Simpler usage - no need to await initialization
 
 **How it works:**
+
 1. `WeaviateClient` is constructed with DI
 2. `IHostedService` runs on app startup
 3. Calls `client.InitializeAsync()` which:
@@ -172,11 +174,13 @@ builder.Services.AddWeaviate(options => { ... }, eagerInitialization: false);
 ```
 
 **When to use:**
+
 - Application startup time is critical
 - Weaviate connection isn't needed immediately
 - You want to handle connection failures gracefully
 
 **Usage with lazy initialization:**
+
 ```csharp
 public class MyService
 {
@@ -222,6 +226,7 @@ var client = await Connect.Local(
 ```
 
 These methods:
+
 - ✅ Return a fully initialized client
 - ✅ Use async initialization (no blocking)
 - ✅ Follow the same REST → Meta → gRPC initialization flow
@@ -345,6 +350,7 @@ public class MyIntegrationTests : IAsyncLifetime
    - Runs initialization task (only once, thread-safe)
 
 3. **Initialization Task**
+
    ```
    ┌─────────────────────────────────────────┐
    │ 1. Initialize Token Service (OAuth, etc)│
@@ -366,9 +372,10 @@ public class MyIntegrationTests : IAsyncLifetime
    - `EnsureInitializedAsync()` returns immediately (already initialized)
    - No performance penalty
 
-### No More `GetAwaiter().GetResult()`!
+### No More `GetAwaiter().GetResult()`
 
 The old pattern had to block:
+
 ```csharp
 // ❌ Old: Blocking async call in constructor
 var client = new WeaviateClient(config);
@@ -376,6 +383,7 @@ var meta = GetMetaAsync().GetAwaiter().GetResult(); // Deadlock risk!
 ```
 
 The new pattern is fully async:
+
 ```csharp
 // ✅ New: Lazy async initialization
 var client = new WeaviateClient(options);
@@ -390,6 +398,7 @@ await client.InitializeAsync(); // Or called automatically
 ### From Old Constructor Pattern
 
 **Before:**
+
 ```csharp
 var config = new ClientConfiguration
 {
@@ -401,6 +410,7 @@ var client = new WeaviateClient(config);
 ```
 
 **After (DI):**
+
 ```csharp
 builder.Services.AddWeaviate(options =>
 {
@@ -413,6 +423,7 @@ public MyService(WeaviateClient client) { ... }
 ```
 
 **After (Non-DI):**
+
 ```csharp
 var client = await Connect.Local();
 // Or
@@ -424,6 +435,7 @@ await client.InitializeAsync();
 ### From `WeaviateClientBuilder`
 
 **Before:**
+
 ```csharp
 var client = await WeaviateClientBuilder
     .Local()
@@ -432,6 +444,7 @@ var client = await WeaviateClientBuilder
 ```
 
 **After (still works!):**
+
 ```csharp
 // This pattern still works exactly as before
 var client = await WeaviateClientBuilder
@@ -441,6 +454,7 @@ var client = await WeaviateClientBuilder
 ```
 
 **Or with DI:**
+
 ```csharp
 builder.Services.AddWeaviate(options =>
 {
