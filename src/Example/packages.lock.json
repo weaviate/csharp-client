@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net8.0": {
+    "net9.0": {
       "Microsoft.Extensions.Hosting": {
         "type": "Direct",
         "requested": "[9.0.0, )",
@@ -45,8 +45,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.33.0",
-        "contentHash": "+kIa03YipuiSDeRuZwcDcXS1xBQAFeGLIjuLbgJr2i+TlwBPYAqdnQZJ2SDVzIgDyy+q+n/400WyWyrJ5ZqCgQ=="
+        "resolved": "3.30.2",
+        "contentHash": "Y2aOVLIt75yeeEWigg9V9YnjsEm53sADtLGq0gLhwaXpk3iu8tYSoauolyhenagA2sWno2TQ2WujI0HQd6s1Vw=="
       },
       "Grpc.Core.Api": {
         "type": "Transitive",
@@ -64,28 +64,28 @@
       },
       "Grpc.Net.Client": {
         "type": "Transitive",
-        "resolved": "2.71.0",
-        "contentHash": "U1vr20r5ngoT9nlb7wejF28EKN+taMhJsV9XtK9MkiepTZwnKxxiarriiMfCHuDAfPUm9XUjFMn/RIuJ4YY61w==",
+        "resolved": "2.70.0",
+        "contentHash": "xNv0FFCVJa5S1beUtye82WFCxKThuE1jbN8DO1x1Rj8VSIWXLBUmfSID5a1fGzsU2R/EMfwPoWclJ2RMfQuGXw==",
         "dependencies": {
-          "Grpc.Net.Common": "2.71.0",
+          "Grpc.Net.Common": "2.70.0",
           "Microsoft.Extensions.Logging.Abstractions": "6.0.0"
         }
       },
       "Grpc.Net.ClientFactory": {
         "type": "Transitive",
-        "resolved": "2.71.0",
-        "contentHash": "8oPLwQLPo86fmcf9ghjCDyNsSWhtHc3CXa/AqwF8Su/pG7qAoeWWtbymsZhoNvCV9Zjzb6BDcIPKXLYt+O175g==",
+        "resolved": "2.70.0",
+        "contentHash": "Qg+93oj/8RdEw3PnLZNNYWnWCWyJYC/ZYZcjeln/pLaxLaPvdXES1peiqSJUI4wLFZ1JwGlbWt8+nM1i2E7ihg==",
         "dependencies": {
-          "Grpc.Net.Client": "2.71.0",
+          "Grpc.Net.Client": "2.70.0",
           "Microsoft.Extensions.Http": "6.0.0"
         }
       },
       "Grpc.Net.Common": {
         "type": "Transitive",
-        "resolved": "2.71.0",
-        "contentHash": "v0c8R97TwRYwNXlC8GyRXwYTCNufpDfUtj9la+wUrZFzVWkFJuNAltU+c0yI3zu0jl54k7en6u2WKgZgd57r2Q==",
+        "resolved": "2.70.0",
+        "contentHash": "rBdEUMyCwa+iB8mqC6JKyPbj3SBHHkReJj/yy/XKJI63GcG6w9DJMMGTVcYHqq4Ci2W4m0HT4jt2pFfFscar8g==",
         "dependencies": {
-          "Grpc.Core.Api": "2.71.0"
+          "Grpc.Core.Api": "2.70.0"
         }
       },
       "Microsoft.Extensions.Configuration": {
@@ -151,8 +151,7 @@
           "Microsoft.Extensions.Configuration": "9.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
           "Microsoft.Extensions.Configuration.FileExtensions": "9.0.0",
-          "Microsoft.Extensions.FileProviders.Abstractions": "9.0.0",
-          "System.Text.Json": "9.0.0"
+          "Microsoft.Extensions.FileProviders.Abstractions": "9.0.0"
         }
       },
       "Microsoft.Extensions.Configuration.UserSecrets": {
@@ -195,8 +194,7 @@
         "contentHash": "UDY7blv4DCyIJ/8CkNrQKLaAZFypXQavRZ2DWf/2zi1mxYYKKw2t8AOCBWxNntyPZHPGhtEmL3snFM98ADZqTw==",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.8",
-          "Microsoft.Extensions.Options": "9.0.8",
-          "System.Diagnostics.DiagnosticSource": "9.0.8"
+          "Microsoft.Extensions.Options": "9.0.8"
         }
       },
       "Microsoft.Extensions.FileProviders.Abstractions": {
@@ -262,8 +260,7 @@
         "resolved": "9.0.8",
         "contentHash": "pYnAffJL7ARD/HCnnPvnFKSIHnTSmWz84WIlT9tPeQ4lHNiu0Az7N/8itihWvcF8sT+VVD5lq8V+ckMzu4SbOw==",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.8",
-          "System.Diagnostics.DiagnosticSource": "9.0.8"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.8"
         }
       },
       "Microsoft.Extensions.Logging.Configuration": {
@@ -290,8 +287,7 @@
           "Microsoft.Extensions.Logging": "9.0.8",
           "Microsoft.Extensions.Logging.Abstractions": "9.0.8",
           "Microsoft.Extensions.Logging.Configuration": "9.0.8",
-          "Microsoft.Extensions.Options": "9.0.8",
-          "System.Text.Json": "9.0.8"
+          "Microsoft.Extensions.Options": "9.0.8"
         }
       },
       "Microsoft.Extensions.Logging.Debug": {
@@ -325,8 +321,7 @@
           "Microsoft.Extensions.Logging": "9.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "9.0.0",
           "Microsoft.Extensions.Options": "9.0.0",
-          "Microsoft.Extensions.Primitives": "9.0.0",
-          "System.Text.Json": "9.0.0"
+          "Microsoft.Extensions.Primitives": "9.0.0"
         }
       },
       "Microsoft.Extensions.Options": {
@@ -355,42 +350,18 @@
         "resolved": "9.0.8",
         "contentHash": "tizSIOEsIgSNSSh+hKeUVPK7xmTIjR8s+mJWOu1KXV3htvNQiPMFRMO17OdI1y/4ZApdBVk49u/08QGC9yvLug=="
       },
-      "System.Diagnostics.DiagnosticSource": {
-        "type": "Transitive",
-        "resolved": "9.0.8",
-        "contentHash": "Lj8/a1Hzli1z6jo8H9urc16GxkpVJtJM+W9fmivXMNu7nwzHziGkxn4vO0DFscMbudkEVKSezdDuHk5kgM0X/g=="
-      },
       "System.Diagnostics.EventLog": {
         "type": "Transitive",
         "resolved": "9.0.0",
         "contentHash": "qd01+AqPhbAG14KtdtIqFk+cxHQFZ/oqRSCoxU1F+Q6Kv0cl726sl7RzU9yLFGd4BUOKdN4XojXF0pQf/R6YeA=="
       },
-      "System.IO.Pipelines": {
-        "type": "Transitive",
-        "resolved": "9.0.8",
-        "contentHash": "6vPmJt73mgUo1gzc/OcXlJvClz/2jxZ4TQPRfriVaLoGRH2mye530D9WHJYbFQRNMxF3PWCoeofsFdCyN7fLzA=="
-      },
-      "System.Text.Encodings.Web": {
-        "type": "Transitive",
-        "resolved": "9.0.8",
-        "contentHash": "W+LotQsM4wBJ4PG7uRkyul4wqL4Fz7R4ty6uXrCNZUhbaHYANgrPaYR2ZpMVpdCjQEJ17Jr1NMN8hv4SHaHY4A=="
-      },
-      "System.Text.Json": {
-        "type": "Transitive",
-        "resolved": "9.0.8",
-        "contentHash": "mIQir9jBqk0V7X0Nw5hzPJZC8DuGdf+2DS3jAVsr6rq5+/VyH5rza0XGcONJUWBrZ+G6BCwNyjWYd9lncBu48A==",
-        "dependencies": {
-          "System.IO.Pipelines": "9.0.8",
-          "System.Text.Encodings.Web": "9.0.8"
-        }
-      },
       "weaviate.client": {
         "type": "Project",
         "dependencies": {
           "Duende.IdentityModel": "[7.1.0, )",
-          "Google.Protobuf": "[3.33.0, )",
+          "Google.Protobuf": "[3.30.2, )",
           "Grpc.HealthCheck": "[2.71.0, )",
-          "Grpc.Net.ClientFactory": "[2.71.0, )",
+          "Grpc.Net.ClientFactory": "[2.70.0, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[9.0.8, )",
           "Microsoft.Extensions.Http": "[9.0.8, )",
           "Microsoft.Extensions.Logging.Console": "[9.0.8, )",
