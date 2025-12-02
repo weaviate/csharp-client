@@ -591,5 +591,27 @@ public static partial class Configure
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
+
+        public static VectorConfigBuilder Multi2VecJinaAI(
+            string? model = null,
+            string? baseURL = null,
+            int? dimensions = null,
+            string[]? imageFields = null,
+            string[]? textFields = null,
+            Vectorizer.JinaAIWeights? weights = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecJinaAI
+                {
+                    Model = model,
+                    BaseURL = baseURL,
+                    Dimensions = dimensions,
+                    ImageFields = imageFields,
+                    TextFields = textFields,
+                    Weights = weights,
+                    VectorizeCollectionName = vectorizeCollectionName,
+                }
+            );
     }
 }
