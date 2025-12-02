@@ -79,8 +79,8 @@ public static class GenerativeConfig
 
         public int? K { get; set; }
         public string? Model { get; set; }
+        public string? BaseURL { get; set; }
         public int? MaxTokens { get; set; }
-        public string? ReturnLikelihoods { get; set; }
         public string[]? StopSequences { get; set; }
         public double? Temperature { get; set; }
     }
@@ -167,7 +167,10 @@ public static class GenerativeConfig
         public string? ApiEndpoint { get; set; }
         public int? MaxOutputTokens { get; set; }
         public string? ModelId { get; set; }
+        public string? Model { get; set; }
         public string? ProjectId { get; set; }
+        public string? EndpointId { get; set; }
+        public string? Region { get; set; }
         public double? Temperature { get; set; }
         public int? TopK { get; set; }
         public double? TopP { get; set; }
