@@ -122,7 +122,7 @@ public static partial class Vectorizer
         public Multi2VecGoogleWeights? Weights { get; set; } = null;
     }
 
-    public partial record Multi2VecJinaAIWeights
+    public partial record JinaAIWeights
     {
         public double[]? ImageFields { get; set; } = null;
         public double[]? TextFields { get; set; } = null;
@@ -136,7 +136,17 @@ public static partial class Vectorizer
         public string? Model { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
-        public Multi2VecJinaAIWeights? Weights { get; set; } = null;
+        public JinaAIWeights? Weights { get; set; } = null;
+    }
+
+    public partial record Multi2MultiVecJinaAI
+    {
+        public string? BaseURL { get; set; } = null;
+        public string? Model { get; set; } = null;
+        public string[]? ImageFields { get; set; } = null;
+        public string[]? TextFields { get; set; } = null;
+        public JinaAIWeights? Weights { get; set; } = null;
+        public bool? VectorizeCollectionName { get; set; } = null;
     }
 
     public partial record Multi2VecVoyageAIWeights
@@ -231,10 +241,12 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    [Obsolete("Use Text2VecJinaAIConfig instead.")]
-    public partial record Text2VecJinaConfig
+    public partial record Text2MultiVecJinaAI
     {
-        // Inherits all properties from Text2VecJinaAIConfig
+        public string? Model { get; set; } = null;
+        public string? BaseURL { get; set; } = null;
+        public int? Dimensions { get; set; } = null;
+        public bool? VectorizeCollectionName { get; set; } = null;
     }
 
     public partial record Text2VecNvidia
