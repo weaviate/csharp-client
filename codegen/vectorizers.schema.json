@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Vectorizer Configuration Schema",
+  "description": "Schema for defining vectorizer data models - platform and language agnostic",
+  "definitions": {
+    "property": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The property name"
+        },
+        "type": {
+          "type": "string",
+          "description": "The property type",
+          "examples": ["string", "int", "bool", "double", "string[]", "double[]", "CustomType"]
+        },
+        "required": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the property is required"
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the property can be null"
+        },
+        "defaultValue": {
+          "type": ["string", "number", "boolean", "null"],
+          "description": "The default value for the property"
+        },
+        "description": {
+          "type": "string",
+          "description": "Documentation for the property"
+        }
+      }
+    },
+    "nestedType": {
+      "type": "object",
+      "required": ["name", "properties"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The nested type name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Documentation for the nested type"
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/property"
+          },
+          "description": "Properties of the nested type"
+        }
+      }
+    },
+    "vectorizer": {
+      "type": "object",
+      "required": ["name", "identifier", "category"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The vectorizer type name",
+          "examples": ["Text2VecOpenAI", "Multi2VecClip"]
+        },
+        "identifier": {
+          "type": "string",
+          "description": "The unique identifier used in the Weaviate API",
+          "examples": ["text2vec-openai", "multi2vec-clip"]
+        },
+        "category": {
+          "type": "string",
+          "enum": ["text2vec", "multi2vec", "img2vec", "ref2vec", "none"],
+          "description": "The category of vectorizer"
+        },
+        "description": {
+          "type": "string",
+          "description": "Documentation for the vectorizer"
+        },
+        "deprecated": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this vectorizer is deprecated"
+        },
+        "deprecatedMessage": {
+          "type": "string",
+          "description": "Deprecation message"
+        },
+        "inheritsFrom": {
+          "type": "string",
+          "description": "Another vectorizer this inherits from (for deprecated aliases)"
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/property"
+          },
+          "description": "The properties for this vectorizer"
+        },
+        "nestedTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/nestedType"
+          },
+          "description": "Nested type definitions used by this vectorizer"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "required": ["version", "vectorizers"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "lastUpdated": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "vectorizers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/vectorizer"
+      }
+    }
+  }
+}

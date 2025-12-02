@@ -1,0 +1,279 @@
+{
+  "$schema": "codegen-config.schema.json",
+  "language": "csharp",
+  "version": "1.0.0",
+  "metadata": {
+    "description": "C# code generation configuration for Weaviate vectorizers",
+    "targetFramework": "net8.0"
+  },
+  "outputPaths": {
+    "declarations": "../src/Weaviate.Client/Models/Vectorizer.Declarations.cs",
+    "properties": "../src/Weaviate.Client/Models/Vectorizer.cs",
+    "configure": "../src/Weaviate.Client/Configure/Vectorizer.cs",
+    "multiVectorConfigure": "../src/Weaviate.Client/Configure/Vectorizer.Multivector.cs"
+  },
+  "namespaces": {
+    "models": "Weaviate.Client.Models",
+    "configure": "Weaviate.Client"
+  },
+  "typeMapping": {
+    "string": "string",
+    "int": "int",
+    "bool": "bool",
+    "double": "double",
+    "string[]": "string[]",
+    "double[]": "double[]"
+  },
+  "namingConventions": {
+    "class": "PascalCase",
+    "property": "PascalCase",
+    "parameter": "camelCase",
+    "constant": "PascalCase"
+  },
+  "codeStyle": {
+    "useRecords": true,
+    "usePartialClasses": true,
+    "useNullableReferenceTypes": true,
+    "indentation": "    "
+  },
+  "vectorizerOverrides": {
+    "SelfProvided": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "generateInMultiVectors": true
+      }
+    },
+    "Img2VecNeural": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["imageFields"]
+      }
+    },
+    "Multi2VecClip": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["imageFields", "inferenceUrl", "textFields", "vectorizeCollectionName", "weights"]
+      }
+    },
+    "Multi2VecCohere": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["baseURL", "imageFields", "model", "dimensions", "textFields", "truncate", "vectorizeCollectionName", "weights"]
+      }
+    },
+    "Multi2VecBind": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["audioFields", "depthFields", "imageFields", "imuFields", "textFields", "thermalFields", "videoFields", "vectorizeCollectionName", "weights"]
+      }
+    },
+    "Multi2VecGoogle": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["projectId", "location", "imageFields", "textFields", "videoFields", "videoIntervalSeconds", "modelId", "dimensions", "vectorizeCollectionName", "weights"]
+      }
+    },
+    "Multi2VecPalm": {
+      "factoryMethod": {
+        "generate": false
+      }
+    },
+    "Multi2VecJinaAI": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "MultiVectors",
+        "parameterOrder": ["baseURL", "dimensions", "imageFields", "model", "textFields", "vectorizeCollectionName", "weights"]
+      }
+    },
+    "Multi2VecVoyageAI": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["baseURL", "imageFields", "model", "textFields", "truncate", "vectorizeCollectionName", "weights"]
+      }
+    },
+    "Ref2VecCentroid": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["referenceProperties", "method"]
+      }
+    },
+    "Text2VecAWS": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["region", "service", "endpoint", "model", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecAzureOpenAI": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["deploymentId", "resourceName", "baseURL", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecCohere": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["baseURL", "model", "dimensions", "truncate", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecDatabricks": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["endpoint", "instruction", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecHuggingFace": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["endpointURL", "model", "passageModel", "queryModel", "useCache", "useGPU", "waitForModel", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecJinaAI": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["model", "dimensions", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecJinaConfig": {
+      "factoryMethod": {
+        "generate": false
+      }
+    },
+    "Text2VecNvidia": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["baseURL", "model", "truncate", "vectorizeCollectionName"]
+      }
+    },
+    "Multi2VecNvidia": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["baseURL", "model", "properties", "truncation"]
+      }
+    },
+    "Text2VecMistral": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["baseURL", "model", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecModel2Vec": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["vectorizeCollectionName"]
+      }
+    },
+    "Text2VecOllama": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["apiEndpoint", "model", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecOpenAI": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["baseURL", "dimensions", "model", "modelVersion", "type", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecPalm": {
+      "factoryMethod": {
+        "generate": false
+      }
+    },
+    "Text2VecGoogle": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["apiEndpoint", "modelId", "projectId", "titleProperty", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecTransformers": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["inferenceUrl", "passageInferenceUrl", "queryInferenceUrl", "poolingStrategy", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecVoyageAI": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["baseURL", "model", "truncate", "dimensions", "vectorizeCollectionName"]
+      }
+    },
+    "Text2VecWeaviate": {
+      "factoryMethod": {
+        "generate": true,
+        "namespace": "Vectors",
+        "parameterOrder": ["baseURL", "dimensions", "model", "vectorizeCollectionName"]
+      },
+      "properties": {
+        "Dimensions": {
+          "jsonConverter": "FlexibleConverter<int>"
+        },
+        "Model": {
+          "jsonConverter": "FlexibleStringConverter"
+        }
+      }
+    },
+    "Multi2VecField": {
+      "factoryMethod": {
+        "generate": false
+      }
+    },
+    "Multi2VecWeights": {
+      "factoryMethod": {
+        "generate": false
+      }
+    },
+    "Multi2VecCohereWeights": {
+      "factoryMethod": {
+        "generate": false
+      }
+    },
+    "Multi2VecBindWeights": {
+      "factoryMethod": {
+        "generate": false
+      }
+    },
+    "Multi2VecGoogleWeights": {
+      "factoryMethod": {
+        "generate": false
+      }
+    },
+    "Multi2VecJinaAIWeights": {
+      "factoryMethod": {
+        "generate": false
+      }
+    },
+    "Multi2VecVoyageAIWeights": {
+      "factoryMethod": {
+        "generate": false
+      }
+    }
+  },
+  "defaultFactoryMethod": {
+    "generate": true,
+    "namespace": "Vectors",
+    "parameterOrder": "auto"
+  }
+}

@@ -1,0 +1,1218 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "lastUpdated": "2025-12-02T00:00:00Z",
+    "description": "Weaviate vectorizer configurations - pure data model"
+  },
+  "vectorizers": [
+    {
+      "name": "SelfProvided",
+      "identifier": "none",
+      "category": "none",
+      "description": "Self-provided vectorization (no automatic vectorization)",
+      "properties": []
+    },
+    {
+      "name": "Img2VecNeural",
+      "identifier": "img2vec-neural",
+      "category": "img2vec",
+      "description": "The configuration for image vectorization using a neural network module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "ImageFields",
+          "type": "string[]",
+          "required": true,
+          "nullable": false,
+          "description": "The image fields used when vectorizing. This is a required field and must match the property fields of the collection that are defined as DataType.BLOB."
+        }
+      ]
+    },
+    {
+      "name": "Multi2VecClip",
+      "identifier": "multi2vec-clip",
+      "category": "multi2vec",
+      "description": "The configuration for multi-media vectorization using the CLIP module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "ImageFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "InferenceUrl",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "TextFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Weights",
+          "type": "Weights",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ],
+      "nestedTypes": [
+        {
+          "name": "Weights",
+          "description": "The weights configuration for multi-media vectorization.",
+          "properties": [
+            {
+              "name": "ImageFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "TextFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Multi2VecCohere",
+      "identifier": "multi2vec-cohere",
+      "category": "multi2vec",
+      "description": "The configuration for multi-media vectorization using the Cohere module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "BaseURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "ImageFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Dimensions",
+          "type": "int",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "TextFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Truncate",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Weights",
+          "type": "Weights",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ],
+      "nestedTypes": [
+        {
+          "name": "Weights",
+          "description": "The weights configuration for Cohere multi-media vectorization.",
+          "properties": [
+            {
+              "name": "ImageFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "TextFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Multi2VecBind",
+      "identifier": "multi2vec-bind",
+      "category": "multi2vec",
+      "description": "The configuration for multi-media vectorization using the Bind module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "AudioFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "DepthFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "ImageFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "IMUFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "TextFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "ThermalFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VideoFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Weights",
+          "type": "Weights",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ],
+      "nestedTypes": [
+        {
+          "name": "Weights",
+          "description": "The weights configuration for Bind multi-media vectorization.",
+          "properties": [
+            {
+              "name": "AudioFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "DepthFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "ImageFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "IMUFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "TextFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "ThermalFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "VideoFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Multi2VecGoogle",
+      "identifier": "multi2vec-palm",
+      "category": "multi2vec",
+      "description": "The configuration for multi-media vectorization using the Google module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "ProjectId",
+          "type": "string",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "Location",
+          "type": "string",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "ImageFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "TextFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VideoFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VideoIntervalSeconds",
+          "type": "int",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "ModelId",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Dimensions",
+          "type": "int",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Weights",
+          "type": "Weights",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ],
+      "nestedTypes": [
+        {
+          "name": "Weights",
+          "description": "The weights configuration for Google multi-media vectorization.",
+          "properties": [
+            {
+              "name": "ImageFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "TextFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "VideoFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Multi2VecPalm",
+      "identifier": "multi2vec-palm",
+      "category": "multi2vec",
+      "description": "Deprecated. Use Multi2VecGoogle instead.",
+      "deprecated": true,
+      "deprecatedMessage": "Use Multi2VecGoogle instead.",
+      "inheritsFrom": "Multi2VecGoogle",
+      "properties": []
+    },
+    {
+      "name": "Multi2VecJinaAI",
+      "identifier": "multi2vec-jinaai",
+      "category": "multi2vec",
+      "description": "The configuration for multi-media vectorization using the Jina module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "BaseURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Dimensions",
+          "type": "int",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "ImageFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "TextFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Weights",
+          "type": "Weights",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ],
+      "nestedTypes": [
+        {
+          "name": "Weights",
+          "description": "The weights configuration for JinaAI multi-media vectorization.",
+          "properties": [
+            {
+              "name": "ImageFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "TextFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Multi2VecVoyageAI",
+      "identifier": "multi2vec-voyageai",
+      "category": "multi2vec",
+      "description": "The configuration for multi-media vectorization using the VoyageAI module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "BaseURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "ImageFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "TextFields",
+          "type": "string[]",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Truncate",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Weights",
+          "type": "Weights",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ],
+      "nestedTypes": [
+        {
+          "name": "Weights",
+          "description": "The weights configuration for VoyageAI multi-media vectorization.",
+          "properties": [
+            {
+              "name": "ImageFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            },
+            {
+              "name": "TextFields",
+              "type": "double[]",
+              "required": false,
+              "nullable": true,
+              "defaultValue": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ref2VecCentroid",
+      "identifier": "ref2vec-centroid",
+      "category": "ref2vec",
+      "description": "The configuration for reference-based vectorization using the centroid method.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "ReferenceProperties",
+          "type": "string[]",
+          "required": true,
+          "nullable": false,
+          "description": "The properties used as reference points for vectorization."
+        },
+        {
+          "name": "Method",
+          "type": "string",
+          "required": false,
+          "nullable": false,
+          "defaultValue": "mean",
+          "description": "The method used to calculate the centroid."
+        }
+      ]
+    },
+    {
+      "name": "Text2VecAWS",
+      "identifier": "text2vec-aws",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the AWS module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "Region",
+          "type": "string",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "Service",
+          "type": "string",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "Endpoint",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecAzureOpenAI",
+      "identifier": "text2vec-azure-openai",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the OpenAI module with Azure.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "DeploymentId",
+          "type": "string",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "ResourceName",
+          "type": "string",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "BaseURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecCohere",
+      "identifier": "text2vec-cohere",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the Cohere module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "BaseURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Dimensions",
+          "type": "int",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Truncate",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecDatabricks",
+      "identifier": "text2vec-databricks",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the Databricks module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "Endpoint",
+          "type": "string",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "Instruction",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecHuggingFace",
+      "identifier": "text2vec-huggingface",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the HuggingFace module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "EndpointURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "PassageModel",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "QueryModel",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "UseCache",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "UseGPU",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "WaitForModel",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecJinaAI",
+      "identifier": "text2vec-jinaai",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the Jina module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Dimensions",
+          "type": "int",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecJinaConfig",
+      "identifier": "text2vec-jinaai",
+      "category": "text2vec",
+      "description": "Deprecated. Use Text2VecJinaAI instead.",
+      "deprecated": true,
+      "deprecatedMessage": "Use Text2VecJinaAI instead.",
+      "inheritsFrom": "Text2VecJinaAI",
+      "properties": []
+    },
+    {
+      "name": "Text2VecNvidia",
+      "identifier": "text2vec-nvidia",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the Nvidia module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "BaseURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Truncate",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Multi2VecNvidia",
+      "identifier": "multi2vec-nvidia",
+      "category": "multi2vec",
+      "description": "The configuration for multi-media vectorization using the Nvidia module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "BaseURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Truncation",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecMistral",
+      "identifier": "text2vec-mistral",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the Mistral module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "BaseURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecModel2Vec",
+      "identifier": "text2vec-model2vec",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the Model2Vec module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecOllama",
+      "identifier": "text2vec-ollama",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the Ollama module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "ApiEndpoint",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecOpenAI",
+      "identifier": "text2vec-openai",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the OpenAI module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "BaseURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Dimensions",
+          "type": "int",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "ModelVersion",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Type",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecPalm",
+      "identifier": "text2vec-palm",
+      "category": "text2vec",
+      "description": "Deprecated. Use Text2VecGoogle instead.",
+      "deprecated": true,
+      "deprecatedMessage": "Use Text2VecGoogle instead.",
+      "inheritsFrom": "Text2VecGoogle",
+      "properties": []
+    },
+    {
+      "name": "Text2VecGoogle",
+      "identifier": "text2vec-palm",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the Google module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "ApiEndpoint",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "ModelId",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "ProjectId",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "TitleProperty",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecTransformers",
+      "identifier": "text2vec-transformers",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the Transformers module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "InferenceUrl",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "PassageInferenceUrl",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "QueryInferenceUrl",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "PoolingStrategy",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecVoyageAI",
+      "identifier": "text2vec-voyageai",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using the VoyageAI module.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "BaseURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Truncate",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Dimensions",
+          "type": "int",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "name": "Text2VecWeaviate",
+      "identifier": "text2vec-weaviate",
+      "category": "text2vec",
+      "description": "The configuration for text vectorization using Weaviate's self-hosted text-based embedding models.\nSee the documentation for detailed usage.",
+      "properties": [
+        {
+          "name": "BaseURL",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Dimensions",
+          "type": "int",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "Model",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        },
+        {
+          "name": "VectorizeCollectionName",
+          "type": "bool",
+          "required": false,
+          "nullable": true,
+          "defaultValue": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+using System.Text.Json.Serialization;
+
+namespace Weaviate.Client.Models;
+
+public static partial class Vectorizer
+{
+{{#each vectorizers}}
+{{#if (and (not deprecated) (eq (or properties.length nestedTypes.length) 0))}}
+    public partial record {{name}} { }
+
+{{/if}}
+{{#if (and (not deprecated) (or properties.length nestedTypes.length))}}
+    public partial record {{name}}
+    {
+{{#each properties}}
+{{#if description}}
+        /// <summary>
+        /// {{description}}
+        /// </summary>
+{{/if}}
+{{#with (getPropertyConfig ../name name)}}
+{{#if jsonConverter}}
+        [JsonConverter(typeof({{jsonConverter}}))]
+{{/if}}
+{{/with}}
+        public {{#if required}}required {{/if}}{{nullableType this}} {{name}} { get; set; }{{defaultValue this}}
+{{/each}}
+{{#if nestedTypes}}
+
+{{#each nestedTypes}}
+{{#if description}}
+        /// <summary>
+        /// {{description}}
+        /// </summary>
+{{/if}}
+        public record {{name}}
+        {
+{{#each properties}}
+{{#if description}}
+            /// <summary>
+            /// {{description}}
+            /// </summary>
+{{/if}}
+            public {{#if required}}required {{/if}}{{nullableType this}} {{name}} { get; set; }{{defaultValue this}}
+{{/each}}
+        }
+{{#unless @last}}
+
+{{/unless}}
+{{/each}}
+{{/if}}
+    }
+
+{{/if}}
+{{#if (and deprecated inheritsFrom)}}
+    [Obsolete("{{deprecatedMessage}}")]
+    public partial record {{name}}
+    {
+        // Inherits all properties from {{inheritsFrom}}
+    }
+
+{{/if}}
+{{/each}}
+}
