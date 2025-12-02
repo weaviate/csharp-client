@@ -136,16 +136,8 @@ internal partial class WeaviateGrpcClient
         }
         catch (global::Grpc.Core.RpcException ex)
         {
-            // Provide clearer diagnostics if the server does not implement the Aggregate RPC yet.
-            if (ex.StatusCode == global::Grpc.Core.StatusCode.Unimplemented)
-            {
-                throw new WeaviateFeatureNotSupportedException(
-                    "gRPC Aggregate method is not implemented on the connected Weaviate server.",
-                    ex
-                );
-            }
-
-            throw new WeaviateServerException("Aggregate request failed", ex);
+            // Use centralized exception mapping helper
+            throw ExceptionHelper.MapGrpcException(ex, "Aggregate request failed");
         }
     }
 

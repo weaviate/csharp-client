@@ -52,24 +52,41 @@ internal class RetryHandler : DelegatingHandler
                 // Non-retriable status code
                 return response;
             }
-            catch (Exception ex) when (ShouldRetry(ex, attempt))
+            catch (Exception ex)
             {
                 lastException = ex;
 
-                _logger?.LogWarning(
-                    ex,
-                    "HTTP request failed with exception. Retry attempt {Attempt} of {MaxRetries}",
-                    attempt + 1,
-                    _policy.MaxRetries
-                );
+                // Check if we should retry
+                if (ShouldRetry(ex, attempt))
+                {
+                    _logger?.LogWarning(
+                        ex,
+                        "HTTP request failed with exception. Retry attempt {Attempt} of {MaxRetries}",
+                        attempt + 1,
+                        _policy.MaxRetries
+                    );
 
-                var delay = _policy.CalculateDelay(attempt);
-                await Task.Delay(delay, cancellationToken);
+                    var delay = _policy.CalculateDelay(attempt);
+                    await Task.Delay(delay, cancellationToken);
+                }
+                else
+                {
+                    // Last attempt or non-retriable exception
+                    // Check if it's a timeout
+                    if (TimeoutHelper.IsTimeoutCancellation(ex))
+                    {
+                        var timeout = TimeoutHelper.GetTimeout();
+                        var operation = TimeoutHelper.GetOperation();
+                        throw new WeaviateTimeoutException(timeout, operation, ex);
+                    }
+
+                    throw;
+                }
             }
         }
 
-        // All retries exhausted, throw the last exception
-        throw lastException ?? new HttpRequestException("Request failed after all retry attempts");
+        // This should never be reached as exceptions are thrown in the catch block
+        throw new WeaviateClientException("Request failed after all retry attempts");
     }
 
     private bool ShouldRetry(Exception ex, int attempt)

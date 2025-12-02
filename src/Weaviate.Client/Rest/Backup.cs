@@ -12,36 +12,26 @@ internal partial class WeaviateRestClient
         CancellationToken cancellationToken = default
     )
     {
-        try
-        {
-            var response = await _httpClient.PostAsJsonAsync(
-                WeaviateEndpoints.Backups(backend.ToEnumMemberString()!),
-                request,
-                options: RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            );
-            await response.ManageStatusCode(
-                [
-                    HttpStatusCode.OK,
-                    // HttpStatusCode.BadRequest,
-                    // HttpStatusCode.Unauthorized,
-                    // HttpStatusCode.Forbidden,
-                    // HttpStatusCode.NotFound,
-                    // HttpStatusCode.Conflict,
-                    // HttpStatusCode.InternalServerError,
-                ],
-                "create backup",
-                ResourceType.Backup
-            );
-            return await response.DecodeAsync<Dto.BackupCreateResponse>(cancellationToken);
-        }
-        catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.UnprocessableEntity
-                && ex.Message.Contains("already in progress")
-            )
-        {
-            throw new WeaviateBackupConflictException(ex);
-        }
+        var response = await _httpClient.PostAsJsonAsync(
+            WeaviateEndpoints.Backups(backend.ToEnumMemberString()!),
+            request,
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
+        );
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "create backup",
+            ResourceType.Backup
+        );
+        return await response.DecodeAsync<Dto.BackupCreateResponse>(cancellationToken);
     }
 
     internal async Task<List<Dto.Anonymous3>> BackupList(
@@ -132,36 +122,26 @@ internal partial class WeaviateRestClient
         CancellationToken cancellationToken = default
     )
     {
-        try
-        {
-            var response = await _httpClient.PostAsJsonAsync(
-                WeaviateEndpoints.BackupRestore(backend.ToEnumMemberString()!, id),
-                request,
-                options: RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            );
-            await response.ManageStatusCode(
-                [
-                    HttpStatusCode.OK,
-                    // HttpStatusCode.BadRequest,
-                    // HttpStatusCode.Unauthorized,
-                    // HttpStatusCode.Forbidden,
-                    // HttpStatusCode.NotFound,
-                    // HttpStatusCode.Conflict,
-                    // HttpStatusCode.InternalServerError,
-                ],
-                "backup restore",
-                ResourceType.Backup
-            );
-            return await response.DecodeAsync<Dto.BackupRestoreResponse>(cancellationToken);
-        }
-        catch (WeaviateUnexpectedStatusCodeException ex)
-            when (ex.StatusCode == HttpStatusCode.UnprocessableEntity
-                && ex.Message.Contains("already in progress")
-            )
-        {
-            throw new WeaviateBackupConflictException(ex);
-        }
+        var response = await _httpClient.PostAsJsonAsync(
+            WeaviateEndpoints.BackupRestore(backend.ToEnumMemberString()!, id),
+            request,
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
+        );
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "backup restore",
+            ResourceType.Backup
+        );
+        return await response.DecodeAsync<Dto.BackupRestoreResponse>(cancellationToken);
     }
 
     internal async Task<Dto.BackupRestoreStatusResponse> BackupRestoreStatus(
