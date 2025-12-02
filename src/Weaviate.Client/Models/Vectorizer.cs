@@ -169,6 +169,7 @@ public static partial class Vectorizer
         public required string ResourceName { get; set; }
         public string? BaseURL { get; set; } = null;
         public int? Dimensions { get; set; } = null;
+        public string? Model { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
