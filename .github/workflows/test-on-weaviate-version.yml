@@ -26,6 +26,7 @@ jobs:
     name: Quick Integration Tests - v${{ inputs.weaviate-version }}
     permissions:
       contents: read
+      checks: write
     uses: ./.github/workflows/integration-test.yml
     secrets: inherit
     with:
@@ -38,6 +39,7 @@ jobs:
     name: Slow Integration Tests - v${{ inputs.weaviate-version }}
     permissions:
       contents: read
+      checks: write
     needs: [integration-rbac]
     if: ${{ inputs.run-slow-tests }}
     uses: ./.github/workflows/integration-test.yml
@@ -52,6 +54,7 @@ jobs:
     name: RBAC Integration Tests - v${{ inputs.weaviate-version }}
     permissions:
       contents: read
+      checks: write
     needs: [integration-quick]
     if: ${{ inputs.run-slow-tests }}
     uses: ./.github/workflows/integration-test.yml
