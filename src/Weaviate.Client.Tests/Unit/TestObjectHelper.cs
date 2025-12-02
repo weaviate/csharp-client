@@ -686,4 +686,100 @@ public partial class ObjectHelperTests
         // Assert
         Assert.NotNull(result);
     }
+
+    [Fact]
+    public void TestUnmarshallProperties_EnumFromString_WithEnumMemberAttribute()
+    {
+        // Arrange
+        var dict = new Dictionary<string, object?>
+        {
+            { "TestEnum", "active" }, // EnumMember value
+        };
+
+        // Act
+        var result = ObjectHelper.UnmarshallProperties<TestProperties>(dict);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(TestStatus.Active, result.TestEnum);
+    }
+
+    [Fact]
+    public void TestUnmarshallProperties_EnumFromString_WithEnumName()
+    {
+        // Arrange
+        var dict = new Dictionary<string, object?>
+        {
+            { "TestEnum", "Active" }, // Enum name
+        };
+
+        // Act
+        var result = ObjectHelper.UnmarshallProperties<TestProperties>(dict);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(TestStatus.Active, result.TestEnum);
+    }
+
+    [Fact]
+    public void TestUnmarshallProperties_EnumFromString_CaseInsensitive()
+    {
+        // Arrange
+        var dict = new Dictionary<string, object?>
+        {
+            { "TestEnum", "PENDING" }, // Different case
+        };
+
+        // Act
+        var result = ObjectHelper.UnmarshallProperties<TestProperties>(dict);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(TestStatus.Pending, result.TestEnum);
+    }
+
+    [Fact]
+    public void TestUnmarshallProperties_EnumFromString_WithoutEnumMemberAttribute()
+    {
+        // Arrange
+        var dict = new Dictionary<string, object?>
+        {
+            { "TestEnum", "Archived" }, // No EnumMember attribute
+        };
+
+        // Act
+        var result = ObjectHelper.UnmarshallProperties<TestProperties>(dict);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(TestStatus.Archived, result.TestEnum);
+    }
+
+    [Fact]
+    public void TestUnmarshallProperties_EnumFromNumber()
+    {
+        // Arrange - Numeric value
+        var dict = new Dictionary<string, object?> { { "TestEnum", 1 } };
+
+        // Act
+        var result = ObjectHelper.UnmarshallProperties<TestProperties>(dict);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(TestStatus.Inactive, result.TestEnum);
+    }
+
+    [Fact]
+    public void TestUnmarshallProperties_EnumFromString_InvalidValue_ThrowsException()
+    {
+        // Arrange
+        var dict = new Dictionary<string, object?> { { "TestEnum", "InvalidValue" } };
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() =>
+            ObjectHelper.UnmarshallProperties<TestProperties>(dict)
+        );
+        Assert.Contains("InvalidValue", exception.Message);
+        Assert.Contains("TestStatus", exception.Message);
+    }
 }

@@ -1,6 +1,22 @@
+using System.Runtime.Serialization;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Common;
+
+public enum TestStatus
+{
+    [EnumMember(Value = "active")]
+    Active,
+
+    [EnumMember(Value = "inactive")]
+    Inactive,
+
+    [EnumMember(Value = "pending")]
+    Pending,
+
+    // No EnumMember attribute for this one
+    Archived,
+}
 
 public record TestNestedProperties
 {
@@ -28,4 +44,5 @@ public record TestProperties
     public PhoneNumber? TestPhone { get; set; }
     public TestNestedProperties? TestObject { get; set; }
     public TestNestedProperties[]? TestObjectArray { get; set; }
+    public TestStatus? TestEnum { get; set; }
 }
