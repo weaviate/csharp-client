@@ -444,6 +444,20 @@ public static partial class Configure
                 }
             );
 
+        public static VectorConfigBuilder Text2VecMorph(
+            string? baseURL = null,
+            string? model = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Text2VecMorph
+                {
+                    BaseURL = baseURL,
+                    Model = model,
+                    VectorizeCollectionName = vectorizeCollectionName,
+                }
+            );
+
         public static VectorConfigBuilder Text2VecOllama(
             string? apiEndpoint = null,
             string? model = null,

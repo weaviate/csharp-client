@@ -247,6 +247,13 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
+    public partial record Text2VecMorph
+    {
+        public string? BaseURL { get; set; } = null;
+        public string? Model { get; set; } = null;
+        public bool? VectorizeCollectionName { get; set; } = null;
+    }
+
     public partial record Text2VecOllama
     {
         public string? ApiEndpoint { get; set; } = null;
