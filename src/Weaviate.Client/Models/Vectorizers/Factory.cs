@@ -12,6 +12,7 @@ internal static class VectorizerConfigFactory
     {
         { Vectorizer.SelfProvided.IdentifierValue, typeof(Vectorizer.SelfProvided) },
         { Vectorizer.Img2VecNeural.IdentifierValue, typeof(Vectorizer.Img2VecNeural) },
+        { Vectorizer.Multi2VecAWS.IdentifierValue, typeof(Vectorizer.Multi2VecAWS) },
         { Vectorizer.Multi2VecClip.IdentifierValue, typeof(Vectorizer.Multi2VecClip) },
         { Vectorizer.Multi2VecCohere.IdentifierValue, typeof(Vectorizer.Multi2VecCohere) },
         { Vectorizer.Multi2VecBind.IdentifierValue, typeof(Vectorizer.Multi2VecBind) },
