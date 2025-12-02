@@ -534,6 +534,7 @@ public static partial class Configure
 
         public static VectorConfigBuilder Text2VecJinaAI(
             string? model = null,
+            string? baseURL = null,
             int? dimensions = null,
             bool? vectorizeCollectionName = null
         ) =>
@@ -541,6 +542,7 @@ public static partial class Configure
                 new Vectorizer.Text2VecJinaAI
                 {
                     Model = model,
+                    BaseURL = baseURL,
                     Dimensions = dimensions,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
