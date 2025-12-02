@@ -268,6 +268,8 @@ public static partial class Vectorizer
         public string? Model { get; set; } = null;
         public string? ProjectId { get; set; } = null;
         public string? TitleProperty { get; set; } = null;
+        public int? Dimensions { get; set; } = null;
+        public string? TaskType { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
