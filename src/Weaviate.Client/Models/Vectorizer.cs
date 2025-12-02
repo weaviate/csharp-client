@@ -243,6 +243,7 @@ public static partial class Vectorizer
 
     public partial record Text2VecModel2Vec
     {
+        public string? InferenceURL { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
