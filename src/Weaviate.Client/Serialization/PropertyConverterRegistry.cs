@@ -92,6 +92,13 @@ public class PropertyConverterRegistry
         if (underlying != null && _byType.TryGetValue(underlying, out converter))
             return converter;
 
+        // Handle enum types - use TextPropertyConverter for string-based enums
+        var enumType = underlying ?? type;
+        if (enumType.IsEnum)
+        {
+            return _byDataType.TryGetValue("text", out converter) ? converter : null;
+        }
+
         // Handle generic collections
         if (type.IsGenericType)
         {

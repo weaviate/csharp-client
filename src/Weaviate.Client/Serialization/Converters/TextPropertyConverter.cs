@@ -12,7 +12,16 @@ public class TextPropertyConverter : PropertyConverterBase
 
     public override object? ToRest(object? value)
     {
-        return value?.ToString();
+        if (value is null)
+            return null;
+
+        // Handle enum types
+        if (value is System.Enum)
+        {
+            return EnumToString(value);
+        }
+
+        return value.ToString();
     }
 
     public override IEnumerable<object?> ToRestArray(IEnumerable<object?> values)
@@ -30,7 +39,31 @@ public class TextPropertyConverter : PropertyConverterBase
 
     public override object? FromRest(object? value, System.Type targetType)
     {
-        return value?.ToString();
+        if (value is null)
+            return null;
+
+        // Handle enum types
+        if (IsEnumType(targetType))
+        {
+            // Check if the value is numeric (enum can be stored as number or string)
+            if (value is int || value is long || value is short || value is byte)
+            {
+                try
+                {
+                    return ConvertNumberToEnum(value, targetType);
+                }
+                catch
+                {
+                    // Fallback to string conversion if numeric conversion fails
+                }
+            }
+
+            // Treat as string (either non-numeric value or numeric conversion failed)
+            var stringValue = value.ToString()!;
+            return ConvertStringToEnum(stringValue, targetType);
+        }
+
+        return value.ToString()!;
     }
 
     public override object? FromGrpc(Value value, System.Type targetType)
@@ -38,6 +71,14 @@ public class TextPropertyConverter : PropertyConverterBase
         if (value.KindCase == Value.KindOneofCase.NullValue)
             return null;
 
-        return value.StringValue;
+        var stringValue = value.StringValue;
+
+        // Handle enum types
+        if (IsEnumType(targetType))
+        {
+            return ConvertStringToEnum(stringValue, targetType);
+        }
+
+        return stringValue;
     }
 }

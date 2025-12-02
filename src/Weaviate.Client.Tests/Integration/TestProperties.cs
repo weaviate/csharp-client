@@ -391,7 +391,10 @@ public partial class PropertyTests : IntegrationTests
             properties: props
         );
 
-        var response = await c.Data.InsertMany(testData, TestContext.Current.CancellationToken);
+        var response = await c.Data.InsertMany(
+            testData,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // 3. Retrieve the object and confirm all properties match
         foreach (var r in response)
