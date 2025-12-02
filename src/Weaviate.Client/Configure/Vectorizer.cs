@@ -400,7 +400,7 @@ public static partial class Configure
             string? baseURL = null,
             string? model = null,
             string[]? properties = null,
-            bool? truncation = null
+            bool? truncate = null
         ) =>
             new(
                 new Vectorizer.Multi2VecNvidia
@@ -408,7 +408,7 @@ public static partial class Configure
                     BaseURL = baseURL,
                     Model = model,
                     SourceProperties = properties,
-                    Truncation = truncation,
+                    Truncate = truncate,
                 }
             );
 
