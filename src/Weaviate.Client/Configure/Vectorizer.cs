@@ -160,6 +160,28 @@ public static partial class Configure
                 }
             );
 
+        public static VectorConfigBuilder Multi2VecAWS(
+            string? region = null,
+            string? model = null,
+            int? dimensions = null,
+            string[]? imageFields = null,
+            string[]? textFields = null,
+            bool? vectorizeCollectionName = null,
+            Vectorizer.Multi2VecAWSWeights? weights = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecAWS
+                {
+                    Region = region,
+                    Model = model,
+                    Dimensions = dimensions,
+                    ImageFields = imageFields,
+                    TextFields = textFields,
+                    VectorizeCollectionName = vectorizeCollectionName,
+                    Weights = weights,
+                }
+            );
+
         public static VectorConfigBuilder Multi2VecClip(
             string[]? imageFields = null,
             string? inferenceUrl = null,
@@ -235,7 +257,7 @@ public static partial class Configure
             string[]? textFields = null,
             string[]? videoFields = null,
             int? videoIntervalSeconds = null,
-            string? modelId = null,
+            string? model = null,
             int? dimensions = null,
             bool? vectorizeCollectionName = null,
             Vectorizer.Multi2VecGoogleWeights? weights = null
@@ -249,7 +271,7 @@ public static partial class Configure
                     TextFields = textFields,
                     VideoFields = videoFields,
                     VideoIntervalSeconds = videoIntervalSeconds,
-                    ModelId = modelId,
+                    ModelId = model,
                     Dimensions = dimensions,
                     VectorizeCollectionName = vectorizeCollectionName,
                     Weights = weights,
@@ -295,6 +317,8 @@ public static partial class Configure
             string service,
             string? endpoint = null,
             string? model = null,
+            string? targetModel = null,
+            string? targetVariant = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
@@ -304,6 +328,8 @@ public static partial class Configure
                     Service = service,
                     Endpoint = endpoint,
                     Model = model,
+                    TargetModel = targetModel,
+                    TargetVariant = targetVariant,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
@@ -312,6 +338,8 @@ public static partial class Configure
             string deploymentId,
             string resourceName,
             string? baseURL = null,
+            int? dimensions = null,
+            string? model = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
@@ -320,6 +348,8 @@ public static partial class Configure
                     DeploymentId = deploymentId,
                     ResourceName = resourceName,
                     BaseURL = baseURL,
+                    Dimensions = dimensions,
+                    Model = model,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
@@ -400,7 +430,7 @@ public static partial class Configure
             string? baseURL = null,
             string? model = null,
             string[]? properties = null,
-            bool? truncation = null
+            bool? truncate = null
         ) =>
             new(
                 new Vectorizer.Multi2VecNvidia
@@ -408,7 +438,7 @@ public static partial class Configure
                     BaseURL = baseURL,
                     Model = model,
                     SourceProperties = properties,
-                    Truncation = truncation,
+                    Truncate = truncate,
                 }
             );
 
@@ -426,10 +456,28 @@ public static partial class Configure
                 }
             );
 
-        public static VectorConfigBuilder Text2VecModel2Vec(bool? vectorizeCollectionName = null) =>
+        public static VectorConfigBuilder Text2VecModel2Vec(
+            string? inferenceURL = null,
+            bool? vectorizeCollectionName = null
+        ) =>
             new(
                 new Vectorizer.Text2VecModel2Vec
                 {
+                    InferenceURL = inferenceURL,
+                    VectorizeCollectionName = vectorizeCollectionName,
+                }
+            );
+
+        public static VectorConfigBuilder Text2VecMorph(
+            string? baseURL = null,
+            string? model = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Text2VecMorph
+                {
+                    BaseURL = baseURL,
+                    Model = model,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
@@ -470,18 +518,22 @@ public static partial class Configure
 
         public static VectorConfigBuilder Text2VecGoogle(
             string? apiEndpoint = null,
-            string? modelId = null,
+            string? model = null,
             string? projectId = null,
             string? titleProperty = null,
+            int? dimensions = null,
+            string? taskType = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
                 new Vectorizer.Text2VecGoogle
                 {
                     ApiEndpoint = apiEndpoint,
-                    ModelId = modelId,
+                    Model = model,
                     ProjectId = projectId,
                     TitleProperty = titleProperty,
+                    Dimensions = dimensions,
+                    TaskType = taskType,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
@@ -491,6 +543,7 @@ public static partial class Configure
             string? passageInferenceUrl = null,
             string? queryInferenceUrl = null,
             string? poolingStrategy = null,
+            int? dimensions = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
@@ -500,6 +553,7 @@ public static partial class Configure
                     PassageInferenceUrl = passageInferenceUrl,
                     QueryInferenceUrl = queryInferenceUrl,
                     PoolingStrategy = poolingStrategy,
+                    Dimensions = dimensions,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
@@ -524,6 +578,7 @@ public static partial class Configure
 
         public static VectorConfigBuilder Text2VecJinaAI(
             string? model = null,
+            string? baseURL = null,
             int? dimensions = null,
             bool? vectorizeCollectionName = null
         ) =>
@@ -531,6 +586,7 @@ public static partial class Configure
                 new Vectorizer.Text2VecJinaAI
                 {
                     Model = model,
+                    BaseURL = baseURL,
                     Dimensions = dimensions,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }

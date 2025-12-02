@@ -25,6 +25,7 @@ public static class GenerativeConfig
         public int? PresencePenalty { get; set; }
         public double? Temperature { get; set; }
         public double? TopP { get; set; }
+        public string? ApiVersion { get; set; }
         public abstract string Type { get; }
     }
 
@@ -37,6 +38,14 @@ public static class GenerativeConfig
         public string Service { get; set; } = string.Empty;
         public string? Model { get; set; }
         public string? Endpoint { get; set; }
+        public string? TargetModel { get; set; }
+        public string? TargetVariant { get; set; }
+        public int? MaxTokenCount { get; set; }
+        public int? MaxTokensToSample { get; set; }
+        public string[]? StopSequences { get; set; }
+        public double? Temperature { get; set; }
+        public double? TopP { get; set; }
+        public double? TopK { get; set; }
     }
 
     public record Anthropic : IGenerativeConfig
@@ -70,8 +79,8 @@ public static class GenerativeConfig
 
         public int? K { get; set; }
         public string? Model { get; set; }
+        public string? BaseURL { get; set; }
         public int? MaxTokens { get; set; }
-        public string? ReturnLikelihoods { get; set; }
         public string[]? StopSequences { get; set; }
         public double? Temperature { get; set; }
     }
@@ -119,6 +128,7 @@ public static class GenerativeConfig
         public int? MaxTokens { get; set; }
         public string? Model { get; set; }
         public double? Temperature { get; set; }
+        public double? TopP { get; set; }
     }
 
     public record Ollama : IGenerativeConfig
@@ -136,6 +146,8 @@ public static class GenerativeConfig
         public override string Type => TypeValue;
 
         public string? Model { get; set; }
+        public string? ReasoningEffort { get; set; }
+        public string? Verbosity { get; set; }
     }
 
     public record AzureOpenAI : OpenAIBase
@@ -155,7 +167,10 @@ public static class GenerativeConfig
         public string? ApiEndpoint { get; set; }
         public int? MaxOutputTokens { get; set; }
         public string? ModelId { get; set; }
+        public string? Model { get; set; }
         public string? ProjectId { get; set; }
+        public string? EndpointId { get; set; }
+        public string? Region { get; set; }
         public double? Temperature { get; set; }
         public int? TopK { get; set; }
         public double? TopP { get; set; }

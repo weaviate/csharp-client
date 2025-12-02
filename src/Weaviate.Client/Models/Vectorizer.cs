@@ -33,6 +33,23 @@ public static partial class Vectorizer
         public double[]? TextFields { get; set; } = null;
     }
 
+    public partial record Multi2VecAWSWeights
+    {
+        public double[]? ImageFields { get; set; } = null;
+        public double[]? TextFields { get; set; } = null;
+    }
+
+    public partial record Multi2VecAWS
+    {
+        public string? Region { get; set; }
+        public string? Model { get; set; } = null;
+        public int? Dimensions { get; set; } = null;
+        public string[]? ImageFields { get; set; } = null;
+        public string[]? TextFields { get; set; } = null;
+        public bool? VectorizeCollectionName { get; set; } = null;
+        public Multi2VecAWSWeights? Weights { get; set; } = null;
+    }
+
     public partial record Multi2VecClip
     {
         public string[]? ImageFields { get; set; } = null;
@@ -158,6 +175,8 @@ public static partial class Vectorizer
         public required string Service { get; set; }
         public string? Endpoint { get; set; } = null;
         public string? Model { get; set; } = null;
+        public string? TargetModel { get; set; } = null;
+        public string? TargetVariant { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -166,6 +185,8 @@ public static partial class Vectorizer
         public required string DeploymentId { get; set; }
         public required string ResourceName { get; set; }
         public string? BaseURL { get; set; } = null;
+        public int? Dimensions { get; set; } = null;
+        public string? Model { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -205,6 +226,7 @@ public static partial class Vectorizer
     public partial record Text2VecJinaAI
     {
         public string? Model { get; set; } = null;
+        public string? BaseURL { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
@@ -227,7 +249,7 @@ public static partial class Vectorizer
     {
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
-        public bool? Truncation { get; set; } = null;
+        public bool? Truncate { get; set; } = null;
     }
 
     public partial record Text2VecMistral
@@ -239,6 +261,14 @@ public static partial class Vectorizer
 
     public partial record Text2VecModel2Vec
     {
+        public string? InferenceURL { get; set; } = null;
+        public bool? VectorizeCollectionName { get; set; } = null;
+    }
+
+    public partial record Text2VecMorph
+    {
+        public string? BaseURL { get; set; } = null;
+        public string? Model { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -262,9 +292,11 @@ public static partial class Vectorizer
     public partial record Text2VecGoogle
     {
         public string? ApiEndpoint { get; set; } = null;
-        public string? ModelId { get; set; } = null;
+        public string? Model { get; set; } = null;
         public string? ProjectId { get; set; } = null;
         public string? TitleProperty { get; set; } = null;
+        public int? Dimensions { get; set; } = null;
+        public string? TaskType { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -274,6 +306,7 @@ public static partial class Vectorizer
         public string? PassageInferenceUrl { get; set; } = null;
         public string? QueryInferenceUrl { get; set; } = null;
         public string? PoolingStrategy { get; set; } = null;
+        public int? Dimensions { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 

@@ -45,6 +45,18 @@ public static partial class Vectorizer
     /// The configuration for multi-media vectorization using the CLIP module.
     /// See the documentation for detailed usage.
     /// </summary>
+    public partial record Multi2VecAWS : VectorizerConfig
+    {
+        public const string IdentifierValue = "multi2vec-aws";
+
+        public Multi2VecAWS()
+            : base(IdentifierValue) { }
+    }
+
+    /// <summary>
+    /// The configuration for multi-media vectorization using the CLIP module.
+    /// See the documentation for detailed usage.
+    /// </summary>
     public partial record Multi2VecClip : VectorizerConfig
     {
         public const string IdentifierValue = "multi2vec-clip";
@@ -294,6 +306,18 @@ public static partial class Vectorizer
         public const string IdentifierValue = "text2vec-model2vec";
 
         public Text2VecModel2Vec()
+            : base(IdentifierValue) { }
+    }
+
+    /// <summary>
+    /// The configuration for text vectorization using the Morph module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    public partial record Text2VecMorph : VectorizerConfig
+    {
+        public const string IdentifierValue = "text2vec-morph";
+
+        public Text2VecMorph()
             : base(IdentifierValue) { }
     }
 
