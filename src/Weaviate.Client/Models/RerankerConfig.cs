@@ -31,12 +31,21 @@ public static class Reranker
         }
     }
 
+    public record ContextualAI : IRerankerConfig
+    {
+        public const string TypeValue = "reranker-contextualai";
+        public string Type => TypeValue;
+
+        public string? Model { get; set; }
+        public string? Instruction { get; set; }
+        public int? TopN { get; set; }
+    }
+
     public record VoyageAI : IRerankerConfig
     {
         public const string TypeValue = "reranker-voyageai";
         public string Type => TypeValue;
 
-        public string? BaseURL { get; set; }
         public string? Model { get; set; }
 
         public static class Models
