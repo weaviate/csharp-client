@@ -288,3 +288,4 @@ jobs:
           generate_release_notes: true
           draft: true
           files: ./out/*.nupkg
+          token: ${{ secrets.GITHUB_TOKEN }}
