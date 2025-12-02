@@ -190,11 +190,6 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecGPT4All
-    {
-        public bool? VectorizeCollectionName { get; set; } = null;
-    }
-
     public partial record Text2VecHuggingFace
     {
         public string? EndpointURL { get; set; } = null;
@@ -210,6 +205,7 @@ public static partial class Vectorizer
     public partial record Text2VecJinaAI
     {
         public string? Model { get; set; } = null;
+        public int? Dimensions { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -238,6 +234,11 @@ public static partial class Vectorizer
     {
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
+        public bool? VectorizeCollectionName { get; set; } = null;
+    }
+
+    public partial record Text2VecModel2Vec
+    {
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
