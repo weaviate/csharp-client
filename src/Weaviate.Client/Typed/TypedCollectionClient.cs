@@ -163,24 +163,4 @@ public class TypedCollectionClient<T>
             yield return obj.ToTyped<T>();
         }
     }
-
-    /// <summary>
-    /// Validates that the C# type T is compatible with this collection's schema.
-    /// Checks property names, types, and array handling.
-    /// </summary>
-    /// <param name="typeValidator">Optional type validator instance. If null, uses TypeValidator.Default.</param>
-    /// <param name="schemaCache">Optional schema cache instance. If null, uses SchemaCache.Default.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>A validation result containing any errors and warnings.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if the collection schema cannot be fetched.</exception>
-    public async Task<ValidationResult> ValidateType(
-        TypeValidator? typeValidator = null,
-        SchemaCache? schemaCache = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var schema = await Config.GetCachedConfig(schemaCache, cancellationToken);
-
-        return schema.ValidateType<T>(typeValidator);
-    }
 }
