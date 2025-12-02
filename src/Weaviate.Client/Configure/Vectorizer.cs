@@ -316,6 +316,7 @@ public static partial class Configure
             string deploymentId,
             string resourceName,
             string? baseURL = null,
+            int? dimensions = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
@@ -324,6 +325,7 @@ public static partial class Configure
                     DeploymentId = deploymentId,
                     ResourceName = resourceName,
                     BaseURL = baseURL,
+                    Dimensions = dimensions,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
