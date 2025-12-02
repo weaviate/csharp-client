@@ -50,25 +50,39 @@ public static partial class Configure
             }
         }
 
-        public static VectorConfigBuilder Multi2VecJinaAI(
+        public static VectorConfigBuilder Text2MultiVecJinaAI(
+            string? model = null,
             string? baseURL = null,
             int? dimensions = null,
-            string[]? imageFields = null,
-            string? model = null,
-            string[]? textFields = null,
-            bool? vectorizeCollectionName = null,
-            Vectorizer.Multi2VecJinaAIWeights? weights = null
+            bool? vectorizeCollectionName = null
         ) =>
             new(
-                new Vectorizer.Multi2VecJinaAI
+                new Vectorizer.Text2MultiVecJinaAI
                 {
+                    Model = model,
                     BaseURL = baseURL,
                     Dimensions = dimensions,
-                    ImageFields = imageFields,
-                    Model = model,
-                    TextFields = textFields,
                     VectorizeCollectionName = vectorizeCollectionName,
+                }
+            );
+
+        public static VectorConfigBuilder Multi2MultiVecJinaAI(
+            string? baseURL = null,
+            string? model = null,
+            string[]? imageFields = null,
+            string[]? textFields = null,
+            Vectorizer.JinaAIWeights? weights = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Multi2MultiVecJinaAI
+                {
+                    BaseURL = baseURL,
+                    Model = model,
+                    ImageFields = imageFields,
+                    TextFields = textFields,
                     Weights = weights,
+                    VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
     }

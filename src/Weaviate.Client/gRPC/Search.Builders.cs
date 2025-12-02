@@ -6,6 +6,13 @@ namespace Weaviate.Client.Grpc;
 
 internal partial class WeaviateGrpcClient
 {
+    private static void SetIfNotNull<T>(Action<T> setter, T? value)
+        where T : struct
+    {
+        if (value.HasValue)
+            setter(value.Value);
+    }
+
     private static V1.SearchRequest BaseSearchRequest(
         string collection,
         Filter? filters = null,
@@ -146,11 +153,7 @@ internal partial class WeaviateGrpcClient
                 result.Anthropic = new V1.GenerativeAnthropic
                 {
                     BaseUrl = a.BaseUrl ?? string.Empty,
-                    MaxTokens = a.MaxTokens ?? 0,
                     Model = a.Model ?? string.Empty,
-                    Temperature = a.Temperature ?? 0,
-                    TopK = a.TopK ?? 0,
-                    TopP = a.TopP ?? 0,
                     StopSequences =
                         a.StopSequences != null
                             ? new V1.TextArray { Values = { a.StopSequences } }
@@ -161,20 +164,23 @@ internal partial class WeaviateGrpcClient
                             ? new V1.TextArray { Values = { a.ImageProperties } }
                             : null,
                 };
+                SetIfNotNull(v => result.Anthropic.MaxTokens = v, a.MaxTokens);
+                SetIfNotNull(v => result.Anthropic.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Anthropic.TopK = v, a.TopK);
+                SetIfNotNull(v => result.Anthropic.TopP = (float)v, a.TopP);
                 break;
             case Models.Generative.Providers.Anyscale a:
                 result.Anyscale = new V1.GenerativeAnyscale
                 {
                     BaseUrl = a.BaseUrl ?? string.Empty,
                     Model = a.Model ?? string.Empty,
-                    Temperature = a.Temperature ?? 0,
                 };
+                SetIfNotNull(v => result.Anyscale.Temperature = (float)v, a.Temperature);
                 break;
             case Models.Generative.Providers.AWS a:
                 result.Aws = new V1.GenerativeAWS
                 {
                     Model = a.Model ?? string.Empty,
-                    Temperature = a.Temperature ?? 0,
                     Service = a.Service ?? string.Empty,
                     Region = a.Region ?? string.Empty,
                     Endpoint = a.Endpoint ?? string.Empty,
@@ -185,30 +191,31 @@ internal partial class WeaviateGrpcClient
                         a.ImageProperties != null
                             ? new V1.TextArray { Values = { a.ImageProperties } }
                             : null,
-                    MaxTokens = a.MaxTokens ?? 0,
                 };
+                SetIfNotNull(v => result.Aws.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Aws.MaxTokens = v, a.MaxTokens);
                 break;
             case Models.Generative.Providers.Cohere a:
                 result.Cohere = new V1.GenerativeCohere
                 {
                     BaseUrl = a.BaseUrl ?? string.Empty,
-                    FrequencyPenalty = a.FrequencyPenalty ?? 0,
-                    MaxTokens = a.MaxTokens ?? 0,
                     Model = a.Model ?? string.Empty,
-                    K = a.K ?? 0,
-                    P = a.P ?? 0,
-                    PresencePenalty = a.PresencePenalty ?? 0,
                     StopSequences =
                         a.StopSequences != null
                             ? new V1.TextArray { Values = { a.StopSequences } }
                             : null,
-                    Temperature = a.Temperature ?? 0,
                     Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
                     ImageProperties =
                         a.ImageProperties != null
                             ? new V1.TextArray { Values = { a.ImageProperties } }
                             : null,
                 };
+                SetIfNotNull(v => result.Cohere.FrequencyPenalty = (float)v, a.FrequencyPenalty);
+                SetIfNotNull(v => result.Cohere.MaxTokens = v, a.MaxTokens);
+                SetIfNotNull(v => result.Cohere.K = v, a.K);
+                SetIfNotNull(v => result.Cohere.P = (float)v, a.P);
+                SetIfNotNull(v => result.Cohere.PresencePenalty = (float)v, a.PresencePenalty);
+                SetIfNotNull(v => result.Cohere.Temperature = (float)v, a.Temperature);
                 break;
             case Models.Generative.Providers.Dummy:
                 result.Dummy = new V1.GenerativeDummy();
@@ -217,36 +224,30 @@ internal partial class WeaviateGrpcClient
                 result.Mistral = new V1.GenerativeMistral
                 {
                     BaseUrl = a.BaseUrl ?? string.Empty,
-                    MaxTokens = a.MaxTokens ?? 0,
                     Model = a.Model ?? string.Empty,
-                    Temperature = a.Temperature ?? 0,
-                    TopP = a.TopP ?? 0,
                 };
+                SetIfNotNull(v => result.Mistral.MaxTokens = v, a.MaxTokens);
+                SetIfNotNull(v => result.Mistral.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Mistral.TopP = (float)v, a.TopP);
                 break;
             case Models.Generative.Providers.Ollama a:
                 result.Ollama = new V1.GenerativeOllama
                 {
                     ApiEndpoint = a.ApiEndpoint ?? string.Empty,
                     Model = a.Model ?? string.Empty,
-                    Temperature = a.Temperature ?? 0,
                     Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
                     ImageProperties =
                         a.ImageProperties != null
                             ? new V1.TextArray { Values = { a.ImageProperties } }
                             : null,
                 };
+                SetIfNotNull(v => result.Ollama.Temperature = (float)v, a.Temperature);
                 break;
             case Models.Generative.Providers.OpenAI a:
                 result.Openai = new V1.GenerativeOpenAI
                 {
-                    FrequencyPenalty = a.FrequencyPenalty ?? 0,
-                    MaxTokens = a.MaxTokens ?? 0,
                     Model = a.Model ?? string.Empty,
-                    N = a.N ?? 0,
-                    PresencePenalty = a.PresencePenalty ?? 0,
                     Stop = a.Stop != null ? new V1.TextArray { Values = { a.Stop } } : null,
-                    Temperature = a.Temperature ?? 0,
-                    TopP = a.TopP ?? 0,
                     BaseUrl = a.BaseUrl ?? string.Empty,
                     ApiVersion = a.ApiVersion ?? string.Empty,
                     ResourceName = a.ResourceName ?? string.Empty,
@@ -264,17 +265,17 @@ internal partial class WeaviateGrpcClient
                         ? (V1.GenerativeOpenAI.Types.Verbosity)a.Verbosity.Value
                         : V1.GenerativeOpenAI.Types.Verbosity.Unspecified,
                 };
+                SetIfNotNull(v => result.Openai.FrequencyPenalty = (float)v, a.FrequencyPenalty);
+                SetIfNotNull(v => result.Openai.MaxTokens = v, a.MaxTokens);
+                SetIfNotNull(v => result.Openai.N = v, a.N);
+                SetIfNotNull(v => result.Openai.PresencePenalty = (float)v, a.PresencePenalty);
+                SetIfNotNull(v => result.Openai.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Openai.TopP = (float)v, a.TopP);
                 break;
             case Models.Generative.Providers.Google a:
                 result.Google = new V1.GenerativeGoogle
                 {
-                    FrequencyPenalty = a.FrequencyPenalty ?? 0,
-                    MaxTokens = a.MaxTokens ?? 0,
                     Model = a.Model ?? string.Empty,
-                    PresencePenalty = a.PresencePenalty ?? 0,
-                    Temperature = a.Temperature ?? 0,
-                    TopK = a.TopK ?? 0,
-                    TopP = a.TopP ?? 0,
                     StopSequences =
                         a.StopSequences != null
                             ? new V1.TextArray { Values = { a.StopSequences } }
@@ -289,58 +290,67 @@ internal partial class WeaviateGrpcClient
                             ? new V1.TextArray { Values = { a.ImageProperties } }
                             : null,
                 };
+                SetIfNotNull(v => result.Google.FrequencyPenalty = (float)v, a.FrequencyPenalty);
+                SetIfNotNull(v => result.Google.MaxTokens = v, a.MaxTokens);
+                SetIfNotNull(v => result.Google.PresencePenalty = (float)v, a.PresencePenalty);
+                SetIfNotNull(v => result.Google.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Google.TopK = v, a.TopK);
+                SetIfNotNull(v => result.Google.TopP = (float)v, a.TopP);
                 break;
             case Models.Generative.Providers.Databricks a:
                 result.Databricks = new V1.GenerativeDatabricks
                 {
                     Endpoint = a.Endpoint ?? string.Empty,
                     Model = a.Model ?? string.Empty,
-                    FrequencyPenalty = a.FrequencyPenalty ?? 0,
                     LogProbs = a.LogProbs ?? false,
-                    TopLogProbs = a.TopLogProbs ?? 0,
-                    MaxTokens = a.MaxTokens ?? 0,
-                    N = a.N ?? 0,
-                    PresencePenalty = a.PresencePenalty ?? 0,
                     Stop = a.Stop != null ? new V1.TextArray { Values = { a.Stop } } : null,
-                    Temperature = a.Temperature ?? 0,
-                    TopP = a.TopP ?? 0,
                 };
+                SetIfNotNull(
+                    v => result.Databricks.FrequencyPenalty = (float)v,
+                    a.FrequencyPenalty
+                );
+                SetIfNotNull(v => result.Databricks.TopLogProbs = v, a.TopLogProbs);
+                SetIfNotNull(v => result.Databricks.MaxTokens = v, a.MaxTokens);
+                SetIfNotNull(v => result.Databricks.N = v, a.N);
+                SetIfNotNull(v => result.Databricks.PresencePenalty = (float)v, a.PresencePenalty);
+                SetIfNotNull(v => result.Databricks.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Databricks.TopP = (float)v, a.TopP);
                 break;
             case Models.Generative.Providers.FriendliAI a:
                 result.Friendliai = new V1.GenerativeFriendliAI
                 {
                     BaseUrl = a.BaseUrl ?? string.Empty,
                     Model = a.Model ?? string.Empty,
-                    MaxTokens = a.MaxTokens ?? 0,
-                    Temperature = a.Temperature ?? 0,
-                    N = a.N ?? 0,
-                    TopP = a.TopP ?? 0,
                 };
+                SetIfNotNull(v => result.Friendliai.MaxTokens = v, a.MaxTokens);
+                SetIfNotNull(v => result.Friendliai.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Friendliai.N = v, a.N);
+                SetIfNotNull(v => result.Friendliai.TopP = (float)v, a.TopP);
                 break;
             case Models.Generative.Providers.Nvidia a:
                 result.Nvidia = new V1.GenerativeNvidia
                 {
                     BaseUrl = a.BaseUrl ?? string.Empty,
                     Model = a.Model ?? string.Empty,
-                    Temperature = a.Temperature ?? 0,
-                    TopP = a.TopP ?? 0,
-                    MaxTokens = a.MaxTokens ?? 0,
                 };
+                SetIfNotNull(v => result.Nvidia.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Nvidia.TopP = (float)v, a.TopP);
+                SetIfNotNull(v => result.Nvidia.MaxTokens = v, a.MaxTokens);
                 break;
             case Models.Generative.Providers.XAI a:
                 result.Xai = new V1.GenerativeXAI
                 {
                     BaseUrl = a.BaseUrl ?? string.Empty,
                     Model = a.Model ?? string.Empty,
-                    Temperature = a.Temperature ?? 0,
-                    TopP = a.TopP ?? 0,
-                    MaxTokens = a.MaxTokens ?? 0,
                     Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
                     ImageProperties =
                         a.ImageProperties != null
                             ? new V1.TextArray { Values = { a.ImageProperties } }
                             : null,
                 };
+                SetIfNotNull(v => result.Xai.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Xai.TopP = (float)v, a.TopP);
+                SetIfNotNull(v => result.Xai.MaxTokens = v, a.MaxTokens);
                 break;
             default:
                 throw new NotSupportedException(
@@ -643,6 +653,11 @@ internal partial class WeaviateGrpcClient
                 targetVector
             );
             request.HybridSearch.Targets = request.HybridSearch.NearVector.Targets;
+        }
+
+        if (vector is null && nearText is null && nearVector is null && targetVector is not null)
+        {
+            request.HybridSearch.Targets = BuildTargetVector(targetVector).targets;
         }
 
         if (queryProperties is not null)
