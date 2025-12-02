@@ -53,9 +53,10 @@ public class TestCancellation
     [Fact]
     public async Task GetMeta_CancellationDuringDelay_Throws()
     {
-        using var client = CreateClientWithDelay(TimeSpan.FromMilliseconds(250));
         using var cts = new CancellationTokenSource();
-        cts.CancelAfter(50);
+        cts.CancelAfter(100);
+
+        using var client = CreateClientWithDelay(TimeSpan.FromMilliseconds(1000));
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => client.GetMeta(cts.Token));
     }
