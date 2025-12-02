@@ -524,6 +524,7 @@ public static partial class Configure
 
         public static VectorConfigBuilder Text2VecJinaAI(
             string? model = null,
+            string? baseURL = null,
             int? dimensions = null,
             bool? vectorizeCollectionName = null
         ) =>
@@ -531,7 +532,30 @@ public static partial class Configure
                 new Vectorizer.Text2VecJinaAI
                 {
                     Model = model,
+                    BaseURL = baseURL,
                     Dimensions = dimensions,
+                    VectorizeCollectionName = vectorizeCollectionName,
+                }
+            );
+
+        public static VectorConfigBuilder Multi2VecJinaAI(
+            string? model = null,
+            string? baseURL = null,
+            int? dimensions = null,
+            string[]? imageFields = null,
+            string[]? textFields = null,
+            Vectorizer.JinaAIWeights? weights = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecJinaAI
+                {
+                    Model = model,
+                    BaseURL = baseURL,
+                    Dimensions = dimensions,
+                    ImageFields = imageFields,
+                    TextFields = textFields,
+                    Weights = weights,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
