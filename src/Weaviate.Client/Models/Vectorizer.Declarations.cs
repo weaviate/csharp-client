@@ -124,7 +124,7 @@ public static partial class Vectorizer
     /// <summary>
     /// The weights configuration for JinaAI multi-media vectorization.
     /// </summary>
-    public partial record Multi2VecJinaAIWeights
+    public partial record JinaAIWeights
     {
         // Implicit constructor used
     }
@@ -138,6 +138,18 @@ public static partial class Vectorizer
         public const string IdentifierValue = "multi2vec-jinaai";
 
         public Multi2VecJinaAI()
+            : base(IdentifierValue) { }
+    }
+
+    /// <summary>
+    /// The configuration for multi-media multi-vector vectorization using the Jina module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    public partial record Multi2MultiVecJinaAI : VectorizerConfig
+    {
+        public const string IdentifierValue = "multi2multivec-jinaai";
+
+        public Multi2MultiVecJinaAI()
             : base(IdentifierValue) { }
     }
 
@@ -246,11 +258,15 @@ public static partial class Vectorizer
     }
 
     /// <summary>
-    /// Deprecated. Use Text2VecJinaAIConfig instead.
+    /// The configuration for text multi-vector vectorization using the Jina module.
+    /// See the documentation for detailed usage.
     /// </summary>
-    public partial record Text2VecJinaConfig : Text2VecJinaAI
+    public partial record Text2MultiVecJinaAI : VectorizerConfig
     {
-        // Inherits constructor from Text2VecJinaAIConfig
+        public const string IdentifierValue = "text2multivec-jinaai";
+
+        public Text2MultiVecJinaAI()
+            : base(IdentifierValue) { }
     }
 
     /// <summary>
