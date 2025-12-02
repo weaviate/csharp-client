@@ -83,13 +83,25 @@ internal class RetryInterceptor : Interceptor
         }
 
         // All retries exhausted
-        if (lastException is RpcException rpcEx)
-            throw rpcEx;
+        if (lastException != null)
+        {
+            // Check if it's a timeout
+            if (TimeoutHelper.IsTimeoutCancellation(lastException))
+            {
+                var timeout = TimeoutHelper.GetTimeout();
+                var operation = TimeoutHelper.GetOperation();
+                throw new WeaviateTimeoutException(timeout, operation, lastException);
+            }
 
-        throw lastException
-            ?? new RpcException(
-                new Status(StatusCode.Internal, "Request failed after all retry attempts")
-            );
+            if (lastException is RpcException rpcEx)
+                throw rpcEx;
+
+            throw lastException;
+        }
+
+        throw new RpcException(
+            new Status(StatusCode.Internal, "Request failed after all retry attempts")
+        );
     }
 
     private bool ShouldRetryGrpc(RpcException ex, int attempt)

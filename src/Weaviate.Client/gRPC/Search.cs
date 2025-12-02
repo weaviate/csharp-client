@@ -22,7 +22,8 @@ internal partial class WeaviateGrpcClient
         }
         catch (global::Grpc.Core.RpcException ex)
         {
-            throw new WeaviateServerException("Search request failed", ex);
+            // Use centralized exception mapping helper
+            throw ExceptionHelper.MapGrpcException(ex, "Search request failed");
         }
     }
 
