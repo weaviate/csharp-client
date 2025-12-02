@@ -25,6 +25,7 @@ public static class GenerativeConfig
         public int? PresencePenalty { get; set; }
         public double? Temperature { get; set; }
         public double? TopP { get; set; }
+        public string? ApiVersion { get; set; }
         public abstract string Type { get; }
     }
 
@@ -144,6 +145,9 @@ public static class GenerativeConfig
         public override string Type => TypeValue;
 
         public string? Model { get; set; }
+        public string? ReasoningEffort { get; set; }
+        public string? Verbosity { get; set; }
+
     }
 
     public record AzureOpenAI : OpenAIBase
