@@ -286,6 +286,18 @@ public static partial class Vectorizer
     }
 
     /// <summary>
+    /// The configuration for text vectorization using the Model2Vec module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    public partial record Text2VecModel2Vec : VectorizerConfig
+    {
+        public const string IdentifierValue = "text2vec-model2vec";
+
+        public Text2VecModel2Vec()
+            : base(IdentifierValue) { }
+    }
+
+    /// <summary>
     /// The configuration for text vectorization using the Ollama module.
     /// See the documentation for detailed usage.
     /// </summary>

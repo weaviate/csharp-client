@@ -27,6 +27,7 @@ internal static class VectorizerConfigFactory
         { Vectorizer.Text2VecJinaAI.IdentifierValue, typeof(Vectorizer.Text2VecJinaAI) },
         { Vectorizer.Text2VecNvidia.IdentifierValue, typeof(Vectorizer.Text2VecNvidia) },
         { Vectorizer.Text2VecMistral.IdentifierValue, typeof(Vectorizer.Text2VecMistral) },
+        { Vectorizer.Text2VecModel2Vec.IdentifierValue, typeof(Vectorizer.Text2VecModel2Vec) },
         { Vectorizer.Text2VecOllama.IdentifierValue, typeof(Vectorizer.Text2VecOllama) },
         { Vectorizer.Text2VecOpenAI.IdentifierValue, typeof(Vectorizer.Text2VecOpenAI) },
         { Vectorizer.Text2VecGoogle.IdentifierValue, typeof(Vectorizer.Text2VecGoogle) },

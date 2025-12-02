@@ -426,6 +426,14 @@ public static partial class Configure
                 }
             );
 
+        public static VectorConfigBuilder Text2VecModel2Vec(bool? vectorizeCollectionName = null) =>
+            new(
+                new Vectorizer.Text2VecModel2Vec
+                {
+                    VectorizeCollectionName = vectorizeCollectionName,
+                }
+            );
+
         public static VectorConfigBuilder Text2VecOllama(
             string? apiEndpoint = null,
             string? model = null,
@@ -516,12 +524,14 @@ public static partial class Configure
 
         public static VectorConfigBuilder Text2VecJinaAI(
             string? model = null,
+            int? dimensions = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
                 new Vectorizer.Text2VecJinaAI
                 {
                     Model = model,
+                    Dimensions = dimensions,
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
