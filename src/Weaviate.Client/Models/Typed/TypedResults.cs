@@ -3,40 +3,65 @@ namespace Weaviate.Client.Models.Typed;
 /// <summary>
 /// Strongly-typed wrapper for WeaviateObject with automatic serialization/deserialization.
 /// Provides both raw dictionary access (Properties) and strongly-typed access (Object).
+/// Internally wraps an untyped WeaviateObject instance.
 /// </summary>
 /// <typeparam name="T">The C# type to deserialize properties into.</typeparam>
 public record WeaviateObject<T>
     where T : class, new()
 {
+    private readonly WeaviateObject _untyped;
     private T? _object;
     private bool _objectLoaded = false;
+
+    protected WeaviateObject(WeaviateObject untyped)
+    {
+        _untyped = untyped;
+    }
 
     /// <summary>
     /// The object ID (UUID).
     /// </summary>
-    public Guid? ID { get; set; }
+    public Guid? ID
+    {
+        get => _untyped.ID;
+        internal set => _untyped.ID = value;
+    }
 
     /// <summary>
     /// The collection name this object belongs to.
     /// </summary>
-    public string? Collection { get; init; }
+    public string? Collection
+    {
+        get => _untyped.Collection;
+    }
 
     /// <summary>
     /// Metadata about the object (creation time, update time, distance, score, etc.).
     /// </summary>
-    public Metadata Metadata { get; set; } = new Metadata();
+    public Metadata Metadata
+    {
+        get => _untyped.Metadata;
+        internal set => _untyped.Metadata = value;
+    }
 
     /// <summary>
     /// The tenant name for multi-tenancy support.
     /// </summary>
-    public string? Tenant { get; set; }
+    public string? Tenant
+    {
+        get => _untyped.Tenant;
+        internal set => _untyped.Tenant = value;
+    }
 
     /// <summary>
     /// Raw properties as a dictionary. This is always available for dynamic access.
     /// When Object is set, this dictionary is automatically updated.
     /// </summary>
-    public IDictionary<string, object?> Properties { get; set; } =
-        new Dictionary<string, object?>();
+    public IDictionary<string, object?> Properties
+    {
+        get => _untyped.Properties;
+        internal set => _untyped.Properties = value;
+    }
 
     /// <summary>
     /// Strongly-typed object deserialized from Properties.
@@ -53,43 +78,41 @@ public record WeaviateObject<T>
             }
             return _object!;
         }
-        set
+        internal set
         {
             _object = value;
             _objectLoaded = true;
 
             // Sync back to Properties dictionary
             var props = ObjectHelper.BuildDataTransferObject(value);
-            Properties = props.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value);
+            _untyped.Properties = props.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value);
         }
     }
 
     /// <summary>
     /// Cross-references to other objects. Remains untyped as references can point to different collection types.
     /// </summary>
-    public IDictionary<string, IList<WeaviateObject>> References { get; set; } =
-        new Dictionary<string, IList<WeaviateObject>>();
+    public IDictionary<string, IList<WeaviateObject>> References
+    {
+        get => _untyped.References;
+        internal set => _untyped.References = value;
+    }
 
     /// <summary>
     /// Vector embeddings for this object.
     /// </summary>
-    public Vectors Vectors { get; set; } = new Vectors();
+    public Vectors Vectors
+    {
+        get => _untyped.Vectors;
+        internal set => _untyped.Vectors = value;
+    }
 
     /// <summary>
     /// Creates a WeaviateObject&lt;T&gt; from an untyped WeaviateObject.
     /// </summary>
     public static WeaviateObject<T> FromUntyped(WeaviateObject obj)
     {
-        return new WeaviateObject<T>
-        {
-            ID = obj.ID,
-            Collection = obj.Collection,
-            Metadata = obj.Metadata,
-            Tenant = obj.Tenant,
-            Properties = obj.Properties,
-            References = obj.References,
-            Vectors = obj.Vectors,
-        };
+        return new WeaviateObject<T>(obj);
     }
 
     /// <summary>
@@ -97,16 +120,7 @@ public record WeaviateObject<T>
     /// </summary>
     public WeaviateObject ToUntyped()
     {
-        return new WeaviateObject
-        {
-            ID = ID,
-            Collection = Collection,
-            Metadata = Metadata,
-            Tenant = Tenant,
-            Properties = Properties,
-            References = References,
-            Vectors = Vectors,
-        };
+        return _untyped;
     }
 }
 
@@ -117,6 +131,9 @@ public record WeaviateObject<T>
 public record GroupByObject<T> : WeaviateObject<T>
     where T : class, new()
 {
+    protected GroupByObject(WeaviateObject untyped)
+        : base(untyped) { }
+
     /// <summary>
     /// The group this object belongs to.
     /// </summary>
@@ -127,18 +144,7 @@ public record GroupByObject<T> : WeaviateObject<T>
     /// </summary>
     public static GroupByObject<T> FromUntyped(GroupByObject obj)
     {
-        var typed = WeaviateObject<T>.FromUntyped(obj);
-        return new GroupByObject<T>
-        {
-            ID = typed.ID,
-            Collection = typed.Collection,
-            Metadata = typed.Metadata,
-            Tenant = typed.Tenant,
-            Properties = typed.Properties,
-            References = typed.References,
-            Vectors = typed.Vectors,
-            BelongsToGroup = obj.BelongsToGroup,
-        };
+        return new GroupByObject<T>(obj) { BelongsToGroup = obj.BelongsToGroup };
     }
 }
 
@@ -194,19 +200,6 @@ public record GroupByResult<T>(
 ) : GroupByResult<GroupByObject<T>, WeaviateGroup<T>>(Objects, Groups)
     where T : class, new() { }
 
-/// <summary>
-/// Strongly-typed query result containing a collection of objects.
-/// </summary>
-/// <typeparam name="T">The C# type of objects in the result.</typeparam>
-public record WeaviateResult<T>
-    where T : class, new()
-{
-    /// <summary>
-    /// The collection of objects returned by the query.
-    /// </summary>
-    public ICollection<WeaviateObject<T>> Objects { get; init; } = Array.Empty<WeaviateObject<T>>();
-}
-
 #region Generative Query Results
 
 /// <summary>
@@ -217,6 +210,17 @@ public record WeaviateResult<T>
 public record GenerativeWeaviateObject<T> : WeaviateObject<T>
     where T : class, new()
 {
+    protected GenerativeWeaviateObject(GenerativeWeaviateObject untyped)
+        : base(untyped)
+    {
+        Generative = untyped.Generative;
+    }
+
+    public static GenerativeWeaviateObject<T> FromUntyped(GenerativeWeaviateObject obj)
+    {
+        return new GenerativeWeaviateObject<T>(obj);
+    }
+
     /// <summary>
     /// Generative AI results associated with this object.
     /// </summary>
@@ -230,6 +234,13 @@ public record GenerativeWeaviateObject<T> : WeaviateObject<T>
 public record GenerativeGroupByObject<T> : GenerativeWeaviateObject<T>
     where T : class, new()
 {
+    protected GenerativeGroupByObject(GenerativeGroupByObject untyped)
+        : base(untyped)
+    {
+        BelongsToGroup = untyped.BelongsToGroup;
+        Generative = untyped.Generative;
+    }
+
     /// <summary>
     /// The group this object belongs to.
     /// </summary>
@@ -240,16 +251,8 @@ public record GenerativeGroupByObject<T> : GenerativeWeaviateObject<T>
     /// </summary>
     public static GenerativeGroupByObject<T> FromUntyped(GenerativeGroupByObject obj)
     {
-        var typed = WeaviateObject<T>.FromUntyped(obj);
-        return new GenerativeGroupByObject<T>
+        return new GenerativeGroupByObject<T>(obj)
         {
-            ID = typed.ID,
-            Collection = typed.Collection,
-            Metadata = typed.Metadata,
-            Tenant = typed.Tenant,
-            Properties = typed.Properties,
-            References = typed.References,
-            Vectors = typed.Vectors,
             BelongsToGroup = obj.BelongsToGroup,
             Generative = obj.Generative,
         };
@@ -299,7 +302,7 @@ public record GenerativeGroupByResult<T>(
 /// Supports both object-level and result-set level generative data.
 /// </summary>
 /// <typeparam name="T">The C# type of objects in the result.</typeparam>
-public record GenerativeWeaviateResult<T> : WeaviateResult<T>
+public record GenerativeWeaviateResult<T> : Models.WeaviateResult<GenerativeWeaviateObject<T>>
     where T : class, new()
 {
     private static readonly GenerativeWeaviateResult<T> _empty = new()

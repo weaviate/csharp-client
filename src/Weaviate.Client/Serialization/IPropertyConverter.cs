@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Runtime.Serialization;
 using Google.Protobuf.WellKnownTypes;
 
 namespace Weaviate.Client.Serialization;
@@ -124,5 +126,82 @@ public abstract class PropertyConverterBase : IPropertyConverter
             array.SetValue(items[i], i);
         }
         return array;
+    }
+
+    /// <summary>
+    /// Checks if the target type is an enum type (including nullable enums).
+    /// </summary>
+    protected static bool IsEnumType(System.Type type)
+    {
+        var underlying = Nullable.GetUnderlyingType(type) ?? type;
+        return underlying.IsEnum;
+    }
+
+    /// <summary>
+    /// Converts a string value to an enum, matching by name or EnumMember attribute.
+    /// </summary>
+    protected static object? ConvertStringToEnum(string value, System.Type enumType)
+    {
+        var actualEnumType = Nullable.GetUnderlyingType(enumType) ?? enumType;
+        if (!actualEnumType.IsEnum)
+            throw new ArgumentException($"Type {enumType.Name} is not an enum type");
+
+        // Try to find a matching enum value by checking:
+        // 1. Enum name (case-insensitive)
+        // 2. EnumMember attribute value (case-insensitive)
+        foreach (var field in actualEnumType.GetFields(BindingFlags.Public | BindingFlags.Static))
+        {
+            // Check if the field name matches
+            if (field.Name.Equals(value, StringComparison.OrdinalIgnoreCase))
+            {
+                return field.GetValue(null);
+            }
+
+            // Check if the EnumMember attribute value matches
+            var enumMemberAttr = field.GetCustomAttribute<EnumMemberAttribute>();
+            if (
+                enumMemberAttr?.Value != null
+                && enumMemberAttr.Value.Equals(value, StringComparison.OrdinalIgnoreCase)
+            )
+            {
+                return field.GetValue(null);
+            }
+        }
+
+        // If no match found, throw an exception
+        throw new ArgumentException(
+            $"Value '{value}' cannot be converted to enum type '{actualEnumType.Name}'. "
+                + $"Valid values are: {string.Join(", ", System.Enum.GetNames(actualEnumType))}"
+        );
+    }
+
+    /// <summary>
+    /// Converts a numeric value to an enum.
+    /// </summary>
+    protected static object? ConvertNumberToEnum(object value, System.Type enumType)
+    {
+        var actualEnumType = Nullable.GetUnderlyingType(enumType) ?? enumType;
+        if (!actualEnumType.IsEnum)
+            throw new ArgumentException($"Type {enumType.Name} is not an enum type");
+
+        return System.Enum.ToObject(actualEnumType, value);
+    }
+
+    /// <summary>
+    /// Converts an enum to its string representation (EnumMember value if present, otherwise name).
+    /// </summary>
+    protected static string? EnumToString(object? value)
+    {
+        if (value is null)
+            return null;
+
+        if (value is not System.Enum enumValue)
+            throw new ArgumentException($"Value is not an enum: {value.GetType().Name}");
+
+        // Return the EnumMember value if present, otherwise the enum name
+        var type = value.GetType();
+        var member = type.GetMember(enumValue.ToString()).FirstOrDefault();
+        var attr = member?.GetCustomAttribute<EnumMemberAttribute>();
+        return attr?.Value ?? enumValue.ToString();
     }
 }

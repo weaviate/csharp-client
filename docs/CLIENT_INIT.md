@@ -57,7 +57,7 @@ var client = await Connect.Local(
     hostname: "localhost",
     defaultTimeout: TimeSpan.FromSeconds(30),
     initTimeout: TimeSpan.FromSeconds(5),
-    dataTimeout: TimeSpan.FromSeconds(60),
+    insertTimeout: TimeSpan.FromSeconds(60),
     queryTimeout: TimeSpan.FromSeconds(120)
 );
 ```
@@ -99,6 +99,201 @@ Client initialization is asynchronous because:
 2. **Authentication Validation**: Credentials are validated immediately, catching auth errors early
 3. **Thread Safety**: Async operations don't block thread pool threads, improving application responsiveness
 4. **Error Handling**: Connection and authentication issues surface immediately during client creation, not later during operations
+
+## Initialization Lifecycle
+
+### Builder Pattern (Recommended)
+
+When using `WeaviateClientBuilder` or `Connect` helpers, initialization happens automatically:
+
+```csharp
+// Client is fully initialized before being returned
+var client = await WeaviateClientBuilder.Local().BuildAsync();
+// ✅ RestClient and GrpcClient are ready to use
+var results = await client.Collections.Get("Article").Query.FetchObjects();
+```
+
+**Key Points:**
+- `BuildAsync()` calls `InitializeAsync()` internally before returning
+- The client is **always fully initialized** when you receive it
+- No manual initialization needed
+
+### Dependency Injection Pattern
+
+When using dependency injection, there are two modes:
+
+#### Eager Initialization (Default - Recommended)
+
+```csharp
+services.AddWeaviateLocal(
+    hostname: "localhost",
+    eagerInitialization: true  // Default
+);
+```
+
+**How it works:**
+- A hosted service (`WeaviateInitializationService`) runs on application startup
+- Calls `InitializeAsync()` automatically before your app serves requests
+- The client is **always initialized** when injected into services
+
+```csharp
+public class MyService
+{
+    private readonly WeaviateClient _client;
+
+    public MyService(WeaviateClient client)
+    {
+        // ✅ Client is already initialized by the hosted service
+        _client = client;
+    }
+
+    public async Task DoWork()
+    {
+        // ✅ Safe to use immediately
+        var results = await _client.Collections.Get("Article").Query.FetchObjects();
+    }
+}
+```
+
+#### Lazy Initialization (Manual Control)
+
+```csharp
+services.AddWeaviateLocal(
+    hostname: "localhost",
+    eagerInitialization: false  // Opt-in to lazy initialization
+);
+```
+
+**How it works:**
+- Client is created but NOT initialized
+- You must call `InitializeAsync()` before first use
+- Useful for scenarios where you want to control when initialization happens
+
+```csharp
+public class MyService
+{
+    private readonly WeaviateClient _client;
+
+    public MyService(WeaviateClient client)
+    {
+        // ⚠️ Client is NOT yet initialized
+        _client = client;
+    }
+
+    public async Task Initialize()
+    {
+        // ✅ Manually trigger initialization
+        await _client.InitializeAsync();
+    }
+
+    public async Task DoWork()
+    {
+        // Check if initialized
+        if (!_client.IsInitialized)
+        {
+            await _client.InitializeAsync();
+        }
+
+        var results = await _client.Collections.Get("Article").Query.FetchObjects();
+    }
+}
+```
+
+### Checking Initialization Status
+
+Use the `IsInitialized` property to check if the client is ready:
+
+```csharp
+if (client.IsInitialized)
+{
+    // Safe to use RestClient and GrpcClient
+    var results = await client.Collections.Get("Article").Query.FetchObjects();
+}
+else
+{
+    // Must call InitializeAsync() first
+    await client.InitializeAsync();
+}
+```
+
+**What happens during initialization:**
+1. Token service is created (for authentication)
+2. REST client is configured
+3. Server metadata is fetched (validates auth, gets gRPC settings)
+4. gRPC client is configured with server metadata
+5. `RestClient` and `GrpcClient` properties are populated
+
+### Important: When is the Client Ready?
+
+| Pattern | When Ready | RestClient/GrpcClient Available |
+|---------|-----------|--------------------------------|
+| `await BuildAsync()` | Immediately after return | ✅ Yes |
+| DI Eager (default) | Before app starts serving | ✅ Yes |
+| DI Lazy | After calling `InitializeAsync()` | ⚠️ Only after init |
+
+**⚠️ Using uninitialized client causes `NullReferenceException`:**
+
+```csharp
+// ❌ BAD: Lazy DI without calling InitializeAsync()
+var client = serviceProvider.GetService<WeaviateClient>();
+var results = await client.Collections.Get("Article").Query.FetchObjects();  // NullReferenceException!
+
+// ✅ GOOD: Check and initialize if needed
+var client = serviceProvider.GetService<WeaviateClient>();
+if (!client.IsInitialized)
+{
+    await client.InitializeAsync();
+}
+var results = await client.Collections.Get("Article").Query.FetchObjects();
+```
+
+### Automatic Initialization Guards
+
+**✨ Safety Feature:** All public async methods in the Weaviate client automatically ensure initialization before executing. This provides a safety net against accidental use of uninitialized clients.
+
+**How it works:**
+
+When you call any async method on the client (like `Collections.Create()`, `Cluster.Replicate()`, `Alias.Get()`, etc.), the client automatically calls `EnsureInitializedAsync()` internally before performing the operation. If the client isn't initialized yet:
+
+- **With eager initialization (default)**: The guard passes immediately since the client is already initialized
+- **With lazy initialization**: The guard triggers initialization automatically on first use
+
+```csharp
+// Lazy DI - initialization happens automatically on first call
+services.AddWeaviateLocal(hostname: "localhost", eagerInitialization: false);
+
+// Later in your code...
+var client = serviceProvider.GetService<WeaviateClient>();
+
+// ✅ This works! The client auto-initializes on first use
+var collections = await client.Collections.List();  // Initialization happens here automatically
+```
+
+**Performance Impact:**
+
+- **Eager initialization (default)**: No overhead - guards pass through immediately
+- **Lazy initialization**: Minimal overhead - first call triggers initialization, subsequent calls pass through
+- Guards use `Lazy<Task>` internally, ensuring initialization happens exactly once even with concurrent calls
+
+**When guards help:**
+
+- Forgetting to call `InitializeAsync()` in lazy initialization scenarios
+- Race conditions where multiple threads access an uninitialized client
+- Unit tests that don't properly set up client initialization
+
+**What's protected:**
+
+- ✅ `client.Collections.*` - All collection operations
+- ✅ `client.Cluster.*` - All cluster operations
+- ✅ `client.Alias.*` - All alias operations
+- ✅ `client.Users.*`, `client.Roles.*`, `client.Groups.*` - All auth operations
+- ✅ Collection-level operations like `collection.Delete()`, `collection.Iterator()`
+- ✅ All async methods that access REST or gRPC clients
+
+**What's not protected:**
+
+- ❌ Synchronous property accessors (design limitation - properties can't be async)
+- ❌ Direct access to internal clients (not part of public API)
 
 ## Connection Configuration
 
@@ -213,7 +408,7 @@ The client supports four timeout categories:
 
 1. **DefaultTimeout**: Applied to all operations (fallback timeout) - **Default: 30 seconds**
 2. **InitTimeout**: Applied to initialization operations (GetMeta, Live, IsReady) - **Default: 2 seconds**
-3. **DataTimeout**: Applied to data operations (Insert, Delete, Update, Reference management) - **Default: 120 seconds**
+3. **InsertTimeout**: Applied to data operations (Insert, Delete, Update, Reference management) - **Default: 120 seconds**
 4. **QueryTimeout**: Applied to query/search operations (FetchObjects, NearText, BM25, Hybrid, Aggregate) and generative operations (Generate.*) - **Default: 60 seconds**
 
 ### Basic Timeout Configuration
@@ -234,7 +429,7 @@ var client = await new WeaviateClientBuilder()
     .WithRestEndpoint("localhost")
     .WithDefaultTimeout(TimeSpan.FromSeconds(30))   // Fallback timeout
     .WithInitTimeout(TimeSpan.FromSeconds(5))       // Fast init timeout
-    .WithDataTimeout(TimeSpan.FromSeconds(60))      // Longer for writes
+    .WithInsertTimeout(TimeSpan.FromSeconds(60))      // Longer for writes
     .WithQueryTimeout(TimeSpan.FromSeconds(120))    // Longest for searches
     .BuildAsync();
 ```
@@ -243,7 +438,7 @@ var client = await new WeaviateClientBuilder()
 
 - **InitTimeout (2s)**: Initialization operations are quick health checks. A very short timeout quickly detects network connectivity issues during client startup without blocking for long.
 
-- **DataTimeout (120s)**: Write operations (inserts, deletes, updates, references) may take longer due to indexing and consistency guarantees. The 120-second default allows time for moderate-to-large batch operations.
+- **InsertTimeout (120s)**: Write operations (inserts, deletes, updates, references) may take longer due to indexing and consistency guarantees. The 120-second default allows time for moderate-to-large batch operations.
 
 - **QueryTimeout (60s)**: Search and retrieval operations (queries, aggregations, generative operations) can be computationally intensive, especially with complex filters, reranking, large result sets, or LLM processing. The 60-second default balances responsiveness with allowing complex queries and generative operations to complete.
 
@@ -375,7 +570,7 @@ class Program
             )
             .WithDefaultTimeout(TimeSpan.FromSeconds(30))
             .WithInitTimeout(TimeSpan.FromSeconds(5))
-            .WithDataTimeout(TimeSpan.FromSeconds(60))
+            .WithInsertTimeout(TimeSpan.FromSeconds(60))
             .WithQueryTimeout(TimeSpan.FromSeconds(120))
             .WithRetryPolicy(new RetryPolicy(maxRetries: 3))
             .BuildAsync();
@@ -426,7 +621,7 @@ var client = await new WeaviateClientBuilder()
     .Local(hostname: "localhost")
     .WithDefaultTimeout(TimeSpan.FromSeconds(30))
     .WithInitTimeout(TimeSpan.FromSeconds(10))
-    .WithDataTimeout(TimeSpan.FromSeconds(60))
+    .WithInsertTimeout(TimeSpan.FromSeconds(60))
     .WithQueryTimeout(TimeSpan.FromSeconds(120))
     .BuildAsync();
 ```
@@ -450,7 +645,7 @@ var client = await new WeaviateClientBuilder()
     .WithHeader("X-API-Key", "secret-key")
     .WithDefaultTimeout(TimeSpan.FromSeconds(30))
     .WithInitTimeout(TimeSpan.FromSeconds(5))
-    .WithDataTimeout(TimeSpan.FromSeconds(90))
+    .WithInsertTimeout(TimeSpan.FromSeconds(90))
     .WithQueryTimeout(TimeSpan.FromSeconds(180))
     .BuildAsync();
 ```
