@@ -342,6 +342,20 @@ internal partial class WeaviateGrpcClient
                             : null,
                 };
                 break;
+            case Models.Generative.Providers.ContextualAI a:
+                result.Contextualai = new V1.GenerativeContextualAI
+                {
+                    Model = a.Model ?? string.Empty,
+                    Temperature = a.Temperature ?? 0,
+                    TopP = a.TopP ?? 0,
+                    MaxNewTokens = a.MaxNewTokens ?? 0,
+                    SystemPrompt = a.SystemPrompt ?? string.Empty,
+                    AvoidCommentary = a.AvoidCommentary ?? false,
+                    Knowledge = a.Knowledge != null
+                        ? new V1.TextArray { Values = { a.Knowledge } }
+                        : new V1.TextArray(),
+                };
+                break;
             default:
                 throw new NotSupportedException(
                     $"Unknown generative provider type: {provider.GetType().Name}"
