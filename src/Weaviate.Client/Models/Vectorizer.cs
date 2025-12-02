@@ -158,6 +158,8 @@ public static partial class Vectorizer
         public required string Service { get; set; }
         public string? Endpoint { get; set; } = null;
         public string? Model { get; set; } = null;
+        public string? TargetModel { get; set; } = null;
+        public string? TargetVariant { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
