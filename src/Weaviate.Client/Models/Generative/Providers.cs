@@ -179,7 +179,7 @@ public static class Providers
         public double? TopP { get; set; }
         public long? MaxNewTokens { get; set; }
         public string? SystemPrompt { get; set; }
-        public string? AvoidCommentary { get; set; }
+        public bool? AvoidCommentary { get; set; }
         public string[]? Knowledge { get; set; }
     }
 }

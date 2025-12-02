@@ -186,4 +186,18 @@ public static class GenerativeConfig
         public double? Temperature { get; set; }
         public double? TopP { get; set; }
     }
+
+    public record ContextualAI : IGenerativeConfig
+    {
+        public const string TypeValue = "generative-contextualai";
+        public string Type => TypeValue;
+
+        public string? Model { get; set; }
+        public double? Temperature { get; set; }
+        public double? TopP { get; set; }
+        public long? MaxNewTokens { get; set; }
+        public string? SystemPrompt { get; set; }
+        public bool? AvoidCommentary { get; set; }
+        public string[]? Knowledge { get; set; }
+    }
 }
