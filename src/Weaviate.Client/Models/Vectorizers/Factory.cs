@@ -12,6 +12,7 @@ internal static class VectorizerConfigFactory
     {
         { Vectorizer.SelfProvided.IdentifierValue, typeof(Vectorizer.SelfProvided) },
         { Vectorizer.Img2VecNeural.IdentifierValue, typeof(Vectorizer.Img2VecNeural) },
+        { Vectorizer.Multi2VecAWS.IdentifierValue, typeof(Vectorizer.Multi2VecAWS) },
         { Vectorizer.Multi2VecClip.IdentifierValue, typeof(Vectorizer.Multi2VecClip) },
         { Vectorizer.Multi2VecCohere.IdentifierValue, typeof(Vectorizer.Multi2VecCohere) },
         { Vectorizer.Multi2VecBind.IdentifierValue, typeof(Vectorizer.Multi2VecBind) },
@@ -28,6 +29,7 @@ internal static class VectorizerConfigFactory
         { Vectorizer.Text2VecNvidia.IdentifierValue, typeof(Vectorizer.Text2VecNvidia) },
         { Vectorizer.Text2VecMistral.IdentifierValue, typeof(Vectorizer.Text2VecMistral) },
         { Vectorizer.Text2VecModel2Vec.IdentifierValue, typeof(Vectorizer.Text2VecModel2Vec) },
+        { Vectorizer.Text2VecMorph.IdentifierValue, typeof(Vectorizer.Text2VecMorph) },
         { Vectorizer.Text2VecOllama.IdentifierValue, typeof(Vectorizer.Text2VecOllama) },
         { Vectorizer.Text2VecOpenAI.IdentifierValue, typeof(Vectorizer.Text2VecOpenAI) },
         { Vectorizer.Text2VecGoogle.IdentifierValue, typeof(Vectorizer.Text2VecGoogle) },
