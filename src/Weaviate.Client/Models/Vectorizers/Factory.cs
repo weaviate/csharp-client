@@ -17,7 +17,10 @@ internal static class VectorizerConfigFactory
         { Vectorizer.Multi2VecBind.IdentifierValue, typeof(Vectorizer.Multi2VecBind) },
         { Vectorizer.Multi2VecGoogle.IdentifierValue, typeof(Vectorizer.Multi2VecGoogle) },
         { Vectorizer.Multi2VecJinaAI.IdentifierValue, typeof(Vectorizer.Multi2VecJinaAI) },
-        { Vectorizer.Multi2MultiVecJinaAI.IdentifierValue, typeof(Vectorizer.Multi2MultiVecJinaAI) },
+        {
+            Vectorizer.Multi2MultiVecJinaAI.IdentifierValue,
+            typeof(Vectorizer.Multi2MultiVecJinaAI)
+        },
         { Vectorizer.Multi2VecVoyageAI.IdentifierValue, typeof(Vectorizer.Multi2VecVoyageAI) },
         { Vectorizer.Ref2VecCentroid.IdentifierValue, typeof(Vectorizer.Ref2VecCentroid) },
         { Vectorizer.Text2VecAWS.IdentifierValue, typeof(Vectorizer.Text2VecAWS) },
