@@ -352,6 +352,19 @@ internal partial class WeaviateGrpcClient
                 SetIfNotNull(v => result.Xai.TopP = (float)v, a.TopP);
                 SetIfNotNull(v => result.Xai.MaxTokens = v, a.MaxTokens);
                 break;
+            case Models.Generative.Providers.ContextualAI a:
+                result.Contextualai = new V1.GenerativeContextualAI
+                {
+                    Model = a.Model ?? string.Empty,
+                    SystemPrompt = a.SystemPrompt ?? string.Empty,
+                    Knowledge =
+                        a.Knowledge != null ? new V1.TextArray { Values = { a.Knowledge } } : null,
+                };
+                SetIfNotNull(v => result.Contextualai.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Contextualai.TopP = (float)v, a.TopP);
+                SetIfNotNull(v => result.Contextualai.MaxNewTokens = v, a.MaxNewTokens);
+                SetIfNotNull(v => result.Contextualai.AvoidCommentary = v, a.AvoidCommentary);
+                break;
             default:
                 throw new NotSupportedException(
                     $"Unknown generative provider type: {provider.GetType().Name}"

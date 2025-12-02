@@ -19,6 +19,7 @@ public static class GenerativeConfig
 
     public abstract record OpenAIBase : IGenerativeConfig
     {
+        public string? Model { get; set; }
         public string? BaseURL { get; set; }
         public int? FrequencyPenalty { get; set; }
         public int? MaxTokens { get; set; }
@@ -26,6 +27,8 @@ public static class GenerativeConfig
         public double? Temperature { get; set; }
         public double? TopP { get; set; }
         public string? ApiVersion { get; set; }
+        public string? ReasoningEffort { get; set; }
+        public string? Verbosity { get; set; }
         public abstract string Type { get; }
     }
 
@@ -144,10 +147,6 @@ public static class GenerativeConfig
     {
         public const string TypeValue = "generative-openai";
         public override string Type => TypeValue;
-
-        public string? Model { get; set; }
-        public string? ReasoningEffort { get; set; }
-        public string? Verbosity { get; set; }
     }
 
     public record AzureOpenAI : OpenAIBase
@@ -186,5 +185,19 @@ public static class GenerativeConfig
         public string? Model { get; set; }
         public double? Temperature { get; set; }
         public double? TopP { get; set; }
+    }
+
+    public record ContextualAI : IGenerativeConfig
+    {
+        public const string TypeValue = "generative-contextualai";
+        public string Type => TypeValue;
+
+        public string? Model { get; set; }
+        public double? Temperature { get; set; }
+        public double? TopP { get; set; }
+        public long? MaxNewTokens { get; set; }
+        public string? SystemPrompt { get; set; }
+        public bool? AvoidCommentary { get; set; }
+        public string[]? Knowledge { get; set; }
     }
 }
