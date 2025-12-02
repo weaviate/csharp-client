@@ -356,15 +356,16 @@ internal partial class WeaviateGrpcClient
                 result.Contextualai = new V1.GenerativeContextualAI
                 {
                     Model = a.Model ?? string.Empty,
-                    Temperature = a.Temperature ?? 0,
-                    TopP = a.TopP ?? 0,
-                    MaxNewTokens = a.MaxNewTokens ?? 0,
                     SystemPrompt = a.SystemPrompt ?? string.Empty,
-                    AvoidCommentary = a.AvoidCommentary ?? false,
-                    Knowledge = a.Knowledge != null
-                        ? new V1.TextArray { Values = { a.Knowledge } }
-                        : new V1.TextArray(),
+                    Knowledge =
+                        a.Knowledge != null
+                            ? new V1.TextArray { Values = { a.Knowledge } }
+                            : null,
                 };
+                SetIfNotNull(v => result.Contextualai.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Contextualai.TopP = (float)v, a.TopP);
+                SetIfNotNull(v => result.Contextualai.MaxNewTokens = v, a.MaxNewTokens);
+                SetIfNotNull(v => result.Contextualai.AvoidCommentary = v, a.AvoidCommentary);
                 break;
             default:
                 throw new NotSupportedException(
