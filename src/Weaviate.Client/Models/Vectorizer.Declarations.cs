@@ -222,18 +222,6 @@ public static partial class Vectorizer
     }
 
     /// <summary>
-    /// The configuration for text vectorization using the GPT4All module.
-    /// See the documentation for detailed usage.
-    /// </summary>
-    public partial record Text2VecGpt4All : VectorizerConfig
-    {
-        public const string IdentifierValue = "text2vec-gpt4all";
-
-        public Text2VecGpt4All()
-            : base(IdentifierValue) { }
-    }
-
-    /// <summary>
     /// The configuration for text vectorization using the HuggingFace module.
     /// See the documentation for detailed usage.
     /// </summary>

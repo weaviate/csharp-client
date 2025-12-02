@@ -356,11 +356,6 @@ public static partial class Configure
                 }
             );
 
-        public static VectorConfigBuilder Text2VecGpt4All(bool? vectorizeCollectionName = null) =>
-            new(
-                new Vectorizer.Text2VecGpt4All { VectorizeCollectionName = vectorizeCollectionName }
-            );
-
         public static VectorConfigBuilder Text2VecHuggingFace(
             string? endpointURL = null,
             string? model = null,
