@@ -113,6 +113,36 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.Class>(cancellationToken);
     }
 
+    internal async Task<Dto.Class> CollectionCreateRaw(
+        string json,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(
+            WeaviateEndpoints.Collection(),
+            content,
+            cancellationToken: cancellationToken
+        );
+
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                // HttpStatusCode.BadRequest, // 400
+                // HttpStatusCode.Unauthorized, // 401
+                // HttpStatusCode.Forbidden, // 403
+                // HttpStatusCode.NotFound, // 404
+                // HttpStatusCode.Conflict, // 409
+                // HttpStatusCode.InternalServerError, // 500
+            ],
+            "collection create (raw JSON)",
+            ResourceType.Collection
+        );
+
+        return await response.DecodeAsync<Dto.Class>(cancellationToken);
+    }
+
     internal async Task<Dto.Class> CollectionUpdate(
         string collectionName,
         Dto.Class collection,
