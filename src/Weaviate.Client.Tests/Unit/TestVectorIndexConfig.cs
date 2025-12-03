@@ -60,15 +60,18 @@ public partial class VectorIndexConfigTests
     public void VectorIndexConfig_None_Quantizer_Sets_SkipDefaultQuantization()
     {
         // Arrange
-        var hnsw = new VectorIndex.HNSW
-        {
-            Quantizer = new VectorIndex.Quantizers.None()
-        };
+        var hnsw = new VectorIndex.HNSW { Quantizer = new VectorIndex.Quantizers.None() };
 
         // Act - serialize to DTO
         var dto = VectorIndexSerialization.ToDto(hnsw);
-        var json = JsonSerializer.Serialize(dto, Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions);
-        var deserialized = JsonSerializer.Deserialize<Dictionary<string, object>>(json, Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions);
+        var json = JsonSerializer.Serialize(
+            dto,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+        var deserialized = JsonSerializer.Deserialize<Dictionary<string, object>>(
+            json,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
 
         // Assert
         Assert.NotNull(deserialized);
