@@ -1156,6 +1156,64 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     [Fact]
+    public async Task Test_skip_default_quantization()
+    {
+        RequireVersion(
+            "1.33.0",
+            message: "Skip default quantization only supported in server version 1.33.0+"
+        );
+
+        var collection = await CollectionFactory(
+            vectorConfig: new[]
+            {
+                Configure
+                    .Vectors.SelfProvided()
+                    .New(
+                        name: "hnswNone",
+                        indexConfig: new VectorIndex.HNSW
+                        {
+                            Quantizer = new VectorIndex.Quantizers.None(),
+                        }
+                    ),
+            }
+        );
+        var config = await collection.Config.Get(TestContext.Current.CancellationToken);
+        Assert.NotNull(config);
+        var vcNone = config.VectorConfig["hnswNone"];
+        Assert.NotNull(vcNone);
+        var hnswConfig = vcNone.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        var noneQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.None;
+        Assert.NotNull(noneQuantizer);
+        Assert.Equal(VectorIndex.Quantizers.None.TypeValue, noneQuantizer.Type);
+
+        // Update to add a different quantizer
+        await collection.Config.Update(c =>
+        {
+            var vc = c.VectorConfig["hnswNone"];
+            vc.VectorIndexConfig.UpdateHNSW(vic =>
+            {
+                vic.Quantizer = new VectorIndex.Quantizers.SQ
+                {
+                    TrainingLimit = 50000,
+                    RescoreLimit = 100,
+                };
+            });
+        });
+
+        config = await collection.Config.Get(TestContext.Current.CancellationToken);
+        Assert.NotNull(config);
+        vcNone = config.VectorConfig["hnswNone"];
+        Assert.NotNull(vcNone);
+        hnswConfig = vcNone.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        var sqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.SQ;
+        Assert.NotNull(sqQuantizer);
+        Assert.Equal(50000, sqQuantizer.TrainingLimit);
+        Assert.Equal(100, sqQuantizer.RescoreLimit);
+    }
+
+    [Fact]
     public async Task Test_Return_Blob_Property()
     {
         // Arrange

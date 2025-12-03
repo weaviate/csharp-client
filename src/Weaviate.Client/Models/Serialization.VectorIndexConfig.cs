@@ -98,6 +98,9 @@ internal class HnswDto
 
     [JsonPropertyName("multivector")]
     public MultiVectorDto? MultiVector { get; set; }
+
+    [JsonPropertyName("skipDefaultQuantization")]
+    public bool? SkipDefaultQuantization { get; set; }
 }
 
 internal class FlatDto
@@ -153,6 +156,11 @@ internal static class VectorIndexMappingExtensions
     {
         var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ, dto.RQ);
 
+        if (dto.SkipDefaultQuantization == true && quantizer == null)
+        {
+            quantizer = new VectorIndex.Quantizers.None();
+        }
+
         var muvera = dto.MultiVector?.Muvera?.ToModel();
 
         var multivector =
@@ -180,6 +188,8 @@ internal static class VectorIndexMappingExtensions
             VectorCacheMaxObjects = dto.VectorCacheMaxObjects,
             Quantizer = quantizer,
             MultiVector = multivector,
+            // Only set SkipDefaultQuantization if it's true to avoid serializing false values
+            SkipDefaultQuantization = dto.SkipDefaultQuantization == true ? true : null,
         };
     }
 
@@ -227,7 +237,18 @@ internal static class VectorIndexMappingExtensions
                 case "rq":
                     dto.RQ = hnsw.Quantizer as VectorIndex.Quantizers.RQ;
                     break;
+                case "none":
+                    dto.SkipDefaultQuantization = true;
+                    break;
             }
+        }
+
+        // Only set SkipDefaultQuantization if it's explicitly true
+        // This is important because skipDefaultQuantization is immutable on the server
+        // and we don't want to serialize false values (omit them from JSON)
+        if (hnsw.SkipDefaultQuantization == true)
+        {
+            dto.SkipDefaultQuantization = true;
         }
 
         return dto;
