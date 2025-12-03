@@ -51,6 +51,7 @@ public class GenerateClient
     /// <returns>Generative group-by result</returns>
     public async Task<GenerativeGroupByResult> FetchObjects(
         Models.GroupByRequest groupBy,
+        Guid? after = null,
         uint? limit = null,
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
@@ -66,6 +67,7 @@ public class GenerateClient
     ) =>
         await _client.GrpcClient.FetchObjects(
             _collectionName,
+            after: after,
             limit: limit,
             rerank: rerank,
             singlePrompt: prompt,
@@ -99,6 +101,7 @@ public class GenerateClient
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>Generative result</returns>
     public async Task<GenerativeWeaviateResult?> FetchObjects(
+        Guid? after = null,
         uint? limit = null,
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
@@ -114,6 +117,7 @@ public class GenerateClient
     ) =>
         await _client.GrpcClient.FetchObjects(
             _collectionName,
+            after: after,
             limit: limit,
             rerank: rerank,
             singlePrompt: prompt,

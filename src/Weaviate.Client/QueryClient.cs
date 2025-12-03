@@ -28,6 +28,7 @@ public class QueryClient
     #region Objects
     public async Task<GroupByResult> FetchObjects(
         Models.GroupByRequest groupBy,
+        Guid? after = null,
         uint? limit = null,
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
@@ -42,6 +43,7 @@ public class QueryClient
     {
         return await _grpc.FetchObjects(
             _collectionName,
+            after: after,
             limit: limit,
             rerank: rerank,
             filters: filters,
@@ -58,6 +60,7 @@ public class QueryClient
     }
 
     public async Task<WeaviateResult> FetchObjects(
+        Guid? after = null,
         uint? limit = null,
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
@@ -71,6 +74,7 @@ public class QueryClient
     ) =>
         await _grpc.FetchObjects(
             _collectionName,
+            after: after,
             limit: limit,
             rerank: rerank,
             filters: filters,
