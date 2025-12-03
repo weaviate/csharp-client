@@ -58,9 +58,12 @@ jobs:
             echo "enabled=false" >> $GITHUB_OUTPUT
           fi
 
-  check_formatting:
-    name: Check Formatting
+  preflight:
+    name: Preflight Checks
+    needs: [setup]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -77,27 +80,6 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Check formatting
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          dotnet tool restore
-          dotnet csharpier check ${{ steps.changed-files.outputs.all_changed_files }}
-
-  unit-tests:
-    name: Unit Tests
-    needs: [setup]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
       - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
@@ -108,6 +90,12 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
+
+      - name: Check formatting
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          dotnet tool restore
+          dotnet csharpier check ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: Run unit tests with coverage (or dry-run)
         run: |
@@ -147,6 +135,7 @@ jobs:
 
   # =============================================================================
   # Integration Tests - All Weaviate Versions
+  # Runs concurrently with preflight checks for faster feedback
   # To add a new version: Add it to the matrix.version array below
   # =============================================================================
   test-weaviate-versions:
@@ -154,7 +143,7 @@ jobs:
     permissions:
       contents: read
       checks: write
-    needs: [unit-tests, setup]
+    needs: [setup]
     strategy:
       fail-fast: false
       matrix:
@@ -170,7 +159,7 @@ jobs:
     name: Test Summary
     needs:
       - setup
-      - unit-tests
+      - preflight
       - test-weaviate-versions
     runs-on: ubuntu-latest
     if: always()
@@ -238,14 +227,15 @@ jobs:
 
       - name: Check test status
         run: |
-          if [ "${{ needs.unit-tests.result }}" != "success" ]; then
-            echo "Unit tests failed"
+          if [ "${{ needs.preflight.result }}" != "success" ]; then
+            echo "❌ Preflight checks failed (formatting or unit tests)"
             exit 1
           fi
           if [ "${{ needs.test-weaviate-versions.result }}" != "success" ]; then
-            echo "Integration tests failed on one or more Weaviate versions"
+            echo "❌ Integration tests failed on one or more Weaviate versions"
             exit 1
           fi
+          echo "✅ All tests passed successfully"
 
   build-and-publish:
     name: Build and Publish to NuGet
