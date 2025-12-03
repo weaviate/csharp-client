@@ -221,9 +221,7 @@ public class DataClient
                             {
                                 Name = v.Key,
                                 VectorBytes = v.Value.ToByteString(),
-                                Type = typeof(System.Collections.IEnumerable).IsAssignableFrom(
-                                    v.Value.ValueType
-                                )
+                                Type = v.Value.IsMultiVector
                                     ? Grpc.Protobuf.V1.Vectors.Types.VectorType.MultiFp32
                                     : Grpc.Protobuf.V1.Vectors.Types.VectorType.SingleFp32,
                             })
@@ -248,7 +246,7 @@ public class DataClient
 
         var results = new List<BatchInsertResponseEntry>();
 
-        foreach (int r in Enumerable.Range(0, objects.Count))
+        foreach (int r in Enumerable.Range(0, objects.Count()))
         {
             results.Add(
                 new BatchInsertResponseEntry(

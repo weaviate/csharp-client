@@ -324,6 +324,88 @@ public static class WeaviateExtensions
         }
     }
 
+    internal static Vector FromByteString<T>(this Grpc.Protobuf.V1.Vectors vector)
+        where T : struct
+    {
+        var byteString = vector.VectorBytes;
+        var vectorName = vector.Name;
+        var vectorType = vector.Type;
+
+        if (vectorType == Grpc.Protobuf.V1.Vectors.Types.VectorType.MultiFp32)
+        {
+            return VectorFromByteStringMulti<T>(byteString, vectorName);
+        }
+        else
+        {
+            return VectorFromByteStringSingle<T>(byteString, vectorName);
+        }
+    }
+
+    private static VectorSingle<T> VectorFromByteStringSingle<T>(
+        Google.Protobuf.ByteString byteString,
+        string vectorName
+    )
+        where T : struct
+    {
+        return new VectorSingle<T>([.. FromByteString<T>(byteString)]) { Name = vectorName };
+    }
+
+    private static VectorMulti<T> VectorFromByteStringMulti<T>(
+        Google.Protobuf.ByteString byteString,
+        string vectorName
+    )
+        where T : struct
+    {
+        using var stream = new MemoryStream();
+
+        byteString.WriteTo(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        using var reader = new BinaryReader(stream);
+
+        // Read the dimensions
+        short rowLength = reader.ReadInt16();
+
+        long remainingBytes = stream.Length - stream.Position;
+        int typeSize = System.Runtime.InteropServices.Marshal.SizeOf<T>();
+        if (typeSize == 0)
+            throw new InvalidOperationException($"Cannot determine size of type {typeof(T).Name}.");
+
+        int totalItems = (int)(remainingBytes / typeSize);
+        int dimensions = totalItems / rowLength;
+
+        var result = new T[dimensions, rowLength];
+
+        int i = 0,
+            j = 0;
+        while (stream.Position < stream.Length)
+        {
+            object value = typeof(T) switch
+            {
+                Type t when t == typeof(int) => reader.ReadInt32(),
+                Type t when t == typeof(long) => reader.ReadInt64(),
+                Type t when t == typeof(short) => reader.ReadInt16(),
+                Type t when t == typeof(float) => reader.ReadSingle(),
+                Type t when t == typeof(double) => reader.ReadDouble(),
+                Type t when t == typeof(byte) => reader.ReadByte(),
+                Type t when t == typeof(bool) => reader.ReadBoolean(),
+                Type t when t == typeof(string) => reader.ReadString(),
+                _ => throw new NotSupportedException(
+                    $"The type '{typeof(T).FullName}' is not supported by FromByteStringMulti<T>."
+                ),
+            };
+            result[i, j] = (T)value;
+            j++;
+            if (j == rowLength)
+            {
+                j = 0;
+                i++;
+            }
+        }
+
+        return new VectorMulti<T>(result) { Name = vectorName };
+    }
+
     internal static Stream ToStream<T>(this IEnumerable<T> items)
         where T : struct
     {
@@ -410,6 +492,11 @@ public static class WeaviateExtensions
             return Google.Protobuf.ByteString.Empty;
         }
 
+        if (vector.IsMultiVector)
+        {
+            return vector.ToMultiDimensionalByteString();
+        }
+
         return vector.ValueType switch
         {
             Type t when t == typeof(float) => ToByteString(vector as IEnumerable<float>),
@@ -420,18 +507,81 @@ public static class WeaviateExtensions
             Type t when t == typeof(byte) => ToByteString(vector as IEnumerable<byte>),
             Type t when t == typeof(bool) => ToByteString(vector as IEnumerable<bool>),
             Type t when t == typeof(decimal) => ToByteString(vector as IEnumerable<decimal>),
-            Type t when t == typeof(float[]) => ToByteString(vector as IEnumerable<float[]>),
-            Type t when t == typeof(double[]) => ToByteString(vector as IEnumerable<double[]>),
-            Type t when t == typeof(int[]) => ToByteString(vector as IEnumerable<int[]>),
-            Type t when t == typeof(long[]) => ToByteString(vector as IEnumerable<long[]>),
-            Type t when t == typeof(short[]) => ToByteString(vector as IEnumerable<short[]>),
-            Type t when t == typeof(byte[]) => ToByteString(vector as IEnumerable<byte[]>),
-            Type t when t == typeof(bool[]) => ToByteString(vector as IEnumerable<bool[]>),
-            Type t when t == typeof(decimal[]) => ToByteString(vector as IEnumerable<decimal[]>),
+
             _ => throw new NotSupportedException(
                 $"The type '{vector.ValueType.FullName}' is not supported by ToByteString."
             ),
         };
+    }
+
+    internal static Google.Protobuf.ByteString ToMultiDimensionalByteString(this Vector vector)
+    {
+        if (vector == null || vector.Dimensions == 0 || vector.Count == 0)
+            return Google.Protobuf.ByteString.Empty;
+
+        int cols = vector.Count;
+
+        using var ms = new MemoryStream();
+        using var writer = new BinaryWriter(ms);
+
+        // Write the number of columns as a little-endian short (must match FromByteStringMulti)
+        writer.Write((short)cols);
+
+        // Write all values in row-major order based on the concrete vector type
+        // Pattern matching on the generic type once is much more efficient than
+        // switching on every individual element
+        switch (vector)
+        {
+            case VectorMulti<float> v:
+                foreach (var row in v)
+                foreach (var item in row)
+                    writer.Write(item);
+                break;
+            case VectorMulti<double> v:
+                foreach (var row in v)
+                foreach (var item in row)
+                    writer.Write(item);
+                break;
+            case VectorMulti<int> v:
+                foreach (var row in v)
+                foreach (var item in row)
+                    writer.Write(item);
+                break;
+            case VectorMulti<long> v:
+                foreach (var row in v)
+                foreach (var item in row)
+                    writer.Write(item);
+                break;
+            case VectorMulti<short> v:
+                foreach (var row in v)
+                foreach (var item in row)
+                    writer.Write(item);
+                break;
+            case VectorMulti<byte> v:
+                foreach (var row in v)
+                foreach (var item in row)
+                    writer.Write(item);
+                break;
+            case VectorMulti<bool> v:
+                foreach (var row in v)
+                foreach (var item in row)
+                    writer.Write(item);
+                break;
+            case VectorMulti<decimal> v:
+                foreach (var row in v)
+                foreach (var item in row)
+                    writer.Write((double)item); // BinaryWriter does not support decimal
+                break;
+            default:
+                throw new NotSupportedException(
+                    $"The type '{vector.ValueType.FullName}' is not supported by ToMultiDimensionalByteString."
+                );
+        }
+
+        writer.Flush();
+        ms.Seek(0, SeekOrigin.Begin); // Reset stream position before reading
+
+        return Google.Protobuf.ByteString.FromStream(ms);
     }
 
     internal static Google.Protobuf.ByteString ToByteString<T>(this IEnumerable<T[]>? items)
