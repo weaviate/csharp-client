@@ -28,7 +28,6 @@ public class TypedDataClient<T>
         Guid? id = null,
         Models.Vectors? vectors = null,
         OneOrManyOf<ObjectReference>? references = null,
-        string? tenant = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -37,7 +36,6 @@ public class TypedDataClient<T>
             id,
             vectors,
             references,
-            tenant,
             cancellationToken: cancellationToken
         );
     }
@@ -50,11 +48,10 @@ public class TypedDataClient<T>
         T data,
         Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
-        string? tenant = null,
         CancellationToken cancellationToken = default
     )
     {
-        await _dataClient.Replace(id, data, vectors, references, tenant, cancellationToken);
+        await _dataClient.Replace(id, data, vectors, references, cancellationToken);
     }
 
     /// <summary>
@@ -150,11 +147,10 @@ public class TypedDataClient<T>
         Filter where,
         bool dryRun = false,
         bool verbose = false,
-        string? tenant = null,
         CancellationToken cancellationToken = default
     )
     {
-        return await _dataClient.DeleteMany(where, dryRun, verbose, tenant, cancellationToken);
+        return await _dataClient.DeleteMany(where, dryRun, verbose, cancellationToken);
     }
 
     /// <summary>
