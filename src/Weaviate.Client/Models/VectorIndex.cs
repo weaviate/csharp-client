@@ -148,7 +148,7 @@ public static class VectorIndex
             public override string Type => TypeValue;
         }
 
-        public record None : QuantizerConfigBase
+        public record None : QuantizerConfigFlat
         {
             public const string TypeValue = "none";
 
@@ -187,6 +187,7 @@ public static class VectorIndex
         public VectorDistance? Distance { get; set; }
         public long? VectorCacheMaxObjects { get; set; }
         public QuantizerConfigFlat? Quantizer { get; set; }
+        public bool? SkipDefaultQuantization { get; set; }
 
         public override string Type => TypeValue;
     }

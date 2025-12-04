@@ -100,7 +100,6 @@ internal class HnswDto
     public MultiVectorDto? MultiVector { get; set; }
 
     [JsonPropertyName("skipDefaultQuantization")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool? SkipDefaultQuantization { get; set; }
 }
 
@@ -126,7 +125,6 @@ internal class FlatDto
     public VectorIndex.Quantizers.RQ? RQ { get; set; }
 
     [JsonPropertyName("skipDefaultQuantization")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool? SkipDefaultQuantization { get; set; }
 }
 
@@ -164,7 +162,7 @@ internal static class VectorIndexMappingExtensions
             dto.PQ,
             dto.SQ,
             dto.RQ,
-            new VectorIndex.Quantizers.None() { Enabled = dto.SkipDefaultQuantization ?? true }
+            new VectorIndex.Quantizers.None() { Enabled = dto.SkipDefaultQuantization == true }
         );
 
         var muvera = dto.MultiVector?.Muvera?.ToModel();
@@ -194,7 +192,8 @@ internal static class VectorIndexMappingExtensions
             VectorCacheMaxObjects = dto.VectorCacheMaxObjects,
             Quantizer = quantizer,
             MultiVector = multivector,
-            // Only set SkipDefaultQuantization if it's true to avoid serializing false values
+            // Only preserve SkipDefaultQuantization if it's true (immutability requirement)
+            // If false/null, we don't set it so it can be omitted from serialization
             SkipDefaultQuantization = dto.SkipDefaultQuantization == true ? true : null,
         };
     }
@@ -249,6 +248,13 @@ internal static class VectorIndexMappingExtensions
             }
         }
 
+        // Set skipDefaultQuantization: true if explicitly set or if using None quantizer
+        // JsonIgnore attribute will handle omitting it when null (false/null cases)
+        if (hnsw.SkipDefaultQuantization == true)
+        {
+            dto.SkipDefaultQuantization = true;
+        }
+
         return dto;
     }
 
@@ -261,7 +267,7 @@ internal static class VectorIndexMappingExtensions
             dto.PQ,
             dto.SQ,
             dto.RQ,
-            new VectorIndex.Quantizers.None() { Enabled = dto.SkipDefaultQuantization ?? true }
+            new VectorIndex.Quantizers.None() { Enabled = dto.SkipDefaultQuantization == true }
         );
 
         return new VectorIndex.Flat
@@ -269,6 +275,9 @@ internal static class VectorIndexMappingExtensions
             Distance = dto.Distance,
             VectorCacheMaxObjects = dto.VectorCacheMaxObjects,
             Quantizer = quantizer as QuantizerConfigFlat,
+            // Only preserve SkipDefaultQuantization if it's true (immutability requirement)
+            // If false/null, we don't set it so it can be omitted from serialization
+            SkipDefaultQuantization = dto.SkipDefaultQuantization == true ? true : null,
         };
     }
 
@@ -298,7 +307,17 @@ internal static class VectorIndexMappingExtensions
                 case "rq":
                     dto.RQ = flat.Quantizer as VectorIndex.Quantizers.RQ;
                     break;
+                case "none":
+                    dto.SkipDefaultQuantization = true;
+                    break;
             }
+        }
+
+        // Set skipDefaultQuantization: true if explicitly set or if using None quantizer
+        // JsonIgnore attribute will handle omitting it when null (false/null cases)
+        if (flat.SkipDefaultQuantization == true)
+        {
+            dto.SkipDefaultQuantization = true;
         }
 
         return dto;
