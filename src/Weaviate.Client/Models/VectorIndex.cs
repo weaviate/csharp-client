@@ -148,7 +148,7 @@ public static class VectorIndex
             public override string Type => TypeValue;
         }
 
-        public record None : QuantizerConfigFlat
+        public record None : QuantizerConfigBase
         {
             public const string TypeValue = "none";
 

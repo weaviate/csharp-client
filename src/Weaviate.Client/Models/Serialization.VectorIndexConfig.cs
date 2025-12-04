@@ -100,6 +100,7 @@ internal class HnswDto
     public MultiVectorDto? MultiVector { get; set; }
 
     [JsonPropertyName("skipDefaultQuantization")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool? SkipDefaultQuantization { get; set; }
 }
 
@@ -116,13 +117,17 @@ internal class FlatDto
     public VectorIndex.Quantizers.BQ? BQ { get; set; }
 
     [JsonPropertyName("pq")]
-    public VectorIndex.Quantizers.BQ? PQ { get; set; }
+    public VectorIndex.Quantizers.PQ? PQ { get; set; }
 
     [JsonPropertyName("sq")]
-    public VectorIndex.Quantizers.BQ? SQ { get; set; }
+    public VectorIndex.Quantizers.SQ? SQ { get; set; }
 
     [JsonPropertyName("rq")]
     public VectorIndex.Quantizers.RQ? RQ { get; set; }
+
+    [JsonPropertyName("skipDefaultQuantization")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public bool? SkipDefaultQuantization { get; set; }
 }
 
 internal class DynamicDto
@@ -154,12 +159,13 @@ internal static class VectorIndexMappingExtensions
     // HNSW mapping
     public static VectorIndex.HNSW ToHnsw(this HnswDto dto)
     {
-        var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ, dto.RQ);
-
-        if (dto.SkipDefaultQuantization == true && quantizer == null)
-        {
-            quantizer = new VectorIndex.Quantizers.None();
-        }
+        var quantizer = GetEnabledQuantizer(
+            dto.BQ,
+            dto.PQ,
+            dto.SQ,
+            dto.RQ,
+            new VectorIndex.Quantizers.None() { Enabled = dto.SkipDefaultQuantization ?? true }
+        );
 
         var muvera = dto.MultiVector?.Muvera?.ToModel();
 
@@ -243,14 +249,6 @@ internal static class VectorIndexMappingExtensions
             }
         }
 
-        // Only set SkipDefaultQuantization if it's explicitly true
-        // This is important because skipDefaultQuantization is immutable on the server
-        // and we don't want to serialize false values (omit them from JSON)
-        if (hnsw.SkipDefaultQuantization == true)
-        {
-            dto.SkipDefaultQuantization = true;
-        }
-
         return dto;
     }
 
@@ -258,7 +256,13 @@ internal static class VectorIndexMappingExtensions
     public static VectorIndex.Flat ToFlat(this FlatDto dto)
     {
         // For Flat, the Quantizer property is specifically BQ type
-        var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ, dto.RQ);
+        var quantizer = GetEnabledQuantizer(
+            dto.BQ,
+            dto.PQ,
+            dto.SQ,
+            dto.RQ,
+            new VectorIndex.Quantizers.None() { Enabled = dto.SkipDefaultQuantization ?? true }
+        );
 
         return new VectorIndex.Flat
         {
