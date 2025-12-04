@@ -43,7 +43,7 @@ public record BM25Config : IEquatable<BM25Config>
             return false;
         if (ReferenceEquals(this, other))
             return true;
-        const float epsilon = 1e-6f;
+        const float epsilon = 1e-5f;
         return Math.Abs(_b - other._b) < epsilon && Math.Abs(_k1 - other._k1) < epsilon;
     }
 }
