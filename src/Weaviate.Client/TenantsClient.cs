@@ -9,23 +9,23 @@ public partial class CollectionClient
 
 public class TenantsClient
 {
-    private CollectionClient _collectionClient;
+    private readonly CollectionClient _collectionClient;
 
     internal TenantsClient(CollectionClient collectionClient)
     {
         _collectionClient = collectionClient;
     }
 
-    public async Task<IEnumerable<Tenant>> Add(
+    public async Task<IEnumerable<Tenant>> Create(
         string[] tenants,
         CancellationToken cancellationToken = default
     )
     {
         var tenantModels = tenants.Select(name => new Tenant { Name = name }).ToArray();
-        return await Add(tenantModels, cancellationToken);
+        return await Create(tenantModels, cancellationToken);
     }
 
-    public async Task<IEnumerable<Tenant>> Add(
+    public async Task<IEnumerable<Tenant>> Create(
         Tenant[] tenants,
         CancellationToken cancellationToken = default
     )

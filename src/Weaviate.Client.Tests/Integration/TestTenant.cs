@@ -22,7 +22,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             new[]
             {
                 new Tenant { Name = "tenant1" },
@@ -68,7 +68,7 @@ public partial class TenantTests : IntegrationTests
         );
 
         Tenant tenantObj = new() { Name = tenant };
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             new[] { tenantObj },
             TestContext.Current.CancellationToken
         );
@@ -112,7 +112,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             new[] { "tenant1", "tenant2" },
             TestContext.Current.CancellationToken
         );
@@ -176,7 +176,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             new[]
             {
                 new Tenant { Name = "tenant1" },
@@ -255,7 +255,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             new[]
             {
                 new Tenant { Name = "tenant1" },
@@ -305,7 +305,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             new[] { "tenant1", "tenant2" },
             TestContext.Current.CancellationToken
         );
@@ -354,7 +354,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             new[] { "Tenant1", "Tenant2" },
             TestContext.Current.CancellationToken
         );
@@ -396,7 +396,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             ["Tenant1", "Tenant2"],
             TestContext.Current.CancellationToken
         );
@@ -450,7 +450,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             ["Tenant1", "Tenant2"],
             TestContext.Current.CancellationToken
         );
@@ -503,7 +503,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             ["Tenant1", "Tenant2"],
             TestContext.Current.CancellationToken
         );
@@ -559,7 +559,7 @@ public partial class TenantTests : IntegrationTests
 
         // Create with HOT (deprecated)
 #pragma warning disable CS0612 // Type or member is obsolete
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             [new Tenant { Name = "1", Status = TenantActivityStatus.Hot }],
             TestContext.Current.CancellationToken
         );
@@ -617,7 +617,7 @@ public partial class TenantTests : IntegrationTests
 
         // Add tenants with various activity statuses, including deprecated ones
 #pragma warning disable CS0612 // Type or member is obsolete
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             [
                 new Tenant { Name = "1", Status = TenantActivityStatus.Hot },
                 new Tenant { Name = "2", Status = TenantActivityStatus.Cold },
@@ -652,7 +652,7 @@ public partial class TenantTests : IntegrationTests
         );
 
         var tenant = new Tenant { Name = "1" };
-        await collectionClient.Tenants.Add([tenant], TestContext.Current.CancellationToken);
+        await collectionClient.Tenants.Create([tenant], TestContext.Current.CancellationToken);
 
         Assert.True(
             await collectionClient.Tenants.Exists(
@@ -684,7 +684,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add([tenantCase], TestContext.Current.CancellationToken);
+        await collectionClient.Tenants.Create([tenantCase], TestContext.Current.CancellationToken);
 
         var tenant = await collectionClient.Tenants.Get(
             tenantCase,
@@ -754,9 +754,9 @@ public partial class TenantTests : IntegrationTests
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
         {
             if (tenants is Tenant t)
-                await collectionClient.Tenants.Add([t], TestContext.Current.CancellationToken);
+                await collectionClient.Tenants.Create([t], TestContext.Current.CancellationToken);
             else if (tenants is List<Tenant> list)
-                await collectionClient.Tenants.Add(
+                await collectionClient.Tenants.Create(
                     list.ToArray(),
                     TestContext.Current.CancellationToken
                 );
@@ -824,7 +824,10 @@ public partial class TenantTests : IntegrationTests
             .Select(i => new Tenant { Name = $"tenant{i}" })
             .ToArray();
 
-        await collectionClient.Tenants.Add(tenantsToCreate, TestContext.Current.CancellationToken);
+        await collectionClient.Tenants.Create(
+            tenantsToCreate,
+            TestContext.Current.CancellationToken
+        );
 
         var tenants = (
             await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
@@ -904,7 +907,7 @@ public partial class TenantTests : IntegrationTests
         );
 
         var tenant = new Tenant { Name = "tenant1" };
-        await collectionClient.Tenants.Add([tenant], TestContext.Current.CancellationToken);
+        await collectionClient.Tenants.Create([tenant], TestContext.Current.CancellationToken);
 
         var tenant1Collection = collectionClient.WithTenant(tenant.Name);
 
@@ -951,7 +954,7 @@ public partial class TenantTests : IntegrationTests
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
 
-        await collectionClient.Tenants.Add(
+        await collectionClient.Tenants.Create(
             new[]
             {
                 new Tenant { Name = "TenantA" },
