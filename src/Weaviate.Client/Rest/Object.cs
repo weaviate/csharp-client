@@ -64,6 +64,12 @@ internal partial class WeaviateRestClient
             ResourceType.Object
         );
 
+        // Only try to deserialize if there's content
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            return data; // Return the input data or null, depending on your needs
+        }
+
         return await response.DecodeAsync<Dto.Object>(cancellationToken);
     }
 
