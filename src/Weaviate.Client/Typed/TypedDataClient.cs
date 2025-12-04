@@ -41,6 +41,20 @@ public class TypedDataClient<T>
     }
 
     /// <summary>
+    /// Updates a strongly-typed object in the collection.
+    /// </summary>
+    public async Task Update(
+        Guid id,
+        T data,
+        Models.Vectors? vectors = null,
+        IEnumerable<ObjectReference>? references = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        await _dataClient.Update(id, data, vectors, references, cancellationToken);
+    }
+
+    /// <summary>
     /// Replaces a strongly-typed object in the collection.
     /// </summary>
     public async Task Replace(

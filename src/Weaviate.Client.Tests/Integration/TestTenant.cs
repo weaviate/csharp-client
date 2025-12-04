@@ -171,7 +171,7 @@ public partial class TenantTests : IntegrationTests
         var collectionClient = await CollectionFactory(
             null,
             "Test collection with tenants",
-            [Property.Text("Name")],
+            [Property.Text("Name"), Property.Text("Name2")],
             vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
@@ -189,7 +189,7 @@ public partial class TenantTests : IntegrationTests
         var tenant2Collection = collectionClient.WithTenant("tenant2");
 
         var uuid = await tenant1Collection.Data.Insert(
-            new { Name = "some name" },
+            new { Name = "some name", Name2 = "some name2" },
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -205,6 +205,7 @@ public partial class TenantTests : IntegrationTests
         );
         Assert.NotNull(obj);
         Assert.Equal("other name", obj.Properties["name"]);
+        Assert.DoesNotContain("name2", obj.Properties.Keys);
 
         Assert.Null(
             await tenant2Collection.Query.FetchObjectByID(
@@ -249,7 +250,7 @@ public partial class TenantTests : IntegrationTests
         var collectionClient = await CollectionFactory(
             null,
             "Test collection with tenants",
-            [Property.Text("Name")],
+            [Property.Text("Name"), Property.Text("Name2")],
             vectorConfig: Configure.Vectors.SelfProvided().New(),
             multiTenancyConfig: Configure.MultiTenancy(enabled: true)
         );
@@ -267,11 +268,11 @@ public partial class TenantTests : IntegrationTests
         var tenant2Collection = collectionClient.WithTenant("tenant2");
 
         var uuid = await tenant1Collection.Data.Insert(
-            new { Name = "some name" },
+            new { Name = "some name", Name2 = "some name2" },
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        await tenant1Collection.Data.Replace(
+        await tenant1Collection.Data.Update(
             uuid,
             new { Name = "other name" },
             cancellationToken: TestContext.Current.CancellationToken
@@ -283,6 +284,7 @@ public partial class TenantTests : IntegrationTests
         );
         Assert.NotNull(obj);
         Assert.Equal("other name", obj.Properties["name"]);
+        Assert.Equal("some name2", obj.Properties["name2"]); // was not replaced
 
         Assert.Null(
             await tenant2Collection.Query.FetchObjectByID(
