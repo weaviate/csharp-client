@@ -49,7 +49,6 @@ public class DataClient
         Guid? id = null,
         Models.Vectors? vectors = null,
         OneOrManyOf<ObjectReference>? references = null,
-        string? tenant = null,
         bool validate = false,
         CancellationToken cancellationToken = default
     )
@@ -79,7 +78,7 @@ public class DataClient
             Class = _collectionName,
             Properties = propDict,
             Vectors = VectorsToDto(vectors),
-            Tenant = tenant ?? _collectionClient.Tenant,
+            Tenant = _collectionClient.Tenant,
         };
 
         var response = await _client.RestClient.ObjectInsert(
@@ -95,7 +94,6 @@ public class DataClient
         object data,
         Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
-        string? tenant = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -112,7 +110,7 @@ public class DataClient
             Class = _collectionName,
             Properties = propDict,
             Vectors = VectorsToDto(vectors),
-            Tenant = tenant ?? _collectionClient.Tenant,
+            Tenant = _collectionClient.Tenant,
         };
 
         await _client.RestClient.ObjectReplace(
@@ -380,7 +378,6 @@ public class DataClient
         Filter where,
         bool dryRun = false,
         bool verbose = false,
-        string? tenant = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -389,7 +386,7 @@ public class DataClient
             where,
             dryRun,
             verbose,
-            tenant,
+            _collectionClient.Tenant,
             _collectionClient.ConsistencyLevel,
             CreateTimeoutCancellationToken(cancellationToken)
         );
