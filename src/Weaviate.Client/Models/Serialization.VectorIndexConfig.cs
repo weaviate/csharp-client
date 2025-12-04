@@ -99,6 +99,7 @@ internal class HnswDto
     [JsonPropertyName("multivector")]
     public MultiVectorDto? MultiVector { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [JsonPropertyName("skipDefaultQuantization")]
     public bool? SkipDefaultQuantization { get; set; }
 }
@@ -220,6 +221,7 @@ internal static class VectorIndexMappingExtensions
                         Aggregation = hnsw.MultiVector?.Aggregation,
                     }
                     : null,
+            SkipDefaultQuantization = hnsw.SkipDefaultQuantization,
         };
 
         // Set the appropriate quantizer property based on type
@@ -243,13 +245,6 @@ internal static class VectorIndexMappingExtensions
                     dto.SkipDefaultQuantization = true;
                     break;
             }
-        }
-
-        // Set skipDefaultQuantization: true if explicitly set or if using None quantizer
-        // JsonIgnore attribute will handle omitting it when null (false/null cases)
-        if (hnsw.SkipDefaultQuantization == true)
-        {
-            dto.SkipDefaultQuantization = true;
         }
 
         return dto;
