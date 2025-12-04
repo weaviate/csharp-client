@@ -84,8 +84,7 @@ internal partial class WeaviateGrpcClient
     {
         if (metadataResult.VectorBytes != null && metadataResult.VectorBytes.Length > 0)
         {
-            var vectorData = metadataResult.VectorBytes.FromByteString<float>();
-            return Vectors.Create(vectorData.ToArray());
+            return Vector.Create<float>([.. metadataResult.VectorBytes.FromByteString<float>()]);
         }
 
         var vectors = metadataResult.Vectors;
@@ -94,9 +93,7 @@ internal partial class WeaviateGrpcClient
 
         foreach (var vector in vectors)
         {
-            // TODO Handle multi-vectors and other types
-            var vectorData = vector.VectorBytes.FromByteString<float>();
-            result.Add(vector.Name, [.. vectorData]);
+            result.Add(vector.FromByteString<float>());
         }
 
         return result;

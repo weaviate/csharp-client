@@ -407,16 +407,17 @@ internal partial class WeaviateGrpcClient
             // If only one target vector is specified, use Vectors
             // This also covers the case where no target vector is specified and only one vector is provided
             // In this case, we assume the single provided vector is the target
-            vectors = vector
-                .Select(v => new V1.Vectors
+            vectors =
+            [
+                .. vector.Select(v => new V1.Vectors
                 {
                     Name = v.Key,
                     Type = v.Value.IsMultiVector
                         ? V1.Vectors.Types.VectorType.MultiFp32
                         : V1.Vectors.Types.VectorType.SingleFp32,
                     VectorBytes = v.Value.ToByteString(),
-                })
-                .ToList();
+                }),
+            ];
             return (targets, vectorForTarget, vectors);
         }
 

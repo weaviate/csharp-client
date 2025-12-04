@@ -34,17 +34,18 @@ public class TestRbacAuthorization : IntegrationTests
         var collectionConfig = new CollectionConfig
         {
             Name = collectionName,
-            Properties = new[]
-            {
-                new Property { Name = "name", DataType = new[] { "string" } },
-            },
+            Properties = [Property.Text("name")],
         };
 
         var client = await CollectionFactory<object>(collectionConfig);
 
+        var roleName = Helpers.GenerateUniqueIdentifier("read-only-role");
+
+        await _weaviate.Roles.Delete(roleName, TestContext.Current.CancellationToken);
+
         // Create a role with only read permission for this collection
         var readOnlyRole = await _weaviate.Roles.Create(
-            "read-only-role",
+            roleName,
             [
                 new Permissions.Collections(collectionName) { Read = true },
                 new Permissions.Data(collectionName, null, null) { Read = true },
