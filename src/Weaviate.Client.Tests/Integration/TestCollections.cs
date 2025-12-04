@@ -298,7 +298,7 @@ public partial class CollectionsTests : IntegrationTests
             ),
             invertedIndexConfig: new()
             {
-                Bm25 = new() { B = 0.70f, K1 = 1.3f },
+                Bm25 = new() { B = 0.70, K1 = 1.3 },
                 CleanupIntervalSeconds = 30,
                 IndexNullState = true,
                 IndexPropertyLength = true,
@@ -732,7 +732,7 @@ public partial class CollectionsTests : IntegrationTests
         {
             c.Description = "Test";
             c.InvertedIndexConfig.Bm25.B = 0.8f;
-            c.InvertedIndexConfig.Bm25.K1 = 1.25f;
+            c.InvertedIndexConfig.Bm25.K1 = 1.25;
             c.InvertedIndexConfig.CleanupIntervalSeconds = 10;
             c.InvertedIndexConfig.Stopwords.Preset = StopwordConfig.Presets.EN;
             c.InvertedIndexConfig.Stopwords.Additions = ["a"];

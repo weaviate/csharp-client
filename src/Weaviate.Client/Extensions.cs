@@ -108,8 +108,8 @@ public static class WeaviateExtensions
                         ? null
                         : new Rest.Dto.BM25Config
                         {
-                            B = collection.InvertedIndexConfig.Bm25.B,
-                            K1 = collection.InvertedIndexConfig.Bm25.K1,
+                            B = (float?)collection.InvertedIndexConfig.Bm25.B,
+                            K1 = (float?)collection.InvertedIndexConfig.Bm25.K1,
                         },
                 Stopwords = stopWordConfig,
                 CleanupIntervalSeconds = collection.InvertedIndexConfig.CleanupIntervalSeconds,

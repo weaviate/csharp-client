@@ -17,15 +17,16 @@ public record InvertedIndexConfigUpdate(InvertedIndexConfig WrappedConfig)
 
 public record Bm25ConfigUpdate(BM25Config WrappedBm25)
 {
-    public float? B
+    public double? B
     {
         get => WrappedBm25.B;
-        set => WrappedBm25.B = value ?? BM25Config.Default.B;
+        set => WrappedBm25.B = (float)(value ?? BM25Config.Default.B);
     }
-    public float? K1
+
+    public double? K1
     {
         get => WrappedBm25.K1;
-        set => WrappedBm25.K1 = value ?? BM25Config.Default.K1;
+        set => WrappedBm25.K1 = (float)(value ?? BM25Config.Default.K1);
     }
 }
 
