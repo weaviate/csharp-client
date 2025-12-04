@@ -25,6 +25,54 @@ public static class WeaviateExtensions
                 WeaviateRestClient.RestJsonSerializerOptions
             );
 
+    internal static Rest.Dto.Property[]? MergeProperties(
+        IEnumerable<Property>? properties,
+        IEnumerable<Reference>? references
+    )
+    {
+        var props = new List<Rest.Dto.Property>();
+
+        foreach (var prop in properties ?? [])
+        {
+            props.Add(prop.ToDto());
+        }
+
+        foreach (var reference in references ?? [])
+        {
+            props.Add(reference.ToDto());
+        }
+
+        return props.Count != 0 ? [.. props] : null;
+    }
+
+    internal static (Property[] properties, Reference[] references) UnmergeProperties(
+        IList<Rest.Dto.Property> propertiesDto
+    )
+    {
+        var props = new List<Weaviate.Client.Models.Property>();
+        var refs = new List<Weaviate.Client.Models.Reference>();
+
+        foreach (
+            var prop in propertiesDto.Where(p =>
+                p.DataType?.All(t => char.IsLower(t.First())) == true
+            )
+        )
+        {
+            props.Add(prop.ToModel());
+        }
+
+        foreach (
+            var prop in propertiesDto.Where(p =>
+                p.DataType?.All(t => char.IsUpper(t.First())) == true
+            )
+        )
+        {
+            refs.Add(prop.ToReferenceModel());
+        }
+
+        return (props.ToArray(), refs.ToArray());
+    }
+
     internal static Rest.Dto.Class ToDto(this CollectionConfig collection)
     {
         var moduleConfig = new ModuleConfigList();
@@ -55,14 +103,7 @@ public static class WeaviateExtensions
         {
             Class1 = collection.Name,
             Description = collection.Description,
-            Properties = collection.Properties.Any()
-                ? collection
-                    .Properties.Concat(
-                        collection.References.Select(r => (Weaviate.Client.Models.Property)r)
-                    )
-                    .Select(p => p.ToDto())
-                    .ToList()
-                : null,
+            Properties = MergeProperties(collection.Properties, collection.References),
             VectorConfig = vectorConfig,
             ShardingConfig = _objectToDict(collection.ShardingConfig),
             ModuleConfig = moduleConfig.Any() ? moduleConfig : null,
@@ -222,29 +263,15 @@ public static class WeaviateExtensions
                 }
                 : null;
 
+        (var properties, var references) = UnmergeProperties(collection?.Properties ?? []);
+
 #pragma warning disable CS0618 // Type or member is obsolete
         return new CollectionConfig()
         {
             Name = collection?.Class1 ?? string.Empty,
             Description = collection?.Description ?? string.Empty,
-            References =
-                collection
-                    ?.Properties?.Where(p => p.DataType?.Any(t => char.IsUpper(t.First())) ?? false)
-                    .Select(p =>
-                        (Reference)
-                            new Weaviate.Client.Models.Property()
-                            {
-                                Name = p.Name ?? string.Empty,
-                                DataType = p.DataType?.ToList() ?? [],
-                                Description = p.Description,
-                            }
-                    )
-                    .ToArray() ?? [],
-            Properties =
-                collection
-                    ?.Properties?.Where(p => p.DataType?.All(t => char.IsLower(t.First())) ?? false)
-                    .Select(p => p.ToModel())
-                    .ToArray() ?? [],
+            References = references,
+            Properties = properties,
             InvertedIndexConfig = invertedIndexConfig,
             ModuleConfig = moduleConfig,
             RerankerConfig = reranker,

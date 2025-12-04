@@ -177,7 +177,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         {
             Name = name,
             Description = description,
-            Properties = properties?.Concat(references!.Select(p => (Property)p)).ToArray() ?? [],
+            Properties = properties?.ToArray() ?? [],
+            References = references?.ToArray() ?? [],
             VectorConfig = vectorConfig,
             MultiTenancyConfig = multiTenancyConfig,
             InvertedIndexConfig = invertedIndexConfig,

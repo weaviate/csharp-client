@@ -19,7 +19,7 @@ public record GroupByResult<TObject, TGroup>(
 
 public record WeaviateResult<TObject> : IEnumerable<TObject>
 {
-    public ICollection<TObject> Objects { get; init; } = Array.Empty<TObject>();
+    public IList<TObject> Objects { get; init; } = Array.Empty<TObject>();
 
     public IEnumerator<TObject> GetEnumerator() => Objects.GetEnumerator();
 

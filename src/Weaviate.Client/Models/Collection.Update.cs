@@ -58,6 +58,16 @@ public partial record PropertyUpdate(Property WrappedProperty)
     }
 }
 
+public partial record ReferenceUpdate(Reference WrappedReference)
+{
+    public string Name => WrappedReference.Name;
+    public string? Description
+    {
+        get => WrappedReference.Description;
+        set => WrappedReference.Description = value;
+    }
+}
+
 public partial record CollectionUpdate(CollectionConfig WrappedCollection)
 {
     public string Name => WrappedCollection.Name;
@@ -72,8 +82,8 @@ public partial record CollectionUpdate(CollectionConfig WrappedCollection)
         WrappedCollection
             .Properties.ToDictionary(p => p.Name, p => new PropertyUpdate(p))
             .AsReadOnly();
-    public ReadOnlyCollection<PropertyUpdate> References { get; } =
-        WrappedCollection.References.Select(r => new PropertyUpdate(r)).ToList().AsReadOnly();
+    public ReadOnlyCollection<ReferenceUpdate> References { get; } =
+        WrappedCollection.References.Select(r => new ReferenceUpdate(r)).ToList().AsReadOnly();
 
     // inverted index config
     public InvertedIndexConfigUpdate InvertedIndexConfig
@@ -359,31 +369,14 @@ public class CollectionConfigClient
 
     internal async Task AddReference(Reference referenceProperty)
     {
-        var p = (Property)referenceProperty;
-
-        var dto = new Rest.Dto.Property() { Name = p.Name, DataType = [.. p.DataType] };
+        var dto = referenceProperty.ToDto();
 
         await _client.RestClient.CollectionAddProperty(_collectionName, dto);
     }
 
     public async Task AddProperty(Property p)
     {
-        await _client.RestClient.CollectionAddProperty(
-            _collectionName,
-            new Rest.Dto.Property()
-            {
-                Name = p.Name,
-                DataType = [.. p.DataType],
-                Description = p.Description,
-                IndexFilterable = p.IndexFilterable,
-#pragma warning disable CS0612 // Type or member is obsolete
-                IndexInverted = p.IndexInverted,
-#pragma warning restore CS0612 // Type or member is obsolete
-                IndexRangeFilters = p.IndexRangeFilters,
-                IndexSearchable = p.IndexSearchable,
-                Tokenization = (Rest.Dto.PropertyTokenization?)p.PropertyTokenization,
-            }
-        );
+        await _client.RestClient.CollectionAddProperty(_collectionName, p.ToDto());
     }
 
     // Add new named vectors

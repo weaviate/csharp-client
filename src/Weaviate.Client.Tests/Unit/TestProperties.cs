@@ -41,10 +41,8 @@ public partial class PropertyTests
     public void Equals_Should_Return_True_For_Identical_Properties()
     {
         // Arrange
-        var property1 = new Property
+        var property1 = new Property("name", DataType.Text)
         {
-            Name = "name",
-            DataType = { "text" },
             Description = "description",
             IndexFilterable = true,
             IndexRangeFilters = false,
@@ -52,10 +50,8 @@ public partial class PropertyTests
             PropertyTokenization = PropertyTokenization.Whitespace,
         };
 
-        var property2 = new Property
+        var property2 = new Property("name", DataType.Text)
         {
-            Name = "name",
-            DataType = { "text" },
             Description = "description",
             IndexFilterable = true,
             IndexRangeFilters = false,
@@ -74,8 +70,8 @@ public partial class PropertyTests
     public void Equals_Should_Return_False_When_Names_Differ()
     {
         // Arrange
-        var property1 = new Property { Name = "name1" };
-        var property2 = new Property { Name = "name2" };
+        var property1 = new Property("name1", DataType.Text);
+        var property2 = new Property("name2", DataType.Text);
 
         // Act
         var result = property1.Equals(property2);
@@ -88,8 +84,8 @@ public partial class PropertyTests
     public void Equals_Should_Return_False_When_DataTypes_Differ()
     {
         // Arrange
-        var property1 = new Property { Name = "prop", DataType = { "text" } };
-        var property2 = new Property { Name = "prop", DataType = { "int" } };
+        var property1 = new Property("prop", DataType.Text);
+        var property2 = new Property("prop", DataType.Int);
 
         // Act
         var result = property1.Equals(property2);
@@ -102,8 +98,8 @@ public partial class PropertyTests
     public void Equals_Should_Return_False_When_Descriptions_Differ()
     {
         // Arrange
-        var property1 = new Property { Name = "prop", Description = "desc1" };
-        var property2 = new Property { Name = "prop", Description = "desc2" };
+        var property1 = new Property("prop", DataType.Text) { Description = "desc1" };
+        var property2 = new Property("prop", DataType.Text) { Description = "desc2" };
 
         // Act
         var result = property1.Equals(property2);
@@ -116,8 +112,8 @@ public partial class PropertyTests
     public void Equals_Should_Return_False_When_IndexFilterable_Differs()
     {
         // Arrange
-        var property1 = new Property { Name = "prop", IndexFilterable = true };
-        var property2 = new Property { Name = "prop", IndexFilterable = false };
+        var property1 = new Property("prop", DataType.Text) { IndexFilterable = true };
+        var property2 = new Property("prop", DataType.Text) { IndexFilterable = false };
 
         // Act
         var result = property1.Equals(property2);
@@ -130,8 +126,8 @@ public partial class PropertyTests
     public void Equals_Should_Return_False_When_IndexRangeFilters_Differs()
     {
         // Arrange
-        var property1 = new Property { Name = "prop", IndexRangeFilters = true };
-        var property2 = new Property { Name = "prop", IndexRangeFilters = false };
+        var property1 = new Property("prop", DataType.Text) { IndexRangeFilters = true };
+        var property2 = new Property("prop", DataType.Text) { IndexRangeFilters = false };
 
         // Act
         var result = property1.Equals(property2);
@@ -144,8 +140,8 @@ public partial class PropertyTests
     public void Equals_Should_Return_False_When_IndexSearchable_Differs()
     {
         // Arrange
-        var property1 = new Property { Name = "prop", IndexSearchable = true };
-        var property2 = new Property { Name = "prop", IndexSearchable = false };
+        var property1 = new Property("prop", DataType.Text) { IndexSearchable = true };
+        var property2 = new Property("prop", DataType.Text) { IndexSearchable = false };
 
         // Act
         var result = property1.Equals(property2);
@@ -158,14 +154,12 @@ public partial class PropertyTests
     public void Equals_Should_Return_False_When_PropertyTokenization_Differs()
     {
         // Arrange
-        var property1 = new Property
+        var property1 = new Property("prop", DataType.Text)
         {
-            Name = "prop",
             PropertyTokenization = PropertyTokenization.Word,
         };
-        var property2 = new Property
+        var property2 = new Property("prop", DataType.Text)
         {
-            Name = "prop",
             PropertyTokenization = PropertyTokenization.Lowercase,
         };
 
@@ -205,16 +199,10 @@ public partial class PropertyTests
         // Assert
         Assert.Equal(4, properties.Length);
 
-        Assert.Contains(properties, p => p.Name == "name" && p.DataType.Contains(DataType.Text));
-        Assert.Contains(properties, p => p.Name == "age" && p.DataType.Contains(DataType.Int));
-        Assert.Contains(
-            properties,
-            p => p.Name == "isActive" && p.DataType.Contains(DataType.Bool)
-        );
-        Assert.Contains(
-            properties,
-            p => p.Name == "createdAt" && p.DataType.Contains(DataType.Date)
-        );
+        Assert.Contains(properties, p => p.Name == "name" && p.DataType == DataType.Text);
+        Assert.Contains(properties, p => p.Name == "age" && p.DataType == DataType.Int);
+        Assert.Contains(properties, p => p.Name == "isActive" && p.DataType == DataType.Bool);
+        Assert.Contains(properties, p => p.Name == "createdAt" && p.DataType == DataType.Date);
     }
 
     [Fact]
@@ -248,25 +236,22 @@ public partial class PropertyTests
         // Assert
         Assert.Equal(3, properties.Length);
 
-        Assert.Contains(properties, p => p.Name == "title" && p.DataType.Contains(DataType.Text));
+        Assert.Contains(properties, p => p.Name == "title" && p.DataType == DataType.Text);
+        Assert.Contains(properties, p => p.Name == "details" && p.DataType == DataType.Object);
         Assert.Contains(
             properties,
-            p => p.Name == "details" && p.DataType.Contains(DataType.Object)
-        );
-        Assert.Contains(
-            properties,
-            p => p.Name == "detailsArray" && p.DataType.Contains(DataType.ObjectArray)
+            p => p.Name == "detailsArray" && p.DataType == DataType.ObjectArray
         );
         var detailsProperty = properties.FirstOrDefault(p => p.Name == "details");
         Assert.NotNull(detailsProperty);
-        Assert.Equal(DataType.Object, detailsProperty!.DataType[0]);
+        Assert.Equal(DataType.Object, detailsProperty!.DataType);
         Assert.NotNull(detailsProperty!.NestedProperties);
         Assert.NotEmpty(detailsProperty.NestedProperties);
         Assert.Null(detailsProperty.NestedProperties[0].NestedProperties);
 
         var detailsArrayProperty = properties.FirstOrDefault(p => p.Name == "detailsArray");
         Assert.NotNull(detailsArrayProperty);
-        Assert.Equal(DataType.ObjectArray, detailsArrayProperty!.DataType[0]);
+        Assert.Equal(DataType.ObjectArray, detailsArrayProperty!.DataType);
         Assert.NotNull(detailsArrayProperty!.NestedProperties);
         Assert.NotEmpty(detailsArrayProperty.NestedProperties);
         Assert.Null(detailsArrayProperty.NestedProperties[0].NestedProperties);

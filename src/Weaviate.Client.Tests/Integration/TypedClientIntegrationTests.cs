@@ -41,10 +41,10 @@ public class TypedClientIntegrationTests : IntegrationTests
         Name = "Articles",
         Properties = new[]
         {
-            new Property { Name = "title", DataType = new[] { "text" } },
-            new Property { Name = "content", DataType = new[] { "text" } },
-            new Property { Name = "viewCount", DataType = new[] { "int" } },
-            new Property { Name = "publishedDate", DataType = new[] { "date" } },
+            new Property { Name = "title", DataType = DataType.Text },
+            new Property { Name = "content", DataType = DataType.Text },
+            new Property { Name = "viewCount", DataType = DataType.Int },
+            new Property { Name = "publishedDate", DataType = DataType.Date },
         },
     };
 
