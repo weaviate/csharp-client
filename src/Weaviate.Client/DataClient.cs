@@ -89,6 +89,37 @@ public class DataClient
         return response.Id!.Value;
     }
 
+    public async Task Update(
+        Guid id,
+        object data,
+        Models.Vectors? vectors = null,
+        IEnumerable<ObjectReference>? references = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var propDict = ObjectHelper.BuildDataTransferObject(data);
+
+        foreach (var kvp in references ?? [])
+        {
+            propDict[kvp.Name] = ObjectHelper.MakeBeacons(kvp.TargetID);
+        }
+
+        var dto = new Rest.Dto.Object()
+        {
+            Id = id,
+            Class = _collectionName,
+            Properties = propDict,
+            Vectors = VectorsToDto(vectors),
+            Tenant = _collectionClient.Tenant,
+        };
+
+        await _client.RestClient.ObjectUpdate(
+            _collectionName,
+            dto,
+            CreateTimeoutCancellationToken(cancellationToken)
+        );
+    }
+
     public async Task Replace(
         Guid id,
         object data,

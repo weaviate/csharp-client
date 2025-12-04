@@ -34,6 +34,45 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.Object>(cancellationToken);
     }
 
+    internal async Task<Dto.Object> ObjectUpdate(
+        string collectionName,
+        Dto.Object data,
+        CancellationToken cancellationToken = default
+    )
+    {
+        ArgumentNullException.ThrowIfNull(data.Id, nameof(data.Id));
+
+        var response = await _httpClient.PatchAsJsonAsync(
+            WeaviateEndpoints.CollectionObject(collectionName, data.Id!.Value),
+            data,
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
+        );
+
+        await response.ManageStatusCode(
+            [
+                HttpStatusCode.OK,
+                HttpStatusCode.NoContent,
+                // HttpStatusCode.BadRequest,
+                // HttpStatusCode.Unauthorized,
+                // HttpStatusCode.Forbidden,
+                // HttpStatusCode.NotFound,
+                // HttpStatusCode.Conflict,
+                // HttpStatusCode.InternalServerError,
+            ],
+            "update object",
+            ResourceType.Object
+        );
+
+        // Only try to deserialize if there's content
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            return data; // Return the input data or null, depending on your needs
+        }
+
+        return await response.DecodeAsync<Dto.Object>(cancellationToken);
+    }
+
     internal async Task<Dto.Object> ObjectReplace(
         string collectionName,
         Dto.Object data,
