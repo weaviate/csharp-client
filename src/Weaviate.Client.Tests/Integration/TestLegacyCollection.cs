@@ -121,13 +121,12 @@ public partial class CollectionsTests
         Assert.NotNull(collectionClient);
         Assert.Equal(className, collectionClient.Name);
 
-        // Generate random vectors for testing
-        var random = new Random(42); // Seed for reproducibility
-        var vector1 = Enumerable.Range(0, 4).Select(_ => (float)random.NextDouble()).ToArray();
-        var vector2 = Enumerable.Range(0, 4).Select(_ => (float)random.NextDouble()).ToArray();
-        var vector3 = Enumerable.Range(0, 4).Select(_ => (float)random.NextDouble()).ToArray();
-        var vector4 = Enumerable.Range(0, 4).Select(_ => (float)random.NextDouble()).ToArray();
-        var vector5 = Enumerable.Range(0, 4).Select(_ => (float)random.NextDouble()).ToArray();
+        // Hardcoded vectors for testing
+        var vector1 = new float[] { 0.6394268f, 0.025010755f, 0.27502932f, 0.22321074f };
+        var vector2 = new float[] { 0.7364716f, 0.6766995f, 0.89217955f, 0.08693883f };
+        var vector3 = new float[] { 0.4219218f, 0.029797219f, 0.21863799f, 0.50535583f };
+        var vector4 = new float[] { 0.026535969f, 0.19883765f, 0.64988444f, 0.5449414f };
+        var vector5 = new float[] { 0.22044062f, 0.5892658f, 0.8094305f, 0.006498759f };
 
         // Insert a few items with normal Insert, manually passing "default" vector
         var id1 = await collectionClient.Data.Insert(
