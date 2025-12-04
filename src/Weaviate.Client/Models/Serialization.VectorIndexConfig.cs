@@ -123,9 +123,6 @@ internal class FlatDto
 
     [JsonPropertyName("rq")]
     public VectorIndex.Quantizers.RQ? RQ { get; set; }
-
-    [JsonPropertyName("skipDefaultQuantization")]
-    public bool? SkipDefaultQuantization { get; set; }
 }
 
 internal class DynamicDto
@@ -262,22 +259,13 @@ internal static class VectorIndexMappingExtensions
     public static VectorIndex.Flat ToFlat(this FlatDto dto)
     {
         // For Flat, the Quantizer property is specifically BQ type
-        var quantizer = GetEnabledQuantizer(
-            dto.BQ,
-            dto.PQ,
-            dto.SQ,
-            dto.RQ,
-            new VectorIndex.Quantizers.None() { Enabled = dto.SkipDefaultQuantization == true }
-        );
+        var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ, dto.RQ);
 
         return new VectorIndex.Flat
         {
             Distance = dto.Distance,
             VectorCacheMaxObjects = dto.VectorCacheMaxObjects,
             Quantizer = quantizer as QuantizerConfigFlat,
-            // Only preserve SkipDefaultQuantization if it's true (immutability requirement)
-            // If false/null, we don't set it so it can be omitted from serialization
-            SkipDefaultQuantization = dto.SkipDefaultQuantization == true ? true : null,
         };
     }
 
@@ -307,17 +295,7 @@ internal static class VectorIndexMappingExtensions
                 case "rq":
                     dto.RQ = flat.Quantizer as VectorIndex.Quantizers.RQ;
                     break;
-                case "none":
-                    dto.SkipDefaultQuantization = true;
-                    break;
             }
-        }
-
-        // Set skipDefaultQuantization: true if explicitly set or if using None quantizer
-        // JsonIgnore attribute will handle omitting it when null (false/null cases)
-        if (flat.SkipDefaultQuantization == true)
-        {
-            dto.SkipDefaultQuantization = true;
         }
 
         return dto;
