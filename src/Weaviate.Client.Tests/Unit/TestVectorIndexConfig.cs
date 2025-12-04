@@ -55,4 +55,47 @@ public partial class VectorIndexConfigTests
             (vectorConfig.VectorIndexConfig as VectorIndex.HNSW)?.Quantizer
         );
     }
+
+    [Fact]
+    public void VectorIndexConfig_None_Quantizer_Sets_SkipDefaultQuantization()
+    {
+        // Arrange
+        var hnsw = new VectorIndex.HNSW { Quantizer = new VectorIndex.Quantizers.None() };
+
+        // Act - serialize to DTO
+        var dto = VectorIndexSerialization.ToDto(hnsw);
+        var json = JsonSerializer.Serialize(
+            dto,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+        var deserialized = JsonSerializer.Deserialize<Dictionary<string, object>>(
+            json,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        // Assert
+        Assert.NotNull(deserialized);
+        Assert.True(deserialized.ContainsKey("skipDefaultQuantization"));
+        Assert.True(deserialized["skipDefaultQuantization"].ToString() == "True");
+    }
+
+    [Fact]
+    public void VectorIndexConfig_SkipDefaultQuantization_Deserializes_To_None_Quantizer()
+    {
+        // Arrange
+        var json = @"{ ""skipDefaultQuantization"": true, ""distance"": ""cosine"" }";
+        var config = JsonSerializer.Deserialize<Dictionary<string, object>>(
+            json,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        // Act
+        var hnsw = (VectorIndex.HNSW?)VectorIndexSerialization.Factory("hnsw", config);
+
+        // Assert
+        Assert.NotNull(hnsw);
+        Assert.NotNull(hnsw?.Quantizer);
+        Assert.Equal("none", hnsw?.Quantizer.Type);
+        Assert.IsType<VectorIndex.Quantizers.None>(hnsw?.Quantizer);
+    }
 }

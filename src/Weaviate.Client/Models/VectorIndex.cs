@@ -147,6 +147,14 @@ public static class VectorIndex
             [JsonIgnore]
             public override string Type => TypeValue;
         }
+
+        public record None : QuantizerConfigBase
+        {
+            public const string TypeValue = "none";
+
+            [JsonIgnore]
+            public override string Type => TypeValue;
+        }
     }
 
     public sealed record HNSW : VectorIndexConfig
@@ -167,6 +175,7 @@ public static class VectorIndex
         public long? VectorCacheMaxObjects { get; set; }
         public QuantizerConfigBase? Quantizer { get; set; }
         public MultiVectorConfig? MultiVector { get; set; }
+        public bool? SkipDefaultQuantization { get; set; }
 
         public override string Type => TypeValue;
     }

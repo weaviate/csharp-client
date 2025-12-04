@@ -98,6 +98,10 @@ internal class HnswDto
 
     [JsonPropertyName("multivector")]
     public MultiVectorDto? MultiVector { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [JsonPropertyName("skipDefaultQuantization")]
+    public bool? SkipDefaultQuantization { get; set; }
 }
 
 internal class FlatDto
@@ -113,10 +117,10 @@ internal class FlatDto
     public VectorIndex.Quantizers.BQ? BQ { get; set; }
 
     [JsonPropertyName("pq")]
-    public VectorIndex.Quantizers.BQ? PQ { get; set; }
+    public VectorIndex.Quantizers.PQ? PQ { get; set; }
 
     [JsonPropertyName("sq")]
-    public VectorIndex.Quantizers.BQ? SQ { get; set; }
+    public VectorIndex.Quantizers.SQ? SQ { get; set; }
 
     [JsonPropertyName("rq")]
     public VectorIndex.Quantizers.RQ? RQ { get; set; }
@@ -151,7 +155,13 @@ internal static class VectorIndexMappingExtensions
     // HNSW mapping
     public static VectorIndex.HNSW ToHnsw(this HnswDto dto)
     {
-        var quantizer = GetEnabledQuantizer(dto.BQ, dto.PQ, dto.SQ, dto.RQ);
+        var quantizer = GetEnabledQuantizer(
+            dto.BQ,
+            dto.PQ,
+            dto.SQ,
+            dto.RQ,
+            new VectorIndex.Quantizers.None() { Enabled = dto.SkipDefaultQuantization == true }
+        );
 
         var muvera = dto.MultiVector?.Muvera?.ToModel();
 
@@ -180,6 +190,9 @@ internal static class VectorIndexMappingExtensions
             VectorCacheMaxObjects = dto.VectorCacheMaxObjects,
             Quantizer = quantizer,
             MultiVector = multivector,
+            // Only preserve SkipDefaultQuantization if it's true (immutability requirement)
+            // If false/null, we don't set it so it can be omitted from serialization
+            SkipDefaultQuantization = dto.SkipDefaultQuantization == true ? true : null,
         };
     }
 
@@ -208,6 +221,7 @@ internal static class VectorIndexMappingExtensions
                         Aggregation = hnsw.MultiVector?.Aggregation,
                     }
                     : null,
+            SkipDefaultQuantization = hnsw.SkipDefaultQuantization,
         };
 
         // Set the appropriate quantizer property based on type
@@ -226,6 +240,9 @@ internal static class VectorIndexMappingExtensions
                     break;
                 case "rq":
                     dto.RQ = hnsw.Quantizer as VectorIndex.Quantizers.RQ;
+                    break;
+                case "none":
+                    dto.SkipDefaultQuantization = true;
                     break;
             }
         }
