@@ -25,7 +25,7 @@ public delegate Property PropertyFactory(
 
 internal class PropertyHelper
 {
-    internal static PropertyFactory Factory(string dataType) =>
+    internal static PropertyFactory Factory(DataType dataType) =>
         (
             name,
             description,
@@ -38,32 +38,32 @@ internal class PropertyHelper
             new Property
             {
                 Name = name,
-                DataType = { dataType },
+                DataType = dataType,
                 Description = description,
                 IndexFilterable = indexFilterable,
                 IndexRangeFilters = indexRangeFilters,
                 IndexSearchable = indexSearchable,
                 PropertyTokenization = tokenization,
                 NestedProperties =
-                    (dataType == Models.DataType.Object || dataType == Models.DataType.ObjectArray)
+                    (dataType == DataType.Object || dataType == DataType.ObjectArray)
                         ? subProperties
                         : null,
             };
 
-    internal static string DataTypeForCollectionType(Type? elementType)
+    internal static DataType DataTypeForCollectionType(Type? elementType)
     {
         if (elementType == null)
-            return null!; // or throw an exception
+            throw new WeaviateClientException("Element type cannot be null");
 
         // Handle special collection element types
         if (elementType == typeof(Guid))
         {
-            return DataType.UuidArray; // Assuming you have array-specific methods
+            return DataType.UuidArray;
         }
 
         if (elementType == typeof(String))
         {
-            return DataType.TextArray; // Assuming you have array-specific methods
+            return DataType.TextArray;
         }
 
         // Enums serialize as text by default (EnumMember or name)
@@ -75,7 +75,7 @@ internal class PropertyHelper
         var tc = Type.GetTypeCode(elementType);
 
         // Handle primitive collection element types
-        string? f = tc switch
+        DataType? f = tc switch
         {
             TypeCode.Int16 => DataType.IntArray,
             TypeCode.UInt16 => DataType.IntArray,
@@ -95,10 +95,15 @@ internal class PropertyHelper
             _ => null,
         };
 
-        return f!;
+        if (f.HasValue)
+            return f.Value;
+
+        throw new WeaviateClientException(
+            new NotSupportedException($"Collection element type {elementType.Name} not supported")
+        );
     }
 
-    internal static string DataTypeForType(Type t)
+    internal static DataType DataTypeForType(Type t)
     {
         // Handle nullable types - get the underlying type
         Type actualType = Nullable.GetUnderlyingType(t) ?? t;
@@ -141,7 +146,7 @@ internal class PropertyHelper
         var tc = Type.GetTypeCode(actualType);
 
         // Handle primitive types
-        string? f = tc switch
+        DataType? f = tc switch
         {
             TypeCode.String => DataType.Text,
             TypeCode.Int16 => DataType.Int,
@@ -161,9 +166,9 @@ internal class PropertyHelper
             _ => null,
         };
 
-        if (f is not null)
+        if (f.HasValue)
         {
-            return f;
+            return f.Value;
         }
 
         if (tc == TypeCode.Object)
@@ -230,47 +235,104 @@ internal class PropertyHelper
     }
 }
 
-public static class DataType
+public enum DataType
 {
-    public const string Text = "text";
-    public const string TextArray = "text[]";
-    public const string Int = "int";
-    public const string IntArray = "int[]";
-    public const string Bool = "boolean";
-    public const string BoolArray = "boolean[]";
-    public const string Number = "number";
-    public const string NumberArray = "number[]";
-    public const string Date = "date";
-    public const string DateArray = "date[]";
-    public const string Uuid = "uuid";
-    public const string UuidArray = "uuid[]";
-    public const string GeoCoordinate = "geoCoordinates";
-    public const string Blob = "blob";
-    public const string PhoneNumber = "phoneNumber";
-    public const string Object = "object";
-    public const string ObjectArray = "object[]";
+    [System.Runtime.Serialization.EnumMember(Value = "unknown")]
+    Unknown,
+
+    [System.Runtime.Serialization.EnumMember(Value = "text")]
+    Text,
+
+    [System.Runtime.Serialization.EnumMember(Value = "text[]")]
+    TextArray,
+
+    [System.Runtime.Serialization.EnumMember(Value = "int")]
+    Int,
+
+    [System.Runtime.Serialization.EnumMember(Value = "int[]")]
+    IntArray,
+
+    [System.Runtime.Serialization.EnumMember(Value = "boolean")]
+    Bool,
+
+    [System.Runtime.Serialization.EnumMember(Value = "boolean[]")]
+    BoolArray,
+
+    [System.Runtime.Serialization.EnumMember(Value = "number")]
+    Number,
+
+    [System.Runtime.Serialization.EnumMember(Value = "number[]")]
+    NumberArray,
+
+    [System.Runtime.Serialization.EnumMember(Value = "date")]
+    Date,
+
+    [System.Runtime.Serialization.EnumMember(Value = "date[]")]
+    DateArray,
+
+    [System.Runtime.Serialization.EnumMember(Value = "uuid")]
+    Uuid,
+
+    [System.Runtime.Serialization.EnumMember(Value = "uuid[]")]
+    UuidArray,
+
+    [System.Runtime.Serialization.EnumMember(Value = "geoCoordinates")]
+    GeoCoordinate,
+
+    [System.Runtime.Serialization.EnumMember(Value = "blob")]
+    Blob,
+
+    [System.Runtime.Serialization.EnumMember(Value = "phoneNumber")]
+    PhoneNumber,
+
+    [System.Runtime.Serialization.EnumMember(Value = "object")]
+    Object,
+
+    [System.Runtime.Serialization.EnumMember(Value = "object[]")]
+    ObjectArray,
+}
+
+internal static class DataTypeExtensions
+{
+    internal static string ToEnumMemberValue(this DataType dataType)
+    {
+        var type = dataType.GetType();
+        var memberInfo = type.GetMember(dataType.ToString());
+        var attributes = memberInfo[0]
+            .GetCustomAttributes(typeof(System.Runtime.Serialization.EnumMemberAttribute), false);
+
+        if (attributes.Length > 0)
+        {
+            var attribute = (System.Runtime.Serialization.EnumMemberAttribute)attributes[0];
+            return attribute.Value ?? dataType.ToString();
+        }
+
+        return dataType.ToString();
+    }
+
+    internal static DataType? ToDataTypeEnum(this string value)
+    {
+        foreach (DataType dt in Enum.GetValues(typeof(DataType)))
+        {
+            if (dt.ToEnumMemberValue() == value)
+                return dt;
+        }
+        return null;
+    }
+}
+
+internal interface IReferenceBase
+{
+    string Name { get; }
+    IList<string> TargetCollections { get; }
+    string? Description { get; }
 }
 
 public record Reference(string Name, string TargetCollection, string? Description = null)
+    : IReferenceBase
 {
-    public static implicit operator Property(Reference p)
-    {
-        return new Property
-        {
-            Name = p.Name,
-            DataType = { p.TargetCollection.Capitalize() },
-            Description = p.Description,
-        };
-    }
-
-    public static implicit operator Reference(Property p)
-    {
-        return new Reference(
-            p.Name,
-            p.DataType.First(t => char.IsUpper(t.First())).Decapitalize(),
-            p.Description
-        );
-    }
+    public string? Description { get; set; } = Description;
+    IList<string> IReferenceBase.TargetCollections { get; } = [TargetCollection];
 }
 
 public static class Property<TField>
@@ -287,7 +349,7 @@ public record Property : IEquatable<Property>
         get => _name;
         set => _name = value.Decapitalize();
     }
-    public IList<string> DataType { get; set; } = new List<string>();
+    public required DataType DataType { get; set; }
     public string? Description { get; set; }
     public bool? IndexFilterable { get; internal set; }
 
@@ -298,27 +360,32 @@ public record Property : IEquatable<Property>
     public PropertyTokenization? PropertyTokenization { get; internal set; }
     public Property[]? NestedProperties { get; internal set; }
 
-    public static PropertyFactory Text => PropertyHelper.Factory(Models.DataType.Text);
-    public static PropertyFactory TextArray => PropertyHelper.Factory(Models.DataType.TextArray);
-    public static PropertyFactory Int => PropertyHelper.Factory(Models.DataType.Int);
-    public static PropertyFactory IntArray => PropertyHelper.Factory(Models.DataType.IntArray);
-    public static PropertyFactory Bool => PropertyHelper.Factory(Models.DataType.Bool);
-    public static PropertyFactory BoolArray => PropertyHelper.Factory(Models.DataType.BoolArray);
-    public static PropertyFactory Number => PropertyHelper.Factory(Models.DataType.Number);
-    public static PropertyFactory NumberArray =>
-        PropertyHelper.Factory(Models.DataType.NumberArray);
-    public static PropertyFactory Date => PropertyHelper.Factory(Models.DataType.Date);
-    public static PropertyFactory DateArray => PropertyHelper.Factory(Models.DataType.DateArray);
-    public static PropertyFactory Uuid => PropertyHelper.Factory(Models.DataType.Uuid);
-    public static PropertyFactory UuidArray => PropertyHelper.Factory(Models.DataType.UuidArray);
-    public static PropertyFactory GeoCoordinate =>
-        PropertyHelper.Factory(Models.DataType.GeoCoordinate);
-    public static PropertyFactory Blob => PropertyHelper.Factory(Models.DataType.Blob);
-    public static PropertyFactory PhoneNumber =>
-        PropertyHelper.Factory(Models.DataType.PhoneNumber);
-    public static PropertyFactory Object => PropertyHelper.Factory(Models.DataType.Object);
-    public static PropertyFactory ObjectArray =>
-        PropertyHelper.Factory(Models.DataType.ObjectArray);
+    public static PropertyFactory Text => PropertyHelper.Factory(DataType.Text);
+    public static PropertyFactory TextArray => PropertyHelper.Factory(DataType.TextArray);
+    public static PropertyFactory Int => PropertyHelper.Factory(DataType.Int);
+    public static PropertyFactory IntArray => PropertyHelper.Factory(DataType.IntArray);
+    public static PropertyFactory Bool => PropertyHelper.Factory(DataType.Bool);
+    public static PropertyFactory BoolArray => PropertyHelper.Factory(DataType.BoolArray);
+    public static PropertyFactory Number => PropertyHelper.Factory(DataType.Number);
+    public static PropertyFactory NumberArray => PropertyHelper.Factory(DataType.NumberArray);
+    public static PropertyFactory Date => PropertyHelper.Factory(DataType.Date);
+    public static PropertyFactory DateArray => PropertyHelper.Factory(DataType.DateArray);
+    public static PropertyFactory Uuid => PropertyHelper.Factory(DataType.Uuid);
+    public static PropertyFactory UuidArray => PropertyHelper.Factory(DataType.UuidArray);
+    public static PropertyFactory GeoCoordinate => PropertyHelper.Factory(DataType.GeoCoordinate);
+    public static PropertyFactory Blob => PropertyHelper.Factory(DataType.Blob);
+    public static PropertyFactory PhoneNumber => PropertyHelper.Factory(DataType.PhoneNumber);
+    public static PropertyFactory Object => PropertyHelper.Factory(DataType.Object);
+    public static PropertyFactory ObjectArray => PropertyHelper.Factory(DataType.ObjectArray);
+
+    public Property() { }
+
+    [System.Diagnostics.CodeAnalysis.SetsRequiredMembers]
+    public Property(string name, DataType dataType)
+    {
+        Name = name;
+        DataType = dataType;
+    }
 
     public static Reference Reference(
         string name,
@@ -334,14 +401,14 @@ public record Property : IEquatable<Property>
 
     public static Property[] FromClass(Type type, int maxDepth = 1)
     {
-        string dataType = PropertyHelper.DataTypeForType(type);
+        DataType dataType = PropertyHelper.DataTypeForType(type);
         return FromClass(type, dataType, maxDepth, new Dictionary<Type, int>())
             ?? Array.Empty<Property>();
     }
 
     private static Property[]? FromClass(
         Type type,
-        string dataType,
+        DataType dataType,
         int maxDepth,
         Dictionary<Type, int> seenTypes
     )
@@ -353,7 +420,7 @@ public record Property : IEquatable<Property>
 
         seenTypes[type] = currentDepth;
 
-        if (type.IsArray || dataType == Models.DataType.ObjectArray)
+        if (type.IsArray || dataType == DataType.ObjectArray)
         {
             type =
                 type.GetElementType()
@@ -368,10 +435,7 @@ public record Property : IEquatable<Property>
 
                 Property[]? subProperties = null;
 
-                if (
-                    dataTypeProp == Models.DataType.Object
-                    || dataTypeProp == Models.DataType.ObjectArray
-                )
+                if (dataTypeProp == DataType.Object || dataTypeProp == DataType.ObjectArray)
                 {
                     subProperties = FromClass(
                         x.PropertyType,
@@ -423,7 +487,7 @@ public record Property : IEquatable<Property>
             return true;
 
         return Name == other.Name
-            && DataType.SequenceEqual(other.DataType)
+            && DataType == other.DataType
             && Description == other.Description
             && IndexFilterable == other.IndexFilterable
             && IndexRangeFilters == other.IndexRangeFilters

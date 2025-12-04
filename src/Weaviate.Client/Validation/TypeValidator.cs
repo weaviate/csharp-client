@@ -128,7 +128,7 @@ public class TypeValidator
         }
 
         // Get expected Weaviate data type for this C# property
-        string expectedDataType;
+        DataType expectedDataType;
         try
         {
             expectedDataType = PropertyHelper.DataTypeForType(csProperty.PropertyType);
@@ -148,22 +148,21 @@ public class TypeValidator
             return;
         }
 
-        // Schema DataType is a list (can have multiple types for cross-references)
-        // For data properties, typically just one type
-        if (schemaProp.DataType == null || schemaProp.DataType.Count == 0)
+        // Schema DataType is now a single enum value
+        if (schemaProp.DataType == DataType.Unknown)
         {
             warnings.Add(
                 new ValidationWarning
                 {
                     PropertyName = csProperty.Name,
-                    Message = $"Schema property '{schemaProp.Name}' has no data type defined.",
+                    Message = $"Schema property '{schemaProp.Name}' has unknown data type.",
                     WarningType = ValidationWarningType.CompatibleTypeDifference,
                 }
             );
             return;
         }
 
-        var schemaDataType = schemaProp.DataType[0]; // Primary type
+        var schemaDataType = schemaProp.DataType; // Direct enum value
 
         // Compare expected vs actual data types
         var isEnum = (csProperty.PropertyType.IsEnum);
@@ -174,12 +173,19 @@ public class TypeValidator
             (isEnum && schemaDataType == DataType.Int)
             || (isEnumArray && schemaDataType == DataType.IntArray);
 
-        if (!AreTypesCompatible(expectedDataType, schemaDataType) && !enumIntCompatible)
+        if (
+            !AreTypesCompatible(
+                expectedDataType.ToEnumMemberString(),
+                schemaDataType.ToEnumMemberString()
+            ) && !enumIntCompatible
+        )
         {
             // Check if it's an array mismatch specifically
+            var expectedString = expectedDataType.ToEnumMemberString();
+            var schemaString = schemaDataType.ToEnumMemberString();
             var isArrayMismatch =
-                (expectedDataType.EndsWith("[]") && !schemaDataType.EndsWith("[]"))
-                || (!expectedDataType.EndsWith("[]") && schemaDataType.EndsWith("[]"));
+                (expectedString.EndsWith("[]") && !schemaString.EndsWith("[]"))
+                || (!expectedString.EndsWith("[]") && schemaString.EndsWith("[]"));
 
             errors.Add(
                 new ValidationError
@@ -187,12 +193,12 @@ public class TypeValidator
                     PropertyName = csProperty.Name,
                     Message =
                         $"Property '{csProperty.Name}' type mismatch: "
-                        + $"expected '{schemaDataType}' but C# type maps to '{expectedDataType}'.",
+                        + $"expected '{schemaString}' but C# type maps to '{expectedString}'.",
                     ErrorType = isArrayMismatch
                         ? ValidationErrorType.ArrayMismatch
                         : ValidationErrorType.TypeMismatch,
-                    ExpectedType = schemaDataType,
-                    ActualType = expectedDataType,
+                    ExpectedType = schemaString,
+                    ActualType = expectedString,
                 }
             );
         }

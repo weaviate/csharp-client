@@ -30,7 +30,7 @@ internal static class ModelsToDtoExtensions
         return new Rest.Dto.NestedProperty
         {
             Name = property.Name,
-            DataType = property.DataType?.ToList(),
+            DataType = [property.DataType.ToEnumMemberString()],
             Description = property.Description,
             IndexFilterable = property.IndexFilterable,
             IndexSearchable = property.IndexSearchable,
@@ -42,12 +42,24 @@ internal static class ModelsToDtoExtensions
         };
     }
 
+    internal static Rest.Dto.Property ToDto(this Models.Reference reference)
+    {
+        IReferenceBase refProp = reference;
+
+        return new Rest.Dto.Property
+        {
+            Name = refProp.Name,
+            DataType = refProp.TargetCollections,
+            Description = refProp.Description,
+        };
+    }
+
     internal static Rest.Dto.Property ToDto(this Models.Property property)
     {
         return new Rest.Dto.Property
         {
             Name = property.Name,
-            DataType = property.DataType?.ToList(),
+            DataType = [property.DataType.ToEnumMemberString()],
             Description = property.Description,
             IndexFilterable = property.IndexFilterable,
 #pragma warning disable CS0612 // Type or member is obsolete

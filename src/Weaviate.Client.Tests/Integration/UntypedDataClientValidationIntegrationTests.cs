@@ -16,8 +16,16 @@ namespace Weaviate.Client.Tests.Integration
             Name = "People",
             Properties = new[]
             {
-                new Weaviate.Client.Models.Property { Name = "name", DataType = new[] { "text" } },
-                new Weaviate.Client.Models.Property { Name = "age", DataType = new[] { "int" } },
+                new Weaviate.Client.Models.Property
+                {
+                    Name = "name",
+                    DataType = Weaviate.Client.Models.DataType.Text,
+                },
+                new Weaviate.Client.Models.Property
+                {
+                    Name = "age",
+                    DataType = Weaviate.Client.Models.DataType.Int,
+                },
             },
         };
 

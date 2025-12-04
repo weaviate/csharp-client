@@ -17,9 +17,9 @@ public class TypeValidatorTests
             Name = "Article",
             Properties =
             [
-                new Property { Name = "title", DataType = [DataType.Text] },
-                new Property { Name = "publishedDate", DataType = [DataType.Date] },
-                new Property { Name = "viewCount", DataType = [DataType.Int] },
+                new Property { Name = "title", DataType = DataType.Text },
+                new Property { Name = "publishedDate", DataType = DataType.Date },
+                new Property { Name = "viewCount", DataType = DataType.Int },
             ],
         };
 
@@ -42,7 +42,7 @@ public class TypeValidatorTests
             Name = "Article",
             Properties =
             [
-                new Property { Name = "viewCount", DataType = [DataType.Text] }, // Wrong: should be int
+                new Property { Name = "viewCount", DataType = DataType.Text }, // Wrong: should be int
             ],
         };
 
@@ -56,8 +56,8 @@ public class TypeValidatorTests
         Assert.Single(result.Errors);
         Assert.Equal(ValidationErrorType.TypeMismatch, result.Errors[0].ErrorType);
         Assert.Equal("ViewCount", result.Errors[0].PropertyName);
-        Assert.Equal(DataType.Text, result.Errors[0].ExpectedType);
-        Assert.Equal(DataType.Int, result.Errors[0].ActualType);
+        Assert.Equal("text", result.Errors[0].ExpectedType);
+        Assert.Equal("int", result.Errors[0].ActualType);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class TypeValidatorTests
                 new Property
                 {
                     Name = "tags",
-                    DataType = [DataType.Text], // Should be text[]
+                    DataType = DataType.Text, // Should be text[]
                 },
             ],
         };
@@ -97,7 +97,7 @@ public class TypeValidatorTests
             Name = "Article",
             Properties =
             [
-                new Property { Name = "title", DataType = [DataType.Text] },
+                new Property { Name = "title", DataType = DataType.Text },
                 // viewCount is in C# type but not in schema
             ],
         };
@@ -128,8 +128,8 @@ public class TypeValidatorTests
             Name = "Article",
             Properties =
             [
-                new Property { Name = "title", DataType = [DataType.Text] },
-                new Property { Name = "content", DataType = [DataType.Text] }, // Not in C# type
+                new Property { Name = "title", DataType = DataType.Text },
+                new Property { Name = "content", DataType = DataType.Text }, // Not in C# type
             ],
         };
 
@@ -153,18 +153,18 @@ public class TypeValidatorTests
             Name = "AllTypes",
             Properties =
             [
-                new Property { Name = "textProp", DataType = [DataType.Text] },
-                new Property { Name = "intProp", DataType = [DataType.Int] },
-                new Property { Name = "numberProp", DataType = [DataType.Number] },
-                new Property { Name = "boolProp", DataType = [DataType.Bool] },
-                new Property { Name = "dateProp", DataType = [DataType.Date] },
-                new Property { Name = "uuidProp", DataType = [DataType.Uuid] },
-                new Property { Name = "blobProp", DataType = [DataType.Blob] },
-                new Property { Name = "geoProp", DataType = [DataType.GeoCoordinate] },
-                new Property { Name = "phoneProp", DataType = [DataType.PhoneNumber] },
-                new Property { Name = "textArrayProp", DataType = [DataType.TextArray] },
-                new Property { Name = "intArrayProp", DataType = [DataType.IntArray] },
-                new Property { Name = "objectProp", DataType = [DataType.Object] },
+                new Property { Name = "textProp", DataType = DataType.Text },
+                new Property { Name = "intProp", DataType = DataType.Int },
+                new Property { Name = "numberProp", DataType = DataType.Number },
+                new Property { Name = "boolProp", DataType = DataType.Bool },
+                new Property { Name = "dateProp", DataType = DataType.Date },
+                new Property { Name = "uuidProp", DataType = DataType.Uuid },
+                new Property { Name = "blobProp", DataType = DataType.Blob },
+                new Property { Name = "geoProp", DataType = DataType.GeoCoordinate },
+                new Property { Name = "phoneProp", DataType = DataType.PhoneNumber },
+                new Property { Name = "textArrayProp", DataType = DataType.TextArray },
+                new Property { Name = "intArrayProp", DataType = DataType.IntArray },
+                new Property { Name = "objectProp", DataType = DataType.Object },
             ],
         };
 
@@ -187,15 +187,15 @@ public class TypeValidatorTests
             Name = "ArticleWithAuthor",
             Properties =
             [
-                new Property { Name = "title", DataType = [DataType.Text] },
+                new Property { Name = "title", DataType = DataType.Text },
                 new Property
                 {
                     Name = "author",
-                    DataType = [DataType.Object],
+                    DataType = DataType.Object,
                     NestedProperties =
                     [
-                        new Property { Name = "name", DataType = [DataType.Text] },
-                        new Property { Name = "age", DataType = [DataType.Int] },
+                        new Property { Name = "name", DataType = DataType.Text },
+                        new Property { Name = "age", DataType = DataType.Int },
                     ],
                 },
             ],
@@ -220,15 +220,15 @@ public class TypeValidatorTests
             Name = "ArticleWithAuthor",
             Properties =
             [
-                new Property { Name = "title", DataType = [DataType.Text] },
+                new Property { Name = "title", DataType = DataType.Text },
                 new Property
                 {
                     Name = "author",
-                    DataType = [DataType.Object],
+                    DataType = DataType.Object,
                     NestedProperties =
                     [
-                        new Property { Name = "name", DataType = [DataType.Text] },
-                        new Property { Name = "age", DataType = [DataType.Text] }, // Wrong: should be int
+                        new Property { Name = "name", DataType = DataType.Text },
+                        new Property { Name = "age", DataType = DataType.Text }, // Wrong: should be int
                     ],
                 },
             ],
@@ -396,7 +396,7 @@ public class TypeValidatorTests
         var schema = new CollectionConfig
         {
             Name = "Product",
-            Properties = [new Property { Name = "price", DataType = [DataType.Number] }],
+            Properties = [new Property { Name = "price", DataType = DataType.Number }],
         };
         var validator = TypeValidator.Default;
 
@@ -415,7 +415,7 @@ public class TypeValidatorTests
         var schema = new CollectionConfig
         {
             Name = "Order",
-            Properties = [new Property { Name = "quantity", DataType = [DataType.Int] }],
+            Properties = [new Property("quantity", DataType.Int)],
         };
         var validator = TypeValidator.Default;
 
@@ -436,11 +436,7 @@ public class TypeValidatorTests
             Name = "UserTask",
             Properties = new[]
             {
-                new Property
-                {
-                    Name = "status",
-                    DataType = new List<string> { DataType.Text },
-                },
+                new Property { Name = "status", DataType = DataType.Text },
             },
         };
         var validator = TypeValidator.Default;
@@ -462,11 +458,7 @@ public class TypeValidatorTests
             Name = "UserTask",
             Properties = new[]
             {
-                new Property
-                {
-                    Name = "status",
-                    DataType = new List<string> { DataType.Int },
-                },
+                new Property { Name = "status", DataType = DataType.Int },
             },
         };
         var validator = TypeValidator.Default;
