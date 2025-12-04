@@ -558,7 +558,11 @@ public class TestBackups : IntegrationTests
             await _weaviate.Alias.Delete(aliasName, TestContext.Current.CancellationToken);
         }
         catch { }
-        await articleClient.Alias.Add(aliasName, TestContext.Current.CancellationToken);
+        await _weaviate.Alias.Create(
+            aliasName,
+            articleClient.Name,
+            TestContext.Current.CancellationToken
+        );
 
         // Create backup including only Article
         var createResp = await _weaviate.Backups.CreateSync(
@@ -569,7 +573,11 @@ public class TestBackups : IntegrationTests
 
         // Delete Article and repoint alias to Paragraph (conflict scenario for restore)
         await _weaviate.Collections.Delete(articleName, TestContext.Current.CancellationToken);
-        await paragraphClient.Alias.Claim(aliasName, TestContext.Current.CancellationToken);
+        await _weaviate.Alias.Update(
+            aliasName,
+            paragraphClient.Name,
+            TestContext.Current.CancellationToken
+        );
 
         // Attempt restore with overwriteAlias = false -> expect failure & alias unchanged
         var restoreResp = await _weaviate.Backups.RestoreSync(
@@ -591,7 +599,7 @@ public class TestBackups : IntegrationTests
             TestContext.Current.CancellationToken
         );
         Assert.NotNull(aliasAfter);
-        Assert.Equal(paragraphName, aliasAfter.TargetClass);
+        Assert.Equal(paragraphName, aliasAfter.TargetCollection);
 
         // Article should have been restored (attempting to use should NOT raise)
         await _weaviate
@@ -632,7 +640,11 @@ public class TestBackups : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        await articleClient.Alias.Add(aliasName, TestContext.Current.CancellationToken);
+        await _weaviate.Alias.Create(
+            aliasName,
+            articleClient.Name,
+            TestContext.Current.CancellationToken
+        );
 
         var createResp = await _weaviate.Backups.CreateSync(
             new BackupCreateRequest(backupId, _backend, Include: new[] { articleName }),
@@ -642,9 +654,10 @@ public class TestBackups : IntegrationTests
 
         // Delete original, repoint alias to Paragraph to simulate conflicting alias
         await _weaviate.Collections.Delete(articleName, TestContext.Current.CancellationToken);
-        await paragraphClient.Alias.Claim(
+        await _weaviate.Alias.Update(
             aliasName,
-            cancellationToken: TestContext.Current.CancellationToken
+            paragraphClient.Name,
+            TestContext.Current.CancellationToken
         );
 
         // Restore with overwriteAlias = true should repoint alias back & recreate Article
@@ -666,7 +679,7 @@ public class TestBackups : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.NotNull(aliasAfter);
-        Assert.Equal(articleName, aliasAfter.TargetClass);
+        Assert.Equal(articleName, aliasAfter.TargetCollection);
 
         // Article collection should exist with restored data (1 object)
         var restoredArticle = _weaviate.Collections.Use(articleName);
