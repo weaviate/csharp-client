@@ -80,10 +80,16 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    internal static Vectors BuildVectorsFromResult(
-        Google.Protobuf.Collections.RepeatedField<Grpc.Protobuf.V1.Vectors> vectors
-    )
+    internal static Vectors BuildVectorsFromResult(Grpc.Protobuf.V1.MetadataResult metadataResult)
     {
+        if (metadataResult.VectorBytes != null && metadataResult.VectorBytes.Length > 0)
+        {
+            var vectorData = metadataResult.VectorBytes.FromByteString<float>();
+            return Vectors.Create(vectorData.ToArray());
+        }
+
+        var vectors = metadataResult.Vectors;
+
         var result = new Vectors();
 
         foreach (var vector in vectors)
@@ -222,7 +228,7 @@ internal partial class WeaviateGrpcClient
         {
             ID = !string.IsNullOrEmpty(metadata.Id) ? Guid.Parse(metadata.Id) : Guid.Empty,
             Collection = collection,
-            Vectors = BuildVectorsFromResult(metadata.Vectors),
+            Vectors = BuildVectorsFromResult(metadata),
             Properties = MakeNonRefs(properties.NonRefProps),
             References = properties.RefPropsRequested
                 ? MakeRefs(properties.RefProps)

@@ -102,6 +102,20 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         RequireVersion(Weaviate.Client.Tests.Common.ServerVersions.MinSupported);
     }
 
+    public string MakeUniqueCollectionName(string? suffix, string collectionNamePartSeparator = "_")
+    {
+        var strings = new string?[]
+        {
+            TestContext.Current.TestMethod?.MethodName,
+            TestContext.Current.Test?.UniqueID,
+            suffix,
+        }
+            .Where(s => !string.IsNullOrEmpty(s))
+            .Cast<string>();
+
+        return string.Join(collectionNamePartSeparator, strings);
+    }
+
     public string MakeUniqueCollectionName<TData>(
         string? suffix,
         string collectionNamePartSeparator = "_"

@@ -222,6 +222,7 @@ public static class WeaviateExtensions
                 }
                 : null;
 
+#pragma warning disable CS0618 // Type or member is obsolete
         return new CollectionConfig()
         {
             Name = collection?.Class1 ?? string.Empty,
@@ -287,7 +288,9 @@ public static class WeaviateExtensions
                     : null,
             ShardingConfig = shardingConfig,
             VectorConfig = vectorConfig,
+            Vectorizer = collection?.Vectorizer ?? string.Empty,
         };
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     internal static IEnumerable<T> FromByteString<T>(this Google.Protobuf.ByteString byteString)
