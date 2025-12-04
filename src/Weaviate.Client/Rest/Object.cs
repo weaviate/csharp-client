@@ -52,6 +52,7 @@ internal partial class WeaviateRestClient
         await response.ManageStatusCode(
             [
                 HttpStatusCode.OK,
+                HttpStatusCode.NoContent,
                 // HttpStatusCode.BadRequest,
                 // HttpStatusCode.Unauthorized,
                 // HttpStatusCode.Forbidden,
