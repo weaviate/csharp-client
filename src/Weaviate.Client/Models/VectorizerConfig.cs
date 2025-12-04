@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Models;
@@ -7,10 +8,14 @@ public abstract record VectorizerConfig : IEquatable<VectorizerConfig>
     private readonly string _identifier;
     protected HashSet<string> _sourceProperties = new();
 
-    protected VectorizerConfig(string identifier)
+    protected VectorizerConfig()
     {
-        ArgumentNullException.ThrowIfNull(identifier);
-        _identifier = identifier;
+        var attribute =
+            GetType().GetCustomAttribute<VectorizerAttribute>()
+            ?? throw new InvalidOperationException(
+                $"VectorizerConfig derived type {GetType().Name} must have a [Vectorizer] attribute."
+            );
+        _identifier = attribute.Identifier;
     }
 
     [JsonConverter(typeof(JsonConverterEmptyCollectionAsNull))]

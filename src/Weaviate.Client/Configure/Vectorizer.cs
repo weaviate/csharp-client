@@ -1,6 +1,30 @@
 using Weaviate.Client.Models;
+using static Weaviate.Client.Models.Vectorizer;
 
 namespace Weaviate.Client;
+
+public record WeightedField(string Name, double Weight)
+{
+    public static implicit operator WeightedField((string Name, double Weight) tuple) =>
+        new(tuple.Name, tuple.Weight);
+};
+
+public class WeightedFields : List<WeightedField>
+{
+    public WeightedFields() { }
+
+    public WeightedFields(IEnumerable<WeightedField> fields)
+        : base(fields) { }
+
+    public WeightedFields(params WeightedField[] fields)
+        : base(fields) { }
+
+    public string[] FieldNames => [.. this.Select(f => f.Name)];
+    public double[] Weights => [.. this.Select(f => f.Weight)];
+
+    public static implicit operator string[]?(WeightedFields? weightedFields) =>
+        weightedFields?.FieldNames;
+}
 
 public static partial class Configure
 {
@@ -164,10 +188,9 @@ public static partial class Configure
             string? region = null,
             string? model = null,
             int? dimensions = null,
-            string[]? imageFields = null,
-            string[]? textFields = null,
-            bool? vectorizeCollectionName = null,
-            Vectorizer.Multi2VecAWSWeights? weights = null
+            WeightedFields? imageFields = null,
+            WeightedFields? textFields = null,
+            bool? vectorizeCollectionName = null
         ) =>
             new(
                 new Vectorizer.Multi2VecAWS
@@ -178,16 +201,35 @@ public static partial class Configure
                     ImageFields = imageFields,
                     TextFields = textFields,
                     VectorizeCollectionName = vectorizeCollectionName,
-                    Weights = weights,
+                    Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+                }
+            );
+
+        public static VectorConfigBuilder Multi2VecAWS(
+            string? region = null,
+            string? model = null,
+            int? dimensions = null,
+            string[]? imageFields = null,
+            string[]? textFields = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecAWS
+                {
+                    Region = region,
+                    Model = model,
+                    Dimensions = dimensions,
+                    ImageFields = imageFields,
+                    TextFields = textFields,
+                    VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
 
         public static VectorConfigBuilder Multi2VecClip(
-            string[]? imageFields = null,
             string? inferenceUrl = null,
-            string[]? textFields = null,
-            bool? vectorizeCollectionName = null,
-            Vectorizer.Multi2VecWeights? weights = null
+            WeightedFields? imageFields = null,
+            WeightedFields? textFields = null,
+            bool? vectorizeCollectionName = null
         ) =>
             new(
                 new Vectorizer.Multi2VecClip
@@ -196,19 +238,34 @@ public static partial class Configure
                     InferenceUrl = inferenceUrl,
                     TextFields = textFields,
                     VectorizeCollectionName = vectorizeCollectionName,
-                    Weights = weights,
+                    Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+                }
+            );
+
+        public static VectorConfigBuilder Multi2VecClip(
+            string? inferenceUrl = null,
+            string[]? imageFields = null,
+            string[]? textFields = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecClip
+                {
+                    ImageFields = imageFields,
+                    InferenceUrl = inferenceUrl,
+                    TextFields = textFields,
+                    VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
 
         public static VectorConfigBuilder Multi2VecCohere(
             string? baseURL = null,
-            string[]? imageFields = null,
+            WeightedFields? imageFields = null,
             string? model = null,
             int? dimensions = null,
-            string[]? textFields = null,
+            WeightedFields? textFields = null,
             string? truncate = null,
-            bool? vectorizeCollectionName = null,
-            Vectorizer.Multi2VecCohereWeights? weights = null
+            bool? vectorizeCollectionName = null
         ) =>
             new(
                 new Vectorizer.Multi2VecCohere
@@ -220,20 +277,41 @@ public static partial class Configure
                     TextFields = textFields,
                     Truncate = truncate,
                     VectorizeCollectionName = vectorizeCollectionName,
-                    Weights = weights,
+                    Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+                }
+            );
+
+        public static VectorConfigBuilder Multi2VecCohere(
+            string? baseURL = null,
+            string[]? imageFields = null,
+            string? model = null,
+            int? dimensions = null,
+            string[]? textFields = null,
+            string? truncate = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecCohere
+                {
+                    BaseURL = baseURL,
+                    ImageFields = imageFields,
+                    Model = model,
+                    Dimensions = dimensions,
+                    TextFields = textFields,
+                    Truncate = truncate,
+                    VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
 
         public static VectorConfigBuilder Multi2VecBind(
-            string[]? audioFields = null,
-            string[]? depthFields = null,
-            string[]? imageFields = null,
-            string[]? imuFields = null,
-            string[]? textFields = null,
-            string[]? thermalFields = null,
-            string[]? videoFields = null,
-            bool? vectorizeCollectionName = null,
-            Vectorizer.Multi2VecBindWeights? weights = null
+            WeightedFields? audioFields = null,
+            WeightedFields? depthFields = null,
+            WeightedFields? imageFields = null,
+            WeightedFields? imuFields = null,
+            WeightedFields? textFields = null,
+            WeightedFields? thermalFields = null,
+            WeightedFields? videoFields = null,
+            bool? vectorizeCollectionName = null
         ) =>
             new(
                 new Vectorizer.Multi2VecBind
@@ -246,21 +324,52 @@ public static partial class Configure
                     ThermalFields = thermalFields,
                     VideoFields = videoFields,
                     VectorizeCollectionName = vectorizeCollectionName,
-                    Weights = weights,
+                    Weights = VectorizerWeights.FromWeightedFields(
+                        audioFields,
+                        depthFields,
+                        imageFields,
+                        imuFields,
+                        textFields,
+                        thermalFields,
+                        videoFields
+                    ),
+                }
+            );
+
+        public static VectorConfigBuilder Multi2VecBind(
+            string[]? audioFields = null,
+            string[]? depthFields = null,
+            string[]? imageFields = null,
+            string[]? imuFields = null,
+            string[]? textFields = null,
+            string[]? thermalFields = null,
+            string[]? videoFields = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecBind
+                {
+                    AudioFields = audioFields,
+                    DepthFields = depthFields,
+                    ImageFields = imageFields,
+                    IMUFields = imuFields,
+                    TextFields = textFields,
+                    ThermalFields = thermalFields,
+                    VideoFields = videoFields,
+                    VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
 
         public static VectorConfigBuilder Multi2VecGoogle(
             string projectId,
             string location,
-            string[]? imageFields = null,
-            string[]? textFields = null,
-            string[]? videoFields = null,
+            WeightedFields? imageFields = null,
+            WeightedFields? textFields = null,
+            WeightedFields? videoFields = null,
             int? videoIntervalSeconds = null,
             string? model = null,
             int? dimensions = null,
-            bool? vectorizeCollectionName = null,
-            Vectorizer.Multi2VecGoogleWeights? weights = null
+            bool? vectorizeCollectionName = null
         ) =>
             new(
                 new Vectorizer.Multi2VecGoogle
@@ -274,18 +383,47 @@ public static partial class Configure
                     ModelId = model,
                     Dimensions = dimensions,
                     VectorizeCollectionName = vectorizeCollectionName,
-                    Weights = weights,
+                    Weights = VectorizerWeights.FromWeightedFields(
+                        imageFields,
+                        textFields,
+                        videoFields
+                    ),
+                }
+            );
+
+        public static VectorConfigBuilder Multi2VecGoogle(
+            string projectId,
+            string location,
+            string[]? imageFields = null,
+            string[]? textFields = null,
+            string[]? videoFields = null,
+            int? videoIntervalSeconds = null,
+            string? model = null,
+            int? dimensions = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecGoogle
+                {
+                    ProjectId = projectId,
+                    Location = location,
+                    ImageFields = imageFields,
+                    TextFields = textFields,
+                    VideoFields = videoFields,
+                    VideoIntervalSeconds = videoIntervalSeconds,
+                    ModelId = model,
+                    Dimensions = dimensions,
+                    VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
 
         public static VectorConfigBuilder Multi2VecVoyageAI(
             string? baseURL = null,
-            string[]? imageFields = null,
+            WeightedFields? imageFields = null,
             string? model = null,
-            string[]? textFields = null,
+            WeightedFields? textFields = null,
             bool? truncate = null,
-            bool? vectorizeCollectionName = null,
-            Vectorizer.Multi2VecVoyageAIWeights? weights = null
+            bool? vectorizeCollectionName = null
         ) =>
             new(
                 new Vectorizer.Multi2VecVoyageAI
@@ -296,7 +434,27 @@ public static partial class Configure
                     TextFields = textFields,
                     Truncate = truncate,
                     VectorizeCollectionName = vectorizeCollectionName,
-                    Weights = weights,
+                    Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+                }
+            );
+
+        public static VectorConfigBuilder Multi2VecVoyageAI(
+            string? baseURL = null,
+            string[]? imageFields = null,
+            string? model = null,
+            string[]? textFields = null,
+            bool? truncate = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecVoyageAI
+                {
+                    BaseURL = baseURL,
+                    ImageFields = imageFields,
+                    Model = model,
+                    TextFields = textFields,
+                    Truncate = truncate,
+                    VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
 
@@ -598,7 +756,6 @@ public static partial class Configure
             int? dimensions = null,
             string[]? imageFields = null,
             string[]? textFields = null,
-            Vectorizer.JinaAIWeights? weights = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
@@ -609,7 +766,27 @@ public static partial class Configure
                     Dimensions = dimensions,
                     ImageFields = imageFields,
                     TextFields = textFields,
-                    Weights = weights,
+                    VectorizeCollectionName = vectorizeCollectionName,
+                }
+            );
+
+        public static VectorConfigBuilder Multi2VecJinaAI(
+            string? model = null,
+            string? baseURL = null,
+            int? dimensions = null,
+            WeightedFields? imageFields = null,
+            WeightedFields? textFields = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Multi2VecJinaAI
+                {
+                    Model = model,
+                    BaseURL = baseURL,
+                    Dimensions = dimensions,
+                    ImageFields = imageFields,
+                    TextFields = textFields,
+                    Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );

@@ -90,7 +90,7 @@ public class TraditionalExample
             Name = "Cat",
             Description = "Lots of Cats of multiple breeds",
             Properties = Property.FromClass<Cat>(),
-            VectorConfig = new VectorConfig("default", new Vectorizer.Text2VecWeaviate()),
+            VectorConfig = Configure.Vectors.Text2VecWeaviate().New(),
         };
 
         collection = await weaviate.Collections.Create<Cat>(catCollection);
