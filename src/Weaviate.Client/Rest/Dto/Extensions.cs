@@ -51,7 +51,7 @@ internal partial record NestedProperty
         return new Models.Property
         {
             Name = Name ?? string.Empty,
-            DataType = DataType?.ToList() ?? new List<string>(),
+            DataType = DataType?.FirstOrDefault()?.FromEnumMemberString<Models.DataType>() ?? Models.DataType.Unknown,
             Description = Description,
             IndexFilterable = IndexFilterable,
             IndexSearchable = IndexSearchable,
@@ -62,13 +62,14 @@ internal partial record NestedProperty
     }
 }
 
-internal partial record Property {
-    public  Models.Property ToModel()
+internal partial record Property
+{
+    public Models.Property ToModel()
     {
         return new Models.Property
         {
             Name = Name ?? string.Empty,
-            DataType = DataType?.ToList() ?? new List<string>(),
+            DataType = DataType?.FirstOrDefault()?.FromEnumMemberString<Models.DataType>() ?? Models.DataType.Unknown,
             Description = Description,
             IndexFilterable = IndexFilterable,
 #pragma warning disable CS0612 // Type or member is obsolete
@@ -80,6 +81,13 @@ internal partial record Property {
             NestedProperties = NestedProperties?.Select(np => np.ToModel()).ToArray(),
         };
     }
+
+        public Models.Reference ToReferenceModel()
+        {
+            var targetCollection = DataType?.FirstOrDefault() ?? string.Empty;
+            return new Models.Reference(Name ?? string.Empty, targetCollection, Description);
+        }
+
 }
 
 internal partial record GeoCoordinates

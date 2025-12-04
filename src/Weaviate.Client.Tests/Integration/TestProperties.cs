@@ -209,7 +209,7 @@ public partial class PropertyTests : IntegrationTests
 
         foreach (var actual in new[] { actualSingle, actualBatch })
         {
-            if (props[0].DataType.Contains(DataType.Blob))
+            if (props[0].DataType == DataType.Blob)
             {
                 Assert.IsType<string>(actual);
                 string actualString = (string)actual!;
@@ -241,7 +241,7 @@ public partial class PropertyTests : IntegrationTests
                     Assert.Equal(exp, act, 5);
                 }
             }
-            else if (props[0].DataType.Contains(DataType.Blob) && actual is string actualString)
+            else if (props[0].DataType == DataType.Blob && actual is string actualString)
             {
                 var actualBytes = Convert.FromBase64String(actualString);
                 Assert.Equal(expected, actualBytes);
