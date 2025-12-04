@@ -33,12 +33,27 @@ public class AliasClient
     /// <param name="alias">The alias to create</param>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>The created alias</returns>
-    public async Task<Alias> Add(Alias alias, CancellationToken cancellationToken = default)
+    public async Task<Alias> Create(Alias alias, CancellationToken cancellationToken = default)
     {
         await _client.EnsureInitializedAsync();
         var dto = ToDto(alias);
         var result = await _client.RestClient.CollectionAliasesPost(dto, cancellationToken);
         return ToModel(result);
+    }
+
+    /// <summary>
+    /// Create a new alias pointing to a collection
+    /// </summary>
+    /// <param name="alias">The alias to create</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
+    /// <returns>The created alias</returns>
+    public async Task<Alias> Create(
+        string alias,
+        string targetCollection,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await Create(new Alias(alias, targetCollection), cancellationToken);
     }
 
     /// <summary>
@@ -93,6 +108,6 @@ public class AliasClient
 
     private static Rest.Dto.Alias ToDto(Alias model)
     {
-        return new Rest.Dto.Alias { Alias1 = model.Name, Class = model.TargetClass };
+        return new Rest.Dto.Alias { Alias1 = model.Name, Class = model.TargetCollection };
     }
 }
