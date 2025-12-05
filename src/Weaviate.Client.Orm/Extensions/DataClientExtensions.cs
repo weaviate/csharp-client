@@ -1,6 +1,8 @@
+using System.Linq.Expressions;
 using Weaviate.Client;
 using Weaviate.Client.Models;
 using Weaviate.Client.Orm.Mapping;
+using Weaviate.Client.Orm.Query;
 
 namespace Weaviate.Client.Orm.Extensions;
 
@@ -201,6 +203,56 @@ public static class DataClientExtensions
             data: obj,
             vectors: vectors,
             references: refParam,
+            cancellationToken: cancellationToken
+        );
+    }
+
+    /// <summary>
+    /// Deletes a single object by its ID.
+    /// </summary>
+    /// <param name="dataClient">The DataClient instance.</param>
+    /// <param name="id">The ID of the object to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Task representing the async operation.</returns>
+    public static async Task DeleteByID(
+        this DataClient dataClient,
+        Guid id,
+        CancellationToken cancellationToken = default
+    )
+    {
+        await dataClient.DeleteByID(id, cancellationToken);
+    }
+
+    /// <summary>
+    /// Deletes multiple objects matching a filter expression.
+    /// Uses type-safe LINQ-style filtering to identify objects to delete.
+    /// </summary>
+    /// <typeparam name="T">The object type.</typeparam>
+    /// <param name="dataClient">The DataClient instance.</param>
+    /// <param name="where">Filter expression to identify objects to delete.</param>
+    /// <param name="dryRun">If true, returns what would be deleted without actually deleting.</param>
+    /// <param name="verbose">If true, includes detailed information in the response.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>DeleteManyResult with information about deleted objects.</returns>
+    public static async Task<DeleteManyResult> DeleteMany<T>(
+        this DataClient dataClient,
+        Expression<Func<T, bool>> where,
+        bool dryRun = false,
+        bool verbose = false,
+        CancellationToken cancellationToken = default
+    )
+        where T : class
+    {
+        ArgumentNullException.ThrowIfNull(where);
+
+        // Convert expression to Filter using the ORM expression converter
+        var filter = ExpressionToFilterConverter.Convert(where);
+
+        // Delete using existing DataClient
+        return await dataClient.DeleteMany(
+            where: filter,
+            dryRun: dryRun,
+            verbose: verbose,
             cancellationToken: cancellationToken
         );
     }
