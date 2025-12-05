@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Weaviate.Client.Models;
 using Weaviate.Client.Orm.Internal;
+using Weaviate.Client.Orm.Mapping;
 using Weaviate.Client.Typed;
 
 namespace Weaviate.Client.Orm.Query;
@@ -280,9 +281,8 @@ public class OrmQueryClient<T>
     {
         var result = await ExecuteQueryAsync(cancellationToken);
 
-        // TODO: In Phase 3, this will populate vectors and references from WeaviateObject
-        // For now, just return the typed objects
-        return result.Objects.Select(obj => obj.Object);
+        // Use ORM object mapper to populate vectors and references
+        return result.Objects.Select(OrmObjectMapper.FromWeaviateObject);
     }
 
     /// <summary>
