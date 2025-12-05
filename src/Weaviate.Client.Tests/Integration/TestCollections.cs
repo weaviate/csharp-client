@@ -400,10 +400,7 @@ public partial class CollectionsTests : IntegrationTests
         var defaultVectorConfig = export.VectorConfig["nondefault"];
         Assert.Equal("nondefault", defaultVectorConfig.Name);
         Assert.NotNull(defaultVectorConfig.Vectorizer);
-        Assert.Equal(
-            Vectorizer.Text2VecTransformers.IdentifierValue,
-            defaultVectorConfig.Vectorizer.Identifier
-        );
+        Assert.Equal("text2vec-transformers", defaultVectorConfig.Vectorizer.Identifier);
 
         // VectorIndexConfig validation
         Assert.NotNull(defaultVectorConfig.VectorIndexConfig);
@@ -559,10 +556,7 @@ public partial class CollectionsTests : IntegrationTests
         var defaultVectorConfig = export.VectorConfig["nondefault"];
         Assert.Equal("nondefault", defaultVectorConfig.Name);
         Assert.NotNull(defaultVectorConfig.Vectorizer);
-        Assert.Equal(
-            Vectorizer.Text2VecTransformers.IdentifierValue,
-            defaultVectorConfig.Vectorizer.Identifier
-        );
+        Assert.Equal("text2vec-transformers", defaultVectorConfig.Vectorizer.Identifier);
 
         // VectorIndexConfig validation
         Assert.NotNull(defaultVectorConfig.VectorIndexConfig);

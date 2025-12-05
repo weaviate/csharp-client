@@ -580,7 +580,7 @@ public class TypedClientIntegrationTests : IntegrationTests
         );
 
         // Add tenant
-        await collection.Tenants.Add(
+        await collection.Tenants.Create(
             new[] { new Tenant { Name = "tenant1" } },
             TestContext.Current.CancellationToken
         );

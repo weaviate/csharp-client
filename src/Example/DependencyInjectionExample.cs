@@ -95,10 +95,7 @@ public class CatService
                     Name = "Cat",
                     Description = "Example cat collection for DI demo",
                     Properties = Weaviate.Client.Models.Property.FromClass<Cat>(),
-                    VectorConfig = new Weaviate.Client.Models.VectorConfig(
-                        "default",
-                        new Weaviate.Client.Models.Vectorizer.Text2VecWeaviate()
-                    ),
+                    VectorConfig = Configure.Vectors.Text2VecWeaviate().New(),
                 }
             );
         }

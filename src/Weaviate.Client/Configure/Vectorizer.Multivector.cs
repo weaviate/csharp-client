@@ -1,5 +1,6 @@
 using Weaviate.Client.Models;
 using static Weaviate.Client.Models.VectorIndexConfig;
+using static Weaviate.Client.Models.Vectorizer;
 
 namespace Weaviate.Client;
 
@@ -71,7 +72,6 @@ public static partial class Configure
             string? model = null,
             string[]? imageFields = null,
             string[]? textFields = null,
-            Vectorizer.JinaAIWeights? weights = null,
             bool? vectorizeCollectionName = null
         ) =>
             new(
@@ -81,8 +81,26 @@ public static partial class Configure
                     Model = model,
                     ImageFields = imageFields,
                     TextFields = textFields,
-                    Weights = weights,
                     VectorizeCollectionName = vectorizeCollectionName,
+                }
+            );
+
+        public static VectorConfigBuilder Multi2MultiVecJinaAI(
+            string? baseURL = null,
+            string? model = null,
+            WeightedFields? imageFields = null,
+            WeightedFields? textFields = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Multi2MultiVecJinaAI
+                {
+                    BaseURL = baseURL,
+                    Model = model,
+                    ImageFields = imageFields,
+                    TextFields = textFields,
+                    VectorizeCollectionName = vectorizeCollectionName,
+                    Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
                 }
             );
     }

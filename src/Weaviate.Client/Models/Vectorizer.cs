@@ -2,71 +2,125 @@ using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Models;
 
-public static partial class Vectorizer
+public static class Vectorizer
 {
-    public partial record SelfProvided { }
-
-    public partial record Img2VecNeural
+    /// <summary>
+    /// Unified weights configuration for multi-media vectorizers.
+    /// All fields are optional and will be omitted from JSON when null.
+    /// </summary>
+    internal record VectorizerWeights
     {
+        public static VectorizerWeights FromWeightedFields(
+            WeightedFields? imageFields = null,
+            WeightedFields? textFields = null,
+            WeightedFields? audioFields = null,
+            WeightedFields? depthFields = null,
+            WeightedFields? imuFields = null,
+            WeightedFields? thermalFields = null,
+            WeightedFields? videoFields = null
+        ) =>
+            new()
+            {
+                AudioFields = audioFields?.Weights,
+                DepthFields = depthFields?.Weights,
+                ImageFields = imageFields?.Weights,
+                IMUFields = imuFields?.Weights,
+                TextFields = textFields?.Weights,
+                ThermalFields = thermalFields?.Weights,
+                VideoFields = videoFields?.Weights,
+            };
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public double[]? AudioFields { get; set; } = null;
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public double[]? DepthFields { get; set; } = null;
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public double[]? ImageFields { get; set; } = null;
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public double[]? IMUFields { get; set; } = null;
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public double[]? TextFields { get; set; } = null;
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public double[]? ThermalFields { get; set; } = null;
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public double[]? VideoFields { get; set; } = null;
+    }
+
+    [Vectorizer("none", VectorType.Both)]
+    public record SelfProvided : VectorizerConfig
+    {
+        [JsonConstructor]
+        internal SelfProvided() { }
+    }
+
+    /// <summary>
+    /// The configuration for image vectorization using a neural network module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("img2vec-neural")]
+    public record Img2VecNeural : VectorizerConfig
+    {
+        [JsonConstructor]
+        internal Img2VecNeural() { }
+
         /// <summary>
         /// The image fields used when vectorizing. This is a required field and must match the property fields of the collection that are defined as DataType.BLOB.
         /// </summary>
         public required string[] ImageFields { get; set; }
     }
 
-    public partial record Multi2VecField
+    /// <summary>
+    /// The configuration for multi-media vectorization using the AWS module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2vec-aws")]
+    public record Multi2VecAWS : VectorizerConfig
     {
-        /// <summary>
-        /// The name of the field to be used when performing multi-media vectorization.
-        /// </summary>
-        public required string Name { get; set; }
+        [JsonConstructor]
+        internal Multi2VecAWS() { }
 
-        /// <summary>
-        /// The weight of the field when performing multi-media vectorization.
-        /// </summary>
-        public double? Weight { get; set; } = null;
-    }
-
-    public partial record Multi2VecWeights
-    {
-        public double[]? ImageFields { get; set; } = null;
-        public double[]? TextFields { get; set; } = null;
-    }
-
-    public partial record Multi2VecAWSWeights
-    {
-        public double[]? ImageFields { get; set; } = null;
-        public double[]? TextFields { get; set; } = null;
-    }
-
-    public partial record Multi2VecAWS
-    {
         public string? Region { get; set; }
         public string? Model { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
-        public Multi2VecAWSWeights? Weights { get; set; } = null;
+        internal VectorizerWeights? Weights { get; set; } = null;
     }
 
-    public partial record Multi2VecClip
+    /// <summary>
+    /// The configuration for multi-media vectorization using the CLIP module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2vec-clip")]
+    public record Multi2VecClip : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Multi2VecClip() { }
+
         public string[]? ImageFields { get; set; } = null;
         public string? InferenceUrl { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
-        public Multi2VecWeights? Weights { get; set; } = null;
+        internal VectorizerWeights? Weights { get; set; } = null;
     }
 
-    public partial record Multi2VecCohereWeights
+    /// <summary>
+    /// The configuration for multi-media vectorization using the Cohere module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2vec-cohere")]
+    public record Multi2VecCohere : VectorizerConfig
     {
-        public double[]? ImageFields { get; set; } = null;
-        public double[]? TextFields { get; set; } = null;
-    }
+        [JsonConstructor]
+        internal Multi2VecCohere() { }
 
-    public partial record Multi2VecCohere
-    {
         public string? BaseURL { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
         public string? Model { get; set; } = null;
@@ -74,22 +128,19 @@ public static partial class Vectorizer
         public string[]? TextFields { get; set; } = null;
         public string? Truncate { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
-        public Multi2VecCohereWeights? Weights { get; set; } = null;
+        internal VectorizerWeights? Weights { get; set; } = null;
     }
 
-    public partial record Multi2VecBindWeights
+    /// <summary>
+    /// The configuration for multi-media vectorization using the Bind module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2vec-bind")]
+    public record Multi2VecBind : VectorizerConfig
     {
-        public double[]? AudioFields { get; set; } = null;
-        public double[]? DepthFields { get; set; } = null;
-        public double[]? ImageFields { get; set; } = null;
-        public double[]? IMUFields { get; set; } = null;
-        public double[]? TextFields { get; set; } = null;
-        public double[]? ThermalFields { get; set; } = null;
-        public double[]? VideoFields { get; set; } = null;
-    }
+        [JsonConstructor]
+        internal Multi2VecBind() { }
 
-    public partial record Multi2VecBind
-    {
         public string[]? AudioFields { get; set; } = null;
         public string[]? DepthFields { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
@@ -98,18 +149,19 @@ public static partial class Vectorizer
         public string[]? ThermalFields { get; set; } = null;
         public string[]? VideoFields { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
-        public Multi2VecBindWeights? Weights { get; set; } = null;
+        internal VectorizerWeights? Weights { get; set; } = null;
     }
 
-    public partial record Multi2VecGoogleWeights
+    /// <summary>
+    /// The configuration for multi-media vectorization using the Google module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2vec-palm")]
+    public record Multi2VecGoogle : VectorizerConfig
     {
-        public double[]? ImageFields { get; set; } = null;
-        public double[]? TextFields { get; set; } = null;
-        public double[]? VideoFields { get; set; } = null;
-    }
+        [JsonConstructor]
+        internal Multi2VecGoogle() { }
 
-    public partial record Multi2VecGoogle
-    {
         public required string ProjectId { get; set; }
         public required string Location { get; set; }
         public string[]? ImageFields { get; set; } = null;
@@ -119,55 +171,84 @@ public static partial class Vectorizer
         public string? ModelId { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
-        public Multi2VecGoogleWeights? Weights { get; set; } = null;
+        internal VectorizerWeights? Weights { get; set; } = null;
     }
 
-    public partial record JinaAIWeights
+    /// <summary>
+    /// Deprecated. Use Multi2VecGoogle instead.
+    /// </summary>
+    public record Multi2VecPalm : Multi2VecGoogle
     {
-        public double[]? ImageFields { get; set; } = null;
-        public double[]? TextFields { get; set; } = null;
+        [JsonConstructor]
+        internal Multi2VecPalm() { }
     }
 
-    public partial record Multi2VecJinaAI
+    /// <summary>
+    /// The configuration for multi-media vectorization using the Jina module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2vec-jinaai")]
+    public record Multi2VecJinaAI : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Multi2VecJinaAI() { }
+
         public string? BaseURL { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
         public string? Model { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
-        public JinaAIWeights? Weights { get; set; } = null;
+        internal VectorizerWeights? Weights { get; set; } = null;
     }
 
-    public partial record Multi2MultiVecJinaAI
+    /// <summary>
+    /// The configuration for multi-media multi-vector vectorization using the Jina module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2multivec-jinaai", VectorType.MultiVector)]
+    public record Multi2MultiVecJinaAI : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Multi2MultiVecJinaAI() { }
+
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
-        public JinaAIWeights? Weights { get; set; } = null;
+        internal VectorizerWeights? Weights { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Multi2VecVoyageAIWeights
+    /// <summary>
+    /// The configuration for multi-media vectorization using the VoyageAI module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2vec-voyageai")]
+    public record Multi2VecVoyageAI : VectorizerConfig
     {
-        public double[]? ImageFields { get; set; } = null;
-        public double[]? TextFields { get; set; } = null;
-    }
+        [JsonConstructor]
+        internal Multi2VecVoyageAI() { }
 
-    public partial record Multi2VecVoyageAI
-    {
         public string? BaseURL { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
         public string? Model { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
         public bool? Truncate { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
-        public Multi2VecVoyageAIWeights? Weights { get; set; } = null;
+        internal VectorizerWeights? Weights { get; set; } = null;
     }
 
-    public partial record Ref2VecCentroid
+    /// <summary>
+    /// The configuration for reference-based vectorization using the centroid method.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("ref2vec-centroid")]
+    public record Ref2VecCentroid : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Ref2VecCentroid() { }
+
         /// <summary>
         /// The properties used as reference points for vectorization.
         /// </summary>
@@ -179,8 +260,16 @@ public static partial class Vectorizer
         public string Method { get; set; } = "mean";
     }
 
-    public partial record Text2VecAWS
+    /// <summary>
+    /// The configuration for text vectorization using the AWS module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-aws")]
+    public record Text2VecAWS : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecAWS() { }
+
         public required string Region { get; set; }
         public required string Service { get; set; }
         public string? Endpoint { get; set; } = null;
@@ -190,8 +279,16 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecAzureOpenAI
+    /// <summary>
+    /// The configuration for text vectorization using the OpenAI module with Azure.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-azure-openai")]
+    public record Text2VecAzureOpenAI : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecAzureOpenAI() { }
+
         public required string DeploymentId { get; set; }
         public required string ResourceName { get; set; }
         public string? BaseURL { get; set; } = null;
@@ -200,8 +297,16 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecCohere
+    /// <summary>
+    /// The configuration for text vectorization using the Cohere module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-cohere")]
+    public record Text2VecCohere : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecCohere() { }
+
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public int? Dimensions { get; set; } = null;
@@ -209,20 +314,31 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecContextionary
+    /// <summary>
+    /// The configuration for text vectorization using the Databricks module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-databricks")]
+    public record Text2VecDatabricks : VectorizerConfig
     {
-        public bool? VectorizeClassName { get; set; } = false;
-    }
+        [JsonConstructor]
+        internal Text2VecDatabricks() { }
 
-    public partial record Text2VecDatabricks
-    {
         public required string Endpoint { get; set; }
         public string? Instruction { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecHuggingFace
+    /// <summary>
+    /// The configuration for text vectorization using the HuggingFace module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-huggingface")]
+    public record Text2VecHuggingFace : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecHuggingFace() { }
+
         public string? EndpointURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public string? PassageModel { get; set; } = null;
@@ -233,66 +349,134 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecJinaAI
+    /// <summary>
+    /// The configuration for text vectorization using the Jina module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-jinaai")]
+    public record Text2VecJinaAI : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecJinaAI() { }
+
         public string? Model { get; set; } = null;
         public string? BaseURL { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2MultiVecJinaAI
+    /// <summary>
+    /// The configuration for text multi-vector vectorization using the Jina module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2multivec-jinaai", VectorType.MultiVector)]
+    public record Text2MultiVecJinaAI : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2MultiVecJinaAI() { }
+
         public string? Model { get; set; } = null;
         public string? BaseURL { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecNvidia
+    /// <summary>
+    /// The configuration for text vectorization using the Nvidia module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-nvidia")]
+    public record Text2VecNvidia : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecNvidia() { }
+
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public bool? Truncate { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Multi2VecNvidia
+    [Vectorizer("multi2vec-nvidia")]
+    public record Multi2VecNvidia : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Multi2VecNvidia() { }
+
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public bool? Truncate { get; set; } = null;
     }
 
-    public partial record Text2VecMistral
+    /// <summary>
+    /// The configuration for text vectorization using the Mistral module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-mistral")]
+    public record Text2VecMistral : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecMistral() { }
+
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecModel2Vec
+    /// <summary>
+    /// The configuration for text vectorization using the Model2Vec module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-model2vec")]
+    public record Text2VecModel2Vec : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecModel2Vec() { }
+
         public string? InferenceURL { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecMorph
+    /// <summary>
+    /// The configuration for text vectorization using the Morph module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-morph")]
+    public record Text2VecMorph : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecMorph() { }
+
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecOllama
+    /// <summary>
+    /// The configuration for text vectorization using the Ollama module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-ollama")]
+    public record Text2VecOllama : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecOllama() { }
+
         public string? ApiEndpoint { get; set; } = null;
         public string? Model { get; set; } = null;
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecOpenAI
+    /// <summary>
+    /// The configuration for text vectorization using the OpenAI module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-openai")]
+    public record Text2VecOpenAI : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecOpenAI() { }
+
         public string? BaseURL { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public string? Model { get; set; } = null;
@@ -301,8 +485,16 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecGoogle
+    /// <summary>
+    /// The configuration for text vectorization using the Google module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-palm")]
+    public record Text2VecGoogle : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecGoogle() { }
+
         public string? ApiEndpoint { get; set; } = null;
         public string? Model { get; set; } = null;
         public string? ProjectId { get; set; } = null;
@@ -312,8 +504,25 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecTransformers
+    /// <summary>
+    /// Deprecated. Use Text2VecGoogle instead.
+    /// </summary>
+    public record Text2VecPalm : Text2VecGoogle
     {
+        [JsonConstructor]
+        internal Text2VecPalm() { }
+    }
+
+    /// <summary>
+    /// The configuration for text vectorization using the Transformers module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-transformers")]
+    public record Text2VecTransformers : VectorizerConfig
+    {
+        [JsonConstructor]
+        internal Text2VecTransformers() { }
+
         public string? InferenceUrl { get; set; } = null;
         public string? PassageInferenceUrl { get; set; } = null;
         public string? QueryInferenceUrl { get; set; } = null;
@@ -322,8 +531,16 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecVoyageAI
+    /// <summary>
+    /// The configuration for text vectorization using the VoyageAI module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-voyageai")]
+    public record Text2VecVoyageAI : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecVoyageAI() { }
+
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public bool? Truncate { get; set; } = null;
@@ -331,8 +548,16 @@ public static partial class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
-    public partial record Text2VecWeaviate
+    /// <summary>
+    /// The configuration for text vectorization using Weaviate's self-hosted text-based embedding models.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-weaviate")]
+    public record Text2VecWeaviate : VectorizerConfig
     {
+        [JsonConstructor]
+        internal Text2VecWeaviate() { }
+
         public string? BaseURL { get; set; } = null;
 
         [JsonConverter(typeof(FlexibleConverter<int>))]
