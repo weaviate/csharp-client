@@ -1,0 +1,32 @@
+namespace Weaviate.Client.Models;
+
+public static partial class Vectorizer
+{
+{{#each vectorizers}}
+{{#unless deprecated}}
+{{#if description}}
+    /// <summary>
+{{formatDescription description 4}}
+    /// </summary>
+{{/if}}
+    public partial record {{name}} : VectorizerConfig
+    {
+        public const string IdentifierValue = "{{identifier}}";
+
+        public {{name}}()
+            : base(IdentifierValue) { }
+    }
+
+{{/unless}}
+{{#if deprecated}}
+    /// <summary>
+    /// {{deprecatedMessage}}
+    /// </summary>
+    public partial record {{name}} : {{inheritsFrom}}
+    {
+        // Inherits constructor from {{inheritsFrom}}
+    }
+
+{{/if}}
+{{/each}}
+}

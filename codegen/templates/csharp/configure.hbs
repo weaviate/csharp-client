@@ -1,0 +1,147 @@
+using Weaviate.Client.Models;
+
+namespace Weaviate.Client;
+
+public static partial class Configure
+{
+    public static class Vectors
+    {
+        public static VectorConfigBuilder SelfProvided() => new(new Vectorizer.SelfProvided());
+
+        public class VectorConfigBuilder(VectorizerConfig Config)
+        {
+            public VectorConfig New(string name = "default", params string[] sourceProperties) =>
+                new(
+                    name,
+                    vectorizer: Config with
+                    {
+                        SourceProperties = sourceProperties,
+                    },
+                    vectorIndexConfig: null
+                );
+
+            public VectorConfig New(
+                string name,
+                VectorIndex.HNSW? indexConfig,
+                VectorIndexConfig.QuantizerConfigBase? quantizerConfig = null,
+                params string[] sourceProperties
+            ) =>
+                new(
+                    name: string.IsNullOrEmpty(name) ? "default" : name,
+                    vectorizer: Config with
+                    {
+                        SourceProperties = sourceProperties,
+                    },
+                    vectorIndexConfig: EnrichVectorIndexConfig(indexConfig, quantizerConfig)
+                );
+
+            public VectorConfig New(
+                string name,
+                VectorIndex.Flat? indexConfig,
+                VectorIndexConfig.QuantizerConfigFlat? quantizerConfig = null,
+                params string[] sourceProperties
+            ) =>
+                new(
+                    name: string.IsNullOrEmpty(name) ? "default" : name,
+                    vectorizer: Config with
+                    {
+                        SourceProperties = sourceProperties,
+                    },
+                    vectorIndexConfig: EnrichVectorIndexConfig(indexConfig, quantizerConfig)
+                );
+
+            public VectorConfig New(
+                string name,
+                VectorIndex.Dynamic? indexConfig,
+                params string[] sourceProperties
+            ) =>
+                new(
+                    name: string.IsNullOrEmpty(name) ? "default" : name,
+                    vectorizer: Config with
+                    {
+                        SourceProperties = sourceProperties,
+                    },
+                    vectorIndexConfig: indexConfig
+                );
+
+            private static VectorIndexConfig? EnrichVectorIndexConfig(
+                VectorIndexConfig? indexConfig,
+                VectorIndexConfig.QuantizerConfigBase? quantizerConfig
+            )
+            {
+                if (indexConfig is null)
+                    return null;
+
+                if (quantizerConfig is null)
+                    return indexConfig;
+
+                if (indexConfig is VectorIndex.HNSW hnsw)
+                {
+                    if (hnsw.Quantizer != null)
+                    {
+                        throw new WeaviateClientException(
+                            "HNSW index already has a quantizer configured. Overwriting is not allowed."
+                        );
+                    }
+
+                    return hnsw with
+                    {
+                        Quantizer = quantizerConfig,
+                    };
+                }
+
+                if (indexConfig is VectorIndex.Flat flat)
+                {
+                    if (flat.Quantizer != null)
+                    {
+                        throw new WeaviateClientException(
+                            "Flat index already has a quantizer configured. Overwriting is not allowed."
+                        );
+                    }
+
+                    if (quantizerConfig is VectorIndex.Quantizers.BQ bq)
+                    {
+                        flat.Quantizer = bq;
+                    }
+                    else
+                    {
+                        throw new WeaviateClientException(
+                            "Flat index supports only BQ quantization. Provided quantizer is of type: "
+                                + quantizerConfig.GetType().Name
+                        );
+                    }
+                    return flat;
+                }
+
+                if (indexConfig is VectorIndex.Dynamic)
+                {
+                    throw new WeaviateClientException(
+                        "Dynamic Index must specify quantizers in their respective Vector Index Configurations."
+                    );
+                }
+
+                return indexConfig;
+            }
+        }
+{{#each vectorizers}}
+{{#if (shouldGenerateFactory name "Vectors")}}
+{{#unless (eq name "SelfProvided")}}
+
+        public static VectorConfigBuilder {{name}}({{#if properties.length}}
+{{#each (getParameterOrder this)}}
+            {{nullableType this}} {{toCamelCase name}}{{#if required}}{{else}} = null{{/if}}{{#unless @last}},{{/unless}}
+{{/each}}
+        {{else}}) {{/if}}=>
+            new(
+                new Vectorizer.{{name}}{{#if properties.length}}
+                {
+{{#each (getParameterOrder this)}}
+                    {{name}} = {{toCamelCase name}}{{#unless @last}},{{/unless}}
+{{/each}}
+                }{{else}} { }{{/if}}
+            );
+{{/unless}}
+{{/if}}
+{{/each}}
+    }
+}

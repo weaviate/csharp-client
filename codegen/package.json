@@ -1,0 +1,28 @@
+{
+  "name": "weaviate-vectorizer-codegen",
+  "version": "1.0.0",
+  "description": "Code generator for Weaviate vectorizer configurations",
+  "main": "generate.js",
+  "scripts": {
+    "generate": "node generate.js",
+    "generate:csharp": "node generate.js csharp",
+    "generate:python": "node generate.js python",
+    "generate:typescript": "node generate.js typescript",
+    "validate": "node validate.js"
+  },
+  "keywords": [
+    "weaviate",
+    "codegen",
+    "vectorizer"
+  ],
+  "author": "",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "glob": "^10.3.10",
+    "handlebars": "^4.7.8"
+  },
+  "devDependencies": {
+    "prettier": "^3.1.1"
+  }
+}
