@@ -220,11 +220,49 @@ internal static class VectorIndexMappingExtensions
                         Muvera = (hnsw.MultiVector?.Encoding as MuveraEncoding)?.ToDto(),
                         Aggregation = hnsw.MultiVector?.Aggregation,
                     }
-                    : null,
+                    : new MultiVectorDto
+                    {
+                        Enabled = false,
+                        Aggregation = "maxSim",
+                        Muvera = new MuveraDto
+                        {
+                            Enabled = false,
+                            KSim = 4,
+                            DProjections = 16,
+                            Repetitions = 10,
+                        },
+                    },
             SkipDefaultQuantization = hnsw.SkipDefaultQuantization,
+            // Always include all quantizers with defaults
+            BQ = new VectorIndex.Quantizers.BQ { Enabled = false },
+            PQ = new VectorIndex.Quantizers.PQ
+            {
+                Enabled = false,
+                BitCompression = false,
+                Centroids = 256,
+                Segments = 0,
+                TrainingLimit = 100000,
+                Encoder = new VectorIndex.Quantizers.PQ.EncoderConfig
+                {
+                    Type = VectorIndex.Quantizers.EncoderType.Kmeans,
+                    Distribution = VectorIndex.Quantizers.DistributionType.LogNormal,
+                },
+            },
+            SQ = new VectorIndex.Quantizers.SQ
+            {
+                Enabled = false,
+                RescoreLimit = 20,
+                TrainingLimit = 100000,
+            },
+            RQ = new VectorIndex.Quantizers.RQ
+            {
+                Enabled = false,
+                Bits = 8,
+                RescoreLimit = 20,
+            },
         };
 
-        // Set the appropriate quantizer property based on type
+        // Override with the enabled quantizer if present
         if (hnsw.Quantizer != null)
         {
             switch (hnsw.Quantizer.Type.ToLowerInvariant())

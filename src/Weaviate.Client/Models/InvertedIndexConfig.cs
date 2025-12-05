@@ -1,6 +1,6 @@
 namespace Weaviate.Client.Models;
 
-public record InvertedIndexConfig : IEquatable<InvertedIndexConfig>
+public record InvertedIndexConfig
 {
     private static readonly Lazy<InvertedIndexConfig> defaultInstance =
         new Lazy<InvertedIndexConfig>(() => new());
@@ -13,32 +13,5 @@ public record InvertedIndexConfig : IEquatable<InvertedIndexConfig>
     public bool IndexPropertyLength { get; set; } = false;
     public bool IndexTimestamps { get; set; } = false;
     public StopwordConfig? Stopwords { get; set; } = StopwordConfig.Default;
-
-    public override int GetHashCode()
-    {
-        var hash = new HashCode();
-        hash.Add(Bm25);
-        hash.Add(CleanupIntervalSeconds);
-        hash.Add(IndexNullState);
-        hash.Add(IndexPropertyLength);
-        hash.Add(IndexTimestamps);
-        hash.Add(Stopwords);
-        return hash.ToHashCode();
-    }
-
-    public virtual bool Equals(InvertedIndexConfig? other)
-    {
-        if (other is null)
-            return false;
-
-        if (ReferenceEquals(this, other))
-            return true;
-
-        return EqualityComparer<BM25Config?>.Default.Equals(Bm25, other.Bm25)
-            && CleanupIntervalSeconds == other.CleanupIntervalSeconds
-            && IndexNullState == other.IndexNullState
-            && IndexPropertyLength == other.IndexPropertyLength
-            && IndexTimestamps == other.IndexTimestamps
-            && EqualityComparer<StopwordConfig?>.Default.Equals(Stopwords, other.Stopwords);
-    }
+    public bool? UsingBlockMaxWAND { get; set; } = null;
 }
