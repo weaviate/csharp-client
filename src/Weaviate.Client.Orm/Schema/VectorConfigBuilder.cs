@@ -41,11 +41,13 @@ internal static class VectorConfigBuilder
         VectorAttributeBase vectorAttr
     )
     {
-        // Vector name comes from property name
-        var vectorName = PropertyHelper.ToCamelCase(prop.Name);
+        // Vector name comes from Name property if specified, otherwise from property name
+        var vectorName = !string.IsNullOrWhiteSpace(vectorAttr.Name)
+            ? vectorAttr.Name
+            : PropertyHelper.ToCamelCase(prop.Name);
 
         // Create the vectorizer instance
-        var vectorizer = CreateVectorizer(vectorAttr);
+        var vectorizer = CreateVectorizer(vectorAttr, prop.DeclaringType!, vectorName);
         if (vectorizer == null)
             return null;
 
@@ -62,9 +64,16 @@ internal static class VectorConfigBuilder
     /// <summary>
     /// Creates and configures a vectorizer from a VectorAttribute.
     /// </summary>
-    private static VectorizerConfig? CreateVectorizer(VectorAttributeBase attr)
+    private static VectorizerConfig? CreateVectorizer(
+        VectorAttributeBase attr,
+        Type declaringType,
+        string vectorName
+    )
     {
         var vectorizerType = attr.VectorizerType;
+
+        // Validate SelfProvided doesn't have configuration properties
+        ValidateSelfProvidedConfiguration(attr, vectorizerType);
 
         // Create instance of vectorizer
         var vectorizer = Activator.CreateInstance(vectorizerType) as VectorizerConfig;
@@ -78,6 +87,27 @@ internal static class VectorConfigBuilder
 
         // Map type-specific properties using reflection
         MapVectorizerSpecificProperties(attr, vectorizer);
+
+        // Invoke ConfigMethod if specified (check using reflection since we can't cast to the generic type)
+        var configMethodProp = attr.GetType().GetProperty("ConfigMethod");
+        if (configMethodProp != null)
+        {
+            var configMethodValue = configMethodProp.GetValue(attr) as string;
+            if (!string.IsNullOrWhiteSpace(configMethodValue))
+            {
+                // Check for ConfigMethodClass property
+                var configMethodClassProp = attr.GetType().GetProperty("ConfigMethodClass");
+                var configMethodClass = configMethodClassProp?.GetValue(attr) as Type;
+
+                vectorizer = InvokeConfigMethod(
+                    configMethodValue,
+                    declaringType,
+                    vectorName,
+                    vectorizer,
+                    configMethodClass
+                );
+            }
+        }
 
         return vectorizer;
     }
@@ -537,5 +567,163 @@ internal static class VectorConfigBuilder
                     a.GetType().IsGenericType
                     && a.GetType().GetGenericTypeDefinition() == typeof(VectorAttribute<>)
                 ) as VectorAttributeBase;
+    }
+
+    /// <summary>
+    /// Validates that SelfProvided vectorizer doesn't have configuration properties set.
+    /// </summary>
+    private static void ValidateSelfProvidedConfiguration(
+        VectorAttributeBase attr,
+        Type vectorizerType
+    )
+    {
+        // Check if this is SelfProvided vectorizer
+        if (vectorizerType.Name != "SelfProvided")
+            return;
+
+        // SelfProvided should not have any configuration properties
+        var hasConfig =
+            attr.SourceProperties != null && attr.SourceProperties.Length > 0
+            || attr.VectorizeCollectionName;
+
+        // Check vectorizer-specific properties if it's a VectorAttribute<T>
+        if (attr.GetType().IsGenericType)
+        {
+            var attrType = attr.GetType();
+            var modelProp = attrType.GetProperty("Model");
+            var dimensionsProp = attrType.GetProperty("Dimensions");
+            var baseUrlProp = attrType.GetProperty("BaseURL");
+
+            hasConfig =
+                hasConfig
+                || (modelProp?.GetValue(attr) != null)
+                || (dimensionsProp?.GetValue(attr) != null)
+                || (baseUrlProp?.GetValue(attr) != null);
+        }
+
+        if (hasConfig)
+        {
+            throw new InvalidOperationException(
+                $"SelfProvided vectorizer should not have Model, Dimensions, BaseURL, "
+                    + $"SourceProperties, or VectorizeCollectionName configured. "
+                    + $"These properties are ignored for self-provided vectors."
+            );
+        }
+    }
+
+    /// <summary>
+    /// Invokes a custom configuration method on the vectorizer.
+    /// </summary>
+    /// <param name="methodName">Method name (e.g., "ConfigureVector" or "ClassName.MethodName" for legacy support)</param>
+    /// <param name="declaringType">The type that declares the property with the vector attribute</param>
+    /// <param name="vectorName">The vector name</param>
+    /// <param name="prebuiltVectorizer">The pre-built vectorizer with attribute properties already set</param>
+    /// <param name="configMethodClass">Optional type containing the method (if null, uses declaringType)</param>
+    /// <returns>The configured vectorizer</returns>
+    private static VectorizerConfig InvokeConfigMethod(
+        string methodName,
+        Type declaringType,
+        string vectorName,
+        VectorizerConfig prebuiltVectorizer,
+        Type? configMethodClass = null
+    )
+    {
+        Type targetType;
+        string actualMethodName;
+
+        // If ConfigMethodClass is provided, use it (type-safe approach)
+        if (configMethodClass != null)
+        {
+            targetType = configMethodClass;
+            actualMethodName = methodName;
+        }
+        // Legacy support: Parse method name - can be "MethodName" or "ClassName.MethodName"
+        else if (methodName.Contains('.'))
+        {
+            var parts = methodName.Split('.');
+            if (parts.Length != 2)
+            {
+                throw new InvalidOperationException(
+                    $"Invalid ConfigMethod format: '{methodName}'. "
+                        + $"Expected 'MethodName' or 'ClassName.MethodName'"
+                );
+            }
+
+            var className = parts[0];
+            actualMethodName = parts[1];
+
+            // Try to find the class in the same assembly as the declaring type
+            targetType =
+                declaringType.Assembly.GetType(className)
+                ?? declaringType.Assembly.GetType($"{declaringType.Namespace}.{className}")
+                ?? throw new InvalidOperationException(
+                    $"Could not find type '{className}' for ConfigMethod '{methodName}'"
+                );
+        }
+        else
+        {
+            // Method in same class
+            targetType = declaringType;
+            actualMethodName = methodName;
+        }
+
+        // Find the method - must be static
+        var method = targetType.GetMethod(
+            actualMethodName,
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static
+        );
+
+        if (method == null)
+        {
+            throw new InvalidOperationException(
+                $"Could not find static method '{actualMethodName}' on type '{targetType.Name}' "
+                    + $"for ConfigMethod '{methodName}'"
+            );
+        }
+
+        // Validate method signature: static TVectorizer MethodName(string vectorName, TVectorizer prebuilt)
+        var parameters = method.GetParameters();
+        if (
+            parameters.Length != 2
+            || parameters[0].ParameterType != typeof(string)
+            || !parameters[1].ParameterType.IsAssignableFrom(prebuiltVectorizer.GetType())
+        )
+        {
+            throw new InvalidOperationException(
+                $"ConfigMethod '{methodName}' has invalid signature. "
+                    + $"Expected: static {prebuiltVectorizer.GetType().Name} {actualMethodName}(string vectorName, {prebuiltVectorizer.GetType().Name} prebuilt)"
+            );
+        }
+
+        if (
+            method.ReturnType == typeof(void)
+            || !method.ReturnType.IsAssignableFrom(prebuiltVectorizer.GetType())
+        )
+        {
+            throw new InvalidOperationException(
+                $"ConfigMethod '{methodName}' must return {prebuiltVectorizer.GetType().Name}"
+            );
+        }
+
+        // Invoke the method
+        try
+        {
+            var result = method.Invoke(null, new object[] { vectorName, prebuiltVectorizer });
+            if (result is VectorizerConfig configuredVectorizer)
+            {
+                return configuredVectorizer;
+            }
+
+            throw new InvalidOperationException(
+                $"ConfigMethod '{methodName}' returned null or invalid type"
+            );
+        }
+        catch (TargetInvocationException ex)
+        {
+            throw new InvalidOperationException(
+                $"ConfigMethod '{methodName}' threw an exception: {ex.InnerException?.Message}",
+                ex.InnerException
+            );
+        }
     }
 }
