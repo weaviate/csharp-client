@@ -131,6 +131,13 @@ public abstract class VectorAttributeBase : Attribute
     public abstract Type VectorizerType { get; }
 
     /// <summary>
+    /// Gets or sets the vector name in the collection schema.
+    /// If not specified, the property name (converted to camelCase) will be used.
+    /// Useful when working with existing collections that have specific vector names.
+    /// </summary>
+    public string? Name { get; set; }
+
+    /// <summary>
     /// Gets or sets the properties to include in vectorization.
     /// Use nameof() for compile-time safety: [nameof(Title), nameof(Content)]
     /// </summary>
@@ -215,4 +222,55 @@ public class VectorAttribute<TVectorizer> : VectorAttributeBase
     /// The type must implement IVectorConfigBuilder&lt;TVectorizer&gt;.
     /// </summary>
     public Type? ConfigBuilder { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of a static method that configures the vectorizer.
+    /// The method signature must be: static TVectorizer MethodName(string vectorName, TVectorizer prebuilt)
+    /// The method receives the vector name and a pre-built vectorizer with properties from the attribute already set.
+    /// If ConfigMethodClass is not specified, the method is looked up in the same class as the property.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// // Same class
+    /// [Vector&lt;Vectorizer.Text2VecOpenAI&gt;(
+    ///     Model = "text-embedding-3-small",
+    ///     ConfigMethod = nameof(ConfigureContentVector)
+    /// )]
+    /// public float[]? ContentEmbedding { get; set; }
+    ///
+    /// public static Vectorizer.Text2VecOpenAI ConfigureContentVector(
+    ///     string vectorName,
+    ///     Vectorizer.Text2VecOpenAI prebuilt)
+    /// {
+    ///     prebuilt.Type = "text";
+    ///     prebuilt.VectorizeCollectionName = false;
+    ///     return prebuilt;
+    /// }
+    ///
+    /// // Different class (type-safe)
+    /// [Vector&lt;Vectorizer.Text2VecOpenAI&gt;(
+    ///     Model = "text-embedding-3-small",
+    ///     ConfigMethod = nameof(VectorConfigurations.ConfigureOpenAI),
+    ///     ConfigMethodClass = typeof(VectorConfigurations)
+    /// )]
+    /// public float[]? TitleEmbedding { get; set; }
+    /// </code>
+    /// </example>
+    public string? ConfigMethod { get; set; }
+
+    /// <summary>
+    /// Gets or sets the class containing the ConfigMethod.
+    /// If not specified, the method is looked up in the same class as the property.
+    /// This provides compile-time type safety when referencing methods in different classes.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// [Vector&lt;Vectorizer.Text2VecOpenAI&gt;(
+    ///     ConfigMethod = nameof(VectorConfigurations.ConfigureOpenAI),
+    ///     ConfigMethodClass = typeof(VectorConfigurations)
+    /// )]
+    /// public float[]? ContentEmbedding { get; set; }
+    /// </code>
+    /// </example>
+    public Type? ConfigMethodClass { get; set; }
 }
