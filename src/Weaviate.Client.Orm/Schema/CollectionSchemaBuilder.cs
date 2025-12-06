@@ -25,6 +25,7 @@ public static class CollectionSchemaBuilder
         var collectionAttr = type.GetCustomAttribute<WeaviateCollectionAttribute>();
         var invertedIndexAttr = type.GetCustomAttribute<InvertedIndexAttribute>();
 
+#pragma warning disable CS8601 // Possible null reference assignment.
         // Build the config
         var config = new CollectionConfig
         {
@@ -33,8 +34,12 @@ public static class CollectionSchemaBuilder
             Properties = BuildProperties(type),
             References = BuildReferences(type),
             VectorConfig = VectorConfigBuilder.BuildVectorConfigs(type),
-            InvertedIndexConfig = BuildInvertedIndexConfig(invertedIndexAttr),
+            InvertedIndexConfig =
+                BuildInvertedIndexConfig(invertedIndexAttr) ?? new InvertedIndexConfig(),
+            ReplicationConfig = new ReplicationConfig(), // Explicitly initialize
+            MultiTenancyConfig = new MultiTenancyConfig(), // Explicitly initialize
         };
+#pragma warning restore CS8601 // Possible null reference assignment.
 
         return config;
     }
@@ -195,7 +200,7 @@ public static class CollectionSchemaBuilder
     /// <summary>
     /// Builds the reference array from properties with [Reference] attributes.
     /// </summary>
-    private static Reference[]? BuildReferences(Type type)
+    private static Reference[] BuildReferences(Type type)
     {
         var references = new List<Reference>();
 
@@ -216,7 +221,7 @@ public static class CollectionSchemaBuilder
             );
         }
 
-        return references.Count > 0 ? references.ToArray() : null;
+        return references.ToArray();
     }
 
     /// <summary>

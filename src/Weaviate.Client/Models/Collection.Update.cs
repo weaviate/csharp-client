@@ -367,24 +367,31 @@ public class CollectionConfigClient
         );
     }
 
-    internal async Task AddReference(Reference referenceProperty)
+    public async Task AddReference(
+        Reference referenceProperty,
+        CancellationToken cancellationToken = default
+    )
     {
         var dto = referenceProperty.ToDto();
 
-        await _client.RestClient.CollectionAddProperty(_collectionName, dto);
+        await _client.RestClient.CollectionAddProperty(_collectionName, dto, cancellationToken);
     }
 
-    public async Task AddProperty(Property p)
+    public async Task AddProperty(Property p, CancellationToken cancellationToken = default)
     {
-        await _client.RestClient.CollectionAddProperty(_collectionName, p.ToDto());
+        await _client.RestClient.CollectionAddProperty(
+            _collectionName,
+            p.ToDto(),
+            cancellationToken
+        );
     }
 
     // Add new named vectors
-    public async Task AddVector(VectorConfig vector)
+    public async Task AddVector(VectorConfig vector, CancellationToken cancellationToken = default)
     {
         // 1. Fetch the collection config
         var collection =
-            await _client.Collections.Export(_collectionName)
+            await _client.Collections.Export(_collectionName, cancellationToken)
             ?? throw new InvalidOperationException(
                 $"Collection '{_collectionName}' does not exist."
             );
@@ -395,16 +402,19 @@ public class CollectionConfigClient
         var dto = collection.ToDto();
 
         // 3. PUT to /schema
-        await _client.RestClient.CollectionUpdate(_collectionName, dto);
+        await _client.RestClient.CollectionUpdate(_collectionName, dto, cancellationToken);
     }
 
     // Proxied property updates
 
-    public async Task<CollectionConfig> Update(Action<CollectionUpdate> c)
+    public async Task<CollectionConfig> Update(
+        Action<CollectionUpdate> c,
+        CancellationToken cancellationToken = default
+    )
     {
         // 1. Fetch the collection config
         var collection =
-            await _client.Collections.Export(_collectionName)
+            await _client.Collections.Export(_collectionName, cancellationToken)
             ?? throw new InvalidOperationException(
                 $"Collection '{_collectionName}' does not exist."
             );
@@ -413,7 +423,11 @@ public class CollectionConfigClient
         c(new CollectionUpdate(collection));
 
         // 3. PUT to /schema
-        var result = await _client.RestClient.CollectionUpdate(_collectionName, collection.ToDto());
+        var result = await _client.RestClient.CollectionUpdate(
+            _collectionName,
+            collection.ToDto(),
+            cancellationToken
+        );
 
         return result.ToModel();
     }

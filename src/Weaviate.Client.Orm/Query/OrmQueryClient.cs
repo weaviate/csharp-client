@@ -33,7 +33,7 @@ public class OrmQueryClient<T>
     private readonly List<string> _includeVectors = new();
     private readonly List<string> _includeReferences = new();
     private OneOrManyOf<Sort>? _sort;
-    private Rerank? _rerank;
+    private Rerank? _rerank = null;
     private OneOrManyOf<string>? _returnProperties;
     private MetadataQuery? _returnMetadata;
 
