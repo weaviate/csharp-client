@@ -35,4 +35,26 @@ public record StopwordConfig
     /// Stopwords to be removed from consideration (default: []). Can be any array of custom strings.
     /// </summary>
     public ImmutableList<string> Removals { get; set; } = [];
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Additions);
+        hash.Add(Preset);
+        hash.Add(Removals);
+        return hash.ToHashCode();
+    }
+
+    public virtual bool Equals(StopwordConfig? other)
+    {
+        if (other is null)
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return Additions.SequenceEqual(other.Additions)
+            && Preset == other.Preset
+            && Removals.SequenceEqual(other.Removals);
+    }
 }

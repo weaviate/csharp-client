@@ -17,4 +17,24 @@ public record BM25Config
     /// Calibrates term-weight scaling based on the term frequency within a document (default: 1.2).
     /// </summary>
     public double K1 { get; set; } = 1.2;
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(B);
+        hash.Add(K1);
+        return hash.ToHashCode();
+    }
+
+    public virtual bool Equals(BM25Config? other)
+    {
+        if (other is null)
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return Math.Round(B, 6).Equals(Math.Round(other.B, 6))
+            && Math.Round(K1, 6).Equals(Math.Round(other.K1, 6));
+    }
 }
