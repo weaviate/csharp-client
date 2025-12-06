@@ -66,6 +66,38 @@ internal partial record Property
 {
     public Models.Property ToModel()
     {
+        // Extract skip and vectorizePropertyName from moduleConfig
+        bool skipVectorization = false;
+        bool vectorizePropertyName = true;
+
+        if (ModuleConfig != null && ModuleConfig.Count > 0)
+        {
+            // Take the first vectorizer's settings (usually there's only one)
+            var firstVectorizerConfig = ModuleConfig.Values.FirstOrDefault();
+            if (firstVectorizerConfig is System.Text.Json.JsonElement jsonElement)
+            {
+                if (jsonElement.TryGetProperty("skip", out var skipProp))
+                {
+                    skipVectorization = skipProp.GetBoolean();
+                }
+                if (jsonElement.TryGetProperty("vectorizePropertyName", out var vecPropNameProp))
+                {
+                    vectorizePropertyName = vecPropNameProp.GetBoolean();
+                }
+            }
+            else if (firstVectorizerConfig is IDictionary<string, object> dict)
+            {
+                if (dict.TryGetValue("skip", out var skipObj))
+                {
+                    skipVectorization = Convert.ToBoolean(skipObj);
+                }
+                if (dict.TryGetValue("vectorizePropertyName", out var vecPropNameObj))
+                {
+                    vectorizePropertyName = Convert.ToBoolean(vecPropNameObj);
+                }
+            }
+        }
+
         return new Models.Property
         {
             Name = Name ?? string.Empty,
@@ -79,6 +111,8 @@ internal partial record Property
             IndexSearchable = IndexSearchable,
             PropertyTokenization = (Models.PropertyTokenization?)Tokenization,
             NestedProperties = NestedProperties?.Select(np => np.ToModel()).ToArray(),
+            SkipVectorization = skipVectorization,
+            VectorizePropertyName = vectorizePropertyName,
         };
     }
 

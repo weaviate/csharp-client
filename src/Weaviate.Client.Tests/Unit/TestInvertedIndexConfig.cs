@@ -249,16 +249,16 @@ public class InvertedIndexConfigTests
         // Assert
         Assert.NotNull(config);
         Assert.NotNull(config.Bm25);
-        Assert.Equal(0.7f, config.Bm25.B);
-        Assert.Equal(1.3f, config.Bm25.K1);
+        Assert.Equal(0.7, config.Bm25.B);
+        Assert.Equal(1.3, config.Bm25.K1);
         Assert.Equal(30, config.CleanupIntervalSeconds);
         Assert.True(config.IndexNullState);
         Assert.True(config.IndexPropertyLength);
         Assert.True(config.IndexTimestamps);
         Assert.NotNull(config.Stopwords);
         Assert.Equal(StopwordConfig.Presets.None, config.Stopwords.Preset);
-        Assert.Equal(new List<string> { "plus" }, config.Stopwords.Additions);
-        Assert.Equal(new List<string> { "minus" }, config.Stopwords.Removals);
+        Assert.Equal(["plus"], config.Stopwords.Additions);
+        Assert.Equal(["minus"], config.Stopwords.Removals);
     }
 
     [Fact]
@@ -267,7 +267,7 @@ public class InvertedIndexConfigTests
         // Arrange
         var config = new InvertedIndexConfig
         {
-            Bm25 = new BM25Config { B = 0.7f, K1 = 1.3f },
+            Bm25 = new BM25Config { B = 0.7, K1 = 1.3 },
             CleanupIntervalSeconds = 30,
             IndexNullState = true,
             IndexPropertyLength = true,
@@ -275,8 +275,8 @@ public class InvertedIndexConfigTests
             Stopwords = new StopwordConfig
             {
                 Preset = StopwordConfig.Presets.None,
-                Additions = new List<string> { "plus" },
-                Removals = new List<string> { "minus" },
+                Additions = ["plus"],
+                Removals = ["minus"],
             },
         };
 

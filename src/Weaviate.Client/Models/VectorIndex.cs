@@ -98,7 +98,10 @@ public static class VectorIndex
         {
             public const string TypeValue = "bq";
 
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
             public bool Cache { get; set; }
+
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
             public int RescoreLimit { get; set; }
 
             [JsonIgnore]
@@ -109,8 +112,12 @@ public static class VectorIndex
         {
             public const string TypeValue = "rq";
 
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
             public int RescoreLimit { get; set; }
+
             public int? Bits { get; set; }
+
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
             public bool Cache { get; set; }
 
             [JsonIgnore]

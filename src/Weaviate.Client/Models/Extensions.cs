@@ -54,8 +54,29 @@ internal static class ModelsToDtoExtensions
         };
     }
 
-    internal static Rest.Dto.Property ToDto(this Models.Property property)
+    internal static Rest.Dto.Property ToDto(
+        this Models.Property property,
+        IEnumerable<string?>? vectorizers = null
+    )
     {
+        // Build moduleConfig dictionary if vectorizers are provided
+        Dictionary<string, object>? moduleConfig = null;
+        if (vectorizers != null && vectorizers.Any())
+        {
+            moduleConfig = new Dictionary<string, object>();
+            foreach (var vectorizer in vectorizers)
+            {
+                if (vectorizer != null)
+                {
+                    moduleConfig[vectorizer] = new Dictionary<string, object>
+                    {
+                        ["skip"] = property.SkipVectorization,
+                        ["vectorizePropertyName"] = property.VectorizePropertyName,
+                    };
+                }
+            }
+        }
+
         return new Rest.Dto.Property
         {
             Name = property.Name,
@@ -71,6 +92,7 @@ internal static class ModelsToDtoExtensions
             NestedProperties = property
                 .NestedProperties?.Select(np => np.ToNestedPropertyDto())
                 .ToList(),
+            ModuleConfig = moduleConfig,
         };
     }
 }

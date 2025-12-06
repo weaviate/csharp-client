@@ -349,16 +349,18 @@ public record Property : IEquatable<Property>
         get => _name;
         set => _name = value.Decapitalize();
     }
-    public required DataType DataType { get; set; }
-    public string? Description { get; set; }
-    public bool? IndexFilterable { get; internal set; }
+    public required DataType DataType { get; init; }
+    public string? Description { get; internal set; }
+    public bool? IndexFilterable { get; init; }
 
     [Obsolete]
-    public bool? IndexInverted { get; internal set; }
-    public bool? IndexRangeFilters { get; internal set; }
-    public bool? IndexSearchable { get; internal set; }
-    public PropertyTokenization? PropertyTokenization { get; internal set; }
-    public Property[]? NestedProperties { get; internal set; }
+    public bool? IndexInverted { get; init; }
+    public bool? IndexRangeFilters { get; init; }
+    public bool? IndexSearchable { get; init; }
+    public PropertyTokenization? PropertyTokenization { get; init; }
+    public Property[]? NestedProperties { get; init; }
+    public bool SkipVectorization { get; init; } = false;
+    public bool VectorizePropertyName { get; init; } = true;
 
     public static PropertyFactory Text => PropertyHelper.Factory(DataType.Text);
     public static PropertyFactory TextArray => PropertyHelper.Factory(DataType.TextArray);
@@ -475,6 +477,8 @@ public record Property : IEquatable<Property>
         hash.Add(IndexSearchable);
         hash.Add(PropertyTokenization);
         hash.Add(NestedProperties);
+        hash.Add(SkipVectorization);
+        hash.Add(VectorizePropertyName);
         return hash.ToHashCode();
     }
 
@@ -493,6 +497,8 @@ public record Property : IEquatable<Property>
             && IndexRangeFilters == other.IndexRangeFilters
             && IndexSearchable == other.IndexSearchable
             && PropertyTokenization == other.PropertyTokenization
+            && SkipVectorization == other.SkipVectorization
+            && VectorizePropertyName == other.VectorizePropertyName
             && (
                 (NestedProperties == null && other.NestedProperties == null)
                 || (

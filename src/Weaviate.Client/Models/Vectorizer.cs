@@ -90,6 +90,8 @@ public static class Vectorizer
         public int? Dimensions { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
         internal VectorizerWeights? Weights { get; set; } = null;
     }
@@ -107,6 +109,8 @@ public static class Vectorizer
         public string[]? ImageFields { get; set; } = null;
         public string? InferenceUrl { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
         internal VectorizerWeights? Weights { get; set; } = null;
     }
@@ -121,12 +125,15 @@ public static class Vectorizer
         [JsonConstructor]
         internal Multi2VecCohere() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
         public string? Model { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
         public string? Truncate { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
         internal VectorizerWeights? Weights { get; set; } = null;
     }
@@ -148,6 +155,8 @@ public static class Vectorizer
         public string[]? TextFields { get; set; } = null;
         public string[]? ThermalFields { get; set; } = null;
         public string[]? VideoFields { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
         internal VectorizerWeights? Weights { get; set; } = null;
     }
@@ -170,6 +179,8 @@ public static class Vectorizer
         public int? VideoIntervalSeconds { get; set; } = null;
         public string? ModelId { get; set; } = null;
         public int? Dimensions { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
         internal VectorizerWeights? Weights { get; set; } = null;
     }
@@ -193,11 +204,14 @@ public static class Vectorizer
         [JsonConstructor]
         internal Multi2VecJinaAI() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
         public string? Model { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
         internal VectorizerWeights? Weights { get; set; } = null;
     }
@@ -212,11 +226,14 @@ public static class Vectorizer
         [JsonConstructor]
         internal Multi2MultiVecJinaAI() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
         internal VectorizerWeights? Weights { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -230,11 +247,14 @@ public static class Vectorizer
         [JsonConstructor]
         internal Multi2VecVoyageAI() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
         public string? Model { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
         public bool? Truncate { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
         internal VectorizerWeights? Weights { get; set; } = null;
     }
@@ -276,6 +296,8 @@ public static class Vectorizer
         public string? Model { get; set; } = null;
         public string? TargetModel { get; set; } = null;
         public string? TargetVariant { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -291,9 +313,13 @@ public static class Vectorizer
 
         public required string DeploymentId { get; set; }
         public required string ResourceName { get; set; }
+
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public string? Model { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -307,10 +333,13 @@ public static class Vectorizer
         [JsonConstructor]
         internal Text2VecCohere() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public string? Truncate { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -326,6 +355,8 @@ public static class Vectorizer
 
         public required string Endpoint { get; set; }
         public string? Instruction { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -346,6 +377,8 @@ public static class Vectorizer
         public bool? UseCache { get; set; } = null;
         public bool? UseGPU { get; set; } = null;
         public bool? WaitForModel { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -360,8 +393,12 @@ public static class Vectorizer
         internal Text2VecJinaAI() { }
 
         public string? Model { get; set; } = null;
+
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public int? Dimensions { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -376,8 +413,12 @@ public static class Vectorizer
         internal Text2MultiVecJinaAI() { }
 
         public string? Model { get; set; } = null;
+
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public int? Dimensions { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -391,9 +432,12 @@ public static class Vectorizer
         [JsonConstructor]
         internal Text2VecNvidia() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public bool? Truncate { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -403,6 +447,7 @@ public static class Vectorizer
         [JsonConstructor]
         internal Multi2VecNvidia() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public bool? Truncate { get; set; } = null;
@@ -418,8 +463,11 @@ public static class Vectorizer
         [JsonConstructor]
         internal Text2VecMistral() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -434,6 +482,8 @@ public static class Vectorizer
         internal Text2VecModel2Vec() { }
 
         public string? InferenceURL { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -447,8 +497,11 @@ public static class Vectorizer
         [JsonConstructor]
         internal Text2VecMorph() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -464,6 +517,8 @@ public static class Vectorizer
 
         public string? ApiEndpoint { get; set; } = null;
         public string? Model { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -477,11 +532,14 @@ public static class Vectorizer
         [JsonConstructor]
         internal Text2VecOpenAI() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public string? Model { get; set; } = null;
         public string? ModelVersion { get; set; } = null;
         public string? Type { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -501,6 +559,8 @@ public static class Vectorizer
         public string? TitleProperty { get; set; } = null;
         public int? Dimensions { get; set; } = null;
         public string? TaskType { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -528,6 +588,8 @@ public static class Vectorizer
         public string? QueryInferenceUrl { get; set; } = null;
         public string? PoolingStrategy { get; set; } = null;
         public int? Dimensions { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -541,10 +603,13 @@ public static class Vectorizer
         [JsonConstructor]
         internal Text2VecVoyageAI() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
         public string? Model { get; set; } = null;
         public bool? Truncate { get; set; } = null;
         public int? Dimensions { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -558,6 +623,7 @@ public static class Vectorizer
         [JsonConstructor]
         internal Text2VecWeaviate() { }
 
+        [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
 
         [JsonConverter(typeof(FlexibleConverter<int>))]
@@ -565,6 +631,8 @@ public static class Vectorizer
 
         [JsonConverter(typeof(FlexibleStringConverter))]
         public string? Model { get; set; } = null;
+
+        [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json;
@@ -25,16 +26,23 @@ public static class WeaviateExtensions
                 WeaviateRestClient.RestJsonSerializerOptions
             );
 
-    internal static Rest.Dto.Property[]? MergeProperties(
+    internal static List<Rest.Dto.Property>? MergeProperties(
         IEnumerable<Property>? properties,
-        IEnumerable<Reference>? references
+        IEnumerable<Reference>? references,
+        VectorConfigList? vectorConfig = null
     )
     {
         var props = new List<Rest.Dto.Property>();
 
+        // Extract vectorizer identifiers from vector config
+        var vectorizers = (vectorConfig?.Values ?? [])
+            .Select(v => v.Vectorizer?.Identifier)
+            .Where(id => id != null && id != "none")
+            .ToList();
+
         foreach (var prop in properties ?? [])
         {
-            props.Add(prop.ToDto());
+            props.Add(prop.ToDto(vectorizers));
         }
 
         foreach (var reference in references ?? [])
@@ -42,7 +50,7 @@ public static class WeaviateExtensions
             props.Add(reference.ToDto());
         }
 
-        return props.Count != 0 ? [.. props] : null;
+        return props.Count != 0 ? props : null;
     }
 
     internal static (Property[] properties, Reference[] references) UnmergeProperties(
@@ -103,7 +111,11 @@ public static class WeaviateExtensions
         {
             Class1 = collection.Name,
             Description = collection.Description,
-            Properties = MergeProperties(collection.Properties, collection.References),
+            Properties = MergeProperties(
+                collection.Properties,
+                collection.References,
+                collection.VectorConfig
+            ),
             VectorConfig = vectorConfig,
             ShardingConfig = _objectToDict(collection.ShardingConfig),
             ModuleConfig = moduleConfig.Any() ? moduleConfig : null,
@@ -136,10 +148,16 @@ public static class WeaviateExtensions
                     ? null
                     : new Rest.Dto.StopwordConfig
                     {
-                        Additions = collection.InvertedIndexConfig.Stopwords.Additions,
+                        Additions =
+                            collection.InvertedIndexConfig.Stopwords.Additions?.Count > 0
+                                ? collection.InvertedIndexConfig.Stopwords.Additions
+                                : null,
                         Preset =
                             collection.InvertedIndexConfig.Stopwords.Preset.ToEnumMemberString(),
-                        Removals = collection.InvertedIndexConfig.Stopwords.Removals,
+                        Removals =
+                            collection.InvertedIndexConfig.Stopwords.Removals?.Count > 0
+                                ? collection.InvertedIndexConfig.Stopwords.Removals
+                                : null,
                     };
 
             data.InvertedIndexConfig = new Rest.Dto.InvertedIndexConfig()
@@ -149,14 +167,24 @@ public static class WeaviateExtensions
                         ? null
                         : new Rest.Dto.BM25Config
                         {
-                            B = collection.InvertedIndexConfig.Bm25.B,
-                            K1 = collection.InvertedIndexConfig.Bm25.K1,
+                            B = Convert.ToSingle(collection.InvertedIndexConfig.Bm25.B),
+                            K1 = Convert.ToSingle(collection.InvertedIndexConfig.Bm25.K1),
                         },
                 Stopwords = stopWordConfig,
                 CleanupIntervalSeconds = collection.InvertedIndexConfig.CleanupIntervalSeconds,
-                IndexNullState = collection.InvertedIndexConfig.IndexNullState,
-                IndexPropertyLength = collection.InvertedIndexConfig.IndexPropertyLength,
-                IndexTimestamps = collection.InvertedIndexConfig.IndexTimestamps,
+                IndexNullState =
+                    collection.InvertedIndexConfig.IndexNullState != false
+                        ? collection.InvertedIndexConfig.IndexNullState
+                        : null,
+                IndexPropertyLength =
+                    collection.InvertedIndexConfig.IndexPropertyLength != false
+                        ? collection.InvertedIndexConfig.IndexPropertyLength
+                        : null,
+                IndexTimestamps =
+                    collection.InvertedIndexConfig.IndexTimestamps != false
+                        ? collection.InvertedIndexConfig.IndexTimestamps
+                        : null,
+                UsingBlockMaxWAND = collection.InvertedIndexConfig.UsingBlockMaxWAND,
             };
         }
 
@@ -239,11 +267,11 @@ public static class WeaviateExtensions
                         (iic.Stopwords is Rest.Dto.StopwordConfig swc)
                             ? new Weaviate.Client.Models.StopwordConfig
                             {
-                                Additions = swc.Additions?.ToList() ?? new List<string>(),
+                                Additions = swc.Additions?.ToImmutableList() ?? [],
                                 Preset = (
                                     swc.Preset ?? ""
                                 ).FromEnumMemberString<Weaviate.Client.Models.StopwordConfig.Presets>(),
-                                Removals = swc.Removals?.ToList() ?? new List<string>(),
+                                Removals = swc.Removals?.ToImmutableList() ?? [],
                             }
                             : null,
                     CleanupIntervalSeconds = iic.CleanupIntervalSeconds.HasValue
@@ -260,6 +288,8 @@ public static class WeaviateExtensions
                     IndexTimestamps =
                         iic.IndexTimestamps
                         ?? Weaviate.Client.Models.InvertedIndexConfig.Default.IndexTimestamps,
+
+                    UsingBlockMaxWAND = iic.UsingBlockMaxWAND,
                 }
                 : null;
 

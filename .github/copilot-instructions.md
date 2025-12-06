@@ -3,7 +3,7 @@
 ## Project Overview
 - Official C# SDK for Weaviate vector DB
 - REST (NSwag auto-gen) for CRUD/metadata, gRPC for queries/vectors
-- Targets .NET 8.0 (C# 13 features)
+- Targets .NET 8.0 and .NET 9.0, and it's using .NET 9.0 SDK.
 
 ## Architecture & Conventions
 - Entry: `WeaviateClient` (REST/gRPC, collections, backup, RBAC, etc.)
@@ -20,7 +20,7 @@
 - Use `ToModel()`/`ToDto()` in `Rest/Dto/Extensions.cs` for mapping
 
 ## Enum & Wire Format
-- Use `ToEnumMemberString()`/`FromEnumMemberString<T>()` for wire-format string conversion
+- Use `ToEnumMemberString()`/`FromEnumMemberString<T>()` for conveting enums to and from strings
 - Always prefer enums for permission actions and resource types
 
 ## Testing
@@ -33,13 +33,13 @@
 - Parse/aggregate permissions using static methods
 
 ## REST/OpenAPI Alignment
-- Always check OpenAPI spec for endpoint behavior, status codes, error handling
+- Refer to the OpenAPI spec for understanding endpoint behavior, status codes, error handling
 - Handle default values (e.g., "*" for collections, "minimal" for verbosity)
 - Only throw documented exceptions
 
 ## Common Pitfalls
 - Don’t edit generated files
-- Always use enum helpers for wire format
+- Use enum helpers wherever possible
 - Test isolation: use provided helpers
 - Version checks: use `RequireVersion()`
 

@@ -71,7 +71,11 @@ public record VectorConfigList
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(_internalList);
+        foreach (var kvp in _internalList)
+        {
+            hash.Add(kvp.Key);
+            hash.Add(kvp.Value);
+        }
         return hash.ToHashCode();
     }
 
@@ -83,7 +87,18 @@ public record VectorConfigList
         if (ReferenceEquals(this, other))
             return true;
 
-        return _internalList.SequenceEqual(other._internalList);
+        if (_internalList.Count != other._internalList.Count)
+            return false;
+
+        foreach (var kvp in _internalList)
+        {
+            if (!other._internalList.TryGetValue(kvp.Key, out var otherValue))
+                return false;
+            if (!EqualityComparer<VectorConfig>.Default.Equals(kvp.Value, otherValue))
+                return false;
+        }
+
+        return true;
     }
 
     internal bool Remove(string name)

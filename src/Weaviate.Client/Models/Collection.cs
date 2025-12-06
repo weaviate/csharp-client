@@ -75,31 +75,56 @@ public partial record CollectionConfig : IEquatable<CollectionConfig>
         if (ReferenceEquals(this, other))
             return true;
 
-        return Name == other.Name
-            && Description == other.Description
-            && Properties.SequenceEqual(other.Properties)
-            && References.SequenceEqual(other.References)
-            && EqualityComparer<InvertedIndexConfig?>.Default.Equals(
+        if (Name != other.Name)
+            return false;
+
+        if (Description != other.Description)
+            return false;
+
+        if (!Properties.SequenceEqual(other.Properties))
+            return false;
+
+        if (!References.SequenceEqual(other.References))
+            return false;
+
+        if (
+            !EqualityComparer<InvertedIndexConfig?>.Default.Equals(
                 InvertedIndexConfig,
                 other.InvertedIndexConfig
             )
-            && EqualityComparer<IDictionary<string, object>?>.Default.Equals(
-                ModuleConfig,
-                other.ModuleConfig
-            )
-            && EqualityComparer<MultiTenancyConfig?>.Default.Equals(
+        )
+            return false;
+
+        if (!EqualityComparer<ModuleConfigList?>.Default.Equals(ModuleConfig, other.ModuleConfig))
+            return false;
+
+        if (
+            !EqualityComparer<MultiTenancyConfig?>.Default.Equals(
                 MultiTenancyConfig,
                 other.MultiTenancyConfig
             )
-            && EqualityComparer<ReplicationConfig?>.Default.Equals(
+        )
+            return false;
+
+        if (
+            !EqualityComparer<ReplicationConfig?>.Default.Equals(
                 ReplicationConfig,
                 other.ReplicationConfig
             )
-            && EqualityComparer<ShardingConfig?>.Default.Equals(
+        )
+            return false;
+
+        if (
+            !EqualityComparer<ShardingConfig?>.Default.Equals(
                 ShardingConfig ?? ShardingConfig.Zero,
                 other.ShardingConfig ?? ShardingConfig.Zero
             )
-            && EqualityComparer<VectorConfigList>.Default.Equals(VectorConfig, other.VectorConfig)
-            && true;
+        )
+            return false;
+
+        if (!EqualityComparer<VectorConfigList>.Default.Equals(VectorConfig, other.VectorConfig))
+            return false;
+
+        return true;
     }
 }

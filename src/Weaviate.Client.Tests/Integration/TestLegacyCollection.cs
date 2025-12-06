@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
@@ -203,5 +204,305 @@ public partial class CollectionsTests
         Assert.True(obj5.Vectors.ContainsKey("default"));
         float[] obj5Vector = obj5.Vectors["default"];
         Assert.Equal(vector5, obj5Vector);
+    }
+
+    [Fact]
+    public async Task Collection_Update_With_T2VCohere()
+    {
+        var className = MakeUniqueCollectionName("t2v_cohere");
+
+        await _weaviate.Collections.Delete(className, TestContext.Current.CancellationToken);
+
+        string expectedJson =
+            $@"{{
+            ""class"": ""{className}"",
+            ""description"": ""Test_Collection_Config_Add_Vector"",
+            ""invertedIndexConfig"": {{
+                ""bm25"": {{
+                    ""b"": 0.75,
+                    ""k1"": 1.2
+                }},
+                ""cleanupIntervalSeconds"": 60,
+                ""stopwords"": {{
+                    ""preset"": ""en""
+                }},
+                ""usingBlockMaxWAND"": true
+            }},
+            ""multiTenancyConfig"": {{
+                ""autoTenantActivation"": false,
+                ""autoTenantCreation"": false,
+                ""enabled"": false
+            }},
+            ""properties"": [
+                {{
+                    ""dataType"": [
+                        ""text""
+                    ],
+                    ""indexFilterable"": true,
+                    ""indexRangeFilters"": false,
+                    ""indexSearchable"": true,
+                    ""moduleConfig"": {{
+                        ""text2vec-cohere"": {{
+                            ""skip"": false,
+                            ""vectorizePropertyName"": false
+                        }}
+                    }},
+                    ""name"": ""name"",
+                    ""tokenization"": ""word""
+                }}
+            ],
+            ""replicationConfig"": {{
+                ""asyncEnabled"": false,
+                ""deletionStrategy"": ""NoAutomatedResolution"",
+                ""factor"": 1
+            }},
+            ""shardingConfig"": {{
+                ""actualCount"": 1,
+                ""actualVirtualCount"": 128,
+                ""desiredCount"": 1,
+                ""desiredVirtualCount"": 128,
+                ""function"": ""murmur3"",
+                ""key"": ""_id"",
+                ""strategy"": ""hash"",
+                ""virtualPerPhysical"": 128
+            }},
+            ""vectorConfig"": {{
+                ""default"": {{
+                    ""vectorIndexConfig"": {{
+                        ""bq"": {{
+                            ""enabled"": false
+                        }},
+                        ""cleanupIntervalSeconds"": 300,
+                        ""distance"": ""cosine"",
+                        ""dynamicEfFactor"": 8,
+                        ""dynamicEfMax"": 500,
+                        ""dynamicEfMin"": 100,
+                        ""ef"": -1,
+                        ""efConstruction"": 128,
+                        ""filterStrategy"": ""sweeping"",
+                        ""flatSearchCutoff"": 40000,
+                        ""maxConnections"": 32,
+                        ""multivector"": {{
+                            ""aggregation"": ""maxSim"",
+                            ""enabled"": false,
+                            ""muvera"": {{
+                                ""dprojections"": 16,
+                                ""enabled"": false,
+                                ""ksim"": 4,
+                                ""repetitions"": 10
+                            }}
+                        }},
+                        ""pq"": {{
+                            ""bitCompression"": false,
+                            ""centroids"": 256,
+                            ""enabled"": false,
+                            ""encoder"": {{
+                                ""distribution"": ""log-normal"",
+                                ""type"": ""kmeans""
+                            }},
+                            ""segments"": 0,
+                            ""trainingLimit"": 100000
+                        }},
+                        ""rq"": {{
+                            ""bits"": 8,
+                            ""enabled"": false,
+                            ""rescoreLimit"": 20
+                        }},
+                        ""skip"": false,
+                        ""sq"": {{
+                            ""enabled"": false,
+                            ""rescoreLimit"": 20,
+                            ""trainingLimit"": 100000
+                        }},
+                        ""vectorCacheMaxObjects"": 1000000000000
+                    }},
+                    ""vectorIndexType"": ""hnsw"",
+                    ""vectorizer"": {{
+                        ""text2vec-cohere"": {{
+                            ""baseUrl"": ""https://api.cohere.ai"",
+                            ""model"": ""embed-multilingual-v3.0"",
+                            ""truncate"": ""END"",
+                            ""vectorizeClassName"": true
+                        }}
+                    }}
+                }}
+            }}
+        }}";
+
+        var collectionClient = await _weaviate.Collections.Create(
+            expectedJson,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        Assert.NotNull(collectionClient);
+        Assert.Equal(className, collectionClient.Name);
+
+        var export = await _weaviate.Collections.Export(
+            className,
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.NotNull(export);
+        Assert.Equal(className, export.Name);
+
+        var exportDto = export.ToDto();
+
+        var actualJson = System.Text.Json.JsonSerializer.Serialize(
+            exportDto,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        // Parse as JsonElement for semantic comparison (ignoring property order)
+        using var expectedDoc = JsonDocument.Parse(expectedJson);
+        using var actualDoc = JsonDocument.Parse(actualJson);
+
+        // Use JsonElement.DeepEquals for semantic comparison
+        Assert.True(
+            JsonElement.DeepEquals(expectedDoc.RootElement, actualDoc.RootElement),
+            $"JSON structures differ:\nExpected:\n{expectedJson}\n\nActual:\n{actualJson}"
+        );
+
+        await collectionClient.Config.AddVector(Configure.Vectors.SelfProvided().New("nondefault"));
+
+        string expectedJsonAfterUpdate =
+            $@"{{
+            ""class"": ""{className}"",
+            ""description"": ""Test_Collection_Config_Add_Vector"",
+            ""invertedIndexConfig"": {{
+                ""bm25"": {{
+                    ""b"": 0.75,
+                    ""k1"": 1.2
+                }},
+                ""cleanupIntervalSeconds"": 60,
+                ""stopwords"": {{
+                    ""preset"": ""en""
+                }},
+                ""usingBlockMaxWAND"": true
+            }},
+            ""multiTenancyConfig"": {{
+                ""autoTenantActivation"": false,
+                ""autoTenantCreation"": false,
+                ""enabled"": false
+            }},
+            ""properties"": [
+                {{
+                    ""dataType"": [
+                        ""text""
+                    ],
+                    ""indexFilterable"": true,
+                    ""indexRangeFilters"": false,
+                    ""indexSearchable"": true,
+                    ""moduleConfig"": {{
+                        ""text2vec-cohere"": {{
+                            ""skip"": false,
+                            ""vectorizePropertyName"": false
+                        }}
+                    }},
+                    ""name"": ""name"",
+                    ""tokenization"": ""word""
+                }}
+            ],
+            ""replicationConfig"": {{
+                ""asyncEnabled"": false,
+                ""deletionStrategy"": ""NoAutomatedResolution"",
+                ""factor"": 1
+            }},
+            ""shardingConfig"": {{
+                ""actualCount"": 1,
+                ""actualVirtualCount"": 128,
+                ""desiredCount"": 1,
+                ""desiredVirtualCount"": 128,
+                ""function"": ""murmur3"",
+                ""key"": ""_id"",
+                ""strategy"": ""hash"",
+                ""virtualPerPhysical"": 128
+            }},
+            ""vectorConfig"": {{
+                ""default"": {{
+                    ""vectorIndexConfig"": {{
+                        ""bq"": {{
+                            ""enabled"": false
+                        }},
+                        ""cleanupIntervalSeconds"": 300,
+                        ""distance"": ""cosine"",
+                        ""dynamicEfFactor"": 8,
+                        ""dynamicEfMax"": 500,
+                        ""dynamicEfMin"": 100,
+                        ""ef"": -1,
+                        ""efConstruction"": 128,
+                        ""filterStrategy"": ""sweeping"",
+                        ""flatSearchCutoff"": 40000,
+                        ""maxConnections"": 32,
+                        ""multivector"": {{
+                            ""aggregation"": ""maxSim"",
+                            ""enabled"": false,
+                            ""muvera"": {{
+                                ""dprojections"": 16,
+                                ""enabled"": false,
+                                ""ksim"": 4,
+                                ""repetitions"": 10
+                            }}
+                        }},
+                        ""pq"": {{
+                            ""bitCompression"": false,
+                            ""centroids"": 256,
+                            ""enabled"": false,
+                            ""encoder"": {{
+                                ""distribution"": ""log-normal"",
+                                ""type"": ""kmeans""
+                            }},
+                            ""segments"": 0,
+                            ""trainingLimit"": 100000
+                        }},
+                        ""rq"": {{
+                            ""bits"": 8,
+                            ""enabled"": false,
+                            ""rescoreLimit"": 20
+                        }},
+                        ""skip"": false,
+                        ""sq"": {{
+                            ""enabled"": false,
+                            ""rescoreLimit"": 20,
+                            ""trainingLimit"": 100000
+                        }},
+                        ""vectorCacheMaxObjects"": 1000000000000
+                    }},
+                    ""vectorIndexType"": ""hnsw"",
+                    ""vectorizer"": {{
+                        ""text2vec-cohere"": {{
+                            ""baseUrl"": ""https://api.cohere.ai"",
+                            ""model"": ""embed-multilingual-v3.0"",
+                            ""truncate"": ""END"",
+                            ""vectorizeClassName"": true
+                        }}
+                    }}
+                }},
+                ""nondefault"": {{
+                    ""vectorIndexType"": ""hnsw"",
+                    ""vectorizer"": {{
+                        ""text2vec-cohere"": {{ }}
+                    }}
+                }}
+            }}
+        }}";
+
+        var actualCollectionConfigAfterupdate = await collectionClient.Config.Get(
+            TestContext.Current.CancellationToken
+        );
+
+        var actualDtoAfterUpdate = actualCollectionConfigAfterupdate!.ToDto();
+        var actualJsonAfterUpdate = System.Text.Json.JsonSerializer.Serialize(
+            actualDtoAfterUpdate,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        using var expectedDocAfterUpdate = JsonDocument.Parse(expectedJsonAfterUpdate);
+        using var actualDocAfterUpdate = JsonDocument.Parse(actualJsonAfterUpdate);
+
+        // Use JsonElement.DeepEquals for semantic comparison
+        Assert.True(
+            JsonElement.DeepEquals(expectedDoc.RootElement, actualDoc.RootElement),
+            $"JSON structures differ:\nExpected:\n{expectedJson}\n\nActual:\n{actualJson}"
+        );
     }
 }
