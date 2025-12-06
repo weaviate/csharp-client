@@ -8,7 +8,12 @@ namespace Weaviate.Client.Orm.Attributes;
 /// </summary>
 /// <example>
 /// <code>
+/// // Property name inferred from C# property name (Title → title)
 /// [Property(DataType.Text, Description = "Article title")]
+/// public string Title { get; set; }
+///
+/// // Custom property name in Weaviate schema
+/// [Property(DataType.Text, Name = "article_title")]
 /// public string Title { get; set; }
 ///
 /// [Property(DataType.Int)]
@@ -22,6 +27,12 @@ public class PropertyAttribute : Attribute
     /// Gets the Weaviate data type for this property.
     /// </summary>
     public DataType DataType { get; }
+
+    /// <summary>
+    /// Gets or sets the property name in the Weaviate schema.
+    /// If not specified, the C# property name will be converted to camelCase.
+    /// </summary>
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the property description.

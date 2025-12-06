@@ -116,6 +116,15 @@ public static class CollectionMigrationExtensions
                         );
                     }
                     break;
+                case SchemaChangeType.AddVector:
+                    if (change.VectorConfig != null)
+                    {
+                        await collectionClient.Config.AddVector(
+                            change.VectorConfig,
+                            cancellationToken
+                        );
+                    }
+                    break;
 
                 case SchemaChangeType.UpdateDescription:
                 case SchemaChangeType.UpdatePropertyDescription:

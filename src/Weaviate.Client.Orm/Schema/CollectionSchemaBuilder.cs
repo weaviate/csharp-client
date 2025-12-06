@@ -37,7 +37,7 @@ public static class CollectionSchemaBuilder
             InvertedIndexConfig =
                 BuildInvertedIndexConfig(invertedIndexAttr) ?? new InvertedIndexConfig(),
             ReplicationConfig = new ReplicationConfig(), // Explicitly initialize
-            MultiTenancyConfig = new MultiTenancyConfig(), // Explicitly initialize
+            MultiTenancyConfig = BuildMultiTenancyConfig(collectionAttr),
         };
 #pragma warning restore CS8601 // Possible null reference assignment.
 
@@ -74,7 +74,8 @@ public static class CollectionSchemaBuilder
     /// </summary>
     private static Property? BuildProperty(PropertyInfo prop, PropertyAttribute propAttr)
     {
-        var propertyName = PropertyHelper.ToCamelCase(prop.Name);
+        // Use custom name from attribute, or convert C# property name to camelCase
+        var propertyName = propAttr.Name ?? PropertyHelper.ToCamelCase(prop.Name);
         var indexAttr = prop.GetCustomAttribute<IndexAttribute>();
         var tokenAttr = prop.GetCustomAttribute<TokenizationAttribute>();
         var nestedAttr = prop.GetCustomAttribute<NestedTypeAttribute>();
@@ -173,28 +174,53 @@ public static class CollectionSchemaBuilder
                 indexFilterable: indexAttr?.Filterable
             ),
 
-            DataType.Object => nestedAttr != null
-                ? Property.Object(
-                    propertyName,
-                    description: propAttr.Description,
-                    subProperties: BuildProperties(nestedAttr.NestedType)
-                )
-                : throw new InvalidOperationException(
-                    $"Property '{prop.Name}' with DataType.Object must have a [NestedType] attribute"
-                ),
+            DataType.Object => Property.Object(
+                propertyName,
+                description: propAttr.Description,
+                subProperties: BuildProperties(GetNestedType(prop, nestedAttr))
+            ),
 
-            DataType.ObjectArray => nestedAttr != null
-                ? Property.ObjectArray(
-                    propertyName,
-                    description: propAttr.Description,
-                    subProperties: BuildProperties(nestedAttr.NestedType)
-                )
-                : throw new InvalidOperationException(
-                    $"Property '{prop.Name}' with DataType.ObjectArray must have a [NestedType] attribute"
-                ),
+            DataType.ObjectArray => Property.ObjectArray(
+                propertyName,
+                description: propAttr.Description,
+                subProperties: BuildProperties(GetNestedType(prop, nestedAttr))
+            ),
 
             _ => throw new NotSupportedException($"DataType {propAttr.DataType} is not supported"),
         };
+    }
+
+    /// <summary>
+    /// Gets the nested type for an Object or ObjectArray property.
+    /// First checks for [NestedType] attribute (for backward compatibility),
+    /// then infers from the property type.
+    /// </summary>
+    private static Type GetNestedType(PropertyInfo prop, NestedTypeAttribute? nestedAttr)
+    {
+        // If [NestedType] is explicitly specified, use it (backward compatibility)
+        if (nestedAttr != null)
+            return nestedAttr.NestedType;
+
+        // Infer from property type
+        var propType = prop.PropertyType;
+
+        // Handle List<T>, IList<T>, IEnumerable<T>, etc. for ObjectArray
+        if (propType.IsGenericType)
+        {
+            var genericTypeDef = propType.GetGenericTypeDefinition();
+            if (
+                genericTypeDef == typeof(List<>)
+                || genericTypeDef == typeof(IList<>)
+                || genericTypeDef == typeof(IEnumerable<>)
+                || genericTypeDef == typeof(ICollection<>)
+            )
+            {
+                return propType.GetGenericArguments()[0];
+            }
+        }
+
+        // For non-generic (single Object), use the property type directly
+        return propType;
     }
 
     /// <summary>
@@ -238,6 +264,27 @@ public static class CollectionSchemaBuilder
             IndexNullState = attr.IndexNullState,
             IndexPropertyLength = attr.IndexPropertyLength,
             IndexTimestamps = attr.IndexTimestamps,
+        };
+    }
+
+    /// <summary>
+    /// Builds multi-tenancy configuration from collection attribute.
+    /// </summary>
+    private static MultiTenancyConfig BuildMultiTenancyConfig(
+        WeaviateCollectionAttribute? collectionAttr
+    )
+    {
+        if (collectionAttr == null)
+            return new MultiTenancyConfig { Enabled = false };
+
+        // If MultiTenancyEnabled is not set, default to false
+        var enabled = collectionAttr.MultiTenancyEnabled ?? false;
+
+        return new MultiTenancyConfig
+        {
+            Enabled = enabled,
+            AutoTenantCreation = collectionAttr.AutoTenantCreation ?? false,
+            AutoTenantActivation = collectionAttr.AutoTenantActivation ?? false,
         };
     }
 

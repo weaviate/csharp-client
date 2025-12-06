@@ -101,6 +101,8 @@ public class Product
 
 /// <summary>
 /// Example 4: Nested objects
+/// The nested type is automatically inferred from the property type.
+/// [NestedType] attribute is optional and only needed if you want to override the inferred type.
 /// </summary>
 [WeaviateCollection("BlogPost")]
 public class BlogPost
@@ -111,12 +113,12 @@ public class BlogPost
     [Property(DataType.Text)]
     public string Content { get; set; }
 
+    // Nested object - type inferred from property type (Author)
     [Property(DataType.Object)]
-    [NestedType(typeof(Author))]
     public Author Author { get; set; }
 
+    // Nested array - type inferred from List<T> (Comment)
     [Property(DataType.ObjectArray)]
-    [NestedType(typeof(Comment))]
     public List<Comment> Comments { get; set; }
 
     [Vector<Vectorizer.Text2VecTransformers>(SourceProperties = [nameof(Title), nameof(Content)])]
