@@ -328,8 +328,8 @@ internal static class SchemaDiffer
                         ChangeType = SchemaChangeType.RemoveVector,
                         Description = $"Remove vector '{key}' (BREAKING - data will be lost)",
                         IsSafe = false,
-                        VectorConfig = target[key],
-                        OldValue = target[key],
+                        VectorConfig = current[key],
+                        OldValue = current[key],
                     }
                 );
             }
@@ -390,6 +390,24 @@ internal static class SchemaDiffer
         if (current == null || target == null)
             return changes;
 
+        // Check if Enabled changed (BREAKING - immutable)
+        if (current.Enabled != target.Enabled)
+        {
+            changes.Add(
+                new SchemaChange
+                {
+                    ChangeType = SchemaChangeType.UpdateMultiTenancy,
+                    Description =
+                        $"Change multi-tenancy Enabled from {current.Enabled} to {target.Enabled} "
+                        + "(BREAKING - multi-tenancy Enabled is immutable and cannot be changed after creation)",
+                    IsSafe = false,
+                    OldValue = current,
+                    NewValue = target,
+                }
+            );
+        }
+
+        // Check if mutable config changed (AutoTenantCreation, AutoTenantActivation)
         if (
             current.AutoTenantCreation != target.AutoTenantCreation
             || current.AutoTenantActivation != target.AutoTenantActivation
@@ -399,7 +417,8 @@ internal static class SchemaDiffer
                 new SchemaChange
                 {
                     ChangeType = SchemaChangeType.UpdateMultiTenancy,
-                    Description = $"Update multi-tenancy configuration",
+                    Description =
+                        $"Update multi-tenancy configuration (AutoTenantCreation: {target.AutoTenantCreation}, AutoTenantActivation: {target.AutoTenantActivation})",
                     IsSafe = true,
                     OldValue = current,
                     NewValue = target,

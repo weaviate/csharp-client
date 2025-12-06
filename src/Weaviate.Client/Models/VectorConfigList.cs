@@ -21,7 +21,7 @@ public record VectorConfigList
 
     public IEnumerator<VectorConfig> GetEnumerator()
     {
-        return ((IEnumerable<VectorConfig>)_internalList).GetEnumerator();
+        return _internalList.Values.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

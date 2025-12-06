@@ -3,6 +3,122 @@ using Weaviate.Client.Models;
 namespace Weaviate.Client.Orm.Attributes;
 
 /// <summary>
+/// Vector index types supported by Weaviate.
+/// </summary>
+public enum VectorIndexType
+{
+    /// <summary>
+    /// HNSW (Hierarchical Navigable Small World) index - default and recommended for most use cases.
+    /// Provides excellent recall with good performance.
+    /// </summary>
+    Hnsw,
+
+    /// <summary>
+    /// Flat index - brute-force exact search.
+    /// Best for small datasets or when exact results are required.
+    /// </summary>
+    Flat,
+
+    /// <summary>
+    /// Dynamic index - automatically switches from Flat to HNSW based on object count.
+    /// Best for collections that start small but may grow large.
+    /// </summary>
+    Dynamic,
+}
+
+/// <summary>
+/// Distance metrics for vector similarity.
+/// </summary>
+public enum VectorDistance
+{
+    /// <summary>
+    /// Cosine similarity - measures angle between vectors (1 - cosine distance).
+    /// Range: 0 (identical) to 2 (opposite). Most common choice.
+    /// </summary>
+    Cosine,
+
+    /// <summary>
+    /// Dot product - measures magnitude and direction.
+    /// Useful for embeddings that are already normalized.
+    /// </summary>
+    Dot,
+
+    /// <summary>
+    /// L2-squared (Euclidean distance squared) - measures straight-line distance.
+    /// Faster than regular L2 distance.
+    /// </summary>
+    L2Squared,
+
+    /// <summary>
+    /// Hamming distance - measures bit differences.
+    /// Only for binary vectors.
+    /// </summary>
+    Hamming,
+}
+
+/// <summary>
+/// Quantizer types for vector compression.
+/// </summary>
+public enum QuantizerType
+{
+    /// <summary>
+    /// Binary Quantization - compresses to 1 bit per dimension.
+    /// Very fast, significant memory savings, works well with cosine distance.
+    /// </summary>
+    BQ,
+
+    /// <summary>
+    /// Product Quantization - sophisticated compression using clustering.
+    /// Good balance of compression and accuracy.
+    /// </summary>
+    PQ,
+
+    /// <summary>
+    /// Scalar Quantization - compresses to 8 bits per dimension.
+    /// Simple and effective compression.
+    /// </summary>
+    SQ,
+
+    /// <summary>
+    /// Residual Quantization - advanced compression technique.
+    /// Best compression-accuracy tradeoff for large datasets.
+    /// </summary>
+    RQ,
+}
+
+/// <summary>
+/// Encoder types for Product Quantization.
+/// </summary>
+public enum PQEncoderType
+{
+    /// <summary>
+    /// K-means clustering encoder - more accurate but slower training.
+    /// </summary>
+    Kmeans,
+
+    /// <summary>
+    /// Tile encoder - faster training, good for most use cases (default).
+    /// </summary>
+    Tile,
+}
+
+/// <summary>
+/// Distribution types for Product Quantization encoder.
+/// </summary>
+public enum PQEncoderDistribution
+{
+    /// <summary>
+    /// Log-normal distribution - better for most embeddings (default).
+    /// </summary>
+    LogNormal,
+
+    /// <summary>
+    /// Normal (Gaussian) distribution - alternative distribution model.
+    /// </summary>
+    Normal,
+}
+
+/// <summary>
 /// Base class for vector attributes. Used for runtime type inspection.
 /// Do not use this directly - use VectorAttribute&lt;TVectorizer&gt; instead.
 /// </summary>

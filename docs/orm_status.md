@@ -1,9 +1,43 @@
 # Weaviate.Client.Orm - Implementation Status
 
 **Last Updated:** 2025-12-06
-**Status:** ✅ Phases 1-5 Complete - Full ORM with Migrations Ready
+**Status:** ✅ Phases 1-5 Complete + Fine-Tuning - Full ORM with Migrations Ready
 
 ---
+
+## Recent Fine-Tuning (December 2025)
+
+### Vector Index & Quantization Improvements
+- ✅ **VectorIndexAttribute<TIndexConfig>** - Type-safe vector index configuration
+  - Supports HNSW, Flat, Dynamic indexes
+  - Distance metrics: Cosine, Dot, L2Squared, Hamming
+  - Full HNSW parameter support (EfConstruction, MaxConnections, Ef, etc.)
+  - Dynamic index with threshold configuration
+
+- ✅ **Concrete Quantizer Attributes** - Replaced generic with specialized classes
+  - `QuantizerBQ` - Binary Quantization (Cache, RescoreLimit)
+  - `QuantizerPQ` - Product Quantization (Segments, Centroids, Encoder config)
+  - `QuantizerSQ` - Scalar Quantization (TrainingLimit, RescoreLimit)
+  - `QuantizerRQ` - Residual Quantization (Bits, Cache, RescoreLimit)
+  - Each quantizer exposes only valid properties for type safety
+
+- ✅ **EncodingAttribute** - Multi-vector (Muvera) encoding support
+  - KSim, DProjections, Repetitions parameters
+  - For ColBERT-style multi-vector embeddings
+
+- ✅ **Multi-Tenancy Configuration** - WeaviateCollectionAttribute extended
+  - MultiTenancyEnabled (immutable after creation)
+  - AutoTenantCreation (mutable)
+  - AutoTenantActivation (mutable)
+  - Migration system detects breaking changes
+
+- ✅ **Custom Property Names** - PropertyAttribute.Name
+  - C# property name can differ from Weaviate schema property name
+  - Example: `[Property(DataType.Text, Name = "article_title")] public string Title`
+
+- ✅ **NestedType Clarification** - Documentation improved
+  - Clarified it's for polymorphic scenarios (interfaces/base classes)
+  - Type inference works automatically in most cases
 
 ## ✅ Phase 1: Attributes and Schema Building (COMPLETE)
 
@@ -44,8 +78,10 @@ All attributes are fully implemented with XML documentation:
    - TargetCollection
    - Supports single, ID-only, and multi-references
 
-7. **NestedTypeAttribute** - Nested objects
-   - NestedType for Object/ObjectArray properties
+7. **NestedTypeAttribute** - Nested objects (OPTIONAL)
+   - Type automatically inferred from property type
+   - Only needed to override inferred type (e.g., interfaces)
+   - Supports List&lt;T&gt;, IList&lt;T&gt;, IEnumerable&lt;T&gt; for ObjectArray
    - Recursive property building
 
 8. **InvertedIndexAttribute** - Inverted index settings

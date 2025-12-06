@@ -49,13 +49,13 @@ internal static class VectorConfigBuilder
         if (vectorizer == null)
             return null;
 
-        // TODO: Build vector index config from VectorIndexAttribute (if present)
-        // For now, we'll use default index config
+        // Build vector index config from VectorIndex attribute on the property
+        var vectorIndexConfig = BuildVectorIndexConfig(prop);
 
         return new VectorConfig(
             name: vectorName,
             vectorizer: vectorizer,
-            vectorIndexConfig: null // Will be enhanced in future
+            vectorIndexConfig: vectorIndexConfig
         );
     }
 
@@ -194,6 +194,336 @@ internal static class VectorConfigBuilder
         {
             // If conversion fails, return the original value and let the caller handle it
             return value;
+        }
+    }
+
+    /// <summary>
+    /// Builds VectorIndexConfig from VectorIndex attribute on the property.
+    /// </summary>
+    private static VectorIndexConfig? BuildVectorIndexConfig(PropertyInfo prop)
+    {
+        // Get VectorIndex attribute
+        var vectorIndexAttr = GetVectorIndexAttribute(prop);
+        if (vectorIndexAttr == null)
+            return null; // Use Weaviate defaults
+
+        var indexType = vectorIndexAttr.IndexConfigType;
+
+        // Build appropriate config based on index type
+        if (indexType == typeof(VectorIndex.HNSW))
+        {
+            return BuildHnswIndexConfig(vectorIndexAttr, prop);
+        }
+        else if (indexType == typeof(VectorIndex.Flat))
+        {
+            return BuildFlatIndexConfig(vectorIndexAttr, prop);
+        }
+        else if (indexType == typeof(VectorIndex.Dynamic))
+        {
+            return BuildDynamicIndexConfig(vectorIndexAttr, prop);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Builds HNSW index configuration from VectorIndex attribute.
+    /// </summary>
+    private static VectorIndex.HNSW BuildHnswIndexConfig(
+        VectorIndexAttributeBase indexAttr,
+        PropertyInfo prop
+    )
+    {
+        var attrType = indexAttr.GetType();
+        var config = new VectorIndex.HNSW();
+
+        // Set distance if specified
+        if (indexAttr.Distance != null)
+        {
+            config.Distance = ConvertDistance(indexAttr.Distance.Value);
+        }
+
+        // HNSW parameters
+        SetIfNotNull(
+            config,
+            GetPropertyValue<int?>(attrType, indexAttr, "EfConstruction"),
+            v => config.EfConstruction = v
+        );
+        SetIfNotNull(config, GetPropertyValue<int?>(attrType, indexAttr, "Ef"), v => config.Ef = v);
+        SetIfNotNull(
+            config,
+            GetPropertyValue<int?>(attrType, indexAttr, "MaxConnections"),
+            v => config.MaxConnections = v
+        );
+        SetIfNotNull(
+            config,
+            GetPropertyValue<int?>(attrType, indexAttr, "DynamicEfMin"),
+            v => config.DynamicEfMin = v
+        );
+        SetIfNotNull(
+            config,
+            GetPropertyValue<int?>(attrType, indexAttr, "DynamicEfMax"),
+            v => config.DynamicEfMax = v
+        );
+        SetIfNotNull(
+            config,
+            GetPropertyValue<int?>(attrType, indexAttr, "DynamicEfFactor"),
+            v => config.DynamicEfFactor = v
+        );
+        SetIfNotNull(
+            config,
+            GetPropertyValue<int?>(attrType, indexAttr, "FlatSearchCutoff"),
+            v => config.FlatSearchCutoff = v
+        );
+        SetIfNotNull(
+            config,
+            GetPropertyValue<long?>(attrType, indexAttr, "VectorCacheMaxObjects"),
+            v => config.VectorCacheMaxObjects = v
+        );
+
+        // Quantizer
+        config.Quantizer = BuildQuantizer(prop);
+
+        // Multi-vector config (encoding)
+        config.MultiVector = BuildMultiVectorConfig(prop);
+
+        return config;
+    }
+
+    /// <summary>
+    /// Builds Flat index configuration from VectorIndex attribute.
+    /// </summary>
+    private static VectorIndex.Flat BuildFlatIndexConfig(
+        VectorIndexAttributeBase indexAttr,
+        PropertyInfo prop
+    )
+    {
+        var attrType = indexAttr.GetType();
+        var config = new VectorIndex.Flat();
+
+        if (indexAttr.Distance != null)
+        {
+            config.Distance = ConvertDistance(indexAttr.Distance.Value);
+        }
+
+        SetIfNotNull(
+            config,
+            GetPropertyValue<long?>(attrType, indexAttr, "VectorCacheMaxObjects"),
+            v => config.VectorCacheMaxObjects = v
+        );
+
+        // Quantizer (Flat only supports BQ and RQ)
+        var quantizer = BuildQuantizer(prop);
+        if (quantizer is VectorIndexConfig.QuantizerConfigFlat flatQuantizer)
+        {
+            config.Quantizer = flatQuantizer;
+        }
+
+        // Note: Flat index does not support MultiVector configuration
+
+        return config;
+    }
+
+    /// <summary>
+    /// Builds Dynamic index configuration from VectorIndex attribute.
+    /// </summary>
+    private static VectorIndex.Dynamic BuildDynamicIndexConfig(
+        VectorIndexAttributeBase indexAttr,
+        PropertyInfo prop
+    )
+    {
+        var attrType = indexAttr.GetType();
+        var config = new VectorIndex.Dynamic
+        {
+            Hnsw = BuildHnswIndexConfig(indexAttr, prop),
+            Flat = BuildFlatIndexConfig(indexAttr, prop),
+        };
+
+        if (indexAttr.Distance != null)
+        {
+            config.Distance = ConvertDistance(indexAttr.Distance.Value);
+        }
+
+        SetIfNotNull(
+            config,
+            GetPropertyValue<int?>(attrType, indexAttr, "Threshold"),
+            v => config.Threshold = v
+        );
+
+        return config;
+    }
+
+    /// <summary>
+    /// Builds quantizer configuration from Quantizer attribute on the property.
+    /// </summary>
+    private static VectorIndexConfig.QuantizerConfigBase? BuildQuantizer(PropertyInfo prop)
+    {
+        var quantizerAttr = GetQuantizerAttribute(prop);
+        if (quantizerAttr == null)
+            return null;
+
+        return quantizerAttr switch
+        {
+            QuantizerBQ bq => BuildBQQuantizer(bq),
+            QuantizerPQ pq => BuildPQQuantizer(pq),
+            QuantizerSQ sq => BuildSQQuantizer(sq),
+            QuantizerRQ rq => BuildRQQuantizer(rq),
+            _ => null,
+        };
+    }
+
+    private static VectorIndex.Quantizers.BQ BuildBQQuantizer(QuantizerBQ attr)
+    {
+        var config = new VectorIndex.Quantizers.BQ();
+        SetIfNotNull(config, attr.RescoreLimit, v => config.RescoreLimit = v);
+        SetIfNotNull(config, attr.Cache, v => config.Cache = v);
+        return config;
+    }
+
+    private static VectorIndex.Quantizers.RQ BuildRQQuantizer(QuantizerRQ attr)
+    {
+        var config = new VectorIndex.Quantizers.RQ();
+        SetIfNotNull(config, attr.RescoreLimit, v => config.RescoreLimit = v);
+        SetIfNotNull(config, attr.Bits, v => config.Bits = v);
+        SetIfNotNull(config, attr.Cache, v => config.Cache = v);
+        return config;
+    }
+
+    private static VectorIndex.Quantizers.SQ BuildSQQuantizer(QuantizerSQ attr)
+    {
+        var config = new VectorIndex.Quantizers.SQ();
+        SetIfNotNull(config, attr.RescoreLimit, v => config.RescoreLimit = v);
+        SetIfNotNull(config, attr.TrainingLimit, v => config.TrainingLimit = v);
+        return config;
+    }
+
+    private static VectorIndex.Quantizers.PQ BuildPQQuantizer(QuantizerPQ attr)
+    {
+        var config = new VectorIndex.Quantizers.PQ();
+        SetIfNotNull(config, attr.Segments, v => config.Segments = v);
+        SetIfNotNull(config, attr.Centroids, v => config.Centroids = v);
+        SetIfNotNull(config, attr.BitCompression, v => config.BitCompression = v);
+        SetIfNotNull(config, attr.TrainingLimit, v => config.TrainingLimit = v);
+        // Note: PQ does not have RescoreLimit property (only BQ, RQ, and SQ have it)
+
+        // Build encoder config from PQ attribute properties
+        config.Encoder = new VectorIndex.Quantizers.PQ.EncoderConfig
+        {
+            Type = ConvertEncoderType(attr.EncoderType),
+            Distribution = ConvertEncoderDistribution(attr.EncoderDistribution),
+        };
+
+        return config;
+    }
+
+    /// <summary>
+    /// Builds multi-vector configuration from Encoding attribute on the property.
+    /// </summary>
+    private static VectorIndexConfig.MultiVectorConfig? BuildMultiVectorConfig(PropertyInfo prop)
+    {
+        var encodingAttr = prop.GetCustomAttribute<EncodingAttribute>();
+        if (encodingAttr == null)
+            return null;
+
+        // MuveraEncoding properties are init-only, must use object initializer
+        var encoding = new VectorIndexConfig.MuveraEncoding
+        {
+            KSim = encodingAttr.KSim,
+            DProjections = encodingAttr.DProjections,
+            Repetitions = encodingAttr.Repetitions,
+        };
+
+        return new VectorIndexConfig.MultiVectorConfig { Encoding = encoding };
+    }
+
+    /// <summary>
+    /// Converts ORM distance enum to Weaviate distance enum.
+    /// </summary>
+    private static VectorIndexConfig.VectorDistance ConvertDistance(VectorDistance distance)
+    {
+        return distance switch
+        {
+            VectorDistance.Cosine => VectorIndexConfig.VectorDistance.Cosine,
+            VectorDistance.Dot => VectorIndexConfig.VectorDistance.Dot,
+            VectorDistance.L2Squared => VectorIndexConfig.VectorDistance.L2Squared,
+            VectorDistance.Hamming => VectorIndexConfig.VectorDistance.Hamming,
+            _ => VectorIndexConfig.VectorDistance.Cosine, // Default
+        };
+    }
+
+    /// <summary>
+    /// Converts ORM encoder type to Weaviate encoder type.
+    /// </summary>
+    private static VectorIndex.Quantizers.EncoderType ConvertEncoderType(PQEncoderType encoderType)
+    {
+        return encoderType switch
+        {
+            PQEncoderType.Kmeans => VectorIndex.Quantizers.EncoderType.Kmeans,
+            PQEncoderType.Tile => VectorIndex.Quantizers.EncoderType.Tile,
+            _ => VectorIndex.Quantizers.EncoderType.Tile,
+        };
+    }
+
+    /// <summary>
+    /// Converts ORM encoder distribution to Weaviate encoder distribution.
+    /// </summary>
+    private static VectorIndex.Quantizers.DistributionType ConvertEncoderDistribution(
+        PQEncoderDistribution distribution
+    )
+    {
+        return distribution switch
+        {
+            PQEncoderDistribution.LogNormal => VectorIndex.Quantizers.DistributionType.LogNormal,
+            PQEncoderDistribution.Normal => VectorIndex.Quantizers.DistributionType.Normal,
+            _ => VectorIndex.Quantizers.DistributionType.LogNormal,
+        };
+    }
+
+    /// <summary>
+    /// Gets the VectorIndex attribute from a property, if it exists.
+    /// </summary>
+    private static VectorIndexAttributeBase? GetVectorIndexAttribute(PropertyInfo prop)
+    {
+        return prop.GetCustomAttributes()
+                .FirstOrDefault(a =>
+                    a.GetType().IsGenericType
+                    && a.GetType().GetGenericTypeDefinition() == typeof(VectorIndexAttribute<>)
+                ) as VectorIndexAttributeBase;
+    }
+
+    /// <summary>
+    /// Gets the Quantizer attribute from a property, if it exists.
+    /// </summary>
+    private static QuantizerAttribute? GetQuantizerAttribute(PropertyInfo prop)
+    {
+        return prop.GetCustomAttribute<QuantizerAttribute>();
+    }
+
+    /// <summary>
+    /// Gets property value using reflection.
+    /// </summary>
+    private static T? GetPropertyValue<T>(Type attrType, object attr, string propertyName)
+    {
+        var prop = attrType.GetProperty(propertyName);
+        if (prop == null)
+            return default;
+
+        var value = prop.GetValue(attr);
+        if (value == null)
+            return default;
+
+        return (T)value;
+    }
+
+    /// <summary>
+    /// Sets property value if not null.
+    /// </summary>
+    private static void SetIfNotNull<T>(object target, T? value, Action<T> setter)
+        where T : struct
+    {
+        if (value.HasValue)
+        {
+            setter(value.Value);
         }
     }
 
