@@ -285,6 +285,7 @@ public float[]? CustomVector { get; set; }
 ```
 
 **Common Vectorizer Properties:**
+- `Name` - Custom vector name (default: camelCase property name)
 - `Model` - Model name/identifier
 - `Dimensions` - Vector dimensions
 - `SourceProperties` - Properties to vectorize
@@ -292,6 +293,91 @@ public float[]? CustomVector { get; set; }
 - `TextFields` - Text fields for multi-modal vectorizers
 - `ImageFields` - Image fields for multi-modal vectorizers
 - `VideoFields` - Video fields for multi-modal vectorizers
+- `ConfigMethod` - Static method name for advanced configuration
+
+**Named Vectors:**
+
+By default, the vector name in Weaviate matches your property name (converted to camelCase). You can override this using the `Name` property:
+
+```csharp
+// Default: vector name will be "contentEmbedding"
+[Vector<Vectorizer.Text2VecOpenAI>(Model = "text-embedding-3-small")]
+public float[]? ContentEmbedding { get; set; }
+
+// Custom name: vector name will be "main_vector"
+[Vector<Vectorizer.Text2VecOpenAI>(
+    Name = "main_vector",
+    Model = "text-embedding-3-small"
+)]
+public float[]? ContentEmbedding { get; set; }
+```
+
+This is useful when working with existing collections that have specific vector names.
+
+**Advanced Configuration with ConfigMethod:**
+
+For vectorizer-specific properties not available as attribute parameters, use `ConfigMethod` to specify a static method that configures the vectorizer:
+
+```csharp
+public class Article
+{
+    // Same class method
+    [Vector<Vectorizer.Text2VecOpenAI>(
+        Model = "text-embedding-3-small",
+        ConfigMethod = nameof(ConfigureContentVector)
+    )]
+    public float[]? ContentEmbedding { get; set; }
+
+    // Different class method (type-safe with ConfigMethodClass)
+    [Vector<Vectorizer.Text2VecOpenAI>(
+        Model = "text-embedding-3-small",
+        ConfigMethod = nameof(VectorConfigurations.ConfigureOpenAI),
+        ConfigMethodClass = typeof(VectorConfigurations)
+    )]
+    public float[]? TitleVector { get; set; }
+
+    // Different class method (legacy string syntax - also supported)
+    [Vector<Vectorizer.Text2VecCohere>(
+        Model = "embed-multilingual-v3.0",
+        ConfigMethod = "VectorConfigurations.ConfigureCohere"
+    )]
+    public float[]? DescriptionVector { get; set; }
+
+    // Configuration method receives vector name and pre-built vectorizer
+    public static Vectorizer.Text2VecOpenAI ConfigureContentVector(
+        string vectorName,
+        Vectorizer.Text2VecOpenAI prebuilt)
+    {
+        // Model is already set from attribute
+        prebuilt.Type = "text";  // OpenAI-specific property
+        prebuilt.VectorizeCollectionName = false;
+        return prebuilt;
+    }
+}
+
+// External configuration class
+public static class VectorConfigurations
+{
+    public static Vectorizer.Text2VecOpenAI ConfigureOpenAI(
+        string vectorName,
+        Vectorizer.Text2VecOpenAI prebuilt)
+    {
+        prebuilt.Type = "code";  // For code embeddings
+        prebuilt.BaseURL = "https://custom-api.example.com";
+        return prebuilt;
+    }
+
+    public static Vectorizer.Text2VecCohere ConfigureCohere(
+        string vectorName,
+        Vectorizer.Text2VecCohere prebuilt)
+    {
+        prebuilt.Truncate = "END";  // Cohere-specific property
+        return prebuilt;
+    }
+}
+```
+
+**Recommendation:** Use `ConfigMethodClass = typeof(ClassName)` for type safety and better IntelliSense support when referencing methods in different classes.
 
 **Supported Vectorizers (47+ types):**
 - Text2Vec: OpenAI, Cohere, HuggingFace, Transformers, Contextionary, GPT4All, Ollama, JinaAI, VoyageAI

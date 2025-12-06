@@ -39,6 +39,37 @@
   - Clarified it's for polymorphic scenarios (interfaces/base classes)
   - Type inference works automatically in most cases
 
+### Vectorizer Configuration Enhancements (December 7, 2025)
+- ✅ **Custom Vector Names** - VectorAttributeBase.Name property
+  - Override default camelCase property name with custom vector name
+  - Useful for working with existing collections
+  - Example: `[Vector<Vectorizer.Text2VecOpenAI>(Name = "main_vector")]`
+
+- ✅ **Advanced Vectorizer Configuration** - ConfigMethod property
+  - Access vectorizer-specific properties not available as attribute parameters
+  - Method signature: `static TVectorizer MethodName(string vectorName, TVectorizer prebuilt)`
+  - Supports same-class and cross-class methods
+  - Example: `ConfigMethod = nameof(ConfigureContentVector)`
+
+- ✅ **Type-Safe ConfigMethodClass** - ConfigMethodClass property
+  - Compile-time validation for cross-class config methods
+  - IntelliSense support with `nameof()` and `typeof()`
+  - Refactoring-safe
+  - Example: `ConfigMethod = nameof(VectorConfigurations.ConfigureOpenAI), ConfigMethodClass = typeof(VectorConfigurations)`
+  - Legacy string-based syntax still supported: `ConfigMethod = "ClassName.MethodName"`
+
+- ✅ **Runtime Validation** - SelfProvided vectorizer validation
+  - Prevents setting configuration properties on SelfProvided vectorizer
+  - Clear error messages for invalid configurations
+  - Example: Setting Model on SelfProvided throws InvalidOperationException
+
+- ✅ **Comprehensive Test Coverage** - 22 tests passing
+  - Named vector functionality
+  - ConfigMethod invocation (same class and external class)
+  - Type-safe ConfigMethodClass approach
+  - SelfProvided validation
+  - Invalid configuration detection
+
 ## ✅ Phase 1: Attributes and Schema Building (COMPLETE)
 
 ### What's Implemented
