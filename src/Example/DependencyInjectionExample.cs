@@ -225,7 +225,7 @@ public class ConnectHelperExample
         // Use the client...
         var results = await collection.Query.FetchObjects(limit: 10);
 
-        Console.WriteLine($"Found {results.Objects.Count()} cats");
+        Console.WriteLine($"Found {results.Objects.Count} cats");
 
         client.Dispose();
     }

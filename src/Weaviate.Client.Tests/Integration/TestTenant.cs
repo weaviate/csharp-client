@@ -693,14 +693,16 @@ public partial class TenantTests : IntegrationTests
 
         Assert.False(collection.MultiTenancyConfig?.AutoTenantCreation);
 
-        collection = await collectionClient.Config.Update(c =>
-            c.MultiTenancyConfig.AutoTenantCreation = true
+        collection = await collectionClient.Config.Update(
+            c => c.MultiTenancyConfig.AutoTenantCreation = true,
+            TestContext.Current.CancellationToken
         );
 
         Assert.True(collection.MultiTenancyConfig?.AutoTenantCreation);
 
-        collection = await collectionClient.Config.Update(c =>
-            c.MultiTenancyConfig.AutoTenantCreation = false
+        collection = await collectionClient.Config.Update(
+            c => c.MultiTenancyConfig.AutoTenantCreation = false,
+            TestContext.Current.CancellationToken
         );
         Assert.False(collection.MultiTenancyConfig?.AutoTenantCreation);
     }

@@ -517,7 +517,7 @@ public partial class PropertyTests : IntegrationTests
                 TestInt = 456,
                 TestIntArray = new[] { 4, 5, 6 },
                 TestBool = true,
-                TestBoolArray = new bool[] { },
+                TestBoolArray = Array.Empty<bool>(),
                 TestNumber = 789.987,
                 TestNumberArray = new[] { 5.6, 7.8 },
                 TestDate = DateTime.Now.AddDays(-2),

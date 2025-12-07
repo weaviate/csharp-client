@@ -369,6 +369,141 @@ public class CollectionConfigBuilderTests
     }
 
     #endregion
+
+    #region Automatic Type Inference Tests
+
+    [Fact]
+    public void BuildProperty_WithoutDataType_InfersFromCSharpType()
+    {
+        // Act
+        var config = CollectionSchemaBuilder.FromClass<ArticleWithInferredTypes>();
+
+        // Assert
+        Assert.NotNull(config.Properties);
+        Assert.Equal(11, config.Properties.Length);
+
+        // Verify inferred types
+        var titleProp = Array.Find(config.Properties, p => p.Name == "title");
+        Assert.NotNull(titleProp);
+        Assert.Equal(DataType.Text, titleProp.DataType);
+
+        var viewCountProp = Array.Find(config.Properties, p => p.Name == "viewCount");
+        Assert.NotNull(viewCountProp);
+        Assert.Equal(DataType.Int, viewCountProp.DataType);
+
+        var publishedProp = Array.Find(config.Properties, p => p.Name == "published");
+        Assert.NotNull(publishedProp);
+        Assert.Equal(DataType.Bool, publishedProp.DataType);
+
+        var scoreProp = Array.Find(config.Properties, p => p.Name == "score");
+        Assert.NotNull(scoreProp);
+        Assert.Equal(DataType.Number, scoreProp.DataType);
+
+        var publishedAtProp = Array.Find(config.Properties, p => p.Name == "publishedAt");
+        Assert.NotNull(publishedAtProp);
+        Assert.Equal(DataType.Date, publishedAtProp.DataType);
+
+        var idProp = Array.Find(config.Properties, p => p.Name == "id");
+        Assert.NotNull(idProp);
+        Assert.Equal(DataType.Uuid, idProp.DataType);
+    }
+
+    [Fact]
+    public void BuildProperty_WithoutDataType_InfersArrayTypes()
+    {
+        // Act
+        var config = CollectionSchemaBuilder.FromClass<ArticleWithInferredTypes>();
+
+        // Assert
+        var tagsProp = Array.Find(config.Properties, p => p.Name == "tags");
+        Assert.NotNull(tagsProp);
+        Assert.Equal(DataType.TextArray, tagsProp.DataType);
+
+        var ratingsProp = Array.Find(config.Properties, p => p.Name == "ratings");
+        Assert.NotNull(ratingsProp);
+        Assert.Equal(DataType.IntArray, ratingsProp.DataType);
+
+        var flagsProp = Array.Find(config.Properties, p => p.Name == "flags");
+        Assert.NotNull(flagsProp);
+        Assert.Equal(DataType.BoolArray, flagsProp.DataType);
+
+        var scoresProp = Array.Find(config.Properties, p => p.Name == "scores");
+        Assert.NotNull(scoresProp);
+        Assert.Equal(DataType.NumberArray, scoresProp.DataType);
+
+        var datesProp = Array.Find(config.Properties, p => p.Name == "dates");
+        Assert.NotNull(datesProp);
+        Assert.Equal(DataType.DateArray, datesProp.DataType);
+    }
+
+    [Fact]
+    public void BuildProperty_WithExplicitDataType_UsesSpecifiedType()
+    {
+        // Act
+        var config = CollectionSchemaBuilder.FromClass<ArticleWithMixedTypes>();
+
+        // Assert
+        var explicitProp = Array.Find(config.Properties, p => p.Name == "explicitProperty");
+        Assert.NotNull(explicitProp);
+        Assert.Equal(DataType.Text, explicitProp.DataType);
+
+        var inferredProp = Array.Find(config.Properties, p => p.Name == "inferredProperty");
+        Assert.NotNull(inferredProp);
+        Assert.Equal(DataType.Text, inferredProp.DataType);
+    }
+
+    #endregion
+
+    #region Test Models
+
+    [WeaviateCollection("ArticlesWithInferredTypes")]
+    private class ArticleWithInferredTypes
+    {
+        [Property]
+        public string Title { get; set; } = string.Empty;
+
+        [Property]
+        public int ViewCount { get; set; }
+
+        [Property]
+        public bool Published { get; set; }
+
+        [Property]
+        public double Score { get; set; }
+
+        [Property]
+        public DateTime PublishedAt { get; set; }
+
+        [Property]
+        public Guid Id { get; set; }
+
+        [Property]
+        public List<string> Tags { get; set; } = new();
+
+        [Property]
+        public int[] Ratings { get; set; } = Array.Empty<int>();
+
+        [Property]
+        public List<bool> Flags { get; set; } = new();
+
+        [Property]
+        public double[] Scores { get; set; } = Array.Empty<double>();
+
+        [Property]
+        public List<DateTime> Dates { get; set; } = new();
+    }
+
+    [WeaviateCollection("ArticlesWithMixedTypes")]
+    private class ArticleWithMixedTypes
+    {
+        [Property(DataType.Text, Description = "Explicit type")]
+        public string ExplicitProperty { get; set; } = string.Empty;
+
+        [Property(Description = "Inferred type")]
+        public string InferredProperty { get; set; } = string.Empty;
+    }
+
+    #endregion
 }
 
 /// <summary>

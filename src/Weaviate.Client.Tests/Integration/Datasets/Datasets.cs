@@ -51,7 +51,10 @@ public partial class FilterTests
                 Filter.Property("ints").ContainsAny([1.0, 4]),
                 new int[] { 0, 3 }
             ),
-            ["ContainsAny ints 10"] = (Filter.Property("ints").ContainsAny([10]), new int[] { }),
+            ["ContainsAny ints 10"] = (
+                Filter.Property("ints").ContainsAny([10]),
+                Array.Empty<int>()
+            ),
             ["ContainsAny int 1"] = (Filter.Property("int").ContainsAny([1]), new int[] { 0, 1 }),
             ["ContainsAny text test"] = (
                 Filter.Property("text").ContainsAny(["test"]),
@@ -71,9 +74,12 @@ public partial class FilterTests
             ),
             ["ContainsAny float 2.0"] = (
                 Filter.Property("float").ContainsAny([2.0]),
-                new int[] { }
+                Array.Empty<int>()
             ),
-            ["ContainsAny float 2"] = (Filter.Property("float").ContainsAny([2]), new int[] { }),
+            ["ContainsAny float 2"] = (
+                Filter.Property("float").ContainsAny([2]),
+                Array.Empty<int>()
+            ),
             ["ContainsAny float 8"] = (Filter.Property("float").ContainsAny([8]), new int[] { 3 }),
             ["ContainsAny float 8.0"] = (
                 Filter.Property("float").ContainsAny([8.0]),
@@ -125,7 +131,7 @@ public partial class FilterTests
             ),
             ["ContainsAll bool true,false"] = (
                 Filter.Property("bool").ContainsAll([true, false]),
-                new int[] { }
+                Array.Empty<int>()
             ),
             ["ContainsAll bool true"] = (
                 Filter.Property("bool").ContainsAll([true]),
@@ -154,7 +160,7 @@ public partial class FilterTests
             ),
             ["ContainsAny uuid uuid3"] = (
                 Filter.Property("uuid").ContainsAny([UUID3]),
-                new int[] { }
+                Array.Empty<int>()
             ),
             ["ContainsAny uuid uuid1"] = (
                 Filter.Property("uuid").ContainsAny([UUID1]),

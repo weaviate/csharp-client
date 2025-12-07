@@ -44,7 +44,7 @@ public partial class SearchTests : IntegrationTests
 
         // Assert
         Assert.NotNull(retrieved);
-        Assert.Equal(4, retrieved.Count());
+        Assert.Equal(4, retrieved.Count);
 
         Assert.Equal(retrieved[0].UUID, guids[2]);
         Assert.Contains("default", retrieved[0].Vectors.Keys);
@@ -88,7 +88,7 @@ public partial class SearchTests : IntegrationTests
         var retrievedObjects = retrieved.Objects.OrderBy(o => o.BelongsToGroup).ToArray();
 
         Assert.Equal(2, retrievedObjects.Length);
-        Assert.Equal(2, retrieved.Groups.Count());
+        Assert.Equal(2, retrieved.Groups.Count);
 
         // Verify the expected GUIDs are present (order-independent)
         var retrievedIds = retrievedObjects.Select(o => o.UUID).ToHashSet();

@@ -50,7 +50,7 @@ public partial class BatchDeleteTests : IntegrationTests
         var objects = await collection.Query.FetchObjects(
             cancellationToken: TestContext.Current.CancellationToken
         );
-        Assert.Equal(3, objects.Objects.Count());
+        Assert.Equal(3, objects.Objects.Count);
 
         await collection.Data.DeleteMany(
             where: Filter.Property("age").IsEqual(10) | Filter.Property("age").IsEqual(30),
@@ -85,7 +85,7 @@ public partial class BatchDeleteTests : IntegrationTests
         var objects = await collection.Query.FetchObjects(
             cancellationToken: TestContext.Current.CancellationToken
         );
-        Assert.Equal(2, objects.Objects.Count());
+        Assert.Equal(2, objects.Objects.Count);
 
         await collection.Data.DeleteMany(
             where: Filter.Property("age").IsEqual(10) & Filter.Property("name").IsEqual("Timmy"),

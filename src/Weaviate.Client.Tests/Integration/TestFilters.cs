@@ -138,7 +138,10 @@ public partial class FilterTests : IntegrationTests
             references: new Reference("ref", cTarget.Name)
         );
 
-        await cFrom.Config.AddReference(new Reference("ref2", cFrom.Name));
+        await cFrom.Config.AddReference(
+            new Reference("ref2", cFrom.Name),
+            TestContext.Current.CancellationToken
+        );
 
         var uuidsFrom = new List<Guid>
         {
@@ -224,7 +227,10 @@ public partial class FilterTests : IntegrationTests
         // Arrange
         var collection = await CollectionFactory();
 
-        await collection.Config.AddReference(new Reference("ref", collection.Name));
+        await collection.Config.AddReference(
+            new Reference("ref", collection.Name),
+            TestContext.Current.CancellationToken
+        );
 
         var uuids = new List<Guid>
         {
@@ -271,7 +277,10 @@ public partial class FilterTests : IntegrationTests
         var one = await CollectionFactory("one");
         var two = await CollectionFactory("two", references: new Reference("ref2", one.Name));
 
-        await one.Config.AddReference(new Reference("ref1", one.Name));
+        await one.Config.AddReference(
+            new Reference("ref1", one.Name),
+            TestContext.Current.CancellationToken
+        );
 
         var uuid11 = await one.Data.Insert(
             new { },
@@ -555,12 +564,12 @@ public partial class FilterTests : IntegrationTests
                     text = "real deal",
                     texts = new[] { "real", "deal" },
                     @int = 3,
-                    ints = new int[0],
-                    floats = new double[0],
+                    ints = Array.Empty<int>(),
+                    floats = Array.Empty<double>(),
                     @bool = false,
-                    bools = new bool[0],
-                    dates = new DateTime[0],
-                    uuids = new Guid[0],
+                    bools = Array.Empty<bool>(),
+                    dates = Array.Empty<DateTime>(),
+                    uuids = Array.Empty<Guid>(),
                 },
                 uuid: UUID3,
                 cancellationToken: TestContext.Current.CancellationToken
@@ -625,7 +634,7 @@ public partial class FilterTests : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
         var idD = await collection.Data.Insert(
-            new { name = "D", uuids = new Guid[0] },
+            new { name = "D", uuids = Array.Empty<Guid>() },
             cancellationToken: TestContext.Current.CancellationToken
         );
 
