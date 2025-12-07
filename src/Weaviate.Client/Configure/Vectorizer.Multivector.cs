@@ -16,6 +16,7 @@ public static partial class Configure
                 string name = "default",
                 VectorIndex.HNSW? indexConfig = null,
                 QuantizerConfigBase? quantizerConfig = null,
+                EncodingConfig? encoding = null,
                 params string[] sourceProperties
             )
             {
@@ -33,6 +34,11 @@ public static partial class Configure
                             "Quantizer is already set on the indexConfig. Please provide either the quantizerConfig or set it on the indexConfig, not both."
                         )
                     );
+                }
+
+                if (encoding is not null)
+                {
+                    indexConfig.MultiVector.Encoding = encoding;
                 }
 
                 return new(
