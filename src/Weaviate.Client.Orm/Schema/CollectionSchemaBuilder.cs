@@ -99,7 +99,13 @@ public static class CollectionSchemaBuilder
         var tokenAttr = prop.GetCustomAttribute<TokenizationAttribute>();
         var nestedAttr = prop.GetCustomAttribute<NestedTypeAttribute>();
 
-        return propAttr.DataType switch
+        // Infer DataType from property type if not explicitly specified
+        var dataType =
+            propAttr.DataType == DataType.Unknown
+                ? InferDataType(prop.PropertyType)
+                : propAttr.DataType;
+
+        return dataType switch
         {
             DataType.Text => Property.Text(
                 propertyName,
@@ -205,7 +211,7 @@ public static class CollectionSchemaBuilder
                 subProperties: BuildProperties(GetNestedType(prop, nestedAttr))
             ),
 
-            _ => throw new NotSupportedException($"DataType {propAttr.DataType} is not supported"),
+            _ => throw new NotSupportedException($"DataType {dataType} is not supported"),
         };
     }
 
@@ -240,6 +246,80 @@ public static class CollectionSchemaBuilder
 
         // For non-generic (single Object), use the property type directly
         return propType;
+    }
+
+    /// <summary>
+    /// Infers the Weaviate DataType from a C# property type.
+    /// </summary>
+    /// <param name="propertyType">The C# property type to infer from.</param>
+    /// <returns>The inferred DataType.</returns>
+    /// <exception cref="NotSupportedException">Thrown when the type cannot be mapped to a Weaviate DataType.</exception>
+    private static DataType InferDataType(Type propertyType)
+    {
+        // Handle nullable types by extracting the underlying type
+        var underlyingType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+
+        // Check for array/collection types
+        if (propertyType.IsArray || IsGenericCollection(propertyType))
+        {
+            var elementType = propertyType.IsArray
+                ? propertyType.GetElementType()!
+                : propertyType.GetGenericArguments()[0];
+
+            // Unwrap nullable element types
+            elementType = Nullable.GetUnderlyingType(elementType) ?? elementType;
+
+            return elementType.Name switch
+            {
+                nameof(String) => DataType.TextArray,
+                nameof(Int32) or nameof(Int64) => DataType.IntArray,
+                nameof(Boolean) => DataType.BoolArray,
+                nameof(Double) or nameof(Single) or nameof(Decimal) => DataType.NumberArray,
+                nameof(DateTime) => DataType.DateArray,
+                nameof(Guid) => DataType.UuidArray,
+                _ when elementType.IsClass => DataType.ObjectArray,
+                _ => throw new NotSupportedException(
+                    $"Cannot infer Weaviate DataType for array/collection of type {elementType.Name}. "
+                        + "Please specify the DataType explicitly in the [Property] attribute."
+                ),
+            };
+        }
+
+        // Handle single-value types
+        return underlyingType.Name switch
+        {
+            nameof(String) => DataType.Text,
+            nameof(Int32) or nameof(Int64) => DataType.Int,
+            nameof(Boolean) => DataType.Bool,
+            nameof(Double) or nameof(Single) or nameof(Decimal) => DataType.Number,
+            nameof(DateTime) => DataType.Date,
+            nameof(Guid) => DataType.Uuid,
+            nameof(Byte) when propertyType.IsArray => DataType.Blob,
+            _ when underlyingType == typeof(GeoCoordinate)
+                    || underlyingType.Name == nameof(GeoCoordinate) => DataType.GeoCoordinate,
+            _ when underlyingType == typeof(PhoneNumber)
+                    || underlyingType.Name == nameof(PhoneNumber) => DataType.PhoneNumber,
+            _ when underlyingType.IsClass => DataType.Object,
+            _ => throw new NotSupportedException(
+                $"Cannot infer Weaviate DataType for C# type {underlyingType.Name}. "
+                    + "Please specify the DataType explicitly in the [Property] attribute."
+            ),
+        };
+    }
+
+    /// <summary>
+    /// Checks if a type is a generic collection (List, IList, IEnumerable, ICollection).
+    /// </summary>
+    private static bool IsGenericCollection(Type type)
+    {
+        if (!type.IsGenericType)
+            return false;
+
+        var genericTypeDef = type.GetGenericTypeDefinition();
+        return genericTypeDef == typeof(List<>)
+            || genericTypeDef == typeof(IList<>)
+            || genericTypeDef == typeof(IEnumerable<>)
+            || genericTypeDef == typeof(ICollection<>);
     }
 
     /// <summary>
