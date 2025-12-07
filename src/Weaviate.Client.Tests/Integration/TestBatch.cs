@@ -29,8 +29,14 @@ public partial class BatchTests : IntegrationTests
             ]
         );
 
-        await client.Config.AddReference(new Reference("ref", client.Name));
-        await client.Config.AddReference(new Reference("ref2", client.Name));
+        await client.Config.AddReference(
+            new Reference("ref", client.Name),
+            TestContext.Current.CancellationToken
+        );
+        await client.Config.AddReference(
+            new Reference("ref2", client.Name),
+            TestContext.Current.CancellationToken
+        );
 
         var result = await client.Data.InsertMany(requests, TestContext.Current.CancellationToken);
         Assert.Equal(expectedErrors, result.Count(r => r.Error != null));

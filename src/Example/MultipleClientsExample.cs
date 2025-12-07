@@ -118,7 +118,7 @@ public class MultiDatabaseService
 
         // Fetch from production
         var prodResults = await prodCollection.Query.FetchObjects(limit: 100);
-        _logger.LogInformation("Found {Count} cats in production", prodResults.Objects.Count());
+        _logger.LogInformation("Found {Count} cats in production", prodResults.Objects.Count);
 
         // Insert into staging
         var cats = prodResults.Objects.Select(o => o.Object!);
@@ -138,7 +138,7 @@ public class MultiDatabaseService
 
         // Test queries locally before deploying to production
         var results = await localCollection.Query.FetchObjects(limit: 10);
-        _logger.LogInformation("Local test completed: {Count} results", results.Objects.Count());
+        _logger.LogInformation("Local test completed: {Count} results", results.Objects.Count);
     }
 }
 

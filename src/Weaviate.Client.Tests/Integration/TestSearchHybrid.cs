@@ -50,7 +50,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(2, objs.Count());
+        Assert.Equal(2, objs.Count);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(limit, (uint)objs.Count());
+        Assert.Equal(limit, (uint)objs.Count);
     }
 
     [Theory]
@@ -190,7 +190,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(expected, objs.Count());
+        Assert.Equal(expected, objs.Count);
     }
 
     [Fact]
@@ -222,7 +222,7 @@ public partial class SearchTests : IntegrationTests
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
-        Assert.Equal(hybridRes.Count(), bm25Res.Count());
+        Assert.Equal(hybridRes.Count, bm25Res.Count);
         Assert.True(hybridRes.Zip(bm25Res).All(pair => pair.First.ID == pair.Second.ID));
 
         hybridRes = (
@@ -238,7 +238,7 @@ public partial class SearchTests : IntegrationTests
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
-        Assert.Equal(hybridRes.Count(), textRes.Count());
+        Assert.Equal(hybridRes.Count, textRes.Count);
         Assert.True(hybridRes.Zip(textRes).All(pair => pair.First.ID == pair.Second.ID));
     }
 
@@ -281,7 +281,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBanana, hybridObjs.First().ID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var nearVec = (
             await collection.Query.NearVector(
@@ -353,7 +353,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBanana, hybridObjs.First().ID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var nearVec = (
             await collection.Query.NearVector(
@@ -416,7 +416,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBananaPudding, hybridObjs.First().ID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var hybridObjs2 = (
             await collection.Query.Hybrid(
@@ -473,7 +473,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBananaPudding, hybridObjs.First().ID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var hybridObjs2 = (
             await collection.Query.Hybrid(

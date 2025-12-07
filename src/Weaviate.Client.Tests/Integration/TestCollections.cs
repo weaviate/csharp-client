@@ -616,7 +616,8 @@ public partial class CollectionsTests : IntegrationTests
         RequireVersion("1.31.0");
 
         await collection.Config.AddVector(
-            Configure.Vectors.Text2VecTransformers().New("nondefault")
+            Configure.Vectors.Text2VecTransformers().New("nondefault"),
+            TestContext.Current.CancellationToken
         );
 
         var c = await collection.Config.Get(TestContext.Current.CancellationToken);
@@ -669,7 +670,10 @@ public partial class CollectionsTests : IntegrationTests
             vectorConfig: vectorizerConfig
         );
 
-        await collection.Config.AddProperty(Property.Text("description"));
+        await collection.Config.AddProperty(
+            Property.Text("description"),
+            TestContext.Current.CancellationToken
+        );
 
         var config = await collection.Config.Get(TestContext.Current.CancellationToken);
 
@@ -728,46 +732,49 @@ public partial class CollectionsTests : IntegrationTests
         }
 
         // Act - Update configuration
-        await collection.Config.Update(c =>
-        {
-            c.Description = "Test";
-            c.InvertedIndexConfig.Bm25.B = 0.8f;
-            c.InvertedIndexConfig.Bm25.K1 = 1.25f;
-            c.InvertedIndexConfig.CleanupIntervalSeconds = 10;
-            c.InvertedIndexConfig.Stopwords.Preset = StopwordConfig.Presets.EN;
-            c.InvertedIndexConfig.Stopwords.Additions = ["a"];
-            c.InvertedIndexConfig.Stopwords.Removals = ["the"];
-
-            c.ReplicationConfig.Factor = 2;
-            c.ReplicationConfig.AsyncEnabled = true;
-            c.ReplicationConfig.DeletionStrategy = DeletionStrategy.DeleteOnConflict;
-
-            var vc = c.VectorConfig["default"];
-            vc.VectorIndexConfig.UpdateHNSW(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.DynamicEfFactor = 8;
-                vic.DynamicEfMax = 500;
-                vic.DynamicEfMin = 100;
-                vic.Ef = -1;
-                vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Acorn;
-                vic.FlatSearchCutoff = 40000;
-                vic.Quantizer = new VectorIndex.Quantizers.PQ
-                {
-                    Centroids = 128,
-                    Encoder = new VectorIndex.Quantizers.PQ.EncoderConfig
-                    {
-                        Type = VectorIndex.Quantizers.EncoderType.Tile,
-                        Distribution = VectorIndex.Quantizers.DistributionType.Normal,
-                    },
-                    Segments = 4,
-                    TrainingLimit = 100001,
-                };
-                vic.VectorCacheMaxObjects = 2000000;
-            });
+                c.Description = "Test";
+                c.InvertedIndexConfig.Bm25.B = 0.8f;
+                c.InvertedIndexConfig.Bm25.K1 = 1.25f;
+                c.InvertedIndexConfig.CleanupIntervalSeconds = 10;
+                c.InvertedIndexConfig.Stopwords.Preset = StopwordConfig.Presets.EN;
+                c.InvertedIndexConfig.Stopwords.Additions = ["a"];
+                c.InvertedIndexConfig.Stopwords.Removals = ["the"];
 
-            c.MultiTenancyConfig.AutoTenantCreation = true;
-            c.MultiTenancyConfig.AutoTenantActivation = true;
-        });
+                c.ReplicationConfig.Factor = 2;
+                c.ReplicationConfig.AsyncEnabled = true;
+                c.ReplicationConfig.DeletionStrategy = DeletionStrategy.DeleteOnConflict;
+
+                var vc = c.VectorConfig["default"];
+                vc.VectorIndexConfig.UpdateHNSW(vic =>
+                {
+                    vic.DynamicEfFactor = 8;
+                    vic.DynamicEfMax = 500;
+                    vic.DynamicEfMin = 100;
+                    vic.Ef = -1;
+                    vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Acorn;
+                    vic.FlatSearchCutoff = 40000;
+                    vic.Quantizer = new VectorIndex.Quantizers.PQ
+                    {
+                        Centroids = 128,
+                        Encoder = new VectorIndex.Quantizers.PQ.EncoderConfig
+                        {
+                            Type = VectorIndex.Quantizers.EncoderType.Tile,
+                            Distribution = VectorIndex.Quantizers.DistributionType.Normal,
+                        },
+                        Segments = 4,
+                        TrainingLimit = 100001,
+                    };
+                    vic.VectorCacheMaxObjects = 2000000;
+                });
+
+                c.MultiTenancyConfig.AutoTenantCreation = true;
+                c.MultiTenancyConfig.AutoTenantActivation = true;
+            },
+            TestContext.Current.CancellationToken
+        );
 
         // Assert - After first update
         config = (await collection.Config.Get(TestContext.Current.CancellationToken))!;
@@ -907,17 +914,20 @@ public partial class CollectionsTests : IntegrationTests
         }
 
         // Act - Second update (disable quantizer and reset filter strategy)
-        await collection.Config.Update(c =>
-        {
-            var vc = c.VectorConfig["default"];
-            vc.VectorIndexConfig.UpdateHNSW(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Sweeping;
-                vic.Quantizer = null; // Disable quantizer
-            });
+                var vc = c.VectorConfig["default"];
+                vc.VectorIndexConfig.UpdateHNSW(vic =>
+                {
+                    vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Sweeping;
+                    vic.Quantizer = null; // Disable quantizer
+                });
 
-            c.ReplicationConfig.DeletionStrategy = DeletionStrategy.NoAutomatedResolution;
-        });
+                c.ReplicationConfig.DeletionStrategy = DeletionStrategy.NoAutomatedResolution;
+            },
+            TestContext.Current.CancellationToken
+        );
 
         // Assert - After second update
         config = (await collection.Config.Get(TestContext.Current.CancellationToken))!;
@@ -1051,28 +1061,34 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(8, rqQuantizer.Bits);
         Assert.Equal(123, rqQuantizer.RescoreLimit);
 
-        await collection.Config.Update(c =>
-        {
-            var vc = c.VectorConfig["hnswSq"];
-            vc.VectorIndexConfig.UpdateHNSW(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Sweeping;
-                vic.Quantizer = new VectorIndex.Quantizers.SQ
+                var vc = c.VectorConfig["hnswSq"];
+                vc.VectorIndexConfig.UpdateHNSW(vic =>
                 {
-                    TrainingLimit = 456,
-                    RescoreLimit = 789,
-                };
-            });
-        });
+                    vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Sweeping;
+                    vic.Quantizer = new VectorIndex.Quantizers.SQ
+                    {
+                        TrainingLimit = 456,
+                        RescoreLimit = 789,
+                    };
+                });
+            },
+            TestContext.Current.CancellationToken
+        );
 
-        await collection.Config.Update(c =>
-        {
-            var vc = c.VectorConfig["hnswRq"];
-            vc.VectorIndexConfig.UpdateHNSW(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
-            });
-        });
+                var vc = c.VectorConfig["hnswRq"];
+                vc.VectorIndexConfig.UpdateHNSW(vic =>
+                {
+                    vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
+                });
+            },
+            TestContext.Current.CancellationToken
+        );
 
         config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
@@ -1134,14 +1150,17 @@ public partial class CollectionsTests : IntegrationTests
             Assert.True(rqQuantizer.Cache);
         }
 
-        await collection.Config.Update(c =>
-        {
-            var vc = c.VectorConfig["flatRq"];
-            vc.VectorIndexConfig.UpdateFlat(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
-            });
-        });
+                var vc = c.VectorConfig["flatRq"];
+                vc.VectorIndexConfig.UpdateFlat(vic =>
+                {
+                    vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
+                });
+            },
+            TestContext.Current.CancellationToken
+        );
 
         config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
@@ -1188,18 +1207,21 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(VectorIndex.Quantizers.None.TypeValue, noneQuantizer.Type);
 
         // Update to add a different quantizer
-        await collection.Config.Update(c =>
-        {
-            var vc = c.VectorConfig["hnswNone"];
-            vc.VectorIndexConfig.UpdateHNSW(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.Quantizer = new VectorIndex.Quantizers.SQ
+                var vc = c.VectorConfig["hnswNone"];
+                vc.VectorIndexConfig.UpdateHNSW(vic =>
                 {
-                    TrainingLimit = 50000,
-                    RescoreLimit = 100,
-                };
-            });
-        });
+                    vic.Quantizer = new VectorIndex.Quantizers.SQ
+                    {
+                        TrainingLimit = 50000,
+                        RescoreLimit = 100,
+                    };
+                });
+            },
+            TestContext.Current.CancellationToken
+        );
 
         config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
@@ -1247,7 +1269,7 @@ public partial class CollectionsTests : IntegrationTests
             )
         ).Objects.ToList();
 
-        Assert.Equal(2, objs.Count());
+        Assert.Equal(2, objs.Count);
         Assert.NotNull(obj);
         Assert.Equal(blobData, obj.Properties["blob"]);
         Assert.Equal(blobData, objs[0].Properties["blob"]);

@@ -121,7 +121,7 @@ public class CatService
         _logger.LogInformation("Querying cats...");
         var results = await collection.Query.FetchObjects(limit: 10);
 
-        _logger.LogInformation("Found {Count} cats", results.Objects.Count());
+        _logger.LogInformation("Found {Count} cats", results.Objects.Count);
 
         foreach (var obj in results.Objects)
         {
@@ -220,7 +220,7 @@ public class ConnectHelperExample
         // Use the client...
         var results = await collection.Query.FetchObjects(limit: 10);
 
-        Console.WriteLine($"Found {results.Objects.Count()} cats");
+        Console.WriteLine($"Found {results.Objects.Count} cats");
 
         client.Dispose();
     }

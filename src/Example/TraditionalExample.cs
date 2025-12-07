@@ -121,7 +121,7 @@ public class TraditionalExample
         // Get all objects and sum up the counter property
         var result = await collection.Query.FetchObjects(limit: 250);
         var retrieved = result.Objects.ToList();
-        Console.WriteLine("Cats retrieved: " + retrieved.Count());
+        Console.WriteLine("Cats retrieved: " + retrieved.Count);
         var sum = retrieved.Sum(c => c.Object?.Counter ?? 0);
 
         // Delete object
@@ -133,7 +133,7 @@ public class TraditionalExample
 
         result = await collection.Query.FetchObjects(limit: 5);
         retrieved = result.Objects.ToList();
-        Console.WriteLine("Cats retrieved: " + retrieved.Count());
+        Console.WriteLine("Cats retrieved: " + retrieved.Count);
 
         firstObj = retrieved.First();
         if (firstObj.ID is Guid id2)

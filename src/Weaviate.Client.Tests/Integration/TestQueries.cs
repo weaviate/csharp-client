@@ -169,7 +169,7 @@ public class TestQueries : IntegrationTests
         Assert.NotNull(res);
         Assert.NotNull(res.Generative);
         Assert.NotNull(res.Objects);
-        Assert.Equal(2, res.Objects.Count());
+        Assert.Equal(2, res.Objects.Count);
 
         foreach (var obj in res.Objects)
         {
@@ -195,7 +195,7 @@ public class TestQueries : IntegrationTests
         var uuid3 = _reusableUuids[2];
 
         yield return new object?[] { Array.Empty<Guid>(), 0, new HashSet<Guid>() };
-        yield return new object?[] { new Guid[] { }, 0, new HashSet<Guid>() };
+        yield return new object?[] { Array.Empty<Guid>(), 0, new HashSet<Guid>() };
         yield return new object?[]
         {
             new Guid[] { uuid3 },
@@ -255,7 +255,7 @@ public class TestQueries : IntegrationTests
 
         Assert.NotNull(res);
         Assert.NotNull(res.Generative);
-        Assert.Equal(expectedLen, res.Objects.Count());
+        Assert.Equal(expectedLen, res.Objects.Count);
         Assert.Equal(expected, res.Objects.Select(o => o.ID!.Value).ToHashSet());
         foreach (var obj in res.Objects)
         {
