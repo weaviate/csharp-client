@@ -8,15 +8,19 @@ namespace Weaviate.Client.Orm.Attributes;
 /// </summary>
 /// <example>
 /// <code>
-/// // Property name inferred from C# property name (Title → title)
+/// // Explicit data type
 /// [Property(DataType.Text, Description = "Article title")]
 /// public string Title { get; set; }
 ///
-/// // Custom property name in Weaviate schema
-/// [Property(DataType.Text, Name = "article_title")]
+/// // Data type inferred from C# type (string → Text, int → Int, etc.)
+/// [Property(Description = "Article title")]
 /// public string Title { get; set; }
 ///
-/// [Property(DataType.Int)]
+/// // Custom property name in Weaviate schema
+/// [Property(Name = "article_title")]
+/// public string Title { get; set; }
+///
+/// [Property]
 /// public int ViewCount { get; set; }
 /// </code>
 /// </example>
@@ -25,6 +29,7 @@ public class PropertyAttribute : Attribute
 {
     /// <summary>
     /// Gets the Weaviate data type for this property.
+    /// When set to <see cref="DataType.Unknown"/>, the type will be automatically inferred from the C# property type.
     /// </summary>
     public DataType DataType { get; }
 
@@ -42,8 +47,9 @@ public class PropertyAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="PropertyAttribute"/> class.
     /// </summary>
-    /// <param name="dataType">The Weaviate data type.</param>
-    public PropertyAttribute(DataType dataType)
+    /// <param name="dataType">The Weaviate data type. If not specified or set to <see cref="DataType.Unknown"/>,
+    /// the type will be automatically inferred from the C# property type.</param>
+    public PropertyAttribute(DataType dataType = DataType.Unknown)
     {
         DataType = dataType;
     }

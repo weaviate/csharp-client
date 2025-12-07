@@ -46,17 +46,27 @@ public class Article
 }
 
 /// <summary>
-/// Example 2: Simple reference target
+/// Example 2: Simple reference target with automatic type inference
 /// </summary>
 [WeaviateCollection("Category")]
 public class Category
 {
-    [Property(DataType.Text)]
+    // Data types are automatically inferred from C# types when not specified
+    [Property]
     [Index(Filterable = true)]
     public string Name { get; set; }
 
-    [Property(DataType.Text)]
+    [Property(Description = "Category description")]
     public string Description { get; set; }
+
+    [Property]
+    public int ItemCount { get; set; }
+
+    [Property]
+    public DateTime CreatedAt { get; set; }
+
+    [Property]
+    public bool IsActive { get; set; }
 }
 
 /// <summary>
@@ -191,9 +201,10 @@ public static class UsageExamples
         var categoryCollection = await client.Collections.CreateFromClass<Category>();
         var productCollection = await client.Collections.CreateFromClass<Product>();
         var blogPostCollection = await client.Collections.CreateFromClass<BlogPost>();
+        var userCollection = await client.Collections.CreateFromClass<User>();
 
         // Collections are now created with full schema!
-        // - All properties configured
+        // - All properties configured with automatic type inference
         // - Vectors configured with correct vectorizers
         // - References set up
         // - Indexing enabled
@@ -225,12 +236,54 @@ public static class UsageExamples
         // TODO: Implement this in Phase 2
         // var results = await collection.Query<Article>()
         //     .Where(a => a.WordCount > 100)
-        //     .NearText("technology", vector: a => a.TitleContentEmbedding)
-        //     .WithReferences(a => a.Category)
-        //     .WithVectors(a => a.TitleContentEmbedding)
-        //     .Limit(10)
-        //     .ExecuteAsync();
+        //     .ToListAsync();
     }
+}
+
+/// <summary>
+/// Example 6: Automatic type inference from C# types
+/// </summary>
+[WeaviateCollection("Users")]
+public class User
+{
+    // All types are automatically inferred - no need to specify DataType
+    [Property]
+    public string Username { get; set; }
+
+    [Property]
+    public string Email { get; set; }
+
+    [Property]
+    public int Age { get; set; }
+
+    [Property]
+    public bool IsActive { get; set; }
+
+    [Property]
+    public double Rating { get; set; }
+
+    [Property]
+    public DateTime CreatedAt { get; set; }
+
+    [Property]
+    public Guid UserId { get; set; }
+
+    // Array types are also inferred
+    [Property]
+    public List<string> Tags { get; set; }
+
+    [Property]
+    public int[] Scores { get; set; }
+
+    [Property]
+    public List<DateTime> LoginDates { get; set; }
+
+    // You can still specify DataType explicitly when needed
+    [Property(DataType.PhoneNumber)]
+    public string Phone { get; set; }
+
+    [Vector<Vectorizer.Text2VecOpenAI>(SourceProperties = [nameof(Username), nameof(Email)])]
+    public float[]? UserEmbedding { get; set; }
 }
 
 #pragma warning restore CS8618
