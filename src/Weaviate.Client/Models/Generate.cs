@@ -14,14 +14,15 @@ public abstract record GenerativeProvider
 public abstract record GenerativePrompt
 {
     public bool Debug { get; set; } = false;
+    public GenerativeProvider? Provider { get; set; }
 }
 
 public record SinglePrompt(string Prompt) : GenerativePrompt
 {
-    public GenerativeProvider? Provider { get; set; }
+    public static implicit operator SinglePrompt(string prompt) => new(prompt);
 }
 
 public record GroupedTask(string Task, params string[] Properties) : GenerativePrompt
 {
-    public GenerativeProvider? Provider { get; set; }
+    public static implicit operator GroupedTask(string task) => new(task);
 }

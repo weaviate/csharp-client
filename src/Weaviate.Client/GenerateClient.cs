@@ -30,4 +30,18 @@ public partial class GenerateClient
             _client.QueryTimeout ?? _client.DefaultTimeout ?? WeaviateDefaults.QueryTimeout;
         return TimeoutHelper.GetCancellationToken(effectiveTimeout, userToken);
     }
+
+    private static GenerativePrompt? EnrichPrompt(
+        GenerativePrompt? prompt,
+        GenerativeProvider? provider
+    )
+    {
+        if (prompt is null)
+            return null;
+
+        if (prompt.Provider is null && provider is not null)
+            prompt.Provider = provider;
+
+        return prompt;
+    }
 }
