@@ -53,28 +53,7 @@ public class GenerativeShortcutsTests
     {
         // Arrange
         var provider = new Providers.OpenAI { Model = "gpt-4", Temperature = 0.7 };
-        SearchRequest? capturedRequest = null;
-
-        var channel = NoOpGrpcChannel.Create(
-            customAsyncHandler: async (request, ct) =>
-            {
-                var path = request.RequestUri?.PathAndQuery ?? string.Empty;
-                if (path.Contains("/weaviate.v1.Weaviate/Search"))
-                {
-                    // Capture and decode the request
-                    var content = await request.Content!.ReadAsByteArrayAsync(ct);
-                    capturedRequest = DecodeGrpcRequest<SearchRequest>(content);
-
-                    // Return empty search reply
-                    var reply = new SearchReply { Collection = "TestCollection" };
-                    return Helpers.CreateGrpcResponse(reply);
-                }
-                return null;
-            }
-        );
-
-        var grpcClient = new WeaviateGrpcClient(channel);
-        var client = new WeaviateClient(grpcClient: grpcClient);
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
 
         // Act
         await client
@@ -87,6 +66,7 @@ public class GenerativeShortcutsTests
             );
 
         // Assert
+        var capturedRequest = getCapturedRequest();
         Assert.NotNull(capturedRequest);
         Assert.NotNull(capturedRequest.Generative);
         Assert.NotNull(capturedRequest.Generative.Single);
@@ -107,26 +87,7 @@ public class GenerativeShortcutsTests
             Model = "claude-3-opus-20240229",
             MaxTokens = 2048,
         };
-        SearchRequest? capturedRequest = null;
-
-        var channel = NoOpGrpcChannel.Create(
-            customAsyncHandler: async (request, ct) =>
-            {
-                var path = request.RequestUri?.PathAndQuery ?? string.Empty;
-                if (path.Contains("/weaviate.v1.Weaviate/Search"))
-                {
-                    var content = await request.Content!.ReadAsByteArrayAsync(ct);
-                    capturedRequest = DecodeGrpcRequest<SearchRequest>(content);
-
-                    var reply = new SearchReply { Collection = "TestCollection" };
-                    return Helpers.CreateGrpcResponse(reply);
-                }
-                return null;
-            }
-        );
-
-        var grpcClient = new WeaviateGrpcClient(channel);
-        var client = new WeaviateClient(grpcClient: grpcClient);
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
 
         // Act
         await client
@@ -140,6 +101,7 @@ public class GenerativeShortcutsTests
             );
 
         // Assert
+        var capturedRequest = getCapturedRequest();
         Assert.NotNull(capturedRequest);
         Assert.NotNull(capturedRequest.Generative);
         Assert.NotNull(capturedRequest.Generative.Grouped);
@@ -156,26 +118,7 @@ public class GenerativeShortcutsTests
     {
         // Arrange
         var provider = new Providers.Cohere { Model = "command", MaxTokens = 1024 };
-        SearchRequest? capturedRequest = null;
-
-        var channel = NoOpGrpcChannel.Create(
-            customAsyncHandler: async (request, ct) =>
-            {
-                var path = request.RequestUri?.PathAndQuery ?? string.Empty;
-                if (path.Contains("/weaviate.v1.Weaviate/Search"))
-                {
-                    var content = await request.Content!.ReadAsByteArrayAsync(ct);
-                    capturedRequest = DecodeGrpcRequest<SearchRequest>(content);
-
-                    var reply = new SearchReply { Collection = "TestCollection" };
-                    return Helpers.CreateGrpcResponse(reply);
-                }
-                return null;
-            }
-        );
-
-        var grpcClient = new WeaviateGrpcClient(channel);
-        var client = new WeaviateClient(grpcClient: grpcClient);
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
 
         // Act
         await client
@@ -189,6 +132,7 @@ public class GenerativeShortcutsTests
             );
 
         // Assert
+        var capturedRequest = getCapturedRequest();
         Assert.NotNull(capturedRequest);
         Assert.NotNull(capturedRequest.Generative);
         Assert.NotNull(capturedRequest.Generative.Single);
@@ -206,30 +150,8 @@ public class GenerativeShortcutsTests
         // Arrange
         var openaiProvider = new Providers.OpenAI { Model = "gpt-4" };
         var cohereProvider = new Providers.Cohere { Model = "command" };
-
-        // Create prompt with explicit OpenAI provider
         var promptWithProvider = new SinglePrompt("Test prompt") { Provider = openaiProvider };
-
-        SearchRequest? capturedRequest = null;
-
-        var channel = NoOpGrpcChannel.Create(
-            customAsyncHandler: async (request, ct) =>
-            {
-                var path = request.RequestUri?.PathAndQuery ?? string.Empty;
-                if (path.Contains("/weaviate.v1.Weaviate/Search"))
-                {
-                    var content = await request.Content!.ReadAsByteArrayAsync(ct);
-                    capturedRequest = DecodeGrpcRequest<SearchRequest>(content);
-
-                    var reply = new SearchReply { Collection = "TestCollection" };
-                    return Helpers.CreateGrpcResponse(reply);
-                }
-                return null;
-            }
-        );
-
-        var grpcClient = new WeaviateGrpcClient(channel);
-        var client = new WeaviateClient(grpcClient: grpcClient);
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
 
         // Act - pass Cohere as provider parameter, but prompt already has OpenAI
         await client
@@ -242,6 +164,7 @@ public class GenerativeShortcutsTests
             );
 
         // Assert - should use OpenAI (from prompt), not Cohere (from parameter)
+        var capturedRequest = getCapturedRequest();
         Assert.NotNull(capturedRequest);
         Assert.NotNull(capturedRequest.Generative);
         Assert.NotNull(capturedRequest.Generative.Single);
@@ -257,30 +180,8 @@ public class GenerativeShortcutsTests
     {
         // Arrange
         var provider = new Providers.Mistral { Model = "mistral-large-latest", Temperature = 0.5 };
-
-        // Create prompt without provider
         var promptWithoutProvider = new SinglePrompt("Test prompt");
-
-        SearchRequest? capturedRequest = null;
-
-        var channel = NoOpGrpcChannel.Create(
-            customAsyncHandler: async (request, ct) =>
-            {
-                var path = request.RequestUri?.PathAndQuery ?? string.Empty;
-                if (path.Contains("/weaviate.v1.Weaviate/Search"))
-                {
-                    var content = await request.Content!.ReadAsByteArrayAsync(ct);
-                    capturedRequest = DecodeGrpcRequest<SearchRequest>(content);
-
-                    var reply = new SearchReply { Collection = "TestCollection" };
-                    return Helpers.CreateGrpcResponse(reply);
-                }
-                return null;
-            }
-        );
-
-        var grpcClient = new WeaviateGrpcClient(channel);
-        var client = new WeaviateClient(grpcClient: grpcClient);
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
 
         // Act - pass provider parameter with prompt that has no provider
         await client
@@ -293,6 +194,7 @@ public class GenerativeShortcutsTests
             );
 
         // Assert - should use Mistral from parameter
+        var capturedRequest = getCapturedRequest();
         Assert.NotNull(capturedRequest);
         Assert.NotNull(capturedRequest.Generative);
         Assert.NotNull(capturedRequest.Generative.Single);
@@ -307,14 +209,10 @@ public class GenerativeShortcutsTests
 
     #region Helper Methods
 
-    private static T DecodeGrpcRequest<T>(byte[] content)
-        where T : IMessage<T>, new()
-    {
-        // gRPC wire format: 1 byte compressed flag + 4 bytes length + message bytes
-        var messageBytes = content.Skip(5).ToArray();
-        var parser = new MessageParser<T>(() => new T());
-        return parser.ParseFrom(messageBytes);
-    }
+    private static (
+        WeaviateClient Client,
+        Func<SearchRequest?> GetCapturedRequest
+    ) CreateClientWithRequestCapture() => MockGrpcClient.CreateWithSearchCapture();
 
     #endregion
 }

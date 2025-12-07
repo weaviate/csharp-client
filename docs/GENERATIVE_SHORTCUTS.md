@@ -18,6 +18,7 @@ These features work together to create a more fluent and readable API for genera
 Instead of explicitly constructing `SinglePrompt` objects, you can use strings directly:
 
 #### Before
+
 ```csharp
 var result = await client
     .Collections.Use("Article")
@@ -29,6 +30,7 @@ var result = await client
 ```
 
 #### After
+
 ```csharp
 var result = await client
     .Collections.Use("Article")
@@ -46,6 +48,7 @@ The string is implicitly converted to a `SinglePrompt` object.
 Similarly, `GroupedTask` accepts string implicit conversions:
 
 #### Before
+
 ```csharp
 var result = await client
     .Collections.Use("Article")
@@ -58,6 +61,7 @@ var result = await client
 ```
 
 #### After
+
 ```csharp
 var result = await client
     .Collections.Use("Article")
@@ -78,6 +82,7 @@ All generative methods now accept an optional `provider` parameter. When supplie
 This eliminates the need to set `Provider` on each prompt individually.
 
 #### Before
+
 ```csharp
 var openai = new Providers.OpenAI 
 { 
@@ -98,6 +103,7 @@ var result = await client
 ```
 
 #### After
+
 ```csharp
 var openai = new Providers.OpenAI 
 { 
@@ -120,6 +126,7 @@ var result = await client
 The real power comes from combining both shortcuts:
 
 #### Before
+
 ```csharp
 var anthropic = new Providers.Anthropic 
 { 
@@ -140,6 +147,7 @@ var result = await client
 ```
 
 #### After
+
 ```csharp
 var anthropic = new Providers.Anthropic 
 { 
@@ -294,6 +302,7 @@ var result = await client
 The C# client supports many generative AI providers. Each has its own configuration options:
 
 ### OpenAI
+
 ```csharp
 var provider = new Providers.OpenAI 
 {
@@ -307,6 +316,7 @@ var provider = new Providers.OpenAI
 ```
 
 ### Anthropic
+
 ```csharp
 var provider = new Providers.Anthropic 
 {
@@ -319,6 +329,7 @@ var provider = new Providers.Anthropic
 ```
 
 ### Cohere
+
 ```csharp
 var provider = new Providers.Cohere 
 {
@@ -331,6 +342,7 @@ var provider = new Providers.Cohere
 ```
 
 ### Google
+
 ```csharp
 var provider = new Providers.Google 
 {
@@ -343,6 +355,7 @@ var provider = new Providers.Google
 ```
 
 ### Mistral
+
 ```csharp
 var provider = new Providers.Mistral 
 {
@@ -354,6 +367,7 @@ var provider = new Providers.Mistral
 ```
 
 ### Ollama (Local)
+
 ```csharp
 var provider = new Providers.Ollama 
 {
@@ -364,6 +378,7 @@ var provider = new Providers.Ollama
 ```
 
 ### AWS Bedrock
+
 ```csharp
 var provider = new Providers.AWS 
 {
@@ -475,6 +490,7 @@ These shortcuts make generative AI code in the C# client:
 - **Backward Compatible**: Existing code continues to work unchanged
 
 The shortcuts are available on all `GenerateClient` methods including:
+
 - `FetchObjects` (with and without grouping)
 - `FetchObjectByID`
 - `FetchObjectsByIDs`
