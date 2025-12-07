@@ -1151,6 +1151,178 @@ await tenantCollection.Data.Insert(article);
 var results = await tenantCollection.Query<Article>().ExecuteAsync();
 ```
 
+### Generative AI (RAG)
+
+Configure generative modules for Retrieval Augmented Generation (RAG) use cases:
+
+```csharp
+using Weaviate.Client.Models;
+
+// OpenAI GPT-4
+[WeaviateCollection("Articles")]
+[Generative<GenerativeConfig.OpenAI>(
+    Model = "gpt-4",
+    MaxTokens = 500,
+    Temperature = 0.7
+)]
+public class Article
+{
+    [Property(DataType.Text)]
+    public string Title { get; set; } = string.Empty;
+
+    [Property(DataType.Text)]
+    public string Content { get; set; } = string.Empty;
+}
+
+// Anthropic Claude
+[Generative<GenerativeConfig.Anthropic>(
+    Model = "claude-3-5-sonnet-20241022",
+    MaxTokens = 4096
+)]
+public class Document { }
+
+// Azure OpenAI
+[Generative<GenerativeConfig.AzureOpenAI>(
+    ResourceName = "my-resource",
+    DeploymentId = "gpt-4-deployment",
+    Model = "gpt-4"
+)]
+public class Report { }
+
+// With ConfigMethod for advanced customization
+[Generative<GenerativeConfig.OpenAI>(
+    Model = "gpt-4",
+    ConfigMethod = nameof(ConfigureGenerative)
+)]
+public class Article
+{
+    public static GenerativeConfig.OpenAI ConfigureGenerative(
+        GenerativeConfig.OpenAI prebuilt)
+    {
+        prebuilt.Temperature = 0.9;
+        prebuilt.TopP = 0.95;
+        return prebuilt;
+    }
+}
+```
+
+Supported providers: OpenAI, Anthropic, Cohere, AWS Bedrock, Azure OpenAI, Google Vertex AI, Mistral, Ollama, Nvidia, and more.
+
+### Reranking
+
+Configure reranker modules for advanced result ranking:
+
+```csharp
+// Cohere reranker
+[WeaviateCollection("Articles")]
+[Reranker<Reranker.Cohere>(Model = "rerank-english-v2.0")]
+public class Article
+{
+    [Property(DataType.Text)]
+    public string Title { get; set; } = string.Empty;
+}
+
+// VoyageAI reranker
+[Reranker<Reranker.VoyageAI>(Model = "rerank-2.5")]
+public class Document { }
+
+// Transformers (local reranker)
+[Reranker<Reranker.Transformers>]
+public class Product { }
+
+// JinaAI with context
+[Reranker<Reranker.JinaAI>(
+    Model = "jina-reranker-v2-base-multilingual"
+)]
+public class SearchResult { }
+```
+
+Supported providers: Cohere, VoyageAI, JinaAI, Nvidia, ContextualAI, Transformers (local).
+
+### Sharding and Replication
+
+Configure sharding and replication directly in attributes:
+
+```csharp
+// Sharding configuration
+[WeaviateCollection(
+    "Articles",
+    ShardingDesiredCount = 3,
+    ShardingVirtualPerPhysical = 256,
+    ShardingKey = "customKey"
+)]
+public class Article { }
+
+// Replication configuration
+[WeaviateCollection(
+    "Articles",
+    ReplicationFactor = 3,
+    ReplicationAsyncEnabled = true
+)]
+public class Document { }
+
+// Combined
+[WeaviateCollection(
+    "HighScaleArticles",
+    ShardingDesiredCount = 5,
+    ReplicationFactor = 3
+)]
+public class Article { }
+```
+
+Note: `-1` sentinel values mean "use Weaviate default".
+
+### CollectionConfigMethod (Escape Hatch)
+
+For complete control over `CollectionConfig`, use `CollectionConfigMethod`:
+
+```csharp
+[WeaviateCollection(
+    "Articles",
+    CollectionConfigMethod = nameof(CustomizeConfig)
+)]
+public class Article
+{
+    [Property(DataType.Text)]
+    public string Title { get; set; } = string.Empty;
+
+    public static CollectionConfig CustomizeConfig(CollectionConfig prebuilt)
+    {
+        // Customize any aspect of the config
+        prebuilt.InvertedIndexConfig = new InvertedIndexConfig
+        {
+            Bm25 = new BM25Config { K1 = 1.5f, B = 0.75f },
+            IndexNullState = true,
+            IndexTimestamps = true
+        };
+
+        // Add custom module config
+        // prebuilt.ModuleConfig = ...
+
+        return prebuilt;
+    }
+}
+
+// Type-safe cross-class method
+[WeaviateCollection(
+    "Products",
+    CollectionConfigMethod = nameof(CollectionConfigurations.CustomizeProducts),
+    ConfigMethodClass = typeof(CollectionConfigurations)
+)]
+public class Product { }
+
+public static class CollectionConfigurations
+{
+    public static CollectionConfig CustomizeProducts(CollectionConfig prebuilt)
+    {
+        // Custom configuration
+        return prebuilt;
+    }
+}
+```
+
+This provides 100% feature parity with manual `CollectionConfig` creation.
+
 ### Custom Vector Index Configuration
 
 ```csharp
