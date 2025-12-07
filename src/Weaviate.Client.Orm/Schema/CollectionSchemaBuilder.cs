@@ -24,6 +24,8 @@ public static class CollectionSchemaBuilder
         // Get collection-level attributes
         var collectionAttr = type.GetCustomAttribute<WeaviateCollectionAttribute>();
         var invertedIndexAttr = type.GetCustomAttribute<InvertedIndexAttribute>();
+        var generativeAttr = GetGenerativeAttribute(type);
+        var rerankerAttr = GetRerankerAttribute(type);
 
 #pragma warning disable CS8601 // Possible null reference assignment.
         // Build the config
@@ -36,10 +38,27 @@ public static class CollectionSchemaBuilder
             VectorConfig = VectorConfigBuilder.BuildVectorConfigs(type),
             InvertedIndexConfig =
                 BuildInvertedIndexConfig(invertedIndexAttr) ?? new InvertedIndexConfig(),
-            ReplicationConfig = new ReplicationConfig(), // Explicitly initialize
+            ReplicationConfig = BuildReplicationConfig(collectionAttr),
             MultiTenancyConfig = BuildMultiTenancyConfig(collectionAttr),
+            ShardingConfig = BuildShardingConfig(collectionAttr),
+            GenerativeConfig = BuildGenerativeConfig(generativeAttr, type),
+            RerankerConfig = BuildRerankerConfig(rerankerAttr, type),
         };
 #pragma warning restore CS8601 // Possible null reference assignment.
+
+        // Apply CollectionConfigMethod if specified
+        if (
+            collectionAttr?.CollectionConfigMethod != null
+            && !string.IsNullOrWhiteSpace(collectionAttr.CollectionConfigMethod)
+        )
+        {
+            config = InvokeCollectionConfigMethod(
+                collectionAttr.CollectionConfigMethod,
+                type,
+                config,
+                collectionAttr.ConfigMethodClass
+            );
+        }
 
         return config;
     }
@@ -306,5 +325,444 @@ public static class CollectionSchemaBuilder
     private static bool IsReferenceProperty(PropertyInfo prop)
     {
         return prop.GetCustomAttribute<ReferenceAttribute>() != null;
+    }
+
+    /// <summary>
+    /// Gets the GenerativeAttributeBase from a class type.
+    /// </summary>
+    private static GenerativeAttributeBase? GetGenerativeAttribute(Type type)
+    {
+        return type.GetCustomAttributes().OfType<GenerativeAttributeBase>().FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Gets the RerankerAttributeBase from a class type.
+    /// </summary>
+    private static RerankerAttributeBase? GetRerankerAttribute(Type type)
+    {
+        return type.GetCustomAttributes().OfType<RerankerAttributeBase>().FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Builds sharding configuration from collection attribute.
+    /// </summary>
+    private static ShardingConfig? BuildShardingConfig(WeaviateCollectionAttribute? collectionAttr)
+    {
+        if (collectionAttr == null)
+            return null;
+
+        // Check if any sharding properties are set (sentinel value is -1)
+        if (
+            collectionAttr.ShardingDesiredCount == -1
+            && collectionAttr.ShardingVirtualPerPhysical == -1
+            && collectionAttr.ShardingDesiredVirtualCount == -1
+            && collectionAttr.ShardingKey == null
+        )
+        {
+            return null; // Use Weaviate defaults
+        }
+
+        var config = new ShardingConfig();
+
+        if (collectionAttr.ShardingDesiredCount != -1)
+            config.DesiredCount = collectionAttr.ShardingDesiredCount;
+
+        if (collectionAttr.ShardingVirtualPerPhysical != -1)
+            config.VirtualPerPhysical = collectionAttr.ShardingVirtualPerPhysical;
+
+        if (collectionAttr.ShardingDesiredVirtualCount != -1)
+            config.DesiredVirtualCount = collectionAttr.ShardingDesiredVirtualCount;
+
+        if (collectionAttr.ShardingKey != null)
+            config.Key = collectionAttr.ShardingKey;
+
+        return config;
+    }
+
+    /// <summary>
+    /// Builds replication configuration from collection attribute.
+    /// </summary>
+    private static ReplicationConfig BuildReplicationConfig(
+        WeaviateCollectionAttribute? collectionAttr
+    )
+    {
+        var config = new ReplicationConfig();
+
+        if (collectionAttr == null)
+            return config;
+
+        if (collectionAttr.ReplicationFactor != -1)
+            config.Factor = collectionAttr.ReplicationFactor;
+
+        config.AsyncEnabled = collectionAttr.ReplicationAsyncEnabled;
+
+        return config;
+    }
+
+    /// <summary>
+    /// Builds generative configuration from attribute.
+    /// </summary>
+    private static IGenerativeConfig? BuildGenerativeConfig(
+        GenerativeAttributeBase? attr,
+        Type declaringType
+    )
+    {
+        if (attr == null)
+            return null;
+
+        var moduleType = attr.ModuleType;
+
+        // Create instance using parameterless constructor or record syntax
+        var generativeConfig = Activator.CreateInstance(moduleType) as IGenerativeConfig;
+        if (generativeConfig == null)
+        {
+            throw new InvalidOperationException(
+                $"Could not create instance of generative module type '{moduleType.FullName}'. "
+                    + "Ensure the type has a parameterless constructor."
+            );
+        }
+
+        // Use reflection to set properties from attribute
+        var attrType = attr.GetType();
+        foreach (
+            var attrProp in attrType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+        )
+        {
+            if (attrProp.Name == nameof(GenerativeAttributeBase.ModuleType))
+                continue;
+            if (attrProp.Name == "ConfigMethod" || attrProp.Name == "ConfigMethodClass")
+                continue;
+
+            var value = attrProp.GetValue(attr);
+            if (value == null)
+                continue;
+
+            // Skip sentinel values (-1 for int/double, -999 for special cases)
+            if (value is int intValue && (intValue == -1 || intValue == -999))
+                continue;
+            if (value is double doubleValue && doubleValue == -1)
+                continue;
+
+            // Find matching property in generative config
+            var configProp = moduleType.GetProperty(attrProp.Name);
+            if (configProp != null && configProp.CanWrite)
+            {
+                configProp.SetValue(generativeConfig, value);
+            }
+        }
+
+        // Apply ConfigMethod if specified
+        var configMethodProp = attrType.GetProperty("ConfigMethod");
+        if (configMethodProp != null)
+        {
+            var configMethodValue = configMethodProp.GetValue(attr) as string;
+            if (!string.IsNullOrWhiteSpace(configMethodValue))
+            {
+                var configMethodClassProp = attrType.GetProperty("ConfigMethodClass");
+                var configMethodClass = configMethodClassProp?.GetValue(attr) as Type;
+
+                generativeConfig = InvokeGenerativeConfigMethod(
+                    configMethodValue,
+                    declaringType,
+                    generativeConfig,
+                    configMethodClass
+                );
+            }
+        }
+
+        return generativeConfig;
+    }
+
+    /// <summary>
+    /// Builds reranker configuration from attribute.
+    /// </summary>
+    private static IRerankerConfig? BuildRerankerConfig(
+        RerankerAttributeBase? attr,
+        Type declaringType
+    )
+    {
+        if (attr == null)
+            return null;
+
+        var moduleType = attr.ModuleType;
+
+        // Create instance
+        var rerankerConfig = Activator.CreateInstance(moduleType) as IRerankerConfig;
+        if (rerankerConfig == null)
+        {
+            throw new InvalidOperationException(
+                $"Could not create instance of reranker module type '{moduleType.FullName}'. "
+                    + "Ensure the type has a parameterless constructor."
+            );
+        }
+
+        // Use reflection to set properties from attribute
+        var attrType = attr.GetType();
+        foreach (
+            var attrProp in attrType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+        )
+        {
+            if (attrProp.Name == nameof(RerankerAttributeBase.ModuleType))
+                continue;
+            if (attrProp.Name == "ConfigMethod" || attrProp.Name == "ConfigMethodClass")
+                continue;
+
+            var value = attrProp.GetValue(attr);
+            if (value == null)
+                continue;
+
+            // Skip sentinel values
+            if (value is int intValue && (intValue == -1 || intValue == -999))
+                continue;
+
+            // Find matching property in reranker config
+            var configProp = moduleType.GetProperty(attrProp.Name);
+            if (configProp != null && configProp.CanWrite)
+            {
+                configProp.SetValue(rerankerConfig, value);
+            }
+        }
+
+        // Apply ConfigMethod if specified
+        var configMethodProp = attrType.GetProperty("ConfigMethod");
+        if (configMethodProp != null)
+        {
+            var configMethodValue = configMethodProp.GetValue(attr) as string;
+            if (!string.IsNullOrWhiteSpace(configMethodValue))
+            {
+                var configMethodClassProp = attrType.GetProperty("ConfigMethodClass");
+                var configMethodClass = configMethodClassProp?.GetValue(attr) as Type;
+
+                rerankerConfig = InvokeRerankerConfigMethod(
+                    configMethodValue,
+                    declaringType,
+                    rerankerConfig,
+                    configMethodClass
+                );
+            }
+        }
+
+        return rerankerConfig;
+    }
+
+    /// <summary>
+    /// Invokes a generative config method with the signature: static TModule MethodName(TModule prebuilt)
+    /// </summary>
+    private static IGenerativeConfig InvokeGenerativeConfigMethod(
+        string methodName,
+        Type declaringType,
+        IGenerativeConfig prebuiltConfig,
+        Type? configMethodClass = null
+    )
+    {
+        Type targetType;
+        string actualMethodName;
+
+        // If ConfigMethodClass is provided, use it (type-safe approach)
+        if (configMethodClass != null)
+        {
+            targetType = configMethodClass;
+            actualMethodName = methodName;
+        }
+        // Legacy support: Parse method name - can be "MethodName" or "ClassName.MethodName"
+        else if (methodName.Contains('.'))
+        {
+            var parts = methodName.Split('.');
+            var className = string.Join(".", parts.Take(parts.Length - 1));
+            actualMethodName = parts.Last();
+
+            // Try to find the class in the same namespace or assembly
+            targetType =
+                declaringType.Assembly.GetType(className)
+                ?? declaringType
+                    .Assembly.GetTypes()
+                    .FirstOrDefault(t => t.Name == className || t.FullName == className)
+                ?? Type.GetType(className)
+                ?? throw new InvalidOperationException(
+                    $"Could not find type '{className}' for generative ConfigMethod."
+                );
+        }
+        else
+        {
+            // Method in same class
+            targetType = declaringType;
+            actualMethodName = methodName;
+        }
+
+        var configType = prebuiltConfig.GetType();
+        var method = targetType.GetMethod(
+            actualMethodName,
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static,
+            null,
+            new[] { configType },
+            null
+        );
+
+        if (method == null)
+        {
+            throw new InvalidOperationException(
+                $"Could not find static method '{actualMethodName}' in type '{targetType.FullName}' "
+                    + $"with signature: static {configType.Name} {actualMethodName}({configType.Name} prebuilt)"
+            );
+        }
+
+        // Validate return type
+        if (method.ReturnType != configType)
+        {
+            throw new InvalidOperationException(
+                $"ConfigMethod '{actualMethodName}' has invalid signature. "
+                    + $"Expected return type '{configType.Name}', got '{method.ReturnType.Name}'."
+            );
+        }
+
+        var result = method.Invoke(null, new object[] { prebuiltConfig });
+        return (IGenerativeConfig)result!; // Non-null because we validated the signature
+    }
+
+    /// <summary>
+    /// Invokes a reranker config method with the signature: static TModule MethodName(TModule prebuilt)
+    /// </summary>
+    private static IRerankerConfig InvokeRerankerConfigMethod(
+        string methodName,
+        Type declaringType,
+        IRerankerConfig prebuiltConfig,
+        Type? configMethodClass = null
+    )
+    {
+        Type targetType;
+        string actualMethodName;
+
+        // If ConfigMethodClass is provided, use it (type-safe approach)
+        if (configMethodClass != null)
+        {
+            targetType = configMethodClass;
+            actualMethodName = methodName;
+        }
+        // Legacy support: Parse method name - can be "MethodName" or "ClassName.MethodName"
+        else if (methodName.Contains('.'))
+        {
+            var parts = methodName.Split('.');
+            var className = string.Join(".", parts.Take(parts.Length - 1));
+            actualMethodName = parts.Last();
+
+            // Try to find the class
+            targetType =
+                declaringType.Assembly.GetType(className)
+                ?? declaringType
+                    .Assembly.GetTypes()
+                    .FirstOrDefault(t => t.Name == className || t.FullName == className)
+                ?? Type.GetType(className)
+                ?? throw new InvalidOperationException(
+                    $"Could not find type '{className}' for reranker ConfigMethod."
+                );
+        }
+        else
+        {
+            // Method in same class
+            targetType = declaringType;
+            actualMethodName = methodName;
+        }
+
+        var configType = prebuiltConfig.GetType();
+        var method = targetType.GetMethod(
+            actualMethodName,
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static,
+            null,
+            new[] { configType },
+            null
+        );
+
+        if (method == null)
+        {
+            throw new InvalidOperationException(
+                $"Could not find static method '{actualMethodName}' in type '{targetType.FullName}' "
+                    + $"with signature: static {configType.Name} {actualMethodName}({configType.Name} prebuilt)"
+            );
+        }
+
+        // Validate return type
+        if (method.ReturnType != configType)
+        {
+            throw new InvalidOperationException(
+                $"ConfigMethod '{actualMethodName}' has invalid signature. "
+                    + $"Expected return type '{configType.Name}', got '{method.ReturnType.Name}'."
+            );
+        }
+
+        var result = method.Invoke(null, new object[] { prebuiltConfig });
+        return (IRerankerConfig)result!; // Non-null because we validated the signature
+    }
+
+    /// <summary>
+    /// Invokes a collection config method with the signature: static CollectionConfig MethodName(CollectionConfig prebuilt)
+    /// </summary>
+    private static CollectionConfig InvokeCollectionConfigMethod(
+        string methodName,
+        Type declaringType,
+        CollectionConfig prebuiltConfig,
+        Type? configMethodClass = null
+    )
+    {
+        Type targetType;
+        string actualMethodName;
+
+        // If ConfigMethodClass is provided, use it (type-safe approach)
+        if (configMethodClass != null)
+        {
+            targetType = configMethodClass;
+            actualMethodName = methodName;
+        }
+        // Legacy support: Parse method name - can be "MethodName" or "ClassName.MethodName"
+        else if (methodName.Contains('.'))
+        {
+            var parts = methodName.Split('.');
+            var className = string.Join(".", parts.Take(parts.Length - 1));
+            actualMethodName = parts.Last();
+
+            // Try to find the class
+            targetType =
+                declaringType.Assembly.GetType(className)
+                ?? declaringType
+                    .Assembly.GetTypes()
+                    .FirstOrDefault(t => t.Name == className || t.FullName == className)
+                ?? Type.GetType(className)
+                ?? throw new InvalidOperationException(
+                    $"Could not find type '{className}' for CollectionConfigMethod."
+                );
+        }
+        else
+        {
+            // Method in same class
+            targetType = declaringType;
+            actualMethodName = methodName;
+        }
+
+        var method = targetType.GetMethod(
+            actualMethodName,
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static,
+            null,
+            new[] { typeof(CollectionConfig) },
+            null
+        );
+
+        if (method == null)
+        {
+            throw new InvalidOperationException(
+                $"Could not find static method '{actualMethodName}' in type '{targetType.FullName}' "
+                    + $"with signature: static CollectionConfig {actualMethodName}(CollectionConfig prebuilt)"
+            );
+        }
+
+        // Validate return type
+        if (method.ReturnType != typeof(CollectionConfig))
+        {
+            throw new InvalidOperationException(
+                $"CollectionConfigMethod '{actualMethodName}' has invalid signature. "
+                    + $"Expected return type 'CollectionConfig', got '{method.ReturnType.Name}'."
+            );
+        }
+
+        var result = method.Invoke(null, new object[] { prebuiltConfig });
+        return (CollectionConfig)result!; // Non-null because we validated the signature
     }
 }
