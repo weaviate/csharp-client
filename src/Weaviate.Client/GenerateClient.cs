@@ -31,6 +31,12 @@ public partial class GenerateClient
         return TimeoutHelper.GetCancellationToken(effectiveTimeout, userToken);
     }
 
+    /// <summary>
+    /// Enriches a generative prompt with a provider if the prompt doesn't already have one.
+    /// </summary>
+    /// <param name="prompt">The prompt to enrich</param>
+    /// <param name="provider">The provider to use if the prompt doesn't have one</param>
+    /// <returns>The enriched prompt, or null if the input prompt was null</returns>
     private static GenerativePrompt? EnrichPrompt(
         GenerativePrompt? prompt,
         GenerativeProvider? provider
