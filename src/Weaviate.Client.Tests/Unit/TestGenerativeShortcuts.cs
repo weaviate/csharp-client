@@ -60,7 +60,7 @@ public class GenerativeShortcutsTests
             .Collections.Use("TestCollection")
             .Generate.FetchObjects(
                 limit: 10,
-                prompt: "Summarize this",
+                singlePrompt: "Summarize this",
                 provider: provider,
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -126,7 +126,7 @@ public class GenerativeShortcutsTests
             .Generate.NearText(
                 text: "artificial intelligence",
                 limit: 5,
-                prompt: "Explain this concept",
+                singlePrompt: "Explain this concept",
                 provider: provider,
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -158,7 +158,7 @@ public class GenerativeShortcutsTests
             .Collections.Use("TestCollection")
             .Generate.FetchObjects(
                 limit: 10,
-                prompt: promptWithProvider,
+                singlePrompt: promptWithProvider,
                 provider: cohereProvider,
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -188,7 +188,7 @@ public class GenerativeShortcutsTests
             .Collections.Use("TestCollection")
             .Generate.FetchObjects(
                 limit: 10,
-                prompt: promptWithoutProvider,
+                singlePrompt: promptWithoutProvider,
                 provider: provider,
                 cancellationToken: TestContext.Current.CancellationToken
             );

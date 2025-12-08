@@ -33,7 +33,7 @@ public class TypedGenerateClient<T>
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
@@ -47,7 +47,7 @@ public class TypedGenerateClient<T>
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -63,7 +63,7 @@ public class TypedGenerateClient<T>
             filters: filters,
             sort: sort,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             returnProperties: returnProperties,
@@ -82,7 +82,7 @@ public class TypedGenerateClient<T>
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
@@ -95,7 +95,7 @@ public class TypedGenerateClient<T>
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -110,7 +110,7 @@ public class TypedGenerateClient<T>
             filters: filters,
             sort: sort,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             returnProperties: returnProperties,
@@ -126,7 +126,7 @@ public class TypedGenerateClient<T>
     /// Fetch a single object by ID with generative AI capabilities.
     /// </summary>
     /// <param name="id">Object ID</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
@@ -136,7 +136,7 @@ public class TypedGenerateClient<T>
     /// <returns>Strongly-typed generative result</returns>
     public async Task<GenerativeWeaviateResult<T>?> FetchObjectByID(
         Guid id,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -148,7 +148,7 @@ public class TypedGenerateClient<T>
     {
         var result = await _generateClient.FetchObjectByID(
             id: id,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             returnProperties: returnProperties,
@@ -168,7 +168,7 @@ public class TypedGenerateClient<T>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
@@ -182,7 +182,7 @@ public class TypedGenerateClient<T>
         Rerank? rerank = null,
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -198,7 +198,7 @@ public class TypedGenerateClient<T>
             rerank: rerank,
             filters: filters,
             sort: sort,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             returnProperties: returnProperties,
@@ -226,7 +226,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -246,7 +246,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -268,7 +268,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -295,7 +295,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -316,7 +316,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -339,7 +339,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -364,7 +364,7 @@ public class TypedGenerateClient<T>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
@@ -382,7 +382,7 @@ public class TypedGenerateClient<T>
         uint? offset = null,
         TargetVectors? targetVector = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -402,7 +402,7 @@ public class TypedGenerateClient<T>
             offset: offset,
             targetVector: targetVector,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             returnProperties: returnProperties,
@@ -427,7 +427,7 @@ public class TypedGenerateClient<T>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
@@ -446,7 +446,7 @@ public class TypedGenerateClient<T>
         uint? offset = null,
         TargetVectors? targetVector = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -467,7 +467,7 @@ public class TypedGenerateClient<T>
             offset: offset,
             targetVector: targetVector,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             returnProperties: returnProperties,
@@ -490,7 +490,7 @@ public class TypedGenerateClient<T>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="after">Cursor for pagination</param>
     /// <param name="consistencyLevel">Consistency level</param>
@@ -509,7 +509,7 @@ public class TypedGenerateClient<T>
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         Guid? after = null,
@@ -530,7 +530,7 @@ public class TypedGenerateClient<T>
             limit: limit,
             offset: offset,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             after: after,
@@ -554,7 +554,7 @@ public class TypedGenerateClient<T>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="after">Cursor for pagination</param>
     /// <param name="consistencyLevel">Consistency level</param>
@@ -572,7 +572,7 @@ public class TypedGenerateClient<T>
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         Guid? after = null,
@@ -592,7 +592,7 @@ public class TypedGenerateClient<T>
             limit: limit,
             offset: offset,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             after: after,
@@ -620,7 +620,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -641,7 +641,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -664,7 +664,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -692,7 +692,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -714,7 +714,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -738,7 +738,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -766,7 +766,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -788,7 +788,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -812,7 +812,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -840,7 +840,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -862,7 +862,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -886,7 +886,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -915,7 +915,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -938,7 +938,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -963,7 +963,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -987,7 +987,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1005,7 +1005,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -1025,7 +1025,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -1050,7 +1050,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1069,7 +1069,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -1090,7 +1090,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -1114,7 +1114,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1132,7 +1132,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -1152,7 +1152,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -1177,7 +1177,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1196,7 +1196,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -1217,7 +1217,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -1242,7 +1242,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1261,7 +1261,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -1282,7 +1282,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
@@ -1308,7 +1308,7 @@ public class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -1328,7 +1328,7 @@ public class TypedGenerateClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
@@ -1350,7 +1350,7 @@ public class TypedGenerateClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            prompt: prompt,
+            singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
             targetVector: targetVector,
