@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weaviate.Client.Analyzers.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weaviate.Client.Orm", "src\Weaviate.Client.Orm\Weaviate.Client.Orm.csproj", "{2D0A3B2A-D4BC-47EA-A83D-32E3C051485E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weaviate.Client.Orm.Tests", "src\Weaviate.Client.Orm.Tests\Weaviate.Client.Orm.Tests.csproj", "{DD29E241-625B-4FD7-BDB4-E1295B88DF45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weaviate.Client.Womp.Tests", "src\Weaviate.Client.Womp.Tests\Weaviate.Client.Womp.Tests.csproj", "{DD29E241-625B-4FD7-BDB4-E1295B88DF45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
