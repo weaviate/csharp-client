@@ -154,25 +154,16 @@ public class GenerativeShortcutsTests
         var (client, getCapturedRequest) = CreateClientWithRequestCapture();
 
         // Act - pass Cohere as provider parameter, but prompt already has OpenAI
-        await client
-            .Collections.Use("TestCollection")
-            .Generate.FetchObjects(
-                limit: 10,
-                singlePrompt: promptWithProvider,
-                provider: cohereProvider,
-                cancellationToken: TestContext.Current.CancellationToken
-            );
-
-        // Assert - should use OpenAI (from prompt), not Cohere (from parameter)
-        var capturedRequest = getCapturedRequest();
-        Assert.NotNull(capturedRequest);
-        Assert.NotNull(capturedRequest.Generative);
-        Assert.NotNull(capturedRequest.Generative.Single);
-        Assert.Single(capturedRequest.Generative.Single.Queries);
-        var providerQuery = capturedRequest.Generative.Single.Queries[0];
-        Assert.NotNull(providerQuery.Openai);
-        Assert.Equal("gpt-4", providerQuery.Openai.Model);
-        Assert.Null(providerQuery.Cohere);
+        await Assert.ThrowsAsync<WeaviateClientException>(async () =>
+            await client
+                .Collections.Use("TestCollection")
+                .Generate.FetchObjects(
+                    limit: 10,
+                    singlePrompt: promptWithProvider,
+                    provider: cohereProvider,
+                    cancellationToken: TestContext.Current.CancellationToken
+                )
+        );
     }
 
     [Fact]
