@@ -36,10 +36,16 @@ public static partial class Configure
                     );
                 }
 
-                if (encoding is not null)
+                if (encoding is not null && indexConfig.MultiVector.Encoding is not null)
                 {
-                    indexConfig.MultiVector.Encoding = encoding;
+                    throw new WeaviateClientException(
+                        new InvalidOperationException(
+                            "Encoding is already set on the indexConfig.MultiVector. Please provide either the encoding parameter or set it on the indexConfig.MultiVector, not both."
+                        )
+                    );
                 }
+
+                indexConfig.MultiVector.Encoding ??= encoding;
 
                 return new(
                     name,
