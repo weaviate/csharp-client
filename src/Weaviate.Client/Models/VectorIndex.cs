@@ -31,7 +31,7 @@ public abstract record VectorIndexConfig()
     public record MultiVectorConfig
     {
         public string? Aggregation { get; set; } = "maxSim";
-        public EncodingConfig? Encoding { get; set; } = new MuveraEncoding();
+        public EncodingConfig? Encoding { get; set; } = null;
     }
 
     [JsonIgnore]
