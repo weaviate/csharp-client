@@ -45,8 +45,18 @@ public partial class GenerateClient
         if (prompt is null)
             return null;
 
+        if (prompt.Provider is not null && provider is not null)
+        {
+            throw new WeaviateClientException(
+                "Cannot override the provider for a generative prompt",
+                new InvalidOperationException("The prompt already has a provider set")
+            );
+        }
+
         if (prompt.Provider is null && provider is not null)
+        {
             prompt.Provider = provider;
+        }
 
         return prompt;
     }

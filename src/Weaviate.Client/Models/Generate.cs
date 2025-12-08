@@ -14,7 +14,7 @@ public abstract record GenerativeProvider
 public abstract record GenerativePrompt
 {
     public bool Debug { get; set; } = false;
-    public GenerativeProvider? Provider { get; set; }
+    public GenerativeProvider? Provider { get; internal set; }
 }
 
 public record SinglePrompt(string Prompt) : GenerativePrompt
