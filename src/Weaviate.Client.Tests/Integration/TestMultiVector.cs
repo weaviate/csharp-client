@@ -18,12 +18,12 @@ public class TestMultiVector : IntegrationTests
                     .MultiVectors.SelfProvided()
                     .New(
                         name: "colbert",
+                        encoding: new VectorIndexConfig.MuveraEncoding(),
                         indexConfig: new VectorIndex.HNSW
                         {
                             MultiVector = new VectorIndexConfig.MultiVectorConfig
                             {
                                 Aggregation = VectorIndexConfig.MultiVectorAggregation.MaxSim,
-                                Encoding = new VectorIndexConfig.MuveraEncoding() { },
                             },
                         }
                     ),
