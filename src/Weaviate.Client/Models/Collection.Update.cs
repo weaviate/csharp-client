@@ -368,7 +368,7 @@ public class CollectionConfigClient
         );
     }
 
-    internal async Task AddReference(Reference referenceProperty)
+    public async Task AddReference(Reference referenceProperty)
     {
         var dto = referenceProperty.ToDto();
 
