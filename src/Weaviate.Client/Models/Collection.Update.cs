@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using Weaviate.Client.Cache;
 
@@ -19,32 +20,32 @@ public record Bm25ConfigUpdate(BM25Config WrappedBm25)
 {
     public float? B
     {
-        get => WrappedBm25.B;
+        get => Convert.ToSingle(WrappedBm25.B);
         set => WrappedBm25.B = value ?? BM25Config.Default.B;
     }
     public float? K1
     {
-        get => WrappedBm25.K1;
+        get => Convert.ToSingle(WrappedBm25.K1);
         set => WrappedBm25.K1 = value ?? BM25Config.Default.K1;
     }
 }
 
 public record StopwordsConfigUpdate(StopwordConfig WrappedStopwords)
 {
-    public List<string> Additions
+    public ImmutableList<string> Additions
     {
         get => WrappedStopwords.Additions;
-        set => WrappedStopwords.Additions = value ?? new List<string>();
+        set => WrappedStopwords.Additions = value ?? [];
     }
     public StopwordConfig.Presets Preset
     {
         get => WrappedStopwords.Preset;
         set => WrappedStopwords.Preset = value;
     }
-    public List<string> Removals
+    public ImmutableList<string> Removals
     {
         get => WrappedStopwords.Removals;
-        set => WrappedStopwords.Removals = value ?? new List<string>();
+        set => WrappedStopwords.Removals = value ?? [];
     }
 }
 
@@ -124,7 +125,7 @@ public partial record CollectionUpdate(CollectionConfig WrappedCollection)
         get => WrappedCollection.ShardingConfig;
     }
 
-    // Configure named vectors. Either use this field or `vectorizer`, `vectorIndexType`, and `vectorIndexConfig` fields. Available from `v1.24.0`.
+    // Configure named vectors.
     public ReadOnlyDictionary<string, VectorConfigUpdate> VectorConfig { get; } =
         WrappedCollection
             .VectorConfig.Select(vc => new VectorConfigUpdate(WrappedCollection, vc.Value))

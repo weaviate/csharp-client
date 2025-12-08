@@ -13,16 +13,18 @@ public record InvertedIndexConfig : IEquatable<InvertedIndexConfig>
     public bool IndexPropertyLength { get; set; } = false;
     public bool IndexTimestamps { get; set; } = false;
     public StopwordConfig? Stopwords { get; set; } = StopwordConfig.Default;
+    public bool? UsingBlockMaxWAND { get; set; } = null;
 
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(Bm25);
+        hash.Add(Bm25?.GetHashCode() ?? 0);
         hash.Add(CleanupIntervalSeconds);
         hash.Add(IndexNullState);
         hash.Add(IndexPropertyLength);
         hash.Add(IndexTimestamps);
-        hash.Add(Stopwords);
+        hash.Add(Stopwords?.GetHashCode() ?? 0);
+        hash.Add(UsingBlockMaxWAND);
         return hash.ToHashCode();
     }
 
@@ -34,11 +36,27 @@ public record InvertedIndexConfig : IEquatable<InvertedIndexConfig>
         if (ReferenceEquals(this, other))
             return true;
 
-        return EqualityComparer<BM25Config?>.Default.Equals(Bm25, other.Bm25)
-            && CleanupIntervalSeconds == other.CleanupIntervalSeconds
-            && IndexNullState == other.IndexNullState
-            && IndexPropertyLength == other.IndexPropertyLength
-            && IndexTimestamps == other.IndexTimestamps
-            && EqualityComparer<StopwordConfig?>.Default.Equals(Stopwords, other.Stopwords);
+        if (!EqualityComparer<BM25Config?>.Default.Equals(Bm25, other.Bm25))
+            return false;
+
+        if (CleanupIntervalSeconds != other.CleanupIntervalSeconds)
+            return false;
+
+        if (IndexNullState != other.IndexNullState)
+            return false;
+
+        if (IndexPropertyLength != other.IndexPropertyLength)
+            return false;
+
+        if (IndexTimestamps != other.IndexTimestamps)
+            return false;
+
+        if (!EqualityComparer<StopwordConfig?>.Default.Equals(Stopwords, other.Stopwords))
+            return false;
+
+        if (UsingBlockMaxWAND != other.UsingBlockMaxWAND)
+            return false;
+
+        return true;
     }
 }

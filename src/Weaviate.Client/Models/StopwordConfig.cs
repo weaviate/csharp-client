@@ -1,8 +1,10 @@
+using System.Collections.Immutable;
+
 namespace Weaviate.Client.Models;
 
 // StopwordConfig fine-grained control over stopword list usage
 //
-public record StopwordConfig : IEquatable<StopwordConfig>
+public record StopwordConfig
 {
     public enum Presets
     {
@@ -22,7 +24,7 @@ public record StopwordConfig : IEquatable<StopwordConfig>
     /// <summary>
     /// Stopwords to be considered additionally (default: []). Can be any array of custom strings.
     /// </summary>
-    public List<string> Additions { get; set; } = new();
+    public ImmutableList<string> Additions { get; set; } = [];
 
     /// <summary>
     /// Pre-existing list of common words by language (default: 'en'). Options: ['en', 'none'].
@@ -32,7 +34,7 @@ public record StopwordConfig : IEquatable<StopwordConfig>
     /// <summary>
     /// Stopwords to be removed from consideration (default: []). Can be any array of custom strings.
     /// </summary>
-    public List<string> Removals { get; set; } = new();
+    public ImmutableList<string> Removals { get; set; } = [];
 
     public override int GetHashCode()
     {

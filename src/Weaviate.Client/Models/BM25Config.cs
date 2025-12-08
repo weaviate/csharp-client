@@ -2,7 +2,7 @@ namespace Weaviate.Client.Models;
 
 // BM25Config tuning parameters for the BM25 algorithm
 //
-public record BM25Config : IEquatable<BM25Config>
+public record BM25Config
 {
     private static readonly Lazy<BM25Config> _default = new Lazy<BM25Config>(() => new());
 
@@ -11,12 +11,12 @@ public record BM25Config : IEquatable<BM25Config>
     /// <summary>
     /// Calibrates term-weight scaling based on the document length (default: 0.75).
     /// </summary>
-    public float B { get; set; } = 0.75f;
+    public double B { get; set; } = 0.75;
 
     /// <summary>
     /// Calibrates term-weight scaling based on the term frequency within a document (default: 1.2).
     /// </summary>
-    public float K1 { get; set; } = 1.2f;
+    public double K1 { get; set; } = 1.2;
 
     public override int GetHashCode()
     {
@@ -34,6 +34,7 @@ public record BM25Config : IEquatable<BM25Config>
         if (ReferenceEquals(this, other))
             return true;
 
-        return B == other.B && K1 == other.K1;
+        return Math.Round(B, 6).Equals(Math.Round(other.B, 6))
+            && Math.Round(K1, 6).Equals(Math.Round(other.K1, 6));
     }
 }
