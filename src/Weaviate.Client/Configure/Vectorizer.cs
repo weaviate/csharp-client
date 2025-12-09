@@ -674,7 +674,7 @@ public static partial class Configure
                 }
             );
 
-        public static VectorConfigBuilder Text2VecGoogle(
+        public static VectorConfigBuilder Text2VecGoogleVertex(
             string? apiEndpoint = null,
             string? model = null,
             string? projectId = null,
@@ -695,6 +695,27 @@ public static partial class Configure
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
+
+        public static VectorConfigBuilder Text2VecGoogleGemini(
+            string? model = null,
+            string? titleProperty = null,
+            int? dimensions = null,
+            string? taskType = null,
+            bool? vectorizeCollectionName = null
+        ) =>
+            new(
+                new Vectorizer.Text2VecGoogle
+                {
+                    ApiEndpoint = null,
+                    Model = model,
+                    ProjectId = null,
+                    TitleProperty = titleProperty,
+                    Dimensions = dimensions,
+                    TaskType = taskType,
+                    VectorizeCollectionName = vectorizeCollectionName,
+                }
+            );
+
 
         public static VectorConfigBuilder Text2VecTransformers(
             string? inferenceUrl = null,
