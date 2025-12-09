@@ -706,7 +706,7 @@ public static partial class Configure
             new(
                 new Vectorizer.Text2VecGoogle
                 {
-                    ApiEndpoint = null,
+                    ApiEndpoint = "generativelanguage.googleapis.com",
                     Model = model,
                     ProjectId = null,
                     TitleProperty = titleProperty,
