@@ -22,11 +22,22 @@ public static class Providers
         public double? Temperature { get; set; }
     }
 
-    public record AWS() : Weaviate.Client.Models.GenerativeProvider("aws")
+    public record AWSBedrock() : Weaviate.Client.Models.GenerativeProvider("aws")
     {
         public string? Model { get; set; }
         public double? Temperature { get; set; }
-        public string? Service { get; set; }
+        public string? Region { get; set; }
+        public string? Endpoint { get; set; }
+        public List<string>? Images { get; set; }
+        public List<string>? ImageProperties { get; set; }
+        public long? MaxTokens { get; set; }
+        // TODO - add top_k, top_p & stop_sequences here when added to server-side proto
+        // Check the latest available version of `grpc/proto/v1/generative.proto` (see GenerativeAWS) in the server repo
+    }
+
+    public record AWSSagemaker() : Weaviate.Client.Models.GenerativeProvider("aws")
+    {
+        public double? Temperature { get; set; }
         public string? Region { get; set; }
         public string? Endpoint { get; set; }
         public string? TargetModel { get; set; }
@@ -34,6 +45,8 @@ public static class Providers
         public List<string>? Images { get; set; }
         public List<string>? ImageProperties { get; set; }
         public long? MaxTokens { get; set; }
+        // TODO - add top_k, top_p & stop_sequences here when added to server-side proto
+        // Check the latest available version of `grpc/proto/v1/generative.proto` (see GenerativeAWS) in the server repo
     }
 
     public record Cohere() : Weaviate.Client.Models.GenerativeProvider("cohere")

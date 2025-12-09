@@ -177,11 +177,28 @@ internal partial class WeaviateGrpcClient
                 };
                 SetIfNotNull(v => result.Anyscale.Temperature = (float)v, a.Temperature);
                 break;
-            case Models.Generative.Providers.AWS a:
+            case Models.Generative.Providers.AWSBedrock a:
                 result.Aws = new V1.GenerativeAWS
                 {
                     Model = a.Model ?? string.Empty,
-                    Service = a.Service ?? string.Empty,
+                    Service = "bedrock",
+                    Region = a.Region ?? string.Empty,
+                    Endpoint = a.Endpoint ?? string.Empty,
+                    Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
+                    ImageProperties =
+                        a.ImageProperties != null
+                            ? new V1.TextArray { Values = { a.ImageProperties } }
+                            : null,
+                };
+                SetIfNotNull(v => result.Aws.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Aws.MaxTokens = v, a.MaxTokens);
+                // TODO - add top_k, top_p & stop_sequences here when added to server-side proto
+                // Check the latest available version of `grpc/proto/v1/generative.proto` (see GenerativeAWS) in the server repo
+                break;
+            case Models.Generative.Providers.AWSSagemaker a:
+                result.Aws = new V1.GenerativeAWS
+                {
+                    Service = "sagemaker",
                     Region = a.Region ?? string.Empty,
                     Endpoint = a.Endpoint ?? string.Empty,
                     TargetModel = a.TargetModel ?? string.Empty,
@@ -194,6 +211,8 @@ internal partial class WeaviateGrpcClient
                 };
                 SetIfNotNull(v => result.Aws.Temperature = (float)v, a.Temperature);
                 SetIfNotNull(v => result.Aws.MaxTokens = v, a.MaxTokens);
+                // TODO - add top_k, top_p & stop_sequences here when added to server-side proto
+                // Check the latest available version of `grpc/proto/v1/generative.proto` (see GenerativeAWS) in the server repo
                 break;
             case Models.Generative.Providers.Cohere a:
                 result.Cohere = new V1.GenerativeCohere
