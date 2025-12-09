@@ -696,6 +696,7 @@ public static partial class Configure
                 }
             );
 
+        // trigger precommit formatting
         public static VectorConfigBuilder Text2VecGoogleGemini(
             string? model = null,
             string? titleProperty = null,
@@ -715,7 +716,6 @@ public static partial class Configure
                     VectorizeCollectionName = vectorizeCollectionName,
                 }
             );
-
 
         public static VectorConfigBuilder Text2VecTransformers(
             string? inferenceUrl = null,
