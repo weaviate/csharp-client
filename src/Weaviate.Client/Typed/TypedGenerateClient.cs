@@ -35,7 +35,6 @@ public class TypedGenerateClient<T>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -50,7 +49,6 @@ public class TypedGenerateClient<T>
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -66,7 +64,6 @@ public class TypedGenerateClient<T>
             rerank: rerank,
             prompt: prompt,
             groupedTask: groupedTask,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -85,7 +82,6 @@ public class TypedGenerateClient<T>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -99,7 +95,6 @@ public class TypedGenerateClient<T>
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -114,7 +109,6 @@ public class TypedGenerateClient<T>
             rerank: rerank,
             prompt: prompt,
             groupedTask: groupedTask,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -130,7 +124,6 @@ public class TypedGenerateClient<T>
     /// <param name="id">Object ID</param>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -141,7 +134,6 @@ public class TypedGenerateClient<T>
         Guid id,
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -153,7 +145,6 @@ public class TypedGenerateClient<T>
             id: id,
             prompt: prompt,
             groupedTask: groupedTask,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -168,7 +159,6 @@ public class TypedGenerateClient<T>
     /// </summary>
     /// <param name="ids">Set of object IDs</param>
     /// <param name="limit">Maximum number of results</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
@@ -183,7 +173,6 @@ public class TypedGenerateClient<T>
     public async Task<GenerativeWeaviateResult<T>> FetchObjectsByIDs(
         HashSet<Guid> ids,
         uint? limit = null,
-        string? tenant = null,
         Rerank? rerank = null,
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
@@ -199,7 +188,6 @@ public class TypedGenerateClient<T>
         var result = await _generateClient.FetchObjectsByIDs(
             ids: ids,
             limit: limit,
-            tenant: tenant,
             rerank: rerank,
             filters: filters,
             sort: sort,
@@ -233,7 +221,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -254,7 +241,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -276,7 +262,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -303,7 +288,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -325,7 +309,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -348,7 +331,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -369,7 +351,6 @@ public class TypedGenerateClient<T>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
@@ -388,7 +369,6 @@ public class TypedGenerateClient<T>
         uint? limit = null,
         uint? offset = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
@@ -408,7 +388,6 @@ public class TypedGenerateClient<T>
             limit: limit,
             offset: offset,
             targetVector: targetVector,
-            tenant: tenant,
             rerank: rerank,
             prompt: prompt,
             groupedTask: groupedTask,
@@ -433,7 +412,6 @@ public class TypedGenerateClient<T>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
@@ -453,7 +431,6 @@ public class TypedGenerateClient<T>
         uint? limit = null,
         uint? offset = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         Rerank? rerank = null,
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
@@ -474,7 +451,6 @@ public class TypedGenerateClient<T>
             limit: limit,
             offset: offset,
             targetVector: targetVector,
-            tenant: tenant,
             rerank: rerank,
             prompt: prompt,
             groupedTask: groupedTask,
@@ -501,7 +477,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="after">Cursor for pagination</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="consistencyLevel">Consistency level</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -521,7 +496,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         Guid? after = null,
-        string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -542,7 +516,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             after: after,
-            tenant: tenant,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
@@ -566,7 +539,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="after">Cursor for pagination</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="consistencyLevel">Consistency level</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -585,7 +557,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         Guid? after = null,
-        string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -605,7 +576,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             after: after,
-            tenant: tenant,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
@@ -633,7 +603,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -655,7 +624,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -678,7 +646,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -706,7 +673,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -729,7 +695,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -753,7 +718,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -781,7 +745,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -804,7 +767,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -828,7 +790,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -856,7 +817,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -879,7 +839,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -903,7 +862,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -932,7 +890,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -956,7 +913,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -981,7 +937,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -1005,7 +960,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -1024,7 +978,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -1044,7 +997,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -1069,7 +1021,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -1089,7 +1040,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -1110,7 +1060,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -1134,7 +1083,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -1153,7 +1101,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -1173,7 +1120,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -1198,7 +1144,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -1218,7 +1163,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -1239,7 +1183,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -1264,7 +1207,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -1284,7 +1226,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -1305,7 +1246,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -1331,7 +1271,6 @@ public class TypedGenerateClient<T>
     /// <param name="prompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="targetVector">Target vector name</param>
-    /// <param name="tenant">Tenant name</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -1352,7 +1291,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? prompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -1374,7 +1312,6 @@ public class TypedGenerateClient<T>
             prompt: prompt,
             groupedTask: groupedTask,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
