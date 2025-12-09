@@ -547,7 +547,7 @@ public static class Vectorizer
     /// The configuration for text vectorization using the Google module.
     /// See the documentation for detailed usage.
     /// </summary>
-    [Vectorizer("text2vec-palm")]
+    [Vectorizer("text2vec-google")]
     public record Text2VecGoogle : VectorizerConfig
     {
         [JsonConstructor]
