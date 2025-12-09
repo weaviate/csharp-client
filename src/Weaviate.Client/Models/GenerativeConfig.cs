@@ -158,18 +158,29 @@ public static class GenerativeConfig
         public string DeploymentId { get; set; } = string.Empty;
     }
 
-    public record Google : IGenerativeConfig
+    public record GoogleVertex : IGenerativeConfig
     {
-        public const string TypeValue = "generative-google";
+        public const string TypeValue = "generative-google-vertex";
         public string Type => TypeValue;
 
         public string? ApiEndpoint { get; set; }
         public int? MaxOutputTokens { get; set; }
-        public string? ModelId { get; set; }
         public string? Model { get; set; }
         public string? ProjectId { get; set; }
         public string? EndpointId { get; set; }
         public string? Region { get; set; }
+        public double? Temperature { get; set; }
+        public int? TopK { get; set; }
+        public double? TopP { get; set; }
+    }
+
+    public record GoogleGemini : IGenerativeConfig
+    {
+        public const string TypeValue = "generative-google-gemini";
+        public string Type => TypeValue;
+
+        public int? MaxOutputTokens { get; set; }
+        public string? Model { get; set; }
         public double? Temperature { get; set; }
         public int? TopK { get; set; }
         public double? TopP { get; set; }

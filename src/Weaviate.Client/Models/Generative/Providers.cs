@@ -71,6 +71,44 @@ public static class Providers
         public List<string>? ImageProperties { get; set; }
     }
 
+    public record AzureOpenAI() : Weaviate.Client.Models.GenerativeProvider("azure-openai")
+    {
+        public enum ReasoningEffortLevel
+        {
+            Unspecified = 0,
+            Minimal = 1,
+            Low = 2,
+            Medium = 3,
+            High = 4,
+        }
+
+        public enum VerbosityLevel
+        {
+            Unspecified = 0,
+            Low = 1,
+            Medium = 2,
+            High = 3,
+        }
+
+        public double? FrequencyPenalty { get; set; }
+        public long? MaxTokens { get; set; }
+        public string? Model { get; set; }
+        public long? N { get; set; }
+        public double? PresencePenalty { get; set; }
+        public List<string>? Stop { get; set; }
+        public double? Temperature { get; set; }
+        public double? TopP { get; set; }
+        public string? BaseUrl { get; set; }
+        public string? ApiVersion { get; set; }
+        public string? ResourceName { get; set; }
+        public string? DeploymentId { get; set; }
+        public bool? IsAzure { get; set; }
+        public List<string>? Images { get; set; }
+        public List<string>? ImageProperties { get; set; }
+        public ReasoningEffortLevel? ReasoningEffort { get; set; }
+        public VerbosityLevel? Verbosity { get; set; }
+    }
+
     public record OpenAI() : Weaviate.Client.Models.GenerativeProvider("openai")
     {
         public enum ReasoningEffortLevel
@@ -109,7 +147,25 @@ public static class Providers
         public VerbosityLevel? Verbosity { get; set; }
     }
 
-    public record Google() : Weaviate.Client.Models.GenerativeProvider("google")
+    public record GoogleVertex() : Weaviate.Client.Models.GenerativeProvider("google-vertex")
+    {
+        public double? FrequencyPenalty { get; set; }
+        public long? MaxTokens { get; set; }
+        public string? Model { get; set; }
+        public double? PresencePenalty { get; set; }
+        public double? Temperature { get; set; }
+        public long? TopK { get; set; }
+        public double? TopP { get; set; }
+        public List<string>? StopSequences { get; set; }
+        public string? ApiEndpoint { get; set; }
+        public string? ProjectId { get; set; }
+        public string? EndpointId { get; set; }
+        public string? Region { get; set; }
+        public List<string>? Images { get; set; }
+        public List<string>? ImageProperties { get; set; }
+    }
+
+    public record GoogleGemini() : Weaviate.Client.Models.GenerativeProvider("google-gemini")
     {
         public double? FrequencyPenalty { get; set; }
         public long? MaxTokens { get; set; }

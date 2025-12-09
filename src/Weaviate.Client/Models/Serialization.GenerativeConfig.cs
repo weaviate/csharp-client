@@ -56,8 +56,13 @@ internal static class GenerativeConfigSerialization
                         vic.GetRawText(),
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
-                GenerativeConfig.Google.TypeValue =>
-                    JsonSerializer.Deserialize<GenerativeConfig.Google>(
+                GenerativeConfig.GoogleGemini.TypeValue =>
+                    JsonSerializer.Deserialize<GenerativeConfig.GoogleGemini>(
+                        vic.GetRawText(),
+                        Rest.WeaviateRestClient.RestJsonSerializerOptions
+                    ),
+                GenerativeConfig.GoogleVertex.TypeValue =>
+                    JsonSerializer.Deserialize<GenerativeConfig.GoogleVertex>(
                         vic.GetRawText(),
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
