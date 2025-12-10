@@ -30,4 +30,34 @@ public partial class GenerateClient
             _client.QueryTimeout ?? _client.DefaultTimeout ?? WeaviateDefaults.QueryTimeout;
         return TimeoutHelper.GetCancellationToken(effectiveTimeout, userToken);
     }
+
+    /// <summary>
+    /// Enriches a generative prompt with a provider if the prompt doesn't already have one.
+    /// </summary>
+    /// <param name="prompt">The prompt to enrich</param>
+    /// <param name="provider">The provider to use if the prompt doesn't have one</param>
+    /// <returns>The enriched prompt, or null if the input prompt was null</returns>
+    private static GenerativePrompt? EnrichPrompt(
+        GenerativePrompt? prompt,
+        GenerativeProvider? provider
+    )
+    {
+        if (prompt is null)
+            return null;
+
+        if (prompt.Provider is not null && provider is not null)
+        {
+            throw new WeaviateClientException(
+                "Cannot override the provider for a generative prompt",
+                new InvalidOperationException("The prompt already has a provider set")
+            );
+        }
+
+        if (prompt.Provider is null && provider is not null)
+        {
+            prompt.Provider = provider;
+        }
+
+        return prompt;
+    }
 }

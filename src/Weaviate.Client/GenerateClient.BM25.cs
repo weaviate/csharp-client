@@ -15,8 +15,9 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
     /// <param name="after">Cursor for pagination</param>
     /// <param name="consistencyLevel">Consistency level</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -34,8 +35,9 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
         Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -55,8 +57,8 @@ public partial class GenerateClient
             offset: offset,
             groupBy: groupBy,
             rerank: rerank,
-            singlePrompt: prompt,
-            groupedTask: groupedTask,
+            singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
+            groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             after: after,
             tenant: _collectionClient.Tenant,
             consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
@@ -79,8 +81,9 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
     /// <param name="after">Cursor for pagination</param>
     /// <param name="consistencyLevel">Consistency level</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -97,8 +100,9 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
         Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
@@ -118,8 +122,8 @@ public partial class GenerateClient
             offset: offset,
             groupBy: null,
             rerank: rerank,
-            singlePrompt: prompt,
-            groupedTask: groupedTask,
+            singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
+            groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             after: after,
             tenant: _collectionClient.Tenant,
             consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
