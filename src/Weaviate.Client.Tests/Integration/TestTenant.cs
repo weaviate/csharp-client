@@ -883,16 +883,20 @@ public partial class TenantTests : IntegrationTests
         Assert.Equal(0, result.Count(r => r.Error != null));
 
         // Batch insert 101 objects for tenants "tenant-0" to "tenant-100"
-        var batchResult = await collectionClient.Data.InsertMany(
+        var batchResult = await Task.WhenAll(
             Enumerable
                 .Range(0, 101)
-                .Select(i =>
-                    BatchInsertRequest.Create(new { name = "some name" }, tenant: $"tenant-{i}")
-                ),
-            TestContext.Current.CancellationToken
+                .Select(async i =>
+                    await collectionClient
+                        .WithTenant($"tenant-{i}")
+                        .Data.InsertMany(
+                            [BatchInsertRequest.Create(new { name = "some name" })],
+                            TestContext.Current.CancellationToken
+                        )
+                )
         );
 
-        Assert.Equal(0, batchResult.Count(r => r.Error != null));
+        Assert.Equal(0, batchResult.Count(r => r.HasErrors));
     }
 
     [Fact]

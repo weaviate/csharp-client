@@ -364,7 +364,7 @@ public partial class AggregatesTests : IntegrationTests
         (Dictionary<string, object> option, int expectedLen)
     > _nearTextAggregationOptions = new()
     {
-        ["distance 0.75=1"] = (new Dictionary<string, object> { { "distance", 0.75f } }, 1),
+        ["distance 0.65=1"] = (new Dictionary<string, object> { { "distance", 0.6500 } }, 1),
         ["distance 0.9=2"] = (new Dictionary<string, object> { { "distance", 0.9 } }, 2),
         ["limit 1"] = (new Dictionary<string, object> { { "object_limit", 1 } }, 1),
         ["limit 2"] = (new Dictionary<string, object> { { "object_limit", 2 } }, 2),
