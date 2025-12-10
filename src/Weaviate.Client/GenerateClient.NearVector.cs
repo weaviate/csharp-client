@@ -16,8 +16,9 @@ public partial class GenerateClient
     /// <param name="offset">Offset for pagination</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -34,8 +35,9 @@ public partial class GenerateClient
         uint? offset = null,
         TargetVectors? targetVector = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -55,8 +57,8 @@ public partial class GenerateClient
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
-            singlePrompt: prompt,
-            groupedTask: groupedTask,
+            singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
+            groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -80,8 +82,9 @@ public partial class GenerateClient
     /// <param name="offset">Offset for pagination</param>
     /// <param name="targetVector">Target vector name</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -99,8 +102,9 @@ public partial class GenerateClient
         uint? offset = null,
         TargetVectors? targetVector = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -121,8 +125,8 @@ public partial class GenerateClient
             targetVector: targetVector,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
-            singlePrompt: prompt,
-            groupedTask: groupedTask,
+            singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
+            groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,

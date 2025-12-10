@@ -13,8 +13,9 @@ public partial class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -28,8 +29,9 @@ public partial class GenerateClient
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -41,8 +43,8 @@ public partial class GenerateClient
             after: after,
             limit: limit,
             rerank: rerank,
-            singlePrompt: prompt,
-            groupedTask: groupedTask,
+            singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
+            groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             filters: filters,
             sort: sort,
             groupBy: groupBy,
@@ -62,7 +64,7 @@ public partial class GenerateClient
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
     /// <param name="rerank">Rerank configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
@@ -76,8 +78,9 @@ public partial class GenerateClient
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -89,8 +92,8 @@ public partial class GenerateClient
             after: after,
             limit: limit,
             rerank: rerank,
-            singlePrompt: prompt,
-            groupedTask: groupedTask,
+            singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
+            groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             filters: filters,
             sort: sort,
             tenant: _collectionClient.Tenant,
@@ -105,8 +108,9 @@ public partial class GenerateClient
     /// Fetch a single object by ID with generative AI capabilities.
     /// </summary>
     /// <param name="id">Object ID</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -115,8 +119,9 @@ public partial class GenerateClient
     /// <returns>Generative result</returns>
     public async Task<GenerativeWeaviateResult?> FetchObjectByID(
         Guid id,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -132,8 +137,8 @@ public partial class GenerateClient
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
             tenant: _collectionClient.Tenant,
-            singlePrompt: prompt,
-            groupedTask: groupedTask,
+            singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
+            groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
         return result;
@@ -147,8 +152,9 @@ public partial class GenerateClient
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
-    /// <param name="prompt">Single prompt for generation</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -161,8 +167,9 @@ public partial class GenerateClient
         Rerank? rerank = null,
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
-        SinglePrompt? prompt = null,
+        SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -188,8 +195,8 @@ public partial class GenerateClient
             sort: sort,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
-            singlePrompt: prompt,
-            groupedTask: groupedTask,
+            singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
+            groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
