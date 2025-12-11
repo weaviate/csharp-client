@@ -64,32 +64,14 @@ internal partial class WeaviateRestClient
 
     internal async Task<Dto.UserApiKey> UserDbCreate(
         string userId,
-        bool? import = null,
-        DateTimeOffset? createTime = null,
         CancellationToken cancellationToken = default
     )
     {
-        object? body = null;
-        if (import.HasValue || createTime.HasValue)
-        {
-            body = new
-            {
-                import = import ?? false,
-                createTime = createTime?.UtcDateTime.ToString("o"),
-            };
-        }
-        var response = body is not null
-            ? await _httpClient.PostAsJsonAsync(
-                WeaviateEndpoints.UserDb(userId),
-                body,
-                options: RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            )
-            : await _httpClient.PostAsync(
-                WeaviateEndpoints.UserDb(userId),
-                null,
-                cancellationToken
-            );
+        var response = await _httpClient.PostAsync(
+            WeaviateEndpoints.UserDb(userId),
+            null,
+            cancellationToken
+        );
 
         await response.ManageStatusCode(
             [HttpStatusCode.Created],
