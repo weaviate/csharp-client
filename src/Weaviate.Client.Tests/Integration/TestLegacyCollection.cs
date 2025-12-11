@@ -114,7 +114,7 @@ public partial class CollectionsTests
     ""vectorizer"": ""none""
 }}";
 
-        var collectionClient = await _weaviate.Collections.Create(
+        var collectionClient = await _weaviate.Collections.CreateFromJson(
             json,
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -329,7 +329,7 @@ public partial class CollectionsTests
             }}
         }}";
 
-        var collectionClient = await _weaviate.Collections.Create(
+        var collectionClient = await _weaviate.Collections.CreateFromJson(
             expectedJson,
             cancellationToken: TestContext.Current.CancellationToken
         );
