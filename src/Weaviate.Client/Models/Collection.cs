@@ -1,6 +1,6 @@
 namespace Weaviate.Client.Models;
 
-public partial record CollectionCreateParams
+public abstract record CollectionConfigCommon
 {
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
@@ -27,34 +27,6 @@ public partial record CollectionCreateParams
 
     // Configure named vectors. Either use this field or `vectorizer`, `vectorIndexType`, and `vectorIndexConfig` fields. Available from `v1.24.0`.
     public VectorConfigList VectorConfig { get; set; } = default!;
-}
-
-public partial record CollectionConfig : CollectionCreateParams
-{
-    internal CollectionConfig()
-        : base() { }
-
-    // Configuration specific to modules in a collection context.
-    public ModuleConfigList? ModuleConfig { get; set; }
-
-    // Vector-index config, that is specific to the type of index selected in vectorIndexType
-    [Obsolete("Use `VectorConfig` instead")]
-    public object? VectorIndexConfig { get; internal set; }
-
-    // Name of the vector index to use, eg. (HNSW)
-    [Obsolete("Use `VectorConfig` instead")]
-    public string VectorIndexType { get; internal set; } = default!;
-
-    [Obsolete("Use `VectorConfig` instead")]
-    public string Vectorizer { get; internal set; } = "";
-
-    public override string ToString()
-    {
-        return System.Text.Json.JsonSerializer.Serialize(
-            this.ToDto(),
-            Rest.WeaviateRestClient.RestJsonSerializerOptions
-        );
-    }
 
     public override int GetHashCode()
     {
@@ -64,7 +36,6 @@ public partial record CollectionConfig : CollectionCreateParams
         hash.Add(Properties);
         hash.Add(References);
         hash.Add(InvertedIndexConfig);
-        hash.Add(ModuleConfig);
         hash.Add(MultiTenancyConfig);
         hash.Add(ReplicationConfig);
         hash.Add(ShardingConfig);
@@ -100,9 +71,6 @@ public partial record CollectionConfig : CollectionCreateParams
         )
             return false;
 
-        if (!EqualityComparer<ModuleConfigList?>.Default.Equals(ModuleConfig, other.ModuleConfig))
-            return false;
-
         if (
             !EqualityComparer<MultiTenancyConfig?>.Default.Equals(
                 MultiTenancyConfig,
@@ -128,6 +96,96 @@ public partial record CollectionConfig : CollectionCreateParams
             return false;
 
         if (!EqualityComparer<VectorConfigList>.Default.Equals(VectorConfig, other.VectorConfig))
+            return false;
+
+        return true;
+    }
+}
+
+public partial record CollectionCreateParams : CollectionConfigCommon
+{
+    public static CollectionCreateParams FromCollectionConfig(CollectionConfig config)
+    {
+        return new CollectionCreateParams
+        {
+            Name = config.Name,
+            Description = config.Description,
+            Properties = config.Properties,
+            References = config.References,
+            InvertedIndexConfig = config.InvertedIndexConfig,
+            MultiTenancyConfig = config.MultiTenancyConfig,
+            ReplicationConfig = config.ReplicationConfig,
+            ShardingConfig = config.ShardingConfig,
+            VectorConfig = config.VectorConfig,
+            GenerativeConfig = config.GenerativeConfig,
+            RerankerConfig = config.RerankerConfig,
+        };
+    }
+}
+
+public partial record CollectionConfig : CollectionConfigCommon
+{
+    internal CollectionConfig()
+        : base() { }
+
+    public static CollectionConfig FromCollectionCreate(CollectionCreateParams config)
+    {
+        return new CollectionConfig
+        {
+            Name = config.Name,
+            Description = config.Description,
+            Properties = config.Properties,
+            References = config.References,
+            InvertedIndexConfig = config.InvertedIndexConfig,
+            MultiTenancyConfig = config.MultiTenancyConfig,
+            ReplicationConfig = config.ReplicationConfig,
+            ShardingConfig = config.ShardingConfig,
+            VectorConfig = config.VectorConfig,
+            GenerativeConfig = config.GenerativeConfig,
+            RerankerConfig = config.RerankerConfig,
+        };
+    }
+
+    // Configuration specific to modules in a collection context.
+    public ModuleConfigList? ModuleConfig { get; set; }
+
+    // Vector-index config, that is specific to the type of index selected in vectorIndexType
+    public object? VectorIndexConfig { get; internal set; }
+
+    // Name of the vector index to use, eg. (HNSW)
+    public string VectorIndexType { get; internal set; } = default!;
+
+    public string Vectorizer { get; internal set; } = "";
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(base.GetHashCode());
+        hash.Add(ModuleConfig);
+        hash.Add(VectorIndexConfig);
+        hash.Add(VectorIndexType);
+        hash.Add(Vectorizer);
+        return hash.ToHashCode();
+    }
+
+    public override bool Equals(CollectionConfig? other)
+    {
+        if (!base.Equals(other))
+            return false;
+
+        if (other is null)
+            return false;
+
+        if (!EqualityComparer<ModuleConfigList?>.Default.Equals(ModuleConfig, other.ModuleConfig))
+            return false;
+
+        if (!VectorIndexConfig?.Equals(other.VectorIndexConfig) ?? other.VectorIndexConfig != null)
+            return false;
+
+        if (VectorIndexType != other.VectorIndexType)
+            return false;
+
+        if (Vectorizer != other.Vectorizer)
             return false;
 
         return true;

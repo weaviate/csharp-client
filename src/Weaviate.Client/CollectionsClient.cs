@@ -147,8 +147,10 @@ public record CollectionsClient
     {
         ArgumentNullException.ThrowIfNull(collection);
 
+        var config = CollectionConfig.FromCollectionCreate(collection);
+
         var jsonString = JsonSerializer.Serialize(
-            collection.ToDto(),
+            config.ToDto(),
             Rest.WeaviateRestClient.RestJsonSerializerOptions
         );
 
@@ -215,8 +217,10 @@ public record CollectionsClient
     {
         ArgumentNullException.ThrowIfNull(collection);
 
+        var config = CollectionConfig.FromCollectionCreate(collection);
+
         var jsonString = JsonSerializer.Serialize(
-            collection.ToDto(),
+            config.ToDto(),
             Rest.WeaviateRestClient.RestJsonSerializerOptions
         );
 

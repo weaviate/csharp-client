@@ -31,7 +31,7 @@ public class TestRbacAuthorization : IntegrationTests
         var userId = Helpers.GenerateUniqueIdentifier("user");
 
         // Create collection
-        var collectionConfig = new CollectionConfig
+        var collectionConfig = new CollectionCreateParams
         {
             Name = collectionName,
             Properties = [Property.Text("name")],

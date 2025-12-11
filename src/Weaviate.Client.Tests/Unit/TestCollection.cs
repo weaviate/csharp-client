@@ -47,7 +47,7 @@ public class CollectionTests
     public void Collection_Equals_Null_Returns_False()
     {
         // Arrange
-        var collection = new CollectionConfig();
+        var collection = new CollectionCreateParams();
 
         // Act
         var result = collection.Equals(null);
@@ -60,7 +60,7 @@ public class CollectionTests
     public void Collection_Equals_Self_Returns_True()
     {
         // Arrange
-        var collection = new CollectionConfig();
+        var collection = new CollectionCreateParams();
 
         // Act
         var result = collection.Equals(collection);
@@ -73,8 +73,8 @@ public class CollectionTests
     public void Collection_Equals_DifferentObjects_Returns_False()
     {
         // Arrange
-        var collection1 = new CollectionConfig();
-        var collection2 = new CollectionConfig();
+        var collection1 = new CollectionCreateParams();
+        var collection2 = new CollectionCreateParams();
 
         // Act
 
@@ -87,8 +87,8 @@ public class CollectionTests
     public void Collection_Equals_Mismatching_Returns_False()
     {
         // Arrange
-        var collection1 = new CollectionConfig { Name = "Test", Description = "Test" };
-        var collection2 = new CollectionConfig { Name = "Different", Description = "Test" };
+        var collection1 = new CollectionCreateParams { Name = "Test", Description = "Test" };
+        var collection2 = new CollectionCreateParams { Name = "Different", Description = "Test" };
 
         // Act
 
@@ -100,8 +100,14 @@ public class CollectionTests
     public void Collection_Equals_InvertedIndexConfig_Matches_Returns_True()
     {
         // Arrange
-        var collection1 = new CollectionConfig { InvertedIndexConfig = new InvertedIndexConfig() };
-        var collection2 = new CollectionConfig { InvertedIndexConfig = new InvertedIndexConfig() };
+        var collection1 = new CollectionCreateParams
+        {
+            InvertedIndexConfig = new InvertedIndexConfig(),
+        };
+        var collection2 = new CollectionCreateParams
+        {
+            InvertedIndexConfig = new InvertedIndexConfig(),
+        };
 
         // Act
 
@@ -113,8 +119,11 @@ public class CollectionTests
     public void Collection_Equals_InvertedIndexConfig_DoesNotMatch_Returns_False()
     {
         // Arrange
-        var collection1 = new CollectionConfig { InvertedIndexConfig = new InvertedIndexConfig() };
-        var collection2 = new CollectionConfig { InvertedIndexConfig = null };
+        var collection1 = new CollectionCreateParams
+        {
+            InvertedIndexConfig = new InvertedIndexConfig(),
+        };
+        var collection2 = new CollectionCreateParams { InvertedIndexConfig = null };
 
         // Act
 
@@ -154,8 +163,14 @@ public class CollectionTests
     public void Collection_Equals_MultiTenancyConfig_Matches_Returns_True()
     {
         // Arrange
-        var collection1 = new CollectionConfig { MultiTenancyConfig = new MultiTenancyConfig() };
-        var collection2 = new CollectionConfig { MultiTenancyConfig = new MultiTenancyConfig() };
+        var collection1 = new CollectionCreateParams
+        {
+            MultiTenancyConfig = new MultiTenancyConfig(),
+        };
+        var collection2 = new CollectionCreateParams
+        {
+            MultiTenancyConfig = new MultiTenancyConfig(),
+        };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -168,8 +183,11 @@ public class CollectionTests
     public void Collection_Equals_MultiTenancyConfig_DoesNotMatch_Returns_False()
     {
         // Arrange
-        var collection1 = new CollectionConfig { MultiTenancyConfig = new MultiTenancyConfig() };
-        var collection2 = new CollectionConfig { MultiTenancyConfig = null };
+        var collection1 = new CollectionCreateParams
+        {
+            MultiTenancyConfig = new MultiTenancyConfig(),
+        };
+        var collection2 = new CollectionCreateParams { MultiTenancyConfig = null };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -182,8 +200,14 @@ public class CollectionTests
     public void Collection_Equals_ReplicationConfig_Matches_Returns_True()
     {
         // Arrange
-        var collection1 = new CollectionConfig { ReplicationConfig = new ReplicationConfig() };
-        var collection2 = new CollectionConfig { ReplicationConfig = new ReplicationConfig() };
+        var collection1 = new CollectionCreateParams
+        {
+            ReplicationConfig = new ReplicationConfig(),
+        };
+        var collection2 = new CollectionCreateParams
+        {
+            ReplicationConfig = new ReplicationConfig(),
+        };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -196,8 +220,11 @@ public class CollectionTests
     public void Collection_Equals_ReplicationConfig_DoesNotMatch_Returns_False()
     {
         // Arrange
-        var collection1 = new CollectionConfig { ReplicationConfig = new ReplicationConfig() };
-        var collection2 = new CollectionConfig { ReplicationConfig = null };
+        var collection1 = new CollectionCreateParams
+        {
+            ReplicationConfig = new ReplicationConfig(),
+        };
+        var collection2 = new CollectionCreateParams { ReplicationConfig = null };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -210,8 +237,8 @@ public class CollectionTests
     public void Collection_Equals_ShardingConfig_Matches_Returns_True()
     {
         // Arrange
-        var collection1 = new CollectionConfig { ShardingConfig = new ShardingConfig() };
-        var collection2 = new CollectionConfig { ShardingConfig = new ShardingConfig() };
+        var collection1 = new CollectionCreateParams { ShardingConfig = new ShardingConfig() };
+        var collection2 = new CollectionCreateParams { ShardingConfig = new ShardingConfig() };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -224,8 +251,8 @@ public class CollectionTests
     public void Collection_Equals_ShardingConfig_DoesNotMatch_Returns_False()
     {
         // Arrange
-        var collection1 = new CollectionConfig { ShardingConfig = new ShardingConfig() };
-        var collection2 = new CollectionConfig { ShardingConfig = null };
+        var collection1 = new CollectionCreateParams { ShardingConfig = new ShardingConfig() };
+        var collection2 = new CollectionCreateParams { ShardingConfig = null };
 
         // Act
         var result = collection1.Equals(collection2);
@@ -238,8 +265,8 @@ public class CollectionTests
     public void Collection_Equals_VectorConfig_Matches_Returns_True()
     {
         // Arrange
-        var collection1 = new CollectionConfig { VectorConfig = new VectorConfigList() };
-        var collection2 = new CollectionConfig { VectorConfig = new VectorConfigList() };
+        var collection1 = new CollectionCreateParams { VectorConfig = new VectorConfigList() };
+        var collection2 = new CollectionCreateParams { VectorConfig = new VectorConfigList() };
 
         // Act
         var result = collection1.Equals(collection2);

@@ -37,7 +37,7 @@ public partial class RestClientTests
 
         handler.AddJsonResponse(mockResponse);
 
-        var config = new CollectionConfig
+        var config = new CollectionCreateParams
         {
             Name = "Article",
             Description = "A news article",
@@ -85,7 +85,7 @@ public partial class RestClientTests
 
         handler.AddJsonResponse(mockResponse);
 
-        var config = new CollectionConfig { Name = "Product" };
+        var config = new CollectionCreateParams { Name = "Product" };
 
         // Act
         var result = await client.Collections.Create(config, TestContext.Current.CancellationToken);
@@ -136,7 +136,7 @@ public partial class RestClientTests
             };
         });
 
-        var config = new CollectionConfig
+        var config = new CollectionCreateParams
         {
             Name = "TestClass",
             VectorConfig = Configure.Vectors.SelfProvided().New(),
@@ -172,7 +172,7 @@ public partial class RestClientTests
 
         handler.AddJsonResponse(mockResponse);
 
-        var config = new CollectionConfig
+        var config = new CollectionCreateParams
         {
             Name = "Person",
             Properties =
@@ -303,7 +303,7 @@ public partial class RestClientTests
 
         handler.AddJsonResponse(mockResponse);
 
-        var config = new CollectionConfig
+        var config = new CollectionCreateParams
         {
             Name = "Document",
             VectorConfig = Configure.Vectors.SelfProvided().New(),
@@ -331,15 +331,15 @@ public partial class RestClientTests
 
         // Act
         await client.Collections.Create(
-            new CollectionConfig { Name = "First" },
+            new CollectionCreateParams { Name = "First" },
             TestContext.Current.CancellationToken
         );
         await client.Collections.Create(
-            new CollectionConfig { Name = "Second" },
+            new CollectionCreateParams { Name = "Second" },
             TestContext.Current.CancellationToken
         );
         await client.Collections.Create(
-            new CollectionConfig { Name = "Third" },
+            new CollectionCreateParams { Name = "Third" },
             TestContext.Current.CancellationToken
         );
 

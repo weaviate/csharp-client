@@ -81,7 +81,7 @@ public static class WeaviateExtensions
         return (props.ToArray(), refs.ToArray());
     }
 
-    internal static Rest.Dto.Class ToDto(this CollectionCreateParams collection)
+    internal static Rest.Dto.Class ToDto(this CollectionConfig collection)
     {
         var moduleConfig = new ModuleConfigList();
 
