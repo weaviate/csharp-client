@@ -177,11 +177,28 @@ internal partial class WeaviateGrpcClient
                 };
                 SetIfNotNull(v => result.Anyscale.Temperature = (float)v, a.Temperature);
                 break;
-            case Models.Generative.Providers.AWS a:
+            case Models.Generative.Providers.AWSBedrock a:
                 result.Aws = new V1.GenerativeAWS
                 {
                     Model = a.Model ?? string.Empty,
-                    Service = a.Service ?? string.Empty,
+                    Service = "bedrock",
+                    Region = a.Region ?? string.Empty,
+                    Endpoint = a.Endpoint ?? string.Empty,
+                    Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
+                    ImageProperties =
+                        a.ImageProperties != null
+                            ? new V1.TextArray { Values = { a.ImageProperties } }
+                            : null,
+                };
+                SetIfNotNull(v => result.Aws.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Aws.MaxTokens = v, a.MaxTokens);
+                // TODO - add top_k, top_p & stop_sequences here when added to server-side proto
+                // Check the latest available version of `grpc/proto/v1/generative.proto` (see GenerativeAWS) in the server repo
+                break;
+            case Models.Generative.Providers.AWSSagemaker a:
+                result.Aws = new V1.GenerativeAWS
+                {
+                    Service = "sagemaker",
                     Region = a.Region ?? string.Empty,
                     Endpoint = a.Endpoint ?? string.Empty,
                     TargetModel = a.TargetModel ?? string.Empty,
@@ -194,6 +211,8 @@ internal partial class WeaviateGrpcClient
                 };
                 SetIfNotNull(v => result.Aws.Temperature = (float)v, a.Temperature);
                 SetIfNotNull(v => result.Aws.MaxTokens = v, a.MaxTokens);
+                // TODO - add top_k, top_p & stop_sequences here when added to server-side proto
+                // Check the latest available version of `grpc/proto/v1/generative.proto` (see GenerativeAWS) in the server repo
                 break;
             case Models.Generative.Providers.Cohere a:
                 result.Cohere = new V1.GenerativeCohere
@@ -243,6 +262,29 @@ internal partial class WeaviateGrpcClient
                 };
                 SetIfNotNull(v => result.Ollama.Temperature = (float)v, a.Temperature);
                 break;
+            case Models.Generative.Providers.AzureOpenAI a:
+                result.Openai = new V1.GenerativeOpenAI
+                {
+                    Model = a.Model ?? string.Empty,
+                    Stop = a.Stop != null ? new V1.TextArray { Values = { a.Stop } } : null,
+                    BaseUrl = a.BaseUrl ?? string.Empty,
+                    ApiVersion = a.ApiVersion ?? string.Empty,
+                    ResourceName = a.ResourceName ?? string.Empty,
+                    DeploymentId = a.DeploymentId ?? string.Empty,
+                    IsAzure = true,
+                    Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
+                    ImageProperties =
+                        a.ImageProperties != null
+                            ? new V1.TextArray { Values = { a.ImageProperties } }
+                            : null,
+                };
+                SetIfNotNull(v => result.Openai.FrequencyPenalty = (float)v, a.FrequencyPenalty);
+                SetIfNotNull(v => result.Openai.MaxTokens = v, a.MaxTokens);
+                SetIfNotNull(v => result.Openai.N = v, a.N);
+                SetIfNotNull(v => result.Openai.PresencePenalty = (float)v, a.PresencePenalty);
+                SetIfNotNull(v => result.Openai.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Openai.TopP = (float)v, a.TopP);
+                break;
             case Models.Generative.Providers.OpenAI a:
                 result.Openai = new V1.GenerativeOpenAI
                 {
@@ -252,7 +294,7 @@ internal partial class WeaviateGrpcClient
                     ApiVersion = a.ApiVersion ?? string.Empty,
                     ResourceName = a.ResourceName ?? string.Empty,
                     DeploymentId = a.DeploymentId ?? string.Empty,
-                    IsAzure = a.IsAzure ?? false,
+                    IsAzure = false,
                     Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
                     ImageProperties =
                         a.ImageProperties != null
@@ -272,7 +314,7 @@ internal partial class WeaviateGrpcClient
                 SetIfNotNull(v => result.Openai.Temperature = (float)v, a.Temperature);
                 SetIfNotNull(v => result.Openai.TopP = (float)v, a.TopP);
                 break;
-            case Models.Generative.Providers.Google a:
+            case Models.Generative.Providers.GoogleVertex a:
                 result.Google = new V1.GenerativeGoogle
                 {
                     Model = a.Model ?? string.Empty,
@@ -284,6 +326,31 @@ internal partial class WeaviateGrpcClient
                     ProjectId = a.ProjectId ?? string.Empty,
                     EndpointId = a.EndpointId ?? string.Empty,
                     Region = a.Region ?? string.Empty,
+                    Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
+                    ImageProperties =
+                        a.ImageProperties != null
+                            ? new V1.TextArray { Values = { a.ImageProperties } }
+                            : null,
+                };
+                SetIfNotNull(v => result.Google.FrequencyPenalty = (float)v, a.FrequencyPenalty);
+                SetIfNotNull(v => result.Google.MaxTokens = v, a.MaxTokens);
+                SetIfNotNull(v => result.Google.PresencePenalty = (float)v, a.PresencePenalty);
+                SetIfNotNull(v => result.Google.Temperature = (float)v, a.Temperature);
+                SetIfNotNull(v => result.Google.TopK = v, a.TopK);
+                SetIfNotNull(v => result.Google.TopP = (float)v, a.TopP);
+                break;
+            case Models.Generative.Providers.GoogleGemini a:
+                result.Google = new V1.GenerativeGoogle
+                {
+                    Model = a.Model ?? string.Empty,
+                    StopSequences =
+                        a.StopSequences != null
+                            ? new V1.TextArray { Values = { a.StopSequences } }
+                            : null,
+                    ApiEndpoint = "generativelanguage.googleapis.com",
+                    ProjectId = string.Empty,
+                    EndpointId = string.Empty,
+                    Region = string.Empty,
                     Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
                     ImageProperties =
                         a.ImageProperties != null
