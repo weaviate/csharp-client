@@ -803,7 +803,7 @@ public partial class SearchTests : IntegrationTests
             vectors: new[] { 1f, 0f, 0f, 0f },
             maxVectorDistance: 0.5f,
             targetVector: "default",
-            metrics: [Metrics.ForProperty("name").Text(count: true)],
+            return_metrics: [Metrics.ForProperty("name").Text(count: true)],
             cancellationToken: TestContext.Current.CancellationToken
         );
 

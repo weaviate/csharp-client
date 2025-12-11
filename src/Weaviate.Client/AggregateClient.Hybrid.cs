@@ -18,7 +18,7 @@ public partial class AggregateClient
     /// <param name="maxVectorDistance">Maximum vector distance</param>
     /// <param name="totalCount">Whether to include total count</param>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <param name="metrics">Metrics to aggregate</param>
+    /// <param name="return_metrics">Metrics to aggregate</param>
     /// <returns>Aggregate result</returns>
     public async Task<AggregateResult> Hybrid(
         string? query = null,
@@ -31,7 +31,7 @@ public partial class AggregateClient
         string? targetVector = null,
         float? maxVectorDistance = null,
         bool totalCount = true,
-        IEnumerable<Aggregate.Metric>? metrics = null,
+        IEnumerable<Aggregate.Metric>? return_metrics = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -49,7 +49,7 @@ public partial class AggregateClient
             objectLimit,
             totalCount,
             _collectionClient.Tenant,
-            metrics,
+            return_metrics,
             cancellationToken: cancellationToken
         );
 
@@ -71,7 +71,7 @@ public partial class AggregateClient
     /// <param name="maxVectorDistance">Maximum vector distance</param>
     /// <param name="totalCount">Whether to include total count</param>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <param name="metrics">Metrics to aggregate</param>
+    /// <param name="return_metrics">Metrics to aggregate</param>
     /// <returns>Grouped aggregate result</returns>
     public async Task<AggregateGroupByResult> Hybrid(
         string? query,
@@ -85,7 +85,7 @@ public partial class AggregateClient
         string? targetVector = null,
         float? maxVectorDistance = null,
         bool totalCount = true,
-        IEnumerable<Aggregate.Metric>? metrics = null,
+        IEnumerable<Aggregate.Metric>? return_metrics = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -103,7 +103,7 @@ public partial class AggregateClient
             objectLimit,
             totalCount,
             _collectionClient.Tenant,
-            metrics,
+            return_metrics,
             cancellationToken: cancellationToken
         );
 

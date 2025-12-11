@@ -15,7 +15,7 @@ public partial class AggregateClient
     /// <param name="targetVector">Target vector name</param>
     /// <param name="totalCount">Whether to include total count</param>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <param name="metrics">Metrics to aggregate</param>
+    /// <param name="return_metrics">Metrics to aggregate</param>
     /// <returns>Aggregate result</returns>
     public async Task<AggregateResult> NearObject(
         Guid nearObject,
@@ -26,7 +26,7 @@ public partial class AggregateClient
         TargetVectors? targetVector = null,
         bool totalCount = true,
         CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? metrics = null
+        IEnumerable<Aggregate.Metric>? return_metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearObject(
@@ -40,7 +40,7 @@ public partial class AggregateClient
             targetVector: targetVector,
             totalCount: totalCount,
             _collectionClient.Tenant,
-            metrics: metrics,
+            metrics: return_metrics,
             cancellationToken: cancellationToken
         );
 
@@ -59,7 +59,7 @@ public partial class AggregateClient
     /// <param name="targetVector">Target vector name</param>
     /// <param name="totalCount">Whether to include total count</param>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <param name="metrics">Metrics to aggregate</param>
+    /// <param name="return_metrics">Metrics to aggregate</param>
     /// <returns>Grouped aggregate result</returns>
     public async Task<AggregateGroupByResult> NearObject(
         Guid nearObject,
@@ -71,7 +71,7 @@ public partial class AggregateClient
         TargetVectors? targetVector = null,
         bool totalCount = true,
         CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? metrics = null
+        IEnumerable<Aggregate.Metric>? return_metrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearObject(
@@ -85,7 +85,7 @@ public partial class AggregateClient
             targetVector: targetVector,
             totalCount: totalCount,
             _collectionClient.Tenant,
-            metrics: metrics,
+            metrics: return_metrics,
             cancellationToken: cancellationToken
         );
 
