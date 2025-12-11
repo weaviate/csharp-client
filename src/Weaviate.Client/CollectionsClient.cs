@@ -55,17 +55,14 @@ public record CollectionsClient
         try
         {
             // Deserialize to Dto.Class to validate structure
-            var dtoClass = JsonSerializer.Deserialize<Rest.Dto.Class>(
-                json,
-                Rest.WeaviateRestClient.RestJsonSerializerOptions
-            );
-
-            if (dtoClass == null)
-            {
-                throw new WeaviateClientException(
+            var dtoClass =
+                JsonSerializer.Deserialize<Rest.Dto.Class>(
+                    json,
+                    Rest.WeaviateRestClient.RestJsonSerializerOptions
+                )
+                ?? throw new WeaviateClientException(
                     $"Invalid {contextDescription}: JSON deserialized to null."
                 );
-            }
 
             // Convert to CollectionConfig model
             var collectionConfig = dtoClass.ToModel();
@@ -144,7 +141,7 @@ public record CollectionsClient
     }
 
     public async Task<CollectionClient> Create(
-        Models.CollectionConfig collection,
+        Models.CollectionCreateParams collection,
         CancellationToken cancellationToken = default
     )
     {
@@ -210,7 +207,7 @@ public record CollectionsClient
     }
 
     public async Task<Typed.TypedCollectionClient<T>> Create<T>(
-        Models.CollectionConfig collection,
+        Models.CollectionCreateParams collection,
         bool validateType = false,
         CancellationToken cancellationToken = default
     )

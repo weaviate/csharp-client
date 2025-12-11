@@ -1,6 +1,6 @@
 namespace Weaviate.Client.Models;
 
-public partial record CollectionConfig : IEquatable<CollectionConfig>
+public partial record CollectionCreateParams
 {
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
@@ -11,10 +11,6 @@ public partial record CollectionConfig : IEquatable<CollectionConfig>
 
     // inverted index config
     public InvertedIndexConfig? InvertedIndexConfig { get; set; }
-
-    // Configuration specific to modules in a collection context.
-    // TODO Considering removing this and keep it managed internally.
-    public ModuleConfigList? ModuleConfig { get; set; }
 
     public IRerankerConfig? RerankerConfig { get; set; }
 
@@ -31,17 +27,26 @@ public partial record CollectionConfig : IEquatable<CollectionConfig>
 
     // Configure named vectors. Either use this field or `vectorizer`, `vectorIndexType`, and `vectorIndexConfig` fields. Available from `v1.24.0`.
     public VectorConfigList VectorConfig { get; set; } = default!;
+}
+
+public partial record CollectionConfig : CollectionCreateParams
+{
+    internal CollectionConfig()
+        : base() { }
+
+    // Configuration specific to modules in a collection context.
+    public ModuleConfigList? ModuleConfig { get; set; }
 
     // Vector-index config, that is specific to the type of index selected in vectorIndexType
     [Obsolete("Use `VectorConfig` instead")]
-    public object? VectorIndexConfig { get; set; }
+    public object? VectorIndexConfig { get; internal set; }
 
     // Name of the vector index to use, eg. (HNSW)
     [Obsolete("Use `VectorConfig` instead")]
-    public string VectorIndexType { get; set; } = default!;
+    public string VectorIndexType { get; internal set; } = default!;
 
     [Obsolete("Use `VectorConfig` instead")]
-    public string Vectorizer { get; set; } = "";
+    public string Vectorizer { get; internal set; } = "";
 
     public override string ToString()
     {

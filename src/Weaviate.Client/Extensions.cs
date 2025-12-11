@@ -20,7 +20,7 @@ public static class WeaviateExtensions
 
     static T? _dictToObject<T>(IDictionary<string, object>? v) =>
         v is null
-            ? default(T)
+            ? default
             : JsonSerializer.Deserialize<T>(
                 JsonSerializer.Serialize(v, WeaviateRestClient.RestJsonSerializerOptions),
                 WeaviateRestClient.RestJsonSerializerOptions
@@ -81,7 +81,7 @@ public static class WeaviateExtensions
         return (props.ToArray(), refs.ToArray());
     }
 
-    internal static Rest.Dto.Class ToDto(this CollectionConfig collection)
+    internal static Rest.Dto.Class ToDto(this CollectionCreateParams collection)
     {
         var moduleConfig = new ModuleConfigList();
 
