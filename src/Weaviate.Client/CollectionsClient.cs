@@ -99,7 +99,7 @@ public record CollectionsClient
         }
     }
 
-    public async Task<CollectionClient> Create(
+    public async Task<CollectionClient> CreateFromJson(
         string json,
         CancellationToken cancellationToken = default
     )
@@ -115,7 +115,7 @@ public record CollectionsClient
         return new CollectionClient(_client, response.ToModel());
     }
 
-    public async Task<CollectionClient> Create(
+    public async Task<CollectionClient> CreateFromJson(
         JsonDocument json,
         CancellationToken cancellationToken = default
     )
@@ -127,10 +127,10 @@ public record CollectionsClient
             Rest.WeaviateRestClient.RestJsonSerializerOptions
         );
 
-        return await Create(jsonString, cancellationToken);
+        return await CreateFromJson(jsonString, cancellationToken);
     }
 
-    public async Task<CollectionClient> Create(
+    public async Task<CollectionClient> CreateFromJson(
         Stream json,
         CancellationToken cancellationToken = default
     )
@@ -140,7 +140,7 @@ public record CollectionsClient
         using var reader = new StreamReader(json, leaveOpen: true);
         var jsonString = await reader.ReadToEndAsync(cancellationToken);
 
-        return await Create(jsonString, cancellationToken);
+        return await CreateFromJson(jsonString, cancellationToken);
     }
 
     public async Task<CollectionClient> Create(
@@ -155,7 +155,7 @@ public record CollectionsClient
             Rest.WeaviateRestClient.RestJsonSerializerOptions
         );
 
-        return await Create(jsonString, cancellationToken);
+        return await CreateFromJson(jsonString, cancellationToken);
     }
 
     public async Task<Typed.TypedCollectionClient<T>> Create<T>(
@@ -172,7 +172,7 @@ public record CollectionsClient
             ValidateJsonAgainstType<T>(json, "collection configuration");
         }
 
-        var collectionClient = await Create(json, cancellationToken);
+        var collectionClient = await CreateFromJson(json, cancellationToken);
 
         return await collectionClient.AsTyped<T>(validate, cancellationToken);
     }
