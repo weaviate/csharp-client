@@ -15,7 +15,7 @@ public partial class AggregateClient
     /// <param name="targetVector">Target vector name</param>
     /// <param name="totalCount">Whether to include total count</param>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <param name="return_metrics">Metrics to aggregate</param>
+    /// <param name="returnMetrics">Metrics to aggregate</param>
     /// <returns>Aggregate result</returns>
     public async Task<AggregateResult> NearImage(
         byte[] media,
@@ -25,7 +25,7 @@ public partial class AggregateClient
         Filter? filters = null,
         TargetVectors? targetVector = null,
         bool totalCount = true,
-        IEnumerable<Aggregate.Metric>? return_metrics = null,
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -41,7 +41,7 @@ public partial class AggregateClient
             targetVector,
             totalCount,
             _collectionClient.Tenant,
-            return_metrics,
+            returnMetrics,
             cancellationToken: cancellationToken
         );
 
