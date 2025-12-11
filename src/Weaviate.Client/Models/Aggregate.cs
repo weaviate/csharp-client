@@ -333,11 +333,6 @@ public class Metrics
             Mode = mode,
         };
     }
-
-    public Aggregate.Metric Reference()
-    {
-        throw new NotImplementedException("Reference metrics are not implemented yet.");
-    }
 }
 
 public static partial class Aggregate
