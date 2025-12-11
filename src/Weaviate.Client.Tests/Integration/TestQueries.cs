@@ -109,12 +109,8 @@ public class TestQueries : IntegrationTests
             query: "Teddy",
             groupBy: groupBy,
             searchFields: new[] { "content" },
-            prompt: new SinglePrompt(
-                "Is there something to eat in {text}? Only answer yes if there is something to eat or no if not without punctuation"
-            ),
-            groupedTask: new GroupedTask(
-                "What is the biggest and what is the smallest? Only write the names separated by a space"
-            ),
+            singlePrompt: "Is there something to eat in {text}? Only answer yes if there is something to eat or no if not without punctuation",
+            groupedTask: "What is the biggest and what is the smallest? Only write the names separated by a space",
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -160,7 +156,7 @@ public class TestQueries : IntegrationTests
 
         // Act: generative fetch
         var res = await collection.Generate.FetchObjects(
-            prompt: new SinglePrompt("Who is this? {text}"),
+            singlePrompt: new SinglePrompt("Who is this? {text}"),
             groupedTask: new GroupedTask("Who are these people?", "text"),
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -248,7 +244,7 @@ public class TestQueries : IntegrationTests
 
         var res = await collection.Generate.FetchObjectsByIDs(
             [.. ids],
-            prompt: new SinglePrompt("Who is this? {text}"),
+            singlePrompt: new SinglePrompt("Who is this? {text}"),
             groupedTask: new GroupedTask("Who are these people?", "text"),
             cancellationToken: TestContext.Current.CancellationToken
         );

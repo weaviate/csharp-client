@@ -34,7 +34,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the query.</param>
     /// <param name="sort">Sorting configuration.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -47,7 +46,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -61,7 +59,6 @@ public class TypedQueryClient<T>
             filters: filters,
             sort: sort,
             rerank: rerank,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -78,7 +75,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the query.</param>
     /// <param name="sort">Sorting configuration.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -90,7 +86,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
         Rerank? rerank = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -103,7 +98,6 @@ public class TypedQueryClient<T>
             filters: filters,
             sort: sort,
             rerank: rerank,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -117,7 +111,6 @@ public class TypedQueryClient<T>
     /// Fetches a single object by its ID.
     /// </summary>
     /// <param name="id">The ID of the object to fetch.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -126,7 +119,6 @@ public class TypedQueryClient<T>
     /// <returns>A strongly-typed object, or null if not found.</returns>
     public async Task<WeaviateObject<T>?> FetchObjectByID(
         Guid id,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -136,7 +128,6 @@ public class TypedQueryClient<T>
     {
         var result = await _queryClient.FetchObjectByID(
             id: id,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -151,7 +142,6 @@ public class TypedQueryClient<T>
     /// </summary>
     /// <param name="ids">The IDs of the objects to fetch.</param>
     /// <param name="limit">Maximum number of objects to return.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="filters">Additional filters to apply.</param>
     /// <param name="sort">Sorting configuration.</param>
@@ -164,7 +154,6 @@ public class TypedQueryClient<T>
     public async Task<Models.WeaviateResult<WeaviateObject<T>>> FetchObjectsByIDs(
         HashSet<Guid> ids,
         uint? limit = null,
-        string? tenant = null,
         Rerank? rerank = null,
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
@@ -178,7 +167,6 @@ public class TypedQueryClient<T>
         var result = await _queryClient.FetchObjectsByIDs(
             ids: ids,
             limit: limit,
-            tenant: tenant,
             rerank: rerank,
             filters: filters,
             sort: sort,
@@ -208,7 +196,6 @@ public class TypedQueryClient<T>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
@@ -227,7 +214,6 @@ public class TypedQueryClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        string? tenant = null,
         TargetVectors? targetVector = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -247,7 +233,6 @@ public class TypedQueryClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
-            tenant: tenant,
             targetVector: targetVector,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -273,7 +258,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -293,7 +277,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -314,7 +297,6 @@ public class TypedQueryClient<T>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -335,7 +317,6 @@ public class TypedQueryClient<T>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
@@ -352,7 +333,6 @@ public class TypedQueryClient<T>
         uint? limit = null,
         uint? offset = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         Rerank? rerank = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -370,7 +350,6 @@ public class TypedQueryClient<T>
             limit: limit,
             offset: offset,
             targetVector: targetVector,
-            tenant: tenant,
             rerank: rerank,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -393,7 +372,6 @@ public class TypedQueryClient<T>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
@@ -411,7 +389,6 @@ public class TypedQueryClient<T>
         uint? limit = null,
         uint? offset = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         Rerank? rerank = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -430,7 +407,6 @@ public class TypedQueryClient<T>
             limit: limit,
             offset: offset,
             targetVector: targetVector,
-            tenant: tenant,
             rerank: rerank,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -453,7 +429,6 @@ public class TypedQueryClient<T>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="after">Cursor for pagination.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="consistencyLevel">Consistency level for the query.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -471,7 +446,6 @@ public class TypedQueryClient<T>
         uint? offset = null,
         Rerank? rerank = null,
         Guid? after = null,
-        string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -490,7 +464,6 @@ public class TypedQueryClient<T>
             offset: offset,
             rerank: rerank,
             after: after,
-            tenant: tenant,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
@@ -512,7 +485,6 @@ public class TypedQueryClient<T>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="after">Cursor for pagination.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="consistencyLevel">Consistency level for the query.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -529,7 +501,6 @@ public class TypedQueryClient<T>
         uint? offset = null,
         Rerank? rerank = null,
         Guid? after = null,
-        string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -547,7 +518,6 @@ public class TypedQueryClient<T>
             offset: offset,
             rerank: rerank,
             after: after,
-            tenant: tenant,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
@@ -574,7 +544,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -595,7 +564,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -617,7 +585,6 @@ public class TypedQueryClient<T>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -643,7 +610,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -664,7 +630,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -686,7 +651,6 @@ public class TypedQueryClient<T>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -713,7 +677,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -735,7 +698,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -758,7 +720,6 @@ public class TypedQueryClient<T>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -785,7 +746,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -807,7 +767,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -830,7 +789,6 @@ public class TypedQueryClient<T>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -852,7 +810,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -869,7 +826,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -887,7 +843,6 @@ public class TypedQueryClient<T>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -910,7 +865,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -928,7 +882,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -947,7 +900,6 @@ public class TypedQueryClient<T>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -969,7 +921,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -986,7 +937,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -1004,7 +954,6 @@ public class TypedQueryClient<T>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -1027,7 +976,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -1045,7 +993,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -1064,7 +1011,6 @@ public class TypedQueryClient<T>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -1087,7 +1033,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -1105,7 +1050,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -1124,7 +1068,6 @@ public class TypedQueryClient<T>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -1148,7 +1091,6 @@ public class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="targetVector">Target vector configuration for named vectors.</param>
-    /// <param name="tenant">Tenant name for multi-tenancy.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -1167,7 +1109,6 @@ public class TypedQueryClient<T>
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        string? tenant = null,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -1187,7 +1128,6 @@ public class TypedQueryClient<T>
             filters: filters,
             rerank: rerank,
             targetVector: targetVector,
-            tenant: tenant,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,

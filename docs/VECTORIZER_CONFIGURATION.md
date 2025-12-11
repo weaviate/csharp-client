@@ -1114,14 +1114,16 @@ Collections can have multiple named vector configurations:
 
 ```csharp
 var collection = await client.Collections.Create(
-    name: "Article",
-    properties: new[]
+    new CollectionConfig
     {
-        Property.Text("title"),
-        Property.Text("content"),
-        Property.Blob("image")
-    },
-    vectorConfig: new[]
+        Name = "Article",
+        Properties = new[]
+        {
+            Property.Text("title"),
+            Property.Text("content"),
+            Property.Blob("image")
+        },
+        VectorConfig = new[]
     {
         // Text embeddings
         Configure.Vectors.Text2VecOpenAI(model: "text-embedding-3-small")
@@ -1136,6 +1138,7 @@ var collection = await client.Collections.Create(
             textFields: ["title"],
             imageFields: ["image"]
         ).New("clip_vec")
+        }
     }
 );
 ```
@@ -1146,9 +1149,11 @@ You can combine regular and multi-vector configurations:
 
 ```csharp
 var collection = await client.Collections.Create(
-    name: "Document",
-    properties: new[] { Property.Text("content") },
-    vectorConfig: new[]
+    new CollectionConfig
+    {
+        Name = "Document",
+        Properties = new[] { Property.Text("content") },
+        VectorConfig = new[]
     {
         // Regular single vector
         Configure.Vectors.Text2VecOpenAI()
@@ -1164,6 +1169,7 @@ var collection = await client.Collections.Create(
                 },
                 sourceProperties: ["content"]
             )
+        }
     }
 );
 ```
@@ -1188,17 +1194,20 @@ await collection.Config.AddVector(
 
 ```csharp
 var collection = await client.Collections.Create(
-    name: "Article",
-    properties: new[]
+    new CollectionConfig
     {
-        Property.Text("title"),
-        Property.Text("content")
-    },
-    vectorConfig: Configure.Vectors.Text2VecOpenAI(
-            model: "text-embedding-3-small",
-            dimensions: 1536
-        )
-        .New("default", "title", "content")
+        Name = "Article",
+        Properties = new[]
+        {
+            Property.Text("title"),
+            Property.Text("content")
+        },
+        VectorConfig = Configure.Vectors.Text2VecOpenAI(
+                model: "text-embedding-3-small",
+                dimensions: 1536
+            )
+            .New("default", "title", "content")
+    }
 );
 ```
 
@@ -1206,9 +1215,11 @@ var collection = await client.Collections.Create(
 
 ```csharp
 var collection = await client.Collections.Create(
-    name: "LargeDataset",
-    properties: new[] { Property.Text("content") },
-    vectorConfig: Configure.Vectors.Text2VecCohere()
+    new CollectionConfig
+    {
+        Name = "LargeDataset",
+        Properties = new[] { Property.Text("content") },
+        VectorConfig = Configure.Vectors.Text2VecCohere()
         .New(
             name: "default",
             indexConfig: new VectorIndex.HNSW
@@ -1229,6 +1240,7 @@ var collection = await client.Collections.Create(
             },
             sourceProperties: ["content"]
         )
+    }
 );
 ```
 
@@ -1236,14 +1248,16 @@ var collection = await client.Collections.Create(
 
 ```csharp
 var collection = await client.Collections.Create(
-    name: "Product",
-    properties: new[]
+    new CollectionConfig
     {
-        Property.Text("name"),
-        Property.Text("description"),
-        Property.Blob("image")
-    },
-    vectorConfig: Configure.Vectors.Multi2VecClip(
+        Name = "Product",
+        Properties = new[]
+        {
+            Property.Text("name"),
+            Property.Text("description"),
+            Property.Blob("image")
+        },
+        VectorConfig = Configure.Vectors.Multi2VecClip(
             inferenceUrl: "http://localhost:8080",
             textFields: new WeightedFields
             {
@@ -1253,6 +1267,7 @@ var collection = await client.Collections.Create(
             imageFields: new WeightedFields { ("image", 1.0) }
         )
         .New("default")
+    }
 );
 ```
 
@@ -1260,9 +1275,11 @@ var collection = await client.Collections.Create(
 
 ```csharp
 var collection = await client.Collections.Create(
-    name: "Document",
-    properties: new[] { Property.Text("content") },
-    vectorConfig: Configure.MultiVectors.Text2MultiVecJinaAI(
+    new CollectionConfig
+    {
+        Name = "Document",
+        Properties = new[] { Property.Text("content") },
+        VectorConfig = Configure.MultiVectors.Text2MultiVecJinaAI(
             model: "jina-colbert-v2",
             dimensions: 128
         )
@@ -1289,6 +1306,7 @@ var collection = await client.Collections.Create(
             },
             sourceProperties: ["content"]
         )
+    }
 );
 ```
 
@@ -1296,14 +1314,16 @@ var collection = await client.Collections.Create(
 
 ```csharp
 var collection = await client.Collections.Create(
-    name: "Article",
-    properties: new[]
+    new CollectionConfig
     {
-        Property.Text("title"),
-        Property.Text("content"),
-        Property.Text("summary")
-    },
-    vectorConfig: new[]
+        Name = "Article",
+        Properties = new[]
+        {
+            Property.Text("title"),
+            Property.Text("content"),
+            Property.Text("summary")
+        },
+        VectorConfig = new[]
     {
         // Fast vector for initial retrieval
         Configure.Vectors.Text2VecOpenAI(model: "text-embedding-3-small")
@@ -1316,6 +1336,7 @@ var collection = await client.Collections.Create(
         // Specialized domain vector
         Configure.Vectors.Text2VecCohere(model: "embed-english-v3.0")
             .New("cohere", "content")
+        }
     }
 );
 ```
@@ -1324,9 +1345,11 @@ var collection = await client.Collections.Create(
 
 ```csharp
 var collection = await client.Collections.Create(
-    name: "GrowingDataset",
-    properties: new[] { Property.Text("text") },
-    vectorConfig: Configure.Vectors.Text2VecTransformers()
+    new CollectionConfig
+    {
+        Name = "GrowingDataset",
+        Properties = new[] { Property.Text("text") },
+        VectorConfig = Configure.Vectors.Text2VecTransformers()
         .New(
             name: "default",
             indexConfig: new VectorIndex.Dynamic
@@ -1351,6 +1374,7 @@ var collection = await client.Collections.Create(
             },
             sourceProperties: ["text"]
         )
+    }
 );
 ```
 
@@ -1359,31 +1383,40 @@ var collection = await client.Collections.Create(
 ```csharp
 // Create referenced collections first
 var authorCollection = await client.Collections.Create(
-    name: "Author",
-    properties: new[] { Property.Text("name") },
-    vectorConfig: Configure.Vectors.Text2VecOpenAI().New("default", "name")
+    new CollectionConfig
+    {
+        Name = "Author",
+        Properties = new[] { Property.Text("name") },
+        VectorConfig = Configure.Vectors.Text2VecOpenAI().New("default", "name")
+    }
 );
 
 var categoryCollection = await client.Collections.Create(
-    name: "Category",
-    properties: new[] { Property.Text("name") },
-    vectorConfig: Configure.Vectors.Text2VecOpenAI().New("default", "name")
+    new CollectionConfig
+    {
+        Name = "Category",
+        Properties = new[] { Property.Text("name") },
+        VectorConfig = Configure.Vectors.Text2VecOpenAI().New("default", "name")
+    }
 );
 
 // Article collection uses ref2vec-centroid
 var articleCollection = await client.Collections.Create(
-    name: "Article",
-    properties: new[]
+    new CollectionConfig
     {
-        Property.Text("title"),
-        Property.CrossReference("hasAuthor", "Author"),
-        Property.CrossReference("inCategory", "Category")
-    },
-    vectorConfig: Configure.Vectors.Ref2VecCentroid(
+        Name = "Article",
+        Properties = new[]
+        {
+            Property.Text("title"),
+            Property.CrossReference("hasAuthor", "Author"),
+            Property.CrossReference("inCategory", "Category")
+        },
+        VectorConfig = Configure.Vectors.Ref2VecCentroid(
             referenceProperties: ["hasAuthor", "inCategory"],
             method: "mean"
         )
         .New("default")
+    }
 );
 ```
 
@@ -1391,9 +1424,12 @@ var articleCollection = await client.Collections.Create(
 
 ```csharp
 var collection = await client.Collections.Create(
-    name: "CustomEmbeddings",
-    properties: new[] { Property.Text("text") },
-    vectorConfig: Configure.Vectors.SelfProvided().New("default")
+    new CollectionConfig
+    {
+        Name = "CustomEmbeddings",
+        Properties = new[] { Property.Text("text") },
+        VectorConfig = Configure.Vectors.SelfProvided().New("default")
+    }
 );
 
 // Insert with custom vectors

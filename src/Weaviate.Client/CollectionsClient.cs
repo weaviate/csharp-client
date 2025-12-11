@@ -287,6 +287,8 @@ public record CollectionsClient
         return new CollectionClient(_client, name);
     }
 
+    public CollectionClient this[string name] => Use(name);
+
     /// <summary>
     /// Creates a strongly-typed collection client for accessing a specific collection.
     /// The collection client provides type-safe data and query operations.

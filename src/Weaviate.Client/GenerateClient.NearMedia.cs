@@ -1,0 +1,148 @@
+using Weaviate.Client.Models;
+
+namespace Weaviate.Client;
+
+public partial class GenerateClient
+{
+    /// <summary>
+    /// Search near media with generative AI capabilities.
+    /// </summary>
+    /// <param name="media">Media data</param>
+    /// <param name="mediaType">Type of media</param>
+    /// <param name="certainty">Certainty threshold</param>
+    /// <param name="distance">Distance threshold</param>
+    /// <param name="limit">Maximum number of results</param>
+    /// <param name="offset">Offset for pagination</param>
+    /// <param name="autoLimit">Auto-limit threshold</param>
+    /// <param name="filters">Filters to apply</param>
+    /// <param name="rerank">Rerank configuration</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
+    /// <param name="targetVector">Target vector name</param>
+    /// <param name="returnProperties">Properties to return</param>
+    /// <param name="returnReferences">References to return</param>
+    /// <param name="returnMetadata">Metadata to return</param>
+    /// <param name="includeVectors">Vectors to include</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
+    /// <returns>Generative result</returns>
+    public async Task<GenerativeWeaviateResult> NearMedia(
+        byte[] media,
+        NearMediaType mediaType,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
+        TargetVectors? targetVector = null,
+        OneOrManyOf<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var result = await _client.GrpcClient.SearchNearMedia(
+            _collectionClient.Name,
+            media: media,
+            mediaType: mediaType,
+            certainty: certainty,
+            distance: distance,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            groupBy: null,
+            rerank: rerank,
+            singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
+            groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
+            tenant: _collectionClient.Tenant,
+            targetVector: targetVector,
+            consistencyLevel: _collectionClient.ConsistencyLevel,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
+        );
+
+        return result;
+    }
+
+    /// <summary>
+    /// Search near media with generative AI capabilities and grouping.
+    /// </summary>
+    /// <param name="media">Media data</param>
+    /// <param name="mediaType">Type of media</param>
+    /// <param name="groupBy">Group by configuration</param>
+    /// <param name="certainty">Certainty threshold</param>
+    /// <param name="distance">Distance threshold</param>
+    /// <param name="limit">Maximum number of results</param>
+    /// <param name="offset">Offset for pagination</param>
+    /// <param name="autoLimit">Auto-limit threshold</param>
+    /// <param name="filters">Filters to apply</param>
+    /// <param name="rerank">Rerank configuration</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
+    /// <param name="targetVector">Target vector name</param>
+    /// <param name="returnProperties">Properties to return</param>
+    /// <param name="returnReferences">References to return</param>
+    /// <param name="returnMetadata">Metadata to return</param>
+    /// <param name="includeVectors">Vectors to include</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
+    /// <returns>Generative group-by result</returns>
+    public async Task<GenerativeGroupByResult> NearMedia(
+        byte[] media,
+        NearMediaType mediaType,
+        GroupByRequest groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
+        TargetVectors? targetVector = null,
+        OneOrManyOf<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var result = await _client.GrpcClient.SearchNearMedia(
+            _collectionClient.Name,
+            media: media,
+            mediaType: mediaType,
+            certainty: certainty,
+            distance: distance,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            groupBy: groupBy,
+            rerank: rerank,
+            singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
+            groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
+            tenant: _collectionClient.Tenant,
+            targetVector: targetVector,
+            consistencyLevel: _collectionClient.ConsistencyLevel,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
+        );
+
+        return result;
+    }
+}
