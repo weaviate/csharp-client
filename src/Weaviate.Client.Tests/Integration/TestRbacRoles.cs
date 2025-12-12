@@ -372,7 +372,7 @@ public class TestRbacRoles : IntegrationTests
             // Create role with multiple Data permissions
             var permissions = new[]
             {
-                new Permissions.Data(collection, null, null)
+                new Permissions.Data(collection)
                 {
                     Read = true,
                     Update = true,
@@ -437,9 +437,9 @@ public class TestRbacRoles : IntegrationTests
             // Create role with multiple Data permissions
             var permissions = new[]
             {
-                new Permissions.Data(collection, null, null) { Read = true },
-                new Permissions.Data(collection, null, null) { Update = true },
-                new Permissions.Data(collection, null, null) { Delete = true },
+                new Permissions.Data(collection) { Read = true },
+                new Permissions.Data(collection) { Update = true },
+                new Permissions.Data(collection, "*") { Delete = true },
             };
             await _weaviate.Roles.Create(
                 roleName,

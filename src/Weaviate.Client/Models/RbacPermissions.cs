@@ -64,8 +64,8 @@ public static class Permissions
         public bool Update { get; set; }
         public bool Delete { get; set; }
 
-        public Data(string? collection, string? tenant, string? @object)
-            : this(new DataResource(collection, tenant, @object)) { }
+        public Data(string? collection, string? tenant = "*")
+            : this(new DataResource(collection, tenant)) { }
 
         Data(DataResource resource)
         {
