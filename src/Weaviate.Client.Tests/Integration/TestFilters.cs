@@ -22,7 +22,7 @@ public partial class FilterTests : IntegrationTests
 
         // Act
         var list = await cA.Query.FetchObjects(
-            filters: Filter.Property("name").Equal("A1"),
+            filters: Filter.Property("name").IsEqual("A1"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 

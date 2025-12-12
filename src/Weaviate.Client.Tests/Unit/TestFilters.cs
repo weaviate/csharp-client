@@ -39,7 +39,7 @@ public partial class FilterTests
     {
         // Arrange
         var f1 = Filter.Reference("ref");
-        var f2 = f1.Reference("ref2").Property("prop").Equal("value");
+        var f2 = f1.Reference("ref2").Property("prop").IsEqual("value");
 
         // Act
         Filters filter = f2.InternalFilter;
@@ -58,7 +58,7 @@ public partial class FilterTests
     public void FilterByReferenceCreatesProperGrpcMessage_1()
     {
         // Arrange
-        var f = Filter.Reference("ref").Property("name").Equal("John");
+        var f = Filter.Reference("ref").Property("name").IsEqual("John");
 
         var expected = new Filters()
         {
@@ -81,7 +81,7 @@ public partial class FilterTests
     public void FilterByReferenceCreatesProperGrpcMessage_2()
     {
         // Arrange
-        var f = Filter.Reference("ref").Property("size").GreaterThan(3);
+        var f = Filter.Reference("ref").Property("size").IsGreaterThan(3);
 
         var expected = new Filters()
         {

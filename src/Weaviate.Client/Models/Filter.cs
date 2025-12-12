@@ -52,17 +52,17 @@ public abstract record TypedBase<T>
         return filter.Internal;
     }
 
-    protected Filter InternalEqual(T value) => Internal.Equal(value);
+    protected Filter InternalEqual(T value) => Internal.IsEqual(value);
 
-    protected Filter InternalNotEqual(T value) => Internal.NotEqual(value);
+    protected Filter InternalNotEqual(T value) => Internal.IsNotEqual(value);
 
-    protected Filter InternalGreaterThan(T value) => Internal.GreaterThan(value);
+    protected Filter InternalGreaterThan(T value) => Internal.IsGreaterThan(value);
 
-    protected Filter InternalGreaterThanEqual(T value) => Internal.GreaterThanEqual(value);
+    protected Filter InternalGreaterThanEqual(T value) => Internal.IsGreaterThanEqual(value);
 
-    protected Filter InternalLessThan(T value) => Internal.LessThan(value);
+    protected Filter InternalLessThan(T value) => Internal.IsLessThan(value);
 
-    protected Filter InternalLessThanEqual(T value) => Internal.LessThanEqual(value);
+    protected Filter InternalLessThanEqual(T value) => Internal.IsLessThanEqual(value);
 
     protected Filter InternalContainsAll(IEnumerable<T> value) => Internal.ContainsAll(value);
 
@@ -120,7 +120,7 @@ public partial record Filter
 
     protected Filter() { }
 
-    public static Filter WithID(Guid id) => Property("_id").Equal(id);
+    public static Filter WithID(Guid id) => Property("_id").IsEqual(id);
 
     public static Filter WithIDs(ISet<Guid> ids) => Or([.. ids.Select(WithID)]);
 
@@ -316,22 +316,22 @@ public record PropertyFilter : Filter
     public Filter ContainsNone<T>(IEnumerable<T> value) =>
         ContainsHelper(Filters.Types.Operator.ContainsNone, value);
 
-    public Filter Equal<TResult>(TResult value) =>
+    public Filter IsEqual<TResult>(TResult value) =>
         WithOperator(Filters.Types.Operator.Equal).WithValue(value);
 
-    public Filter NotEqual<T>(T value) =>
+    public Filter IsNotEqual<T>(T value) =>
         WithOperator(Filters.Types.Operator.NotEqual).WithValue(value);
 
-    public Filter GreaterThan<TResult>(TResult value) =>
+    public Filter IsGreaterThan<TResult>(TResult value) =>
         WithOperator(Filters.Types.Operator.GreaterThan).WithValue(value);
 
-    public Filter GreaterThanEqual<T>(T value) =>
+    public Filter IsGreaterThanEqual<T>(T value) =>
         WithOperator(Filters.Types.Operator.GreaterThanEqual).WithValue(value);
 
-    public Filter LessThan<T>(T value) =>
+    public Filter IsLessThan<T>(T value) =>
         WithOperator(Filters.Types.Operator.LessThan).WithValue(value);
 
-    public Filter LessThanEqual<T>(T value) =>
+    public Filter IsLessThanEqual<T>(T value) =>
         WithOperator(Filters.Types.Operator.LessThanEqual).WithValue(value);
 
     public Filter WithinGeoRange(GeoCoordinate coord, float radius) =>
@@ -341,7 +341,7 @@ public record PropertyFilter : Filter
     public Filter WithinGeoRange(GeoCoordinateConstraint value) =>
         WithOperator(Filters.Types.Operator.WithinGeoRange).WithValue(value);
 
-    public Filter Like<T>(T value) => WithOperator(Filters.Types.Operator.Like).WithValue(value);
+    public Filter IsLike<T>(T value) => WithOperator(Filters.Types.Operator.Like).WithValue(value);
 
     public Filter IsNull(bool value = true) =>
         WithOperator(Filters.Types.Operator.IsNull).WithValue(value);
