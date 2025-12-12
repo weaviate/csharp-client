@@ -87,7 +87,7 @@ public class CollectionConfigClient
         return result.ToModel();
     }
 
-    public async Task<CollectionConfig?> Get(CancellationToken cancellationToken = default)
+    public async Task<CollectionConfigExport?> Get(CancellationToken cancellationToken = default)
     {
         var response = await _client.RestClient.CollectionGet(_collectionName, cancellationToken);
 
