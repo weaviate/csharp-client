@@ -125,7 +125,7 @@ public class TypedGenerateClient<T>
     /// <summary>
     /// Fetch a single object by ID with generative AI capabilities.
     /// </summary>
-    /// <param name="uuid">Object ID</param>
+    /// <param name="uuid">Object UUID</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
