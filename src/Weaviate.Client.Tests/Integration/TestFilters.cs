@@ -63,7 +63,7 @@ public partial class FilterTests : IntegrationTests
         Assert.NotNull(objA1?.Metadata.CreationTime);
         Assert.Equal(DateTimeKind.Utc, objA1.Metadata.CreationTime.Value.Kind);
 
-        var filter = Filter.CreationTime.Equal(objA1.Metadata.CreationTime.Value);
+        var filter = Filter.CreationTime.IsEqual(objA1.Metadata.CreationTime.Value);
         var list = await cA.Query.FetchObjects(
             filters: filter,
             cancellationToken: TestContext.Current.CancellationToken
@@ -302,7 +302,7 @@ public partial class FilterTests : IntegrationTests
 
         // Act
         var objects = await two.Query.FetchObjects(
-            filters: Filter.Reference("ref2").Reference("ref1").Count.Equal(1),
+            filters: Filter.Reference("ref2").Reference("ref1").Count.IsEqual(1),
             returnReferences:
             [
                 new QueryReference("ref2", [], references: [new QueryReference("ref1", [])]),

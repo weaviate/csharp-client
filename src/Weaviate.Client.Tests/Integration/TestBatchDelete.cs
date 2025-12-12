@@ -119,7 +119,7 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         var result = await collection.Data.DeleteMany(
-            where: Filter.ID.Equal(uuid1),
+            where: Filter.ID.IsEqual(uuid1),
             dryRun: dryRun,
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -177,7 +177,7 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         var result = await collection.Data.DeleteMany(
-            where: Filter.ID.Equal(uuid1),
+            where: Filter.ID.IsEqual(uuid1),
             verbose: verbose,
             dryRun: false,
             cancellationToken: TestContext.Current.CancellationToken

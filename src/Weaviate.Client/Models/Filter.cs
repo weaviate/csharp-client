@@ -6,8 +6,8 @@ public record GeoCoordinateConstraint(float Latitude, float Longitude, float Dis
 
 public interface IFilterEquality<T>
 {
-    Filter Equal(T value);
-    Filter NotEqual(T value);
+    Filter IsEqual(T value);
+    Filter IsNotEqual(T value);
 }
 
 public interface IFilterContainsAny<T>
@@ -32,10 +32,10 @@ public interface IFilterContains<T>
 
 public interface IFilterCompare<T>
 {
-    public Filter GreaterThan(T value);
-    public Filter GreaterThanEqual(T value);
-    public Filter LessThan(T value);
-    public Filter LessThanEqual(T value);
+    public Filter IsGreaterThan(T value);
+    public Filter IsGreaterThanEqual(T value);
+    public Filter IsLessThan(T value);
+    public Filter IsLessThanEqual(T value);
 }
 
 public abstract record TypedBase<T>
@@ -80,9 +80,9 @@ public record TypedGuid(PropertyFilter Parent)
 
     public Filter ContainsNone(IEnumerable<Guid> value) => InternalContainsNone(value);
 
-    public Filter Equal(Guid value) => InternalEqual(value);
+    public Filter IsEqual(Guid value) => InternalEqual(value);
 
-    public Filter NotEqual(Guid value) => InternalNotEqual(value);
+    public Filter IsNotEqual(Guid value) => InternalNotEqual(value);
 }
 
 public record TypedValue<T>
@@ -101,17 +101,17 @@ public record TypedValue<T>
 
     public Filter ContainsNone(IEnumerable<T> value) => InternalContainsNone(value);
 
-    public Filter Equal(T value) => InternalEqual(value);
+    public Filter IsEqual(T value) => InternalEqual(value);
 
-    public Filter NotEqual(T value) => InternalNotEqual(value);
+    public Filter IsNotEqual(T value) => InternalNotEqual(value);
 
-    public Filter GreaterThan(T value) => InternalGreaterThan(value);
+    public Filter IsGreaterThan(T value) => InternalGreaterThan(value);
 
-    public Filter GreaterThanEqual(T value) => InternalGreaterThanEqual(value);
+    public Filter IsGreaterThanEqual(T value) => InternalGreaterThanEqual(value);
 
-    public Filter LessThan(T value) => InternalLessThan(value);
+    public Filter IsLessThan(T value) => InternalLessThan(value);
 
-    public Filter LessThanEqual(T value) => InternalLessThanEqual(value);
+    public Filter IsLessThanEqual(T value) => InternalLessThanEqual(value);
 }
 
 public partial record Filter
