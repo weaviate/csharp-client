@@ -9,8 +9,8 @@ public partial class FilterTests
     [Theory]
     [InlineData(
         typeof(TypedGuid),
-        new[] { "Equal", "NotEqual", "ContainsAny" },
-        new[] { "GreaterThan", "GreaterThanEqual", "LessThan", "LessThanEqual" }
+        new[] { "IsEqual", "IsNotEqual", "ContainsAny" },
+        new[] { "IsGreaterThan", "IsGreaterThanEqual", "IsLessThan", "IsLessThanEqual" }
     )]
     public void FilterTypeSupportedOperations(
         Type t,
@@ -39,7 +39,7 @@ public partial class FilterTests
     {
         // Arrange
         var f1 = Filter.Reference("ref");
-        var f2 = f1.Reference("ref2").Property("prop").Equal("value");
+        var f2 = f1.Reference("ref2").Property("prop").IsEqual("value");
 
         // Act
         Filters filter = f2.InternalFilter;
@@ -58,7 +58,7 @@ public partial class FilterTests
     public void FilterByReferenceCreatesProperGrpcMessage_1()
     {
         // Arrange
-        var f = Filter.Reference("ref").Property("name").Equal("John");
+        var f = Filter.Reference("ref").Property("name").IsEqual("John");
 
         var expected = new Filters()
         {
@@ -81,7 +81,7 @@ public partial class FilterTests
     public void FilterByReferenceCreatesProperGrpcMessage_2()
     {
         // Arrange
-        var f = Filter.Reference("ref").Property("size").GreaterThan(3);
+        var f = Filter.Reference("ref").Property("size").IsGreaterThan(3);
 
         var expected = new Filters()
         {
@@ -104,7 +104,7 @@ public partial class FilterTests
     public void FilterByReferenceCreatesProperGrpcMessage_3()
     {
         // Arrange
-        var f = Filter.Reference("ref").Count.Equal(1);
+        var f = Filter.Reference("ref").Count.IsEqual(1);
 
         var expected = new Filters()
         {
@@ -142,7 +142,7 @@ public partial class FilterTests
     public void Filter_Property_Length()
     {
         // Arrange
-        var f = Filter.Property("name").Length().Equal(5);
+        var f = Filter.Property("name").HasLength().IsEqual(5);
 
         var expected = new Filters()
         {
@@ -179,7 +179,7 @@ public partial class FilterTests
     {
         var uuid2 = Guid.NewGuid();
         var f1 = Filter.Property("uuids").ContainsAny(new[] { uuid2 });
-        var f2 = Filter.Property("name").Length().Equal(5);
+        var f2 = Filter.Property("name").HasLength().IsEqual(5);
 
         var expectedAllOf = f1 & f2;
         var expectedAnyOf = f1 | f2;

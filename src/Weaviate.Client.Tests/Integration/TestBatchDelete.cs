@@ -19,7 +19,7 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         var result = await collection.Data.DeleteMany(
-            where: Filter.Property("name").Equal("delet me"),
+            where: Filter.Property("name").IsEqual("delet me"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -53,7 +53,7 @@ public partial class BatchDeleteTests : IntegrationTests
         Assert.Equal(3, objects.Objects.Count());
 
         await collection.Data.DeleteMany(
-            where: Filter.Property("age").Equal(10) | Filter.Property("age").Equal(30),
+            where: Filter.Property("age").IsEqual(10) | Filter.Property("age").IsEqual(30),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -88,7 +88,7 @@ public partial class BatchDeleteTests : IntegrationTests
         Assert.Equal(2, objects.Objects.Count());
 
         await collection.Data.DeleteMany(
-            where: Filter.Property("age").Equal(10) & Filter.Property("name").Equal("Timmy"),
+            where: Filter.Property("age").IsEqual(10) & Filter.Property("name").IsEqual("Timmy"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -119,7 +119,7 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         var result = await collection.Data.DeleteMany(
-            where: Filter.ID.Equal(uuid1),
+            where: Filter.ID.IsEqual(uuid1),
             dryRun: dryRun,
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -177,7 +177,7 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         var result = await collection.Data.DeleteMany(
-            where: Filter.ID.Equal(uuid1),
+            where: Filter.ID.IsEqual(uuid1),
             verbose: verbose,
             dryRun: false,
             cancellationToken: TestContext.Current.CancellationToken

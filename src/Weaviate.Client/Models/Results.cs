@@ -123,9 +123,9 @@ public record GenerativeWeaviateResult : WeaviateResult<GenerativeWeaviateObject
 public record GenerativeDebug(string? FullPrompt = null);
 
 public record GenerativeReply(
-    string Result,
-    GenerativeDebug? Debug = null,
-    object? Metadata = null // TODO: GenerativeMetadata? Dictionary?
+    string Text
+// GenerativeDebug? Debug = null,
+// object? Metadata = null,
 );
 
 public record GenerativeResult(IList<GenerativeReply> Values) : IList<string>
@@ -135,8 +135,8 @@ public record GenerativeResult(IList<GenerativeReply> Values) : IList<string>
 
     public string this[int index]
     {
-        get => Values[index].Result;
-        set => Values[index] = Values[index] with { Result = value };
+        get => Values[index].Text;
+        set => Values[index] = Values[index] with { Text = value };
     }
 
     public int Count => Values.Count;
@@ -155,27 +155,27 @@ public record GenerativeResult(IList<GenerativeReply> Values) : IList<string>
 
     public bool Contains(string item)
     {
-        return Values.Any(v => v.Result == item);
+        return Values.Any(v => v.Text == item);
     }
 
     public void CopyTo(string[] array, int arrayIndex)
     {
         for (int i = 0; i < Values.Count; i++)
         {
-            array[arrayIndex + i] = Values[i].Result;
+            array[arrayIndex + i] = Values[i].Text;
         }
     }
 
     public IEnumerator<string> GetEnumerator()
     {
-        return Values.Select(v => v.Result).GetEnumerator();
+        return Values.Select(v => v.Text).GetEnumerator();
     }
 
     public int IndexOf(string item)
     {
         for (int i = 0; i < Values.Count; i++)
         {
-            if (Values[i].Result == item)
+            if (Values[i].Text == item)
                 return i;
         }
         return -1;

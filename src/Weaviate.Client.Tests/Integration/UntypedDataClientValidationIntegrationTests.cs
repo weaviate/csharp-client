@@ -11,7 +11,7 @@ namespace Weaviate.Client.Tests.Integration
             public int Age { get; set; }
         }
 
-        private readonly CollectionConfig _config = new()
+        private readonly CollectionCreateParams _config = new()
         {
             Name = "People",
             Properties = new[]

@@ -17,21 +17,22 @@ public static class Filter<T>
 
         public Filter ContainsAll(IEnumerable<TResult> values) => _prop.ContainsAll(values);
 
-        public Filter Equal(TResult value) => _prop.Equal(value);
+        public Filter Equal(TResult value) => _prop.IsEqual(value);
 
-        public Filter NotEqual(TResult value) => _prop.NotEqual(value);
+        public Filter NotEqual(TResult value) => _prop.IsNotEqual(value);
 
-        public Filter GreaterThan(TResult value) => _prop.GreaterThan(value);
+        public Filter GreaterThan(TResult value) => _prop.IsGreaterThan(value);
 
-        public Filter GreaterThanEqual(TResult value) => _prop.GreaterThanEqual(value);
+        public Filter GreaterThanEqual(TResult value) => _prop.IsGreaterThanEqual(value);
 
-        public Filter LessThan(TResult value) => _prop.LessThan(value);
+        public Filter LessThan(TResult value) => _prop.IsLessThan(value);
 
-        public Filter LessThanEqual(TResult value) => _prop.LessThanEqual(value);
+        public Filter LessThanEqual(TResult value) => _prop.IsLessThanEqual(value);
 
-        public Filter WithinGeoRange(GeoCoordinateConstraint value) => _prop.WithinGeoRange(value);
+        public Filter WithinGeoRange(GeoCoordinateConstraint value) =>
+            _prop.IsWithinGeoRange(value);
 
-        public Filter Like(TResult value) => _prop.Like(value);
+        public Filter Like(TResult value) => _prop.IsLike(value);
 
         public Filter IsNull(bool value = true) => _prop.IsNull(value);
     }

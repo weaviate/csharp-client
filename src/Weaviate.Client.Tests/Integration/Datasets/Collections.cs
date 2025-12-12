@@ -74,10 +74,10 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
         Threshold = 1000,
     };
 
-    public static Dictionary<string, CollectionConfig> Cases =>
+    public static Dictionary<string, CollectionCreateParams> Cases =>
         new()
         {
-            ["with default values"] = new CollectionConfig
+            ["with default values"] = new CollectionCreateParams
             {
                 Name = "CreationAndExport",
                 Description = "My own description too",
@@ -92,7 +92,7 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 ShardingConfig = ShardingConfig.Default,
                 MultiTenancyConfig = MultiTenancyConfig.Default,
             },
-            ["with non default values, with sharding"] = new CollectionConfig
+            ["with non default values, with sharding"] = new CollectionCreateParams
             {
                 Name = "CreationAndExportNonDefaultSharding",
                 Description = "My own description too",
@@ -142,7 +142,7 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 },
                 MultiTenancyConfig = MultiTenancyConfig.Default,
             },
-            ["with non default values, with multi-tenancy"] = new CollectionConfig
+            ["with non default values, with multi-tenancy"] = new CollectionCreateParams
             {
                 Name = "CreationAndExportNonDefaultSharding",
                 Description = "My own description too",
@@ -190,7 +190,7 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                     Enabled = true,
                 },
             },
-            ["with all vector index configurations"] = new CollectionConfig
+            ["with all vector index configurations"] = new CollectionCreateParams
             {
                 Name = "AllVectorIndexConfigurations",
                 Description = "Vector Index Configurations",

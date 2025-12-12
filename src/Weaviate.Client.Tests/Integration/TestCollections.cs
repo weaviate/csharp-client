@@ -106,7 +106,9 @@ public partial class CollectionsTests : IntegrationTests
             TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(c, export);
+        var expected = CollectionConfig.FromCollectionCreate(c);
+
+        Assert.Equal(expected, export);
     }
 
     [Fact]

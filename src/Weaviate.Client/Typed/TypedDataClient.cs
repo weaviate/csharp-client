@@ -24,7 +24,7 @@ public class TypedDataClient<T>
     /// Inserts a strongly-typed object into the collection.
     /// </summary>
     public async Task<Guid> Insert(
-        T data,
+        T properties,
         Guid? uuid = null,
         Models.Vectors? vectors = null,
         OneOrManyOf<ObjectReference>? references = null,
@@ -32,7 +32,7 @@ public class TypedDataClient<T>
     )
     {
         return await _dataClient.Insert(
-            data,
+            properties,
             uuid,
             vectors,
             references,
@@ -45,13 +45,13 @@ public class TypedDataClient<T>
     /// </summary>
     public async Task Update(
         Guid uuid,
-        T data,
+        T properties,
         Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
     {
-        await _dataClient.Update(uuid, data, vectors, references, cancellationToken);
+        await _dataClient.Update(uuid, properties, vectors, references, cancellationToken);
     }
 
     /// <summary>
@@ -59,25 +59,25 @@ public class TypedDataClient<T>
     /// </summary>
     public async Task Replace(
         Guid uuid,
-        T data,
+        T properties,
         Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
     {
-        await _dataClient.Replace(uuid, data, vectors, references, cancellationToken);
+        await _dataClient.Replace(uuid, properties, vectors, references, cancellationToken);
     }
 
     /// <summary>
     /// Inserts multiple strongly-typed objects in a batch operation.
     /// </summary>
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<T> data,
+        IEnumerable<T> properties,
         CancellationToken cancellationToken = default
     )
     {
         return await _dataClient.InsertMany(
-            (IEnumerable)data,
+            (IEnumerable)properties,
             cancellationToken: cancellationToken
         );
     }
@@ -86,12 +86,12 @@ public class TypedDataClient<T>
     /// Inserts multiple strongly-typed objects with explicit IDs.
     /// </summary>
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(T data, Guid uuid)> requests,
+        IEnumerable<(T properties, Guid uuid)> requests,
         CancellationToken cancellationToken = default
     )
     {
         return await _dataClient.InsertMany(
-            requests.Select(r => ((object)r.data, r.uuid)),
+            requests.Select(r => ((object)r.properties, r.uuid)),
             cancellationToken
         );
     }
@@ -100,12 +100,12 @@ public class TypedDataClient<T>
     /// Inserts multiple strongly-typed objects with vectors.
     /// </summary>
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(T data, Models.Vectors vectors)> requests,
+        IEnumerable<(T properties, Models.Vectors vectors)> requests,
         CancellationToken cancellationToken = default
     )
     {
         return await _dataClient.InsertMany(
-            requests.Select(r => ((object)r.data, r.vectors)),
+            requests.Select(r => ((object)r.properties, r.vectors)),
             cancellationToken
         );
     }
@@ -114,12 +114,12 @@ public class TypedDataClient<T>
     /// Inserts multiple strongly-typed objects with references.
     /// </summary>
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(T data, IEnumerable<ObjectReference>? references)> requests,
+        IEnumerable<(T properties, IEnumerable<ObjectReference>? references)> requests,
         CancellationToken cancellationToken = default
     )
     {
         return await _dataClient.InsertMany(
-            requests.Select(r => ((object)r.data, r.references)),
+            requests.Select(r => ((object)r.properties, r.references)),
             cancellationToken
         );
     }
