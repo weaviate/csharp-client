@@ -143,16 +143,16 @@ public partial class AggregatesTests : IntegrationTests
         var date1 = new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var date2 = new DateTime(2021, 1, 2, 0, 0, 0, DateTimeKind.Utc);
 
-        yield return new object[] { Filter.Property("text").Equal("two") };
-        yield return new object[] { Filter.Property("int").Equal(2) };
-        yield return new object[] { Filter.Property("float").Equal(2.0) };
-        yield return new object[] { Filter.Property("bool").Equal(false) };
-        yield return new object[] { Filter.Property("date").Equal(date2) };
+        yield return new object[] { Filter.Property("text").IsEqual("two") };
+        yield return new object[] { Filter.Property("int").IsEqual(2) };
+        yield return new object[] { Filter.Property("float").IsEqual(2.0) };
+        yield return new object[] { Filter.Property("bool").IsEqual(false) };
+        yield return new object[] { Filter.Property("date").IsEqual(date2) };
         yield return new object[]
         {
-            Filter.Property("text").Equal("two") | Filter.Property("int").Equal(2),
+            Filter.Property("text").IsEqual("two") | Filter.Property("int").IsEqual(2),
         };
-        yield return new object[] { Filter.Property("uuid").Equal(uuid2) };
+        yield return new object[] { Filter.Property("uuid").IsEqual(uuid2) };
         yield return new object[] { Filter.Property("texts").ContainsAny(new[] { "two" }) };
         yield return new object[] { Filter.Property("ints").ContainsAny(new[] { 2 }) };
         yield return new object[] { Filter.Property("floats").ContainsAny(new[] { 2.0 }) };
