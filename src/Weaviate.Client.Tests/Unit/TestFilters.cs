@@ -142,7 +142,7 @@ public partial class FilterTests
     public void Filter_Property_Length()
     {
         // Arrange
-        var f = Filter.Property("name").Length().Equal(5);
+        var f = Filter.Property("name").HasLength().Equal(5);
 
         var expected = new Filters()
         {
@@ -179,7 +179,7 @@ public partial class FilterTests
     {
         var uuid2 = Guid.NewGuid();
         var f1 = Filter.Property("uuids").ContainsAny(new[] { uuid2 });
-        var f2 = Filter.Property("name").Length().Equal(5);
+        var f2 = Filter.Property("name").HasLength().Equal(5);
 
         var expectedAllOf = f1 & f2;
         var expectedAnyOf = f1 | f2;

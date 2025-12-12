@@ -29,7 +29,8 @@ public static class Filter<T>
 
         public Filter LessThanEqual(TResult value) => _prop.IsLessThanEqual(value);
 
-        public Filter WithinGeoRange(GeoCoordinateConstraint value) => _prop.WithinGeoRange(value);
+        public Filter WithinGeoRange(GeoCoordinateConstraint value) =>
+            _prop.IsWithinGeoRange(value);
 
         public Filter Like(TResult value) => _prop.IsLike(value);
 

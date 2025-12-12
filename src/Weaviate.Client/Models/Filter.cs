@@ -280,7 +280,7 @@ public record PropertyFilter : Filter
         WithProperty(name);
     }
 
-    public TypedValue<int> Length()
+    public TypedValue<int> HasLength()
     {
         if (_target is null)
         {
@@ -334,11 +334,11 @@ public record PropertyFilter : Filter
     public Filter IsLessThanEqual<T>(T value) =>
         WithOperator(Filters.Types.Operator.LessThanEqual).WithValue(value);
 
-    public Filter WithinGeoRange(GeoCoordinate coord, float radius) =>
+    public Filter IsWithinGeoRange(GeoCoordinate coord, float radius) =>
         WithOperator(Filters.Types.Operator.WithinGeoRange)
             .WithValue(new GeoCoordinateConstraint(coord.Latitude, coord.Longitude, radius));
 
-    public Filter WithinGeoRange(GeoCoordinateConstraint value) =>
+    public Filter IsWithinGeoRange(GeoCoordinateConstraint value) =>
         WithOperator(Filters.Types.Operator.WithinGeoRange).WithValue(value);
 
     public Filter IsLike<T>(T value) => WithOperator(Filters.Types.Operator.Like).WithValue(value);

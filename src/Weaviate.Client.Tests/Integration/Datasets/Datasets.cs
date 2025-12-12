@@ -196,12 +196,17 @@ public partial class FilterTests
                     1
                 ),
                 ["RefPropertyLengthLessThan6"] = (
-                    Filter.Reference("ref").Property("name").Length().LessThan(6),
+                    Filter.Reference("ref").Property("name").HasLength().LessThan(6),
                     0
                 ),
                 ["RefIDEquals"] = (Filter.Reference("ref").ID.Equal(_reusableUuids[1]), 1),
                 ["IndirectSelfRefLengthLessThan6"] = (
-                    Filter.Reference("ref2").Reference("ref").Property("name").Length().LessThan(6),
+                    Filter
+                        .Reference("ref2")
+                        .Reference("ref")
+                        .Property("name")
+                        .HasLength()
+                        .LessThan(6),
                     2
                 ),
             };
