@@ -13,7 +13,7 @@ public class TestMultiVector : IntegrationTests
             name: "TestMultiVectorCollection",
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided().New(name: "regular"),
+                ("regular", Configure.Vectorizer.SelfProvided()),
                 Configure
                     .MultiVectors.SelfProvided()
                     .New(
@@ -47,7 +47,7 @@ public class TestMultiVector : IntegrationTests
             name: "TestMultiVectorCollection",
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided().New(name: "regular"),
+                ("regular", Configure.Vectorizer.SelfProvided()),
                 Configure.MultiVectors.SelfProvided().New(name: "colbert"),
             }
         );
@@ -70,7 +70,7 @@ public class TestMultiVector : IntegrationTests
             name: "TestMultiVectorCollectionConfig",
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided().New(name: "regular"),
+                ("regular", Configure.Vectorizer.SelfProvided()),
                 Configure.MultiVectors.SelfProvided().New(name: "colbert"),
             }
         );
@@ -116,7 +116,7 @@ public class TestMultiVector : IntegrationTests
                             },
                         }
                     ),
-                Configure.Vectors.SelfProvided().New(name: "regular"),
+                ("regular", Configure.Vectorizer.SelfProvided()),
             }
         );
 

@@ -14,7 +14,7 @@ public partial class AggregatesTests : IntegrationTests
     public async Task Test_Collection_Length(int howMany)
     {
         var collectionClient = await CollectionFactory(
-            vectorConfig: Configure.Vectors.SelfProvided().New()
+            vectorConfig: Configure.Vectorizer.SelfProvided()
         );
 
         await collectionClient.Data.InsertMany(
@@ -284,7 +284,7 @@ public partial class AggregatesTests : IntegrationTests
     {
         var collectionClient = await CollectionFactory(
             properties: [Property.Text("text")],
-            vectorConfig: Configure.Vectors.SelfProvided().New("default")
+            vectorConfig: Configure.Vectorizer.SelfProvided()
         );
 
         var text1 = "some text";
@@ -430,9 +430,7 @@ public partial class AggregatesTests : IntegrationTests
         var (option, expectedLen) = _nearTextAggregationOptions[usecase];
         var collectionClient = await CollectionFactory(
             properties: new[] { Property.Text("text") },
-            vectorConfig: Configure
-                .Vectors.Text2VecTransformers(vectorizeCollectionName: true)
-                .New("default")
+            vectorConfig: Configure.Vectorizer.Text2VecTransformers(vectorizeCollectionName: true)
         );
         var text1 = "some text";
         var text2 = "nothing like the other one at all, not even a little bit";
