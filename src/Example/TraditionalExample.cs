@@ -85,7 +85,7 @@ public class TraditionalExample
             Console.WriteLine($"Error deleting collections: {e.Message}");
         }
 
-        var catCollection = new CollectionConfig()
+        var catCollection = new CollectionCreateParams()
         {
             Name = "Cat",
             Description = "Lots of Cats of multiple breeds",
