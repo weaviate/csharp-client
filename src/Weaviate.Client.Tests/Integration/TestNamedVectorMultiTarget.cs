@@ -46,7 +46,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             targetVector: ["first", "second"],
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var ids = objs.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
+        var ids = objs.Select(o => o.UUID!.Value).OrderBy(x => x).ToList();
         var expected = new[] { uuid1, uuid2 }.OrderBy(x => x).ToList();
         Assert.Equal(expected, ids);
     }
@@ -186,7 +186,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             targetVector: targetVector,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var ids = objs.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
+        var ids = objs.Select(o => o.UUID!.Value).OrderBy(x => x).ToList();
         var expected = new[] { uuid2, uuid1 }.OrderBy(x => x).ToList();
         Assert.Equal(expected, ids);
     }
@@ -359,7 +359,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             returnMetadata: MetadataOptions.All,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var ids = objs.Objects.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
+        var ids = objs.Objects.Select(o => o.UUID!.Value).OrderBy(x => x).ToList();
         var expected = new[] { uuid2, uuid1 }.OrderBy(x => x).ToList();
         Assert.Equal(expected, ids);
     }
@@ -434,8 +434,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             )
         ).ToList();
 
-        var uuid1 = results[0].ID!.Value;
-        var uuid2 = results[1].ID!.Value;
+        var uuid1 = results[0].UUID!.Value;
+        var uuid2 = results[1].UUID!.Value;
 
         var objs = await collection.Query.NearVector(
             new Vectors
@@ -454,7 +454,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             returnMetadata: MetadataOptions.All,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var ids = objs.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
+        var ids = objs.Select(o => o.UUID!.Value).OrderBy(x => x).ToList();
         var expected = new[] { uuid1, uuid2 }.OrderBy(x => x).ToList();
         Assert.Equal(expected, ids);
         Assert.Equal(expectedDistances.Length, objs.Count());
@@ -512,7 +512,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             targetVector: targetVector,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var ids = objs.Select(o => o.ID!.Value).OrderBy(x => x).ToList();
+        var ids = objs.Select(o => o.UUID!.Value).OrderBy(x => x).ToList();
         var expected = new[] { uuid1, uuid2 }.OrderBy(x => x).ToList();
         Assert.Equal(expected, ids);
     }

@@ -54,8 +54,8 @@ public partial class ReferenceTests : IntegrationTests
 
         var refs = result.References["a"].ToList();
         Assert.Equal(2, refs.Count);
-        Assert.Contains(refs, r => r.ID == uuid_A2);
-        Assert.Contains(refs, r => r.ID == uuid_A1);
+        Assert.Contains(refs, r => r.UUID == uuid_A2);
+        Assert.Contains(refs, r => r.UUID == uuid_A1);
 
         await cB.Data.ReferenceDelete(
             from: uuid_B,
@@ -71,7 +71,7 @@ public partial class ReferenceTests : IntegrationTests
         Assert.NotNull(resultAfterDelete);
         var refsAfterDelete = resultAfterDelete.References["a"].ToList();
         Assert.Single(refsAfterDelete);
-        Assert.Contains(refsAfterDelete, r => r.ID == uuid_A1);
+        Assert.Contains(refsAfterDelete, r => r.UUID == uuid_A1);
 
         await cB.Data.ReferenceReplace(
             from: uuid_B,
@@ -87,9 +87,9 @@ public partial class ReferenceTests : IntegrationTests
         Assert.NotNull(resultAfterReplace);
         var refsAfterReplace = resultAfterReplace.References["a"].ToList();
         Assert.Equal(3, refsAfterReplace.Count);
-        Assert.Contains(refsAfterReplace, r => r.ID == uuid_A2);
-        Assert.Contains(refsAfterReplace, r => r.ID == uuid_A1);
-        Assert.Contains(refsAfterReplace, r => r.ID == uuid_A3);
+        Assert.Contains(refsAfterReplace, r => r.UUID == uuid_A2);
+        Assert.Contains(refsAfterReplace, r => r.UUID == uuid_A1);
+        Assert.Contains(refsAfterReplace, r => r.UUID == uuid_A3);
 
         var uuid_B2 = await cB.Data.Insert(
             new TestData { Name = "B" },
@@ -113,9 +113,9 @@ public partial class ReferenceTests : IntegrationTests
         Assert.NotNull(resultB2);
         var refsB2 = resultB2.References["a"].ToList();
         Assert.Equal(3, refsB2.Count);
-        Assert.Contains(refsB2, r => r.ID == uuid_A2);
-        Assert.Contains(refsB2, r => r.ID == uuid_A1);
-        Assert.Contains(refsB2, r => r.ID == uuid_A3);
+        Assert.Contains(refsB2, r => r.UUID == uuid_A2);
+        Assert.Contains(refsB2, r => r.UUID == uuid_A1);
+        Assert.Contains(refsB2, r => r.UUID == uuid_A3);
     }
 
     [Fact]
@@ -204,14 +204,14 @@ public partial class ReferenceTests : IntegrationTests
 
         Assert.Equal(cA.Name, bObjsObjects[0].References["a"][0].Collection);
         Assert.Equal("A1", bObjsObjects[0].References["a"][0].Properties["name"]);
-        Assert.Equal(uuid_A1, bObjsObjects[0].References["a"][0].ID);
+        Assert.Equal(uuid_A1, bObjsObjects[0].References["a"][0].UUID);
         Assert.Equal(cA.Name, bObjsObjects[0].References["a"][1].Collection);
         Assert.Equal("A2", bObjsObjects[0].References["a"][1].Properties["name"]);
-        Assert.Equal(uuid_A2, bObjsObjects[0].References["a"][1].ID);
+        Assert.Equal(uuid_A2, bObjsObjects[0].References["a"][1].UUID);
 
         Assert.Equal(cC.Name, cObjsObjects[0].Collection);
         Assert.Equal("find me", cObjsObjects[0].Properties["name"]);
-        Assert.Equal(uuid_C, cObjsObjects[0].ID);
+        Assert.Equal(uuid_C, cObjsObjects[0].UUID);
         Assert.Equal(cB.Name, cObjsObjects[0].References["b"][0].Collection);
         Assert.Equal("B", cObjsObjects[0].References["b"][0].Properties["name"]);
         Assert.NotNull(cObjsObjects[0].References["b"][0].Metadata.LastUpdateTime);
@@ -465,7 +465,7 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         var dmRefs = disappointedObjects
             .SelectMany(x => x.References["forMovie"])
-            .Select(r => r.ID)
+            .Select(r => r.UUID)
             .ToHashSet();
         Assert.Contains(movieIds[2], dmRefs);
         Assert.Contains(movieIds[3], dmRefs);

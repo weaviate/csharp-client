@@ -19,12 +19,12 @@ public record WeaviateObject<T>
     }
 
     /// <summary>
-    /// The object ID (UUID).
+    /// The object UUID.
     /// </summary>
-    public Guid? ID
+    public Guid? UUID
     {
-        get => _untyped.ID;
-        internal set => _untyped.ID = value;
+        get => _untyped.UUID;
+        internal set => _untyped.UUID = value;
     }
 
     /// <summary>

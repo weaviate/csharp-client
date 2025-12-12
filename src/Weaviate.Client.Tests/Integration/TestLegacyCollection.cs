@@ -171,7 +171,7 @@ public partial class CollectionsTests
         Assert.Equal(5, fetchedObjects.Objects.Count);
 
         // Assert that all objects have the "default" vector and correct data
-        var obj1 = fetchedObjects.Objects.First(o => o.ID == id1);
+        var obj1 = fetchedObjects.Objects.First(o => o.UUID == id1);
         Assert.NotNull(obj1);
         Assert.Equal("Item1", obj1.Properties["name"]);
         Assert.True(obj1.Vectors.ContainsKey("default"));
@@ -179,14 +179,14 @@ public partial class CollectionsTests
         float[] obj1Vector = obj1.Vectors["default"];
         Assert.Equal(vector1, obj1Vector);
 
-        var obj2 = fetchedObjects.Objects.First(o => o.ID == id2);
+        var obj2 = fetchedObjects.Objects.First(o => o.UUID == id2);
         Assert.NotNull(obj2);
         Assert.Equal("Item2", obj2.Properties["name"]);
         Assert.True(obj2.Vectors.ContainsKey("default"));
         float[] obj2Vector = obj2.Vectors["default"];
         Assert.Equal(vector2, obj2Vector);
 
-        var obj3 = fetchedObjects.Objects.First(o => o.ID == id3);
+        var obj3 = fetchedObjects.Objects.First(o => o.UUID == id3);
         Assert.NotNull(obj3);
         Assert.Equal("Item3", obj3.Properties["name"]);
         Assert.True(obj3.Vectors.ContainsKey("default"));

@@ -126,7 +126,7 @@ public class TraditionalExample
 
         // Delete object
         var firstObj = retrieved.First();
-        if (firstObj.ID is Guid id)
+        if (firstObj.UUID is Guid id)
         {
             await collection.Data.DeleteByID(id);
         }
@@ -136,19 +136,19 @@ public class TraditionalExample
         Console.WriteLine("Cats retrieved: " + retrieved.Count());
 
         firstObj = retrieved.First();
-        if (firstObj.ID is Guid id2)
+        if (firstObj.UUID is Guid id2)
         {
-            var fetched = await collection.Query.FetchObjectByID(id: id2);
+            var fetched = await collection.Query.FetchObjectByID(uuid: id2);
             Console.WriteLine(
-                "Cat retrieved via gRPC matches: " + ((fetched?.ID ?? Guid.Empty) == id2)
+                "Cat retrieved via gRPC matches: " + ((fetched?.UUID ?? Guid.Empty) == id2)
             );
         }
 
         {
             var idList = retrieved
-                .Where(c => c.ID.HasValue)
+                .Where(c => c.UUID.HasValue)
                 .Take(10)
-                .Select(c => c.ID!.Value)
+                .Select(c => c.UUID!.Value)
                 .ToHashSet();
 
             var fetched = await collection.Query.FetchObjectsByIDs(idList);

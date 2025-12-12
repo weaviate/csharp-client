@@ -119,7 +119,7 @@ public partial class BatchTests : IntegrationTests
 
             // The first reference should match the corresponding "To" object's "number"
             Assert.Equal(num, (long)refObjects[0].Properties["number"]!);
-            Assert.Contains(refObjects[0].ID!.Value, uuidsTo);
+            Assert.Contains(refObjects[0].UUID!.Value, uuidsTo);
 
             // There should be 4 references: 1 from the first batch, 3 from the second
             Assert.Equal(4, refObjects.Count);

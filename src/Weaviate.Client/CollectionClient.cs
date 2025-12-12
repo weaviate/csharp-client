@@ -101,7 +101,7 @@ public partial class CollectionClient
 
             foreach (var c in page.Objects)
             {
-                cursor = c.ID;
+                cursor = c.UUID;
                 yield return c;
             }
         }

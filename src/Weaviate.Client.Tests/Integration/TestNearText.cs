@@ -46,7 +46,7 @@ public partial class SearchTests : IntegrationTests
         Assert.NotNull(retrieved);
         Assert.Equal(4, retrieved.Count());
 
-        Assert.Equal(retrieved[0].ID, guids[2]);
+        Assert.Equal(retrieved[0].UUID, guids[2]);
         Assert.Contains("default", retrieved[0].Vectors.Keys);
         Assert.Equal("apple cake", retrieved[0].As<TestDataValue>()?.Value);
     }
@@ -91,7 +91,7 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(2, retrieved.Groups.Count());
 
         // Verify the expected GUIDs are present (order-independent)
-        var retrievedIds = retrievedObjects.Select(o => o.ID).ToHashSet();
+        var retrievedIds = retrievedObjects.Select(o => o.UUID).ToHashSet();
         Assert.Contains(guids[2], retrievedIds); // "apple cake"
         Assert.Contains(guids[3], retrievedIds); // "cake"
 
@@ -99,10 +99,10 @@ public partial class SearchTests : IntegrationTests
         Assert.All(retrievedObjects, obj => Assert.Contains("default", obj.Vectors.Keys));
 
         // Verify BelongsToGroup matches the value property for each object
-        var cakeObject = retrievedObjects.First(o => o.ID == guids[3]);
+        var cakeObject = retrievedObjects.First(o => o.UUID == guids[3]);
         Assert.Equal("cake", cakeObject.BelongsToGroup);
 
-        var appleCakeObject = retrievedObjects.First(o => o.ID == guids[2]);
+        var appleCakeObject = retrievedObjects.First(o => o.UUID == guids[2]);
         Assert.Equal("apple cake", appleCakeObject.BelongsToGroup);
 
         // Optional: Verify the separate fetch still works
@@ -112,7 +112,7 @@ public partial class SearchTests : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.NotNull(obj);
-        Assert.Equal(guids[3], obj.ID);
+        Assert.Equal(guids[3], obj.UUID);
         Assert.Contains("default", obj.Vectors.Keys);
     }
 }

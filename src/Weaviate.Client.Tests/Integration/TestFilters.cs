@@ -30,7 +30,7 @@ public partial class FilterTests : IntegrationTests
 
         // Assert
         Assert.Single(objs);
-        Assert.Equal(uuid_A1, objs[0].ID);
+        Assert.Equal(uuid_A1, objs[0].UUID);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public partial class FilterTests : IntegrationTests
         var obj = list.First();
 
         // Assert
-        Assert.Equal(objA1.ID, obj.ID);
+        Assert.Equal(objA1.UUID, obj.UUID);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public partial class FilterTests : IntegrationTests
 
         // Assert
         Assert.Single(objs);
-        Assert.Equal(uuid_A2, objs[0].ID);
+        Assert.Equal(uuid_A2, objs[0].UUID);
     }
 
     [Theory]
@@ -178,7 +178,7 @@ public partial class FilterTests : IntegrationTests
 
         // Assert
         Assert.Single(objs);
-        Assert.Equal(uuidsFrom[expected], objs.First().ID);
+        Assert.Equal(uuidsFrom[expected], objs.First().UUID);
     }
 
     [Theory]
@@ -212,7 +212,7 @@ public partial class FilterTests : IntegrationTests
         ).ToList();
 
         Assert.Single(objects);
-        Assert.Equal(_reusableUuids[0], objects[0].ID);
+        Assert.Equal(_reusableUuids[0], objects[0].UUID);
     }
 
     [Theory]
@@ -259,8 +259,8 @@ public partial class FilterTests : IntegrationTests
 
         var expectedUuids = results.Select(result => uuids[result]).ToList();
         Assert.True(
-            objs.Where(obj => obj.ID.HasValue)
-                .All(obj => expectedUuids.Contains(obj.ID ?? Guid.Empty))
+            objs.Where(obj => obj.UUID.HasValue)
+                .All(obj => expectedUuids.Contains(obj.UUID ?? Guid.Empty))
         );
     }
 
@@ -314,7 +314,7 @@ public partial class FilterTests : IntegrationTests
 
         // Assert
         Assert.Single(objs);
-        Assert.Equal(uuid21, objs[0].ID);
+        Assert.Equal(uuid21, objs[0].UUID);
     }
 
     [Fact]
@@ -366,7 +366,7 @@ public partial class FilterTests : IntegrationTests
         // Assert
         Assert.Equal(2, objs.Count);
         var expectedUuids = new HashSet<Guid>([uuid2, uuid3]);
-        Assert.True(objs.All(obj => obj.ID != null && expectedUuids.Contains(obj.ID.Value)));
+        Assert.True(objs.All(obj => obj.UUID != null && expectedUuids.Contains(obj.UUID.Value)));
     }
 
     [Theory]
@@ -417,9 +417,9 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(results.Length, objs.Count);
 
         var expectedUuids = new HashSet<Guid>(
-            results.Select(result => allObjectsList[result].ID!.Value)
+            results.Select(result => allObjectsList[result].UUID!.Value)
         );
-        Assert.True(objs.All(obj => obj.ID != null && expectedUuids.Contains(obj.ID.Value)));
+        Assert.True(objs.All(obj => obj.UUID != null && expectedUuids.Contains(obj.UUID.Value)));
     }
 
     [Theory]
@@ -480,7 +480,7 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(results.Length, objects.Count());
 
         var expectedUuids = results.Select(result => uuids[result]).ToHashSet();
-        Assert.True(objects.All(obj => expectedUuids.Contains(obj.ID!.Value)));
+        Assert.True(objects.All(obj => expectedUuids.Contains(obj.UUID!.Value)));
     }
 
     [Theory]
@@ -595,7 +595,7 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(results.Length, objects.Count());
 
         var expectedUuids = results.Select(result => uuids[result]).ToHashSet();
-        Assert.True(objects.All(obj => expectedUuids.Contains(obj.ID!.Value)));
+        Assert.True(objects.All(obj => expectedUuids.Contains(obj.UUID!.Value)));
     }
 
     [Fact]
@@ -635,7 +635,7 @@ public partial class FilterTests : IntegrationTests
             filters: filter,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var ids = objects.Select(o => o.ID).ToHashSet();
+        var ids = objects.Select(o => o.UUID).ToHashSet();
 
         // Assert
         Assert.DoesNotContain(idA, ids);
@@ -677,7 +677,7 @@ public partial class FilterTests : IntegrationTests
             filters: filter,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var ids = objects.Select(o => o.ID).ToHashSet();
+        var ids = objects.Select(o => o.UUID).ToHashSet();
 
         // Assert
         Assert.DoesNotContain(idA, ids);
@@ -713,7 +713,7 @@ public partial class FilterTests : IntegrationTests
             filters: filterNull,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var idsWithNull = objectsWithNull.Select(o => o.ID).ToHashSet();
+        var idsWithNull = objectsWithNull.Select(o => o.UUID).ToHashSet();
 
         // Act - Filter for objects where country IS NOT null
         var filterNotNull = Filter.Property("country").IsNull(false);
@@ -721,7 +721,7 @@ public partial class FilterTests : IntegrationTests
             filters: filterNotNull,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var idsWithoutNull = objectsWithoutNull.Select(o => o.ID).ToHashSet();
+        var idsWithoutNull = objectsWithoutNull.Select(o => o.UUID).ToHashSet();
 
         // Assert - IsNull(true) should return only objects with null country
         Assert.Contains(idWithoutCountry, idsWithNull);

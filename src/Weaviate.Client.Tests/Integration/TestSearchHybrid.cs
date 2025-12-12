@@ -223,7 +223,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
         Assert.Equal(hybridRes.Count(), bm25Res.Count());
-        Assert.True(hybridRes.Zip(bm25Res).All(pair => pair.First.ID == pair.Second.ID));
+        Assert.True(hybridRes.Zip(bm25Res).All(pair => pair.First.UUID == pair.Second.UUID));
 
         hybridRes = (
             await collection.Query.Hybrid(
@@ -239,7 +239,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
         Assert.Equal(hybridRes.Count(), textRes.Count());
-        Assert.True(hybridRes.Zip(textRes).All(pair => pair.First.ID == pair.Second.ID));
+        Assert.True(hybridRes.Zip(textRes).All(pair => pair.First.UUID == pair.Second.UUID));
     }
 
     [Fact]
@@ -280,7 +280,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(uuidBanana, hybridObjs.First().ID);
+        Assert.Equal(uuidBanana, hybridObjs.First().UUID);
         Assert.Equal(3, hybridObjs.Count());
 
         var nearVec = (
@@ -304,7 +304,7 @@ public partial class SearchTests : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(uuidBanana, hybridObjs2.First().ID);
+        Assert.Equal(uuidBanana, hybridObjs2.First().UUID);
         Assert.Single(hybridObjs2);
     }
 
@@ -352,7 +352,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(uuidBanana, hybridObjs.First().ID);
+        Assert.Equal(uuidBanana, hybridObjs.First().UUID);
         Assert.Equal(3, hybridObjs.Count());
 
         var nearVec = (
@@ -380,7 +380,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(uuidBanana, hybridObjs2.First().ID);
+        Assert.Equal(uuidBanana, hybridObjs2.First().UUID);
         Assert.Single(hybridObjs2);
     }
 
@@ -415,7 +415,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(uuidBananaPudding, hybridObjs.First().ID);
+        Assert.Equal(uuidBananaPudding, hybridObjs.First().UUID);
         Assert.Equal(3, hybridObjs.Count());
 
         var hybridObjs2 = (
@@ -433,7 +433,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(uuidBananaPudding, hybridObjs2.First().ID);
+        Assert.Equal(uuidBananaPudding, hybridObjs2.First().UUID);
     }
 
     [Fact]
@@ -472,7 +472,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(uuidBananaPudding, hybridObjs.First().ID);
+        Assert.Equal(uuidBananaPudding, hybridObjs.First().UUID);
         Assert.Equal(3, hybridObjs.Count());
 
         var hybridObjs2 = (
@@ -491,7 +491,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(uuidBananaPudding, hybridObjs2.First().ID);
+        Assert.Equal(uuidBananaPudding, hybridObjs2.First().UUID);
     }
 
     [Fact]
@@ -541,8 +541,8 @@ public partial class SearchTests : IntegrationTests
         ).ToList();
 
         Assert.Equal(2, objs.Count);
-        Assert.Equal(uuid1, objs[0].ID);
-        Assert.Equal(uuid2, objs[1].ID);
+        Assert.Equal(uuid1, objs[0].UUID);
+        Assert.Equal(uuid2, objs[1].UUID);
 
         objs = (
             await collection.Query.Hybrid(
@@ -554,7 +554,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects.ToList();
 
         Assert.Single(objs);
-        Assert.Equal(uuid1, objs[0].ID);
+        Assert.Equal(uuid1, objs[0].UUID);
     }
 
     // TODO Is Second a list of vectors or a multivector?
@@ -704,7 +704,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).ToList();
         Assert.Equal(3, objs.Count);
-        Assert.Equal(uuid1, objs[0].ID);
+        Assert.Equal(uuid1, objs[0].UUID);
 
         objs = (
             await collection.Query.Hybrid(
@@ -716,7 +716,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).ToList();
         Assert.Single(objs);
-        Assert.Equal(uuid1, objs[0].ID);
+        Assert.Equal(uuid1, objs[0].UUID);
     }
 
     [Fact]
@@ -758,8 +758,8 @@ public partial class SearchTests : IntegrationTests
         ).ToList();
 
         Assert.Equal(4, objs.Count);
-        Assert.Equal(uuid2, objs[0].ID);
-        var rest = objs.Skip(1).Select(o => o.ID).OrderBy(x => x).ToList();
+        Assert.Equal(uuid2, objs[0].UUID);
+        var rest = objs.Skip(1).Select(o => o.UUID).OrderBy(x => x).ToList();
         var expected = new List<Guid?> { uuid1, uuid3, uuid4 };
         expected.Sort();
         Assert.Equal(expected, rest);

@@ -252,7 +252,7 @@ public class TestQueries : IntegrationTests
         Assert.NotNull(res);
         Assert.NotNull(res.Generative);
         Assert.Equal(expectedLen, res.Objects.Count());
-        Assert.Equal(expected, res.Objects.Select(o => o.ID!.Value).ToHashSet());
+        Assert.Equal(expected, res.Objects.Select(o => o.UUID!.Value).ToHashSet());
         foreach (var obj in res.Objects)
         {
             Assert.NotNull(obj.Generative);

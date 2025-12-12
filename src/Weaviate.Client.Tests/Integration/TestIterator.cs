@@ -279,7 +279,7 @@ public partial class BasicTests
 
         await foreach (var obj in initialIter)
         {
-            allUuids.Add(obj.ID!.Value);
+            allUuids.Add(obj.UUID!.Value);
         }
 
         // Test pagination with after parameter

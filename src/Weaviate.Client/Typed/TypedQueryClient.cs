@@ -110,7 +110,7 @@ public class TypedQueryClient<T>
     /// <summary>
     /// Fetches a single object by its ID.
     /// </summary>
-    /// <param name="id">The ID of the object to fetch.</param>
+    /// <param name="uuid">The ID of the object to fetch.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -118,7 +118,7 @@ public class TypedQueryClient<T>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed object, or null if not found.</returns>
     public async Task<WeaviateObject<T>?> FetchObjectByID(
-        Guid id,
+        Guid uuid,
         OneOrManyOf<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -127,7 +127,7 @@ public class TypedQueryClient<T>
     )
     {
         var result = await _queryClient.FetchObjectByID(
-            id: id,
+            id: uuid,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -140,7 +140,7 @@ public class TypedQueryClient<T>
     /// <summary>
     /// Fetches multiple objects by their IDs.
     /// </summary>
-    /// <param name="ids">The IDs of the objects to fetch.</param>
+    /// <param name="uuids">The IDs of the objects to fetch.</param>
     /// <param name="limit">Maximum number of objects to return.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="filters">Additional filters to apply.</param>
@@ -152,7 +152,7 @@ public class TypedQueryClient<T>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the fetched objects.</returns>
     public async Task<Models.WeaviateResult<WeaviateObject<T>>> FetchObjectsByIDs(
-        HashSet<Guid> ids,
+        HashSet<Guid> uuids,
         uint? limit = null,
         Rerank? rerank = null,
         Filter? filters = null,
@@ -165,7 +165,7 @@ public class TypedQueryClient<T>
     )
     {
         var result = await _queryClient.FetchObjectsByIDs(
-            ids: ids,
+            ids: uuids,
             limit: limit,
             rerank: rerank,
             filters: filters,
