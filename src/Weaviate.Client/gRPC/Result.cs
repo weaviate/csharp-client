@@ -223,7 +223,7 @@ internal partial class WeaviateGrpcClient
     {
         return new WeaviateObject
         {
-            ID = !string.IsNullOrEmpty(metadata.Id) ? Guid.Parse(metadata.Id) : Guid.Empty,
+            UUID = !string.IsNullOrEmpty(metadata.Id) ? Guid.Parse(metadata.Id) : Guid.Empty,
             Collection = collection,
             Vectors = BuildVectorsFromResult(metadata),
             Properties = MakeNonRefs(properties.NonRefProps),
@@ -258,7 +258,7 @@ internal partial class WeaviateGrpcClient
 
         return new GenerativeWeaviateObject
         {
-            ID = obj.ID,
+            UUID = obj.UUID,
             Collection = obj.Collection,
             Vectors = obj.Vectors,
             Properties = obj.Properties,
@@ -369,7 +369,7 @@ internal partial class WeaviateGrpcClient
 
         return new GenerativeGroupByObject()
         {
-            ID = result.ID,
+            UUID = result.UUID,
             Collection = result.Collection,
             Vectors = result.Vectors,
             Properties = result.Properties,

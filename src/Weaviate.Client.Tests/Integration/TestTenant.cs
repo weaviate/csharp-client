@@ -374,7 +374,7 @@ public partial class TenantTests : IntegrationTests
             )
         ).ToList();
         Assert.Single(objects1);
-        Assert.Equal(uuid1, objects1[0].ID);
+        Assert.Equal(uuid1, objects1[0].UUID);
 
         var objects2 = (
             await tenant2Collection.Query.BM25(

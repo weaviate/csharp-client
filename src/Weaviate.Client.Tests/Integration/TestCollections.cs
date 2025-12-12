@@ -1313,7 +1313,7 @@ public partial class CollectionsTests : IntegrationTests
         )
             .Objects.Select(r => new
             {
-                r.ID,
+                r.UUID,
                 Age = r.Properties["age"],
                 r.Metadata.RerankScore,
             })
@@ -1328,7 +1328,7 @@ public partial class CollectionsTests : IntegrationTests
         )
             .Objects.Select(r => new
             {
-                r.ID,
+                r.UUID,
                 Age = r.Properties["age"],
                 r.Metadata.RerankScore,
             })
@@ -1341,8 +1341,8 @@ public partial class CollectionsTests : IntegrationTests
         Assert.True(results.All(r => r.RerankScore == null));
         Assert.True(resultsReranked.All(r => r.RerankScore != null));
 
-        var resultsIDs = results.OrderByDescending(x => x.Age).Select(x => x.ID).ToList();
-        var resultsRerankedIDs = resultsReranked.Select(x => x.ID).ToList();
+        var resultsIDs = results.OrderByDescending(x => x.Age).Select(x => x.UUID).ToList();
+        var resultsRerankedIDs = resultsReranked.Select(x => x.UUID).ToList();
 
         Assert.Equal(resultsIDs, resultsRerankedIDs);
     }

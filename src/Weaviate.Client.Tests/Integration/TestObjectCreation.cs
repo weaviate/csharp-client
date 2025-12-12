@@ -27,7 +27,7 @@ public partial class BasicTests : IntegrationTests
         );
 
         Assert.NotNull(retrieved);
-        Assert.Equal(id, retrieved.ID);
+        Assert.Equal(id, retrieved.UUID);
         Assert.Equal("TestObject", retrieved.Properties["name"]);
         Assert.Equal("TestObject", retrieved.As<TestData>()?.Name);
 

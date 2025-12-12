@@ -125,7 +125,7 @@ public class TypedGenerateClient<T>
     /// <summary>
     /// Fetch a single object by ID with generative AI capabilities.
     /// </summary>
-    /// <param name="id">Object ID</param>
+    /// <param name="uuid">Object UUID</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="returnProperties">Properties to return</param>
@@ -135,7 +135,7 @@ public class TypedGenerateClient<T>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>Strongly-typed generative result</returns>
     public async Task<GenerativeWeaviateResult<T>?> FetchObjectByID(
-        Guid id,
+        Guid uuid,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -147,7 +147,7 @@ public class TypedGenerateClient<T>
     )
     {
         var result = await _generateClient.FetchObjectByID(
-            id: id,
+            id: uuid,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
@@ -163,7 +163,7 @@ public class TypedGenerateClient<T>
     /// <summary>
     /// Fetch multiple objects by IDs with generative AI capabilities.
     /// </summary>
-    /// <param name="ids">Set of object IDs</param>
+    /// <param name="uuids">Set of object UUIDs</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="filters">Filters to apply</param>
@@ -177,7 +177,7 @@ public class TypedGenerateClient<T>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>Strongly-typed generative result</returns>
     public async Task<GenerativeWeaviateResult<T>> FetchObjectsByIDs(
-        HashSet<Guid> ids,
+        HashSet<Guid> uuids,
         uint? limit = null,
         Rerank? rerank = null,
         Filter? filters = null,
@@ -193,7 +193,7 @@ public class TypedGenerateClient<T>
     )
     {
         var result = await _generateClient.FetchObjectsByIDs(
-            ids: ids,
+            ids: uuids,
             limit: limit,
             rerank: rerank,
             filters: filters,

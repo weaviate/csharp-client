@@ -236,7 +236,7 @@ public class TypedClientIntegrationTests : IntegrationTests
         // Act
         var id = await typedClient.Data.Insert(
             article,
-            id: expectedId,
+            uuid: expectedId,
             cancellationToken: TestContext.Current.CancellationToken
         );
 

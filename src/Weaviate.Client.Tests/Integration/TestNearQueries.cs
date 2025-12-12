@@ -99,15 +99,15 @@ public class TestNearQueries : IntegrationTests
 
         var objs = (
             await collectionClient.Query.NearObject(
-                banana.ID!.Value,
+                banana.UUID!.Value,
                 limit: 2,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects.ToList();
 
         Assert.Equal(2, objs.Count);
-        Assert.Equal(uuidBanana, objs[0].ID);
-        Assert.Equal(uuidFruit, objs[1].ID);
+        Assert.Equal(uuidBanana, objs[0].UUID);
+        Assert.Equal(uuidFruit, objs[1].UUID);
     }
 
     [Fact]
@@ -145,14 +145,14 @@ public class TestNearQueries : IntegrationTests
 
         var objs = (
             await collectionClient.Query.NearObject(
-                banana.ID!.Value,
+                banana.UUID!.Value,
                 offset: 1,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects.ToList();
 
         Assert.Equal(3, objs.Count);
-        Assert.Equal(uuidFruit, objs[0].ID);
+        Assert.Equal(uuidFruit, objs[0].UUID);
     }
 
     [Fact]

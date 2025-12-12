@@ -50,7 +50,7 @@ public record GroupByObject : WeaviateObject
 
 public record WeaviateObject
 {
-    public Guid? ID { get; set; }
+    public Guid? UUID { get; set; }
 
     public string? Collection { get; init; }
 

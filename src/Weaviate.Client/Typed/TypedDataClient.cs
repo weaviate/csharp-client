@@ -25,7 +25,7 @@ public class TypedDataClient<T>
     /// </summary>
     public async Task<Guid> Insert(
         T properties,
-        Guid? id = null,
+        Guid? uuid = null,
         Models.Vectors? vectors = null,
         OneOrManyOf<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
@@ -33,7 +33,7 @@ public class TypedDataClient<T>
     {
         return await _dataClient.Insert(
             properties,
-            id,
+            uuid,
             vectors,
             references,
             cancellationToken: cancellationToken
@@ -44,28 +44,28 @@ public class TypedDataClient<T>
     /// Updates a strongly-typed object in the collection.
     /// </summary>
     public async Task Update(
-        Guid id,
+        Guid uuid,
         T properties,
         Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
     {
-        await _dataClient.Update(id, properties, vectors, references, cancellationToken);
+        await _dataClient.Update(uuid, properties, vectors, references, cancellationToken);
     }
 
     /// <summary>
     /// Replaces a strongly-typed object in the collection.
     /// </summary>
     public async Task Replace(
-        Guid id,
+        Guid uuid,
         T properties,
         Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
     {
-        await _dataClient.Replace(id, properties, vectors, references, cancellationToken);
+        await _dataClient.Replace(uuid, properties, vectors, references, cancellationToken);
     }
 
     /// <summary>
@@ -86,12 +86,12 @@ public class TypedDataClient<T>
     /// Inserts multiple strongly-typed objects with explicit IDs.
     /// </summary>
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(T properties, Guid id)> requests,
+        IEnumerable<(T properties, Guid uuid)> requests,
         CancellationToken cancellationToken = default
     )
     {
         return await _dataClient.InsertMany(
-            requests.Select(r => ((object)r.properties, r.id)),
+            requests.Select(r => ((object)r.properties, r.uuid)),
             cancellationToken
         );
     }
@@ -149,9 +149,9 @@ public class TypedDataClient<T>
     /// <summary>
     /// Deletes an object by its ID.
     /// </summary>
-    public async Task DeleteByID(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteByID(Guid uuid, CancellationToken cancellationToken = default)
     {
-        await _dataClient.DeleteByID(id, cancellationToken);
+        await _dataClient.DeleteByID(uuid, cancellationToken);
     }
 
     /// <summary>

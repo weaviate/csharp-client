@@ -36,7 +36,7 @@ public partial class PaginationTests : IntegrationTests
 
         // Assert page1
         Assert.Equal(2, page1.Count());
-        var page1Ids = page1.Select(o => o.ID!.Value).ToArray();
+        var page1Ids = page1.Select(o => o.UUID!.Value).ToArray();
         var afterCursor = page1Ids.Last();
 
         // Act: fetch second page using `after` cursor
@@ -47,7 +47,7 @@ public partial class PaginationTests : IntegrationTests
         );
 
         // Assert page2 does not include page1 items and has expected count
-        var page2Ids = page2.Select(o => o.ID!.Value).ToArray();
+        var page2Ids = page2.Select(o => o.UUID!.Value).ToArray();
         Assert.Equal(2, page2Ids.Length);
         Assert.DoesNotContain(page2Ids[0], page1Ids);
         Assert.DoesNotContain(page2Ids[1], page1Ids);
@@ -61,7 +61,7 @@ public partial class PaginationTests : IntegrationTests
         );
 
         // Assert last page has the remaining single item
-        var page3Ids = page3.Select(o => o.ID!.Value).ToArray();
+        var page3Ids = page3.Select(o => o.UUID!.Value).ToArray();
         Assert.Single(page3Ids);
         Assert.DoesNotContain(page3Ids[0], page1Ids);
         Assert.DoesNotContain(page3Ids[0], page2Ids);
