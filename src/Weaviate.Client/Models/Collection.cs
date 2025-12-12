@@ -106,15 +106,9 @@ public partial record CollectionCreateParams : CollectionConfigCommon { }
 
 public partial record CollectionConfigExport : CollectionConfig
 {
-    public static CollectionCreateParams ToCollectionConfigCreateParams(
-        CollectionConfigExport config
-    )
+    public CollectionCreateParams ToCollectionConfigCreateParams()
     {
-        if (
-            config.VectorIndexType != ""
-            || config.VectorIndexConfig != null
-            || config.Vectorizer != ""
-        )
+        if (this.VectorIndexType != "" || this.VectorIndexConfig != null || this.Vectorizer != "")
         {
             throw new WeaviateClientException(
                 "Cannot convert CollectionConfigExport with legacy settings to CollectionCreateParams."
@@ -123,17 +117,17 @@ public partial record CollectionConfigExport : CollectionConfig
 
         return new CollectionCreateParams
         {
-            Name = config.Name,
-            Description = config.Description,
-            Properties = config.Properties,
-            References = config.References,
-            InvertedIndexConfig = config.InvertedIndexConfig,
-            MultiTenancyConfig = config.MultiTenancyConfig,
-            ReplicationConfig = config.ReplicationConfig,
-            ShardingConfig = config.ShardingConfig,
-            VectorConfig = config.VectorConfig,
-            GenerativeConfig = config.GenerativeConfig,
-            RerankerConfig = config.RerankerConfig,
+            Name = this.Name,
+            Description = this.Description,
+            Properties = this.Properties,
+            References = this.References,
+            InvertedIndexConfig = this.InvertedIndexConfig,
+            MultiTenancyConfig = this.MultiTenancyConfig,
+            ReplicationConfig = this.ReplicationConfig,
+            ShardingConfig = this.ShardingConfig,
+            VectorConfig = this.VectorConfig,
+            GenerativeConfig = this.GenerativeConfig,
+            RerankerConfig = this.RerankerConfig,
         };
     }
 }

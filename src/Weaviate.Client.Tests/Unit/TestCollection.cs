@@ -473,7 +473,7 @@ public class CollectionTests
         };
 
         var ex = Assert.Throws<WeaviateClientException>(() =>
-            CollectionConfigExport.ToCollectionConfigCreateParams(export)
+            export.ToCollectionConfigCreateParams()
         );
         Assert.Contains("legacy settings", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
@@ -499,7 +499,7 @@ public class CollectionTests
             Vectorizer = "",
         };
 
-        var result = CollectionConfigExport.ToCollectionConfigCreateParams(export);
+        var result = export.ToCollectionConfigCreateParams();
 
         Assert.NotNull(result);
         Assert.Equal(export.Name, result.Name);
