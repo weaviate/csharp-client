@@ -362,7 +362,9 @@ public partial class CollectionsTests
             $"JSON structures differ:\nExpected:\n{expectedJson}\n\nActual:\n{actualJson}"
         );
 
-        await collectionClient.Config.AddVector(Configure.Vectors.SelfProvided().New("nondefault"));
+        await collectionClient.Config.AddVector(
+            ("nondefault", Configure.Vectorizer.SelfProvided())
+        );
 
         string expectedJsonAfterUpdate =
             $@"{{

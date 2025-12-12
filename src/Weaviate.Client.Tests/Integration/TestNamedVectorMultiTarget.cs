@@ -15,11 +15,11 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         RequireVersion("1.26.0");
 
         var collection = await CollectionFactory(
-            vectorConfig: new[]
-            {
-                Configure.Vectors.SelfProvided().New(name: "first"),
-                Configure.Vectors.SelfProvided().New(name: "second"),
-            }
+            vectorConfig:
+            [
+                ("first", Configure.Vectorizer.SelfProvided()),
+                ("second", Configure.Vectorizer.SelfProvided()),
+            ]
         );
 
         var uuid1 = await collection.Data.Insert(
@@ -157,8 +157,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided().New(name: "first"),
-                Configure.Vectors.SelfProvided().New(name: "second"),
+                Configure.Vector(name: "first"),
+                Configure.Vector(name: "second"),
             }
         );
 
@@ -328,8 +328,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided().New(name: "first"),
-                Configure.Vectors.SelfProvided().New(name: "second"),
+                Configure.Vector(name: "first"),
+                Configure.Vector(name: "second"),
             }
         );
 
@@ -398,8 +398,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided().New(name: "first"),
-                Configure.Vectors.SelfProvided().New(name: "second"),
+                Configure.Vector(name: "first"),
+                Configure.Vector(name: "second"),
             }
         );
 
@@ -483,8 +483,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided().New(name: "first"),
-                Configure.Vectors.SelfProvided().New(name: "second"),
+                Configure.Vector(name: "first"),
+                Configure.Vector(name: "second"),
             }
         );
 

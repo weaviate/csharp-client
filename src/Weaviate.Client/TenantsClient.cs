@@ -17,15 +17,6 @@ public class TenantsClient
     }
 
     public async Task<IEnumerable<Tenant>> Create(
-        string[] tenants,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var tenantModels = tenants.Select(name => new Tenant { Name = name }).ToArray();
-        return await Create(tenantModels, cancellationToken);
-    }
-
-    public async Task<IEnumerable<Tenant>> Create(
         Tenant[] tenants,
         CancellationToken cancellationToken = default
     )
@@ -35,8 +26,10 @@ public class TenantsClient
             .Select(t => new Rest.Dto.Tenant
             {
                 Name = t.Name,
-                ActivityStatus = (Rest.Dto.TenantActivityStatus?)
-                    Enum.Parse(typeof(Rest.Dto.TenantActivityStatus), t.Status.ToString(), true),
+                ActivityStatus = Enum.Parse<Rest.Dto.TenantActivityStatus>(
+                    t.Status.ToString(),
+                    true
+                ),
             })
             .ToArray();
         var result = await _collectionClient.Client.RestClient.TenantsAdd(
@@ -48,12 +41,7 @@ public class TenantsClient
         {
             Name = t.Name!,
             Status = t.ActivityStatus.HasValue
-                ? (Models.TenantActivityStatus)
-                    Enum.Parse(
-                        typeof(Models.TenantActivityStatus),
-                        t.ActivityStatus.Value.ToString(),
-                        true
-                    )
+                ? Enum.Parse<TenantActivityStatus>(t.ActivityStatus.Value.ToString(), true)
                 : Models.TenantActivityStatus.Unspecified,
         });
     }

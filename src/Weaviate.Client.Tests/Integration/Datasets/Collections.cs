@@ -106,12 +106,14 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                         indexSearchable: false
                     ),
                 ],
-                VectorConfig = Configure
-                    .Vectors.Text2VecTransformers(
+                VectorConfig = Configure.Vector(
+                    "nondefault",
+                    Configure.Vectorizer.Text2VecTransformers(
                         vectorizeCollectionName: false,
                         poolingStrategy: "masked_mean"
-                    )
-                    .New("nondefault", _vectorIndexConfigHNSW_base),
+                    ),
+                    _vectorIndexConfigHNSW_base
+                ),
                 InvertedIndexConfig = new()
                 {
                     Bm25 = new() { B = 0.70f, K1 = 1.3f },
@@ -156,12 +158,17 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                         indexSearchable: false
                     ),
                 ],
-                VectorConfig = Configure
-                    .Vectors.Text2VecTransformers(
-                        vectorizeCollectionName: false,
-                        poolingStrategy: "masked_mean"
-                    )
-                    .New("nondefault", _vectorIndexConfigHNSW_base),
+                VectorConfig =
+                [
+                    (
+                        "nondefault",
+                        Configure.Vectorizer.Text2VecTransformers(
+                            vectorizeCollectionName: false,
+                            poolingStrategy: "masked_mean"
+                        ),
+                        _vectorIndexConfigHNSW_base
+                    ),
+                ],
                 InvertedIndexConfig = new()
                 {
                     Bm25 = new() { B = 0.70f, K1 = 1.3f },
@@ -195,18 +202,22 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 Name = "AllVectorIndexConfigurations",
                 Description = "Vector Index Configurations",
                 Properties = [_nameProperty],
-                VectorConfig = new[]
-                {
-                    Configure.Vectors.SelfProvided().New("hnswbase", _vectorIndexConfigHNSW_base),
+                VectorConfig =
+                [
+                    Configure.Vector(
+                        "hnswbase",
+                        t => t.SelfProvided(),
+                        _vectorIndexConfigHNSW_base
+                    ),
                     // TODO BQ is only returning Enabled property for HNSW
-                    // Configure.Vectors.SelfProvided("hnswbq", _vectorIndexConfigHNSW_BQ),
-                    Configure.Vectors.SelfProvided().New("hnswpq", _vectorIndexConfigHNSW_PQ),
-                    Configure.Vectors.SelfProvided().New("hnswsq", _vectorIndexConfigHNSW_SQ),
-                    Configure.Vectors.SelfProvided().New("flatbase", _vectorIndexConfigFlat_base),
-                    Configure.Vectors.SelfProvided().New("flatbq", _vectorIndexConfigFlat_BQ),
+                    // Configure.Vectorizer.SelfProvided("hnswbq", _vectorIndexConfigHNSW_BQ),
+                    ("hnswpq", Configure.Vectorizer.SelfProvided(), _vectorIndexConfigHNSW_PQ),
+                    ("hnswsq", Configure.Vectorizer.SelfProvided(), _vectorIndexConfigHNSW_SQ),
+                    ("flatbase", Configure.Vectorizer.SelfProvided(), _vectorIndexConfigFlat_base),
+                    ("flatbq", Configure.Vectorizer.SelfProvided(), _vectorIndexConfigFlat_BQ),
                     // Requires ASYNC_INDEXING: 'true'
-                    // Configure.Vectors.SelfProvided("dynamicbase", _vectorIndexConfigDynamic_base),
-                },
+                    // ("dynamicbase", Configure.Vectorizer.SelfProvided(), _vectorIndexConfigDynamic_base),
+                ],
                 InvertedIndexConfig = InvertedIndexConfig.Default,
                 ReplicationConfig = ReplicationConfig.Default,
                 ShardingConfig = ShardingConfig.Default,

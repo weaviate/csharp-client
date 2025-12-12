@@ -16,7 +16,12 @@ public partial class VectorConfigListTests
         };
         var bq = new Quantizers.BQ { Cache = false, RescoreLimit = 5 };
         Assert.Throws<WeaviateClientException>(() =>
-            Configure.Vectors.SelfProvided().New("flat-bq", flat, bq)
+            Configure.Vector(
+                "flat-bq",
+                Configure.Vectorizer.SelfProvided(),
+                index: flat,
+                quantizer: bq
+            )
         );
     }
 
@@ -29,7 +34,12 @@ public partial class VectorConfigListTests
         };
         var bq = new Quantizers.BQ { Cache = false, RescoreLimit = 5 };
         Assert.Throws<WeaviateClientException>(() =>
-            Configure.Vectors.SelfProvided().New("hnsw-bq", hnsw, bq)
+            Configure.Vector(
+                "hnsw-bq",
+                Configure.Vectorizer.SelfProvided(),
+                index: hnsw,
+                quantizer: bq
+            )
         );
     }
 
@@ -46,7 +56,7 @@ public partial class VectorConfigListTests
     [Fact]
     public void Test_VectorConfigList()
     {
-        var transformerVectorizer = Configure.Vectors.Text2VecTransformers();
+        var transformerVectorizer = Configure.Vectorizer.Text2VecTransformers();
 
         // Arrange
         VectorConfigList ncList = new[]
@@ -76,12 +86,18 @@ public partial class VectorConfigListTests
                 new Vectorizer.Text2VecTransformers { SourceProperties = ["location"] }
             ),
             new VectorConfig("nein", new Vectorizer.SelfProvided()),
-            transformerVectorizer.New("transf1", sourceProperties: ["breed"]),
-            transformerVectorizer.New("transf2", sourceProperties: ["color"]),
-            Configure
-                .Vectors.Text2VecWeaviate(vectorizeCollectionName: true)
-                .New("weaviate", sourceProperties: ["color"]),
-            Configure.Vectors.Img2VecNeural([]).New("neural", sourceProperties: ["color"]),
+            Configure.Vector("transf1", transformerVectorizer, sourceProperties: ["breed"]),
+            Configure.Vector("transf2", transformerVectorizer, sourceProperties: ["color"]),
+            Configure.Vector(
+                "weaviate",
+                Configure.Vectorizer.Text2VecWeaviate(vectorizeCollectionName: true),
+                sourceProperties: ["color"]
+            ),
+            Configure.Vector(
+                "neural",
+                Configure.Vectorizer.Img2VecNeural([]),
+                sourceProperties: ["color"]
+            ),
         };
 
         // Act

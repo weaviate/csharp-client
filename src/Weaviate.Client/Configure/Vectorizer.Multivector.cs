@@ -8,7 +8,8 @@ public static partial class Configure
 {
     public static class MultiVectors
     {
-        public static VectorConfigBuilder SelfProvided() => new(new Vectorizer.SelfProvided());
+        public static VectorConfigBuilder SelfProvided() =>
+            new(new Models.Vectorizer.SelfProvided());
 
         public class VectorConfigBuilder(VectorizerConfig Config)
         {
@@ -70,7 +71,7 @@ public static partial class Configure
             bool? vectorizeCollectionName = null
         ) =>
             new(
-                new Vectorizer.Text2MultiVecJinaAI
+                new Models.Vectorizer.Text2MultiVecJinaAI
                 {
                     Model = model,
                     BaseURL = baseURL,
@@ -87,7 +88,7 @@ public static partial class Configure
             bool? vectorizeCollectionName = null
         ) =>
             new(
-                new Vectorizer.Multi2MultiVecJinaAI
+                new Models.Vectorizer.Multi2MultiVecJinaAI
                 {
                     BaseURL = baseURL,
                     Model = model,
@@ -105,7 +106,7 @@ public static partial class Configure
             bool? vectorizeCollectionName = null
         ) =>
             new(
-                new Vectorizer.Multi2MultiVecJinaAI
+                new Models.Vectorizer.Multi2MultiVecJinaAI
                 {
                     BaseURL = baseURL,
                     Model = model,

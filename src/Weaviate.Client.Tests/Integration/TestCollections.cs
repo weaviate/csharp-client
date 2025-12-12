@@ -38,17 +38,17 @@ public partial class CollectionsTests : IntegrationTests
             await CollectionFactory(
                 name: "Collection1",
                 properties: [Property.Text("Name")],
-                vectorConfig: Configure.Vectors.SelfProvided().New()
+                vectorConfig: Configure.Vectorizer.SelfProvided()
             ),
             await CollectionFactory(
                 name: "Collection2",
                 properties: [Property.Text("Lastname")],
-                vectorConfig: Configure.Vectors.SelfProvided().New()
+                vectorConfig: Configure.Vectorizer.SelfProvided()
             ),
             await CollectionFactory(
                 name: "Collection3",
                 properties: [Property.Text("Address")],
-                vectorConfig: Configure.Vectors.SelfProvided().New()
+                vectorConfig: Configure.Vectorizer.SelfProvided()
             ),
         };
 
@@ -61,7 +61,7 @@ public partial class CollectionsTests : IntegrationTests
             .ToHashSetAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        Assert.Superset(collectionNames, list);
+        Assert.Superset<string>(collectionNames, list);
     }
 
     [Fact]
@@ -605,14 +605,14 @@ public partial class CollectionsTests : IntegrationTests
         // Arrange
         var collection = await CollectionFactory(
             name: "Test",
-            vectorConfig: Configure.Vectors.SelfProvided().New("default"),
+            vectorConfig: Configure.Vectorizer.SelfProvided(),
             properties: [Property.Text("name")]
         );
 
         RequireVersion("1.31.0");
 
         await collection.Config.AddVector(
-            Configure.Vectors.Text2VecTransformers().New("nondefault")
+            ("nondefault", Configure.Vectorizer.Text2VecTransformers())
         );
 
         var c = await collection.Config.Get(TestContext.Current.CancellationToken);
@@ -627,17 +627,15 @@ public partial class CollectionsTests : IntegrationTests
         yield return new GenerativeConfig.Anyscale();
     }
 
-    public static IEnumerable<object?> VectorizerConfigData()
+    public static IEnumerable<VectorConfigList?> VectorizerConfigData()
     {
         yield return null;
-        yield return Configure.Vectors.SelfProvided().New();
-        yield return Configure
-            .Vectors.Text2VecTransformers(vectorizeCollectionName: false)
-            .New("vec");
-        yield return new[]
-        {
-            Configure.Vectors.Text2VecTransformers(vectorizeCollectionName: false).New(name: "vec"),
-        };
+        yield return Configure.Vectorizer.SelfProvided();
+        yield return
+        [
+            ("vec", Configure.Vectorizer.Text2VecTransformers(vectorizeCollectionName: false)),
+        ];
+        yield return [Configure.Vectorizer.Text2VecTransformers(vectorizeCollectionName: false)];
     }
 
     public static IEnumerable<object?[]> AddPropertyTestData()
@@ -679,7 +677,7 @@ public partial class CollectionsTests : IntegrationTests
         // Arrange
         var collection = await CollectionFactory(
             name: "TestCollectionUpdate",
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
+            vectorConfig: Configure.Vectorizer.SelfProvided(),
             properties: [Property.Text("name"), Property.Int("age")],
             multiTenancyConfig: new()
             {
@@ -997,35 +995,29 @@ public partial class CollectionsTests : IntegrationTests
         RequireVersion("1.32.0", message: "RQ only supported in server version 1.32.0+");
 
         var collection = await CollectionFactory(
-            vectorConfig: new[]
-            {
-                Configure
-                    .Vectors.SelfProvided()
-                    .New(
-                        name: "hnswSq",
-                        indexConfig: new VectorIndex.HNSW
+            vectorConfig:
+            [
+                (
+                    "hnswSq",
+                    Configure.Vectorizer.SelfProvided(),
+                    new VectorIndex.HNSW
+                    {
+                        Quantizer = new VectorIndex.Quantizers.SQ
                         {
-                            Quantizer = new VectorIndex.Quantizers.SQ
-                            {
-                                TrainingLimit = 100001,
-                                RescoreLimit = 123,
-                            },
-                        }
-                    ),
-                Configure
-                    .Vectors.SelfProvided()
-                    .New(
-                        name: "hnswRq",
-                        indexConfig: new VectorIndex.HNSW
-                        {
-                            Quantizer = new VectorIndex.Quantizers.RQ
-                            {
-                                Bits = 8,
-                                RescoreLimit = 123,
-                            },
-                        }
-                    ),
-            }
+                            TrainingLimit = 100001,
+                            RescoreLimit = 123,
+                        },
+                    }
+                ),
+                (
+                    "hnswRq",
+                    Configure.Vectorizer.SelfProvided(),
+                    new VectorIndex.HNSW
+                    {
+                        Quantizer = new VectorIndex.Quantizers.RQ { Bits = 8, RescoreLimit = 123 },
+                    }
+                ),
+            ]
         );
         var config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
@@ -1097,23 +1089,22 @@ public partial class CollectionsTests : IntegrationTests
         RequireVersion("1.34.0", message: "RQ with flat only supported in server version 1.34.0+");
 
         var collection = await CollectionFactory(
-            vectorConfig: new[]
-            {
-                Configure
-                    .Vectors.SelfProvided()
-                    .New(
-                        name: "flatRq",
-                        indexConfig: new VectorIndex.Flat
+            vectorConfig:
+            [
+                (
+                    "flatRq",
+                    Configure.Vectorizer.SelfProvided(),
+                    new VectorIndex.Flat
+                    {
+                        Quantizer = new VectorIndex.Quantizers.RQ
                         {
-                            Quantizer = new VectorIndex.Quantizers.RQ
-                            {
-                                Bits = 8,
-                                RescoreLimit = 123,
-                                Cache = true,
-                            },
-                        }
-                    ),
-            }
+                            Bits = 8,
+                            RescoreLimit = 123,
+                            Cache = true,
+                        },
+                    }
+                ),
+            ]
         );
         var config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
@@ -1160,18 +1151,14 @@ public partial class CollectionsTests : IntegrationTests
         );
 
         var collection = await CollectionFactory(
-            vectorConfig: new[]
-            {
-                Configure
-                    .Vectors.SelfProvided()
-                    .New(
-                        name: "hnswNone",
-                        indexConfig: new VectorIndex.HNSW
-                        {
-                            Quantizer = new VectorIndex.Quantizers.None(),
-                        }
-                    ),
-            }
+            vectorConfig:
+            [
+                (
+                    "hnswNone",
+                    Configure.Vectorizer.SelfProvided(),
+                    new VectorIndex.HNSW { Quantizer = new VectorIndex.Quantizers.None() }
+                ),
+            ]
         );
         var config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
@@ -1258,7 +1245,7 @@ public partial class CollectionsTests : IntegrationTests
             name: "QueryTestCollection",
             properties: [Property.Text("firstName"), Property.Int("age"), Property.Text("bio")],
             rerankerConfig: new Reranker.Custom { Type = "reranker-dummy", Config = new { } },
-            vectorConfig: Configure.Vectors.SelfProvided().New()
+            vectorConfig: Configure.Vectorizer.SelfProvided()
         );
 
         // Sample data. The reranker-dummy module will use the length of the "bio" property to

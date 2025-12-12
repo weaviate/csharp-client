@@ -43,6 +43,8 @@ public record Tenant
     public required string Name { get; init; }
     public TenantActivityStatus Status { get; init; } = TenantActivityStatus.Hot;
 
+    public static implicit operator Tenant(string name) => new() { Name = name };
+
     public Tenant() { }
 
     public Tenant(string name, TenantActivityStatus status)
