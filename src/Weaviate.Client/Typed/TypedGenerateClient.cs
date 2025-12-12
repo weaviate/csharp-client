@@ -163,7 +163,7 @@ public class TypedGenerateClient<T>
     /// <summary>
     /// Fetch multiple objects by IDs with generative AI capabilities.
     /// </summary>
-    /// <param name="uuids">Set of object IDs</param>
+    /// <param name="uuids">Set of object UUIDs</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="filters">Filters to apply</param>
