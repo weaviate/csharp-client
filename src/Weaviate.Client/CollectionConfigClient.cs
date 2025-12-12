@@ -87,11 +87,15 @@ public class CollectionConfigClient
         return result.ToModel();
     }
 
-    public async Task<CollectionConfigExport?> Get(CancellationToken cancellationToken = default)
+    public async Task<CollectionConfigExport> Get(CancellationToken cancellationToken = default)
     {
-        var response = await _client.RestClient.CollectionGet(_collectionName, cancellationToken);
+        var response =
+            await _client.RestClient.CollectionGet(_collectionName, cancellationToken)
+            ?? throw new WeaviateClientException(
+                new InvalidOperationException($"Collection '{_collectionName}' does not exist.")
+            );
 
-        return response?.ToModel();
+        return response.ToModel();
     }
 
     /// <summary>
