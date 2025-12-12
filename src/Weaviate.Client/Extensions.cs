@@ -20,7 +20,7 @@ public static class WeaviateExtensions
 
     static T? _dictToObject<T>(IDictionary<string, object>? v) =>
         v is null
-            ? default(T)
+            ? default
             : JsonSerializer.Deserialize<T>(
                 JsonSerializer.Serialize(v, WeaviateRestClient.RestJsonSerializerOptions),
                 WeaviateRestClient.RestJsonSerializerOptions
@@ -191,7 +191,7 @@ public static class WeaviateExtensions
         return data;
     }
 
-    internal static CollectionConfig ToModel(this Rest.Dto.Class collection)
+    internal static CollectionConfigExport ToModel(this Rest.Dto.Class collection)
     {
         var makeVectorConfig = (string name, Rest.Dto.VectorConfig v) =>
         {
@@ -296,7 +296,7 @@ public static class WeaviateExtensions
         (var properties, var references) = UnmergeProperties(collection?.Properties ?? []);
 
 #pragma warning disable CS0618 // Type or member is obsolete
-        return new CollectionConfig()
+        return new CollectionConfigExport()
         {
             Name = collection?.Class1 ?? string.Empty,
             Description = collection?.Description ?? string.Empty,

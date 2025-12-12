@@ -90,7 +90,7 @@ public class CatService
             // Create collection
             _logger.LogInformation("Creating Cat collection...");
             await _weaviate.Collections.Create<Cat>(
-                new Weaviate.Client.Models.CollectionConfig
+                new Weaviate.Client.Models.CollectionCreateParams
                 {
                     Name = "Cat",
                     Description = "Example cat collection for DI demo",

@@ -36,7 +36,7 @@ public class TypedClientIntegrationTests : IntegrationTests
         // Missing Content, ViewCount, PublishedDate
     }
 
-    private readonly CollectionConfig _articleConfig = new()
+    private readonly CollectionCreateParams _articleConfig = new()
     {
         Name = "Articles",
         Properties = new[]

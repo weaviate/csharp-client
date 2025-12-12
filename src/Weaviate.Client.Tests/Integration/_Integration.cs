@@ -134,7 +134,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         return string.Join(collectionNamePartSeparator, strings);
     }
 
-    public async Task<CollectionClient> CollectionFactory<TData>(CollectionConfig c)
+    public async Task<CollectionClient> CollectionFactory<TData>(CollectionCreateParams c)
     {
         await _weaviate.Collections.Delete(c.Name);
 
@@ -173,7 +173,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
 
         references ??= [];
 
-        var c = new CollectionConfig
+        var c = new CollectionCreateParams
         {
             Name = name,
             Description = description,

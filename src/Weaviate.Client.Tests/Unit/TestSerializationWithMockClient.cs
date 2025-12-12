@@ -97,7 +97,7 @@ public class SerializationWithMockClientTests
 
         // Act
         var collection = await client.Collections.Create(
-            new CollectionConfig { Name = "AllProperties" },
+            new CollectionCreateParams { Name = "AllProperties" },
             TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(
@@ -352,7 +352,7 @@ public class SerializationWithMockClientTests
 
         // Act
         var collection = await client.Collections.Create(
-            new CollectionConfig { Name = "AllProperties" },
+            new CollectionCreateParams { Name = "AllProperties" },
             TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(
