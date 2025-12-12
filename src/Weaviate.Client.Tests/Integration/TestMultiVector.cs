@@ -13,20 +13,19 @@ public class TestMultiVector : IntegrationTests
             name: "TestMultiVectorCollection",
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided().New(name: "regular"),
-                Configure
-                    .MultiVectors.SelfProvided()
-                    .New(
-                        name: "colbert",
-                        encoding: new VectorIndexConfig.MuveraEncoding(),
-                        indexConfig: new VectorIndex.HNSW
+                Configure.Vector("regular", v => v.SelfProvided()),
+                Configure.MultiVector(
+                    "colbert",
+                    v => v.SelfProvided(),
+                    index: new VectorIndex.HNSW
+                    {
+                        MultiVector = new VectorIndexConfig.MultiVectorConfig
                         {
-                            MultiVector = new VectorIndexConfig.MultiVectorConfig
-                            {
-                                Aggregation = VectorIndexConfig.MultiVectorAggregation.MaxSim,
-                            },
-                        }
-                    ),
+                            Aggregation = VectorIndexConfig.MultiVectorAggregation.MaxSim,
+                        },
+                    },
+                    encoding: new VectorIndexConfig.MuveraEncoding()
+                ),
             }
         );
 
@@ -47,8 +46,8 @@ public class TestMultiVector : IntegrationTests
             name: "TestMultiVectorCollection",
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided().New(name: "regular"),
-                Configure.MultiVectors.SelfProvided().New(name: "colbert"),
+                Configure.Vector("regular", v => v.SelfProvided()),
+                Configure.MultiVector("colbert", v => v.SelfProvided()),
             }
         );
 
@@ -70,8 +69,8 @@ public class TestMultiVector : IntegrationTests
             name: "TestMultiVectorCollectionConfig",
             vectorConfig: new[]
             {
-                Configure.Vectors.SelfProvided().New(name: "regular"),
-                Configure.MultiVectors.SelfProvided().New(name: "colbert"),
+                Configure.Vector("regular", v => v.SelfProvided()),
+                Configure.MultiVector("colbert", v => v.SelfProvided()),
             }
         );
 
@@ -104,19 +103,18 @@ public class TestMultiVector : IntegrationTests
             properties: new[] { Property.Text("title") },
             vectorConfig: new[]
             {
-                Configure
-                    .MultiVectors.SelfProvided()
-                    .New(
-                        name: "colbert",
-                        indexConfig: new VectorIndex.HNSW()
+                Configure.MultiVector(
+                    "colbert",
+                    v => v.SelfProvided(),
+                    index: new VectorIndex.HNSW()
+                    {
+                        MultiVector = new VectorIndexConfig.MultiVectorConfig
                         {
-                            MultiVector = new VectorIndexConfig.MultiVectorConfig
-                            {
-                                Aggregation = VectorIndexConfig.MultiVectorAggregation.MaxSim,
-                            },
-                        }
-                    ),
-                Configure.Vectors.SelfProvided().New(name: "regular"),
+                            Aggregation = VectorIndexConfig.MultiVectorAggregation.MaxSim,
+                        },
+                    }
+                ),
+                Configure.Vector("regular", v => v.SelfProvided()),
             }
         );
 
@@ -257,18 +255,17 @@ public class TestMultiVector : IntegrationTests
             properties: new[] { Property.Text("name") },
             vectorConfig: new[]
             {
-                Configure
-                    .MultiVectors.SelfProvided()
-                    .New(
-                        name: "default",
-                        indexConfig: new VectorIndex.HNSW()
+                Configure.MultiVector(
+                    "default",
+                    v => v.SelfProvided(),
+                    index: new VectorIndex.HNSW()
+                    {
+                        MultiVector = new VectorIndexConfig.MultiVectorConfig
                         {
-                            MultiVector = new VectorIndexConfig.MultiVectorConfig
-                            {
-                                Aggregation = VectorIndexConfig.MultiVectorAggregation.MaxSim,
-                            },
-                        }
-                    ),
+                            Aggregation = VectorIndexConfig.MultiVectorAggregation.MaxSim,
+                        },
+                    }
+                ),
             }
         );
 

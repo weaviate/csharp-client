@@ -95,7 +95,15 @@ public class CatService
                     Name = "Cat",
                     Description = "Example cat collection for DI demo",
                     Properties = Weaviate.Client.Models.Property.FromClass<Cat>(),
-                    VectorConfig = Configure.Vectors.Text2VecWeaviate().New(),
+                    VectorConfig =
+                    [
+                        Configure.Vector("name", v => v.SelfProvided(), sourceProperties: "name"),
+                        Configure.MultiVector(
+                            "breed",
+                            v => v.SelfProvided(),
+                            sourceProperties: "breed"
+                        ),
+                    ],
                 }
             );
         }
@@ -118,7 +126,7 @@ public class CatService
         _logger.LogInformation("Querying cats...");
         var results = await collection.Query.FetchObjects(limit: 10);
 
-        _logger.LogInformation("Found {Count} cats", results.Objects.Count());
+        _logger.LogInformation("Found {Count} cats", results.Objects.Count);
 
         foreach (var obj in results.Objects)
         {

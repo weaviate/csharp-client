@@ -18,8 +18,8 @@ public partial class TenantTests : IntegrationTests
             "",
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig { Enabled = true }
         );
 
         await collectionClient.Tenants.Create(
@@ -63,15 +63,12 @@ public partial class TenantTests : IntegrationTests
             "",
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
-        Tenant tenantObj = new() { Name = tenant };
-        await collectionClient.Tenants.Create(
-            new[] { tenantObj },
-            TestContext.Current.CancellationToken
-        );
+        Tenant tenantObj = tenant;
+        await collectionClient.Tenants.Create([tenantObj], TestContext.Current.CancellationToken);
 
         var tenant1Collection = collectionClient.WithTenant(tenantObj.Name);
         var uuid = await tenant1Collection.Data.Insert(
@@ -108,12 +105,12 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("Name")],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await collectionClient.Tenants.Create(
-            new[] { "tenant1", "tenant2" },
+            ["tenant1", "tenant2"],
             TestContext.Current.CancellationToken
         );
 
@@ -172,8 +169,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("Name"), Property.Text("Name2")],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await collectionClient.Tenants.Create(
@@ -222,7 +219,7 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("Name")],
-            vectorConfig: Configure.Vectors.SelfProvided().New()
+            vectorConfig: Configure.Vector()
         );
 
         var uuid = await collectionClient.Data.Insert(
@@ -251,8 +248,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("Name"), Property.Text("Name2")],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await collectionClient.Tenants.Create(
@@ -301,12 +298,12 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await collectionClient.Tenants.Create(
-            new[] { "tenant1", "tenant2" },
+            ["tenant1", "tenant2"],
             TestContext.Current.CancellationToken
         );
 
@@ -350,12 +347,12 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await collectionClient.Tenants.Create(
-            new[] { "Tenant1", "Tenant2" },
+            ["Tenant1", "Tenant2"],
             TestContext.Current.CancellationToken
         );
 
@@ -392,8 +389,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await collectionClient.Tenants.Create(
@@ -446,8 +443,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await collectionClient.Tenants.Create(
@@ -499,8 +496,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await collectionClient.Tenants.Create(
@@ -553,8 +550,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         // Create with HOT (deprecated)
@@ -611,8 +608,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         // Add tenants with various activity statuses, including deprecated ones
@@ -647,8 +644,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         var tenant = new Tenant { Name = "1" };
@@ -680,8 +677,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await collectionClient.Tenants.Create([tenantCase], TestContext.Current.CancellationToken);
@@ -702,8 +699,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         var collection = await collectionClient.Config.Get(TestContext.Current.CancellationToken);
@@ -747,8 +744,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
@@ -791,8 +788,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
@@ -814,8 +811,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         // Create 1001 tenants
@@ -858,8 +855,8 @@ public partial class TenantTests : IntegrationTests
             "dummy",
             "dummy",
             [],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         // Create collection with auto-tenant creation enabled
@@ -867,8 +864,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true, autoTenantCreation: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true, AutoTenantCreation: true)
         );
 
         // Insert 101 objects for tenant "tenant"
@@ -906,8 +903,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         var tenant = new Tenant { Name = "tenant1" };
@@ -954,8 +951,8 @@ public partial class TenantTests : IntegrationTests
             null,
             "Test collection with tenants",
             [Property.Text("name")],
-            vectorConfig: Configure.Vectors.SelfProvided().New(),
-            multiTenancyConfig: Configure.MultiTenancy(enabled: true)
+            vectorConfig: Configure.Vector(),
+            multiTenancyConfig: new MultiTenancyConfig(Enabled: true)
         );
 
         await collectionClient.Tenants.Create(

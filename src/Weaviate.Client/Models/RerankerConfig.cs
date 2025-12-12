@@ -12,12 +12,18 @@ public static class Reranker
 {
     public record Transformers : IRerankerConfig
     {
+        [JsonConstructor]
+        internal Transformers() { }
+
         public const string TypeValue = "reranker-transformers";
         public string Type => TypeValue;
     }
 
     public record Cohere : IRerankerConfig
     {
+        [JsonConstructor]
+        internal Cohere() { }
+
         public const string TypeValue = "reranker-cohere";
         public string Type => TypeValue;
 
@@ -33,6 +39,9 @@ public static class Reranker
 
     public record ContextualAI : IRerankerConfig
     {
+        [JsonConstructor]
+        internal ContextualAI() { }
+
         public const string TypeValue = "reranker-contextualai";
         public string Type => TypeValue;
 
@@ -43,6 +52,9 @@ public static class Reranker
 
     public record VoyageAI : IRerankerConfig
     {
+        [JsonConstructor]
+        internal VoyageAI() { }
+
         public const string TypeValue = "reranker-voyageai";
         public string Type => TypeValue;
 
@@ -61,6 +73,9 @@ public static class Reranker
 
     public record JinaAI : IRerankerConfig
     {
+        [JsonConstructor]
+        internal JinaAI() { }
+
         public const string TypeValue = "reranker-jinaai";
         public string Type => TypeValue;
 
@@ -79,6 +94,9 @@ public static class Reranker
 
     public record Nvidia : IRerankerConfig
     {
+        [JsonConstructor]
+        internal Nvidia() { }
+
         public const string TypeValue = "reranker-nvidia";
         public string Type => TypeValue;
 
@@ -93,6 +111,9 @@ public static class Reranker
 
     public record Custom : IRerankerConfig
     {
+        [JsonConstructor]
+        internal Custom() { }
+
         public required string Type { get; init; }
 
         public dynamic? Config { get; set; }
@@ -101,6 +122,9 @@ public static class Reranker
     // Special case for "none" - no configuration needed
     public record None : IRerankerConfig
     {
+        [JsonConstructor]
+        internal None() { }
+
         public const string TypeValue = "none";
         public string Type => TypeValue;
     }

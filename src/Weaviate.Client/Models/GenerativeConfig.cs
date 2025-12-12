@@ -12,6 +12,9 @@ public static class GenerativeConfig
 {
     public record Custom : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal Custom() { }
+
         public required string Type { get; set; }
 
         public dynamic? Config { get; set; } = new { };
@@ -19,6 +22,9 @@ public static class GenerativeConfig
 
     public abstract record OpenAIBase : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal OpenAIBase() { }
+
         public string? Model { get; set; }
         public string? BaseURL { get; set; }
         public int? FrequencyPenalty { get; set; }
@@ -34,6 +40,9 @@ public static class GenerativeConfig
 
     public record AWS : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal AWS() { }
+
         public const string TypeValue = "generative-aws";
         public string Type => TypeValue;
 
@@ -53,6 +62,9 @@ public static class GenerativeConfig
 
     public record Anthropic : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal Anthropic() { }
+
         public const string TypeValue = "generative-anthropic";
         public string Type => TypeValue;
 
@@ -67,6 +79,9 @@ public static class GenerativeConfig
 
     public record Anyscale : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal Anyscale() { }
+
         public const string TypeValue = "generative-anyscale";
         public string Type => TypeValue;
 
@@ -77,6 +92,9 @@ public static class GenerativeConfig
 
     public record Cohere : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal Cohere() { }
+
         public const string TypeValue = "generative-cohere";
         public string Type => TypeValue;
 
@@ -90,6 +108,9 @@ public static class GenerativeConfig
 
     public record Databricks : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal Databricks() { }
+
         public const string TypeValue = "generative-databricks";
         public string Type => TypeValue;
 
@@ -102,6 +123,9 @@ public static class GenerativeConfig
 
     public record FriendliAI : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal FriendliAI() { }
+
         public const string TypeValue = "generative-friendliai";
         public string Type => TypeValue;
 
@@ -113,6 +137,9 @@ public static class GenerativeConfig
 
     public record Mistral : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal Mistral() { }
+
         public const string TypeValue = "generative-mistral";
         public string Type => TypeValue;
 
@@ -124,6 +151,9 @@ public static class GenerativeConfig
 
     public record Nvidia : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal Nvidia() { }
+
         public const string TypeValue = "generative-nvidia";
         public string Type => TypeValue;
 
@@ -136,6 +166,9 @@ public static class GenerativeConfig
 
     public record Ollama : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal Ollama() { }
+
         public const string TypeValue = "generative-ollama";
         public string Type => TypeValue;
 
@@ -145,12 +178,18 @@ public static class GenerativeConfig
 
     public record OpenAI : OpenAIBase
     {
+        [JsonConstructor]
+        internal OpenAI() { }
+
         public const string TypeValue = "generative-openai";
         public override string Type => TypeValue;
     }
 
     public record AzureOpenAI : OpenAIBase
     {
+        [JsonConstructor]
+        internal AzureOpenAI() { }
+
         public const string TypeValue = "generative-azure-openai";
         public override string Type => TypeValue;
 
@@ -160,6 +199,9 @@ public static class GenerativeConfig
 
     public record GoogleVertex : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal GoogleVertex() { }
+
         public const string TypeValue = "generative-google-vertex";
         public string Type => TypeValue;
 
@@ -176,6 +218,9 @@ public static class GenerativeConfig
 
     public record GoogleGemini : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal GoogleGemini() { }
+
         public const string TypeValue = "generative-google-gemini";
         public string Type => TypeValue;
 
@@ -188,6 +233,9 @@ public static class GenerativeConfig
 
     public record XAI : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal XAI() { }
+
         public const string TypeValue = "generative-xai";
         public string Type => TypeValue;
 
@@ -200,6 +248,9 @@ public static class GenerativeConfig
 
     public record ContextualAI : IGenerativeConfig
     {
+        [JsonConstructor]
+        internal ContextualAI() { }
+
         public const string TypeValue = "generative-contextualai";
         public string Type => TypeValue;
 
