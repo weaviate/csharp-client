@@ -140,7 +140,7 @@ public class TypedQueryClient<T>
     /// <summary>
     /// Fetches multiple objects by their IDs.
     /// </summary>
-    /// <param name="uuids">The IDs of the objects to fetch.</param>
+    /// <param name="uuids">The UUIDs of the objects to fetch.</param>
     /// <param name="limit">Maximum number of objects to return.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="filters">Additional filters to apply.</param>
