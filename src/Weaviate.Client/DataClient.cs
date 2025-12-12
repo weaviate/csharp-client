@@ -226,7 +226,7 @@ public class DataClient
                         Collection = _collectionName,
                         Uuid = (r.ID ?? Guid.NewGuid()).ToString(),
                         Properties = ObjectHelper.BuildBatchProperties(r.Data),
-                        Tenant = r.Tenant ?? _collectionClient.Tenant,
+                        Tenant = _collectionClient.Tenant,
                     };
 
                     if (r.References?.Any() ?? false)

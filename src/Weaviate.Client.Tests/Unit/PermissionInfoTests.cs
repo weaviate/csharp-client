@@ -123,7 +123,6 @@ public class PermissionInfoTests
         var dataRes = ((Permissions.Data)dataModel).Resource;
         Assert.Equal("data-collection", dataRes.Collection);
         Assert.Equal("tenant1", dataRes.Tenant);
-        Assert.Equal("object1", dataRes.Object);
 
         // Nodes
         var nodesDto = new Weaviate.Client.Rest.Dto.Permission

@@ -6,19 +6,17 @@ public record BatchInsertRequest(
     object Data,
     Guid? ID = null,
     Vectors? Vectors = null,
-    IEnumerable<ObjectReference>? References = null,
-    string? Tenant = null
+    IEnumerable<ObjectReference>? References = null
 )
 {
     public static BatchInsertRequest Create(
         object data,
         Guid? id = null,
         Vectors? vectors = null,
-        IEnumerable<ObjectReference>? references = null,
-        string? tenant = null
+        IEnumerable<ObjectReference>? references = null
     )
     {
-        return new BatchInsertRequest(data, id, vectors, references, tenant);
+        return new BatchInsertRequest(data, id, vectors, references);
     }
 
     public static BatchInsertRequest[] Create(IEnumerable<object> data)

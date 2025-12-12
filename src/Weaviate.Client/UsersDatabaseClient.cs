@@ -45,14 +45,9 @@ public class UsersDatabaseClient
     /// <summary>
     /// Creates a new database user and returns their API key.
     /// </summary>
-    public async Task<string> Create(
-        string userId,
-        bool? import = null,
-        DateTimeOffset? createTime = null,
-        CancellationToken cancellationToken = default
-    )
+    public async Task<string> Create(string userId, CancellationToken cancellationToken = default)
     {
-        var apiKey = await _client.RestClient.UserDbCreate(userId, import, createTime);
+        var apiKey = await _client.RestClient.UserDbCreate(userId, cancellationToken);
         return apiKey.Apikey;
     }
 

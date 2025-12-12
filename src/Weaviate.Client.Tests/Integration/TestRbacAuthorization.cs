@@ -48,7 +48,7 @@ public class TestRbacAuthorization : IntegrationTests
             roleName,
             [
                 new Permissions.Collections(collectionName) { Read = true },
-                new Permissions.Data(collectionName, null, null) { Read = true },
+                new Permissions.Data(collectionName, null) { Read = true },
             ],
             TestContext.Current.CancellationToken
         );

@@ -2,7 +2,7 @@ namespace Weaviate.Client.Models;
 
 public record BackupsResource(string? Collection);
 
-public record DataResource(string? Collection = "*", string? Tenant = "*", string? Object = "*");
+public record DataResource(string? Collection = "*", string? Tenant = "*");
 
 public record NodesResource(
     string? Collection = "*",
@@ -32,12 +32,7 @@ internal static class PermissionResourceExtensions
 
     internal static Rest.Dto.Data ToDto(this DataResource resource)
     {
-        return new Rest.Dto.Data
-        {
-            Collection = resource.Collection,
-            Tenant = resource.Tenant,
-            Object = resource.Object,
-        };
+        return new Rest.Dto.Data { Collection = resource.Collection, Tenant = resource.Tenant };
     }
 
     internal static Rest.Dto.Nodes ToDto(this NodesResource resource)
@@ -122,7 +117,7 @@ internal static class PermissionResourceExtensions
     {
         var actions = permissions.Where(p => p.Data == resource).Select(p => p.Action).ToHashSet();
 
-        return new Models.Permissions.Data(resource.Collection, resource.Tenant, resource.Object)
+        return new Models.Permissions.Data(resource.Collection, resource.Tenant)
         {
             Create = actions.Contains(Rest.Dto.PermissionAction.Create_data),
             Read = actions.Contains(Rest.Dto.PermissionAction.Read_data),
