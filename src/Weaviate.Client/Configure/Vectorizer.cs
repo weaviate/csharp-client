@@ -1,15 +1,26 @@
 using Weaviate.Client.Models;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Weaviate.Client;
+
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 internal static partial class Factory
 {
     public static VectorizerFactory Vectorizer { get; } = new VectorizerFactory();
     public static VectorizerFactoryMulti VectorizerMulti { get; } = new VectorizerFactoryMulti();
+    public static GenerativeProviderFactory GenerativeProvider { get; } =
+        new GenerativeProviderFactory();
+    public static GenerativeConfigFactory Generative { get; } = new GenerativeConfigFactory();
+    public static RerankerConfigFactory Reranker { get; } = new RerankerConfigFactory();
 }
 
 public static partial class Configure
 {
+    public static GenerativeProviderFactory GenerativeProvider => Factory.GenerativeProvider;
+    public static GenerativeConfigFactory Generative => Factory.Generative;
+    public static RerankerConfigFactory Reranker => Factory.Reranker;
+
     public static VectorConfig Vector(string? name = null) =>
         Vector(name, (VectorizerConfig?)null, null, null);
 
