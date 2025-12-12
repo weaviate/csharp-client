@@ -108,10 +108,11 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 ],
                 VectorConfig = Configure.Vector(
                     "nondefault",
-                    Configure.Vectorizer.Text2VecTransformers(
-                        vectorizeCollectionName: false,
-                        poolingStrategy: "masked_mean"
-                    ),
+                    t =>
+                        t.Text2VecTransformers(
+                            vectorizeCollectionName: false,
+                            poolingStrategy: "masked_mean"
+                        ),
                     _vectorIndexConfigHNSW_base
                 ),
                 InvertedIndexConfig = new()
@@ -160,12 +161,13 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 ],
                 VectorConfig =
                 [
-                    (
+                    Configure.Vector(
                         "nondefault",
-                        Configure.Vectorizer.Text2VecTransformers(
-                            vectorizeCollectionName: false,
-                            poolingStrategy: "masked_mean"
-                        ),
+                        t =>
+                            t.Text2VecTransformers(
+                                vectorizeCollectionName: false,
+                                poolingStrategy: "masked_mean"
+                            ),
                         _vectorIndexConfigHNSW_base
                     ),
                 ],
@@ -211,10 +213,14 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                     ),
                     // TODO BQ is only returning Enabled property for HNSW
                     // Configure.Vectorizer.SelfProvided("hnswbq", _vectorIndexConfigHNSW_BQ),
-                    ("hnswpq", Configure.Vectorizer.SelfProvided(), _vectorIndexConfigHNSW_PQ),
-                    ("hnswsq", Configure.Vectorizer.SelfProvided(), _vectorIndexConfigHNSW_SQ),
-                    ("flatbase", Configure.Vectorizer.SelfProvided(), _vectorIndexConfigFlat_base),
-                    ("flatbq", Configure.Vectorizer.SelfProvided(), _vectorIndexConfigFlat_BQ),
+                    Configure.Vector("hnswpq", t => t.SelfProvided(), _vectorIndexConfigHNSW_PQ),
+                    Configure.Vector("hnswsq", t => t.SelfProvided(), _vectorIndexConfigHNSW_SQ),
+                    Configure.Vector(
+                        "flatbase",
+                        t => t.SelfProvided(),
+                        _vectorIndexConfigFlat_base
+                    ),
+                    Configure.Vector("flatbq", t => t.SelfProvided(), _vectorIndexConfigFlat_BQ),
                     // Requires ASYNC_INDEXING: 'true'
                     // ("dynamicbase", Configure.Vectorizer.SelfProvided(), _vectorIndexConfigDynamic_base),
                 ],

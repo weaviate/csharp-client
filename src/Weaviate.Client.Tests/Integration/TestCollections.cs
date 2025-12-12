@@ -38,17 +38,17 @@ public partial class CollectionsTests : IntegrationTests
             await CollectionFactory(
                 name: "Collection1",
                 properties: [Property.Text("Name")],
-                vectorConfig: Configure.Vectorizer.SelfProvided()
+                vectorConfig: Configure.Vector(t => t.SelfProvided())
             ),
             await CollectionFactory(
                 name: "Collection2",
                 properties: [Property.Text("Lastname")],
-                vectorConfig: Configure.Vectorizer.SelfProvided()
+                vectorConfig: Configure.Vector(t => t.SelfProvided())
             ),
             await CollectionFactory(
                 name: "Collection3",
                 properties: [Property.Text("Address")],
-                vectorConfig: Configure.Vectorizer.SelfProvided()
+                vectorConfig: Configure.Vector(t => t.SelfProvided())
             ),
         };
 
@@ -605,14 +605,14 @@ public partial class CollectionsTests : IntegrationTests
         // Arrange
         var collection = await CollectionFactory(
             name: "Test",
-            vectorConfig: Configure.Vectorizer.SelfProvided(),
+            vectorConfig: Configure.Vector(t => t.SelfProvided()),
             properties: [Property.Text("name")]
         );
 
         RequireVersion("1.31.0");
 
         await collection.Config.AddVector(
-            ("nondefault", Configure.Vectorizer.Text2VecTransformers())
+            Configure.Vector("nondefault", t => t.Text2VecTransformers())
         );
 
         var c = await collection.Config.Get(TestContext.Current.CancellationToken);
@@ -630,12 +630,15 @@ public partial class CollectionsTests : IntegrationTests
     public static IEnumerable<VectorConfigList?> VectorizerConfigData()
     {
         yield return null;
-        yield return Configure.Vectorizer.SelfProvided();
+        yield return Configure.Vector(t => t.SelfProvided());
         yield return
         [
-            ("vec", Configure.Vectorizer.Text2VecTransformers(vectorizeCollectionName: false)),
+            Configure.Vector("vec", t => t.Text2VecTransformers(vectorizeCollectionName: false)),
         ];
-        yield return [Configure.Vectorizer.Text2VecTransformers(vectorizeCollectionName: false)];
+        yield return
+        [
+            Configure.Vector(t => t.Text2VecTransformers(vectorizeCollectionName: false)),
+        ];
     }
 
     public static IEnumerable<object?[]> AddPropertyTestData()
@@ -677,7 +680,7 @@ public partial class CollectionsTests : IntegrationTests
         // Arrange
         var collection = await CollectionFactory(
             name: "TestCollectionUpdate",
-            vectorConfig: Configure.Vectorizer.SelfProvided(),
+            vectorConfig: Configure.Vector(t => t.SelfProvided()),
             properties: [Property.Text("name"), Property.Int("age")],
             multiTenancyConfig: new()
             {
@@ -997,9 +1000,9 @@ public partial class CollectionsTests : IntegrationTests
         var collection = await CollectionFactory(
             vectorConfig:
             [
-                (
+                Configure.Vector(
                     "hnswSq",
-                    Configure.Vectorizer.SelfProvided(),
+                    t => t.SelfProvided(),
                     new VectorIndex.HNSW
                     {
                         Quantizer = new VectorIndex.Quantizers.SQ
@@ -1009,9 +1012,9 @@ public partial class CollectionsTests : IntegrationTests
                         },
                     }
                 ),
-                (
+                Configure.Vector(
                     "hnswRq",
-                    Configure.Vectorizer.SelfProvided(),
+                    t => t.SelfProvided(),
                     new VectorIndex.HNSW
                     {
                         Quantizer = new VectorIndex.Quantizers.RQ { Bits = 8, RescoreLimit = 123 },
@@ -1091,9 +1094,9 @@ public partial class CollectionsTests : IntegrationTests
         var collection = await CollectionFactory(
             vectorConfig:
             [
-                (
+                Configure.Vector(
                     "flatRq",
-                    Configure.Vectorizer.SelfProvided(),
+                    t => t.SelfProvided(),
                     new VectorIndex.Flat
                     {
                         Quantizer = new VectorIndex.Quantizers.RQ
@@ -1153,9 +1156,9 @@ public partial class CollectionsTests : IntegrationTests
         var collection = await CollectionFactory(
             vectorConfig:
             [
-                (
+                Configure.Vector(
                     "hnswNone",
-                    Configure.Vectorizer.SelfProvided(),
+                    t => t.SelfProvided(),
                     new VectorIndex.HNSW { Quantizer = new VectorIndex.Quantizers.None() }
                 ),
             ]
@@ -1245,7 +1248,7 @@ public partial class CollectionsTests : IntegrationTests
             name: "QueryTestCollection",
             properties: [Property.Text("firstName"), Property.Int("age"), Property.Text("bio")],
             rerankerConfig: new Reranker.Custom { Type = "reranker-dummy", Config = new { } },
-            vectorConfig: Configure.Vectorizer.SelfProvided()
+            vectorConfig: Configure.Vector(t => t.SelfProvided())
         );
 
         // Sample data. The reranker-dummy module will use the length of the "bio" property to

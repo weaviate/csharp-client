@@ -2,12 +2,18 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+internal static partial class Factory
+{
+    public static VectorizerFactory Vectorizer { get; } = new VectorizerFactory();
+    public static VectorizerFactoryMulti VectorizerMulti { get; } = new VectorizerFactoryMulti();
+}
+
 public static partial class Configure
 {
     public static VectorConfig Vector(string? name = null) =>
         Vector(name, (VectorizerConfig?)null, null, null);
 
-    public static VectorConfig Vector(
+    internal static VectorConfig Vector(
         string? name = null,
         VectorizerConfig? vectorizer = null,
         VectorIndexConfig? index = null,
@@ -29,8 +35,62 @@ public static partial class Configure
         );
     }
 
-    public static VectorConfig Vector(
+    internal static VectorConfig MultiVector(
         string? name = null,
+        VectorizerConfig? vectorizer = null,
+        VectorIndex.HNSW? indexConfig = null,
+        VectorIndexConfig.QuantizerConfigBase? quantizerConfig = null,
+        VectorIndexConfig.EncodingConfig? encoding = null,
+        params string[] sourceProperties
+    )
+    {
+        name ??= "default";
+        indexConfig ??= new VectorIndex.HNSW()
+        {
+            MultiVector = new VectorIndexConfig.MultiVectorConfig(),
+        };
+
+        indexConfig.MultiVector ??= new VectorIndexConfig.MultiVectorConfig();
+
+        if (quantizerConfig is not null && indexConfig.Quantizer is not null)
+        {
+            throw new WeaviateClientException(
+                new InvalidOperationException(
+                    "Quantizer is already set on the indexConfig. Please provide either the quantizerConfig or set it on the indexConfig, not both."
+                )
+            );
+        }
+
+        if (encoding is not null && indexConfig.MultiVector.Encoding is not null)
+        {
+            throw new WeaviateClientException(
+                new InvalidOperationException(
+                    "Encoding is already set on the indexConfig.MultiVector. Please provide either the encoding parameter or set it on the indexConfig.MultiVector, not both."
+                )
+            );
+        }
+
+        indexConfig.MultiVector.Encoding ??= encoding;
+
+        vectorizer ??= new Models.Vectorizer.SelfProvided();
+
+        return new(
+            name,
+            vectorizer: vectorizer with
+            {
+                SourceProperties = sourceProperties,
+            },
+            vectorIndexConfig: quantizerConfig is null
+                ? indexConfig
+                : indexConfig with
+                {
+                    Quantizer = quantizerConfig,
+                }
+        );
+    }
+
+    public static VectorConfig Vector(
+        string name,
         Func<VectorizerFactory, VectorizerConfig>? vectorizer = null,
         VectorIndexConfig? index = null,
         VectorIndexConfig.QuantizerConfigBase? quantizer = null,
@@ -38,9 +98,56 @@ public static partial class Configure
     ) =>
         Vector(
             name,
-            vectorizer is null ? null : vectorizer(Vectorizer),
+            vectorizer is null ? null : vectorizer(Factory.Vectorizer),
             index,
             quantizer,
+            sourceProperties
+        );
+
+    public static VectorConfig Vector(
+        Func<VectorizerFactory, VectorizerConfig>? vectorizer = null,
+        VectorIndexConfig? index = null,
+        VectorIndexConfig.QuantizerConfigBase? quantizer = null,
+        params string[] sourceProperties
+    ) =>
+        Vector(
+            null,
+            vectorizer is null ? null : vectorizer(Factory.Vectorizer),
+            index,
+            quantizer,
+            sourceProperties
+        );
+
+    public static VectorConfig MultiVector(
+        string name,
+        Func<VectorizerFactoryMulti, VectorizerConfig>? vectorizer = null,
+        VectorIndex.HNSW? index = null,
+        VectorIndexConfig.QuantizerConfigBase? quantizer = null,
+        VectorIndexConfig.EncodingConfig? encoding = null,
+        params string[] sourceProperties
+    ) =>
+        MultiVector(
+            name,
+            vectorizer is null ? null : vectorizer(Factory.VectorizerMulti),
+            index,
+            quantizer,
+            encoding,
+            sourceProperties
+        );
+
+    public static VectorConfig MultiVector(
+        Func<VectorizerFactoryMulti, VectorizerConfig>? vectorizer = null,
+        VectorIndex.HNSW? index = null,
+        VectorIndexConfig.QuantizerConfigBase? quantizer = null,
+        VectorIndexConfig.EncodingConfig? encoding = null,
+        params string[] sourceProperties
+    ) =>
+        MultiVector(
+            null,
+            vectorizer is null ? null : vectorizer(Factory.VectorizerMulti),
+            index,
+            quantizer,
+            encoding,
             sourceProperties
         );
 
@@ -119,6 +226,4 @@ public static partial class Configure
 
         return indexConfig;
     }
-
-    public static VectorizerFactory Vectorizer { get; } = new VectorizerFactory();
 }

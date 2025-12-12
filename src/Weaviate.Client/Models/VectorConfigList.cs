@@ -39,11 +39,6 @@ public record VectorConfigList
         return new(config);
     }
 
-    public static implicit operator VectorConfigList(VectorizerConfig config)
-    {
-        return new(config);
-    }
-
     public void Add(params VectorConfig[] vectorConfigs)
     {
         foreach (var c in vectorConfigs)

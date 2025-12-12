@@ -363,7 +363,7 @@ public partial class CollectionsTests
         );
 
         await collectionClient.Config.AddVector(
-            ("nondefault", Configure.Vectorizer.SelfProvided())
+            Configure.Vector("nondefault", v => v.SelfProvided())
         );
 
         string expectedJsonAfterUpdate =
