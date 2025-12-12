@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Models;
 
-public static class Vectorizer
+internal static class Vectorizer
 {
     /// <summary>
     /// Unified weights configuration for multi-media vectorizers.

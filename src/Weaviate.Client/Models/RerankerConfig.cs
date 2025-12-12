@@ -12,12 +12,16 @@ public static class Reranker
 {
     public record Transformers : IRerankerConfig
     {
+        internal Transformers() { }
+
         public const string TypeValue = "reranker-transformers";
         public string Type => TypeValue;
     }
 
     public record Cohere : IRerankerConfig
     {
+        internal Cohere() { }
+
         public const string TypeValue = "reranker-cohere";
         public string Type => TypeValue;
 
@@ -33,6 +37,8 @@ public static class Reranker
 
     public record ContextualAI : IRerankerConfig
     {
+        internal ContextualAI() { }
+
         public const string TypeValue = "reranker-contextualai";
         public string Type => TypeValue;
 
@@ -43,6 +49,8 @@ public static class Reranker
 
     public record VoyageAI : IRerankerConfig
     {
+        internal VoyageAI() { }
+
         public const string TypeValue = "reranker-voyageai";
         public string Type => TypeValue;
 
@@ -61,6 +69,8 @@ public static class Reranker
 
     public record JinaAI : IRerankerConfig
     {
+        internal JinaAI() { }
+
         public const string TypeValue = "reranker-jinaai";
         public string Type => TypeValue;
 
@@ -79,6 +89,8 @@ public static class Reranker
 
     public record Nvidia : IRerankerConfig
     {
+        internal Nvidia() { }
+
         public const string TypeValue = "reranker-nvidia";
         public string Type => TypeValue;
 
@@ -93,6 +105,8 @@ public static class Reranker
 
     public record Custom : IRerankerConfig
     {
+        internal Custom() { }
+
         public required string Type { get; init; }
 
         public dynamic? Config { get; set; }
@@ -101,6 +115,8 @@ public static class Reranker
     // Special case for "none" - no configuration needed
     public record None : IRerankerConfig
     {
+        internal None() { }
+
         public const string TypeValue = "none";
         public string Type => TypeValue;
     }

@@ -117,11 +117,14 @@ public partial class CollectionsTests : IntegrationTests
         // Arrange
         var collectionClient = await CollectionFactory(
             properties: [Property.Text("Name")],
-            rerankerConfig: new Reranker.Custom
-            {
-                Type = "reranker-dummy",
-                Config = new { ConfigOption = "ConfigValue" },
-            }
+            rerankerConfig: Configure.Reranker.Custom(
+                "reranker-dummy",
+                new { ConfigOption = "ConfigValue" }
+            ),
+            generativeConfig: Configure.Generative.Custom(
+                "generative-dummy",
+                new { ConfigOption = "ConfigValue" }
+            )
         );
 
         // Act
@@ -1247,7 +1250,10 @@ public partial class CollectionsTests : IntegrationTests
         var collection = await CollectionFactory(
             name: "QueryTestCollection",
             properties: [Property.Text("firstName"), Property.Int("age"), Property.Text("bio")],
-            rerankerConfig: new Reranker.Custom { Type = "reranker-dummy", Config = new { } },
+            rerankerConfig: Configure.Reranker.Custom(
+                "reranker-dummy",
+                new { ConfigOption = "ConfigValue" }
+            ),
             vectorConfig: Configure.Vector(t => t.SelfProvided())
         );
 
