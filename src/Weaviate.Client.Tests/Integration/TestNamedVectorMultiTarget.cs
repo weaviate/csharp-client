@@ -17,8 +17,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         var collection = await CollectionFactory(
             vectorConfig:
             [
-                ("first", Configure.Vectorizer.SelfProvided()),
-                ("second", Configure.Vectorizer.SelfProvided()),
+                Configure.Vector("first", v => v.SelfProvided()),
+                Configure.Vector("second", v => v.SelfProvided()),
             ]
         );
 

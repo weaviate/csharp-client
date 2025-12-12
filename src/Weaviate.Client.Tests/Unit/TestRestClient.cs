@@ -139,7 +139,7 @@ public partial class RestClientTests
         var config = new CollectionCreateParams
         {
             Name = "TestClass",
-            VectorConfig = Configure.Vectorizer.SelfProvided(),
+            VectorConfig = Configure.Vector(),
         };
 
         // Act
@@ -306,7 +306,7 @@ public partial class RestClientTests
         var config = new CollectionCreateParams
         {
             Name = "Document",
-            VectorConfig = Configure.Vectorizer.SelfProvided(),
+            VectorConfig = Configure.Vector(),
         };
 
         // Act

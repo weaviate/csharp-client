@@ -19,35 +19,6 @@ public record VectorConfig : IEquatable<VectorConfig>
         VectorIndexConfig = vectorIndexConfig;
     }
 
-    public static implicit operator VectorConfig(VectorizerConfig vectorizer)
-    {
-        return Configure.Vector(vectorizer: vectorizer);
-    }
-
-    public static implicit operator VectorConfig(string name)
-    {
-        return Configure.Vector(
-            name: name,
-            vectorizer: (Weaviate.Client.Models.VectorizerConfig?)null
-        );
-    }
-
-    public static implicit operator VectorConfig((string name, VectorizerConfig vectorizer) entry)
-    {
-        return Configure.Vector(name: entry.name, vectorizer: entry.vectorizer);
-    }
-
-    public static implicit operator VectorConfig(
-        (string name, VectorizerConfig vectorizer, VectorIndexConfig vectorIndexConfig) entry
-    )
-    {
-        return Configure.Vector(
-            name: entry.name,
-            vectorizer: entry.vectorizer,
-            index: entry.vectorIndexConfig
-        );
-    }
-
     /// <summary>
     /// Name of the vector index to use, eg. (HNSW).
     /// </summary>

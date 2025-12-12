@@ -21,11 +21,11 @@ public static class Vectorizer
         ) =>
             new()
             {
+                ImageFields = imageFields?.Weights,
+                TextFields = textFields?.Weights,
                 AudioFields = audioFields?.Weights,
                 DepthFields = depthFields?.Weights,
-                ImageFields = imageFields?.Weights,
                 IMUFields = imuFields?.Weights,
-                TextFields = textFields?.Weights,
                 ThermalFields = thermalFields?.Weights,
                 VideoFields = videoFields?.Weights,
             };

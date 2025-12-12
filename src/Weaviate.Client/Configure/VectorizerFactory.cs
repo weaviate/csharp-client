@@ -31,11 +31,11 @@ public class VectorizerFactory
         };
 
     public VectorizerConfig Multi2VecAWS(
+        WeightedFields imageFields,
+        WeightedFields textFields,
         string? region = null,
         string? model = null,
         int? dimensions = null,
-        WeightedFields? imageFields = null,
-        WeightedFields? textFields = null,
         bool? vectorizeCollectionName = null
     ) =>
         new Models.Vectorizer.Multi2VecAWS
@@ -50,11 +50,11 @@ public class VectorizerFactory
         };
 
     public VectorizerConfig Multi2VecAWS(
+        string[]? imageFields = null,
+        string[]? textFields = null,
         string? region = null,
         string? model = null,
         int? dimensions = null,
-        string[]? imageFields = null,
-        string[]? textFields = null,
         bool? vectorizeCollectionName = null
     ) =>
         new Models.Vectorizer.Multi2VecAWS
@@ -68,9 +68,9 @@ public class VectorizerFactory
         };
 
     public VectorizerConfig Multi2VecClip(
+        WeightedFields imageFields,
+        WeightedFields textFields,
         string? inferenceUrl = null,
-        WeightedFields? imageFields = null,
-        WeightedFields? textFields = null,
         bool? vectorizeCollectionName = null
     ) =>
         new Models.Vectorizer.Multi2VecClip
@@ -83,9 +83,9 @@ public class VectorizerFactory
         };
 
     public VectorizerConfig Multi2VecClip(
-        string? inferenceUrl = null,
         string[]? imageFields = null,
         string[]? textFields = null,
+        string? inferenceUrl = null,
         bool? vectorizeCollectionName = null
     ) =>
         new Models.Vectorizer.Multi2VecClip
@@ -97,11 +97,11 @@ public class VectorizerFactory
         };
 
     public VectorizerConfig Multi2VecCohere(
+        WeightedFields imageFields,
+        WeightedFields textFields,
         string? baseURL = null,
-        WeightedFields? imageFields = null,
         string? model = null,
         int? dimensions = null,
-        WeightedFields? textFields = null,
         string? truncate = null,
         bool? vectorizeCollectionName = null
     ) =>
@@ -118,11 +118,11 @@ public class VectorizerFactory
         };
 
     public VectorizerConfig Multi2VecCohere(
-        string? baseURL = null,
         string[]? imageFields = null,
+        string[]? textFields = null,
+        string? baseURL = null,
         string? model = null,
         int? dimensions = null,
-        string[]? textFields = null,
         string? truncate = null,
         bool? vectorizeCollectionName = null
     ) =>
@@ -138,13 +138,13 @@ public class VectorizerFactory
         };
 
     public VectorizerConfig Multi2VecBind(
-        WeightedFields? audioFields = null,
-        WeightedFields? depthFields = null,
-        WeightedFields? imageFields = null,
-        WeightedFields? imuFields = null,
-        WeightedFields? textFields = null,
-        WeightedFields? thermalFields = null,
-        WeightedFields? videoFields = null,
+        WeightedFields imageFields,
+        WeightedFields textFields,
+        WeightedFields audioFields,
+        WeightedFields depthFields,
+        WeightedFields imuFields,
+        WeightedFields thermalFields,
+        WeightedFields videoFields,
         bool? vectorizeCollectionName = null
     ) =>
         new Models.Vectorizer.Multi2VecBind
@@ -158,22 +158,22 @@ public class VectorizerFactory
             VideoFields = videoFields,
             VectorizeCollectionName = vectorizeCollectionName,
             Weights = VectorizerWeights.FromWeightedFields(
+                imageFields,
+                textFields,
                 audioFields,
                 depthFields,
-                imageFields,
                 imuFields,
-                textFields,
                 thermalFields,
                 videoFields
             ),
         };
 
     public VectorizerConfig Multi2VecBind(
+        string[]? imageFields = null,
+        string[]? textFields = null,
         string[]? audioFields = null,
         string[]? depthFields = null,
-        string[]? imageFields = null,
         string[]? imuFields = null,
-        string[]? textFields = null,
         string[]? thermalFields = null,
         string[]? videoFields = null,
         bool? vectorizeCollectionName = null
@@ -193,9 +193,9 @@ public class VectorizerFactory
     public VectorizerConfig Multi2VecGoogle(
         string projectId,
         string location,
-        WeightedFields? imageFields = null,
-        WeightedFields? textFields = null,
-        WeightedFields? videoFields = null,
+        WeightedFields imageFields,
+        WeightedFields textFields,
+        WeightedFields videoFields,
         int? videoIntervalSeconds = null,
         string? model = null,
         int? dimensions = null,
@@ -240,10 +240,10 @@ public class VectorizerFactory
         };
 
     public VectorizerConfig Multi2VecVoyageAI(
+        WeightedFields imageFields,
+        WeightedFields textFields,
         string? baseURL = null,
-        WeightedFields? imageFields = null,
         string? model = null,
-        WeightedFields? textFields = null,
         bool? truncate = null,
         bool? vectorizeCollectionName = null
     ) =>
@@ -259,10 +259,10 @@ public class VectorizerFactory
         };
 
     public VectorizerConfig Multi2VecVoyageAI(
-        string? baseURL = null,
         string[]? imageFields = null,
-        string? model = null,
         string[]? textFields = null,
+        string? baseURL = null,
+        string? model = null,
         bool? truncate = null,
         bool? vectorizeCollectionName = null
     ) =>
@@ -550,11 +550,11 @@ public class VectorizerFactory
         };
 
     public VectorizerConfig Multi2VecJinaAI(
+        string[]? imageFields = null,
+        string[]? textFields = null,
         string? model = null,
         string? baseURL = null,
         int? dimensions = null,
-        string[]? imageFields = null,
-        string[]? textFields = null,
         bool? vectorizeCollectionName = null
     ) =>
         new Models.Vectorizer.Multi2VecJinaAI
@@ -568,11 +568,11 @@ public class VectorizerFactory
         };
 
     public VectorizerConfig Multi2VecJinaAI(
+        WeightedFields imageFields,
+        WeightedFields textFields,
         string? model = null,
         string? baseURL = null,
         int? dimensions = null,
-        WeightedFields? imageFields = null,
-        WeightedFields? textFields = null,
         bool? vectorizeCollectionName = null
     ) =>
         new Models.Vectorizer.Multi2VecJinaAI

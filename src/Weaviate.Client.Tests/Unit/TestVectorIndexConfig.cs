@@ -43,7 +43,7 @@ public partial class VectorIndexConfigTests
         // Act & Assert
         var vectorConfig = Configure.Vector(
             "regular",
-            Configure.Vectorizer.SelfProvided(),
+            v => v.SelfProvided(),
             index: config,
             quantizer: quantizer
         );

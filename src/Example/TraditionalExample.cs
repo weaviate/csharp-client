@@ -85,19 +85,18 @@ public class TraditionalExample
             Console.WriteLine($"Error deleting collections: {e.Message}");
         }
 
-        VectorConfigList vc1 = new() { { "default", Configure.Vectorizer.Text2VecWeaviate() } };
-        VectorConfigList vc2 = [Configure.Vectorizer.Text2VecWeaviate()];
-        VectorConfigList vc3 = Configure.Vector(vectorizer: t => t.Text2VecWeaviate());
-        VectorConfigList vc4 = Configure.Vector(
-            vectorizer: Configure.Vectorizer.Text2VecWeaviate()
-        );
+        VectorConfigList vc1 =
+        [
+            Configure.Vector(vectorizer: t => t.Multi2VecAWS()),
+            Configure.MultiVector("colbert", v => v.Multi2MultiVecJinaAI()),
+        ];
 
         var catCollection = new CollectionCreateParams
         {
             Name = "Cat",
             Description = "Lots of Cats of multiple breeds",
             Properties = Property.FromClass<Cat>(),
-            VectorConfig = vc1, // or vc2 or vc3 or vc4
+            VectorConfig = vc1,
         };
 
         collection = await weaviate.Collections.Create<Cat>(catCollection);
