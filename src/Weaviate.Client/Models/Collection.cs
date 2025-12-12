@@ -102,10 +102,25 @@ public abstract record CollectionConfigCommon
     }
 }
 
-public partial record CollectionCreateParams : CollectionConfigCommon
+public partial record CollectionCreateParams : CollectionConfigCommon { }
+
+public partial record CollectionConfigExport : CollectionConfig
 {
-    public static CollectionCreateParams FromCollectionConfig(CollectionConfig config)
+    public static CollectionCreateParams ToCollectionConfigCreateParams(
+        CollectionConfigExport config
+    )
     {
+        if (
+            config.VectorIndexType != ""
+            || config.VectorIndexConfig != null
+            || config.Vectorizer != ""
+        )
+        {
+            throw new WeaviateClientException(
+                "Cannot convert CollectionConfigExport with legacy settings to CollectionCreateParams."
+            );
+        }
+
         return new CollectionCreateParams
         {
             Name = config.Name,
@@ -128,7 +143,7 @@ public partial record CollectionConfig : CollectionConfigCommon
     internal CollectionConfig()
         : base() { }
 
-    public static CollectionConfig FromCollectionCreate(CollectionCreateParams config)
+    internal static CollectionConfig FromCollectionCreate(CollectionCreateParams config)
     {
         return new CollectionConfig
         {

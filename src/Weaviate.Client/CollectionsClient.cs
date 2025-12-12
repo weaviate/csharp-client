@@ -253,7 +253,7 @@ public record CollectionsClient
         return await _client.RestClient.CollectionExists(collectionName, cancellationToken);
     }
 
-    public async Task<CollectionConfig?> Export(
+    public async Task<CollectionConfigExport?> Export(
         string collectionName,
         CancellationToken cancellationToken = default
     )

@@ -460,4 +460,52 @@ public class CollectionTests
             $"JSON structures differ:\nExpected:\n{expectedJson}\n\nActual:\n{actualJson}"
         );
     }
+
+    [Fact]
+    public void ToCollectionConfigCreateParams_Throws_WhenLegacySettingsPresent()
+    {
+        var export = new CollectionConfigExport
+        {
+            Name = "Test",
+            VectorIndexType = "HNSW",
+            VectorIndexConfig = new object(),
+            Vectorizer = "text2vec",
+        };
+
+        var ex = Assert.Throws<WeaviateClientException>(() =>
+            CollectionConfigExport.ToCollectionConfigCreateParams(export)
+        );
+        Assert.Contains("legacy settings", ex.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void ToCollectionConfigCreateParams_Succeeds_WhenNoLegacySettings()
+    {
+        var export = new CollectionConfigExport
+        {
+            Name = "Test",
+            Description = "desc",
+            Properties = [],
+            References = [],
+            InvertedIndexConfig = null,
+            MultiTenancyConfig = null,
+            ReplicationConfig = null,
+            ShardingConfig = null,
+            VectorConfig = [],
+            GenerativeConfig = null,
+            RerankerConfig = null,
+            VectorIndexType = "",
+            VectorIndexConfig = null,
+            Vectorizer = "",
+        };
+
+        var result = CollectionConfigExport.ToCollectionConfigCreateParams(export);
+
+        Assert.NotNull(result);
+        Assert.Equal(export.Name, result.Name);
+        Assert.Equal(export.Description, result.Description);
+        Assert.Equal(export.Properties, result.Properties);
+        Assert.Equal(export.References, result.References);
+        Assert.Equal(export.VectorConfig, result.VectorConfig);
+    }
 }
