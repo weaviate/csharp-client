@@ -122,11 +122,11 @@ public partial record Filter
 
     public static Filter WithID(Guid id) => Property("_id").IsEqual(id);
 
-    public static Filter WithIDs(ISet<Guid> ids) => Or([.. ids.Select(WithID)]);
+    public static Filter WithIDs(ISet<Guid> ids) => AnyOf([.. ids.Select(WithID)]);
 
-    public static Filter Or(params Filter[] filters) => new OrNestedFilter(filters);
+    public static Filter AnyOf(params Filter[] filters) => new OrNestedFilter(filters);
 
-    public static Filter And(params Filter[] filters) => new AndNestedFilter(filters);
+    public static Filter AllOf(params Filter[] filters) => new AndNestedFilter(filters);
 
     public static Filter Not(Filter filter) => new NotNestedFilter(filter);
 
@@ -202,10 +202,6 @@ public partial record Filter
 
         return this;
     }
-
-    internal static Filter AllOf(params Filter[] filters) => And(filters);
-
-    internal static Filter AnyOf(params Filter[] filters) => Or(filters);
 
     #region Operators
     public static Filter operator &(Filter left, Filter right)
