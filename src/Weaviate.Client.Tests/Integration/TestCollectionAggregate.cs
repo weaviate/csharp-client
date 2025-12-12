@@ -51,7 +51,7 @@ public partial class AggregatesTests : IntegrationTests
         );
 
         var result = await collectionClient.Aggregate.OverAll(
-            metrics: [Metrics.ForProperty("text").Text(count: true)],
+            returnMetrics: [Metrics.ForProperty("text").Text(count: true)],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -79,7 +79,7 @@ public partial class AggregatesTests : IntegrationTests
         );
 
         var result = await collectionClient.Aggregate.OverAll(
-            metrics: [Metrics.ForProperty("text").Text(minOccurrences: 1)],
+            returnMetrics: [Metrics.ForProperty("text").Text(minOccurrences: 1)],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -109,7 +109,7 @@ public partial class AggregatesTests : IntegrationTests
 
         var result = await collectionClient.Aggregate.OverAll(
             groupBy: new Aggregate.GroupBy("text", 2),
-            metrics: [Metrics.ForProperty("text").Text(count: true)],
+            returnMetrics: [Metrics.ForProperty("text").Text(count: true)],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -129,7 +129,7 @@ public partial class AggregatesTests : IntegrationTests
 
         var result = await collectionClient.Aggregate.OverAll(
             groupBy: new Aggregate.GroupBy("text", 2),
-            metrics: [Metrics.ForProperty("text").Text(count: true)],
+            returnMetrics: [Metrics.ForProperty("text").Text(count: true)],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -228,7 +228,10 @@ public partial class AggregatesTests : IntegrationTests
 
         var result = await collectionClient.Aggregate.OverAll(
             filters: filter,
-            metrics: [Metrics.ForProperty("text").Text(count: true, topOccurrencesValue: true)],
+            returnMetrics:
+            [
+                Metrics.ForProperty("text").Text(count: true, topOccurrencesValue: true),
+            ],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -318,7 +321,7 @@ public partial class AggregatesTests : IntegrationTests
         {
             result = await collectionClient.Aggregate.NearVector(
                 nearVector,
-                metrics: metrics,
+                returnMetrics: metrics,
                 limit: Convert.ToUInt32(option["objectLimit"]),
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -327,7 +330,7 @@ public partial class AggregatesTests : IntegrationTests
         {
             result = await collectionClient.Aggregate.NearVector(
                 nearVector,
-                metrics: metrics,
+                returnMetrics: metrics,
                 certainty: Convert.ToDouble(option["certainty"]),
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -336,7 +339,7 @@ public partial class AggregatesTests : IntegrationTests
         {
             result = await collectionClient.Aggregate.NearVector(
                 nearVector,
-                metrics: metrics,
+                returnMetrics: metrics,
                 distance: Convert.ToDouble(option["distance"]),
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -461,7 +464,7 @@ public partial class AggregatesTests : IntegrationTests
         {
             res = await collectionClient.Aggregate.NearText(
                 text1,
-                metrics: metrics,
+                returnMetrics: metrics,
                 limit: Convert.ToUInt32(option["object_limit"]),
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -470,7 +473,7 @@ public partial class AggregatesTests : IntegrationTests
         {
             res = await collectionClient.Aggregate.NearText(
                 [text1],
-                metrics: metrics,
+                returnMetrics: metrics,
                 certainty: Convert.ToDouble(option["certainty"]),
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -479,7 +482,7 @@ public partial class AggregatesTests : IntegrationTests
         {
             res = await collectionClient.Aggregate.NearText(
                 new[] { text1 }!,
-                metrics: metrics,
+                returnMetrics: metrics,
                 distance: Convert.ToDouble(option["distance"]),
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -491,7 +494,7 @@ public partial class AggregatesTests : IntegrationTests
             var moveAway = option.ContainsKey("move_away") ? option["move_away"] as Move : null;
             res = await collectionClient.Aggregate.NearText(
                 new[] { text1 }!,
-                metrics: metrics,
+                returnMetrics: metrics,
                 moveTo: moveTo,
                 moveAway: moveAway,
                 cancellationToken: TestContext.Current.CancellationToken
@@ -533,7 +536,7 @@ public partial class AggregatesTests : IntegrationTests
         // Group by "text"
         var resultByText = await collectionClient.Aggregate.OverAll(
             groupBy: "text", // shorthand for new Aggregate.GroupBy("text")
-            metrics:
+            returnMetrics:
             [
                 Metrics.ForProperty("text").Text(count: true),
                 Metrics.ForProperty("int").Integer(count: true),
@@ -553,7 +556,7 @@ public partial class AggregatesTests : IntegrationTests
         // Group by "int"
         var resultByInt = await collectionClient.Aggregate.OverAll(
             groupBy: "int", // shorthand for new Aggregate.GroupBy("int")
-            metrics:
+            returnMetrics:
             [
                 Metrics.ForProperty("text").Text(count: true),
                 Metrics.ForProperty("int").Integer(count: true),
@@ -657,7 +660,7 @@ public partial class AggregatesTests : IntegrationTests
         };
 
         var result = await collectionClient.Aggregate.OverAll(
-            metrics: [metric],
+            returnMetrics: [metric],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -772,7 +775,7 @@ public partial class AggregatesTests : IntegrationTests
         };
 
         var result = await collectionClient.Aggregate.OverAll(
-            metrics: [metric],
+            returnMetrics: [metric],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
