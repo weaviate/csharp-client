@@ -9,8 +9,8 @@ public partial class FilterTests
     [Theory]
     [InlineData(
         typeof(TypedGuid),
-        new[] { "Equal", "NotEqual", "ContainsAny" },
-        new[] { "GreaterThan", "GreaterThanEqual", "LessThan", "LessThanEqual" }
+        new[] { "IsEqual", "IsNotEqual", "ContainsAny" },
+        new[] { "IsGreaterThan", "IsGreaterThanEqual", "IsLessThan", "IsLessThanEqual" }
     )]
     public void FilterTypeSupportedOperations(
         Type t,
