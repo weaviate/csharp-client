@@ -110,7 +110,7 @@ public class TypedQueryClient<T>
     /// <summary>
     /// Fetches a single object by its ID.
     /// </summary>
-    /// <param name="uuid">The ID of the object to fetch.</param>
+    /// <param name="uuid">The UUID of the object to fetch.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
