@@ -172,7 +172,7 @@ public class TestQueries : IntegrationTests
             Assert.NotNull(obj.Generative);
             Assert.Contains(
                 "I'm sorry, I'm just a dummy and can't generate anything.",
-                obj.Generative.Values[0].Result
+                obj.Generative.Values[0].Text
             );
 
             // The value of the Result property can be
@@ -180,7 +180,7 @@ public class TestQueries : IntegrationTests
             // or via Generative.Values[] indexer.
             // They return the same value.
             // The entries in the Values list contain additional properties.
-            Assert.Same(obj.Generative.Values[0].Result, obj.Generative[0]);
+            Assert.Same(obj.Generative.Values[0].Text, obj.Generative[0]);
         }
     }
 

@@ -240,9 +240,9 @@ internal partial class WeaviateGrpcClient
     {
         return generative
                 ?.Select(g => new Models.GenerativeReply(
-                    Result: g.Result,
-                    Debug: g.Debug is null ? null : new GenerativeDebug(g.Debug.FullPrompt),
-                    Metadata: g.Metadata
+                    Text: g.Result
+                //Debug: g.Debug is null ? null : new GenerativeDebug(g.Debug.FullPrompt),
+                //Metadata: g.Metadata
                 ))
                 .ToList() ?? [];
     }
@@ -432,9 +432,9 @@ internal partial class WeaviateGrpcClient
             gs = new GenerativeResult(
                 [
                     new GenerativeReply(
-                        Result: reply.GenerativeGroupedResult,
-                        Debug: null,
-                        Metadata: null
+                        Text: reply.GenerativeGroupedResult
+                    // Debug: null,
+                    // Metadata: null
                     ),
                 ]
             );
