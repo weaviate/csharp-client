@@ -120,10 +120,6 @@ public partial record Filter
 
     protected Filter() { }
 
-    public static Filter WithID(Guid id) => Property("_id").IsEqual(id);
-
-    public static Filter WithIDs(ISet<Guid> ids) => AnyOf([.. ids.Select(WithID)]);
-
     public static Filter AnyOf(params Filter[] filters) => new OrNestedFilter(filters);
 
     public static Filter AllOf(params Filter[] filters) => new AndNestedFilter(filters);

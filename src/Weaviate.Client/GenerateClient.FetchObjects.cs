@@ -132,7 +132,7 @@ public partial class GenerateClient
         var result = await _client.GrpcClient.FetchObjects(
             _collectionName,
             returnProperties: returnProperties,
-            filters: Filter.WithID(id),
+            filters: Filter.ID.IsEqual(id),
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
@@ -183,7 +183,10 @@ public partial class GenerateClient
         if (ids.Count == 0)
             return GenerativeWeaviateResult.Empty;
 
-        Filter idFilter = ids.Count == 1 ? Filter.WithID(ids.First()) : Filter.WithIDs(ids);
+        Filter idFilter =
+            ids.Count == 1
+                ? Filter.ID.IsEqual(ids.First())
+                : Filter.AnyOf([.. ids.Select(id => Filter.ID.IsEqual(id))]);
 
         if (filters is not null)
             idFilter = filters & idFilter;
