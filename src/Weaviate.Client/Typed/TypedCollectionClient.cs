@@ -75,6 +75,11 @@ public class TypedCollectionClient<T>
     public AggregateClient Aggregate => _collectionClient.Aggregate;
 
     /// <summary>
+    /// Tenant operations.
+    /// </summary>
+    public TenantsClient Tenants => _collectionClient.Tenants;
+
+    /// <summary>
     /// Collection configuration operations.
     /// </summary>
     public CollectionConfigClient Config => _collectionClient.Config;

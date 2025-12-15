@@ -68,7 +68,7 @@ public partial class TenantTests : IntegrationTests
         );
 
         Tenant tenantObj = tenant;
-        await collectionClient.Tenants.Create([tenantObj], TestContext.Current.CancellationToken);
+        await collectionClient.Tenants.Create(tenantObj, TestContext.Current.CancellationToken);
 
         var tenant1Collection = collectionClient.WithTenant(tenantObj.Name);
         var uuid = await tenant1Collection.Data.Insert(

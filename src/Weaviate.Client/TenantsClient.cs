@@ -17,10 +17,14 @@ public class TenantsClient
     }
 
     public async Task<IEnumerable<Tenant>> Create(
-        Tenant[] tenants,
+        OneOrManyOf<Tenant> tenants,
         CancellationToken cancellationToken = default
     )
     {
+        if (tenants == null || !tenants.Any())
+        {
+            throw new ArgumentException("At least one tenant must be provided.", nameof(tenants));
+        }
         // Map Models.Tenant to Rest.Dto.Tenant
         var restTenants = tenants
             .Select(t => new Rest.Dto.Tenant
@@ -47,11 +51,11 @@ public class TenantsClient
     }
 
     public async Task<IEnumerable<Tenant>> Update(
-        Tenant[] tenants,
+        OneOrManyOf<Tenant> tenants,
         CancellationToken cancellationToken = default
     )
     {
-        if (tenants == null || tenants.Length == 0)
+        if (tenants == null || !tenants.Any())
         {
             throw new ArgumentException("At least one tenant must be provided.", nameof(tenants));
         }
@@ -89,8 +93,18 @@ public class TenantsClient
         });
     }
 
-    public async Task Delete(string[] tenantNames, CancellationToken cancellationToken = default)
+    public async Task Delete(
+        OneOrManyOf<string> tenantNames,
+        CancellationToken cancellationToken = default
+    )
     {
+        if (tenantNames == null || !tenantNames.Any())
+        {
+            throw new ArgumentException(
+                "At least one tenant name must be provided.",
+                nameof(tenantNames)
+            );
+        }
         await _collectionClient.Client.RestClient.TenantsDelete(
             _collectionClient.Name,
             tenantNames,
