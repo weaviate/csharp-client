@@ -438,12 +438,12 @@ public partial class AggregatesTests : IntegrationTests
         var text2 = "nothing like the other one at all, not even a little bit";
         await collectionClient.Data.Insert(
             new { text = text1 },
-            id: uuid1,
+            uuid: uuid1,
             cancellationToken: TestContext.Current.CancellationToken
         );
         await collectionClient.Data.Insert(
             new { text = text2 },
-            id: uuid2,
+            uuid: uuid2,
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(

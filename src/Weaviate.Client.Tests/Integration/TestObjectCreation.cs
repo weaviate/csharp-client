@@ -14,7 +14,7 @@ public partial class BasicTests : IntegrationTests
         var id = Guid.NewGuid();
         var obj = await collectionClient.Data.Insert(
             new TestData() { Name = "TestObject" },
-            id: id,
+            uuid: id,
             cancellationToken: TestContext.Current.CancellationToken
         );
 

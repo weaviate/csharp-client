@@ -19,12 +19,12 @@ public partial class SearchTests : IntegrationTests
 
         await collection.Data.Insert(
             new { Name = "some name" },
-            id: uuid1,
+            uuid: uuid1,
             cancellationToken: TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(
             new { Name = "other word" },
-            id: uuid2,
+            uuid: uuid2,
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -66,12 +66,12 @@ public partial class SearchTests : IntegrationTests
 
         await collection.Data.Insert(
             new { Name = "some name" },
-            id: uuid1,
+            uuid: uuid1,
             cancellationToken: TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(
             new { Name = "other word" },
-            id: uuid2,
+            uuid: uuid2,
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -102,7 +102,7 @@ public partial class SearchTests : IntegrationTests
         var uuid = Guid.NewGuid();
         await collection.Data.Insert(
             new { Name = "some name" },
-            id: uuid,
+            uuid: uuid,
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -116,7 +116,7 @@ public partial class SearchTests : IntegrationTests
 
         await collection.Data.Insert(
             new { Name = "other word" },
-            id: Guid.NewGuid(),
+            uuid: Guid.NewGuid(),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -253,7 +253,7 @@ public partial class SearchTests : IntegrationTests
         var uuidBanana = Guid.NewGuid();
         await collection.Data.Insert(
             new { text = "banana" },
-            id: uuidBanana,
+            uuid: uuidBanana,
             cancellationToken: TestContext.Current.CancellationToken
         );
         var obj = await collection.Query.FetchObjectByID(
@@ -323,7 +323,7 @@ public partial class SearchTests : IntegrationTests
         var uuidBanana = Guid.NewGuid();
         await collection.Data.Insert(
             new { text = "banana" },
-            id: uuidBanana,
+            uuid: uuidBanana,
             cancellationToken: TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(
@@ -395,7 +395,7 @@ public partial class SearchTests : IntegrationTests
         var uuidBananaPudding = Guid.NewGuid();
         await collection.Data.Insert(
             new { text = "banana pudding" },
-            id: uuidBananaPudding,
+            uuid: uuidBananaPudding,
             cancellationToken: TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(
@@ -451,7 +451,7 @@ public partial class SearchTests : IntegrationTests
         var uuidBananaPudding = Guid.NewGuid();
         await collection.Data.Insert(
             new { text = "banana pudding" },
-            id: uuidBananaPudding,
+            uuid: uuidBananaPudding,
             cancellationToken: TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(

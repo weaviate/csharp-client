@@ -45,8 +45,8 @@ public class DataClient
     }
 
     public async Task<Guid> Insert(
-        object data,
-        Guid? id = null,
+        object properties,
+        Guid? uuid = null,
         Models.Vectors? vectors = null,
         OneOrManyOf<ObjectReference>? references = null,
         bool validate = false,
@@ -56,16 +56,19 @@ public class DataClient
         if (validate)
         {
             var schema = await _collectionClient.Config.GetCachedConfig();
-            var validationResult = TypeValidator.Default.ValidateType(data.GetType(), schema!);
+            var validationResult = TypeValidator.Default.ValidateType(
+                properties.GetType(),
+                schema!
+            );
             if (!validationResult.IsValid)
             {
                 throw new InvalidOperationException(
-                    $"Object of type '{data.GetType().Name}' does not conform to schema of collection '{_collectionName}':\n"
+                    $"Object of type '{properties.GetType().Name}' does not conform to schema of collection '{_collectionName}':\n"
                         + validationResult.GetDetailedMessage()
                 );
             }
         }
-        var propDict = ObjectHelper.BuildDataTransferObject(data);
+        var propDict = ObjectHelper.BuildDataTransferObject(properties);
 
         foreach (var kvp in references ?? [])
         {
@@ -74,7 +77,7 @@ public class DataClient
 
         var dto = new Rest.Dto.Object()
         {
-            Id = id ?? Guid.NewGuid(),
+            Id = uuid ?? Guid.NewGuid(),
             Class = _collectionName,
             Properties = propDict,
             Vectors = VectorsToDto(vectors),
@@ -90,14 +93,14 @@ public class DataClient
     }
 
     public async Task Update(
-        Guid id,
-        object data,
+        Guid uuid,
+        object properties,
         Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
     {
-        var propDict = ObjectHelper.BuildDataTransferObject(data);
+        var propDict = ObjectHelper.BuildDataTransferObject(properties);
 
         foreach (var kvp in references ?? [])
         {
@@ -106,7 +109,7 @@ public class DataClient
 
         var dto = new Rest.Dto.Object()
         {
-            Id = id,
+            Id = uuid,
             Class = _collectionName,
             Properties = propDict,
             Vectors = VectorsToDto(vectors),
@@ -121,14 +124,14 @@ public class DataClient
     }
 
     public async Task Replace(
-        Guid id,
-        object data,
+        Guid uuid,
+        object properties,
         Models.Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
     {
-        var propDict = ObjectHelper.BuildDataTransferObject(data);
+        var propDict = ObjectHelper.BuildDataTransferObject(properties);
 
         foreach (var kvp in references ?? [])
         {
@@ -137,7 +140,7 @@ public class DataClient
 
         var dto = new Rest.Dto.Object()
         {
-            Id = id,
+            Id = uuid,
             Class = _collectionName,
             Properties = propDict,
             Vectors = VectorsToDto(vectors),
@@ -152,12 +155,12 @@ public class DataClient
     }
 
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable data,
+        IEnumerable properties,
         bool validate = false,
         CancellationToken cancellationToken = default
     )
     {
-        var objects = data.Cast<object>().ToList();
+        var objects = properties.Cast<object>().ToList();
         if (validate)
         {
             var schema = await _collectionClient.Config.GetCachedConfig(
@@ -276,11 +279,11 @@ public class DataClient
         return new BatchInsertResponse(results);
     }
 
-    public async Task DeleteByID(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteByID(Guid uuid, CancellationToken cancellationToken = default)
     {
         await _client.RestClient.DeleteObject(
             _collectionName,
-            id,
+            uuid,
             _collectionClient.Tenant,
             CreateTimeoutCancellationToken(cancellationToken)
         );

@@ -1290,17 +1290,17 @@ public partial class CollectionsTests : IntegrationTests
         // Insert data
         var id1 = await collection.Data.Insert(
             data[0],
-            id: _reusableUuids[0],
+            uuid: _reusableUuids[0],
             cancellationToken: TestContext.Current.CancellationToken
         );
         var id2 = await collection.Data.Insert(
             data[1],
-            id: _reusableUuids[1],
+            uuid: _reusableUuids[1],
             cancellationToken: TestContext.Current.CancellationToken
         );
         var id3 = await collection.Data.Insert(
             data[2],
-            id: _reusableUuids[2],
+            uuid: _reusableUuids[2],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
