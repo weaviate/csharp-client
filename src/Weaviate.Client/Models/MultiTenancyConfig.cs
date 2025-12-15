@@ -3,7 +3,11 @@ namespace Weaviate.Client.Models;
 /// <summary>
 /// Configuration related to multi-tenancy within a class
 /// </summary>
-public record MultiTenancyConfig : IEquatable<MultiTenancyConfig>
+public record MultiTenancyConfig(
+    bool Enabled = false,
+    bool AutoTenantCreation = false,
+    bool AutoTenantActivation = false
+)
 {
     private static readonly Lazy<MultiTenancyConfig> _default = new(() => new());
 
@@ -15,15 +19,15 @@ public record MultiTenancyConfig : IEquatable<MultiTenancyConfig>
     /// <summary>
     /// Existing tenants should (not) be turned HOT implicitly when they are accessed and in another activity status (default: false).
     /// </summary>
-    public bool AutoTenantActivation { get; set; } = false;
+    public bool AutoTenantActivation { get; set; } = AutoTenantActivation;
 
     /// <summary>
     /// Nonexistent tenants should (not) be created implicitly (default: false).
     /// </summary>
-    public bool AutoTenantCreation { get; set; } = false;
+    public bool AutoTenantCreation { get; set; } = AutoTenantCreation;
 
     /// <summary>
     /// Whether or not multi-tenancy is enabled for this class (default: false).
     /// </summary>
-    public bool Enabled { get; set; } = false;
+    public bool Enabled { get; set; } = Enabled;
 }
