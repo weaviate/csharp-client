@@ -109,7 +109,9 @@ public class TraditionalExample
         if (_useBatchInsert)
         {
             // Batch Insertion Demo
-            var requests = cats.Select(c => (c.Data, new Vectors { { "default", c.Vector } }));
+            var requests = cats.Select(c =>
+                BatchInsertRequest.Create(c.Data, vectors: new Vectors { { "default", c.Vector } })
+            );
 
             var batchInsertions = await collection.Data.InsertMany(requests);
         }

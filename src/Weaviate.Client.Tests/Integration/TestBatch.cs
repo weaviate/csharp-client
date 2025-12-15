@@ -63,7 +63,9 @@ public partial class BatchTests : IntegrationTests
 
         // Insert objects into the referenced collection and get their UUIDs
         var refInsertResult = await refCollection.Data.InsertMany(
-            Enumerable.Range(0, numObjects).Select(i => new { Number = i }),
+            Enumerable
+                .Range(0, numObjects)
+                .Select(i => BatchInsertRequest.Create(new { Number = i })),
             cancellationToken: TestContext.Current.CancellationToken
         );
 

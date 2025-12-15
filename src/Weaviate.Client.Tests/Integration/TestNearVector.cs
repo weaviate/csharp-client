@@ -27,7 +27,7 @@ public partial class SearchTests
         );
 
         await collectionClient.Data.Insert(
-            data: new TestData { Name = "TestObject3" },
+            properties: new TestData { Name = "TestObject3" },
             vectors: new[] { 0.5f, 0.6f, 0.7f },
             cancellationToken: TestContext.Current.CancellationToken
         );
