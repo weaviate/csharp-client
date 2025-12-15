@@ -92,12 +92,6 @@ public partial record CollectionUpdate(CollectionConfig WrappedCollection)
         get => new(WrappedCollection.InvertedIndexConfig ??= Models.InvertedIndexConfig.Default);
     }
 
-    // Configuration specific to modules in a collection context.
-    public ModuleConfigList? ModuleConfig // TODO Considering removing this, or making it internal.
-    {
-        get => WrappedCollection.ModuleConfig ??= new();
-    }
-
     public IRerankerConfig? RerankerConfig
     {
         get => WrappedCollection.RerankerConfig;
@@ -148,7 +142,6 @@ public partial record CollectionUpdate(CollectionConfig WrappedCollection)
         hash.Add(Properties);
         hash.Add(References);
         hash.Add(InvertedIndexConfig);
-        hash.Add(ModuleConfig);
         hash.Add(MultiTenancyConfig);
         hash.Add(ReplicationConfig);
         hash.Add(ShardingConfig);
