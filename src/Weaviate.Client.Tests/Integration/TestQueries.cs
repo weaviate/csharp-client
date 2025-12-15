@@ -140,7 +140,7 @@ public class TestQueries : IntegrationTests
         // Arrange: create collection with no vectorizer
         var collection = await CollectionFactory(
             properties: [Property.Text("text")],
-            vectorConfig: Configure.Vector(),
+            vectorConfig: Configure.Vector(t => t.SelfProvided()),
             generativeConfig: new GenerativeConfig.Custom
             {
                 Type = "generative-dummy",
@@ -223,7 +223,7 @@ public class TestQueries : IntegrationTests
     public async Task Test_Generate_By_Ids(Guid[] ids, int expectedLen, HashSet<Guid> expected)
     {
         var collection = await CollectionFactory(
-            vectorConfig: Configure.Vector(),
+            vectorConfig: Configure.Vector(t => t.SelfProvided()),
             properties: [Property.Text("text")],
             generativeConfig: new GenerativeConfig.Custom
             {
