@@ -55,16 +55,6 @@ public partial class CollectionClient
         _queryClient = new QueryClient(this);
     }
 
-    /// <summary>
-    /// Deletes this collection from Weaviate.
-    /// </summary>
-    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
-    public async Task Delete(CancellationToken cancellationToken = default)
-    {
-        await _client.EnsureInitializedAsync();
-        await _client.RestClient.CollectionDelete(Name, cancellationToken);
-    }
-
     public async IAsyncEnumerable<WeaviateObject> Iterator(
         Guid? after = null,
         uint cacheSize = ITERATOR_CACHE_SIZE,

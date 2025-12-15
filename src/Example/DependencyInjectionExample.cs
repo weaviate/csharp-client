@@ -140,7 +140,7 @@ public class CatService
 
         // Cleanup
         _logger.LogInformation("Cleaning up...");
-        await collection.Delete();
+        await _weaviate.Collections.Delete(collection.Name);
     }
 }
 

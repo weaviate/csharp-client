@@ -86,15 +86,6 @@ public class TypedCollectionClient<T>
     public CollectionClient Untyped => _collectionClient;
 
     /// <summary>
-    /// Deletes this collection from Weaviate.
-    /// </summary>
-    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
-    public async Task Delete(CancellationToken cancellationToken = default)
-    {
-        await _collectionClient.Delete(cancellationToken);
-    }
-
-    /// <summary>
     /// Returns the total count of objects in this collection.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
