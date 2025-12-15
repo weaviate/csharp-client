@@ -12,15 +12,10 @@ public class GenerativeConfigFactory
     public IGenerativeConfig Custom(string type, object? config = null) =>
         new GenerativeConfig.Custom { Type = type, Config = config };
 
-    public IGenerativeConfig AWS(
+    public IGenerativeConfig AWSBedrock(
         string region,
-        string service,
-        string? model = null,
-        string? endpoint = null,
-        string? targetModel = null,
-        string? targetVariant = null,
-        int? maxTokenCount = null,
-        int? maxTokensToSample = null,
+        string model,
+        int? maxTokens = null,
         string[]? stopSequences = null,
         double? temperature = null,
         double? topP = null,
@@ -29,13 +24,38 @@ public class GenerativeConfigFactory
         new GenerativeConfig.AWS
         {
             Region = region,
-            Service = service,
+            Service = "bedrock",
             Model = model,
+            Endpoint = null,
+            TargetModel = null,
+            TargetVariant = null,
+            MaxTokens = maxTokens,
+            StopSequences = stopSequences,
+            Temperature = temperature,
+            TopP = topP,
+            TopK = topK,
+        };
+
+    public IGenerativeConfig AWSSagemaker(
+        string region,
+        string endpoint,
+        string? targetModel = null,
+        string? targetVariant = null,
+        int? maxTokens = null,
+        string[]? stopSequences = null,
+        double? temperature = null,
+        double? topP = null,
+        double? topK = null
+    ) =>
+        new GenerativeConfig.AWS
+        {
+            Region = region,
+            Service = "sagemaker",
+            Model = null,
             Endpoint = endpoint,
             TargetModel = targetModel,
             TargetVariant = targetVariant,
-            MaxTokenCount = maxTokenCount,
-            MaxTokensToSample = maxTokensToSample,
+            MaxTokens = maxTokens,
             StopSequences = stopSequences,
             Temperature = temperature,
             TopP = topP,

@@ -30,7 +30,7 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
-    public VectorizerConfig Multi2VecAWS(
+    public VectorizerConfig Multi2VecAWSBedrock(
         WeightedFields imageFields,
         WeightedFields textFields,
         string? region = null,
@@ -49,7 +49,7 @@ public class VectorizerFactory
             Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
         };
 
-    public VectorizerConfig Multi2VecAWS(
+    public VectorizerConfig Multi2VecAWSBedrock(
         string[]? imageFields = null,
         string[]? textFields = null,
         string? region = null,
@@ -283,11 +283,25 @@ public class VectorizerFactory
             Method = method,
         };
 
-    public VectorizerConfig Text2VecAWS(
+    public VectorizerConfig Text2VecAWSBedrock(
         string region,
-        string service,
-        string? endpoint = null,
-        string? model = null,
+        string model,
+        bool? vectorizeCollectionName = null
+    ) =>
+        new Models.Vectorizer.Text2VecAWS
+        {
+            Region = region,
+            Service = "bedrock",
+            Endpoint = null,
+            Model = model,
+            TargetModel = null,
+            TargetVariant = null,
+            VectorizeCollectionName = vectorizeCollectionName,
+        };
+
+    public VectorizerConfig Text2VecAWSSagemaker(
+        string region,
+        string endpoint,
         string? targetModel = null,
         string? targetVariant = null,
         bool? vectorizeCollectionName = null
@@ -295,9 +309,9 @@ public class VectorizerFactory
         new Models.Vectorizer.Text2VecAWS
         {
             Region = region,
-            Service = service,
+            Service = "sagemaker",
             Endpoint = endpoint,
-            Model = model,
+            Model = null,
             TargetModel = targetModel,
             TargetVariant = targetVariant,
             VectorizeCollectionName = vectorizeCollectionName,

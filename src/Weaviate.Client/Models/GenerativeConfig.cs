@@ -52,8 +52,7 @@ public static class GenerativeConfig
         public string? Endpoint { get; set; }
         public string? TargetModel { get; set; }
         public string? TargetVariant { get; set; }
-        public int? MaxTokenCount { get; set; }
-        public int? MaxTokensToSample { get; set; }
+        public int? MaxTokens { get; set; }
         public string[]? StopSequences { get; set; }
         public double? Temperature { get; set; }
         public double? TopP { get; set; }
