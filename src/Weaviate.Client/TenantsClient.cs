@@ -17,7 +17,7 @@ public class TenantsClient
     }
 
     public async Task<IEnumerable<Tenant>> Create(
-        Tenant[] tenants,
+        OneOrManyOf<Tenant> tenants,
         CancellationToken cancellationToken = default
     )
     {
@@ -47,11 +47,11 @@ public class TenantsClient
     }
 
     public async Task<IEnumerable<Tenant>> Update(
-        Tenant[] tenants,
+        OneOrManyOf<Tenant> tenants,
         CancellationToken cancellationToken = default
     )
     {
-        if (tenants == null || tenants.Length == 0)
+        if (tenants == null || !tenants.Any())
         {
             throw new ArgumentException("At least one tenant must be provided.", nameof(tenants));
         }
@@ -89,7 +89,10 @@ public class TenantsClient
         });
     }
 
-    public async Task Delete(string[] tenantNames, CancellationToken cancellationToken = default)
+    public async Task Delete(
+        OneOrManyOf<string> tenantNames,
+        CancellationToken cancellationToken = default
+    )
     {
         await _collectionClient.Client.RestClient.TenantsDelete(
             _collectionClient.Name,
