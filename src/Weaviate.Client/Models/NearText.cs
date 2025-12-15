@@ -4,11 +4,11 @@ public record Move
 {
     public float Force { get; }
     public Guid[]? Objects { get; }
-    public string[]? Concepts { get; }
+    public OneOrManyOf<string>? Concepts { get; }
 
-    public Move(float force, Guid[]? objects = null, string[]? concepts = null)
+    public Move(float force, Guid[]? objects = null, OneOrManyOf<string>? concepts = null)
     {
-        if (objects is null && (concepts == null || concepts.Length == 0))
+        if (objects is null && (concepts == null || !concepts.Any()))
         {
             throw new ArgumentException("Either objects or concepts need to be given");
         }
