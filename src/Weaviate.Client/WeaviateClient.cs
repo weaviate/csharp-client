@@ -57,7 +57,7 @@ public partial class WeaviateClient : IDisposable
     /// <summary>
     /// Returns true if the Weaviate process is live.
     /// </summary>
-    public async Task<bool> Live(CancellationToken cancellationToken = default)
+    public async Task<bool> IsLive(CancellationToken cancellationToken = default)
     {
         await EnsureInitializedAsync();
         return await RestClient.LiveAsync(CreateInitCancellationToken(cancellationToken));
@@ -138,11 +138,6 @@ public partial class WeaviateClient : IDisposable
             || url.ToLower().Contains("semi.technology")
             || url.ToLower().Contains("weaviate.cloud");
     }
-
-    public TimeSpan? DefaultTimeout => Configuration.DefaultTimeout;
-    public TimeSpan? InitTimeout => Configuration.InitTimeout;
-    public TimeSpan? InsertTimeout => Configuration.InsertTimeout;
-    public TimeSpan? QueryTimeout => Configuration.QueryTimeout;
 
     /// <summary>
     /// Internal constructor for builder path with async initialization.

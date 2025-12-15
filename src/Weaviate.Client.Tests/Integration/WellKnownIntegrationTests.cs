@@ -22,7 +22,7 @@ namespace Weaviate.Client.Tests.Integration
             var client = _weaviate;
 
             // Act
-            var isLive = await client.Live(TestContext.Current.CancellationToken);
+            var isLive = await client.IsLive(TestContext.Current.CancellationToken);
 
             // Assert
             Assert.True(isLive, "The server should be live.");

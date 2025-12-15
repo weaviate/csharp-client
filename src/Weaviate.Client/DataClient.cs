@@ -25,7 +25,9 @@ public class DataClient
     private CancellationToken CreateTimeoutCancellationToken(CancellationToken userToken = default)
     {
         var effectiveTimeout =
-            _client.InsertTimeout ?? _client.DefaultTimeout ?? WeaviateDefaults.InsertTimeout;
+            _client.Configuration.InsertTimeout
+            ?? _client.Configuration.DefaultTimeout
+            ?? WeaviateDefaults.InsertTimeout;
         return TimeoutHelper.GetCancellationToken(effectiveTimeout, userToken);
     }
 
