@@ -77,7 +77,7 @@ public class TraditionalExample
         // Delete any existing "cat" class
         try
         {
-            await collection.Delete();
+            await weaviate.Collections.Delete(collection.Name);
             Console.WriteLine("Deleted existing 'Cat' collection");
         }
         catch (Exception e)
