@@ -93,7 +93,7 @@ public partial record CollectionUpdate(CollectionConfig WrappedCollection)
     }
 
     // Configuration specific to modules in a collection context.
-    public ModuleConfigList? ModuleConfig // TODO Considering removing this, or making it internal.
+    private ModuleConfigList? ModuleConfig
     {
         get => WrappedCollection.ModuleConfig ??= new();
     }
