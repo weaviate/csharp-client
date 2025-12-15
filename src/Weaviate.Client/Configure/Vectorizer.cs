@@ -21,19 +21,19 @@ public static partial class Configure
     public static GenerativeConfigFactory Generative => Factory.Generative;
     public static RerankerConfigFactory Reranker => Factory.Reranker;
 
-    public static VectorConfig Vector(string? name = null) =>
-        Vector(name, (VectorizerConfig?)null, null, null);
+    // Note: `vectorizer` is now required on public overloads to make the
+    // caller explicitly choose the vectorizer instead of relying on an
+    // implicit default.
 
     internal static VectorConfig Vector(
+        VectorizerConfig vectorizer,
         string? name = null,
-        VectorizerConfig? vectorizer = null,
         VectorIndexConfig? index = null,
         VectorIndexConfig.QuantizerConfigBase? quantizer = null,
         params string[] sourceProperties
     )
     {
         name ??= "default";
-        vectorizer ??= new Models.Vectorizer.SelfProvided();
         index ??= new VectorIndex.HNSW();
 
         return new(
@@ -47,8 +47,8 @@ public static partial class Configure
     }
 
     internal static VectorConfig MultiVector(
+        VectorizerConfig vectorizer,
         string? name = null,
-        VectorizerConfig? vectorizer = null,
         VectorIndex.HNSW? indexConfig = null,
         VectorIndexConfig.QuantizerConfigBase? quantizerConfig = null,
         VectorIndexConfig.EncodingConfig? encoding = null,
@@ -83,7 +83,8 @@ public static partial class Configure
 
         indexConfig.MultiVector.Encoding ??= encoding;
 
-        vectorizer ??= new Models.Vectorizer.SelfProvided();
+        // vectorizer is required by callers; do not provide a default here so missing
+        // vectorizer is a compile-time error for callers that omit it.
 
         return new(
             name,
@@ -102,44 +103,30 @@ public static partial class Configure
 
     public static VectorConfig Vector(
         string name,
-        Func<VectorizerFactory, VectorizerConfig>? vectorizer = null,
+        Func<VectorizerFactory, VectorizerConfig> vectorizer,
         VectorIndexConfig? index = null,
         VectorIndexConfig.QuantizerConfigBase? quantizer = null,
         params string[] sourceProperties
-    ) =>
-        Vector(
-            name,
-            vectorizer is null ? null : vectorizer(Factory.Vectorizer),
-            index,
-            quantizer,
-            sourceProperties
-        );
+    ) => Vector(vectorizer(Factory.Vectorizer), name, index, quantizer, sourceProperties);
 
     public static VectorConfig Vector(
-        Func<VectorizerFactory, VectorizerConfig>? vectorizer = null,
+        Func<VectorizerFactory, VectorizerConfig> vectorizer,
         VectorIndexConfig? index = null,
         VectorIndexConfig.QuantizerConfigBase? quantizer = null,
         params string[] sourceProperties
-    ) =>
-        Vector(
-            null,
-            vectorizer is null ? null : vectorizer(Factory.Vectorizer),
-            index,
-            quantizer,
-            sourceProperties
-        );
+    ) => Vector(vectorizer(Factory.Vectorizer), null, index, quantizer, sourceProperties);
 
     public static VectorConfig MultiVector(
         string name,
-        Func<VectorizerFactoryMulti, VectorizerConfig>? vectorizer = null,
+        Func<VectorizerFactoryMulti, VectorizerConfig> vectorizer,
         VectorIndex.HNSW? index = null,
         VectorIndexConfig.QuantizerConfigBase? quantizer = null,
         VectorIndexConfig.EncodingConfig? encoding = null,
         params string[] sourceProperties
     ) =>
         MultiVector(
+            vectorizer(Factory.VectorizerMulti),
             name,
-            vectorizer is null ? null : vectorizer(Factory.VectorizerMulti),
             index,
             quantizer,
             encoding,
@@ -147,15 +134,15 @@ public static partial class Configure
         );
 
     public static VectorConfig MultiVector(
-        Func<VectorizerFactoryMulti, VectorizerConfig>? vectorizer = null,
+        Func<VectorizerFactoryMulti, VectorizerConfig> vectorizer,
         VectorIndex.HNSW? index = null,
         VectorIndexConfig.QuantizerConfigBase? quantizer = null,
         VectorIndexConfig.EncodingConfig? encoding = null,
         params string[] sourceProperties
     ) =>
         MultiVector(
+            vectorizer(Factory.VectorizerMulti),
             null,
-            vectorizer is null ? null : vectorizer(Factory.VectorizerMulti),
             index,
             quantizer,
             encoding,

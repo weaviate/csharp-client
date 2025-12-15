@@ -157,8 +157,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vector(name: "first"),
-                Configure.Vector(name: "second"),
+                Configure.Vector("first", v => v.SelfProvided()),
+                Configure.Vector("second", v => v.SelfProvided()),
             }
         );
 
@@ -328,8 +328,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vector(name: "first"),
-                Configure.Vector(name: "second"),
+                Configure.Vector("first", v => v.SelfProvided()),
+                Configure.Vector("second", v => v.SelfProvided()),
             }
         );
 
@@ -398,8 +398,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vector(name: "first"),
-                Configure.Vector(name: "second"),
+                Configure.Vector("first", v => v.SelfProvided()),
+                Configure.Vector("second", v => v.SelfProvided()),
             }
         );
 
@@ -483,8 +483,8 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
-                Configure.Vector(name: "first"),
-                Configure.Vector(name: "second"),
+                Configure.Vector("first", v => v.SelfProvided()),
+                Configure.Vector("second", v => v.SelfProvided()),
             }
         );
 
