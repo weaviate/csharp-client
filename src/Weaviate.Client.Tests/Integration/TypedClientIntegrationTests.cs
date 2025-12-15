@@ -292,6 +292,60 @@ public class TypedClientIntegrationTests : IntegrationTests
     }
 
     [Fact]
+    public async Task TestAfter()
+    {
+        // Arrange
+        var collection = await CollectionFactory<Article>(_articleConfig);
+        var typedClient = await collection.AsTyped<Article>(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var articles = new[]
+        {
+            new Article
+            {
+                Title = "GraphQL Queries",
+                Content = "GraphQL query language...",
+                ViewCount = 300,
+                PublishedDate = DateTime.UtcNow,
+            },
+            new Article
+            {
+                Title = "REST APIs",
+                Content = "RESTful service architecture...",
+                ViewCount = 250,
+                PublishedDate = DateTime.UtcNow.AddDays(-1),
+            },
+            new Article
+            {
+                Title = "Vector Databases",
+                Content = "Modern vector storage solutions...",
+                ViewCount = 400,
+                PublishedDate = DateTime.UtcNow.AddDays(-2),
+            },
+        };
+
+        await typedClient.Data.InsertMany(
+            articles,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Act
+        var results = await typedClient.Query.FetchObjects(
+            limit: 2,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(2, results.Objects.Count);
+
+        var res2 = await typedClient.Query.FetchObjects(
+            limit: 2,
+            after: results.Objects.Last().UUID,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Single(res2.Objects);
+    }
+
+    [Fact]
     public async Task TypedWorkflow_Query_FetchObjects_ReturnsTypedResults()
     {
         // Arrange

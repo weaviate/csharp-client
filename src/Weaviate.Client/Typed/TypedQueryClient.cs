@@ -71,6 +71,7 @@ public class TypedQueryClient<T>
     /// <summary>
     /// Fetches objects from the collection.
     /// </summary>
+    /// <param name="after">Cursor for pagination.</param>
     /// <param name="limit">Maximum number of objects to return.</param>
     /// <param name="filters">Filters to apply to the query.</param>
     /// <param name="sort">Sorting configuration.</param>
@@ -82,6 +83,7 @@ public class TypedQueryClient<T>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the fetched objects.</returns>
     public async Task<Models.WeaviateResult<WeaviateObject<T>>> FetchObjects(
+        Guid? after = null,
         uint? limit = null,
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
@@ -98,6 +100,7 @@ public class TypedQueryClient<T>
             filters: filters,
             sort: sort,
             rerank: rerank,
+            after: after,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -428,7 +431,6 @@ public class TypedQueryClient<T>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="after">Cursor for pagination.</param>
     /// <param name="consistencyLevel">Consistency level for the query.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -445,7 +447,6 @@ public class TypedQueryClient<T>
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
-        Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -463,7 +464,6 @@ public class TypedQueryClient<T>
             limit: limit,
             offset: offset,
             rerank: rerank,
-            after: after,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
@@ -484,7 +484,6 @@ public class TypedQueryClient<T>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="after">Cursor for pagination.</param>
     /// <param name="consistencyLevel">Consistency level for the query.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -500,7 +499,6 @@ public class TypedQueryClient<T>
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
-        Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -517,7 +515,6 @@ public class TypedQueryClient<T>
             limit: limit,
             offset: offset,
             rerank: rerank,
-            after: after,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
