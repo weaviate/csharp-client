@@ -292,7 +292,7 @@ public class TypedClientIntegrationTests : IntegrationTests
     }
 
     [Fact]
-    public async Task TestAfter()
+    public async Task TypedWorkflow_FetchObjects_WithAfterParameter_PaginatesCorrectly()
     {
         // Arrange
         var collection = await CollectionFactory<Article>(_articleConfig);
