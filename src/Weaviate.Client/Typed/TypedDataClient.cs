@@ -83,59 +83,6 @@ public class TypedDataClient<T>
     }
 
     /// <summary>
-    /// Inserts multiple strongly-typed objects with explicit IDs.
-    /// </summary>
-    public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(T properties, Guid uuid)> requests,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await _dataClient.InsertMany(
-            requests.Select(r => ((object)r.properties, r.uuid)),
-            cancellationToken
-        );
-    }
-
-    /// <summary>
-    /// Inserts multiple strongly-typed objects with vectors.
-    /// </summary>
-    public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(T properties, Models.Vectors vectors)> requests,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await _dataClient.InsertMany(
-            requests.Select(r => ((object)r.properties, r.vectors)),
-            cancellationToken
-        );
-    }
-
-    /// <summary>
-    /// Inserts multiple strongly-typed objects with references.
-    /// </summary>
-    public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(T properties, IEnumerable<ObjectReference>? references)> requests,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await _dataClient.InsertMany(
-            requests.Select(r => ((object)r.properties, r.references)),
-            cancellationToken
-        );
-    }
-
-    /// <summary>
-    /// Inserts multiple batches of strongly-typed objects.
-    /// </summary>
-    public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<BatchInsertRequest[]> requestBatches,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await _dataClient.InsertMany(requestBatches, cancellationToken);
-    }
-
-    /// <summary>
     /// Inserts multiple strongly-typed objects using BatchInsertRequest.
     /// </summary>
     public async Task<BatchInsertResponse> InsertMany(
