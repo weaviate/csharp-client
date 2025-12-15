@@ -10,7 +10,7 @@ public class GenerativeConfigFactory
     internal GenerativeConfigFactory() { }
 #pragma warning disable CA1822 // Mark members as static
     public IGenerativeConfig Custom(string type, object? config = null) =>
-        new GenerativeConfig.Custom { Type = type, Config = config };
+        new GenerativeConfig.Custom { Type = type, Config = config ?? new { } };
 
     public IGenerativeConfig AWSBedrock(
         string region,

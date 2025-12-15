@@ -10,88 +10,92 @@ internal static class GenerativeConfigSerialization
 
         if (config is JsonElement vic)
         {
+            var text = vic.GetRawText();
+
             var result = type switch
             {
                 GenerativeConfig.Anthropic.TypeValue => (IGenerativeConfig?)
                     JsonSerializer.Deserialize<GenerativeConfig.Anthropic>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 GenerativeConfig.Anyscale.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.Anyscale>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 GenerativeConfig.AWS.TypeValue => JsonSerializer.Deserialize<GenerativeConfig.AWS>(
-                    vic.GetRawText(),
+                    text,
                     Rest.WeaviateRestClient.RestJsonSerializerOptions
                 ),
                 GenerativeConfig.Cohere.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.Cohere>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 GenerativeConfig.Databricks.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.Databricks>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 GenerativeConfig.FriendliAI.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.FriendliAI>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 GenerativeConfig.Mistral.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.Mistral>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 GenerativeConfig.OpenAI.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.OpenAI>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 GenerativeConfig.AzureOpenAI.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.AzureOpenAI>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 GenerativeConfig.GoogleGemini.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.GoogleGemini>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 GenerativeConfig.GoogleVertex.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.GoogleVertex>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 GenerativeConfig.XAI.TypeValue => JsonSerializer.Deserialize<GenerativeConfig.XAI>(
-                    vic.GetRawText(),
+                    text,
                     Rest.WeaviateRestClient.RestJsonSerializerOptions
                 ),
                 GenerativeConfig.Nvidia.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.Nvidia>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 GenerativeConfig.Ollama.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.Ollama>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 _ => new GenerativeConfig.Custom
                 {
                     Type = type,
-                    Config = ObjectHelper.ConvertJsonElement(
-                        (
-                            (dynamic?)
-                                JsonSerializer.Deserialize<System.Dynamic.ExpandoObject>(
-                                    vic.GetRawText(),
+                    Config =
+                        ObjectHelper.ConvertJsonElement(
+                            (
+                                JsonSerializer.Deserialize<JsonElement>(
+                                    text,
                                     Rest.WeaviateRestClient.RestJsonSerializerOptions
                                 )
-                        )?.config
-                    ),
+                            ).TryGetProperty("config", out var configElement)
+                                ? configElement
+                                : null
+                        ) ?? new { },
                 },
             };
 
