@@ -21,6 +21,10 @@ public class TenantsClient
         CancellationToken cancellationToken = default
     )
     {
+        if (tenants == null || !tenants.Any())
+        {
+            throw new ArgumentException("At least one tenant must be provided.", nameof(tenants));
+        }
         // Map Models.Tenant to Rest.Dto.Tenant
         var restTenants = tenants
             .Select(t => new Rest.Dto.Tenant
@@ -94,6 +98,10 @@ public class TenantsClient
         CancellationToken cancellationToken = default
     )
     {
+        if (tenantNames == null || !tenantNames.Any())
+        {
+            throw new ArgumentException("At least one tenant name must be provided.", nameof(tenantNames));
+        }
         await _collectionClient.Client.RestClient.TenantsDelete(
             _collectionClient.Name,
             tenantNames,
