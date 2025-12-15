@@ -83,6 +83,17 @@ public class TypedDataClient<T>
     }
 
     /// <summary>
+    /// Inserts multiple batches of strongly-typed objects.
+    /// </summary>
+    public async Task<BatchInsertResponse> InsertMany(
+        IEnumerable<BatchInsertRequest[]> requestBatches,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _dataClient.InsertMany(requestBatches, cancellationToken);
+    }
+
+    /// <summary>
     /// Inserts multiple strongly-typed objects using BatchInsertRequest.
     /// </summary>
     public async Task<BatchInsertResponse> InsertMany(
