@@ -158,6 +158,7 @@ public class TestQueries : IntegrationTests
         var res = await collection.Generate.FetchObjects(
             singlePrompt: new SinglePrompt("Who is this? {text}"),
             groupedTask: new GroupedTask("Who are these people?", "text"),
+            provider: Generate.Provider.Dummy(),
             cancellationToken: TestContext.Current.CancellationToken
         );
 

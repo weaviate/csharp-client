@@ -15,9 +15,13 @@ internal static partial class Factory
     public static RerankerConfigFactory Reranker { get; } = new RerankerConfigFactory();
 }
 
+public static partial class Generate
+{
+    public static GenerativeProviderFactory Provider => Factory.GenerativeProvider;
+}
+
 public static partial class Configure
 {
-    public static GenerativeProviderFactory GenerativeProvider => Factory.GenerativeProvider;
     public static GenerativeConfigFactory Generative => Factory.Generative;
     public static RerankerConfigFactory Reranker => Factory.Reranker;
 
