@@ -100,7 +100,10 @@ public class TenantsClient
     {
         if (tenantNames == null || !tenantNames.Any())
         {
-            throw new ArgumentException("At least one tenant name must be provided.", nameof(tenantNames));
+            throw new ArgumentException(
+                "At least one tenant name must be provided.",
+                nameof(tenantNames)
+            );
         }
         await _collectionClient.Client.RestClient.TenantsDelete(
             _collectionClient.Name,
