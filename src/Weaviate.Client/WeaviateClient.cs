@@ -250,7 +250,7 @@ public partial class WeaviateClient : IDisposable
         // Fetch metadata eagerly with init timeout - this will throw if authentication fails
         var initTimeout =
             config.InitTimeout ?? config.DefaultTimeout ?? WeaviateDefaults.DefaultTimeout;
-        var metaCts = new CancellationTokenSource(initTimeout);
+        using var metaCts = new CancellationTokenSource(initTimeout);
         var metaDto = await RestClient.GetMeta(metaCts.Token);
         _metaCache = new Models.MetaInfo
         {
