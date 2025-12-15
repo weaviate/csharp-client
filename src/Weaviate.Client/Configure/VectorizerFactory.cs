@@ -30,7 +30,7 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
-    public VectorizerConfig Multi2VecAWS(
+    public VectorizerConfig Multi2VecAWSBedrock(
         WeightedFields imageFields,
         WeightedFields textFields,
         string? region = null,
@@ -49,7 +49,7 @@ public class VectorizerFactory
             Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
         };
 
-    public VectorizerConfig Multi2VecAWS(
+    public VectorizerConfig Multi2VecAWSBedrock(
         string[]? imageFields = null,
         string[]? textFields = null,
         string? region = null,

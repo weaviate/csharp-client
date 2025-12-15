@@ -87,7 +87,7 @@ public class TraditionalExample
 
         VectorConfigList vc1 =
         [
-            Configure.Vector(vectorizer: t => t.Multi2VecAWS()),
+            Configure.Vector(vectorizer: t => t.Multi2VecAWSBedrock()),
             Configure.MultiVector("colbert", v => v.Multi2MultiVecJinaAI()),
         ];
 
