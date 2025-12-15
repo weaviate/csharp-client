@@ -1,4 +1,5 @@
 using Weaviate.Client.Models;
+using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 
@@ -6,7 +7,7 @@ public partial class WeaviateClient
 {
     private BackupClient? _backups;
 
-    public BackupClient Backups => _backups ??= new(this);
+    public BackupClient Backup => _backups ??= new(this);
 }
 
 public class BackupClient
@@ -86,43 +87,40 @@ public class BackupClient
         return new Rest.Dto.BackupCreateRequest
         {
             Id = request.Id,
-            Include = request.Include?.ToList(),
-            Exclude = request.Exclude?.ToList(),
-            Config = request.Config is null
-                ? null
-                : new Rest.Dto.BackupConfig
+            Include = request.IncludeCollections?.ToList(),
+            Exclude = request.ExcludeCollections?.ToList(),
+            Config = new Rest.Dto.BackupConfig
+            {
+                Bucket = bucket,
+                Path = path,
+                CPUPercentage = request.CPUPercentage,
+                CompressionLevel = request.CompressionLevel switch
                 {
-                    Endpoint = request.Config.Endpoint,
-                    Bucket = bucket,
-                    Path = path,
-                    CPUPercentage = request.Config.CPUPercentage,
-                    CompressionLevel = request.Config.CompressionLevel switch
-                    {
-                        Models.BackupCompressionLevel.BestSpeed => Rest.Dto
-                            .BackupConfigCompressionLevel
-                            .BestSpeed,
-                        Models.BackupCompressionLevel.BestCompression => Rest.Dto
-                            .BackupConfigCompressionLevel
-                            .BestCompression,
-                        Models.BackupCompressionLevel.DefaultCompression => Rest.Dto
-                            .BackupConfigCompressionLevel
-                            .DefaultCompression,
-                        Models.BackupCompressionLevel.ZstdDefaultCompression => Rest.Dto
-                            .BackupConfigCompressionLevel
-                            .ZstdDefaultCompression,
-                        Models.BackupCompressionLevel.ZstdBestSpeed => Rest.Dto
-                            .BackupConfigCompressionLevel
-                            .ZstdBestSpeed,
-                        Models.BackupCompressionLevel.ZstdBestCompression => Rest.Dto
-                            .BackupConfigCompressionLevel
-                            .ZstdBestCompression,
-                        Models.BackupCompressionLevel.NoCompression => Rest.Dto
-                            .BackupConfigCompressionLevel
-                            .NoCompression,
-                        null => Rest.Dto.BackupConfigCompressionLevel.DefaultCompression,
-                        _ => Rest.Dto.BackupConfigCompressionLevel.DefaultCompression,
-                    },
+                    Models.BackupCompressionLevel.BestSpeed => Rest.Dto
+                        .BackupConfigCompressionLevel
+                        .BestSpeed,
+                    Models.BackupCompressionLevel.BestCompression => Rest.Dto
+                        .BackupConfigCompressionLevel
+                        .BestCompression,
+                    Models.BackupCompressionLevel.DefaultCompression => Rest.Dto
+                        .BackupConfigCompressionLevel
+                        .DefaultCompression,
+                    Models.BackupCompressionLevel.ZstdDefaultCompression => Rest.Dto
+                        .BackupConfigCompressionLevel
+                        .ZstdDefaultCompression,
+                    Models.BackupCompressionLevel.ZstdBestSpeed => Rest.Dto
+                        .BackupConfigCompressionLevel
+                        .ZstdBestSpeed,
+                    Models.BackupCompressionLevel.ZstdBestCompression => Rest.Dto
+                        .BackupConfigCompressionLevel
+                        .ZstdBestCompression,
+                    Models.BackupCompressionLevel.NoCompression => Rest.Dto
+                        .BackupConfigCompressionLevel
+                        .NoCompression,
+                    null => Rest.Dto.BackupConfigCompressionLevel.DefaultCompression,
+                    _ => Rest.Dto.BackupConfigCompressionLevel.DefaultCompression,
                 },
+            },
         };
     }
 
@@ -251,30 +249,27 @@ public class BackupClient
 
         return new Rest.Dto.BackupRestoreRequest
         {
-            Include = request.Include?.ToList(),
-            Exclude = request.Exclude?.ToList(),
+            Include = request.IncludeCollections?.ToList(),
+            Exclude = request.ExcludeCollections?.ToList(),
             Node_mapping = request.NodeMapping is null
                 ? null
                 : new Dictionary<string, string>(request.NodeMapping),
-            Config = request.Config is null
-                ? null
-                : new Rest.Dto.RestoreConfig
+            Config = new Rest.Dto.RestoreConfig
+            {
+                Bucket = bucket,
+                Path = path,
+                CPUPercentage = request.CPUPercentage,
+                RolesOptions = request.RolesOptions switch
                 {
-                    Endpoint = request.Config.Endpoint,
-                    Bucket = bucket,
-                    Path = path,
-                    CPUPercentage = request.Config.CPUPercentage,
-                    RolesOptions = request.Config.RolesOptions switch
-                    {
-                        "all" => Rest.Dto.RestoreConfigRolesOptions.All,
-                        _ => Rest.Dto.RestoreConfigRolesOptions.NoRestore,
-                    },
-                    UsersOptions = request.Config.UsersOptions switch
-                    {
-                        "all" => Rest.Dto.RestoreConfigUsersOptions.All,
-                        _ => Rest.Dto.RestoreConfigUsersOptions.NoRestore,
-                    },
+                    RolesRestoreOption.All => Rest.Dto.RestoreConfigRolesOptions.All,
+                    _ => Rest.Dto.RestoreConfigRolesOptions.NoRestore,
                 },
+                UsersOptions = request.UsersOptions switch
+                {
+                    UserRestoreOption.All => Rest.Dto.RestoreConfigUsersOptions.All,
+                    _ => Rest.Dto.RestoreConfigUsersOptions.NoRestore,
+                },
+            },
             OverwriteAlias = request.OverwriteAlias,
         };
     }
