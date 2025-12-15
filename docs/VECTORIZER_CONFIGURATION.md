@@ -458,7 +458,7 @@ Use when you provide your own vectors.
 #### SelfProvided (Configure.Vectors)
 
 ```csharp
-var config = Configure.Vectors.SelfProvided().New("default");
+var config = Configure.Vectorizer.SelfProvided();
 ```
 
 **Wire Format:** `none`  
@@ -1428,7 +1428,7 @@ var collection = await client.Collections.Create(
     {
         Name = "CustomEmbeddings",
         Properties = new[] { Property.Text("text") },
-        VectorConfig = Configure.Vectors.SelfProvided().New("default")
+        VectorConfig = Configure.Vectorizer.SelfProvided()
     }
 );
 

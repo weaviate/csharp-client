@@ -58,7 +58,7 @@ public class TestWellKnown
         var noOpChannel = NoOpGrpcChannel.Create();
         var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
         var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
-        Assert.True(await client.Live(TestContext.Current.CancellationToken));
+        Assert.True(await client.IsLive(TestContext.Current.CancellationToken));
         Assert.Equal(
             "v1/.well-known/live",
             handler.Requests.Single().RequestUri!.AbsolutePath.TrimStart('/')

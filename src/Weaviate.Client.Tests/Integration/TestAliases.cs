@@ -239,11 +239,14 @@ public class TestAliases : IntegrationTests
 
         var aliasName = MakeUniqueCollectionName<object>("BadAlias");
         var nonexistentCollectionName = MakeUniqueCollectionName<object>("NonexistentCollection");
-        var alias = new Alias(aliasName, nonexistentCollectionName);
 
         // Act & Assert
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
-            await _weaviate.Alias.Create(alias, TestContext.Current.CancellationToken)
+            await _weaviate.Alias.Create(
+                aliasName,
+                nonexistentCollectionName,
+                TestContext.Current.CancellationToken
+            )
         );
     }
 

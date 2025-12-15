@@ -151,7 +151,7 @@ public class MultiConfigService
         );
         Console.WriteLine($"  - SSL: {prodClient.Configuration.UseSsl}");
         Console.WriteLine($"  - Version: {prodClient.WeaviateVersion}");
-        Console.WriteLine($"  - Query Timeout: {prodClient.QueryTimeout}");
+        Console.WriteLine($"  - Query Timeout: {prodClient.Configuration.QueryTimeout}");
         Console.WriteLine();
 
         Console.WriteLine($"Local:");
@@ -160,7 +160,7 @@ public class MultiConfigService
         );
         Console.WriteLine($"  - SSL: {localClient.Configuration.UseSsl}");
         Console.WriteLine($"  - Version: {localClient.WeaviateVersion}");
-        Console.WriteLine($"  - Query Timeout: {localClient.QueryTimeout}");
+        Console.WriteLine($"  - Query Timeout: {localClient.Configuration.QueryTimeout}");
         Console.WriteLine();
 
         Console.WriteLine($"Staging:");

@@ -233,9 +233,10 @@ public record Backup(
 public record BackupCreateRequest(
     string Id,
     BackupBackend Backend,
-    IEnumerable<string>? Include = null,
-    IEnumerable<string>? Exclude = null,
-    BackupConfig? Config = null
+    OneOrManyOf<string>? IncludeCollections = null,
+    OneOrManyOf<string>? ExcludeCollections = null,
+    int? CPUPercentage = null,
+    BackupCompressionLevel? CompressionLevel = null
 );
 
 /// <summary>
@@ -244,22 +245,35 @@ public record BackupCreateRequest(
 public record BackupRestoreRequest(
     string Id,
     BackupBackend Backend,
-    IEnumerable<string>? Include = null,
-    IEnumerable<string>? Exclude = null,
+    OneOrManyOf<string>? IncludeCollections = null,
+    OneOrManyOf<string>? ExcludeCollections = null,
     IDictionary<string, string>? NodeMapping = null,
-    RestoreConfig? Config = null,
+    int? CPUPercentage = null,
+    RolesRestoreOption? RolesOptions = null,
+    UserRestoreOption? UsersOptions = null,
     bool? OverwriteAlias = null
 );
 
-public record BackupConfig(
-    string? Endpoint = null,
-    int? CPUPercentage = null,
-    BackupCompressionLevel? CompressionLevel = null
-);
+/// <summary>
+/// Options for restore behavior of users
+/// </summary>
+public enum UserRestoreOption
+{
+    [System.Runtime.Serialization.EnumMember(Value = "noRestore")]
+    NoRestore,
 
-public record RestoreConfig(
-    string? Endpoint = null,
-    int? CPUPercentage = null,
-    string? RolesOptions = null,
-    string? UsersOptions = null
-);
+    [System.Runtime.Serialization.EnumMember(Value = "all")]
+    All,
+}
+
+/// <summary>
+/// Options for restore behavior of roles
+/// </summary>
+public enum RolesRestoreOption
+{
+    [System.Runtime.Serialization.EnumMember(Value = "noRestore")]
+    NoRestore,
+
+    [System.Runtime.Serialization.EnumMember(Value = "all")]
+    All,
+}
