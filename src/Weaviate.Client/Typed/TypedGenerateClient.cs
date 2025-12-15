@@ -78,6 +78,7 @@ public class TypedGenerateClient<T>
     /// <summary>
     /// Fetch objects with generative AI capabilities.
     /// </summary>
+    /// <param name="after">Cursor for pagination.</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
@@ -91,6 +92,7 @@ public class TypedGenerateClient<T>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>Strongly-typed generative result</returns>
     public async Task<GenerativeWeaviateResult<T>?> FetchObjects(
+        Guid? after = null,
         uint? limit = null,
         Filter? filters = null,
         OneOrManyOf<Sort>? sort = null,
@@ -112,6 +114,7 @@ public class TypedGenerateClient<T>
             rerank: rerank,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
+            after: after,
             provider: provider,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -492,7 +495,6 @@ public class TypedGenerateClient<T>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
-    /// <param name="after">Cursor for pagination</param>
     /// <param name="consistencyLevel">Consistency level</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -512,7 +514,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
-        Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -533,7 +534,6 @@ public class TypedGenerateClient<T>
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
-            after: after,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
@@ -556,7 +556,6 @@ public class TypedGenerateClient<T>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
-    /// <param name="after">Cursor for pagination</param>
     /// <param name="consistencyLevel">Consistency level</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -575,7 +574,6 @@ public class TypedGenerateClient<T>
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
-        Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         OneOrManyOf<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -595,7 +593,6 @@ public class TypedGenerateClient<T>
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
-            after: after,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
