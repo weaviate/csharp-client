@@ -233,11 +233,11 @@ public class TestQueries : IntegrationTests
         );
 
         var result = await collection.Data.InsertMany(
-            new (object, Guid id)[]
+            new[]
             {
-                (new { text = "John Doe" }, id: _reusableUuids[0]),
-                (new { text = "Jane Doe" }, id: _reusableUuids[1]),
-                (new { text = "J. Doe" }, id: _reusableUuids[2]),
+                BatchInsertRequest.Create(new { text = "John Doe" }, id: _reusableUuids[0]),
+                BatchInsertRequest.Create(new { text = "Jane Doe" }, id: _reusableUuids[1]),
+                BatchInsertRequest.Create(new { text = "J. Doe" }, id: _reusableUuids[2]),
             },
             TestContext.Current.CancellationToken
         );

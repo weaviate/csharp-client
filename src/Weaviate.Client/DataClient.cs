@@ -182,21 +182,6 @@ public class DataClient
     }
 
     public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(object, Guid id)> requests,
-        CancellationToken cancellationToken = default
-    ) => await InsertMany(BatchInsertRequest.Create(requests), cancellationToken);
-
-    public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(object, Models.Vectors vectors)> requests,
-        CancellationToken cancellationToken = default
-    ) => await InsertMany(BatchInsertRequest.Create(requests), cancellationToken);
-
-    public async Task<BatchInsertResponse> InsertMany(
-        IEnumerable<(object data, IEnumerable<ObjectReference>? references)> requests,
-        CancellationToken cancellationToken = default
-    ) => await InsertMany(BatchInsertRequest.Create(requests), cancellationToken);
-
-    public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<BatchInsertRequest[]> requestBatches,
         CancellationToken cancellationToken = default
     )
