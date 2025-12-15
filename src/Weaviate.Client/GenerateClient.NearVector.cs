@@ -26,7 +26,7 @@ public partial class GenerateClient
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>Generative result</returns>
     public async Task<GenerativeWeaviateResult> NearVector(
-        Vectors vector,
+        NearVectorInput vector,
         Filter? filters = null,
         float? certainty = null,
         float? distance = null,
@@ -92,7 +92,7 @@ public partial class GenerateClient
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>Generative group-by result</returns>
     public async Task<GenerativeGroupByResult> NearVector(
-        Vectors vector,
+        NearVectorInput vector,
         GroupByRequest groupBy,
         Filter? filters = null,
         float? distance = null,

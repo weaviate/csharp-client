@@ -199,7 +199,7 @@ internal partial class WeaviateGrpcClient
             metrics
         );
 
-        request.NearText = new() { Query = { query } };
+        request.NearText = new() { Query = { query }, Targets = targetVector ?? [] };
 
         if (certainty.HasValue)
         {
@@ -212,7 +212,7 @@ internal partial class WeaviateGrpcClient
         if (moveTo is not null)
         {
             var uuids = moveTo.Objects is null ? [] : moveTo.Objects.Select(x => x.ToString());
-            var concepts = moveTo.Concepts is null ? new string[] { } : moveTo.Concepts;
+            var concepts = moveTo.Concepts is null ? [] : moveTo.Concepts;
             request.NearText.MoveTo = new NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
@@ -223,7 +223,7 @@ internal partial class WeaviateGrpcClient
         if (moveAway is not null)
         {
             var uuids = moveAway.Objects is null ? [] : moveAway.Objects.Select(x => x.ToString());
-            var concepts = moveAway.Concepts is null ? new string[] { } : moveAway.Concepts;
+            var concepts = moveAway.Concepts is null ? [] : moveAway.Concepts;
             request.NearText.MoveAway = new NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
@@ -237,7 +237,7 @@ internal partial class WeaviateGrpcClient
 
     internal async Task<AggregateReply> AggregateNearVector(
         string collection,
-        Models.Vectors vector,
+        Models.NearVectorInput vector,
         double? certainty,
         double? distance,
         uint? limit,
@@ -302,7 +302,7 @@ internal partial class WeaviateGrpcClient
 
         var (targets, _, vector) = BuildTargetVector(
             targetVector is null ? null : [targetVector],
-            vectors
+            vectors?.Values.ToList()
         );
 
         request.Hybrid.Vectors.AddRange(vector ?? []);

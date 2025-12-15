@@ -29,6 +29,81 @@ public partial class AggregateClient
         bool totalCount = true,
         CancellationToken cancellationToken = default,
         IEnumerable<Aggregate.Metric>? returnMetrics = null
+    ) =>
+        await NearVector(
+            (NearVectorInput)vector,
+            groupBy,
+            certainty,
+            distance,
+            limit,
+            filters,
+            targetVector,
+            totalCount,
+            cancellationToken,
+            returnMetrics
+        );
+
+    /// <summary>
+    /// Aggregate near vector.
+    /// </summary>
+    /// <param name="vector">Vector to search near</param>
+    /// <param name="certainty">Certainty threshold</param>
+    /// <param name="distance">Distance threshold</param>
+    /// <param name="limit">Maximum number of results</param>
+    /// <param name="filters">Filters to apply</param>
+    /// <param name="targetVector">Target vector name</param>
+    /// <param name="totalCount">Whether to include total count</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
+    /// <param name="returnMetrics">Metrics to aggregate</param>
+    /// <returns>Aggregate result</returns>
+    public async Task<AggregateResult> NearVector(
+        Vectors vector,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filters = null,
+        TargetVectors? targetVector = null,
+        bool totalCount = true,
+        CancellationToken cancellationToken = default,
+        IEnumerable<Aggregate.Metric>? returnMetrics = null
+    ) =>
+        await NearVector(
+            (NearVectorInput)vector,
+            certainty,
+            distance,
+            limit,
+            filters,
+            targetVector,
+            totalCount,
+            cancellationToken,
+            returnMetrics
+        );
+
+    /// <summary>
+    /// Aggregate near vector with grouping.
+    /// </summary>
+    /// <param name="vector">Vector to search near</param>
+    /// <param name="groupBy">Group by configuration</param>
+    /// <param name="certainty">Certainty threshold</param>
+    /// <param name="distance">Distance threshold</param>
+    /// <param name="limit">Maximum number of results</param>
+    /// <param name="filters">Filters to apply</param>
+    /// <param name="targetVector">Target vector name</param>
+    /// <param name="totalCount">Whether to include total count</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
+    /// <param name="returnMetrics">Metrics to aggregate</param>
+    /// <returns>Grouped aggregate result</returns>
+    public async Task<AggregateGroupByResult> NearVector(
+        NearVectorInput vector,
+        Aggregate.GroupBy? groupBy,
+        double? certainty = null,
+        double? distance = null,
+        uint? limit = null,
+        Filter? filters = null,
+        TargetVectors? targetVector = null,
+        bool totalCount = true,
+        CancellationToken cancellationToken = default,
+        IEnumerable<Aggregate.Metric>? returnMetrics = null
     )
     {
         var result = await _client.GrpcClient.AggregateNearVector(
@@ -63,7 +138,7 @@ public partial class AggregateClient
     /// <param name="returnMetrics">Metrics to aggregate</param>
     /// <returns>Aggregate result</returns>
     public async Task<AggregateResult> NearVector(
-        Vectors vector,
+        NearVectorInput vector,
         double? certainty = null,
         double? distance = null,
         uint? limit = null,

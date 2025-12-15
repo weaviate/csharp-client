@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 using Weaviate.Client.Models;
 using Xunit;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Performance",
+    "CA1861:Avoid constant arrays as arguments",
+    Justification = "Irrelevant"
+)]
 public class TestNamedVectorMultiTarget : IntegrationTests
 {
     [Fact]
@@ -51,94 +56,37 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         Assert.Equal(expected, ids);
     }
 
-    public static TheoryData<Vectors, string[]> MultiInputCombinations =>
+    public static TheoryData<NearVectorInput, string[]> MultiInputCombinations =>
         new(
             (
-                new Vectors
+                new NearVectorInput
                 {
                     { "first", new[] { 0f, 1f } },
-                    {
-                        "second",
-                        new float[,]
-                        {
-                            { 1f, 0f, 0f },
-                            { 0f, 0f, 1f },
-                        }
-                    },
+                    { "second", new float[] { 1f, 0f, 0f }, new float[] { 0f, 0f, 1f } },
                 },
                 new[] { "first", "second" }
             ),
             (
-                new Vectors
+                new NearVectorInput
                 {
-                    { "first", new[] { 0f, 1f } },
-                    {
-                        "second",
-                        new float[,]
-                        {
-                            { 1f, 0f, 0f },
-                            { 0f, 0f, 1f },
-                        }
-                    },
-                },
-                new[] { "first", "second" }
-            ),
-            (
-                new Vectors
-                {
-                    {
-                        "first",
-                        new float[,]
-                        {
-                            { 0f, 1f },
-                            { 0f, 1f },
-                        }
-                    },
+                    { "first", new[] { 0f, 1f }, new[] { 0f, 1f } },
                     { "second", new[] { 1f, 0f, 0f } },
                 },
                 new[] { "first", "second" }
             ),
             (
-                new Vectors
+                new NearVectorInput
                 {
-                    {
-                        "first",
-                        new float[,]
-                        {
-                            { 0f, 1f },
-                            { 0f, 1f },
-                        }
-                    },
-                    {
-                        "second",
-                        new float[,]
-                        {
-                            { 1f, 0f, 0f },
-                            { 0f, 0f, 1f },
-                        }
-                    },
+                    { "first", new float[] { 0f, 1f }, new float[] { 0f, 1f } },
+                    { "second", new float[] { 1f, 0f, 0f }, new float[] { 0f, 0f, 1f } },
                 },
                 new[] { "first", "second" }
             ),
             (
-                new Vectors
+                new NearVectorInput
                 {
-                    {
-                        "first",
-                        new float[,]
-                        {
-                            { 0f, 1f },
-                            { 0f, 1f },
-                        }
-                    },
-                    {
-                        "second",
-                        new float[,]
-                        {
-                            { 1f, 0f, 0f },
-                            { 0f, 0f, 1f },
-                        }
-                    },
+                    { "first", new float[] { 0f, 1f }, new float[] { 0f, 1f } },
+                    { "second", new float[] { 1f, 0f, 0f }, new float[] { 0f, 0f, 1f } },
                 },
                 new[] { "second", "first" }
             )
@@ -147,7 +95,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
     [Theory]
     [MemberData(nameof(MultiInputCombinations))]
     public async Task Test_SameTargetVector_MultipleInputCombinations(
-        Vectors nearVector,
+        NearVectorInput nearVector,
         string[] targetVector
     )
     {
@@ -438,17 +386,10 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         var uuid2 = results[1].UUID!.Value;
 
         var objs = await collection.Query.NearVector(
-            new Vectors
+            new NearVectorInput
             {
                 { "first", new[] { 0f, 1f } },
-                {
-                    "second",
-                    new[,]
-                    {
-                        { 1f, 0f, 0f },
-                        { 0f, 0f, 1f },
-                    }
-                },
+                { "second", new[] { 1f, 0f, 0f }, new[] { 0f, 0f, 1f } },
             },
             targetVector: targetVector,
             returnMetadata: MetadataOptions.All,

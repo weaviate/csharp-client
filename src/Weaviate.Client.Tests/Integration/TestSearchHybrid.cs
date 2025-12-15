@@ -2,6 +2,11 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Performance",
+    "CA1861:Avoid constant arrays as arguments",
+    Justification = "Irrelevant"
+)]
 public partial class SearchTests : IntegrationTests
 {
     [Theory]
@@ -50,7 +55,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(2, objs.Count());
+        Assert.Equal(2, objs.Count);
     }
 
     [Fact]
@@ -158,7 +163,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(limit, (uint)objs.Count());
+        Assert.Equal(limit, (uint)objs.Count);
     }
 
     [Theory]
@@ -190,7 +195,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(expected, objs.Count());
+        Assert.Equal(expected, objs.Count);
     }
 
     [Fact]
@@ -222,7 +227,7 @@ public partial class SearchTests : IntegrationTests
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
-        Assert.Equal(hybridRes.Count(), bm25Res.Count());
+        Assert.Equal(hybridRes.Count, bm25Res.Count);
         Assert.True(hybridRes.Zip(bm25Res).All(pair => pair.First.UUID == pair.Second.UUID));
 
         hybridRes = (
@@ -238,7 +243,7 @@ public partial class SearchTests : IntegrationTests
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
-        Assert.Equal(hybridRes.Count(), textRes.Count());
+        Assert.Equal(hybridRes.Count, textRes.Count);
         Assert.True(hybridRes.Zip(textRes).All(pair => pair.First.UUID == pair.Second.UUID));
     }
 
@@ -281,7 +286,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBanana, hybridObjs.First().UUID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var nearVec = (
             await collection.Query.NearVector(
@@ -353,7 +358,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBanana, hybridObjs.First().UUID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var nearVec = (
             await collection.Query.NearVector(
@@ -416,7 +421,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBananaPudding, hybridObjs.First().UUID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var hybridObjs2 = (
             await collection.Query.Hybrid(
@@ -473,7 +478,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBananaPudding, hybridObjs.First().UUID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var hybridObjs2 = (
             await collection.Query.Hybrid(
@@ -544,14 +549,17 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(uuid1, objs[0].UUID);
         Assert.Equal(uuid2, objs[1].UUID);
 
-        objs = (
-            await collection.Query.Hybrid(
-                query: null,
-                vectors: new HybridNearVector(vector, Certainty: null, Distance: 0.1f),
-                targetVector: new[] { "first", "second" },
-                cancellationToken: TestContext.Current.CancellationToken
-            )
-        ).Objects.ToList();
+        objs =
+        [
+            .. (
+                await collection.Query.Hybrid(
+                    query: null,
+                    vectors: new HybridNearVector(vector, Certainty: null, Distance: 0.1f),
+                    targetVector: new[] { "first", "second" },
+                    cancellationToken: TestContext.Current.CancellationToken
+                )
+            ).Objects,
+        ];
 
         Assert.Single(objs);
         Assert.Equal(uuid1, objs[0].UUID);
@@ -706,15 +714,18 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(3, objs.Count);
         Assert.Equal(uuid1, objs[0].UUID);
 
-        objs = (
-            await collection.Query.Hybrid(
-                "name",
-                vectors: Vectors.Create(1f, 0f, 0f),
-                maxVectorDistance: 0.1f,
-                alpha: 0.7f,
-                cancellationToken: TestContext.Current.CancellationToken
-            )
-        ).ToList();
+        objs =
+        [
+            .. (
+                await collection.Query.Hybrid(
+                    "name",
+                    vectors: Vectors.Create(1f, 0f, 0f),
+                    maxVectorDistance: 0.1f,
+                    alpha: 0.7f,
+                    cancellationToken: TestContext.Current.CancellationToken
+                )
+            ),
+        ];
         Assert.Single(objs);
         Assert.Equal(uuid1, objs[0].UUID);
     }

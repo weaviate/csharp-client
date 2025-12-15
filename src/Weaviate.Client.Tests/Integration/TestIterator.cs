@@ -112,7 +112,7 @@ public partial class BasicTests
 
         // Sort by data property for consistent comparison
         var allData = objects.Select(obj => (long)obj.Properties["data"]!).OrderBy(x => x).ToList();
-        Assert.Equal(Enumerable.Range(0, 10).Select(Convert.ToInt64).ToList(), allData);
+        Assert.Equal([.. Enumerable.Range(0, 10).Select(Convert.ToInt64)], allData);
 
         // Test expectations based on parameters
         if (includeVector && returnSpecificProperties != true && returnFullMetadata == true)
@@ -253,7 +253,7 @@ public partial class BasicTests
                 Assert.Equal(firstOrder, ret);
             }
 
-            Assert.Equal(expected, ret.OrderBy(x => x).ToList());
+            Assert.Equal(expected, [.. ret.OrderBy(x => x)]);
         }
     }
 

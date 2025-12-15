@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace Weaviate.Client.Models;
 
-public abstract record Vector : IEnumerable, IHybridVectorInput
+public abstract record Vector : IEnumerable, IHybridVectorInput, INearVectorInput
 {
     public string Name { get; init; } = "default";
     public abstract int Dimensions { get; }
@@ -37,6 +37,11 @@ public abstract record Vector : IEnumerable, IHybridVectorInput
                 ),
             };
         }
+    }
+
+    public static Vector Create(string name, Vector values)
+    {
+        return values with { Name = name };
     }
 
     public static Vector Create<T>(params T[] values) => new VectorSingle<T>(values);
@@ -290,7 +295,7 @@ public sealed record VectorMulti<T> : Vector, IEnumerable<T[]>
     }
 }
 
-public class Vectors : Dictionary<string, Vector>, IHybridVectorInput
+public class Vectors : Dictionary<string, Vector>, IHybridVectorInput, INearVectorInput
 {
     public void Add<T>(T[] value)
         where T : struct
