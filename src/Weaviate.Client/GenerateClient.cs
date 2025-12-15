@@ -27,7 +27,9 @@ public partial class GenerateClient
     private CancellationToken CreateTimeoutCancellationToken(CancellationToken userToken = default)
     {
         var effectiveTimeout =
-            _client.QueryTimeout ?? _client.DefaultTimeout ?? WeaviateDefaults.QueryTimeout;
+            _client.Configuration.QueryTimeout
+            ?? _client.Configuration.DefaultTimeout
+            ?? WeaviateDefaults.QueryTimeout;
         return TimeoutHelper.GetCancellationToken(effectiveTimeout, userToken);
     }
 

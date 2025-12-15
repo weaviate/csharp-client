@@ -57,7 +57,7 @@ public partial class WeaviateClient : IDisposable
     /// <summary>
     /// Returns true if the Weaviate process is live.
     /// </summary>
-    public async Task<bool> Live(CancellationToken cancellationToken = default)
+    public async Task<bool> IsLive(CancellationToken cancellationToken = default)
     {
         await EnsureInitializedAsync();
         return await RestClient.LiveAsync(CreateInitCancellationToken(cancellationToken));
@@ -138,11 +138,6 @@ public partial class WeaviateClient : IDisposable
             || url.ToLower().Contains("semi.technology")
             || url.ToLower().Contains("weaviate.cloud");
     }
-
-    public TimeSpan? DefaultTimeout => Configuration.DefaultTimeout;
-    public TimeSpan? InitTimeout => Configuration.InitTimeout;
-    public TimeSpan? InsertTimeout => Configuration.InsertTimeout;
-    public TimeSpan? QueryTimeout => Configuration.QueryTimeout;
 
     /// <summary>
     /// Internal constructor for builder path with async initialization.
@@ -255,7 +250,7 @@ public partial class WeaviateClient : IDisposable
         // Fetch metadata eagerly with init timeout - this will throw if authentication fails
         var initTimeout =
             config.InitTimeout ?? config.DefaultTimeout ?? WeaviateDefaults.DefaultTimeout;
-        var metaCts = new CancellationTokenSource(initTimeout);
+        using var metaCts = new CancellationTokenSource(initTimeout);
         var metaDto = await RestClient.GetMeta(metaCts.Token);
         _metaCache = new Models.MetaInfo
         {

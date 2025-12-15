@@ -46,7 +46,7 @@ public class TestCancellation
         cts.Cancel();
 
         // Live wraps exceptions and returns false on failure; ensure cancellation doesn't masquerade as success.
-        var result = await client.Live(cts.Token);
+        var result = await client.IsLive(cts.Token);
         Assert.False(result);
     }
 
