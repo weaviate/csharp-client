@@ -247,7 +247,7 @@ public class TestMultiVector : IntegrationTests
     }
 
     [Fact]
-    public async Task Test_Collection_Fetch_With_Multivector()
+    public async Task Test_Collection_Fetch_Aand_Insert_With_Multivector()
     {
         RequireVersion("1.29.0");
 
@@ -366,5 +366,19 @@ public class TestMultiVector : IntegrationTests
         Assert.True(obj5.Vectors.ContainsKey("default"));
         float[,] obj5Vector = obj5.Vectors["default"];
         Assert.Equal(vector5, obj5Vector);
+
+        var uuid6 = await collection.Data.Insert(
+            obj5.Properties,
+            vectors: vector5,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var obj6 = await collection.Query.FetchObjectByID(
+            uuid6,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        Assert.NotNull(obj6);
+        Assert.Equal(obj6.Properties, obj5.Properties);
+        Assert.Equal(obj6.Vectors, obj5.Vectors);
     }
 }
