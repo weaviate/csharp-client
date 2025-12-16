@@ -2,6 +2,12 @@ using Weaviate.Client.Grpc.Protobuf.V1;
 
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// Represents a geographic constraint for filtering objects within a specified distance from a coordinate.
+/// </summary>
+/// <param name="Latitude">The latitude coordinate.</param>
+/// <param name="Longitude">The longitude coordinate.</param>
+/// <param name="Distance">The maximum distance in meters from the coordinate.</param>
 public record GeoCoordinateConstraint(float Latitude, float Longitude, float Distance);
 
 public interface IFilterEquality<T>
@@ -114,26 +120,74 @@ public record TypedValue<T>
     public Filter IsLessThanEqual(T value) => InternalLessThanEqual(value);
 }
 
+/// <summary>
+/// Provides a fluent API for building filters to query Weaviate objects.
+/// </summary>
+/// <remarks>
+/// Filters can be combined using logical operators (&amp; for AND, | for OR) and support
+/// equality, comparison, containment, and geo-spatial operations.
+/// Use static factory methods like <see cref="Property"/>, <see cref="Reference"/>, <see cref="ID"/>
+/// to start building filters.
+/// </remarks>
+/// <example>
+/// <code>
+/// var filter = Filter.Property("age").IsGreaterThan(18) &amp; Filter.Property("city").IsEqual("New York");
+/// </code>
+/// </example>
 public partial record Filter
 {
     internal Filters InternalFilter { get; init; } = new Filters();
 
     protected Filter() { }
 
+    /// <summary>
+    /// Creates a filter that matches objects satisfying any of the specified filters (logical OR).
+    /// </summary>
+    /// <param name="filters">The filters to combine with OR logic.</param>
+    /// <returns>A combined filter matching any of the conditions.</returns>
     public static Filter AnyOf(params Filter[] filters) => new OrNestedFilter(filters);
 
+    /// <summary>
+    /// Creates a filter that matches objects satisfying all of the specified filters (logical AND).
+    /// </summary>
+    /// <param name="filters">The filters to combine with AND logic.</param>
+    /// <returns>A combined filter matching all of the conditions.</returns>
     public static Filter AllOf(params Filter[] filters) => new AndNestedFilter(filters);
 
+    /// <summary>
+    /// Creates a filter that negates the specified filter (logical NOT).
+    /// </summary>
+    /// <param name="filter">The filter to negate.</param>
+    /// <returns>A filter matching objects that do not match the specified filter.</returns>
     public static Filter Not(Filter filter) => new NotNestedFilter(filter);
 
+    /// <summary>
+    /// Gets a typed filter for the object ID property.
+    /// </summary>
     public static TypedGuid ID => new(Property("_id"));
 
+    /// <summary>
+    /// Creates a filter for a property with the specified name.
+    /// </summary>
+    /// <param name="name">The name of the property to filter on.</param>
+    /// <returns>A <see cref="PropertyFilter"/> for building filter conditions.</returns>
     public static PropertyFilter Property(string name) => new(name.Decapitalize());
 
+    /// <summary>
+    /// Creates a filter for a cross-reference property with the specified name.
+    /// </summary>
+    /// <param name="name">The name of the reference property.</param>
+    /// <returns>A <see cref="ReferenceFilter"/> for building reference-based filter conditions.</returns>
     public static ReferenceFilter Reference(string name) => new(name.Decapitalize());
 
+    /// <summary>
+    /// Gets a typed filter for the object creation timestamp.
+    /// </summary>
     public static TypedValue<DateTime> CreationTime => new TimeFilter("_creationTimeUnix");
 
+    /// <summary>
+    /// Gets a typed filter for the object last update timestamp.
+    /// </summary>
     public static TypedValue<DateTime> UpdateTime => new TimeFilter("_lastUpdateTimeUnix");
 
     internal Filter WithOperator(Filters.Types.Operator op)
