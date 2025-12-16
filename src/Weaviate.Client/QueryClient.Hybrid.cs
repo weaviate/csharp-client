@@ -75,7 +75,12 @@ public partial class QueryClient
             query: query,
             alpha: alpha,
             vector: vectors is Vector v ? Vectors.Create(v) : vectors as Vectors,
-            nearVector: vectors as HybridNearVector,
+            nearVector: vectors as HybridNearVector
+                ?? (
+                    vectors is NearVectorInput nv
+                        ? new HybridNearVector(nv, null, null, targetVector)
+                        : null
+                ),
             nearText: vectors as HybridNearText,
             queryProperties: queryProperties,
             fusionType: fusionType,

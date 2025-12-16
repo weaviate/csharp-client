@@ -565,119 +565,116 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(uuid1, objs[0].UUID);
     }
 
-    // TODO Is Second a list of vectors or a multivector?
-    // TODO Hybrid doesn't like that multiple vectors are passed in. How to handle this?
-    // public static IEnumerable<object[]> SameTargetVectorMultipleInputCombinationsData =>
-    //     new List<object[]>
-    //     {
-    //         new object[]
-    //         {
-    //             new VectorContainer
-    //             {
-    //                 { "first", new float[] { 0, 1 } },
-    //                 { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
-    //             },
-    //             new[] { "first", "second" },
-    //         },
-    //         new object[]
-    //         {
-    //             new VectorContainer
-    //             {
-    //                 { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
-    //                 { "second", new float[] { 1, 0, 0 } },
-    //             },
-    //             new[] { "first", "second" },
-    //         },
-    //         new object[]
-    //         {
-    //             new VectorContainer
-    //             {
-    //                 { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
-    //                 { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
-    //             },
-    //             new[] { "first", "second" },
-    //         },
-    //         new object[]
-    //         {
-    //             new HybridNearVector(
-    //                 new VectorContainer
-    //                 {
-    //                     { "first", new float[] { 0, 1 } },
-    //                     { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
-    //                 }
-    //             ),
-    //             new[] { "first", "second" },
-    //         },
-    //         new object[]
-    //         {
-    //             new HybridNearVector(
-    //                 new VectorContainer
-    //                 {
-    //                     { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
-    //                     { "second", new float[] { 1, 0, 0 } },
-    //                 }
-    //             ),
-    //             new[] { "first", "second" },
-    //         },
-    //         new object[]
-    //         {
-    //             new HybridNearVector(
-    //                 new VectorContainer
-    //                 {
-    //                     { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
-    //                     { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
-    //                 }
-    //             ),
-    //             new[] { "first", "second" },
-    //         },
-    //     };
+    public static TheoryData<
+        IHybridVectorInput,
+        string[]
+    > SameTargetVectorMultipleInputCombinationsData =>
+        new(
+            (
+                new NearVectorInput
+                {
+                    { "first", new float[] { 0, 1 } },
+                    { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
+                },
+                new[] { "first", "second" }
+            ),
+            (
+                new NearVectorInput
+                {
+                    { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
+                    { "second", new float[] { 1, 0, 0 } },
+                },
+                new[] { "first", "second" }
+            ),
+            (
+                new NearVectorInput
+                {
+                    { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
+                    { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
+                },
+                new[] { "first", "second" }
+            ),
+            (
+                new HybridNearVector(
+                    new NearVectorInput
+                    {
+                        { "first", new float[] { 0, 1 } },
+                        { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
+                    }
+                ),
+                new[] { "first", "second" }
+            ),
+            (
+                new HybridNearVector(
+                    new NearVectorInput
+                    {
+                        { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
+                        { "second", new float[] { 1, 0, 0 } },
+                    }
+                ),
+                new[] { "first", "second" }
+            ),
+            (
+                new HybridNearVector(
+                    new NearVectorInput
+                    {
+                        { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
+                        { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
+                    }
+                ),
+                new[] { "first", "second" }
+            )
+        );
 
-    // [Theory]
-    // [MemberData(nameof(SameTargetVectorMultipleInputCombinationsData))]
-    // public async Task Test_Same_Target_Vector_Multiple_Input_Combinations(
-    //     IHybridVectorInput nearVector,
-    //     string[] targetVector
-    // )
-    // {
-    //     var collection = await CollectionFactory(
-    //         properties: Array.Empty<Property>(),
-    //         vectorConfig: new[]
-    //         {
-    //             Configure.Vectors.SelfProvided("first"),
-    //             Configure.Vectors.SelfProvided("second"),
-    //         }
-    //     );
+    [Theory]
+    [MemberData(nameof(SameTargetVectorMultipleInputCombinationsData))]
+    public async Task Test_Same_Target_Vector_Multiple_Input_Combinations(
+        IHybridVectorInput nearVector,
+        string[] targetVector
+    )
+    {
+        var collection = await CollectionFactory(
+            properties: Array.Empty<Property>(),
+            vectorConfig: new[]
+            {
+                Configure.Vector("first", t => t.SelfProvided()),
+                Configure.Vector("second", t => t.SelfProvided()),
+            }
+        );
 
-    //     var uuid1 = await collection.Data.Insert(
-    //         new { },
-    //         vectors: new()
-    //         {
-    //             { "first", new float[] { 1, 0 } },
-    //             { "second", new float[] { 0, 1, 0 } },
-    //         }
-    //     );
-    //     var uuid2 = await collection.Data.Insert(
-    //         new { },
-    //         vectors: new()
-    //         {
-    //             { "first", new float[] { 0, 1 } },
-    //             { "second", new float[] { 1, 0, 0 } },
-    //         }
-    //     );
+        var uuid1 = await collection.Data.Insert(
+            new { },
+            vectors: new()
+            {
+                { "first", new float[] { 1, 0 } },
+                { "second", new float[] { 0, 1, 0 } },
+            },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuid2 = await collection.Data.Insert(
+            new { },
+            vectors: new()
+            {
+                { "first", new float[] { 0, 1 } },
+                { "second", new float[] { 1, 0, 0 } },
+            },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-    //     var objs = (
-    //         await collection.Query.Hybrid(
-    //             query: null,
-    //             vector: nearVector,
-    //             targetVector: targetVector,
-    //             metadata: MetadataOptions.Full
-    //         )
-    //     ).ToList();
+        var objs = (
+            await collection.Query.Hybrid(
+                query: null,
+                vectors: nearVector,
+                targetVector: targetVector,
+                returnMetadata: MetadataOptions.All,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
 
-    //     var uuids = objs.Select(o => o.ID).OrderBy(x => x).ToHashSet();
-    //     var expected = new HashSet<Guid?> { uuid1, uuid2 };
-    //     Assert.Equal(expected, uuids);
-    // }
+        var uuids = objs.Select(o => o.UUID).OrderBy(x => x).ToHashSet();
+        var expected = new HashSet<Guid?> { uuid1, uuid2 };
+        Assert.Equal(expected, uuids);
+    }
 
     [Fact]
     public async Task Test_Vector_Distance()

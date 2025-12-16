@@ -10,7 +10,7 @@ public interface IHybridVectorInput
 
 public interface INearVectorInput { }
 
-public record NearVectorInput : IEnumerable<Vector>, INearVectorInput
+public record NearVectorInput : IEnumerable<Vector>, IHybridVectorInput, INearVectorInput
 {
     private readonly List<Vector> _vectors = [];
 
