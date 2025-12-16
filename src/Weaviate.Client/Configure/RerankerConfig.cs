@@ -35,7 +35,7 @@ public class RerankerConfigFactory
         new Reranker.Nvidia { BaseURL = baseURL, Model = model };
 
     public IRerankerConfig Custom(string type, object? config = null) =>
-        new Reranker.Custom { Type = type, Config = config };
+        new Reranker.Custom { Type = type, Config = config ?? new { } };
 
     public IRerankerConfig None() => new Reranker.None();
 #pragma warning restore CA1822 // Mark members as static

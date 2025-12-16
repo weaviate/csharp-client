@@ -767,6 +767,9 @@ public partial class CollectionsTests : IntegrationTests
 
             c.MultiTenancyConfig.AutoTenantCreation = true;
             c.MultiTenancyConfig.AutoTenantActivation = true;
+
+            c.GenerativeConfig = Configure.Generative.Custom("generative-dummy");
+            c.RerankerConfig = Configure.Reranker.Custom("reranker-dummy");
         });
 
         // Assert - After first update

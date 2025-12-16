@@ -10,45 +10,49 @@ internal static class RerankerConfigSerialization
 
         if (config is JsonElement vic)
         {
+            var text = vic.GetRawText();
+
             var result = type switch
             {
                 Reranker.Transformers.TypeValue => (IRerankerConfig?)
                     JsonSerializer.Deserialize<Reranker.Transformers>(
-                        vic.GetRawText(),
+                        text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
                 Reranker.Cohere.TypeValue => JsonSerializer.Deserialize<Reranker.Cohere>(
-                    vic.GetRawText(),
+                    text,
                     Rest.WeaviateRestClient.RestJsonSerializerOptions
                 ),
                 Reranker.VoyageAI.TypeValue => JsonSerializer.Deserialize<Reranker.VoyageAI>(
-                    vic.GetRawText(),
+                    text,
                     Rest.WeaviateRestClient.RestJsonSerializerOptions
                 ),
                 Reranker.JinaAI.TypeValue => JsonSerializer.Deserialize<Reranker.JinaAI>(
-                    vic.GetRawText(),
+                    text,
                     Rest.WeaviateRestClient.RestJsonSerializerOptions
                 ),
                 Reranker.Nvidia.TypeValue => JsonSerializer.Deserialize<Reranker.Nvidia>(
-                    vic.GetRawText(),
+                    text,
                     Rest.WeaviateRestClient.RestJsonSerializerOptions
                 ),
                 Reranker.None.TypeValue => JsonSerializer.Deserialize<Reranker.None>(
-                    vic.GetRawText(),
+                    text,
                     Rest.WeaviateRestClient.RestJsonSerializerOptions
                 ),
                 _ => new Reranker.Custom
                 {
                     Type = type,
-                    Config = ObjectHelper.ConvertJsonElement(
-                        (
-                            (dynamic?)
-                                JsonSerializer.Deserialize<System.Dynamic.ExpandoObject>(
-                                    vic.GetRawText(),
+                    Config =
+                        ObjectHelper.ConvertJsonElement(
+                            (
+                                JsonSerializer.Deserialize<JsonElement>(
+                                    text,
                                     Rest.WeaviateRestClient.RestJsonSerializerOptions
                                 )
-                        )?.config
-                    ),
+                            ).TryGetProperty("config", out var configElement)
+                                ? configElement
+                                : null
+                        ) ?? new { },
                 },
             };
 

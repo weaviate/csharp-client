@@ -17,7 +17,7 @@ public static class GenerativeConfig
 
         public required string Type { get; set; }
 
-        public dynamic? Config { get; set; } = new { };
+        public object Config { get; set; } = new { };
     }
 
     public abstract record OpenAIBase : IGenerativeConfig

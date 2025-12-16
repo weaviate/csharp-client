@@ -116,7 +116,7 @@ public static class Reranker
 
         public required string Type { get; init; }
 
-        public dynamic? Config { get; set; }
+        public object Config { get; set; } = new { };
     }
 
     // Special case for "none" - no configuration needed
