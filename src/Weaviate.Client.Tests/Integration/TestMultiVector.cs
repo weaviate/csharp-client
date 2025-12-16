@@ -247,7 +247,7 @@ public class TestMultiVector : IntegrationTests
     }
 
     [Fact]
-    public async Task Test_Collection_Fetch_Aand_Insert_With_Multivector()
+    public async Task Test_Collection_Fetch_And_Insert_With_Multivector()
     {
         RequireVersion("1.29.0");
 
