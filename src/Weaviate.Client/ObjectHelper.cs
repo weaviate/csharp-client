@@ -143,7 +143,78 @@ internal class ObjectHelper
             return new Dictionary<string, object>();
         }
 
+        // Handle ExpandoObject and other IDictionary types which don't have traditional properties
+        if (data is IDictionary<string, object?> dict)
+        {
+            return SerializeDictionaryToRest(dict);
+        }
+
         return PropertyConverterRegistry.Default.SerializeToRest(data)!;
+    }
+
+    private static Dictionary<string, object> SerializeDictionaryToRest(
+        IDictionary<string, object?> dict
+    )
+    {
+        var result = new Dictionary<string, object>();
+
+        foreach (var kvp in dict)
+        {
+            var key = kvp.Key.Decapitalize();
+            var value = kvp.Value;
+
+            if (value is null)
+            {
+                continue;
+            }
+
+            // Recursively handle nested dictionaries (e.g., nested ExpandoObjects)
+            if (value is IDictionary<string, object?> nestedDict)
+            {
+                result[key] = SerializeDictionaryToRest(nestedDict);
+            }
+            else if (value is System.Collections.IEnumerable enumerable && value is not string)
+            {
+                // Handle arrays/lists that may contain nested dictionaries
+                result[key] = SerializeEnumerableToRest(enumerable);
+            }
+            else
+            {
+                // Use converter for known types
+                var converter = PropertyConverterRegistry.Default.GetConverterForType(
+                    value.GetType()
+                );
+                result[key] = converter?.ToRest(value) ?? value;
+            }
+        }
+
+        return result;
+    }
+
+    private static List<object?> SerializeEnumerableToRest(
+        System.Collections.IEnumerable enumerable
+    )
+    {
+        var list = new List<object?>();
+        foreach (var item in enumerable)
+        {
+            if (item is IDictionary<string, object?> nestedDict)
+            {
+                list.Add(SerializeDictionaryToRest(nestedDict));
+            }
+            else if (item is not null)
+            {
+                var converter = PropertyConverterRegistry.Default.GetConverterForType(
+                    item.GetType()
+                );
+                list.Add(converter?.ToRest(item) ?? item);
+            }
+            else
+            {
+                list.Add(null);
+            }
+        }
+        return list;
     }
 
     internal static V1.BatchObject.Types.Properties BuildBatchProperties<TProps>(TProps data)

@@ -57,7 +57,9 @@ public class DataClient
     {
         if (validate)
         {
-            var schema = await _collectionClient.Config.GetCachedConfig();
+            var schema = await _collectionClient.Config.GetCachedConfig(
+                cancellationToken: cancellationToken
+            );
             var validationResult = TypeValidator.Default.ValidateType(
                 properties.GetType(),
                 schema!
