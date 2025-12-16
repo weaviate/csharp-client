@@ -1,31 +1,78 @@
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// Base class for collection configuration, containing common settings shared between creation and update operations.
+/// </summary>
+/// <remarks>
+/// A collection in Weaviate is similar to a table in traditional databases or a collection in MongoDB.
+/// It defines the schema (properties and references), indexing behavior, and various configurations
+/// for storing and searching data objects.
+/// </remarks>
 public abstract record CollectionConfigCommon
 {
+    /// <summary>
+    /// Gets or sets the name of the collection. Must be unique within the Weaviate instance.
+    /// </summary>
     public string Name { get; set; } = "";
+
+    /// <summary>
+    /// Gets or sets the description of the collection, explaining its purpose and contents.
+    /// </summary>
     public string Description { get; set; } = "";
 
-    // Define properties of the collection.
+    /// <summary>
+    /// Gets or sets the properties (data fields) defined for this collection.
+    /// Properties define the schema for data objects stored in the collection.
+    /// </summary>
     public Property[] Properties { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the cross-references to other collections.
+    /// References enable relationships between objects in different collections.
+    /// </summary>
     public Reference[] References { get; set; } = [];
 
-    // inverted index config
+    /// <summary>
+    /// Gets or sets the inverted index configuration for filtering and keyword search.
+    /// The inverted index is used for BM25 keyword search and filtering operations.
+    /// </summary>
     public InvertedIndexConfig? InvertedIndexConfig { get; set; }
 
+    /// <summary>
+    /// Gets or sets the reranker configuration for improving search result quality.
+    /// Rerankers can reorder search results using more sophisticated models.
+    /// </summary>
     public IRerankerConfig? RerankerConfig { get; set; }
 
+    /// <summary>
+    /// Gets or sets the generative AI configuration for RAG (Retrieval-Augmented Generation).
+    /// Enables integration with LLMs for generating text based on search results.
+    /// </summary>
     public IGenerativeConfig? GenerativeConfig { get; set; }
 
-    // multi tenancy config
+    /// <summary>
+    /// Gets or sets the multi-tenancy configuration.
+    /// Multi-tenancy enables data isolation for different tenants within the same collection.
+    /// </summary>
     public MultiTenancyConfig? MultiTenancyConfig { get; set; }
 
-    // replication config
+    /// <summary>
+    /// Gets or sets the replication configuration for data redundancy and high availability.
+    /// Controls how many copies of data are maintained across the cluster.
+    /// </summary>
     public ReplicationConfig? ReplicationConfig { get; set; }
 
-    // Manage how the index should be sharded and distributed in the cluster
+    /// <summary>
+    /// Gets or sets the sharding configuration, controlling how data is distributed across cluster nodes.
+    /// Sharding enables horizontal scaling of data storage and query performance.
+    /// </summary>
     public ShardingConfig? ShardingConfig { get; set; }
 
-    // Configure named vectors. Either use this field or `vectorizer`, `vectorIndexType`, and `vectorIndexConfig` fields. Available from `v1.24.0`.
+    /// <summary>
+    /// Gets or sets the named vector configurations for this collection.
+    /// Supports multiple vector spaces per collection (available from Weaviate v1.24.0).
+    /// Use this for multi-vector setups, or use the legacy single-vector configuration.
+    /// </summary>
     public VectorConfigList VectorConfig { get; set; } = default!;
 
     public override int GetHashCode()
