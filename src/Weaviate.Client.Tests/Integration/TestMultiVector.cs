@@ -374,6 +374,7 @@ public class TestMultiVector : IntegrationTests
         );
         var obj6 = await collection.Query.FetchObjectByID(
             uuid6,
+            includeVectors: true,
             cancellationToken: TestContext.Current.CancellationToken
         );
 

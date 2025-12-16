@@ -782,4 +782,123 @@ public partial class ObjectHelperTests
         Assert.Contains("InvalidValue", exception.Message);
         Assert.Contains("TestStatus", exception.Message);
     }
+
+    [Fact]
+    public void TestBuildDataTransferObject_WithExpandoObject()
+    {
+        // Arrange
+        dynamic expando = new ExpandoObject();
+        expando.Name = "test";
+        expando.Age = 42;
+        expando.Active = true;
+
+        // Act
+        var result = ObjectHelper.BuildDataTransferObject(expando);
+
+        // Assert
+        Assert.Equal("test", result["name"]);
+        Assert.Equal(42, result["age"]);
+        Assert.Equal(true, result["active"]);
+    }
+
+    [Fact]
+    public void TestBuildDataTransferObject_WithNestedExpandoObject()
+    {
+        // Arrange
+        dynamic nested = new ExpandoObject();
+        nested.City = "Amsterdam";
+        nested.Country = "Netherlands";
+
+        dynamic expando = new ExpandoObject();
+        expando.Name = "test";
+        expando.Address = nested;
+
+        // Act
+        var result = ObjectHelper.BuildDataTransferObject(expando);
+
+        // Assert
+        Assert.Equal("test", result["name"]);
+        Assert.IsType<Dictionary<string, object>>(result["address"]);
+        var addressDict = (Dictionary<string, object>)result["address"];
+        Assert.Equal("Amsterdam", addressDict["city"]);
+        Assert.Equal("Netherlands", addressDict["country"]);
+    }
+
+    [Fact]
+    public void TestBuildDataTransferObject_WithExpandoContainingArray()
+    {
+        // Arrange
+        dynamic expando = new ExpandoObject();
+        expando.Name = "test";
+        expando.Tags = new[] { "tag1", "tag2" };
+
+        // Act
+        var result = ObjectHelper.BuildDataTransferObject(expando);
+
+        // Assert
+        Assert.Equal("test", result["name"]);
+        Assert.IsAssignableFrom<IEnumerable<object?>>(result["tags"]);
+        var tags = ((IEnumerable<object?>)result["tags"]).ToList();
+        Assert.Equal(2, tags.Count);
+        Assert.Equal("tag1", tags[0]);
+        Assert.Equal("tag2", tags[1]);
+    }
+
+    [Fact]
+    public void TestBuildDataTransferObject_WithExpandoContainingNestedExpandoArray()
+    {
+        // Arrange
+        dynamic item1 = new ExpandoObject();
+        item1.Id = 1;
+        item1.Value = "first";
+
+        dynamic item2 = new ExpandoObject();
+        item2.Id = 2;
+        item2.Value = "second";
+
+        dynamic expando = new ExpandoObject();
+        expando.Items = new object[] { item1, item2 };
+
+        // Act
+        var result = ObjectHelper.BuildDataTransferObject(expando);
+
+        // Assert
+        Assert.IsAssignableFrom<IEnumerable<object?>>(result["items"]);
+        var items = ((IEnumerable<object?>)result["items"]).ToList();
+        Assert.Equal(2, items.Count);
+
+        var firstItem = (Dictionary<string, object>)items[0]!;
+        Assert.Equal(1, Convert.ToInt32(firstItem["id"]));
+        Assert.Equal("first", firstItem["value"]);
+
+        var secondItem = (Dictionary<string, object>)items[1]!;
+        Assert.Equal(2, Convert.ToInt32(secondItem["id"]));
+        Assert.Equal("second", secondItem["value"]);
+    }
+
+    [Fact]
+    public void TestBuildDataTransferObject_WithNull_ReturnsEmptyDictionary()
+    {
+        // Act
+        var result = ObjectHelper.BuildDataTransferObject(null);
+
+        // Assert
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void TestBuildDataTransferObject_WithExpandoContainingDateTimeShouldConvert()
+    {
+        // Arrange
+        var testDate = new DateTime(2024, 6, 15, 10, 30, 0, DateTimeKind.Utc);
+        dynamic expando = new ExpandoObject();
+        expando.CreatedAt = testDate;
+
+        // Act
+        var result = ObjectHelper.BuildDataTransferObject(expando);
+
+        // Assert
+        // DatePropertyConverter should convert DateTime to ISO 8601 string
+        Assert.IsType<string>(result["createdAt"]);
+    }
 }

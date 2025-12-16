@@ -181,4 +181,334 @@ public class VectorDataTests
 
         Assert.IsType<float[]>(vc2["default"][0]);
     }
+
+    #region Equality Tests
+    [Fact]
+    public void VectorSingle_Equality_WithSameValues_ShouldBeEqual()
+    {
+        // Arrange: Create two single vectors with identical values
+        var vector1 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 3.0f });
+        var vector2 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 3.0f });
+
+        // Act & Assert
+        Assert.Equal(vector1, vector2);
+        Assert.True(vector1 == vector2);
+        Assert.False(vector1 != vector2);
+        Assert.Equal(vector1.GetHashCode(), vector2.GetHashCode());
+    }
+
+    [Fact]
+    public void VectorSingle_Equality_WithDifferentValues_ShouldNotBeEqual()
+    {
+        // Arrange: Create two single vectors with different values
+        var vector1 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 3.0f });
+        var vector2 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 4.0f });
+
+        // Act & Assert
+        Assert.NotEqual(vector1, vector2);
+        Assert.False(vector1 == vector2);
+        Assert.True(vector1 != vector2);
+    }
+
+    [Fact]
+    public void VectorSingle_Equality_WithDifferentNames_ShouldNotBeEqual()
+    {
+        // Arrange: Create two single vectors with same values but different names
+        var vector1 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 3.0f }) { Name = "vector1" };
+        var vector2 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 3.0f }) { Name = "vector2" };
+
+        // Act & Assert
+        Assert.NotEqual(vector1, vector2);
+    }
+
+    [Fact]
+    public void VectorMulti_Equality_WithSameValues_ShouldBeEqual()
+    {
+        // Arrange: Create two multi-vectors with identical values
+        var vector1 = new VectorMulti<float>(
+            new[,]
+            {
+                { 1.0f, 2.0f, 3.0f },
+                { 4.0f, 5.0f, 6.0f },
+                { 7.0f, 8.0f, 9.0f },
+                { 10.0f, 11.0f, 12.0f },
+            }
+        );
+        var vector2 = new VectorMulti<float>(
+            new[,]
+            {
+                { 1.0f, 2.0f, 3.0f },
+                { 4.0f, 5.0f, 6.0f },
+                { 7.0f, 8.0f, 9.0f },
+                { 10.0f, 11.0f, 12.0f },
+            }
+        );
+
+        // Act & Assert
+        Assert.Equal(vector1, vector2);
+        Assert.True(vector1 == vector2);
+        Assert.False(vector1 != vector2);
+        Assert.Equal(vector1.GetHashCode(), vector2.GetHashCode());
+    }
+
+    [Fact]
+    public void VectorMulti_Equality_WithDifferentValues_ShouldNotBeEqual()
+    {
+        // Arrange: Create two multi-vectors with different values
+        var vector1 = new VectorMulti<float>(
+            new[,]
+            {
+                { 1.0f, 2.0f, 3.0f },
+                { 4.0f, 5.0f, 6.0f },
+            }
+        );
+        var vector2 = new VectorMulti<float>(
+            new[,]
+            {
+                { 1.0f, 2.0f, 3.0f },
+                { 4.0f, 5.0f, 7.0f }, // Different value
+            }
+        );
+
+        // Act & Assert
+        Assert.NotEqual(vector1, vector2);
+    }
+
+    [Fact]
+    public void VectorMulti_Equality_WithDifferentDimensions_ShouldNotBeEqual()
+    {
+        // Arrange: Create two multi-vectors with different dimensions
+        var vector1 = new VectorMulti<float>(
+            new[,]
+            {
+                { 1.0f, 2.0f, 3.0f },
+                { 4.0f, 5.0f, 6.0f },
+            }
+        );
+        var vector2 = new VectorMulti<float>(
+            new[,]
+            {
+                { 1.0f, 2.0f, 3.0f },
+                { 4.0f, 5.0f, 6.0f },
+                { 7.0f, 8.0f, 9.0f },
+            }
+        );
+
+        // Act & Assert
+        Assert.NotEqual(vector1, vector2);
+    }
+
+    [Fact]
+    public void Vectors_Equality_WithIdenticalSingleVectors_ShouldBeEqual()
+    {
+        // Arrange: Create two Vectors objects with identical single vectors
+        var vectors1 = new Vectors { { "default", new[] { 1.0f, 2.0f, 3.0f } } };
+
+        var vectors2 = new Vectors { { "default", new[] { 1.0f, 2.0f, 3.0f } } };
+
+        // Act & Assert
+        Assert.Equal(vectors1, vectors2);
+    }
+
+    [Fact]
+    public void Vectors_Equality_WithIdenticalMultiVectors_ShouldBeEqual()
+    {
+        // Arrange: Create two Vectors objects with identical multi-vectors
+        var vectors1 = new Vectors
+        {
+            {
+                "default",
+                new[,]
+                {
+                    { 1.0f, 2.0f, 3.0f },
+                    { 4.0f, 5.0f, 6.0f },
+                }
+            },
+        };
+
+        var vectors2 = new Vectors
+        {
+            {
+                "default",
+                new[,]
+                {
+                    { 1.0f, 2.0f, 3.0f },
+                    { 4.0f, 5.0f, 6.0f },
+                }
+            },
+        };
+
+        // Act & Assert
+        Assert.Equal(vectors1, vectors2);
+    }
+
+    [Fact]
+    public void Vectors_Equality_WithDifferentVectorNames_ShouldNotBeEqual()
+    {
+        // Arrange: Create two Vectors objects with vectors under different keys
+        var vectors1 = new Vectors { { "vector1", new[] { 1.0f, 2.0f, 3.0f } } };
+
+        var vectors2 = new Vectors { { "vector2", new[] { 1.0f, 2.0f, 3.0f } } };
+
+        // Act & Assert
+        Assert.NotEqual(vectors1, vectors2);
+    }
+
+    [Fact]
+    public void Vectors_Equality_WithDifferentVectorValues_ShouldNotBeEqual()
+    {
+        // Arrange: Create two Vectors objects with different vector values
+        var vectors1 = new Vectors { { "default", new[] { 1.0f, 2.0f, 3.0f } } };
+
+        var vectors2 = new Vectors { { "default", new[] { 1.0f, 2.0f, 4.0f } } };
+
+        // Act & Assert
+        Assert.NotEqual(vectors1, vectors2);
+    }
+
+    [Fact]
+    public void Vectors_Equality_CreatedInDifferentWays_ShouldBeEqual()
+    {
+        // Arrange: Create Vectors objects using different construction methods
+        // Method 1: Using implicit conversion from array
+        Vectors vectors1 = new[] { 1.0f, 2.0f, 3.0f };
+
+        // Method 2: Using Add method
+        var vectors2 = new Vectors();
+        vectors2.Add(new[] { 1.0f, 2.0f, 3.0f });
+
+        // Method 3: Using Create method
+        var vectors3 = Vectors.Create(1.0f, 2.0f, 3.0f);
+
+        // Act & Assert
+        Assert.Equal(vectors1, vectors2);
+        Assert.Equal(vectors1, vectors3);
+        Assert.Equal(vectors2, vectors3);
+    }
+
+    [Fact]
+    public void Vectors_Equality_WithMultipleNamedVectors_ShouldBeEqual()
+    {
+        // Arrange: Create Vectors objects with multiple named vectors
+        var vectors1 = new Vectors
+        {
+            { "vec1", new[] { 1.0f, 2.0f } },
+            { "vec2", new[] { 3.0f, 4.0f } },
+            { "vec3", new[] { 5.0f, 6.0f } },
+        };
+
+        var vectors2 = new Vectors
+        {
+            { "vec1", new[] { 1.0f, 2.0f } },
+            { "vec2", new[] { 3.0f, 4.0f } },
+            { "vec3", new[] { 5.0f, 6.0f } },
+        };
+
+        // Act & Assert
+        Assert.Equal(vectors1, vectors2);
+    }
+
+    [Fact]
+    public void Vectors_Equality_WithMixedSingleAndMultiVectors_ShouldBeEqual()
+    {
+        // Arrange: Create Vectors objects with both single and multi vectors
+        var vectors1 = new Vectors
+        {
+            { "single", new[] { 1.0f, 2.0f, 3.0f } },
+            {
+                "multi",
+                new[,]
+                {
+                    { 4.0f, 5.0f },
+                    { 6.0f, 7.0f },
+                }
+            },
+        };
+
+        var vectors2 = new Vectors
+        {
+            { "single", new[] { 1.0f, 2.0f, 3.0f } },
+            {
+                "multi",
+                new[,]
+                {
+                    { 4.0f, 5.0f },
+                    { 6.0f, 7.0f },
+                }
+            },
+        };
+
+        // Act & Assert
+        Assert.Equal(vectors1, vectors2);
+    }
+
+    [Fact]
+    public void Vectors_Equality_AfterReinsert_ShouldBeEqual()
+    {
+        // Arrange: Simulate the integration test scenario - create a Vectors object,
+        // then create another one from the same properties
+        var originalProperties = new { name = "Item5" };
+
+        var vector5 = new[,]
+        {
+            { 0.8f, 0.9f, 0.1f },
+            { 0.2f, 0.3f, 0.4f },
+            { 0.5f, 0.6f, 0.7f },
+            { 0.1f, 0.2f, 0.3f },
+        };
+
+        Vectors vectors1 = vector5;
+
+        // Create a second Vectors object with the same vector
+        Vectors vectors2 = vector5;
+
+        // Act & Assert
+        Assert.Equal(vectors1, vectors2);
+    }
+
+    [Fact]
+    public void VectorSingle_Equality_WithIntegerType_ShouldBeEqual()
+    {
+        // Arrange: Test with integer type
+        var vector1 = new VectorSingle<int>(new[] { 1, 2, 3, 4, 5 });
+        var vector2 = new VectorSingle<int>(new[] { 1, 2, 3, 4, 5 });
+
+        // Act & Assert
+        Assert.Equal(vector1, vector2);
+    }
+
+    [Fact]
+    public void VectorMulti_Equality_WithDoubleType_ShouldBeEqual()
+    {
+        // Arrange: Test with double type
+        var vector1 = new VectorMulti<double>(
+            new[,]
+            {
+                { 1.0, 2.0 },
+                { 3.0, 4.0 },
+            }
+        );
+        var vector2 = new VectorMulti<double>(
+            new[,]
+            {
+                { 1.0, 2.0 },
+                { 3.0, 4.0 },
+            }
+        );
+
+        // Act & Assert
+        Assert.Equal(vector1, vector2);
+    }
+
+    [Fact]
+    public void VectorSingle_Equality_EmptyVectors_ShouldBeEqual()
+    {
+        // Arrange: Create two empty vectors
+        var vector1 = new VectorSingle<float>(Array.Empty<float>());
+        var vector2 = new VectorSingle<float>(Array.Empty<float>());
+
+        // Act & Assert
+        Assert.Equal(vector1, vector2);
+    }
+    #endregion
 }
