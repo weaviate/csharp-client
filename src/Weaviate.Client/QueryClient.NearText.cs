@@ -5,7 +5,7 @@ namespace Weaviate.Client;
 public partial class QueryClient
 {
     public async Task<WeaviateResult> NearText(
-        OneOrManyOf<string> text,
+        AutoArray<string> text,
         float? certainty = null,
         float? distance = null,
         Move? moveTo = null,
@@ -16,7 +16,7 @@ public partial class QueryClient
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        OneOrManyOf<string>? returnProperties = null,
+        AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
@@ -45,7 +45,7 @@ public partial class QueryClient
         );
 
     public async Task<GroupByResult> NearText(
-        OneOrManyOf<string> text,
+        AutoArray<string> text,
         GroupByRequest groupBy,
         float? certainty = null,
         float? distance = null,
@@ -57,7 +57,7 @@ public partial class QueryClient
         Filter? filters = null,
         Rerank? rerank = null,
         TargetVectors? targetVector = null,
-        OneOrManyOf<string>? returnProperties = null,
+        AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,

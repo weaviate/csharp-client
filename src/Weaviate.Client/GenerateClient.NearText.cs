@@ -28,7 +28,7 @@ public partial class GenerateClient
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>Generative result</returns>
     public async Task<GenerativeWeaviateResult> NearText(
-        OneOrManyOf<string> text,
+        AutoArray<string> text,
         float? certainty = null,
         float? distance = null,
         Move? moveTo = null,
@@ -42,7 +42,7 @@ public partial class GenerateClient
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
-        OneOrManyOf<string>? returnProperties = null,
+        AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
@@ -100,7 +100,7 @@ public partial class GenerateClient
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>Generative group-by result</returns>
     public async Task<GenerativeGroupByResult> NearText(
-        OneOrManyOf<string> text,
+        AutoArray<string> text,
         GroupByRequest groupBy,
         float? certainty = null,
         float? distance = null,
@@ -115,7 +115,7 @@ public partial class GenerateClient
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
         TargetVectors? targetVector = null,
-        OneOrManyOf<string>? returnProperties = null,
+        AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,

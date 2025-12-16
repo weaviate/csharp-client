@@ -50,7 +50,7 @@ public class DataClient
         object properties,
         Guid? uuid = null,
         Models.Vectors? vectors = null,
-        OneOrManyOf<ObjectReference>? references = null,
+        AutoArray<ObjectReference>? references = null,
         bool validate = false,
         CancellationToken cancellationToken = default
     )

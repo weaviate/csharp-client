@@ -17,7 +17,7 @@ public class TenantsClient
     }
 
     public async Task<IEnumerable<Tenant>> Create(
-        OneOrManyOf<Tenant> tenants,
+        AutoArray<Tenant> tenants,
         CancellationToken cancellationToken = default
     )
     {
@@ -51,7 +51,7 @@ public class TenantsClient
     }
 
     public async Task<IEnumerable<Tenant>> Update(
-        OneOrManyOf<Tenant> tenants,
+        AutoArray<Tenant> tenants,
         CancellationToken cancellationToken = default
     )
     {
@@ -94,7 +94,7 @@ public class TenantsClient
     }
 
     public async Task Delete(
-        OneOrManyOf<string> tenantNames,
+        AutoArray<string> tenantNames,
         CancellationToken cancellationToken = default
     )
     {

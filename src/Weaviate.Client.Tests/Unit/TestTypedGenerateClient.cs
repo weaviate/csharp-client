@@ -117,7 +117,7 @@ public class TypedGenerateClientTests
         var collectionClient = new CollectionClient(client, "Articles");
         var typedGenerateClient = new TypedGenerateClient<TestArticle>(collectionClient.Generate);
 
-        var searchText = new OneOrManyOf<string>("test query");
+        AutoArray<string> searchText = "test query";
         var prompt = new SinglePrompt("Generate summary");
 
         // Act & Assert
@@ -135,7 +135,7 @@ public class TypedGenerateClientTests
         var collectionClient = new CollectionClient(client, "Articles");
         var typedGenerateClient = new TypedGenerateClient<TestArticle>(collectionClient.Generate);
 
-        var searchText = new OneOrManyOf<string>("test query");
+        AutoArray<string> searchText = "test query";
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
         var groupedTask = new GroupedTask("Summarize each group");
 

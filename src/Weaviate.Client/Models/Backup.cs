@@ -233,8 +233,8 @@ public record Backup(
 public record BackupCreateRequest(
     string Id,
     BackupBackend Backend,
-    OneOrManyOf<string>? IncludeCollections = null,
-    OneOrManyOf<string>? ExcludeCollections = null,
+    AutoArray<string>? IncludeCollections = null,
+    AutoArray<string>? ExcludeCollections = null,
     int? CPUPercentage = null,
     BackupCompressionLevel? CompressionLevel = null
 );
@@ -245,8 +245,8 @@ public record BackupCreateRequest(
 public record BackupRestoreRequest(
     string Id,
     BackupBackend Backend,
-    OneOrManyOf<string>? IncludeCollections = null,
-    OneOrManyOf<string>? ExcludeCollections = null,
+    AutoArray<string>? IncludeCollections = null,
+    AutoArray<string>? ExcludeCollections = null,
     IDictionary<string, string>? NodeMapping = null,
     int? CPUPercentage = null,
     RolesRestoreOption? RolesOptions = null,

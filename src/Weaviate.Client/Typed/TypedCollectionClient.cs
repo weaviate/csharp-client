@@ -139,7 +139,7 @@ public class TypedCollectionClient<T>
         uint cacheSize = CollectionClient.ITERATOR_CACHE_SIZE,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
-        OneOrManyOf<string>? returnProperties = null,
+        AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default
     )

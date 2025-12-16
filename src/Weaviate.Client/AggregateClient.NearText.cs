@@ -21,7 +21,7 @@ public partial class AggregateClient
     /// <param name="returnMetrics">Metrics to aggregate</param>
     /// <returns>Grouped aggregate result</returns>
     public async Task<AggregateGroupByResult> NearText(
-        OneOrManyOf<string> query,
+        AutoArray<string> query,
         Aggregate.GroupBy? groupBy,
         double? certainty = null,
         double? distance = null,
@@ -71,7 +71,7 @@ public partial class AggregateClient
     /// <param name="returnMetrics">Metrics to aggregate</param>
     /// <returns>Aggregate result</returns>
     public async Task<AggregateResult> NearText(
-        OneOrManyOf<string> query,
+        AutoArray<string> query,
         double? certainty = null,
         double? distance = null,
         uint? limit = null,

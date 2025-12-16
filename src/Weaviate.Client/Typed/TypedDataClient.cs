@@ -27,7 +27,7 @@ public class TypedDataClient<T>
         T properties,
         Guid? uuid = null,
         Models.Vectors? vectors = null,
-        OneOrManyOf<ObjectReference>? references = null,
+        AutoArray<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
     {

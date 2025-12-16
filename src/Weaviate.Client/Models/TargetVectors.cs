@@ -66,7 +66,7 @@ public class TargetVectors : IEnumerable<string>
 
     // ManualWeights
     public static TargetVectors ManualWeights(
-        params (string name, OneOrManyOf<double> weight)[] weights
+        params (string name, AutoArray<double> weight)[] weights
     )
     {
         var dict = weights.ToDictionary(w => w.name, w => w.weight.ToList());
@@ -75,7 +75,7 @@ public class TargetVectors : IEnumerable<string>
 
     // RelativeScore
     public static TargetVectors RelativeScore(
-        params (string name, OneOrManyOf<double> weight)[] weights
+        params (string name, AutoArray<double> weight)[] weights
     )
     {
         var dict = weights.ToDictionary(w => w.name, w => w.weight.ToList());
