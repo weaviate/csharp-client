@@ -999,6 +999,27 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     [Fact]
+    public async Task TestUpdateGenerativeReranker()
+    {
+        var collection = await CollectionFactory();
+
+        var config = (await collection.Config.Get(TestContext.Current.CancellationToken))!;
+        Assert.Null(config.GenerativeConfig);
+        Assert.Null(config.RerankerConfig);
+
+        await collection.Config.Update(c =>
+        {
+            c.GenerativeConfig = Configure.Generative.Custom("generative-custom", new { });
+            c.RerankerConfig = Configure.Reranker.Custom("reranker-custom", new { });
+        });
+
+        config = (await collection.Config.Get(TestContext.Current.CancellationToken))!;
+        Assert.NotNull(config.GenerativeConfig);
+        Assert.IsType<GenerativeConfig.Custom>(config.GenerativeConfig);
+        Assert.IsType<Reranker.Custom>(config.RerankerConfig);
+    }
+
+    [Fact]
     public async Task Test_sq_and_rq()
     {
         RequireVersion("1.32.0", message: "RQ only supported in server version 1.32.0+");
