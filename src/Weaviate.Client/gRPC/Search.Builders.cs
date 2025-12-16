@@ -466,9 +466,9 @@ internal partial class WeaviateGrpcClient
 
         targetVector ??= vector
             .Select(v => v.Name)
-            .Order()
             .Where(tv => string.IsNullOrEmpty(tv) is false)
             .ToHashSet()
+            .Order()
             .ToArray();
 
         if (targetVector.Count() == 1 && vector.Count() == 1)

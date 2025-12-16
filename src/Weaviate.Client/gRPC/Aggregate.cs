@@ -302,7 +302,7 @@ internal partial class WeaviateGrpcClient
 
         var (targets, _, vector) = BuildTargetVector(
             targetVector is null ? null : [targetVector],
-            vectors?.Values.ToList()
+            vectors?.Values
         );
 
         request.Hybrid.Vectors.AddRange(vector ?? []);
