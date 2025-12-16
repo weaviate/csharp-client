@@ -178,6 +178,28 @@ public sealed record VectorSingle<T> : Vector, IEnumerable<T>
     {
         Values = values;
     }
+
+    public bool Equals(VectorSingle<T>? other)
+    {
+        if (other is null)
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
+
+        // Compare Name and Values
+        return Name == other.Name && Values.SequenceEqual(other.Values);
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Name);
+        foreach (var value in Values)
+        {
+            hash.Add(value);
+        }
+        return hash.ToHashCode();
+    }
 }
 
 public sealed record VectorMulti<T> : Vector, IEnumerable<T[]>
@@ -226,6 +248,45 @@ public sealed record VectorMulti<T> : Vector, IEnumerable<T[]>
             }
             return result;
         }
+    }
+
+    public bool Equals(VectorMulti<T>? other)
+    {
+        if (other is null)
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
+
+        // Compare Name, dimensions, and all values
+        if (Name != other.Name || _rows != other._rows || _cols != other._cols)
+            return false;
+
+        for (int i = 0; i < _rows; i++)
+        {
+            for (int j = 0; j < _cols; j++)
+            {
+                if (!EqualityComparer<T>.Default.Equals(_values[i, j], other._values[i, j]))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Name);
+        hash.Add(_rows);
+        hash.Add(_cols);
+        for (int i = 0; i < _rows; i++)
+        {
+            for (int j = 0; j < _cols; j++)
+            {
+                hash.Add(_values[i, j]);
+            }
+        }
+        return hash.ToHashCode();
     }
 }
 
