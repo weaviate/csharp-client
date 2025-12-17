@@ -77,7 +77,8 @@ internal static class VectorConfigBuilder
         ValidateSelfProvidedConfiguration(attr, vectorizerType);
 
         // Create instance of vectorizer
-        var vectorizer = Activator.CreateInstance(vectorizerType) as VectorizerConfig;
+        var vectorizer =
+            Activator.CreateInstance(vectorizerType, nonPublic: true) as VectorizerConfig;
         if (vectorizer == null)
             throw new InvalidOperationException(
                 $"Failed to create vectorizer of type {vectorizerType.Name}"

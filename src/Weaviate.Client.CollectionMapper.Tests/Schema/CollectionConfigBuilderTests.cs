@@ -330,7 +330,7 @@ public class CollectionConfigBuilderTests
         [Property(DataType.Text)]
         public string Title { get; set; } = string.Empty;
 
-        public static CollectionConfig CustomizeConfig(CollectionConfig prebuilt)
+        public static CollectionCreateParams CustomizeConfig(CollectionCreateParams prebuilt)
         {
             prebuilt.InvertedIndexConfig = new InvertedIndexConfig
             {
@@ -524,7 +524,7 @@ public static class ModuleConfigurations
 /// </summary>
 public static class CollectionConfigurations
 {
-    public static CollectionConfig CustomizeArticles(CollectionConfig prebuilt)
+    public static CollectionCreateParams CustomizeArticles(CollectionCreateParams prebuilt)
     {
         prebuilt.InvertedIndexConfig = new InvertedIndexConfig
         {

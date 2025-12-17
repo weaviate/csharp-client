@@ -493,8 +493,9 @@ public static class CollectionSchemaBuilder
 
         var moduleType = attr.ModuleType;
 
-        // Create instance using parameterless constructor or record syntax
-        var generativeConfig = Activator.CreateInstance(moduleType) as IGenerativeConfig;
+        // Create instance using parameterless constructor (including internal constructors)
+        var generativeConfig =
+            Activator.CreateInstance(moduleType, nonPublic: true) as IGenerativeConfig;
         if (generativeConfig == null)
         {
             throw new InvalidOperationException(
@@ -567,8 +568,9 @@ public static class CollectionSchemaBuilder
 
         var moduleType = attr.ModuleType;
 
-        // Create instance
-        var rerankerConfig = Activator.CreateInstance(moduleType) as IRerankerConfig;
+        // Create instance using parameterless constructor (including internal constructors)
+        var rerankerConfig =
+            Activator.CreateInstance(moduleType, nonPublic: true) as IRerankerConfig;
         if (rerankerConfig == null)
         {
             throw new InvalidOperationException(
