@@ -1017,11 +1017,14 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Null(config.GenerativeConfig);
         Assert.Null(config.RerankerConfig);
 
-        await collection.Config.Update(c =>
-        {
-            c.GenerativeConfig = Configure.Generative.Custom("generative-custom", new { });
-            c.RerankerConfig = Configure.Reranker.Custom("reranker-custom", new { });
-        });
+        await collection.Config.Update(
+            c =>
+            {
+                c.GenerativeConfig = Configure.Generative.Custom("generative-custom", new { });
+                c.RerankerConfig = Configure.Reranker.Custom("reranker-custom", new { });
+            },
+            TestContext.Current.CancellationToken
+        );
 
         config = (await collection.Config.Get(TestContext.Current.CancellationToken))!;
         Assert.NotNull(config.GenerativeConfig);
