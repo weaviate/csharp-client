@@ -82,10 +82,9 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
                 Name = "CreationAndExport",
                 Description = "My own description too",
                 Properties = [_nameProperty],
-                VectorConfig = new VectorConfig(
-                    "default",
-                    new Vectorizer.SelfProvided(),
-                    vectorIndexConfig: _vectorIndexConfigHNSW_base
+                VectorConfig = Configure.Vector(
+                    v => v.SelfProvided(),
+                    index: _vectorIndexConfigHNSW_base
                 ),
                 InvertedIndexConfig = InvertedIndexConfig.Default,
                 ReplicationConfig = ReplicationConfig.Default,

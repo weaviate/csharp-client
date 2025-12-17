@@ -5,6 +5,10 @@ using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Weaviate.Client.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Weaviate.Client.CollectionMapper")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(
+    "Weaviate.Client.CollectionMapper.Tests"
+)]
 
 namespace Weaviate.Client;
 

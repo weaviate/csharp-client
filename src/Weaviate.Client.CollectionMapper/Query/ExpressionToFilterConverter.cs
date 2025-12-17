@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Weaviate.Client.CollectionMapper.Internal;
 using Weaviate.Client.Models;
+using PropertyHelper = Weaviate.Client.CollectionMapper.Internal.PropertyHelper;
 
 namespace Weaviate.Client.CollectionMapper.Query;
 
@@ -61,12 +62,12 @@ public static class ExpressionToFilterConverter
         // Handle logical operators (&&, ||)
         if (binary.NodeType == ExpressionType.AndAlso)
         {
-            return Filter.And(ConvertExpression(binary.Left), ConvertExpression(binary.Right));
+            return Filter.AllOf(ConvertExpression(binary.Left), ConvertExpression(binary.Right));
         }
 
         if (binary.NodeType == ExpressionType.OrElse)
         {
-            return Filter.Or(ConvertExpression(binary.Left), ConvertExpression(binary.Right));
+            return Filter.AnyOf(ConvertExpression(binary.Left), ConvertExpression(binary.Right));
         }
 
         // Handle comparison operators
@@ -83,14 +84,14 @@ public static class ExpressionToFilterConverter
 
         return binary.NodeType switch
         {
-            ExpressionType.Equal => Filter.Property(propertyPath).Equal(value),
-            ExpressionType.NotEqual => Filter.Property(propertyPath).NotEqual(value),
-            ExpressionType.GreaterThan => Filter.Property(propertyPath).GreaterThan(value),
+            ExpressionType.Equal => Filter.Property(propertyPath).IsEqual(value),
+            ExpressionType.NotEqual => Filter.Property(propertyPath).IsNotEqual(value),
+            ExpressionType.GreaterThan => Filter.Property(propertyPath).IsGreaterThan(value),
             ExpressionType.GreaterThanOrEqual => Filter
                 .Property(propertyPath)
-                .GreaterThanEqual(value),
-            ExpressionType.LessThan => Filter.Property(propertyPath).LessThan(value),
-            ExpressionType.LessThanOrEqual => Filter.Property(propertyPath).LessThanEqual(value),
+                .IsGreaterThanEqual(value),
+            ExpressionType.LessThan => Filter.Property(propertyPath).IsLessThan(value),
+            ExpressionType.LessThanOrEqual => Filter.Property(propertyPath).IsLessThanEqual(value),
             _ => throw new NotSupportedException(
                 $"Binary operator '{binary.NodeType}' is not supported"
             ),
@@ -109,7 +110,7 @@ public static class ExpressionToFilterConverter
         {
             var propertyPath = PropertyHelper.GetNestedPropertyPath(member);
             var value = EvaluateExpression(method.Arguments[0]);
-            return Filter.Property(propertyPath).Like($"%{value}%");
+            return Filter.Property(propertyPath).IsLike($"%{value}%");
         }
 
         // List/Array Contains (for checking if a collection contains a value)
@@ -164,7 +165,7 @@ public static class ExpressionToFilterConverter
     {
         // For boolean properties: a.IsActive => a.IsActive == true
         var propertyPath = PropertyHelper.GetNestedPropertyPath(member);
-        return Filter.Property(propertyPath).Equal(true);
+        return Filter.Property(propertyPath).IsEqual(true);
     }
 
     /// <summary>

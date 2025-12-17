@@ -3,6 +3,7 @@ using Weaviate.Client.CollectionMapper.Internal;
 using Weaviate.Client.CollectionMapper.Mapping;
 using Weaviate.Client.Models;
 using Weaviate.Client.Typed;
+using PropertyHelper = Weaviate.Client.CollectionMapper.Internal.PropertyHelper;
 
 namespace Weaviate.Client.CollectionMapper.Query;
 
@@ -32,9 +33,9 @@ public class CollectionMapperQueryClient<T>
     private uint? _limit;
     private readonly List<string> _includeVectors = new();
     private readonly List<string> _includeReferences = new();
-    private OneOrManyOf<Sort>? _sort;
+    private AutoArray<Sort>? _sort;
     private Rerank? _rerank = null;
-    private OneOrManyOf<string>? _returnProperties;
+    private AutoArray<string>? _returnProperties;
     private MetadataQuery? _returnMetadata;
 
     // Search state
@@ -68,7 +69,7 @@ public class CollectionMapperQueryClient<T>
     public CollectionMapperQueryClient<T> Where(Expression<Func<T, bool>> predicate)
     {
         var filter = ExpressionToFilterConverter.Convert(predicate);
-        _filter = _filter == null ? filter : Filter.And(_filter, filter);
+        _filter = _filter == null ? filter : Filter.AllOf(_filter, filter);
         return this;
     }
 
@@ -335,7 +336,7 @@ public class CollectionMapperQueryClient<T>
             ),
 
             SearchMode.NearText => await _typedClient.NearText(
-                text: (OneOrManyOf<string>)_searchTarget!,
+                text: (AutoArray<string>)_searchTarget!,
                 limit: _limit,
                 certainty: _certainty,
                 distance: _distance,

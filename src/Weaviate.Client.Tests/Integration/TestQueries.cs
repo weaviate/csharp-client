@@ -18,7 +18,7 @@ public class TestQueries : IntegrationTests
         // Arrange
         var collection = await this.CollectionFactory<TestProperties>(
             properties: props,
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         var testData = new[]
@@ -75,7 +75,7 @@ public class TestQueries : IntegrationTests
         // Arrange
         var collection = await this.CollectionFactory<object>(
             properties: [Property.Text("text"), Property.Text("content")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided()),
+            vectorConfig: Configure.Vector(v => v.SelfProvided()),
             generativeConfig: new GenerativeConfig.Custom
             {
                 Type = "generative-dummy",

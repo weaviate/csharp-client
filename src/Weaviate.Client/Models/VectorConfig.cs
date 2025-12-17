@@ -8,7 +8,7 @@ public record VectorConfig : IEquatable<VectorConfig>
     /// <param name="Name">The name of the vector configuration.</param>
     /// <param name="Vectorizer">Configuration of a specific vectorizer used by this vector.</param>
     /// <param name="VectorIndexConfig">Vector-index config, that is specific to the type of index selected in vectorIndexType.</param>
-    public VectorConfig(
+    internal VectorConfig(
         string name,
         VectorizerConfig? vectorizer = null,
         VectorIndexConfig? vectorIndexConfig = null

@@ -384,7 +384,7 @@ private Filter? _filter;
 private uint? _limit;
 private List<string> _includeVectors;
 private List<string> _includeReferences;
-private OneOrManyOf<Sort>? _sort;
+private AutoArray<Sort>? _sort;
 private NearSearchMode _searchMode;
 private object? _searchTarget;
 private string? _targetVector;

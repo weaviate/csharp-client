@@ -20,7 +20,7 @@ repos:
         pass_filenames: false
         description: Build the .NET project to ensure it compiles without errors.
         name: Run .NET build
-        entry: dotnet build --no-restore        
+        entry: dotnet build --no-restore ./src
       - id: csharpier
         name: Run CSharpier on C# files
         entry: dotnet tool run csharpier

@@ -52,10 +52,10 @@ public partial class VectorConfigListTests
         // Arrange
         VectorConfigList ncList = new[]
         {
-            new VectorConfig(
+            Configure.Vector(
                 "default",
-                new Vectorizer.Text2VecTransformers { SourceProperties = ["breed", "color"] },
-                new VectorIndex.HNSW()
+                v => v.Text2VecTransformers(),
+                index: new VectorIndex.HNSW()
                 {
                     Distance = VectorIndexConfig.VectorDistance.Cosine,
                     Quantizer = new Quantizers.PQ
@@ -66,17 +66,20 @@ public partial class VectorConfigListTests
                             Type = Quantizers.EncoderType.Kmeans,
                         },
                     },
-                }
+                },
+                sourceProperties: ["breed", "color"]
             ),
-            new VectorConfig(
+            Configure.Vector(
                 "fromSizes",
-                new Vectorizer.Text2VecTransformers { SourceProperties = ["size"] }
+                v => v.Text2VecTransformers(),
+                sourceProperties: ["size"]
             ),
-            new VectorConfig(
+            Configure.Vector(
                 "location",
-                new Vectorizer.Text2VecTransformers { SourceProperties = ["location"] }
+                v => v.Text2VecTransformers(),
+                sourceProperties: ["location"]
             ),
-            new VectorConfig("nein", new Vectorizer.SelfProvided()),
+            Configure.Vector("nein", v => v.SelfProvided()),
             Configure.Vector("transf1", transformerVectorizer, sourceProperties: ["breed"]),
             Configure.Vector("transf2", transformerVectorizer, sourceProperties: ["color"]),
             Configure.Vector(
@@ -109,7 +112,7 @@ public partial class VectorConfigListTests
     public void Test_NamedVectorConfig_SelfProvided_Has_No_Properties()
     {
         // Arrange
-        var vc = new VectorConfig("default", new Vectorizer.SelfProvided());
+        var vc = Configure.Vector(v => v.SelfProvided());
 
         // Act
         var dto = vc.Vectorizer?.ToDto() ?? default;
@@ -136,9 +139,10 @@ public partial class VectorConfigListTests
     public void Test_NamedVectorConfig_Has_Properties()
     {
         // Arrange
-        var defaultVec = new VectorConfig(
+        var defaultVec = Configure.Vector(
             "default",
-            new Vectorizer.Text2VecTransformers() { SourceProperties = ["name"] }
+            v => v.Text2VecTransformers(),
+            sourceProperties: ["name"]
         );
 
         // Build explicitely, when typing as VectorConfig is needed,

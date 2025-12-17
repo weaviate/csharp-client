@@ -2,6 +2,7 @@ using System.Reflection;
 using Weaviate.Client.CollectionMapper.Attributes;
 using Weaviate.Client.CollectionMapper.Internal;
 using Weaviate.Client.Models;
+using PropertyHelper = Weaviate.Client.CollectionMapper.Internal.PropertyHelper;
 
 namespace Weaviate.Client.CollectionMapper.Mapping;
 
@@ -52,7 +53,11 @@ internal static class ReferenceMapper
                 {
                     references[refName] = new List<WeaviateObject>
                     {
-                        new WeaviateObject { ID = id.Value, Collection = refAttr.TargetCollection },
+                        new WeaviateObject
+                        {
+                            UUID = id.Value,
+                            Collection = refAttr.TargetCollection,
+                        },
                     };
                 }
             }
@@ -64,7 +69,7 @@ internal static class ReferenceMapper
                 {
                     var refList = ids.Select(id => new WeaviateObject
                         {
-                            ID = id,
+                            UUID = id,
                             Collection = refAttr.TargetCollection,
                         })
                         .ToList();
@@ -95,7 +100,7 @@ internal static class ReferenceMapper
                         {
                             new WeaviateObject
                             {
-                                ID = id.Value,
+                                UUID = id.Value,
                                 Collection = refAttr.TargetCollection,
                             },
                         };
@@ -128,7 +133,7 @@ internal static class ReferenceMapper
                                 refList.Add(
                                     new WeaviateObject
                                     {
-                                        ID = id.Value,
+                                        UUID = id.Value,
                                         Collection = refAttr.TargetCollection,
                                     }
                                 );
@@ -179,15 +184,15 @@ internal static class ReferenceMapper
             if (prop.PropertyType == typeof(Guid) || prop.PropertyType == typeof(Guid?))
             {
                 var firstRef = refList.FirstOrDefault();
-                if (firstRef?.ID != null)
+                if (firstRef?.UUID != null)
                 {
-                    prop.SetValue(obj, firstRef.ID);
+                    prop.SetValue(obj, firstRef.UUID);
                 }
             }
             // Handle List<Guid> (multi-ID reference)
             else if (IsGenericList(prop.PropertyType, typeof(Guid)))
             {
-                var ids = refList.Where(r => r.ID.HasValue).Select(r => r.ID!.Value).ToList();
+                var ids = refList.Where(r => r.UUID.HasValue).Select(r => r.UUID!.Value).ToList();
                 prop.SetValue(obj, ids);
             }
             // Handle single object reference (T?)
@@ -208,9 +213,9 @@ internal static class ReferenceMapper
                                     | BindingFlags.Instance
                                     | BindingFlags.IgnoreCase
                             );
-                            if (idProp != null && idProp.CanWrite && firstRef.ID.HasValue)
+                            if (idProp != null && idProp.CanWrite && firstRef.UUID.HasValue)
                             {
-                                idProp.SetValue(instance, firstRef.ID.Value);
+                                idProp.SetValue(instance, firstRef.UUID.Value);
                             }
 
                             // Note: Full object hydration from Properties would require ObjectHelper which is internal
@@ -248,9 +253,9 @@ internal static class ReferenceMapper
                                         | BindingFlags.Instance
                                         | BindingFlags.IgnoreCase
                                 );
-                                if (idProp != null && idProp.CanWrite && refObj.ID.HasValue)
+                                if (idProp != null && idProp.CanWrite && refObj.UUID.HasValue)
                                 {
-                                    idProp.SetValue(instance, refObj.ID.Value);
+                                    idProp.SetValue(instance, refObj.UUID.Value);
                                 }
 
                                 // Note: Full object hydration from Properties would require ObjectHelper which is internal

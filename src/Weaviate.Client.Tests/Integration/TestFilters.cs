@@ -439,7 +439,7 @@ public partial class FilterTests : IntegrationTests
 
         // Arrange
         var collection = await CollectionFactory(
-            vectorConfig: new VectorConfig("default"),
+            vectorConfig: Configure.Vector(v => v.SelfProvided()),
             properties:
             [
                 Property.TextArray("texts"),
@@ -500,7 +500,7 @@ public partial class FilterTests : IntegrationTests
 
         // Arrange
         var collection = await CollectionFactory(
-            vectorConfig: new VectorConfig("default"),
+            vectorConfig: Configure.Vector(v => v.SelfProvided()),
             properties:
             [
                 Property.Text("text"),

@@ -13,11 +13,7 @@ public class CollectionTests
             Name = "ClassName",
             Description = "Description",
             Properties = [Property.Text("Name")],
-            VectorConfig = new VectorConfig(
-                "default",
-                new Vectorizer.SelfProvided(),
-                new VectorIndex.HNSW()
-            ),
+            VectorConfig = Configure.Vector(v => v.SelfProvided(), index: new VectorIndex.HNSW()),
             InvertedIndexConfig = InvertedIndexConfig.Default,
             ReplicationConfig = ReplicationConfig.Default,
             ShardingConfig = ShardingConfig.Default,
@@ -29,11 +25,7 @@ public class CollectionTests
             Name = "ClassName",
             Description = "Description",
             Properties = [Property.Text("Name")],
-            VectorConfig = new VectorConfig(
-                "default",
-                new Vectorizer.SelfProvided(),
-                new VectorIndex.HNSW()
-            ),
+            VectorConfig = Configure.Vector(v => v.SelfProvided(), index: new VectorIndex.HNSW()),
             InvertedIndexConfig = InvertedIndexConfig.Default,
             ReplicationConfig = ReplicationConfig.Default,
             ShardingConfig = ShardingConfig.Default,

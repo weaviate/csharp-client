@@ -1,0 +1,28 @@
+<Solution>
+    <Configurations>
+        <Platform Name="Any CPU" />
+    </Configurations>
+    <Folder Name="/Example/">
+        <Project Path="Example/Example.csproj" />
+    </Folder>
+    <Folder Name="/Client/">
+        <Project Path="Weaviate.Client.Tests/Weaviate.Client.Tests.csproj" />
+        <Project Path="Weaviate.Client/Weaviate.Client.csproj" />
+    </Folder>
+    <Folder Name="/Analyzers/">
+        <Project Path="Weaviate.Client.Analyzers.Tests/Weaviate.Client.Analyzers.Tests.csproj" />
+        <Project Path="Weaviate.Client.Analyzers/Weaviate.Client.Analyzers.csproj" />
+    </Folder>
+    <Folder Name="/CollectionMapper/">
+        <Project Path="Weaviate.Client.CollectionMapper.Tests/Weaviate.Client.CollectionMapper.Tests.csproj">
+            <BuildType Project="?" />
+            <Platform Project="?" />
+            <Build Project="false" />
+        </Project>
+        <Project Path="Weaviate.Client.CollectionMapper/Weaviate.Client.CollectionMapper.csproj">
+            <BuildType Project="?" />
+            <Platform Project="?" />
+            <Build Project="false" />
+        </Project>
+    </Folder>
+</Solution>

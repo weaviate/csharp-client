@@ -2,6 +2,7 @@ using System.Reflection;
 using Weaviate.Client.CollectionMapper.Attributes;
 using Weaviate.Client.CollectionMapper.Internal;
 using Weaviate.Client.Models;
+using PropertyHelper = Weaviate.Client.CollectionMapper.Internal.PropertyHelper;
 
 namespace Weaviate.Client.CollectionMapper.Schema;
 

@@ -69,7 +69,7 @@ public partial class CollectionsTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("Name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         bool exists = await _weaviate.Collections.Exists(
@@ -169,7 +169,7 @@ public partial class CollectionsTests : IntegrationTests
             name: "MyOwnSuffix",
             description: "My own description too",
             properties: [Property.Text("Name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         var export = await _weaviate.Collections.Export(
@@ -297,9 +297,9 @@ public partial class CollectionsTests : IntegrationTests
             properties: [Property.Text("Name"), Property.Int("SomeNumber")],
             references: null,
             collectionNamePartSeparator: "",
-            vectorConfig: new VectorConfig(
+            vectorConfig: Configure.Vector(
                 "nondefault",
-                new Vectorizer.Text2VecTransformers() { VectorizeCollectionName = false }
+                v => v.Text2VecTransformers(vectorizeCollectionName: false)
             ),
             invertedIndexConfig: new()
             {
@@ -455,9 +455,9 @@ public partial class CollectionsTests : IntegrationTests
             properties: [Property.Text("Name"), Property.Int("SomeNumber")],
             references: null,
             collectionNamePartSeparator: "",
-            vectorConfig: new VectorConfig(
+            vectorConfig: Configure.Vector(
                 "nondefault",
-                new Vectorizer.Text2VecTransformers() { VectorizeCollectionName = false }
+                v => v.Text2VecTransformers(vectorizeCollectionName: false)
             ),
             multiTenancyConfig: new()
             {

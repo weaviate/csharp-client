@@ -22,7 +22,8 @@ public static class CollectionMigrationExtensions
     )
         where T : class
     {
-        var targetConfig = CollectionSchemaBuilder.FromClass<T>();
+        var targetCreateParams = CollectionSchemaBuilder.FromClass<T>();
+        var targetConfig = CollectionConfig.FromCollectionCreate(targetCreateParams);
         var collectionName = targetConfig.Name;
 
         CollectionConfig? currentConfig = null;
@@ -85,8 +86,9 @@ public static class CollectionMigrationExtensions
 
         if (migrationPlan.CurrentConfig == null)
         {
-            // Collection does not exist, create it
-            await collections.Create(migrationPlan.TargetConfig, cancellationToken);
+            // Collection does not exist, create it from the original CreateParams
+            var targetCreateParams = CollectionSchemaBuilder.FromClass<T>();
+            await collections.Create(targetCreateParams, cancellationToken);
             return migrationPlan;
         }
 

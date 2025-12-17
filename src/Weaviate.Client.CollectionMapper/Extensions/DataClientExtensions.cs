@@ -36,7 +36,7 @@ public static class DataClientExtensions
 
         // Extract references and convert to ObjectReference format
         var references = ReferenceMapper.ExtractReferences(obj);
-        OneOrManyOf<ObjectReference>? refParam = null;
+        AutoArray<ObjectReference>? refParam = null;
         if (references != null && references.Count > 0)
         {
             var refList = new List<ObjectReference>();
@@ -44,9 +44,9 @@ public static class DataClientExtensions
             {
                 foreach (var refObj in refObjects)
                 {
-                    if (refObj.ID.HasValue)
+                    if (refObj.UUID.HasValue)
                     {
-                        refList.Add(new ObjectReference(refName, refObj.ID.Value));
+                        refList.Add(new ObjectReference(refName, refObj.UUID.Value));
                     }
                 }
             }
@@ -58,8 +58,8 @@ public static class DataClientExtensions
 
         // Insert using existing DataClient - it will handle object serialization
         var result = await dataClient.Insert(
-            data: obj,
-            id: id,
+            properties: obj,
+            uuid: id,
             vectors: vectors,
             references: refParam,
             cancellationToken: cancellationToken
@@ -130,9 +130,9 @@ public static class DataClientExtensions
             {
                 foreach (var refObj in refObjects)
                 {
-                    if (refObj.ID.HasValue)
+                    if (refObj.UUID.HasValue)
                     {
-                        refList.Add(new ObjectReference(refName, refObj.ID.Value));
+                        refList.Add(new ObjectReference(refName, refObj.UUID.Value));
                     }
                 }
             }
@@ -144,8 +144,8 @@ public static class DataClientExtensions
 
         // Replace using existing DataClient
         await dataClient.Replace(
-            id: id,
-            data: obj,
+            uuid: id,
+            properties: obj,
             vectors: vectors,
             references: refParam,
             cancellationToken: cancellationToken
@@ -185,9 +185,9 @@ public static class DataClientExtensions
             {
                 foreach (var refObj in refObjects)
                 {
-                    if (refObj.ID.HasValue)
+                    if (refObj.UUID.HasValue)
                     {
-                        refList.Add(new ObjectReference(refName, refObj.ID.Value));
+                        refList.Add(new ObjectReference(refName, refObj.UUID.Value));
                     }
                 }
             }
@@ -199,8 +199,8 @@ public static class DataClientExtensions
 
         // Update using existing DataClient
         await dataClient.Update(
-            id: id,
-            data: obj,
+            uuid: id,
+            properties: obj,
             vectors: vectors,
             references: refParam,
             cancellationToken: cancellationToken

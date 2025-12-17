@@ -62,7 +62,7 @@ public partial class BatchTests : IntegrationTests
         // Setup referenced collection ("To")
         var refCollection = await CollectionFactory(
             name: "To",
-            vectorConfig: new VectorConfig("default"),
+            vectorConfig: Configure.Vector(v => v.SelfProvided()),
             properties: [Property.Int("number")]
         );
         int numObjects = 10;
@@ -82,7 +82,7 @@ public partial class BatchTests : IntegrationTests
             name: "From",
             properties: Property.Int("num"),
             references: new Reference("ref", refCollection.Name),
-            vectorConfig: new VectorConfig("default")
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         // Insert objects into the main collection and get their UUIDs

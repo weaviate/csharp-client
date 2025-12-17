@@ -2,21 +2,22 @@ using System.Reflection;
 using Weaviate.Client.CollectionMapper.Attributes;
 using Weaviate.Client.CollectionMapper.Internal;
 using Weaviate.Client.Models;
+using PropertyHelper = Weaviate.Client.CollectionMapper.Internal.PropertyHelper;
 
 namespace Weaviate.Client.CollectionMapper.Schema;
 
 /// <summary>
-/// Builds a <see cref="CollectionConfig"/> from a C# class decorated with ORM attributes.
+/// Builds a <see cref="CollectionCreateParams"/> from a C# class decorated with ORM attributes.
 /// </summary>
 public static class CollectionSchemaBuilder
 {
     /// <summary>
-    /// Creates a <see cref="CollectionConfig"/> from a C# class with ORM attributes.
+    /// Creates a <see cref="CollectionCreateParams"/> from a C# class with ORM attributes.
     /// </summary>
     /// <typeparam name="T">The class type representing the collection.</typeparam>
-    /// <returns>A fully configured <see cref="CollectionConfig"/>.</returns>
+    /// <returns>A fully configured <see cref="CollectionCreateParams"/>.</returns>
     /// <exception cref="InvalidOperationException">Thrown when required attributes are missing or invalid.</exception>
-    public static CollectionConfig FromClass<T>()
+    public static CollectionCreateParams FromClass<T>()
         where T : class
     {
         var type = typeof(T);
@@ -29,7 +30,7 @@ public static class CollectionSchemaBuilder
 
 #pragma warning disable CS8601 // Possible null reference assignment.
         // Build the config
-        var config = new CollectionConfig
+        var config = new CollectionCreateParams
         {
             Name = collectionAttr?.Name ?? type.Name,
             Description = collectionAttr?.Description,
@@ -774,12 +775,12 @@ public static class CollectionSchemaBuilder
     }
 
     /// <summary>
-    /// Invokes a collection config method with the signature: static CollectionConfig MethodName(CollectionConfig prebuilt)
+    /// Invokes a collection config method with the signature: static CollectionCreateParams MethodName(CollectionCreateParams prebuilt)
     /// </summary>
-    private static CollectionConfig InvokeCollectionConfigMethod(
+    private static CollectionCreateParams InvokeCollectionConfigMethod(
         string methodName,
         Type declaringType,
-        CollectionConfig prebuiltConfig,
+        CollectionCreateParams prebuiltConfig,
         Type? configMethodClass = null
     )
     {
@@ -821,7 +822,7 @@ public static class CollectionSchemaBuilder
             actualMethodName,
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static,
             null,
-            new[] { typeof(CollectionConfig) },
+            new[] { typeof(CollectionCreateParams) },
             null
         );
 
@@ -829,20 +830,20 @@ public static class CollectionSchemaBuilder
         {
             throw new InvalidOperationException(
                 $"Could not find static method '{actualMethodName}' in type '{targetType.FullName}' "
-                    + $"with signature: static CollectionConfig {actualMethodName}(CollectionConfig prebuilt)"
+                    + $"with signature: static CollectionCreateParams {actualMethodName}(CollectionCreateParams prebuilt)"
             );
         }
 
         // Validate return type
-        if (method.ReturnType != typeof(CollectionConfig))
+        if (method.ReturnType != typeof(CollectionCreateParams))
         {
             throw new InvalidOperationException(
                 $"CollectionConfigMethod '{actualMethodName}' has invalid signature. "
-                    + $"Expected return type 'CollectionConfig', got '{method.ReturnType.Name}'."
+                    + $"Expected return type 'CollectionCreateParams', got '{method.ReturnType.Name}'."
             );
         }
 
         var result = method.Invoke(null, new object[] { prebuiltConfig });
-        return (CollectionConfig)result!; // Non-null because we validated the signature
+        return (CollectionCreateParams)result!; // Non-null because we validated the signature
     }
 }
