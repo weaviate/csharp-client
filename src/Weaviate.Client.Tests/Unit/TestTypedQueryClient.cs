@@ -108,7 +108,7 @@ public class TypedQueryClientTests
         var collectionClient = new CollectionClient(client, "Articles");
         var typedQueryClient = new TypedQueryClient<TestArticle>(collectionClient.Query);
 
-        var searchText = new OneOrManyOf<string>("test query");
+        AutoArray<string> searchText = "test query";
 
         // Act & Assert
         // Verify the method accepts text parameter
@@ -124,7 +124,7 @@ public class TypedQueryClientTests
         var collectionClient = new CollectionClient(client, "Articles");
         var typedQueryClient = new TypedQueryClient<TestArticle>(collectionClient.Query);
 
-        var searchText = new OneOrManyOf<string>("test query");
+        AutoArray<string> searchText = "test query";
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
 
         // Act & Assert

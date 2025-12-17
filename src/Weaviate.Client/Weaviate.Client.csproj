@@ -38,6 +38,9 @@
     <Protobuf Include="gRPC\proto\v1\properties.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
     <Protobuf Include="gRPC\proto\v1\search_get.proto" GrpcServices="Client" AdditionalImportDirs="gRPC\proto" Access="Internal" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Weaviate.Client.Analyzers\Weaviate.Client.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
   <PropertyGroup>
     <MinVerSkip Condition="'$(Configuration)' == 'Debug'">true</MinVerSkip>
   </PropertyGroup>

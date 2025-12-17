@@ -308,35 +308,27 @@ public partial class TenantTests : IntegrationTests
         );
 
         var tenants = (
-            await collectionClient.Tenants.List(
-                Array.Empty<string>(),
-                TestContext.Current.CancellationToken
-            )
+            await collectionClient.Tenants.List([], TestContext.Current.CancellationToken)
         ).ToList();
         Assert.Equal(2, tenants.Count);
         Assert.Contains(tenants, t => t.Name == "tenant1");
         Assert.Contains(tenants, t => t.Name == "tenant2");
 
         var tenant2List = (
-            await collectionClient.Tenants.List(
-                new[] { "tenant2" },
-                TestContext.Current.CancellationToken
-            )
+            await collectionClient.Tenants.List(["tenant2"], TestContext.Current.CancellationToken)
         ).ToList();
         Assert.Single(tenant2List);
         Assert.Equal("tenant2", tenant2List[0].Name);
 
         await collectionClient.Tenants.Delete(
-            new[] { "tenant1", "tenant2" },
+            ["tenant1", "tenant2"],
             TestContext.Current.CancellationToken
         );
 
-        tenants = (
-            await collectionClient.Tenants.List(
-                Array.Empty<string>(),
-                TestContext.Current.CancellationToken
-            )
-        ).ToList();
+        tenants =
+        [
+            .. (await collectionClient.Tenants.List([], TestContext.Current.CancellationToken)),
+        ];
         Assert.Empty(tenants);
     }
 
@@ -555,12 +547,10 @@ public partial class TenantTests : IntegrationTests
         );
 
         // Create with HOT (deprecated)
-#pragma warning disable CS0612 // Type or member is obsolete
         await collectionClient.Tenants.Create(
             [new Tenant { Name = "1", Status = TenantActivityStatus.Hot }],
             TestContext.Current.CancellationToken
         );
-#pragma warning restore CS0612 // Type or member is obsolete
 
         var tenants = (
             await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
@@ -568,13 +558,10 @@ public partial class TenantTests : IntegrationTests
         Assert.Equal(TenantActivityStatus.Active, tenants["1"].Status);
 
         // Update to COLD (deprecated)
-#pragma warning disable CS0612 // Type or member is obsolete
         await collectionClient.Tenants.Update(
             [new Tenant { Name = "1", Status = TenantActivityStatus.Cold }],
             TestContext.Current.CancellationToken
         );
-#pragma warning restore CS0612 // Type or member is obsolete
-
         tenants = (
             await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
         ).ToDictionary(t => t.Name);
@@ -613,7 +600,6 @@ public partial class TenantTests : IntegrationTests
         );
 
         // Add tenants with various activity statuses, including deprecated ones
-#pragma warning disable CS0612 // Type or member is obsolete
         await collectionClient.Tenants.Create(
             [
                 new Tenant { Name = "1", Status = TenantActivityStatus.Hot },
@@ -624,8 +610,6 @@ public partial class TenantTests : IntegrationTests
             ],
             TestContext.Current.CancellationToken
         );
-#pragma warning restore CS0612 // Type or member is obsolete
-
         var tenants = (
             await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
         ).ToDictionary(t => t.Name);
@@ -731,7 +715,7 @@ public partial class TenantTests : IntegrationTests
         {
             new List<Tenant>
             {
-                new Tenant { Name = "4", Status = TenantActivityStatus.Frozen },
+                new() { Name = "4", Status = TenantActivityStatus.Frozen },
             },
         };
     }
@@ -774,8 +758,8 @@ public partial class TenantTests : IntegrationTests
         {
             new List<Tenant>
             {
-                new Tenant { Name = "1", Status = TenantActivityStatus.Offloading },
-                new Tenant { Name = "2", Status = TenantActivityStatus.Onloading },
+                new() { Name = "1", Status = TenantActivityStatus.Offloading },
+                new() { Name = "2", Status = TenantActivityStatus.Onloading },
             },
         };
     }
@@ -840,9 +824,7 @@ public partial class TenantTests : IntegrationTests
         foreach (var tenant in tenantsToUpdate)
             await collectionClient.Tenants.Update([tenant], TestContext.Current.CancellationToken);
 
-        tenants = (
-            await collectionClient.Tenants.List(TestContext.Current.CancellationToken)
-        ).ToList();
+        tenants = [.. (await collectionClient.Tenants.List(TestContext.Current.CancellationToken))];
         Assert.Equal(1001, tenants.Count);
         Assert.All(tenants, t => Assert.Equal(TenantActivityStatus.Inactive, t.Status));
     }
@@ -934,11 +916,14 @@ public partial class TenantTests : IntegrationTests
 
         await collectionClient.Tenants.Activate([tenant], TestContext.Current.CancellationToken);
 
-        objects = (
-            await tenant1Collection.Query.FetchObjects(
-                cancellationToken: TestContext.Current.CancellationToken
-            )
-        ).ToList();
+        objects =
+        [
+            .. (
+                await tenant1Collection.Query.FetchObjects(
+                    cancellationToken: TestContext.Current.CancellationToken
+                )
+            ),
+        ];
         Assert.Single(objects);
         Assert.Equal("some name", objects[0].Properties["name"]);
     }

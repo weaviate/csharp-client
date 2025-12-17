@@ -27,7 +27,7 @@ internal partial class WeaviateGrpcClient
         ConsistencyLevels? consistencyLevel = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
-        OneOrManyOf<string>? returnProperties = null,
+        AutoArray<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
         IList<QueryReference>? returnReferences = null
