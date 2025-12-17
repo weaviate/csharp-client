@@ -89,20 +89,22 @@ public partial class BatchTests : IntegrationTests
 
         // First batch: each "From" object references the "To" object with the same index
         var batchReturn1 = await collection.Data.ReferenceAddMany(
-            Enumerable
-                .Range(0, numObjects)
-                .Select(i => new DataReference(uuidsFrom[i], "ref", [uuidsTo[i]]))
-                .ToArray(),
+            [
+                .. Enumerable
+                    .Range(0, numObjects)
+                    .Select(i => new DataReference(uuidsFrom[i], "ref", [uuidsTo[i]])),
+            ],
             TestContext.Current.CancellationToken
         );
         Assert.False(batchReturn1.HasErrors);
 
         // Second batch: each "From" object references the first 3 "To" objects
         var batchReturn2 = await collection.Data.ReferenceAddMany(
-            Enumerable
-                .Range(0, numObjects)
-                .Select(i => new DataReference(uuidsFrom[i], "ref", [.. uuidsTo.Take(3)]))
-                .ToArray(),
+            [
+                .. Enumerable
+                    .Range(0, numObjects)
+                    .Select(i => new DataReference(uuidsFrom[i], "ref", [.. uuidsTo.Take(3)])),
+            ],
             TestContext.Current.CancellationToken
         );
         Assert.False(batchReturn2.HasErrors);
@@ -133,7 +135,7 @@ public partial class BatchTests : IntegrationTests
                 .Select(r => (long)r.Properties["number"]!)
                 .OrderBy(x => x)
                 .ToList();
-            Assert.Equal(new List<long> { 0, 1, 2 }, refs);
+            Assert.Equal([0, 1, 2], refs);
         }
     }
 }

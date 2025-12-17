@@ -20,6 +20,39 @@ public partial class QueryClient
         VectorQuery? includeVectors = null,
         CancellationToken cancellationToken = default
     ) =>
+        await NearVector(
+            (NearVectorInput)vector,
+            filters,
+            certainty,
+            distance,
+            autoLimit,
+            limit,
+            offset,
+            targetVector,
+            rerank,
+            returnProperties,
+            returnReferences,
+            returnMetadata,
+            includeVectors,
+            cancellationToken
+        );
+
+    public async Task<WeaviateResult> NearVector(
+        NearVectorInput vector,
+        Filter? filters = null,
+        float? certainty = null,
+        float? distance = null,
+        uint? autoLimit = null,
+        uint? limit = null,
+        uint? offset = null,
+        TargetVectors? targetVector = null,
+        Rerank? rerank = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
         await _grpc.SearchNearVector(
             _collectionClient.Name,
             vector,
@@ -42,6 +75,41 @@ public partial class QueryClient
 
     public async Task<GroupByResult> NearVector(
         Vectors vector,
+        GroupByRequest groupBy,
+        Filter? filters = null,
+        float? distance = null,
+        float? certainty = null,
+        uint? autoLimit = null,
+        uint? limit = null,
+        uint? offset = null,
+        TargetVectors? targetVector = null,
+        Rerank? rerank = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        await NearVector(
+            (NearVectorInput)vector,
+            groupBy,
+            filters,
+            distance,
+            certainty,
+            autoLimit,
+            limit,
+            offset,
+            targetVector,
+            rerank,
+            returnProperties,
+            returnReferences,
+            returnMetadata,
+            includeVectors,
+            cancellationToken
+        );
+
+    public async Task<GroupByResult> NearVector(
+        NearVectorInput vector,
         GroupByRequest groupBy,
         Filter? filters = null,
         float? distance = null,

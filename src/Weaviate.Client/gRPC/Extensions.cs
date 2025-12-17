@@ -45,8 +45,8 @@ internal partial class Targets
 
         var grpcTargets = new Targets
         {
-            TargetVectors = { targets },
-            WeightsForTargets = { weightsForTargets },
+            TargetVectors = { targets.Order() },
+            WeightsForTargets = { weightsForTargets.OrderBy(wft => wft.Target) },
             Combination = targetVectors.Combination,
         };
 

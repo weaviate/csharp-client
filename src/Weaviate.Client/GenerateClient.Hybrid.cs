@@ -283,7 +283,12 @@ public partial class GenerateClient
             query: query,
             alpha: alpha,
             vector: vectors as Vectors,
-            nearVector: vectors as HybridNearVector,
+            vectors as HybridNearVector
+                ?? (
+                    vectors is NearVectorInput nv
+                        ? new HybridNearVector(nv, null, null, targetVector)
+                        : null
+                ),
             nearText: vectors as HybridNearText,
             queryProperties: queryProperties,
             fusionType: fusionType,
@@ -365,7 +370,12 @@ public partial class GenerateClient
             query: query,
             alpha: alpha,
             vector: vectors as Vectors,
-            nearVector: vectors as HybridNearVector,
+            vectors as HybridNearVector
+                ?? (
+                    vectors is NearVectorInput nv
+                        ? new HybridNearVector(nv, null, null, targetVector)
+                        : null
+                ),
             nearText: vectors as HybridNearText,
             queryProperties: queryProperties,
             fusionType: fusionType,

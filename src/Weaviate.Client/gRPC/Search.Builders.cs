@@ -44,9 +44,8 @@ internal partial class WeaviateGrpcClient
             ExplainScore = returnMetadata?.ExplainScore ?? false,
             IsConsistent = returnMetadata?.IsConsistent ?? false,
             Vector =
-                (includeVectors?.Vectors != null && includeVectors.Vectors.Length > 0)
-                    ? false
-                    : (includeVectors?.Vectors != null),
+                ((includeVectors?.Vectors) == null || includeVectors.Vectors.Length == 0)
+                && (includeVectors?.Vectors != null),
             Vectors = { includeVectors?.Vectors ?? [] },
         };
 
@@ -99,9 +98,10 @@ internal partial class WeaviateGrpcClient
                             ? new V1.GenerativeSearch.Types.Grouped()
                             {
                                 Task = groupedTask.Task,
-                                Properties = groupedTask.Properties.Any()
-                                    ? new V1.TextArray { Values = { groupedTask.Properties } }
-                                    : null,
+                                Properties =
+                                    groupedTask.Properties.Length != 0
+                                        ? new V1.TextArray { Values = { groupedTask.Properties } }
+                                        : null,
                                 Debug = groupedTask.Debug,
                                 Queries =
                                 {
@@ -455,90 +455,113 @@ internal partial class WeaviateGrpcClient
 
     private static (
         V1.Targets? targets,
-        ICollection<V1.VectorForTarget>? vectorForTargets,
-        ICollection<V1.Vectors>? vectors
-    ) BuildTargetVector(TargetVectors? targetVector, Models.Vectors? vector = null)
+        IList<V1.VectorForTarget>? vectorForTargets,
+        IList<V1.Vectors>? vectors
+    ) BuildTargetVector(TargetVectors? targetVector, IEnumerable<Vector>? vector = null)
     {
-        V1.Targets? targets = null;
-        ICollection<V1.VectorForTarget>? vectorForTarget = null;
-        ICollection<V1.Vectors>? vectors = null;
+        IList<V1.VectorForTarget>? vectorForTarget = null;
+        IList<V1.Vectors>? vectors = null;
 
-        vector ??= new Models.Vectors();
+        vector ??= [];
 
-        targetVector ??= vector.Keys.Where(tv => string.IsNullOrEmpty(tv) is false).ToArray();
+        targetVector ??= vector
+            .Select(v => v.Name)
+            .Where(tv => string.IsNullOrEmpty(tv) is false)
+            .ToHashSet()
+            .Order()
+            .ToArray();
 
-        targets = targetVector;
-
-        if (targetVector.Count() == 1 && vector.Count == 1)
+        if (targetVector.Count() == 1 && vector.Count() == 1)
         {
             // If only one target vector is specified, use Vectors
             // This also covers the case where no target vector is specified and only one vector is provided
             // In this case, we assume the single provided vector is the target
             vectors =
             [
-                .. vector.Select(v => new V1.Vectors
-                {
-                    Name = v.Key,
-                    Type = v.Value.IsMultiVector
-                        ? V1.Vectors.Types.VectorType.MultiFp32
-                        : V1.Vectors.Types.VectorType.SingleFp32,
-                    VectorBytes = v.Value.ToByteString(),
-                }),
+                .. vector
+                    .Select(v => new V1.Vectors
+                    {
+                        Name = v.Name,
+                        Type = v.IsMultiVector
+                            ? V1.Vectors.Types.VectorType.MultiFp32
+                            : V1.Vectors.Types.VectorType.SingleFp32,
+                        VectorBytes = v.ToByteString(),
+                    })
+                    .OrderBy(v => v.Name),
             ];
-            return (targets, vectorForTarget, vectors);
+
+            return (targetVector, vectorForTarget, vectors);
         }
+
+        var vectorUniqueNames = vector.Select(v => v.Name).ToHashSet();
+        var vectorInstances = vector.GroupBy(v => v.Name).ToDictionary(g => g.Key, g => g.ToList());
+        var vectorInstanceWeights = targetVector
+            .GetVectorWithWeights()
+            .GroupBy(v => v.name)
+            .ToDictionary(g => g.Key, g => g.Select(w => w.weight).ToList());
+
+        // If multiple target vectors are specified, use VectorForTargets.
+        // If multiple vectors are specified, ensure they align with the
+        // weights provided in the target vector.
+        bool vectorNamesMatch = vectorUniqueNames.SetEquals(targetVector);
+        bool vectorsMatchTargets = vectorInstances.Count == vectorInstanceWeights.Count;
+        bool weightsCheck = true;
 
         if (
-            targetVector.Count() > 1
-            && vector.Count == targetVector.Count()
-            && targetVector.All(tv => vector.ContainsKey(tv)) // TODO Throw an exception if the TargetVector does not match the provided vectors?
+            targetVector.Combination == V1.CombinationMethod.TypeManual
+            || targetVector.Combination == V1.CombinationMethod.TypeRelativeScore
         )
         {
-            // If multiple target vectors are specified, use VectorForTargets
-            vectorForTarget = targetVector
-                .Select(
-                    (v, idx) =>
-                        new
-                        {
-                            Name = v,
-                            Index = idx,
-                            Vector = vector.ContainsKey(v)
-                                ? vector[v]
-                                : vector.Values.ElementAt(idx),
-                        }
-                )
-                .Select(v => new V1.VectorForTarget()
-                {
-                    Name = v.Name,
-                    Vectors =
-                    {
-                        new V1.Vectors
-                        {
-                            Name = v.Name,
-                            Type = v.Vector.IsMultiVector
-                                ? V1.Vectors.Types.VectorType.MultiFp32
-                                : V1.Vectors.Types.VectorType.SingleFp32,
-                            VectorBytes = v.Vector.ToByteString(),
-                        },
-                    },
-                })
-                .ToList();
-        }
-        else
-        {
-            vectors = vector
-                .Select(v => new V1.Vectors
-                {
-                    Name = v.Key,
-                    Type = v.Value.IsMultiVector
-                        ? V1.Vectors.Types.VectorType.MultiFp32
-                        : V1.Vectors.Types.VectorType.SingleFp32,
-                    VectorBytes = v.Value.ToByteString(),
-                })
-                .ToList();
+            // Ensure all vectors are present and match the weights provided
+            bool allVectorsPresentAndMatchingWeights = vectorInstances.All(kv =>
+                vectorInstanceWeights.TryGetValue(kv.Key, out var count)
+                && count.Count == kv.Value.Count
+            );
+            bool vectorsUseWeights = vector.Count() == targetVector.GetVectorWithWeights().Count();
+
+            weightsCheck = allVectorsPresentAndMatchingWeights && vectorsUseWeights;
         }
 
-        return (targets, vectorForTarget, vectors);
+        if (targetVector.Count() > 1 && vectorNamesMatch && vectorsMatchTargets && weightsCheck)
+        {
+            vectorForTarget =
+            [
+                .. vectorUniqueNames
+                    .Select(name => new V1.VectorForTarget()
+                    {
+                        Name = name,
+                        Vectors =
+                        {
+                            vectorInstances[name]
+                                .Select(v => new V1.Vectors
+                                {
+                                    Name = v.Name,
+                                    Type = v.IsMultiVector
+                                        ? V1.Vectors.Types.VectorType.MultiFp32
+                                        : V1.Vectors.Types.VectorType.SingleFp32,
+                                    VectorBytes = v.ToByteString(),
+                                }),
+                        },
+                    })
+                    .OrderBy(vft => vft.Name),
+            ];
+
+            return (targetVector, vectorForTarget, vectors);
+        }
+
+        vectors =
+        [
+            .. vector.Select(v => new V1.Vectors
+            {
+                Name = v.Name,
+                Type = v.IsMultiVector
+                    ? V1.Vectors.Types.VectorType.MultiFp32
+                    : V1.Vectors.Types.VectorType.SingleFp32,
+                VectorBytes = v.ToByteString(),
+            }),
+        ];
+
+        return (targetVector, vectorForTarget, vectors);
     }
 
     private static V1.NearTextSearch BuildNearText(
@@ -550,13 +573,12 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector = null
     )
     {
-        var (targets, _, _) = BuildTargetVector(targetVector, null);
-        var nearText = new V1.NearTextSearch { Query = { query }, Targets = targets };
+        var nearText = new V1.NearTextSearch { Query = { query }, Targets = targetVector ?? [] };
 
         if (moveTo is not null)
         {
             var uuids = moveTo.Objects is null ? [] : moveTo.Objects.Select(x => x.ToString());
-            var concepts = moveTo.Concepts is null ? new string[] { } : moveTo.Concepts;
+            var concepts = moveTo.Concepts is null ? [] : moveTo.Concepts;
             nearText.MoveTo = new V1.NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
@@ -568,7 +590,7 @@ internal partial class WeaviateGrpcClient
         if (moveAway is not null)
         {
             var uuids = moveAway.Objects is null ? [] : moveAway.Objects.Select(x => x.ToString());
-            var concepts = moveAway.Concepts is null ? new string[] { } : moveAway.Concepts;
+            var concepts = moveAway.Concepts is null ? [] : moveAway.Concepts;
             nearText.MoveAway = new V1.NearTextSearch.Types.Move
             {
                 Uuids = { uuids },
@@ -591,7 +613,7 @@ internal partial class WeaviateGrpcClient
     }
 
     private static V1.NearVector BuildNearVector(
-        Models.Vectors vector,
+        NearVectorInput vector,
         double? certainty,
         double? distance,
         TargetVectors? targetVector
@@ -687,7 +709,7 @@ internal partial class WeaviateGrpcClient
 
         if (vector is not null && nearText is null && nearVector is null)
         {
-            var (targets, vfts, vectors) = BuildTargetVector(targetVector, vector);
+            var (targets, vfts, vectors) = BuildTargetVector(targetVector, vector.Values);
 
             if (vfts is not null)
             {
@@ -738,7 +760,7 @@ internal partial class WeaviateGrpcClient
 
         if (vector is null && nearText is null && nearVector is null && targetVector is not null)
         {
-            request.HybridSearch.Targets = BuildTargetVector(targetVector).targets;
+            request.HybridSearch.Targets = targetVector ?? [];
         }
 
         if (queryProperties is not null)
@@ -793,8 +815,6 @@ internal partial class WeaviateGrpcClient
             request.NearObject.Distance = distance.Value;
         }
 
-        var (targets, _, _) = BuildTargetVector(targetVector);
-
-        request.NearObject.Targets = targets;
+        request.NearObject.Targets = targetVector ?? [];
     }
 }

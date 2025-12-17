@@ -2,6 +2,11 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Performance",
+    "CA1861:Avoid constant arrays as arguments",
+    Justification = "Irrelevant"
+)]
 public partial class SearchTests : IntegrationTests
 {
     [Theory]
@@ -50,7 +55,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(2, objs.Count());
+        Assert.Equal(2, objs.Count);
     }
 
     [Fact]
@@ -158,7 +163,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(limit, (uint)objs.Count());
+        Assert.Equal(limit, (uint)objs.Count);
     }
 
     [Theory]
@@ -190,7 +195,7 @@ public partial class SearchTests : IntegrationTests
             )
         ).Objects;
 
-        Assert.Equal(expected, objs.Count());
+        Assert.Equal(expected, objs.Count);
     }
 
     [Fact]
@@ -222,7 +227,7 @@ public partial class SearchTests : IntegrationTests
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
-        Assert.Equal(hybridRes.Count(), bm25Res.Count());
+        Assert.Equal(hybridRes.Count, bm25Res.Count);
         Assert.True(hybridRes.Zip(bm25Res).All(pair => pair.First.UUID == pair.Second.UUID));
 
         hybridRes = (
@@ -238,7 +243,7 @@ public partial class SearchTests : IntegrationTests
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
-        Assert.Equal(hybridRes.Count(), textRes.Count());
+        Assert.Equal(hybridRes.Count, textRes.Count);
         Assert.True(hybridRes.Zip(textRes).All(pair => pair.First.UUID == pair.Second.UUID));
     }
 
@@ -281,7 +286,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBanana, hybridObjs.First().UUID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var nearVec = (
             await collection.Query.NearVector(
@@ -353,7 +358,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBanana, hybridObjs.First().UUID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var nearVec = (
             await collection.Query.NearVector(
@@ -416,7 +421,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBananaPudding, hybridObjs.First().UUID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var hybridObjs2 = (
             await collection.Query.Hybrid(
@@ -473,7 +478,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
 
         Assert.Equal(uuidBananaPudding, hybridObjs.First().UUID);
-        Assert.Equal(3, hybridObjs.Count());
+        Assert.Equal(3, hybridObjs.Count);
 
         var hybridObjs2 = (
             await collection.Query.Hybrid(
@@ -544,132 +549,132 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(uuid1, objs[0].UUID);
         Assert.Equal(uuid2, objs[1].UUID);
 
-        objs = (
-            await collection.Query.Hybrid(
-                query: null,
-                vectors: new HybridNearVector(vector, Certainty: null, Distance: 0.1f),
-                targetVector: new[] { "first", "second" },
-                cancellationToken: TestContext.Current.CancellationToken
-            )
-        ).Objects.ToList();
+        objs =
+        [
+            .. (
+                await collection.Query.Hybrid(
+                    query: null,
+                    vectors: new HybridNearVector(vector, Certainty: null, Distance: 0.1f),
+                    targetVector: new[] { "first", "second" },
+                    cancellationToken: TestContext.Current.CancellationToken
+                )
+            ).Objects,
+        ];
 
         Assert.Single(objs);
         Assert.Equal(uuid1, objs[0].UUID);
     }
 
-    // TODO Is Second a list of vectors or a multivector?
-    // TODO Hybrid doesn't like that multiple vectors are passed in. How to handle this?
-    // public static IEnumerable<object[]> SameTargetVectorMultipleInputCombinationsData =>
-    //     new List<object[]>
-    //     {
-    //         new object[]
-    //         {
-    //             new VectorContainer
-    //             {
-    //                 { "first", new float[] { 0, 1 } },
-    //                 { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
-    //             },
-    //             new[] { "first", "second" },
-    //         },
-    //         new object[]
-    //         {
-    //             new VectorContainer
-    //             {
-    //                 { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
-    //                 { "second", new float[] { 1, 0, 0 } },
-    //             },
-    //             new[] { "first", "second" },
-    //         },
-    //         new object[]
-    //         {
-    //             new VectorContainer
-    //             {
-    //                 { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
-    //                 { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
-    //             },
-    //             new[] { "first", "second" },
-    //         },
-    //         new object[]
-    //         {
-    //             new HybridNearVector(
-    //                 new VectorContainer
-    //                 {
-    //                     { "first", new float[] { 0, 1 } },
-    //                     { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
-    //                 }
-    //             ),
-    //             new[] { "first", "second" },
-    //         },
-    //         new object[]
-    //         {
-    //             new HybridNearVector(
-    //                 new VectorContainer
-    //                 {
-    //                     { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
-    //                     { "second", new float[] { 1, 0, 0 } },
-    //                 }
-    //             ),
-    //             new[] { "first", "second" },
-    //         },
-    //         new object[]
-    //         {
-    //             new HybridNearVector(
-    //                 new VectorContainer
-    //                 {
-    //                     { "first", new[] { new float[] { 0, 1 }, new float[] { 0, 1 } } },
-    //                     { "second", new[] { new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } } },
-    //                 }
-    //             ),
-    //             new[] { "first", "second" },
-    //         },
-    //     };
+    public static TheoryData<
+        IHybridVectorInput,
+        string[]
+    > SameTargetVectorMultipleInputCombinationsData =>
+        new(
+            (
+                new NearVectorInput
+                {
+                    { "first", new float[] { 0, 1 } },
+                    { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
+                },
+                new[] { "first", "second" }
+            ),
+            (
+                new NearVectorInput
+                {
+                    { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
+                    { "second", new float[] { 1, 0, 0 } },
+                },
+                new[] { "first", "second" }
+            ),
+            (
+                new NearVectorInput
+                {
+                    { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
+                    { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
+                },
+                new[] { "first", "second" }
+            ),
+            (
+                new HybridNearVector(
+                    new NearVectorInput
+                    {
+                        { "first", new float[] { 0, 1 } },
+                        { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
+                    }
+                ),
+                new[] { "first", "second" }
+            ),
+            (
+                new HybridNearVector(
+                    new NearVectorInput
+                    {
+                        { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
+                        { "second", new float[] { 1, 0, 0 } },
+                    }
+                ),
+                new[] { "first", "second" }
+            ),
+            (
+                new HybridNearVector(
+                    new NearVectorInput
+                    {
+                        { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
+                        { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
+                    }
+                ),
+                new[] { "first", "second" }
+            )
+        );
 
-    // [Theory]
-    // [MemberData(nameof(SameTargetVectorMultipleInputCombinationsData))]
-    // public async Task Test_Same_Target_Vector_Multiple_Input_Combinations(
-    //     IHybridVectorInput nearVector,
-    //     string[] targetVector
-    // )
-    // {
-    //     var collection = await CollectionFactory(
-    //         properties: Array.Empty<Property>(),
-    //         vectorConfig: new[]
-    //         {
-    //             Configure.Vectors.SelfProvided("first"),
-    //             Configure.Vectors.SelfProvided("second"),
-    //         }
-    //     );
+    [Theory]
+    [MemberData(nameof(SameTargetVectorMultipleInputCombinationsData))]
+    public async Task Test_Same_Target_Vector_Multiple_Input_Combinations(
+        IHybridVectorInput nearVector,
+        string[] targetVector
+    )
+    {
+        var collection = await CollectionFactory(
+            properties: Array.Empty<Property>(),
+            vectorConfig: new[]
+            {
+                Configure.Vector("first", t => t.SelfProvided()),
+                Configure.Vector("second", t => t.SelfProvided()),
+            }
+        );
 
-    //     var uuid1 = await collection.Data.Insert(
-    //         new { },
-    //         vectors: new()
-    //         {
-    //             { "first", new float[] { 1, 0 } },
-    //             { "second", new float[] { 0, 1, 0 } },
-    //         }
-    //     );
-    //     var uuid2 = await collection.Data.Insert(
-    //         new { },
-    //         vectors: new()
-    //         {
-    //             { "first", new float[] { 0, 1 } },
-    //             { "second", new float[] { 1, 0, 0 } },
-    //         }
-    //     );
+        var uuid1 = await collection.Data.Insert(
+            new { },
+            vectors: new()
+            {
+                { "first", new float[] { 1, 0 } },
+                { "second", new float[] { 0, 1, 0 } },
+            },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuid2 = await collection.Data.Insert(
+            new { },
+            vectors: new()
+            {
+                { "first", new float[] { 0, 1 } },
+                { "second", new float[] { 1, 0, 0 } },
+            },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-    //     var objs = (
-    //         await collection.Query.Hybrid(
-    //             query: null,
-    //             vector: nearVector,
-    //             targetVector: targetVector,
-    //             metadata: MetadataOptions.Full
-    //         )
-    //     ).ToList();
+        var objs = (
+            await collection.Query.Hybrid(
+                query: null,
+                vectors: nearVector,
+                targetVector: targetVector,
+                returnMetadata: MetadataOptions.All,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
 
-    //     var uuids = objs.Select(o => o.ID).OrderBy(x => x).ToHashSet();
-    //     var expected = new HashSet<Guid?> { uuid1, uuid2 };
-    //     Assert.Equal(expected, uuids);
-    // }
+        var uuids = objs.Select(o => o.UUID).OrderBy(x => x).ToHashSet();
+        var expected = new HashSet<Guid?> { uuid1, uuid2 };
+        Assert.Equal(expected, uuids);
+    }
 
     [Fact]
     public async Task Test_Vector_Distance()
@@ -706,15 +711,18 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(3, objs.Count);
         Assert.Equal(uuid1, objs[0].UUID);
 
-        objs = (
-            await collection.Query.Hybrid(
-                "name",
-                vectors: Vectors.Create(1f, 0f, 0f),
-                maxVectorDistance: 0.1f,
-                alpha: 0.7f,
-                cancellationToken: TestContext.Current.CancellationToken
-            )
-        ).ToList();
+        objs =
+        [
+            .. (
+                await collection.Query.Hybrid(
+                    "name",
+                    vectors: Vectors.Create(1f, 0f, 0f),
+                    maxVectorDistance: 0.1f,
+                    alpha: 0.7f,
+                    cancellationToken: TestContext.Current.CancellationToken
+                )
+            ),
+        ];
         Assert.Single(objs);
         Assert.Equal(uuid1, objs[0].UUID);
     }

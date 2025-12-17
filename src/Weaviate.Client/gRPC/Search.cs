@@ -69,7 +69,7 @@ internal partial class WeaviateGrpcClient
 
     internal async Task<V1.SearchReply> SearchNearVector(
         string collection,
-        Models.Vectors vector,
+        NearVectorInput vector,
         GroupByRequest? groupBy = null,
         float? distance = null,
         float? certainty = null,
@@ -400,7 +400,7 @@ internal partial class WeaviateGrpcClient
                     request.NearImage.Distance = distance.Value;
                 }
 
-                request.NearImage.Targets = BuildTargetVector(targetVector).targets;
+                request.NearImage.Targets = targetVector ?? [];
 
                 break;
             case NearMediaType.Video:
@@ -418,7 +418,7 @@ internal partial class WeaviateGrpcClient
                     request.NearVideo.Distance = distance.Value;
                 }
 
-                request.NearVideo.Targets = BuildTargetVector(targetVector).targets;
+                request.NearVideo.Targets = targetVector ?? [];
                 break;
             case NearMediaType.Audio:
                 request.NearAudio = new V1.NearAudioSearch
@@ -435,7 +435,7 @@ internal partial class WeaviateGrpcClient
                     request.NearAudio.Distance = distance.Value;
                 }
 
-                request.NearAudio.Targets = BuildTargetVector(targetVector).targets;
+                request.NearAudio.Targets = targetVector ?? [];
                 break;
             case NearMediaType.Depth:
                 request.NearDepth = new V1.NearDepthSearch
@@ -452,7 +452,7 @@ internal partial class WeaviateGrpcClient
                     request.NearDepth.Distance = distance.Value;
                 }
 
-                request.NearDepth.Targets = BuildTargetVector(targetVector).targets;
+                request.NearDepth.Targets = targetVector ?? [];
                 break;
             case NearMediaType.Thermal:
                 request.NearThermal = new V1.NearThermalSearch
@@ -469,7 +469,7 @@ internal partial class WeaviateGrpcClient
                     request.NearThermal.Distance = distance.Value;
                 }
 
-                request.NearThermal.Targets = BuildTargetVector(targetVector).targets;
+                request.NearThermal.Targets = targetVector ?? [];
                 break;
             case NearMediaType.IMU:
                 request.NearImu = new V1.NearIMUSearch { Imu = Convert.ToBase64String(media) };
@@ -483,7 +483,7 @@ internal partial class WeaviateGrpcClient
                     request.NearImu.Distance = distance.Value;
                 }
 
-                request.NearImu.Targets = BuildTargetVector(targetVector).targets;
+                request.NearImu.Targets = targetVector ?? [];
                 break;
             default:
                 throw new ArgumentException("Unsupported media type for near media search.");

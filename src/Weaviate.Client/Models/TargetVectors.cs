@@ -30,6 +30,24 @@ public class TargetVectors : IEnumerable<string>
         return GetEnumerator();
     }
 
+    internal IEnumerable<(string name, double? weight)> GetVectorWithWeights()
+    {
+        foreach (var target in Targets)
+        {
+            if (Weights?.TryGetValue(target, out var weightList) ?? false)
+            {
+                foreach (var weight in weightList)
+                {
+                    yield return (target, weight);
+                }
+            }
+            else
+            {
+                yield return (target, null);
+            }
+        }
+    }
+
     private TargetVectors(IEnumerable<string> targets)
     {
         Targets.AddRange(targets);
@@ -41,28 +59,28 @@ public class TargetVectors : IEnumerable<string>
         Dictionary<string, List<double>>? weights = null
     )
     {
-        Targets = new(targets ?? weights?.Keys ?? Enumerable.Empty<string>());
+        Targets = [.. targets ?? weights?.Keys ?? Enumerable.Empty<string>()];
         Combination = combination;
         Weights = weights;
     }
 
     // Implicit conversion from string[]
-    public static implicit operator TargetVectors(string[] names) => new TargetVectors(names);
+    public static implicit operator TargetVectors(string[] names) => [.. names];
 
     // Implicit conversion from List<string>
-    public static implicit operator TargetVectors(List<string> names) => new TargetVectors(names);
+    public static implicit operator TargetVectors(List<string> names) => [.. names];
 
     // Sum
     public static TargetVectors Sum(IEnumerable<string> names) =>
-        new TargetVectors(names, V1.CombinationMethod.TypeSum);
+        new(names, V1.CombinationMethod.TypeSum);
 
     // Minimum
     public static TargetVectors Minimum(IEnumerable<string> names) =>
-        new TargetVectors(names, V1.CombinationMethod.TypeMin);
+        new(names, V1.CombinationMethod.TypeMin);
 
     // Average
     public static TargetVectors Average(IEnumerable<string> names) =>
-        new TargetVectors(names, V1.CombinationMethod.TypeAverage);
+        new(names, V1.CombinationMethod.TypeAverage);
 
     // ManualWeights
     public static TargetVectors ManualWeights(
