@@ -40,6 +40,7 @@ public partial class QueryClient
     public async Task<WeaviateResult> FetchObjects(
         Guid? after = null,
         uint? limit = null,
+        uint? offset = null,
         Filter? filters = null,
         AutoArray<Sort>? sort = null,
         Rerank? rerank = null,
@@ -53,6 +54,7 @@ public partial class QueryClient
             _collectionName,
             after: after,
             limit: limit,
+            offset: offset,
             rerank: rerank,
             filters: filters,
             sort: sort,
