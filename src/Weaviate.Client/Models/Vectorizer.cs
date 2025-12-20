@@ -249,9 +249,11 @@ internal static class Vectorizer
 
         [JsonPropertyName("baseUrl")]
         public string? BaseURL { get; set; } = null;
+        public int? Dimensions { get; set; } = null;
         public string[]? ImageFields { get; set; } = null;
         public string? Model { get; set; } = null;
         public string[]? TextFields { get; set; } = null;
+        public string[]? VideoFields { get; set; } = null;
         public bool? Truncate { get; set; } = null;
 
         [JsonPropertyName("vectorizeClassName")]
