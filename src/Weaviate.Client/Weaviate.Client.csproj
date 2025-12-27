@@ -6,6 +6,11 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- Enable XML documentation generation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Weaviate.Client.xml</DocumentationFile>
+    <!-- Suppress warnings for missing XML comments (remove this line once all public APIs are documented) -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Duende.IdentityModel" Version="7.1.0" />

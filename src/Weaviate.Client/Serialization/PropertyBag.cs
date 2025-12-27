@@ -8,7 +8,7 @@ namespace Weaviate.Client.Serialization;
 /// A strongly-typed property bag that replaces ExpandoObject for storing Weaviate object properties.
 /// Implements IDictionary for backward compatibility while providing typed accessors.
 /// </summary>
-public class PropertyBag : IDictionary<string, object?>
+internal class PropertyBag : IDictionary<string, object?>
 {
     private readonly Dictionary<string, object?> _properties = new(
         StringComparer.OrdinalIgnoreCase

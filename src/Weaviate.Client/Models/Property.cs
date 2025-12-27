@@ -1,18 +1,67 @@
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// Text tokenization strategy for indexing and searching text properties.
+/// </summary>
 public enum PropertyTokenization
 {
+    /// <summary>
+    /// Tokenizes on word boundaries (default for most text properties).
+    /// </summary>
     Word = 0,
+
+    /// <summary>
+    /// Tokenizes and converts to lowercase for case-insensitive search.
+    /// </summary>
     Lowercase = 1,
+
+    /// <summary>
+    /// Tokenizes only on whitespace, preserving punctuation and case.
+    /// </summary>
     Whitespace = 2,
+
+    /// <summary>
+    /// Treats entire field as a single token (useful for exact matching).
+    /// </summary>
     Field = 3,
+
+    /// <summary>
+    /// Tokenizes into overlapping trigrams (3-character sequences) for fuzzy matching.
+    /// </summary>
     Trigram = 4,
+
+    /// <summary>
+    /// Chinese text tokenization using GSE (Go Simple Efficient) segmentation.
+    /// </summary>
     Gse = 5,
+
+    /// <summary>
+    /// Korean text tokenization using Kagome.
+    /// </summary>
     Kagome_kr = 6,
+
+    /// <summary>
+    /// Japanese text tokenization using Kagome.
+    /// </summary>
     Kagome_ja = 7,
+
+    /// <summary>
+    /// Chinese text tokenization using GSE with Chinese-specific settings.
+    /// </summary>
     Gse_ch = 8,
 }
 
+/// <summary>
+/// Factory delegate for creating <see cref="Property"/> instances with fluent configuration.
+/// </summary>
+/// <param name="name">The name of the property.</param>
+/// <param name="description">Optional description of the property's purpose.</param>
+/// <param name="indexFilterable">Whether this property can be used in filters.</param>
+/// <param name="indexRangeFilters">Whether range filters (greater than, less than) are enabled.</param>
+/// <param name="indexSearchable">Whether this property is included in keyword search.</param>
+/// <param name="tokenization">The tokenization strategy for text properties.</param>
+/// <param name="subProperties">Nested properties for object/objectArray types.</param>
+/// <returns>A configured <see cref="Property"/> instance.</returns>
 public delegate Property PropertyFactory(
     string name,
     string? description = null,
@@ -328,60 +377,183 @@ internal interface IReferenceBase
     string? Description { get; }
 }
 
+/// <summary>
+/// Defines a cross-reference property that links to objects in another collection.
+/// </summary>
+/// <param name="Name">The name of the reference property.</param>
+/// <param name="TargetCollection">The name of the collection this reference points to.</param>
+/// <param name="Description">Optional description of the reference relationship.</param>
+/// <remarks>
+/// References enable relationships between objects in different collections, similar to foreign keys in relational databases.
+/// Use <see cref="Property.Reference(string, string, string?)"/> to create reference properties.
+/// </remarks>
 public record Reference(string Name, string TargetCollection, string? Description = null)
     : IReferenceBase
 {
+    /// <summary>
+    /// Gets or sets the description of this reference relationship.
+    /// </summary>
     public string? Description { get; set; } = Description;
+
     IList<string> IReferenceBase.TargetCollections { get; } = [TargetCollection];
 }
 
+/// <summary>
+/// Generic helper for creating type-safe property factories based on a C# type.
+/// </summary>
+/// <typeparam name="TField">The C# type to infer the Weaviate data type from.</typeparam>
 public static class Property<TField>
 {
+    /// <summary>
+    /// Gets a property factory that automatically infers the <see cref="DataType"/> from the generic type parameter.
+    /// </summary>
     public static PropertyFactory New => PropertyHelper.ForType(typeof(TField));
 }
 
+/// <summary>
+/// Defines a property (data field) in a Weaviate collection schema.
+/// </summary>
+/// <remarks>
+/// Properties define the structure of data objects stored in a collection.
+/// Each property has a data type, optional indexing configuration, and optional nested properties for object types.
+/// Use the static factory methods (e.g., <see cref="Text"/>, <see cref="Int"/>, <see cref="Bool"/>)
+/// or the generic <see cref="Property{TField}.New"/> for type-safe property creation.
+/// </remarks>
+/// <example>
+/// <code>
+/// var titleProp = Property.Text("title", description: "Article title", indexSearchable: true);
+/// var ageProp = Property.Int("age", indexFilterable: true, indexRangeFilters: true);
+/// var tagsProp = Property.TextArray("tags", indexFilterable: true);
+/// </code>
+/// </example>
 public record Property : IEquatable<Property>
 {
     private string _name = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the name of the property. Names are automatically decapitalized for Weaviate compatibility.
+    /// </summary>
     public required string Name
     {
         get => _name;
         set => _name = value.Decapitalize();
     }
+
+    /// <summary>
+    /// Gets the data type of this property (e.g., Text, Int, Bool, Object).
+    /// </summary>
     public required DataType DataType { get; init; }
+
+    /// <summary>
+    /// Gets or sets an optional description explaining the property's purpose.
+    /// </summary>
     public string? Description { get; internal set; }
+
+    /// <summary>
+    /// Gets or sets whether this property can be used in filter expressions. When null, uses Weaviate's default.
+    /// </summary>
     public bool? IndexFilterable { get; init; }
 
-    [Obsolete]
+    /// <summary>
+    /// Obsolete. Use <see cref="IndexFilterable"/> instead.
+    /// </summary>
+    [Obsolete("Use IndexFilterable instead")]
     public bool? IndexInverted { get; init; }
+
+    /// <summary>
+    /// Gets or sets whether range filters (&gt;, &lt;, &gt;=, &lt;=) are enabled for this property. When null, uses Weaviate's default.
+    /// </summary>
     public bool? IndexRangeFilters { get; init; }
+
+    /// <summary>
+    /// Gets or sets whether this property is included in BM25 keyword search. When null, uses Weaviate's default.
+    /// </summary>
     public bool? IndexSearchable { get; init; }
+
+    /// <summary>
+    /// Gets or sets the tokenization strategy for text properties. When null, uses Weaviate's default tokenization.
+    /// </summary>
     public PropertyTokenization? PropertyTokenization { get; init; }
+
+    /// <summary>
+    /// Gets or sets nested properties for Object and ObjectArray data types.
+    /// Defines the schema for nested objects.
+    /// </summary>
     public Property[]? NestedProperties { get; init; }
+
+    /// <summary>
+    /// Gets or sets whether to skip vectorization for this property's values. Defaults to false.
+    /// When true, this property's data is not included in the object's vector representation.
+    /// </summary>
     public bool SkipVectorization { get; init; } = false;
+
+    /// <summary>
+    /// Gets or sets whether to include the property name in vectorization. Defaults to true.
+    /// When true, the property name itself is included in the vector representation for better context.
+    /// </summary>
     public bool VectorizePropertyName { get; init; } = true;
 
+    /// <summary>Gets a factory for creating text properties.</summary>
     public static PropertyFactory Text => PropertyHelper.Factory(DataType.Text);
+
+    /// <summary>Gets a factory for creating text array properties.</summary>
     public static PropertyFactory TextArray => PropertyHelper.Factory(DataType.TextArray);
+
+    /// <summary>Gets a factory for creating integer properties.</summary>
     public static PropertyFactory Int => PropertyHelper.Factory(DataType.Int);
+
+    /// <summary>Gets a factory for creating integer array properties.</summary>
     public static PropertyFactory IntArray => PropertyHelper.Factory(DataType.IntArray);
+
+    /// <summary>Gets a factory for creating boolean properties.</summary>
     public static PropertyFactory Bool => PropertyHelper.Factory(DataType.Bool);
+
+    /// <summary>Gets a factory for creating boolean array properties.</summary>
     public static PropertyFactory BoolArray => PropertyHelper.Factory(DataType.BoolArray);
+
+    /// <summary>Gets a factory for creating number (floating-point) properties.</summary>
     public static PropertyFactory Number => PropertyHelper.Factory(DataType.Number);
+
+    /// <summary>Gets a factory for creating number array properties.</summary>
     public static PropertyFactory NumberArray => PropertyHelper.Factory(DataType.NumberArray);
+
+    /// <summary>Gets a factory for creating date/time properties.</summary>
     public static PropertyFactory Date => PropertyHelper.Factory(DataType.Date);
+
+    /// <summary>Gets a factory for creating date/time array properties.</summary>
     public static PropertyFactory DateArray => PropertyHelper.Factory(DataType.DateArray);
+
+    /// <summary>Gets a factory for creating UUID properties.</summary>
     public static PropertyFactory Uuid => PropertyHelper.Factory(DataType.Uuid);
+
+    /// <summary>Gets a factory for creating UUID array properties.</summary>
     public static PropertyFactory UuidArray => PropertyHelper.Factory(DataType.UuidArray);
+
+    /// <summary>Gets a factory for creating geo-coordinate properties.</summary>
     public static PropertyFactory GeoCoordinate => PropertyHelper.Factory(DataType.GeoCoordinate);
+
+    /// <summary>Gets a factory for creating blob (binary data) properties.</summary>
     public static PropertyFactory Blob => PropertyHelper.Factory(DataType.Blob);
+
+    /// <summary>Gets a factory for creating phone number properties.</summary>
     public static PropertyFactory PhoneNumber => PropertyHelper.Factory(DataType.PhoneNumber);
+
+    /// <summary>Gets a factory for creating nested object properties.</summary>
     public static PropertyFactory Object => PropertyHelper.Factory(DataType.Object);
+
+    /// <summary>Gets a factory for creating object array properties.</summary>
     public static PropertyFactory ObjectArray => PropertyHelper.Factory(DataType.ObjectArray);
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Property"/> record.
+    /// </summary>
     public Property() { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Property"/> record with the specified name and data type.
+    /// </summary>
+    /// <param name="name">The name of the property. Will be automatically decapitalized.</param>
+    /// <param name="dataType">The data type of the property.</param>
     [System.Diagnostics.CodeAnalysis.SetsRequiredMembers]
     public Property(string name, DataType dataType)
     {
@@ -389,18 +561,64 @@ public record Property : IEquatable<Property>
         DataType = dataType;
     }
 
+    /// <summary>
+    /// Creates a cross-reference property that links to objects in another collection.
+    /// </summary>
+    /// <param name="name">The name of the reference property.</param>
+    /// <param name="targetCollection">The name of the collection this reference points to.</param>
+    /// <param name="description">Optional description of the reference relationship.</param>
+    /// <returns>A <see cref="Reference"/> instance representing the cross-reference property.</returns>
+    /// <example>
+    /// <code>
+    /// var authorRef = Property.Reference("author", "Author", "The author who wrote this article");
+    /// var categoryRef = Property.Reference("category", "Category");
+    /// </code>
+    /// </example>
     public static Reference Reference(
         string name,
         string targetCollection,
         string? description = null
     ) => new(name, targetCollection, description);
 
-    // Extract collection properties from type specified by TData, supporting nested properties up to maxDepth.
+    /// <summary>
+    /// Extracts property definitions from a C# class using reflection.
+    /// </summary>
+    /// <typeparam name="TData">The C# type to extract properties from.</typeparam>
+    /// <param name="maxDepth">Maximum depth for nested object properties. Default is 1.</param>
+    /// <returns>An array of <see cref="Property"/> instances representing the class's properties.</returns>
+    /// <remarks>
+    /// This method uses reflection to automatically generate Weaviate property definitions from a C# class.
+    /// Properties are mapped based on their .NET types to corresponding Weaviate data types.
+    /// For nested objects, properties are extracted recursively up to the specified <paramref name="maxDepth"/>.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// public class Article
+    /// {
+    ///     public string Title { get; set; }
+    ///     public int Views { get; set; }
+    ///     public DateTime PublishedAt { get; set; }
+    /// }
+    ///
+    /// var properties = Property.FromClass&lt;Article&gt;();
+    /// </code>
+    /// </example>
     public static Property[] FromClass<TData>(int maxDepth = 1)
     {
         return FromClass(typeof(TData), maxDepth);
     }
 
+    /// <summary>
+    /// Extracts property definitions from a C# type using reflection.
+    /// </summary>
+    /// <param name="type">The C# type to extract properties from.</param>
+    /// <param name="maxDepth">Maximum depth for nested object properties. Default is 1.</param>
+    /// <returns>An array of <see cref="Property"/> instances representing the type's properties.</returns>
+    /// <remarks>
+    /// This method uses reflection to automatically generate Weaviate property definitions from a C# type.
+    /// Properties are mapped based on their .NET types to corresponding Weaviate data types.
+    /// For nested objects, properties are extracted recursively up to the specified <paramref name="maxDepth"/>.
+    /// </remarks>
     public static Property[] FromClass(Type type, int maxDepth = 1)
     {
         DataType dataType = PropertyHelper.DataTypeForType(type);
