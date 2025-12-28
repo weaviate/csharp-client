@@ -293,7 +293,7 @@ public partial class BatchTests
                         [
                             BatchInsertRequest.Create(
                                 new { Name = "some name" },
-                                vectors: Vector.Create(1, 2, 3)
+                                vectors: new int[] { 1, 2, 3 }
                             ),
                             BatchInsertRequest.Create(
                                 new { Name = "some other name" },

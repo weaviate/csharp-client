@@ -5,6 +5,11 @@ using Quantizers = Weaviate.Client.Models.VectorIndex.Quantizers;
 
 namespace Weaviate.Client.Tests.Unit;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Performance",
+    "CA1861:Avoid constant arrays as arguments",
+    Justification = "<Pending>"
+)]
 public partial class VectorConfigListTests
 {
     [Fact]
@@ -36,17 +41,16 @@ public partial class VectorConfigListTests
     [Fact]
     public void NamedVectorInitialization()
     {
-        var v1 = new Vectors();
-        v1.Add("default", new[] { 0.1f, 0.2f, 0.3f });
+        var v1 = new Vectors { { "default", new[] { 0.1f, 0.2f, 0.3f } } };
 
         // Act & Assert
-        Assert.Equal(new[] { 0.1f, 0.2f, 0.3f }, v1["default"].Cast<float>());
+        Assert.Equal([0.1f, 0.2f, 0.3f], v1["default"].Cast<float>());
     }
 
     [Fact]
     public void Test_VectorConfigList()
     {
-        Func<VectorizerFactory, VectorizerConfig> transformerVectorizer = v =>
+        static VectorizerConfig transformerVectorizer(VectorizerFactory v) =>
             v.Text2VecTransformers();
 
         // Arrange
@@ -136,6 +140,11 @@ public partial class VectorConfigListTests
     }
 
     [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
     public void Test_NamedVectorConfig_Has_Properties()
     {
         // Arrange

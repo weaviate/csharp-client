@@ -1,0 +1,142 @@
+using Weaviate.Client.Models;
+using Weaviate.Client.Models.Typed;
+
+namespace Weaviate.Client.Typed;
+
+public partial class TypedGenerateClient<T>
+{
+    /// <summary>
+    /// Search near text with generative AI capabilities.
+    /// </summary>
+    /// <param name="text">Text to search near</param>
+    /// <param name="certainty">Certainty threshold</param>
+    /// <param name="distance">Distance threshold</param>
+    /// <param name="moveTo">Move towards concept</param>
+    /// <param name="moveAway">Move away from concept</param>
+    /// <param name="limit">Maximum number of results</param>
+    /// <param name="offset">Offset for pagination</param>
+    /// <param name="autoLimit">Auto-cut threshold</param>
+    /// <param name="filters">Filters to apply</param>
+    /// <param name="rerank">Rerank configuration</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="targetVector">Target vector name</param>
+    /// <param name="returnProperties">Properties to return</param>
+    /// <param name="returnReferences">References to return</param>
+    /// <param name="returnMetadata">Metadata to return</param>
+    /// <param name="includeVectors">Vectors to include</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
+    /// <returns>Strongly-typed generative result</returns>
+    public async Task<GenerativeWeaviateResult<T>> NearText(
+        AutoArray<string> text,
+        float? certainty = null,
+        float? distance = null,
+        Move? moveTo = null,
+        Move? moveAway = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var result = await _generateClient.NearText(
+            text: text,
+            certainty: certainty,
+            distance: distance,
+            moveTo: moveTo,
+            moveAway: moveAway,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedTask: groupedTask,
+            provider: provider,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
+        return result.ToTyped<T>();
+    }
+
+    /// <summary>
+    /// Search near text with generative AI capabilities and grouping.
+    /// </summary>
+    /// <param name="text">Text to search near</param>
+    /// <param name="groupBy">Group by configuration</param>
+    /// <param name="certainty">Certainty threshold</param>
+    /// <param name="distance">Distance threshold</param>
+    /// <param name="moveTo">Move towards concept</param>
+    /// <param name="moveAway">Move away from concept</param>
+    /// <param name="limit">Maximum number of results</param>
+    /// <param name="offset">Offset for pagination</param>
+    /// <param name="autoLimit">Auto-cut threshold</param>
+    /// <param name="filters">Filters to apply</param>
+    /// <param name="rerank">Rerank configuration</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="targetVector">Target vector name</param>
+    /// <param name="returnProperties">Properties to return</param>
+    /// <param name="returnReferences">References to return</param>
+    /// <param name="returnMetadata">Metadata to return</param>
+    /// <param name="includeVectors">Vectors to include</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
+    /// <returns>Strongly-typed generative group-by result</returns>
+    public async Task<GenerativeGroupByResult<T>> NearText(
+        AutoArray<string> text,
+        GroupByRequest groupBy,
+        float? certainty = null,
+        float? distance = null,
+        Move? moveTo = null,
+        Move? moveAway = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var result = await _generateClient.NearText(
+            text: text,
+            groupBy: groupBy,
+            certainty: certainty,
+            distance: distance,
+            moveTo: moveTo,
+            moveAway: moveAway,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedTask: groupedTask,
+            provider: provider,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
+        return result.ToTyped<T>();
+    }
+}

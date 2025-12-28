@@ -10,7 +10,7 @@ namespace Weaviate.Client;
 
 public static class WeaviateExtensions
 {
-    static Func<object?, IDictionary<string, object>?> _objectToDict = (object? v) =>
+    static readonly Func<object?, IDictionary<string, object>?> _objectToDict = v =>
         v is null
             ? null
             : JsonSerializer.Deserialize<IDictionary<string, object>>(
@@ -295,7 +295,6 @@ public static class WeaviateExtensions
 
         (var properties, var references) = UnmergeProperties(collection?.Properties ?? []);
 
-#pragma warning disable CS0618 // Type or member is obsolete
         return new CollectionConfigExport()
         {
             Name = collection?.Class1 ?? string.Empty,
@@ -347,7 +346,6 @@ public static class WeaviateExtensions
             VectorConfig = vectorConfig,
             Vectorizer = collection?.Vectorizer ?? string.Empty,
         };
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     internal static IEnumerable<T> FromByteString<T>(this Google.Protobuf.ByteString byteString)
@@ -381,7 +379,7 @@ public static class WeaviateExtensions
         }
     }
 
-    internal static Vector FromByteString<T>(this Grpc.Protobuf.V1.Vectors vector)
+    internal static NamedVector FromByteString<T>(this Grpc.Protobuf.V1.Vectors vector)
         where T : struct
     {
         var byteString = vector.VectorBytes;
@@ -398,16 +396,17 @@ public static class WeaviateExtensions
         }
     }
 
-    private static VectorSingle<T> VectorFromByteStringSingle<T>(
+    private static NamedVector VectorFromByteStringSingle<T>(
         Google.Protobuf.ByteString byteString,
         string vectorName
     )
         where T : struct
     {
-        return new VectorSingle<T>([.. FromByteString<T>(byteString)]) { Name = vectorName };
+        var data = new VectorSingle<T>([.. FromByteString<T>(byteString)]);
+        return (vectorName, new Vector(data));
     }
 
-    private static VectorMulti<T> VectorFromByteStringMulti<T>(
+    private static NamedVector VectorFromByteStringMulti<T>(
         Google.Protobuf.ByteString byteString,
         string vectorName
     )
@@ -460,7 +459,8 @@ public static class WeaviateExtensions
             }
         }
 
-        return new VectorMulti<T>(result) { Name = vectorName };
+        var data = new VectorMulti<T>(result);
+        return (vectorName, new Vector(data));
     }
 
     internal static Stream ToStream<T>(this IEnumerable<T> items)
@@ -554,29 +554,31 @@ public static class WeaviateExtensions
             return vector.ToMultiDimensionalByteString();
         }
 
-        return vector.ValueType switch
-        {
-            Type t when t == typeof(float) => ToByteString(vector as IEnumerable<float>),
-            Type t when t == typeof(double) => ToByteString(vector as IEnumerable<double>),
-            Type t when t == typeof(int) => ToByteString(vector as IEnumerable<int>),
-            Type t when t == typeof(long) => ToByteString(vector as IEnumerable<long>),
-            Type t when t == typeof(short) => ToByteString(vector as IEnumerable<short>),
-            Type t when t == typeof(byte) => ToByteString(vector as IEnumerable<byte>),
-            Type t when t == typeof(bool) => ToByteString(vector as IEnumerable<bool>),
-            Type t when t == typeof(decimal) => ToByteString(vector as IEnumerable<decimal>),
-
-            _ => throw new NotSupportedException(
-                $"The type '{vector.ValueType.FullName}' is not supported by ToByteString."
-            ),
-        };
+        // Use Match pattern to access internal vector data and convert to ByteString
+        return vector.Match<Google.Protobuf.ByteString>(data =>
+            data switch
+            {
+                VectorSingle<float> v => ToByteString<float>(v.Values),
+                VectorSingle<double> v => ToByteString<double>(v.Values),
+                VectorSingle<int> v => ToByteString<int>(v.Values),
+                VectorSingle<long> v => ToByteString<long>(v.Values),
+                VectorSingle<short> v => ToByteString<short>(v.Values),
+                VectorSingle<byte> v => ToByteString<byte>(v.Values),
+                VectorSingle<bool> v => ToByteString<bool>(v.Values),
+                VectorSingle<decimal> v => ToByteString<decimal>(v.Values),
+                _ => throw new NotSupportedException(
+                    $"The type '{vector.ValueType.FullName}' is not supported by ToByteString."
+                ),
+            }
+        );
     }
 
     internal static Google.Protobuf.ByteString ToMultiDimensionalByteString(this Vector vector)
     {
-        if (vector == null || vector.Dimensions == 0 || vector.Count == 0)
+        if (vector == null || vector.Count == 0)
             return Google.Protobuf.ByteString.Empty;
 
-        int cols = vector.Count;
+        int cols = vector.Dimensions.cols;
 
         using var ms = new MemoryStream();
         using var writer = new BinaryWriter(ms);
@@ -584,56 +586,60 @@ public static class WeaviateExtensions
         // Write the number of columns as a little-endian short (must match FromByteStringMulti)
         writer.Write((short)cols);
 
-        // Write all values in row-major order based on the concrete vector type
+        // Use Match pattern to access internal vector data
         // Pattern matching on the generic type once is much more efficient than
         // switching on every individual element
-        switch (vector)
+        vector.Match<int>(data =>
         {
-            case VectorMulti<float> v:
-                foreach (var row in v)
-                foreach (var item in row)
-                    writer.Write(item);
-                break;
-            case VectorMulti<double> v:
-                foreach (var row in v)
-                foreach (var item in row)
-                    writer.Write(item);
-                break;
-            case VectorMulti<int> v:
-                foreach (var row in v)
-                foreach (var item in row)
-                    writer.Write(item);
-                break;
-            case VectorMulti<long> v:
-                foreach (var row in v)
-                foreach (var item in row)
-                    writer.Write(item);
-                break;
-            case VectorMulti<short> v:
-                foreach (var row in v)
-                foreach (var item in row)
-                    writer.Write(item);
-                break;
-            case VectorMulti<byte> v:
-                foreach (var row in v)
-                foreach (var item in row)
-                    writer.Write(item);
-                break;
-            case VectorMulti<bool> v:
-                foreach (var row in v)
-                foreach (var item in row)
-                    writer.Write(item);
-                break;
-            case VectorMulti<decimal> v:
-                foreach (var row in v)
-                foreach (var item in row)
-                    writer.Write((double)item); // BinaryWriter does not support decimal
-                break;
-            default:
-                throw new NotSupportedException(
-                    $"The type '{vector.ValueType.FullName}' is not supported by ToMultiDimensionalByteString."
-                );
-        }
+            switch (data)
+            {
+                case VectorMulti<float> v:
+                    foreach (var row in v)
+                    foreach (var item in row)
+                        writer.Write(item);
+                    break;
+                case VectorMulti<double> v:
+                    foreach (var row in v)
+                    foreach (var item in row)
+                        writer.Write(item);
+                    break;
+                case VectorMulti<int> v:
+                    foreach (var row in v)
+                    foreach (var item in row)
+                        writer.Write(item);
+                    break;
+                case VectorMulti<long> v:
+                    foreach (var row in v)
+                    foreach (var item in row)
+                        writer.Write(item);
+                    break;
+                case VectorMulti<short> v:
+                    foreach (var row in v)
+                    foreach (var item in row)
+                        writer.Write(item);
+                    break;
+                case VectorMulti<byte> v:
+                    foreach (var row in v)
+                    foreach (var item in row)
+                        writer.Write(item);
+                    break;
+                case VectorMulti<bool> v:
+                    foreach (var row in v)
+                    foreach (var item in row)
+                        writer.Write(item);
+                    break;
+                case VectorMulti<decimal> v:
+                    foreach (var row in v)
+                    foreach (var item in row)
+                        writer.Write((double)item); // BinaryWriter does not support decimal
+                    break;
+                default:
+                    throw new NotSupportedException(
+                        $"The type '{vector.ValueType.FullName}' is not supported by ToMultiDimensionalByteString."
+                    );
+            }
+            return 0; // Return value required by Match<T>, but not used
+        });
 
         writer.Flush();
         ms.Seek(0, SeekOrigin.Begin); // Reset stream position before reading
