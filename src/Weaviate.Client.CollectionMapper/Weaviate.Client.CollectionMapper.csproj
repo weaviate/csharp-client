@@ -4,11 +4,61 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>Weaviate.Client.CollectionMapper</PackageId>
+    <Title>Weaviate Collection Mapper</Title>
+    <Description>Type-safe, attribute-based collection mapper for the Weaviate C# client. Provides an ORM-like experience for defining and managing Weaviate collections using C# classes and attributes.</Description>
+    <Authors>Weaviate</Authors>
+    <Company>Weaviate</Company>
+    <Product>Weaviate.Client.CollectionMapper</Product>
+    <PackageTags>weaviate;vector-database;orm;mapper;attribute-mapping;nosql;ai;machine-learning</PackageTags>
+    <PackageProjectUrl>https://github.com/weaviate/weaviate-dotnet-client</PackageProjectUrl>
+    <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/weaviate/weaviate-dotnet-client</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon Condition="Exists('..\..\icon.png')">icon.png</PackageIcon>
+    <Copyright>Copyright © Weaviate</Copyright>
+
+    <!-- Generate package on build -->
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+
+    <!-- Enable source link for better debugging -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!-- Documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- Suppress missing XML doc warnings for now -->
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Weaviate.Client\Weaviate.Client.csproj" />
     <PackageReference Include="Humanizer.Core" Version="2.14.1" />
+    <PackageReference Include="MinVer" Version="6.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <InternalsVisibleTo Include="Weaviate.Client.CollectionMapper.Tests" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\" Condition="Exists('..\..\icon.png')" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- MinVer configuration -->
+    <MinVerSkip Condition="'$(Configuration)' == 'Debug'">true</MinVerSkip>
+    <MinVerTagPrefix>collectionmapper-v</MinVerTagPrefix>
+    <MinVerDefaultPreReleaseIdentifiers>beta</MinVerDefaultPreReleaseIdentifiers>
+  </PropertyGroup>
 </Project>
