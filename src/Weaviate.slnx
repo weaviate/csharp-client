@@ -14,15 +14,7 @@
         <Project Path="Weaviate.Client.Analyzers/Weaviate.Client.Analyzers.csproj" />
     </Folder>
     <Folder Name="/CollectionMapper/">
-        <Project Path="Weaviate.Client.CollectionMapper.Tests/Weaviate.Client.CollectionMapper.Tests.csproj">
-            <BuildType Project="?" />
-            <Platform Project="?" />
-            <Build Project="false" />
-        </Project>
-        <Project Path="Weaviate.Client.CollectionMapper/Weaviate.Client.CollectionMapper.csproj">
-            <BuildType Project="?" />
-            <Platform Project="?" />
-            <Build Project="false" />
-        </Project>
+        <Project Path="Weaviate.Client.CollectionMapper/Weaviate.Client.CollectionMapper.csproj" />
+        <Project Path="Weaviate.Client.CollectionMapper.Tests/Weaviate.Client.CollectionMapper.Tests.csproj" />
     </Folder>
 </Solution>

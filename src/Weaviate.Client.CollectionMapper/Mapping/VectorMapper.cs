@@ -46,7 +46,7 @@ internal static class VectorMapper
                 var floatArray = value as float[];
                 if (floatArray != null && floatArray.Length > 0)
                 {
-                    vectors[vectorName] = floatArray;
+                    vectors.Add(vectorName, floatArray); // Use Add method instead of indexer
                 }
             }
             // Handle float[,] (multi-vector - not commonly used, but supported)
@@ -55,7 +55,7 @@ internal static class VectorMapper
                 var multiVector = value as float[,];
                 if (multiVector != null && multiVector.GetLength(0) > 0)
                 {
-                    vectors[vectorName] = multiVector;
+                    vectors.Add(vectorName, multiVector); // Use Add method instead of indexer
                 }
             }
         }

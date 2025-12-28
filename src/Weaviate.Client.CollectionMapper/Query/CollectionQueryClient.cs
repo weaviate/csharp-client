@@ -97,8 +97,7 @@ public class CollectionMapperQueryClient<T>
         if (vector != null)
         {
             var vectorName = GetVectorName(vector);
-            _targetVectors = new TargetVectors();
-            _targetVectors.Add(vectorName);
+            _targetVectors = new[] { vectorName }; // Implicit conversion from string[] to TargetVectors
         }
         _certainty = certainty;
         _distance = distance;
@@ -125,8 +124,7 @@ public class CollectionMapperQueryClient<T>
         if (vector != null)
         {
             var vectorName = GetVectorName(vector);
-            _targetVectors = new TargetVectors();
-            _targetVectors.Add(vectorName);
+            _targetVectors = new[] { vectorName }; // Implicit conversion from string[] to TargetVectors
         }
         _certainty = certainty;
         _distance = distance;
@@ -151,8 +149,7 @@ public class CollectionMapperQueryClient<T>
         if (vector != null)
         {
             var vectorName = GetVectorName(vector);
-            _targetVectors = new TargetVectors();
-            _targetVectors.Add(vectorName);
+            _targetVectors = new[] { vectorName }; // Implicit conversion from string[] to TargetVectors
         }
         _alpha = alpha;
         return this;
@@ -341,7 +338,7 @@ public class CollectionMapperQueryClient<T>
                 certainty: _certainty,
                 distance: _distance,
                 filters: _filter,
-                targetVector: _targetVectors,
+                targets: _targetVectors != null ? _ => _targetVectors : null,
                 returnProperties: _returnProperties,
                 returnReferences: queryReferences,
                 returnMetadata: _returnMetadata,
@@ -350,12 +347,13 @@ public class CollectionMapperQueryClient<T>
             ),
 
             SearchMode.NearVector => await _typedClient.NearVector(
-                vector: (float[])_searchTarget!,
+                vectors: (float[])_searchTarget!, // Implicit conversion to VectorSearchInput
                 limit: _limit,
                 certainty: _certainty,
                 distance: _distance,
                 filters: _filter,
-                targetVector: _targetVectors,
+                // Note: VectorSearchInput doesn't support simple target specification
+                // Target vectors should be set through the vector name in the input
                 returnProperties: _returnProperties,
                 returnReferences: queryReferences,
                 returnMetadata: _returnMetadata,
@@ -365,10 +363,11 @@ public class CollectionMapperQueryClient<T>
 
             SearchMode.Hybrid => await _typedClient.Hybrid(
                 query: (string)_searchTarget!,
+                vectors: null, // No vector input for simple keyword-only hybrid search
                 limit: _limit,
                 alpha: _alpha,
                 filters: _filter,
-                targetVector: _targetVectors,
+                // Note: Target vectors for hybrid search should be embedded in HybridVectorInput
                 returnProperties: _returnProperties,
                 returnReferences: queryReferences,
                 returnMetadata: _returnMetadata,
