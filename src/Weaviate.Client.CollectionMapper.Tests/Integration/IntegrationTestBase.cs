@@ -41,6 +41,17 @@ public abstract class IntegrationTestBase : IAsyncLifetime
                     + "docker-compose -f docker-compose.integration.yml up -d"
             );
         }
+
+        // Verify minimum version requirement
+        var minVersion = new Version(1, 32, 0);
+        if (Client.WeaviateVersion != null && Client.WeaviateVersion < minVersion)
+        {
+            throw new InvalidOperationException(
+                $"Weaviate version {Client.WeaviateVersion} is not supported. "
+                    + $"Minimum required version is {minVersion}. "
+                    + "Please upgrade your Weaviate instance."
+            );
+        }
     }
 
     /// <summary>

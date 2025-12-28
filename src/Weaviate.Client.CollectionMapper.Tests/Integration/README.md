@@ -367,7 +367,7 @@ These tests are compatible with:
 
 | Component | Version |
 |-----------|---------|
-| Weaviate | 1.27.8+ |
+| Weaviate | 1.32.0+ |
 | .NET | 8.0, 9.0 |
 | Docker | 20.10+ |
 
