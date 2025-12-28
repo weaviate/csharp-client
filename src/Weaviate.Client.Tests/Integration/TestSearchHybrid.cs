@@ -35,8 +35,9 @@ public partial class SearchTests : IntegrationTests
 
         var objs = (
             await collection.Query.Hybrid(
-                alpha: 0,
                 query: "name",
+                vectors: null,
+                alpha: 0,
                 fusionType: fusionType,
                 includeVectors: true,
                 cancellationToken: TestContext.Current.CancellationToken
@@ -47,10 +48,10 @@ public partial class SearchTests : IntegrationTests
 
         objs = (
             await collection.Query.Hybrid(
-                alpha: 1,
                 query: "name",
+                vectors: new Vectors(objs.First().Vectors["default"]),
+                alpha: 1,
                 fusionType: fusionType,
-                vectors: objs.First().Vectors["default"],
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
@@ -82,9 +83,10 @@ public partial class SearchTests : IntegrationTests
 
         var objs = (
             await collection.Query.Hybrid(
-                alpha: 0,
                 query: "name",
+                vectors: null,
                 groupBy: new GroupByRequest("name") { ObjectsPerGroup = 1, NumberOfGroups = 2 },
+                alpha: 0,
                 includeVectors: true,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -157,6 +159,7 @@ public partial class SearchTests : IntegrationTests
         var objs = (
             await collection.Query.Hybrid(
                 query: "test",
+                vectors: null,
                 alpha: 0,
                 limit: limit,
                 cancellationToken: TestContext.Current.CancellationToken
@@ -189,6 +192,7 @@ public partial class SearchTests : IntegrationTests
         var objs = (
             await collection.Query.Hybrid(
                 query: "test",
+                vectors: null,
                 alpha: 0,
                 offset: offset,
                 cancellationToken: TestContext.Current.CancellationToken
@@ -217,6 +221,7 @@ public partial class SearchTests : IntegrationTests
         var hybridRes = (
             await collection.Query.Hybrid(
                 query: "fruit",
+                vectors: null,
                 alpha: 0,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -233,6 +238,7 @@ public partial class SearchTests : IntegrationTests
         hybridRes = (
             await collection.Query.Hybrid(
                 query: "fruit",
+                vectors: null,
                 alpha: 1,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -280,7 +286,7 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearVector(obj.Vectors["default"]),
+                vectors: new NearVectorInput(Vector: obj.Vectors["default"]),
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
@@ -290,7 +296,7 @@ public partial class SearchTests : IntegrationTests
 
         var nearVec = (
             await collection.Query.NearVector(
-                vector: obj.Vectors["default"],
+                obj.Vectors["default"],
                 returnMetadata: MetadataOptions.Distance,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -300,7 +306,7 @@ public partial class SearchTests : IntegrationTests
 
         var hybridObjs2 = await collection.Query.Hybrid(
             query: null,
-            vectors: new HybridNearVector(
+            vectors: new NearVectorInput(
                 obj.Vectors["default"],
                 Certainty: null,
                 Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
@@ -351,8 +357,7 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearVector(obj.Vectors["text"]),
-                targetVector: ["text"],
+                vectors: new NearVectorInput(Vector: obj.Vectors["text"]),
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
@@ -362,8 +367,7 @@ public partial class SearchTests : IntegrationTests
 
         var nearVec = (
             await collection.Query.NearVector(
-                vector: obj.Vectors["text"],
-                targetVector: ["text"],
+                obj.Vectors["text"],
                 returnMetadata: MetadataOptions.Distance,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -374,12 +378,11 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs2 = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearVector(
+                vectors: new NearVectorInput(
                     obj.Vectors["text"],
                     Certainty: null,
                     Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
                 ),
-                targetVector: ["text"],
                 returnMetadata: MetadataOptions.All,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -415,7 +418,7 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearText("banana pudding"),
+                vectors: new NearTextInput(Query: "banana pudding"),
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
@@ -426,7 +429,7 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs2 = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearText(
+                vectors: new NearTextInput(
                     "banana",
                     Certainty: null,
                     Distance: null,
@@ -471,8 +474,10 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearText("banana pudding"),
-                targetVector: ["text"],
+                vectors: new NearTextInput(
+                    Query: "banana pudding",
+                    TargetVectors: new[] { "text" }
+                ),
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
@@ -483,14 +488,14 @@ public partial class SearchTests : IntegrationTests
         var hybridObjs2 = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearText(
+                vectors: new NearTextInput(
                     "banana",
                     Certainty: null,
                     Distance: null,
                     MoveTo: new Move(force: 0.1f, concepts: ["pudding"]),
-                    MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
+                    MoveAway: new Move(force: 0.1f, concepts: ["smoothie"]),
+                    TargetVectors: new[] { "text" }
                 ),
-                targetVector: ["text"],
                 returnMetadata: MetadataOptions.All,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -539,8 +544,7 @@ public partial class SearchTests : IntegrationTests
         var objs = (
             await collection.Query.Hybrid(
                 query: null,
-                vectors: new HybridNearVector(vector),
-                targetVector: ["first", "second"],
+                vectors: new NearVectorInput(Vector: vector),
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).ToList();
@@ -554,8 +558,7 @@ public partial class SearchTests : IntegrationTests
             .. (
                 await collection.Query.Hybrid(
                     query: null,
-                    vectors: new HybridNearVector(vector, Certainty: null, Distance: 0.1f),
-                    targetVector: new[] { "first", "second" },
+                    vectors: new NearVectorInput(Vector: vector, Certainty: null, Distance: 0.1f),
                     cancellationToken: TestContext.Current.CancellationToken
                 )
             ).Objects,
@@ -565,72 +568,66 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(uuid1, objs[0].UUID);
     }
 
-    public static TheoryData<
-        IHybridVectorInput,
-        string[]
+    public static IEnumerable<
+        TheoryDataRow<HybridVectorInput>
     > SameTargetVectorMultipleInputCombinationsData =>
-        new(
-            (
-                new NearVectorInput
-                {
-                    { "first", new float[] { 0, 1 } },
-                    { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
-                },
-                new[] { "first", "second" }
-            ),
-            (
-                new NearVectorInput
-                {
-                    { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
-                    { "second", new float[] { 1, 0, 0 } },
-                },
-                new[] { "first", "second" }
-            ),
-            (
-                new NearVectorInput
-                {
-                    { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
-                    { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
-                },
-                new[] { "first", "second" }
-            ),
-            (
-                new HybridNearVector(
-                    new NearVectorInput
+        [
+            .. new List<HybridVectorInput>
+            {
+                new NearVectorInput(
+                    Vector: new VectorSearchInput
                     {
                         { "first", new float[] { 0, 1 } },
-                        { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
+                        { "second", new float[] { 1, 0, 0 } },
+                        { "second", new float[] { 0, 0, 1 } },
                     }
                 ),
-                new[] { "first", "second" }
-            ),
-            (
-                new HybridNearVector(
-                    new NearVectorInput
+                new NearVectorInput(
+                    Vector: new VectorSearchInput
+                    {
+                        { "first", new float[] { 0, 1 } },
+                        { "first", new float[] { 0, 1 } },
+                        { "second", new float[] { 1, 0, 0 } },
+                    }
+                ),
+                new NearVectorInput(
+                    Vector: new VectorSearchInput
+                    {
+                        { "first", new float[] { 0, 1 } },
+                        { "first", new float[] { 0, 1 } },
+                        { "second", new float[] { 1, 0, 0 } },
+                        { "second", new float[] { 0, 0, 1 } },
+                    }
+                ),
+                new NearVectorInput(
+                    Vector: new VectorSearchInput
+                    {
+                        { "first", new float[] { 0, 1 } },
+                        { "second", new float[] { 1, 0, 0 } },
+                        { "second", new float[] { 0, 0, 1 } },
+                    }
+                ),
+                new NearVectorInput(
+                    Vector: new VectorSearchInput
                     {
                         { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
                         { "second", new float[] { 1, 0, 0 } },
                     }
                 ),
-                new[] { "first", "second" }
-            ),
-            (
-                new HybridNearVector(
-                    new NearVectorInput
+                new NearVectorInput(
+                    Vector: new VectorSearchInput
                     {
                         { "first", new float[] { 0, 1 }, new float[] { 0, 1 } },
                         { "second", new float[] { 1, 0, 0 }, new float[] { 0, 0, 1 } },
                     }
                 ),
-                new[] { "first", "second" }
-            )
-        );
+            },
+        ];
 
     [Theory]
     [MemberData(nameof(SameTargetVectorMultipleInputCombinationsData))]
     public async Task Test_Same_Target_Vector_Multiple_Input_Combinations(
-        IHybridVectorInput nearVector,
-        string[] targetVector
+        HybridVectorInput nearVector
     )
     {
         var collection = await CollectionFactory(
@@ -665,7 +662,6 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 query: null,
                 vectors: nearVector,
-                targetVector: targetVector,
                 returnMetadata: MetadataOptions.All,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -703,7 +699,7 @@ public partial class SearchTests : IntegrationTests
         var objs = (
             await collection.Query.Hybrid(
                 "name",
-                vectors: Vector.Create(1f, 0f, 0f),
+                vectors: new float[] { 1f, 0f, 0f },
                 alpha: 0.7f,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -716,7 +712,7 @@ public partial class SearchTests : IntegrationTests
             .. (
                 await collection.Query.Hybrid(
                     "name",
-                    vectors: Vectors.Create(1f, 0f, 0f),
+                    vectors: new float[] { 1f, 0f, 0f },
                     maxVectorDistance: 0.1f,
                     alpha: 0.7f,
                     cancellationToken: TestContext.Current.CancellationToken
@@ -759,6 +755,7 @@ public partial class SearchTests : IntegrationTests
         var objs = (
             await collection.Query.Hybrid(
                 "banana two",
+                vectors: null,
                 alpha: 0.0f,
                 bm25Operator: new BM25Operator.Or(MinimumMatch: 1),
                 cancellationToken: TestContext.Current.CancellationToken
@@ -808,9 +805,8 @@ public partial class SearchTests : IntegrationTests
 
         var res = await collection.Aggregate.Hybrid(
             query: "banana",
-            vectors: new[] { 1f, 0f, 0f, 0f },
+            vectors: ("default", new[] { 1f, 0f, 0f, 0f }),
             maxVectorDistance: 0.5f,
-            targetVector: "default",
             returnMetrics: [Metrics.ForProperty("name").Text(count: true)],
             cancellationToken: TestContext.Current.CancellationToken
         );

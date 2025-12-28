@@ -110,7 +110,7 @@ public class TraditionalExample
         {
             // Batch Insertion Demo
             var requests = cats.Select(c =>
-                BatchInsertRequest.Create(c.Data, vectors: new Vectors { { "default", c.Vector } })
+                BatchInsertRequest.Create(c.Data, vectors: ("default", c.Vector))
             );
 
             var batchInsertions = await collection.Data.InsertMany(requests);
@@ -140,7 +140,7 @@ public class TraditionalExample
         }
 
         result = await collection.Query.FetchObjects(limit: 5);
-        retrieved = result.Objects.ToList();
+        retrieved = [.. result.Objects];
         Console.WriteLine("Cats retrieved: " + retrieved.Count);
 
         firstObj = retrieved.First();
@@ -167,8 +167,10 @@ public class TraditionalExample
 
         Console.WriteLine("Querying Neighboring Cats: [20,21,22]");
 
+        float[] vector1 = [20f, 21f, 22f];
+
         var queryNearVector = await collection.Query.NearVector(
-            vector: new[] { 20f, 21f, 22f },
+            vectors: vector1,
             distance: 0.5f,
             limit: 5,
             returnProperties: ["name", "breed", "color", "counter"],

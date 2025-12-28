@@ -125,7 +125,7 @@ public class TypedDataClientTests
         var collectionClient = new CollectionClient(client, "Articles");
         var typedDataClient = new TypedDataClient<TestArticle>(collectionClient.Data);
 
-        var vectors = new Models.Vectors { ["default"] = new float[] { 0.1f, 0.2f, 0.3f } };
+        Vectors vectors = ("default", [0.1f, 0.2f, 0.3f]);
         var requests = new List<(TestArticle data, Models.Vectors vectors)>
         {
             (new TestArticle { Title = "Article 1" }, vectors),

@@ -142,7 +142,7 @@ public class TypedQueryClientTests
         var collectionClient = new CollectionClient(client, "Articles");
         var typedQueryClient = new TypedQueryClient<TestArticle>(collectionClient.Query);
 
-        var vectors = new Vectors { ["default"] = new float[] { 0.1f, 0.2f, 0.3f } };
+        Vectors vectors = new float[] { 0.1f, 0.2f, 0.3f };
 
         // Act & Assert
         // Verify the method accepts Vectors parameter
@@ -158,7 +158,7 @@ public class TypedQueryClientTests
         var collectionClient = new CollectionClient(client, "Articles");
         var typedQueryClient = new TypedQueryClient<TestArticle>(collectionClient.Query);
 
-        var vectors = new Vectors { ["default"] = new float[] { 0.1f, 0.2f, 0.3f } };
+        Vectors vectors = new float[] { 0.1f, 0.2f, 0.3f };
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
 
         // Act & Assert
@@ -213,7 +213,7 @@ public class TypedQueryClientTests
         var typedQueryClient = new TypedQueryClient<TestArticle>(collectionClient.Query);
 
         var query = "hybrid search";
-        var vectors = new Vectors { ["default"] = new float[] { 0.1f, 0.2f, 0.3f } };
+        Vectors vectors = new float[] { 0.1f, 0.2f, 0.3f };
 
         // Act & Assert
         // Verify the method accepts query and Vectors parameters
@@ -223,7 +223,7 @@ public class TypedQueryClientTests
     }
 
     [Fact]
-    public void Hybrid_WithIHybridVectorInput_AcceptsCorrectParameters()
+    public void Hybrid_WithHybridVectorInput_AcceptsCorrectParameters()
     {
         // Arrange
         var client = CreateWeaviateClient();
@@ -248,7 +248,7 @@ public class TypedQueryClientTests
 
         var query = "hybrid search";
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
-        var vectors = new Vectors { ["default"] = new float[] { 0.1f, 0.2f, 0.3f } };
+        Vectors vectors = new float[] { 0.1f, 0.2f, 0.3f };
 
         // Act & Assert
         // Verify the method accepts query, groupBy, and Vectors parameters
@@ -378,6 +378,111 @@ public class TypedQueryClientTests
         // Verify that TypedQueryClient enforces type constraints
         // The fact that this compiles and accepts TestArticle proves type safety
         Assert.NotNull(typedQueryClient);
+    }
+
+    [Fact]
+    public void NearVector_AcceptsAllVectorInputFormats()
+    {
+        // Arrange
+        var client = CreateWeaviateClient();
+        var collectionClient = new CollectionClient(client, "Articles");
+        var queryClient = collectionClient.Query;
+
+        // Test all vector input formats - verify implicit conversions to VectorSearchInput
+
+        // 1. float[] - basic array
+        float[] vector1 = [20f, 21f, 22f];
+        VectorSearchInput input1 = vector1; // Test implicit conversion from float[]
+        Assert.NotNull(input1);
+
+        // 2. double[] - basic array
+        double[] vector1d = [20.0, 21.0, 22.0];
+        VectorSearchInput input1d = vector1d; // Test implicit conversion from double[]
+        Assert.NotNull(input1d);
+
+        // 3. Vector - implicit conversion from float[]
+        Vector vector2 = vector1;
+        VectorSearchInput input2 = vector2; // Test implicit conversion from Vector
+        Assert.NotNull(input2);
+
+        // 4. NamedVector - tuple syntax (string, Vector)
+        NamedVector vector3 = ("default", vector2);
+        VectorSearchInput input3 = vector3; // Test implicit conversion from NamedVector
+        Assert.NotNull(input3);
+
+        // 5. Vectors - implicit conversion from Vector
+        Vectors vector4 = vector2;
+        VectorSearchInput input4 = vector4; // Test implicit conversion from Vectors
+        Assert.NotNull(input4);
+
+        // 6. Vectors - implicit conversion from NamedVector
+        Vectors vector5 = vector3;
+        VectorSearchInput input5 = vector5; // Test implicit conversion from Vectors (from NamedVector)
+        Assert.NotNull(input5);
+
+        // 7. float[,] - 2D array (multi-vector)
+        float[,] vector6 = new[,]
+        {
+            { 20f, 21f, 22f },
+            { 23f, 24f, 25f },
+        };
+
+        // 8. Vector - implicit conversion from 2D array
+        Vector vector7 = vector6;
+        VectorSearchInput input7 = vector7; // Test implicit conversion from Vector (multi-vector)
+        Assert.NotNull(input7);
+
+        // 9. NamedVector - from 2D array via Vector
+        NamedVector vector8 = ("default", vector7);
+        VectorSearchInput input8 = vector8; // Test implicit conversion from NamedVector (multi-vector)
+        Assert.NotNull(input8);
+
+        // 10. Vectors - implicit conversion from 2D array
+        Vectors vector9 = vector6;
+        VectorSearchInput input9 = vector9; // Test implicit conversion from Vectors (multi-vector)
+        Assert.NotNull(input9);
+
+        // 11. Vectors - from NamedVector (multi-vector)
+        Vectors vectorA = vector8;
+        VectorSearchInput inputA = vectorA; // Test implicit conversion from Vectors (from NamedVector multi-vector)
+        Assert.NotNull(inputA);
+
+        // 12. NamedVector[] - array of named vectors (multiple target vectors)
+        NamedVector[] vectorB = [vector3, vector8];
+        VectorSearchInput inputB = vectorB; // Test implicit conversion from NamedVector[]
+        Assert.NotNull(inputB);
+
+        // Additional NamedVector[] test cases
+
+        // 13. Single element NamedVector[]
+        NamedVector[] singleElementArray = [vector3];
+        VectorSearchInput inputC = singleElementArray; // Test implicit conversion from single-element NamedVector[]
+        Assert.NotNull(inputC);
+
+        // 14. NamedVector[] containing different named vectors
+        Vector textVector = new float[] { 1f, 2f, 3f };
+        Vector imageVector = new float[] { 4f, 5f, 6f };
+        NamedVector namedVector1 = ("text", textVector);
+        NamedVector namedVector2 = ("image", imageVector);
+        NamedVector[] multiNamedVectors = [namedVector1, namedVector2];
+        VectorSearchInput inputD = multiNamedVectors; // Test implicit conversion from multi-target NamedVector[]
+        Assert.NotNull(inputD);
+
+        // 15. NamedVector[] mixing single and multi vectors
+        Vector singleVector = new float[] { 7f, 8f, 9f };
+        Vector multiVector = new float[,]
+        {
+            { 10f, 11f },
+            { 12f, 13f },
+        };
+        NamedVector singleVec = ("single", singleVector);
+        NamedVector multiVec = ("multi", multiVector);
+        NamedVector[] mixedArray = [singleVec, multiVec];
+        VectorSearchInput inputE = mixedArray; // Test implicit conversion from mixed NamedVector[]
+        Assert.NotNull(inputE);
+
+        // Verify that QueryClient actually accepts VectorSearchInput
+        Assert.NotNull(queryClient);
     }
 
     private static WeaviateClient CreateWeaviateClient()

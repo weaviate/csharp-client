@@ -155,7 +155,7 @@ public class TypedGenerateClientTests
         var collectionClient = new CollectionClient(client, "Articles");
         var typedGenerateClient = new TypedGenerateClient<TestArticle>(collectionClient.Generate);
 
-        var vectors = new Vectors { ["default"] = new float[] { 0.1f, 0.2f, 0.3f } };
+        Vectors vectors = new float[] { 0.1f, 0.2f, 0.3f };
         var prompt = new SinglePrompt("Analyze these results");
 
         // Act & Assert
@@ -173,7 +173,7 @@ public class TypedGenerateClientTests
         var collectionClient = new CollectionClient(client, "Articles");
         var typedGenerateClient = new TypedGenerateClient<TestArticle>(collectionClient.Generate);
 
-        var vectors = new Vectors { ["default"] = new float[] { 0.1f, 0.2f, 0.3f } };
+        Vectors vectors = new float[] { 0.1f, 0.2f, 0.3f };
         var groupBy = new GroupByRequest("Title") { NumberOfGroups = 10 };
         var groupedTask = new GroupedTask("Summarize groups");
 
@@ -252,7 +252,7 @@ public class TypedGenerateClientTests
         var typedGenerateClient = new TypedGenerateClient<TestArticle>(collectionClient.Generate);
 
         var query = "hybrid search";
-        var vectors = new Vectors { ["default"] = new float[] { 0.1f, 0.2f, 0.3f } };
+        Vectors vectors = new float[] { 0.1f, 0.2f, 0.3f };
         var prompt = new SinglePrompt("Generate analysis");
 
         // Act & Assert
