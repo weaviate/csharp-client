@@ -1,0 +1,319 @@
+Weaviate.Client.CollectionMapper.Attributes.EncodingAttribute
+Weaviate.Client.CollectionMapper.Attributes.EncodingAttribute.DProjections.get -> double?
+Weaviate.Client.CollectionMapper.Attributes.EncodingAttribute.DProjections.set -> void
+Weaviate.Client.CollectionMapper.Attributes.EncodingAttribute.EncodingAttribute() -> void
+Weaviate.Client.CollectionMapper.Attributes.EncodingAttribute.KSim.get -> double?
+Weaviate.Client.CollectionMapper.Attributes.EncodingAttribute.KSim.set -> void
+Weaviate.Client.CollectionMapper.Attributes.EncodingAttribute.Repetitions.get -> double?
+Weaviate.Client.CollectionMapper.Attributes.EncodingAttribute.Repetitions.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ApiEndpoint.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ApiEndpoint.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ApiVersion.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ApiVersion.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.BaseURL.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.BaseURL.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ConfigMethod.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ConfigMethod.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ConfigMethodClass.get -> System.Type
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ConfigMethodClass.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.DeploymentId.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.DeploymentId.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.Endpoint.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.Endpoint.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.EndpointId.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.EndpointId.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.FrequencyPenalty.get -> int
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.FrequencyPenalty.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.GenerativeAttribute() -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.MaxTokens.get -> int
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.MaxTokens.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.Model.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.Model.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.PresencePenalty.get -> int
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.PresencePenalty.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ProjectId.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ProjectId.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ReasoningEffort.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ReasoningEffort.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.Region.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.Region.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ResourceName.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.ResourceName.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.Service.get -> string
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.Service.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.Temperature.get -> double
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.Temperature.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.TopK.get -> int
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.TopK.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.TopP.get -> double
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttribute<TModule>.TopP.set -> void
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttributeBase
+Weaviate.Client.CollectionMapper.Attributes.GenerativeAttributeBase.GenerativeAttributeBase() -> void
+Weaviate.Client.CollectionMapper.Attributes.IndexAttribute
+Weaviate.Client.CollectionMapper.Attributes.IndexAttribute.Filterable.get -> bool
+Weaviate.Client.CollectionMapper.Attributes.IndexAttribute.Filterable.set -> void
+Weaviate.Client.CollectionMapper.Attributes.IndexAttribute.IndexAttribute() -> void
+Weaviate.Client.CollectionMapper.Attributes.IndexAttribute.RangeFilters.get -> bool
+Weaviate.Client.CollectionMapper.Attributes.IndexAttribute.RangeFilters.set -> void
+Weaviate.Client.CollectionMapper.Attributes.IndexAttribute.Searchable.get -> bool
+Weaviate.Client.CollectionMapper.Attributes.IndexAttribute.Searchable.set -> void
+Weaviate.Client.CollectionMapper.Attributes.InvertedIndexAttribute
+Weaviate.Client.CollectionMapper.Attributes.InvertedIndexAttribute.CleanupIntervalSeconds.get -> int
+Weaviate.Client.CollectionMapper.Attributes.InvertedIndexAttribute.CleanupIntervalSeconds.set -> void
+Weaviate.Client.CollectionMapper.Attributes.InvertedIndexAttribute.IndexNullState.get -> bool
+Weaviate.Client.CollectionMapper.Attributes.InvertedIndexAttribute.IndexNullState.set -> void
+Weaviate.Client.CollectionMapper.Attributes.InvertedIndexAttribute.IndexPropertyLength.get -> bool
+Weaviate.Client.CollectionMapper.Attributes.InvertedIndexAttribute.IndexPropertyLength.set -> void
+Weaviate.Client.CollectionMapper.Attributes.InvertedIndexAttribute.IndexTimestamps.get -> bool
+Weaviate.Client.CollectionMapper.Attributes.InvertedIndexAttribute.IndexTimestamps.set -> void
+Weaviate.Client.CollectionMapper.Attributes.InvertedIndexAttribute.InvertedIndexAttribute() -> void
+Weaviate.Client.CollectionMapper.Attributes.NestedTypeAttribute
+Weaviate.Client.CollectionMapper.Attributes.NestedTypeAttribute.NestedType.get -> System.Type
+Weaviate.Client.CollectionMapper.Attributes.NestedTypeAttribute.NestedTypeAttribute(System.Type nestedType) -> void
+Weaviate.Client.CollectionMapper.Attributes.PQEncoderDistribution
+Weaviate.Client.CollectionMapper.Attributes.PQEncoderDistribution.LogNormal = 0 -> Weaviate.Client.CollectionMapper.Attributes.PQEncoderDistribution
+Weaviate.Client.CollectionMapper.Attributes.PQEncoderDistribution.Normal = 1 -> Weaviate.Client.CollectionMapper.Attributes.PQEncoderDistribution
+Weaviate.Client.CollectionMapper.Attributes.PQEncoderType
+Weaviate.Client.CollectionMapper.Attributes.PQEncoderType.Kmeans = 0 -> Weaviate.Client.CollectionMapper.Attributes.PQEncoderType
+Weaviate.Client.CollectionMapper.Attributes.PQEncoderType.Tile = 1 -> Weaviate.Client.CollectionMapper.Attributes.PQEncoderType
+Weaviate.Client.CollectionMapper.Attributes.PropertyAttribute
+Weaviate.Client.CollectionMapper.Attributes.PropertyAttribute.DataType.get -> Weaviate.Client.Models.DataType
+Weaviate.Client.CollectionMapper.Attributes.PropertyAttribute.Description.get -> string
+Weaviate.Client.CollectionMapper.Attributes.PropertyAttribute.Description.set -> void
+Weaviate.Client.CollectionMapper.Attributes.PropertyAttribute.Name.get -> string
+Weaviate.Client.CollectionMapper.Attributes.PropertyAttribute.Name.set -> void
+Weaviate.Client.CollectionMapper.Attributes.PropertyAttribute.PropertyAttribute(Weaviate.Client.Models.DataType dataType = Weaviate.Client.Models.DataType.Unknown) -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerAttribute
+Weaviate.Client.CollectionMapper.Attributes.QuantizerAttribute.QuantizerAttribute() -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerAttribute.RescoreLimit.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.QuantizerAttribute.RescoreLimit.set -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerBQ
+Weaviate.Client.CollectionMapper.Attributes.QuantizerBQ.Cache.get -> bool?
+Weaviate.Client.CollectionMapper.Attributes.QuantizerBQ.Cache.set -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerBQ.QuantizerBQ() -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.BitCompression.get -> bool?
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.BitCompression.set -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.Centroids.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.Centroids.set -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.EncoderDistribution.get -> Weaviate.Client.CollectionMapper.Attributes.PQEncoderDistribution
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.EncoderDistribution.set -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.EncoderType.get -> Weaviate.Client.CollectionMapper.Attributes.PQEncoderType
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.EncoderType.set -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.QuantizerPQ() -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.Segments.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.Segments.set -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.TrainingLimit.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.QuantizerPQ.TrainingLimit.set -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerRQ
+Weaviate.Client.CollectionMapper.Attributes.QuantizerRQ.Bits.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.QuantizerRQ.Bits.set -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerRQ.Cache.get -> bool?
+Weaviate.Client.CollectionMapper.Attributes.QuantizerRQ.Cache.set -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerRQ.QuantizerRQ() -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerSQ
+Weaviate.Client.CollectionMapper.Attributes.QuantizerSQ.QuantizerSQ() -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerSQ.TrainingLimit.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.QuantizerSQ.TrainingLimit.set -> void
+Weaviate.Client.CollectionMapper.Attributes.QuantizerType
+Weaviate.Client.CollectionMapper.Attributes.QuantizerType.BQ = 0 -> Weaviate.Client.CollectionMapper.Attributes.QuantizerType
+Weaviate.Client.CollectionMapper.Attributes.QuantizerType.PQ = 1 -> Weaviate.Client.CollectionMapper.Attributes.QuantizerType
+Weaviate.Client.CollectionMapper.Attributes.QuantizerType.RQ = 3 -> Weaviate.Client.CollectionMapper.Attributes.QuantizerType
+Weaviate.Client.CollectionMapper.Attributes.QuantizerType.SQ = 2 -> Weaviate.Client.CollectionMapper.Attributes.QuantizerType
+Weaviate.Client.CollectionMapper.Attributes.ReferenceAttribute
+Weaviate.Client.CollectionMapper.Attributes.ReferenceAttribute.Description.get -> string
+Weaviate.Client.CollectionMapper.Attributes.ReferenceAttribute.Description.set -> void
+Weaviate.Client.CollectionMapper.Attributes.ReferenceAttribute.ReferenceAttribute(string targetCollection) -> void
+Weaviate.Client.CollectionMapper.Attributes.ReferenceAttribute.TargetCollection.get -> string
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.BaseURL.get -> string
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.BaseURL.set -> void
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.ConfigMethod.get -> string
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.ConfigMethod.set -> void
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.ConfigMethodClass.get -> System.Type
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.ConfigMethodClass.set -> void
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.Instruction.get -> string
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.Instruction.set -> void
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.Model.get -> string
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.Model.set -> void
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.RerankerAttribute() -> void
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.TopN.get -> int
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttribute<TModule>.TopN.set -> void
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttributeBase
+Weaviate.Client.CollectionMapper.Attributes.RerankerAttributeBase.RerankerAttributeBase() -> void
+Weaviate.Client.CollectionMapper.Attributes.TokenizationAttribute
+Weaviate.Client.CollectionMapper.Attributes.TokenizationAttribute.Tokenization.get -> Weaviate.Client.Models.PropertyTokenization
+Weaviate.Client.CollectionMapper.Attributes.TokenizationAttribute.TokenizationAttribute(Weaviate.Client.Models.PropertyTokenization tokenization) -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.BaseURL.get -> string
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.BaseURL.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.ConfigBuilder.get -> System.Type
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.ConfigBuilder.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.ConfigMethod.get -> string
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.ConfigMethod.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.ConfigMethodClass.get -> System.Type
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.ConfigMethodClass.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.Dimensions.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.Dimensions.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.ImageFields.get -> string[]
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.ImageFields.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.Model.get -> string
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.Model.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.ReferenceProperties.get -> string[]
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.ReferenceProperties.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.TextFields.get -> string[]
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.TextFields.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.VectorAttribute() -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.VideoFields.get -> string[]
+Weaviate.Client.CollectionMapper.Attributes.VectorAttribute<TVectorizer>.VideoFields.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttributeBase
+Weaviate.Client.CollectionMapper.Attributes.VectorAttributeBase.Name.get -> string
+Weaviate.Client.CollectionMapper.Attributes.VectorAttributeBase.Name.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttributeBase.SourceProperties.get -> string[]
+Weaviate.Client.CollectionMapper.Attributes.VectorAttributeBase.SourceProperties.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttributeBase.VectorAttributeBase() -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorAttributeBase.VectorizeCollectionName.get -> bool
+Weaviate.Client.CollectionMapper.Attributes.VectorAttributeBase.VectorizeCollectionName.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorDistance
+Weaviate.Client.CollectionMapper.Attributes.VectorDistance.Cosine = 0 -> Weaviate.Client.CollectionMapper.Attributes.VectorDistance
+Weaviate.Client.CollectionMapper.Attributes.VectorDistance.Dot = 1 -> Weaviate.Client.CollectionMapper.Attributes.VectorDistance
+Weaviate.Client.CollectionMapper.Attributes.VectorDistance.Hamming = 3 -> Weaviate.Client.CollectionMapper.Attributes.VectorDistance
+Weaviate.Client.CollectionMapper.Attributes.VectorDistance.L2Squared = 2 -> Weaviate.Client.CollectionMapper.Attributes.VectorDistance
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.DynamicEfFactor.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.DynamicEfFactor.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.DynamicEfMax.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.DynamicEfMax.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.DynamicEfMin.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.DynamicEfMin.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.Ef.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.Ef.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.EfConstruction.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.EfConstruction.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.FlatSearchCutoff.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.FlatSearchCutoff.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.MaxConnections.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.MaxConnections.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.Threshold.get -> int?
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.Threshold.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.VectorCacheMaxObjects.get -> long?
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.VectorCacheMaxObjects.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttribute<TIndexConfig>.VectorIndexAttribute() -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttributeBase
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttributeBase.Distance.get -> Weaviate.Client.CollectionMapper.Attributes.VectorDistance?
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttributeBase.Distance.set -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttributeBase.VectorIndexAttributeBase() -> void
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexType
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexType.Dynamic = 2 -> Weaviate.Client.CollectionMapper.Attributes.VectorIndexType
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexType.Flat = 1 -> Weaviate.Client.CollectionMapper.Attributes.VectorIndexType
+Weaviate.Client.CollectionMapper.Attributes.VectorIndexType.Hnsw = 0 -> Weaviate.Client.CollectionMapper.Attributes.VectorIndexType
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.AutoTenantActivation.get -> bool?
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.AutoTenantActivation.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.AutoTenantCreation.get -> bool?
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.AutoTenantCreation.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.CollectionConfigMethod.get -> string
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.CollectionConfigMethod.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ConfigMethodClass.get -> System.Type
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ConfigMethodClass.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.Description.get -> string
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.Description.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.MultiTenancyEnabled.get -> bool?
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.MultiTenancyEnabled.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.Name.get -> string
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.Name.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ReplicationAsyncEnabled.get -> bool
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ReplicationAsyncEnabled.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ReplicationFactor.get -> int
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ReplicationFactor.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ShardingDesiredCount.get -> int
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ShardingDesiredCount.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ShardingDesiredVirtualCount.get -> int
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionMapper.Attributes.WeaviateCollectionAttribute.ShardingDesiredVirtualCount.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ShardingKey.get -> string
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ShardingKey.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ShardingVirtualPerPhysical.get -> int
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.ShardingVirtualPerPhysical.set -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.WeaviateCollectionAttribute() -> void
+Weaviate.Client.CollectionMapper.Attributes.WeaviateCollectionAttribute.WeaviateCollectionAttribute(string name) -> void
+Weaviate.Client.CollectionMapper.Extensions.CollectionClientExtensions
+Weaviate.Client.CollectionMapper.Extensions.CollectionMigrationExtensions
+Weaviate.Client.CollectionMapper.Extensions.DataClientExtensions
+Weaviate.Client.CollectionMapper.Extensions.WeaviateClientExtensions
+Weaviate.Client.CollectionMapper.Mapping.CollectionMapperObjectMapper
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.Changes.get -> System.Collections.Generic.List<Weaviate.Client.CollectionMapper.Migrations.SchemaChange>
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.Changes.init -> void
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.CollectionName.get -> string
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.CollectionName.init -> void
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.CurrentConfig.get -> Weaviate.Client.Models.CollectionConfig
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.CurrentConfig.init -> void
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.GetSummary() -> string
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.HasChanges.get -> bool
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.IsSafe.get -> bool
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.MigrationPlan() -> void
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.TargetConfig.get -> Weaviate.Client.Models.CollectionConfig
+Weaviate.Client.CollectionMapper.Migrations.MigrationPlan.TargetConfig.init -> void
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.ChangeType.get -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.ChangeType.init -> void
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.Description.get -> string
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.Description.init -> void
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.IsSafe.get -> bool
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.IsSafe.init -> void
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.NewValue.get -> object
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.NewValue.init -> void
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.OldValue.get -> object
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.OldValue.init -> void
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.Property.get -> Weaviate.Client.Models.Property
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.Property.init -> void
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.Reference.get -> Weaviate.Client.Models.Reference
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.Reference.init -> void
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.SchemaChange() -> void
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.VectorConfig.get -> Weaviate.Client.Models.VectorConfig
+Weaviate.Client.CollectionMapper.Migrations.SchemaChange.VectorConfig.init -> void
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.AddProperty = 0 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.AddReference = 1 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.AddVector = 2 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.ModifyPropertyType = 13 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.Other = 14 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.RemoveProperty = 10 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.RemoveReference = 11 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.RemoveVector = 12 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.UpdateDescription = 3 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.UpdateInvertedIndex = 6 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.UpdateMultiTenancy = 9 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.UpdatePropertyDescription = 4 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.UpdateReferenceDescription = 5 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.UpdateReplication = 8 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType.UpdateVectorIndex = 7 -> Weaviate.Client.CollectionMapper.Migrations.SchemaChangeType
+Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>
+Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>.ExecuteAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<T>>
+Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>.ExecuteWithMetadataAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.Typed.WeaviateObject<T>>>
+Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>.Hybrid(string query, System.Linq.Expressions.Expression<System.Func<T, object>> vector = null, float? alpha = null) -> Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>
+Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>.Limit(uint limit) -> Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>
+Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>.NearText(string text, System.Linq.Expressions.Expression<System.Func<T, object>> vector = null, float? certainty = null, float? distance = null) -> Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>
+Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>.NearVector(float[] vectorValues, System.Linq.Expressions.Expression<System.Func<T, object>> vector = null, float? certainty = null, float? distance = null) -> Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>
+Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>.Select(System.Linq.Expressions.Expression<System.Func<T, object>>[] properties) -> Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>
+Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>.Where(System.Linq.Expressions.Expression<System.Func<T, bool>> predicate) -> Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>
+Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>.WithReferences(params System.Linq.Expressions.Expression<System.Func<T, object>>[] references) -> Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>
+Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>.WithVectors(params System.Linq.Expressions.Expression<System.Func<T, object>>[] vectors) -> Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>
+static Weaviate.Client.CollectionMapper.Attributes.GenerativeAttributeBase.ModuleType.get -> System.Type
+static Weaviate.Client.CollectionMapper.Attributes.QuantizerAttribute.QuantizerType.get -> System.Type
+static Weaviate.Client.CollectionMapper.Attributes.RerankerAttributeBase.ModuleType.get -> System.Type
+static Weaviate.Client.CollectionMapper.Attributes.VectorAttributeBase.VectorizerType.get -> System.Type
+static Weaviate.Client.CollectionMapper.Attributes.VectorIndexAttributeBase.IndexConfigType.get -> System.Type
+static Weaviate.Client.CollectionMapper.Extensions.CollectionClientExtensions.Query<T>(this Weaviate.Client.CollectionClient collection) -> Weaviate.Client.CollectionMapper.Query.CollectionMapperQueryClient<T>
+static Weaviate.Client.CollectionMapper.Extensions.CollectionMigrationExtensions.CheckMigrate<T>(this Weaviate.Client.CollectionsClient collections, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.CollectionMapper.Migrations.MigrationPlan>
+static Weaviate.Client.CollectionMapper.Extensions.CollectionMigrationExtensions.Migrate<T>(this Weaviate.Client.CollectionsClient collections, bool checkFirst = true, bool allowBreakingChanges = false, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.CollectionMapper.Migrations.MigrationPlan>
+static Weaviate.Client.CollectionMapper.Extensions.DataClientExtensions.DeleteByID(this Weaviate.Client.DataClient dataClient, System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task
+static Weaviate.Client.CollectionMapper.Extensions.DataClientExtensions.DeleteMany<T>(this Weaviate.Client.DataClient dataClient, System.Linq.Expressions.Expression<System.Func<T, bool>> where, bool dryRun = false, bool verbose = false, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.DeleteManyResult>
+static Weaviate.Client.CollectionMapper.Extensions.DataClientExtensions.Insert<T>(this Weaviate.Client.DataClient dataClient, T obj, System.Guid? id = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Guid>
+static Weaviate.Client.CollectionMapper.Extensions.DataClientExtensions.InsertMany<T>(this Weaviate.Client.DataClient dataClient, System.Collections.Generic.IEnumerable<T> objects, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.BatchInsertResponse>
+static Weaviate.Client.CollectionMapper.Extensions.DataClientExtensions.Replace<T>(this Weaviate.Client.DataClient dataClient, T obj, System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task
+static Weaviate.Client.CollectionMapper.Extensions.DataClientExtensions.Update<T>(this Weaviate.Client.DataClient dataClient, T obj, System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task
+static Weaviate.Client.CollectionMapper.Extensions.WeaviateClientExtensions.CreateFromClass<T>(this Weaviate.Client.CollectionsClient collections, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.CollectionClient>
+static Weaviate.Client.CollectionMapper.Mapping.CollectionMapperObjectMapper.DeserializeObject<T>(Weaviate.Client.Models.WeaviateObject weaviateObject) -> T
+static Weaviate.Client.CollectionMapper.Mapping.CollectionMapperObjectMapper.SerializeObject(object obj) -> object
