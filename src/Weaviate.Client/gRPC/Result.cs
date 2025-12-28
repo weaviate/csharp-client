@@ -84,19 +84,12 @@ internal partial class WeaviateGrpcClient
     {
         if (metadataResult.VectorBytes != null && metadataResult.VectorBytes.Length > 0)
         {
-            return Vector.Create<float>([.. metadataResult.VectorBytes.FromByteString<float>()]);
+            return metadataResult.VectorBytes.FromByteString<float>().ToArray();
         }
 
         var vectors = metadataResult.Vectors;
 
-        var result = new Vectors();
-
-        foreach (var vector in vectors)
-        {
-            result.Add(vector.FromByteString<float>());
-        }
-
-        return result;
+        return new Vectors(vectors.Select(vector => vector.FromByteString<float>()));
     }
 
     internal static GroupByObject BuildGroupByObjectFromResult(

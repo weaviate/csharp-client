@@ -238,13 +238,17 @@ public class DataClient
                     if (r.Vectors != null)
                     {
                         o.Vectors.AddRange(
-                            r.Vectors.Select(v => new Grpc.Protobuf.V1.Vectors
+                            r.Vectors.Select(kvp =>
                             {
-                                Name = v.Key,
-                                VectorBytes = v.Value.ToByteString(),
-                                Type = v.Value.IsMultiVector
-                                    ? Grpc.Protobuf.V1.Vectors.Types.VectorType.MultiFp32
-                                    : Grpc.Protobuf.V1.Vectors.Types.VectorType.SingleFp32,
+                                var v = kvp.Value;
+                                return new Grpc.Protobuf.V1.Vectors
+                                {
+                                    Name = kvp.Key,
+                                    VectorBytes = v.ToByteString(),
+                                    Type = v.IsMultiVector
+                                        ? Grpc.Protobuf.V1.Vectors.Types.VectorType.MultiFp32
+                                        : Grpc.Protobuf.V1.Vectors.Types.VectorType.SingleFp32,
+                                };
                             })
                         );
                     }

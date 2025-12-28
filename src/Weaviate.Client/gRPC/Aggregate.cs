@@ -5,7 +5,7 @@ namespace Weaviate.Client.Grpc;
 
 internal partial class WeaviateGrpcClient
 {
-    private Grpc.Protobuf.V1.AggregateRequest BaseAggregateRequest(
+    private static Grpc.Protobuf.V1.AggregateRequest BaseAggregateRequest(
         string collection,
         Filter? filter = null,
         Aggregate.GroupBy? groupBy = null,
@@ -199,51 +199,26 @@ internal partial class WeaviateGrpcClient
             metrics
         );
 
-        request.NearText = new() { Query = { query }, Targets = targetVector ?? [] };
-
-        if (certainty.HasValue)
-        {
-            request.NearText.Certainty = certainty.Value;
-        }
-        if (distance.HasValue)
-        {
-            request.NearText.Distance = distance.Value;
-        }
-        if (moveTo is not null)
-        {
-            var uuids = moveTo.Objects is null ? [] : moveTo.Objects.Select(x => x.ToString());
-            var concepts = moveTo.Concepts is null ? [] : moveTo.Concepts;
-            request.NearText.MoveTo = new NearTextSearch.Types.Move
-            {
-                Uuids = { uuids },
-                Concepts = { concepts },
-                Force = moveTo.Force,
-            };
-        }
-        if (moveAway is not null)
-        {
-            var uuids = moveAway.Objects is null ? [] : moveAway.Objects.Select(x => x.ToString());
-            var concepts = moveAway.Concepts is null ? [] : moveAway.Concepts;
-            request.NearText.MoveAway = new NearTextSearch.Types.Move
-            {
-                Uuids = { uuids },
-                Concepts = { concepts },
-                Force = moveAway.Force,
-            };
-        }
+        request.NearText = BuildNearText(
+            query,
+            distance,
+            certainty,
+            moveTo,
+            moveAway,
+            targetVector
+        );
 
         return await Aggregate(request, cancellationToken);
     }
 
     internal async Task<AggregateReply> AggregateNearVector(
         string collection,
-        Models.NearVectorInput vector,
+        VectorSearchInput vectors,
         double? certainty,
         double? distance,
         uint? limit,
         Filter? filter,
         Aggregate.GroupBy? groupBy,
-        TargetVectors? targetVector,
         bool totalCount,
         string? tenant,
         IEnumerable<Aggregate.Metric>? metrics,
@@ -260,7 +235,7 @@ internal partial class WeaviateGrpcClient
             metrics
         );
 
-        request.NearVector = BuildNearVector(vector, certainty, distance, targetVector);
+        request.NearVector = BuildNearVector(vectors, certainty, distance);
 
         return await Aggregate(request, cancellationToken);
     }
@@ -269,10 +244,9 @@ internal partial class WeaviateGrpcClient
         string collection,
         string? query,
         float alpha,
-        Models.Vectors? vectors,
+        HybridVectorInput? vectors,
         string[]? queryProperties,
         BM25Operator? bm25Operator,
-        string? targetVector,
         float? maxVectorDistance,
         Filter? filter,
         Aggregate.GroupBy? groupBy,
@@ -293,39 +267,15 @@ internal partial class WeaviateGrpcClient
             metrics
         );
 
-        request.Hybrid = new() { Query = query, Alpha = alpha };
-
-        if (queryProperties is not null && queryProperties.Length > 0)
-        {
-            request.Hybrid.Properties.AddRange(queryProperties);
-        }
-
-        var (targets, _, vector) = BuildTargetVector(
-            targetVector is null ? null : [targetVector],
-            vectors?.Values
+        request.Hybrid = BuildHybrid(
+            query,
+            alpha,
+            vectors,
+            queryProperties,
+            null,
+            maxVectorDistance,
+            bm25Operator
         );
-
-        request.Hybrid.Vectors.AddRange(vector ?? []);
-        request.Hybrid.Targets = targets;
-
-        if (maxVectorDistance.HasValue)
-        {
-            request.Hybrid.VectorDistance = maxVectorDistance.Value;
-        }
-
-        if (bm25Operator != null)
-        {
-            request.Hybrid.Bm25SearchOperator = new()
-            {
-                Operator = bm25Operator switch
-                {
-                    BM25Operator.And => Protobuf.V1.SearchOperatorOptions.Types.Operator.And,
-                    BM25Operator.Or => Protobuf.V1.SearchOperatorOptions.Types.Operator.Or,
-                    _ => Protobuf.V1.SearchOperatorOptions.Types.Operator.Unspecified,
-                },
-                MinimumOrTokensMatch = (bm25Operator as BM25Operator.Or)?.MinimumMatch ?? 1,
-            };
-        }
 
         return await Aggregate(request, cancellationToken);
     }
