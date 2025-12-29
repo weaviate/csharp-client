@@ -13,9 +13,9 @@ public partial class SearchTests : IntegrationTests
             null,
             "Test collection description",
             [Property.Text("value")],
-            vectorConfig: new VectorConfig(
-                "default",
-                new Vectorizer.Text2VecTransformers() { SourceProperties = ["value"] }
+            vectorConfig: Configure.Vector(
+                v => v.Text2VecTransformers(),
+                sourceProperties: ["value"]
             )
         );
 
@@ -59,7 +59,7 @@ public partial class SearchTests : IntegrationTests
             "",
             "Test collection description",
             [Property.Text("value")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers())
+            vectorConfig: Configure.Vector(v => v.Text2VecTransformers())
         );
 
         string[] values = ["Apple", "Mountain climbing", "apple cake", "cake"];
