@@ -111,6 +111,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="uuid">Object UUID</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Generative provider</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
