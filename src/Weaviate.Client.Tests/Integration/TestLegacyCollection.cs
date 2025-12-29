@@ -1,3 +1,5 @@
+// These tests require internal access to ToDto() and WeaviateRestClient.
+#if ENABLE_INTERNAL_TESTS
 using System.Text.Json;
 using Weaviate.Client.Models;
 
@@ -508,3 +510,4 @@ public partial class CollectionsTests
         );
     }
 }
+#endif

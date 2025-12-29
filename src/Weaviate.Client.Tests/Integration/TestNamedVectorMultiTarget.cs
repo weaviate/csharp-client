@@ -298,43 +298,50 @@ public class TestNamedVectorMultiTarget : IntegrationTests
     /// Ported from Python: test_same_target_vector_multiple_input
     /// Tests multiple vectors for the same target with Sum combination and distance verification.
     /// </summary>
-    public static TheoryData<VectorSearchInput, float[]> MultiTargetVectorsWithDistances =>
+    public static TheoryData<
+        Func<VectorSearchInput.Builder, VectorSearchInput>,
+        float[]
+    > MultiTargetVectorsWithDistances =>
         new()
         {
             // Sum combination: first has 1 vector, second has 2 vectors
             {
-                new VectorSearchInput.Builder().Sum(
-                    ("first", new[] { 0f, 1f }),
-                    ("second", new[] { 1f, 0f, 0f }),
-                    ("second", new[] { 0f, 0f, 1f })
-                ),
+                tv =>
+                    tv.Sum(
+                        ("first", new[] { 0f, 1f }),
+                        ("second", new[] { 1f, 0f, 0f }),
+                        ("second", new[] { 0f, 0f, 1f })
+                    ),
                 new[] { 1.0f, 3.0f }
             },
             // ManualWeights: weight 1 for each vector
             {
-                new VectorSearchInput.Builder().ManualWeights(
-                    ("first", 1.0, new[] { 0f, 1f }),
-                    ("second", 1.0, new[] { 1f, 0f, 0f }),
-                    ("second", 1.0, new[] { 0f, 0f, 1f })
-                ),
+                tv =>
+                    tv.ManualWeights(
+                        ("first", 1.0, new[] { 0f, 1f }),
+                        ("second", 1.0, new[] { 1f, 0f, 0f }),
+                        ("second", 1.0, new[] { 0f, 0f, 1f })
+                    ),
                 new[] { 1.0f, 3.0f }
             },
             // ManualWeights: different weights (1 for first, 1 and 2 for second)
             {
-                new VectorSearchInput.Builder().ManualWeights(
-                    ("first", 1.0, new[] { 0f, 1f }),
-                    ("second", 1.0, new[] { 1f, 0f, 0f }),
-                    ("second", 2.0, new[] { 0f, 0f, 1f })
-                ),
+                tv =>
+                    tv.ManualWeights(
+                        ("first", 1.0, new[] { 0f, 1f }),
+                        ("second", 1.0, new[] { 1f, 0f, 0f }),
+                        ("second", 2.0, new[] { 0f, 0f, 1f })
+                    ),
                 new[] { 2.0f, 4.0f }
             },
             // ManualWeights: same weights but different order (second before first)
             {
-                new VectorSearchInput.Builder().ManualWeights(
-                    ("second", 1.0, new[] { 1f, 0f, 0f }),
-                    ("second", 2.0, new[] { 0f, 0f, 1f }),
-                    ("first", 1.0, new[] { 0f, 1f })
-                ),
+                tv =>
+                    tv.ManualWeights(
+                        ("second", 1.0, new[] { 1f, 0f, 0f }),
+                        ("second", 2.0, new[] { 0f, 0f, 1f }),
+                        ("first", 1.0, new[] { 0f, 1f })
+                    ),
                 new[] { 2.0f, 4.0f }
             },
         };
@@ -342,7 +349,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
     [Theory]
     [MemberData(nameof(MultiTargetVectorsWithDistances))]
     public async Task Test_SameTargetVector_MultipleInput(
-        VectorSearchInput nearVectorInput,
+        Func<VectorSearchInput.Builder, VectorSearchInput> nearVectorInput,
         float[] expectedDistances
     )
     {
@@ -404,7 +411,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
     public static TheoryData<TargetVectors, string> MultiTargetVectors =>
         new()
         {
-            { new SimpleTargetVectors(["first", "second"]), "Targets" },
+            { new[] { "first", "second" }, "Targets" },
             { TargetVectors.Sum("first", "second"), "Sum" },
             { TargetVectors.Minimum("first", "second"), "Minimum" },
             { TargetVectors.Average("first", "second"), "Average" },

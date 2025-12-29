@@ -1,5 +1,3 @@
-using Google.Protobuf;
-using Weaviate.Client.Grpc;
 using Weaviate.Client.Grpc.Protobuf.V1;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Generative;

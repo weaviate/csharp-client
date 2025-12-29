@@ -1,3 +1,5 @@
+// Some tests in this file require internal access to OAuthTokenService.
+#if ENABLE_INTERNAL_TESTS
 namespace Weaviate.Client.Tests.Integration;
 
 using System.Net.Http;
@@ -224,3 +226,4 @@ public class TestAuth : IntegrationTests
         });
     }
 }
+#endif

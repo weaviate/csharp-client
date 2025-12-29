@@ -1,3 +1,4 @@
+#if ENABLE_INTERNAL_TESTS
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Grpc.Protobuf.V1;
 using Weaviate.Client.Tests.Unit.Mocks;
@@ -71,3 +72,4 @@ public class TestGrpcCancellation
         Assert.NotNull(reply);
     }
 }
+#endif
