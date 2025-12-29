@@ -15,7 +15,9 @@ public partial class TypedQueryClient<T>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="searchOperator">BM25 search operator (AND/OR).</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="after">Cursor for pagination.</param>
     /// <param name="consistencyLevel">Consistency level for the query.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -31,7 +33,9 @@ public partial class TypedQueryClient<T>
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
+        BM25Operator? searchOperator = null,
         Rerank? rerank = null,
+        Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         AutoArray<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -48,7 +52,9 @@ public partial class TypedQueryClient<T>
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
+            searchOperator: searchOperator,
             rerank: rerank,
+            after: after,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
@@ -68,7 +74,9 @@ public partial class TypedQueryClient<T>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="searchOperator">BM25 search operator (AND/OR).</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="after">Cursor for pagination.</param>
     /// <param name="consistencyLevel">Consistency level for the query.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -83,7 +91,9 @@ public partial class TypedQueryClient<T>
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
+        BM25Operator? searchOperator = null,
         Rerank? rerank = null,
+        Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         AutoArray<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -99,7 +109,9 @@ public partial class TypedQueryClient<T>
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
+            searchOperator: searchOperator,
             rerank: rerank,
+            after: after,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,

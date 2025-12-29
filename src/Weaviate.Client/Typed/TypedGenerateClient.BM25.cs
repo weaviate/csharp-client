@@ -18,6 +18,8 @@ public partial class TypedGenerateClient<T>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
+    /// <param name="after">Cursor for pagination</param>
     /// <param name="consistencyLevel">Consistency level</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -37,6 +39,7 @@ public partial class TypedGenerateClient<T>
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
+        Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         AutoArray<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -57,6 +60,7 @@ public partial class TypedGenerateClient<T>
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
+            after: after,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,
@@ -79,6 +83,8 @@ public partial class TypedGenerateClient<T>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
+    /// <param name="after">Cursor for pagination</param>
     /// <param name="consistencyLevel">Consistency level</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -97,6 +103,7 @@ public partial class TypedGenerateClient<T>
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
+        Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         AutoArray<string>? returnProperties = null,
         MetadataQuery? returnMetadata = null,
@@ -116,6 +123,7 @@ public partial class TypedGenerateClient<T>
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
+            after: after,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
             returnMetadata: returnMetadata,

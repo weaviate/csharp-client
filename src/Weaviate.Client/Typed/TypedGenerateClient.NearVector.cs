@@ -127,4 +127,121 @@ public partial class TypedGenerateClient<T>
         );
         return result.ToTyped<T>();
     }
+
+    /// <summary>
+    /// Search near vector with generative AI capabilities using lambda builder.
+    /// </summary>
+    /// <param name="vectors">Lambda function to build the vectors</param>
+    /// <param name="filters">Filters to apply</param>
+    /// <param name="certainty">Certainty threshold</param>
+    /// <param name="distance">Distance threshold</param>
+    /// <param name="autoLimit">Auto-cut threshold</param>
+    /// <param name="limit">Maximum number of results</param>
+    /// <param name="offset">Offset for pagination</param>
+    /// <param name="rerank">Rerank configuration</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider</param>
+    /// <param name="returnProperties">Properties to return</param>
+    /// <param name="returnReferences">References to return</param>
+    /// <param name="returnMetadata">Metadata to return</param>
+    /// <param name="includeVectors">Vectors to include</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
+    /// <returns>Strongly-typed generative result</returns>
+    public Task<GenerativeWeaviateResult<T>> NearVector(
+        VectorSearchInput.FactoryFn vectors,
+        Filter? filters = null,
+        float? certainty = null,
+        float? distance = null,
+        uint? autoLimit = null,
+        uint? limit = null,
+        uint? offset = null,
+        Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        NearVector(
+            vectors(new VectorSearchInput.Builder()),
+            filters,
+            certainty,
+            distance,
+            autoLimit,
+            limit,
+            offset,
+            rerank,
+            singlePrompt,
+            groupedTask,
+            provider,
+            returnProperties,
+            returnReferences,
+            returnMetadata,
+            includeVectors,
+            cancellationToken
+        );
+
+    /// <summary>
+    /// Search near vector with generative AI capabilities and grouping using lambda builder.
+    /// </summary>
+    /// <param name="vectors">Lambda function to build the vectors</param>
+    /// <param name="groupBy">Group by configuration</param>
+    /// <param name="filters">Filters to apply</param>
+    /// <param name="certainty">Certainty threshold</param>
+    /// <param name="distance">Distance threshold</param>
+    /// <param name="autoLimit">Auto-cut threshold</param>
+    /// <param name="limit">Maximum number of results</param>
+    /// <param name="offset">Offset for pagination</param>
+    /// <param name="rerank">Rerank configuration</param>
+    /// <param name="singlePrompt">Single prompt for generation</param>
+    /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider">Optional generative provider</param>
+    /// <param name="returnProperties">Properties to return</param>
+    /// <param name="returnReferences">References to return</param>
+    /// <param name="returnMetadata">Metadata to return</param>
+    /// <param name="includeVectors">Vectors to include</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
+    /// <returns>Strongly-typed generative group-by result</returns>
+    public Task<GenerativeGroupByResult<T>> NearVector(
+        VectorSearchInput.FactoryFn vectors,
+        GroupByRequest groupBy,
+        Filter? filters = null,
+        float? certainty = null,
+        float? distance = null,
+        uint? autoLimit = null,
+        uint? limit = null,
+        uint? offset = null,
+        Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        NearVector(
+            vectors(new VectorSearchInput.Builder()),
+            groupBy,
+            filters,
+            certainty,
+            distance,
+            autoLimit,
+            limit,
+            offset,
+            rerank,
+            singlePrompt,
+            groupedTask,
+            provider,
+            returnProperties,
+            returnReferences,
+            returnMetadata,
+            includeVectors,
+            cancellationToken
+        );
 }
