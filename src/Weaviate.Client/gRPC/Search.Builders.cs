@@ -769,15 +769,8 @@ internal partial class WeaviateGrpcClient
             vectors.Match<object?>(
                 onVectorSearch: vectorSearchInput =>
                 {
-                    // Flatten the NamedVector[] arrays from all dictionary entries
-                    var namedVectors = vectorSearchInput
-                        .Vectors.SelectMany(kvp => kvp.Value)
-                        .ToList();
-                    // Build target vectors from VectorSearchInput
-                    var (targets, vfts, vectorsGrpc) = BuildTargetVector(
-                        new SimpleTargetVectors([.. vectorSearchInput.Vectors.Keys]),
-                        namedVectors
-                    );
+                    // Build target vectors from VectorSearchInput (includes combination method)
+                    var (targets, vfts, vectorsGrpc) = BuildTargetVector(vectorSearchInput);
                     // Set targets for hybrid search
                     if (targets is not null)
                     {

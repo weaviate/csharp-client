@@ -78,7 +78,7 @@ public partial class QueryClient
 
     // Lambda syntax overload
     public async Task<WeaviateResult> NearVector(
-        Func<VectorSearchInput.Builder, VectorSearchInput> vectors,
+        VectorSearchInput.FactoryFn vectors,
         Filter? filters = null,
         float? certainty = null,
         float? distance = null,
@@ -110,7 +110,7 @@ public partial class QueryClient
 
     // Lambda syntax overload with GroupBy
     public async Task<GroupByResult> NearVector(
-        Func<VectorSearchInput.Builder, VectorSearchInput> vectors,
+        VectorSearchInput.FactoryFn vectors,
         GroupByRequest groupBy,
         Filter? filters = null,
         float? certainty = null,

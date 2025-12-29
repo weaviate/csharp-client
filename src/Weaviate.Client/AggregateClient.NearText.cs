@@ -29,7 +29,7 @@ public partial class AggregateClient
         Move? moveTo = null,
         Move? moveAway = null,
         Filter? filters = null,
-        Func<TargetVectorsBuilder, TargetVectors>? targets = null,
+        TargetVectors.FactoryFn? targets = null,
         bool totalCount = true,
         CancellationToken cancellationToken = default,
         IEnumerable<Aggregate.Metric>? returnMetrics = null
@@ -45,7 +45,7 @@ public partial class AggregateClient
             moveAway,
             filters,
             groupBy,
-            targets?.Invoke(new TargetVectorsBuilder()),
+            targets?.Invoke(new TargetVectors.Builder()),
             totalCount,
             _collectionClient.Tenant,
             returnMetrics,
@@ -78,7 +78,7 @@ public partial class AggregateClient
         Move? moveTo = null,
         Move? moveAway = null,
         Filter? filters = null,
-        Func<TargetVectorsBuilder, TargetVectors>? targets = null,
+        TargetVectors.FactoryFn? targets = null,
         bool totalCount = true,
         CancellationToken cancellationToken = default,
         IEnumerable<Aggregate.Metric>? returnMetrics = null
@@ -94,7 +94,7 @@ public partial class AggregateClient
             moveAway,
             filters,
             null, // No GroupByRequest for NearText
-            targets?.Invoke(new TargetVectorsBuilder()),
+            targets?.Invoke(new TargetVectors.Builder()),
             totalCount,
             _collectionClient.Tenant,
             returnMetrics,

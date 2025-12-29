@@ -94,7 +94,7 @@ public partial class GenerateClient
     /// Search near vector with generative AI capabilities using lambda builder.
     /// </summary>
     public async Task<GenerativeWeaviateResult> NearVector(
-        Func<VectorSearchInput.Builder, VectorSearchInput> vectors,
+        VectorSearchInput.FactoryFn vectors,
         Filter? filters = null,
         float? certainty = null,
         float? distance = null,
@@ -134,7 +134,7 @@ public partial class GenerateClient
     /// Search near vector with generative AI capabilities and grouping using lambda builder.
     /// </summary>
     public async Task<GenerativeGroupByResult> NearVector(
-        Func<VectorSearchInput.Builder, VectorSearchInput> vectors,
+        VectorSearchInput.FactoryFn vectors,
         GroupByRequest groupBy,
         Filter? filters = null,
         float? certainty = null,

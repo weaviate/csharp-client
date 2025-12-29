@@ -10,6 +10,12 @@ public abstract record TargetVectors : IEnumerable<string>
 {
     internal TargetVectors() { } // Prevent external inheritance
 
+    /// <summary>
+    /// Factory delegate for creating VectorSearchInput using a builder pattern.
+    /// Example: FactoryFn factory = b => b.Sum(("title", vec1), ("desc", vec2))
+    /// </summary>
+    public delegate TargetVectors FactoryFn(Builder builder);
+
     public abstract IReadOnlyList<string> Targets { get; }
     internal abstract V1.CombinationMethod Combination { get; }
 
@@ -76,6 +82,96 @@ public abstract record TargetVectors : IEnumerable<string>
     // Implicit conversion from string array for convenience
     public static implicit operator TargetVectors(string[] targets) =>
         new SimpleTargetVectors(targets, V1.CombinationMethod.Unspecified);
+
+    /// <summary>
+    /// Builder for creating TargetVectors via lambda syntax.
+    /// </summary>
+    public sealed class Builder
+    {
+        internal Builder() { }
+
+        /// <summary>
+        /// Specifies target vector names without a combination method.
+        /// </summary>
+        public SimpleTargetVectors Targets(params string[] names)
+        {
+            return new SimpleTargetVectors(
+                targets: names,
+                combination: V1.CombinationMethod.Unspecified
+            );
+        }
+
+        /// <summary>
+        /// Creates a multi-target configuration with Sum combination.
+        /// </summary>
+        public SimpleTargetVectors Sum(params string[] names)
+        {
+            return new SimpleTargetVectors(
+                targets: names,
+                combination: V1.CombinationMethod.TypeSum
+            );
+        }
+
+        /// <summary>
+        /// Creates a multi-target configuration with Average combination.
+        /// </summary>
+        public SimpleTargetVectors Average(params string[] names)
+        {
+            return new SimpleTargetVectors(
+                targets: names,
+                combination: V1.CombinationMethod.TypeAverage
+            );
+        }
+
+        /// <summary>
+        /// Creates a multi-target configuration with Minimum combination.
+        /// </summary>
+        public SimpleTargetVectors Minimum(params string[] names)
+        {
+            return new SimpleTargetVectors(
+                targets: names,
+                combination: V1.CombinationMethod.TypeMin
+            );
+        }
+
+        /// <summary>
+        /// Creates a multi-target configuration with ManualWeights.
+        /// Supports multiple weights per target.
+        /// </summary>
+        public WeightedTargetVectors ManualWeights(params (string name, double weight)[] weights)
+        {
+            var dict = weights
+                .GroupBy(w => w.name)
+                .ToDictionary(
+                    g => g.Key,
+                    g => (IReadOnlyList<double>)g.Select(w => w.weight).ToList()
+                );
+            return new WeightedTargetVectors(
+                targets: weights.Select(w => w.name).Distinct().ToList(),
+                combination: V1.CombinationMethod.TypeManual,
+                weights: dict
+            );
+        }
+
+        /// <summary>
+        /// Creates a multi-target configuration with RelativeScore.
+        /// Supports multiple weights per target.
+        /// </summary>
+        public WeightedTargetVectors RelativeScore(params (string name, double weight)[] weights)
+        {
+            var dict = weights
+                .GroupBy(w => w.name)
+                .ToDictionary(
+                    g => g.Key,
+                    g => (IReadOnlyList<double>)g.Select(w => w.weight).ToList()
+                );
+            return new WeightedTargetVectors(
+                targets: weights.Select(w => w.name).Distinct().ToList(),
+                combination: V1.CombinationMethod.TypeRelativeScore,
+                weights: dict
+            );
+        }
+    }
 }
 
 /// <summary>
@@ -126,83 +222,5 @@ public sealed record WeightedTargetVectors : TargetVectors
                     yield return (target, weight);
             }
         }
-    }
-}
-
-/// <summary>
-/// Builder for creating TargetVectors via lambda syntax.
-/// </summary>
-public sealed class TargetVectorsBuilder
-{
-    internal TargetVectorsBuilder() { }
-
-    /// <summary>
-    /// Specifies target vector names without a combination method.
-    /// </summary>
-    public SimpleTargetVectors Targets(params string[] names)
-    {
-        return new SimpleTargetVectors(
-            targets: names,
-            combination: V1.CombinationMethod.Unspecified
-        );
-    }
-
-    /// <summary>
-    /// Creates a multi-target configuration with Sum combination.
-    /// </summary>
-    public SimpleTargetVectors Sum(params string[] names)
-    {
-        return new SimpleTargetVectors(targets: names, combination: V1.CombinationMethod.TypeSum);
-    }
-
-    /// <summary>
-    /// Creates a multi-target configuration with Average combination.
-    /// </summary>
-    public SimpleTargetVectors Average(params string[] names)
-    {
-        return new SimpleTargetVectors(
-            targets: names,
-            combination: V1.CombinationMethod.TypeAverage
-        );
-    }
-
-    /// <summary>
-    /// Creates a multi-target configuration with Minimum combination.
-    /// </summary>
-    public SimpleTargetVectors Minimum(params string[] names)
-    {
-        return new SimpleTargetVectors(targets: names, combination: V1.CombinationMethod.TypeMin);
-    }
-
-    /// <summary>
-    /// Creates a multi-target configuration with ManualWeights.
-    /// Supports multiple weights per target.
-    /// </summary>
-    public WeightedTargetVectors ManualWeights(params (string name, double weight)[] weights)
-    {
-        var dict = weights
-            .GroupBy(w => w.name)
-            .ToDictionary(g => g.Key, g => (IReadOnlyList<double>)g.Select(w => w.weight).ToList());
-        return new WeightedTargetVectors(
-            targets: weights.Select(w => w.name).Distinct().ToList(),
-            combination: V1.CombinationMethod.TypeManual,
-            weights: dict
-        );
-    }
-
-    /// <summary>
-    /// Creates a multi-target configuration with RelativeScore.
-    /// Supports multiple weights per target.
-    /// </summary>
-    public WeightedTargetVectors RelativeScore(params (string name, double weight)[] weights)
-    {
-        var dict = weights
-            .GroupBy(w => w.name)
-            .ToDictionary(g => g.Key, g => (IReadOnlyList<double>)g.Select(w => w.weight).ToList());
-        return new WeightedTargetVectors(
-            targets: weights.Select(w => w.name).Distinct().ToList(),
-            combination: V1.CombinationMethod.TypeRelativeScore,
-            weights: dict
-        );
     }
 }
