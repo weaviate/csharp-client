@@ -7,6 +7,53 @@ public partial class GenerateClient
     /// <summary>
     /// Hybrid search with generative AI capabilities.
     /// </summary>
+    public Task<GenerativeWeaviateResult> Hybrid(
+        string query,
+        float? alpha = null,
+        string[]? queryProperties = null,
+        HybridFusion? fusionType = null,
+        float? maxVectorDistance = null,
+        uint? limit = null,
+        uint? offset = null,
+        BM25Operator? bm25Operator = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        Hybrid(
+            query: query,
+            vectors: null,
+            alpha: alpha,
+            queryProperties: queryProperties,
+            fusionType: fusionType,
+            maxVectorDistance: maxVectorDistance,
+            limit: limit,
+            offset: offset,
+            bm25Operator: bm25Operator,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedTask: groupedTask,
+            provider: provider,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
+
+    /// <summary>
+    /// Hybrid search with generative AI capabilities.
+    /// </summary>
     public async Task<GenerativeWeaviateResult> Hybrid(
         string? query,
         HybridVectorInput? vectors,
@@ -64,6 +111,55 @@ public partial class GenerateClient
 
         return result;
     }
+
+    /// <summary>
+    /// Hybrid search with generative AI capabilities and grouping.
+    /// </summary>
+    public Task<GenerativeGroupByResult> Hybrid(
+        string query,
+        Models.GroupByRequest groupBy,
+        float? alpha = null,
+        string[]? queryProperties = null,
+        HybridFusion? fusionType = null,
+        float? maxVectorDistance = null,
+        uint? limit = null,
+        uint? offset = null,
+        BM25Operator? bm25Operator = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        Hybrid(
+            query: query,
+            vectors: null,
+            groupBy: groupBy,
+            alpha: alpha,
+            queryProperties: queryProperties,
+            fusionType: fusionType,
+            maxVectorDistance: maxVectorDistance,
+            limit: limit,
+            offset: offset,
+            bm25Operator: bm25Operator,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedTask: groupedTask,
+            provider: provider,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
 
     /// <summary>
     /// Hybrid search with generative AI capabilities and grouping.

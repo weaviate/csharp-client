@@ -7,6 +7,35 @@ public partial class AggregateClient
     /// <summary>
     /// Aggregate using hybrid search.
     /// </summary>
+    public Task<AggregateResult> Hybrid(
+        string query,
+        float alpha = 0.7f,
+        string[]? queryProperties = null,
+        uint? objectLimit = null,
+        BM25Operator? bm25Operator = null,
+        Filter? filters = null,
+        float? maxVectorDistance = null,
+        bool totalCount = true,
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        Hybrid(
+            query: query,
+            vectors: null,
+            alpha: alpha,
+            queryProperties: queryProperties,
+            objectLimit: objectLimit,
+            bm25Operator: bm25Operator,
+            filters: filters,
+            maxVectorDistance: maxVectorDistance,
+            totalCount: totalCount,
+            returnMetrics: returnMetrics,
+            cancellationToken: cancellationToken
+        );
+
+    /// <summary>
+    /// Aggregate using hybrid search.
+    /// </summary>
     public async Task<AggregateResult> Hybrid(
         string? query,
         HybridVectorInput? vectors,
@@ -47,6 +76,37 @@ public partial class AggregateClient
 
         return AggregateResult.FromGrpcReply(result);
     }
+
+    /// <summary>
+    /// Aggregate using hybrid search with grouping.
+    /// </summary>
+    public Task<AggregateGroupByResult> Hybrid(
+        string query,
+        Aggregate.GroupBy groupBy,
+        float alpha = 0.7f,
+        string[]? queryProperties = null,
+        uint? objectLimit = null,
+        BM25Operator? bm25Operator = null,
+        Filter? filters = null,
+        float? maxVectorDistance = null,
+        bool totalCount = true,
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        Hybrid(
+            query: query,
+            vectors: null,
+            groupBy: groupBy,
+            alpha: alpha,
+            queryProperties: queryProperties,
+            objectLimit: objectLimit,
+            bm25Operator: bm25Operator,
+            filters: filters,
+            maxVectorDistance: maxVectorDistance,
+            totalCount: totalCount,
+            returnMetrics: returnMetrics,
+            cancellationToken: cancellationToken
+        );
 
     /// <summary>
     /// Aggregate using hybrid search with grouping.
