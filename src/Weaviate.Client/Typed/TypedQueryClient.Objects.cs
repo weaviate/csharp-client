@@ -9,6 +9,7 @@ public partial class TypedQueryClient<T>
     /// Fetches objects with group-by aggregation.
     /// </summary>
     /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="after">Cursor for pagination.</param>
     /// <param name="limit">Maximum number of objects to return.</param>
     /// <param name="filters">Filters to apply to the query.</param>
     /// <param name="sort">Sorting configuration.</param>
@@ -21,6 +22,7 @@ public partial class TypedQueryClient<T>
     /// <returns>A strongly-typed grouped result.</returns>
     public async Task<GroupByResult<T>> FetchObjects(
         GroupByRequest groupBy,
+        Guid? after = null,
         uint? limit = null,
         Filter? filters = null,
         AutoArray<Sort>? sort = null,
@@ -34,6 +36,7 @@ public partial class TypedQueryClient<T>
     {
         var result = await _queryClient.FetchObjects(
             groupBy: groupBy,
+            after: after,
             limit: limit,
             filters: filters,
             sort: sort,
@@ -52,6 +55,7 @@ public partial class TypedQueryClient<T>
     /// </summary>
     /// <param name="after">Cursor for pagination.</param>
     /// <param name="limit">Maximum number of objects to return.</param>
+    /// <param name="offset">Number of results to skip.</param>
     /// <param name="filters">Filters to apply to the query.</param>
     /// <param name="sort">Sorting configuration.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
@@ -64,6 +68,7 @@ public partial class TypedQueryClient<T>
     public async Task<Models.WeaviateResult<WeaviateObject<T>>> FetchObjects(
         Guid? after = null,
         uint? limit = null,
+        uint? offset = null,
         Filter? filters = null,
         AutoArray<Sort>? sort = null,
         Rerank? rerank = null,
@@ -75,11 +80,12 @@ public partial class TypedQueryClient<T>
     )
     {
         var result = await _queryClient.FetchObjects(
+            after: after,
             limit: limit,
+            offset: offset,
             filters: filters,
             sort: sort,
             rerank: rerank,
-            after: after,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,

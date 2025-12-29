@@ -19,7 +19,8 @@ public partial class TypedGenerateClient<T>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
-    /// <param name="targetVector">Target vector name</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
+    /// <param name="targets">Target vectors to search</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -39,6 +40,7 @@ public partial class TypedGenerateClient<T>
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
+        TargetVectors.FactoryFn? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -59,6 +61,7 @@ public partial class TypedGenerateClient<T>
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
+            targets: targets,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -83,7 +86,8 @@ public partial class TypedGenerateClient<T>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
-    /// <param name="targetVector">Target vector name</param>
+    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
+    /// <param name="targets">Target vectors to search</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -104,6 +108,7 @@ public partial class TypedGenerateClient<T>
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
+        TargetVectors.FactoryFn? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -125,6 +130,7 @@ public partial class TypedGenerateClient<T>
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
+            targets: targets,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,

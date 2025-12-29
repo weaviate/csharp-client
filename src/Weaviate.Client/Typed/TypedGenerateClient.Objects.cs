@@ -9,6 +9,7 @@ public partial class TypedGenerateClient<T>
     /// Fetch objects with generative AI capabilities and grouping.
     /// </summary>
     /// <param name="groupBy">Group by configuration</param>
+    /// <param name="after">Cursor for pagination.</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
@@ -23,6 +24,7 @@ public partial class TypedGenerateClient<T>
     /// <returns>Strongly-typed generative group-by result</returns>
     public async Task<GenerativeGroupByResult<T>> FetchObjects(
         Models.GroupByRequest groupBy,
+        Guid? after = null,
         uint? limit = null,
         Filter? filters = null,
         AutoArray<Sort>? sort = null,
@@ -39,6 +41,7 @@ public partial class TypedGenerateClient<T>
     {
         var result = await _generateClient.FetchObjects(
             groupBy: groupBy,
+            after: after,
             limit: limit,
             filters: filters,
             sort: sort,
