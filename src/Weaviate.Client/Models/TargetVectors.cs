@@ -1,11 +1,13 @@
 namespace Weaviate.Client.Models;
 
+using System.Runtime.CompilerServices;
 using V1 = Grpc.Protobuf.V1;
 
 /// <summary>
 /// Base class for target vector configuration for text/media-based searches.
 /// Cannot be constructed directly - use lambda syntax with builder methods.
 /// </summary>
+[CollectionBuilder(typeof(TargetVectors), nameof(Create))]
 public abstract record TargetVectors : IEnumerable<string>
 {
     internal TargetVectors() { } // Prevent external inheritance
@@ -82,6 +84,13 @@ public abstract record TargetVectors : IEnumerable<string>
     // Implicit conversion from string array for convenience
     public static implicit operator TargetVectors(string[] targets) =>
         new SimpleTargetVectors(targets, V1.CombinationMethod.Unspecified);
+
+    /// <summary>
+    /// Creates a TargetVectors from a collection expression.
+    /// Enables syntax like: targets: ["title", "description"]
+    /// </summary>
+    public static TargetVectors Create(ReadOnlySpan<string> targets) =>
+        new SimpleTargetVectors(targets.ToArray(), V1.CombinationMethod.Unspecified);
 
     /// <summary>
     /// Builder for creating TargetVectors via lambda syntax.
