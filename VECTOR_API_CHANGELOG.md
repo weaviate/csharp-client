@@ -12,7 +12,8 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
 
 - `VectorSearchInput` - Central type for all vector search inputs with extensive implicit conversions
 - `VectorSearchInput.Builder` - Lambda builder for complex multi-target scenarios
-- `HybridInput` - Central type for hybrid search parameters (query, near-text, near-vector, vectors)
+- `VectorSearchInput.FactoryFn` - Delegate for creating VectorSearchInput via lambda expressions with implicit conversion
+- `HybridVectorInput` - Discriminated union for hybrid search vector inputs (VectorSearchInput, NearTextInput, or NearVectorInput)
 - `NearVectorInput` - Wrapper for vector input with optional thresholds (replaces `HybridNearVector`)
 - `NearTextInput` - Server-side vectorization with target vectors (replaces `HybridNearText`)
 - `TargetVectors` - Static factory methods for target vector configuration
@@ -20,7 +21,7 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
 
 #### Removed Types
 
-- `IHybridVectorInput` - Marker interface removed in favor of `HybridInput`
+- `IHybridVectorInput` - Marker interface removed in favor of `HybridVectorInput`
 - `INearVectorInput` - Marker interface removed
 - `HybridNearVector` - Renamed to `NearVectorInput`
 - `HybridNearText` - Renamed to `NearTextInput`
@@ -38,9 +39,9 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
 
 #### API Changes
 
-1. **HybridInput replaces query + vectors parameters**
+1. **HybridVectorInput discriminated union for vectors parameter**
    - Before: `Hybrid(string? query, IHybridVectorInput? vectors, ...)`
-   - After: `Hybrid(HybridInput input, ...)` - query is inside HybridInput
+   - After: `Hybrid(string? query, HybridVectorInput? vectors, ...)` - accepts VectorSearchInput, NearTextInput, or NearVectorInput via implicit conversions
 
 2. **VectorSearchInput replaces multiple input types**
    - Before: Separate overloads for `float[]`, `Vector`, `Vectors`, tuple enumerables
@@ -50,15 +51,19 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
    - Before: `VectorSearchInputBuilder` as standalone class
    - After: `VectorSearchInput.Builder` as nested class
 
-4. **Targets embedded in VectorSearchInput**
+4. **FactoryFn delegate enables lambda syntax**
+   - New: `VectorSearchInput.FactoryFn` delegate with implicit conversion to `VectorSearchInput`
+   - Allows: `vectors: b => b.Sum(("title", vec1), ("desc", vec2))` syntax
+
+5. **Targets embedded in VectorSearchInput**
    - Before: Separate `targets` parameter on some methods
    - After: Targets configured via `VectorSearchInput.Builder` methods (Sum, ManualWeights, etc.)
 
-5. **TargetVectors uses static factory methods**
+6. **TargetVectors uses static factory methods**
    - Before: `new SimpleTargetVectors(["title", "description"])`
    - After: `TargetVectors.Sum("title", "description")` or `new[] { "title", "description" }` (implicit)
 
-6. **NearTextInput includes TargetVectors**
+7. **NearTextInput includes TargetVectors**
    - Before: Separate `targetVector` parameter on Hybrid methods
    - After: `NearTextInput.TargetVectors` property is single source of truth
 
@@ -169,8 +174,9 @@ await collection.Query.NearVector(
 - `IHybridVectorInput` and `INearVectorInput` interfaces removed
 - `HybridNearVector` renamed to `NearVectorInput`
 - `HybridNearText` renamed to `NearTextInput`
-- `Hybrid(string? query, ...)` signature changed to `Hybrid(HybridInput input, ...)`
+- `Hybrid` method `vectors` parameter now uses `HybridVectorInput?` discriminated union type
 - `SimpleTargetVectors` and `WeightedTargetVectors` constructors are now internal
+- `VectorSearchInput.Builder` constructor is now internal (use `FactoryFn` lambda syntax instead)
 - `targetVector` parameter removed from Hybrid methods - use `NearTextInput.TargetVectors` instead
 - Removed tuple enumerable overloads (`IEnumerable<(string, Vector)>`)
 - `targetVector` string parameter removed from NearVector methods (use builder instead)
