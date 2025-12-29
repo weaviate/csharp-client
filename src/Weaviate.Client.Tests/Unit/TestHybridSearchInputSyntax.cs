@@ -1062,5 +1062,772 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("vector1", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("vector2", request.HybridSearch.Targets.TargetVectors);
     }
+
+    [Fact]
+    public async Task Hybrid_ImplicitConversion_String_ToNearText_ProducesValidRequest()
+    {
+        // Act - implicit conversion from string to HybridVectorInput (via NearText)
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: "semantic search query",
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.NearText);
+        Assert.Contains("semantic search query", request.HybridSearch.NearText.Query);
+    }
+
+    [Fact]
+    public async Task Hybrid_ImplicitConversion_NamedVectorArray_ProducesValidRequest()
+    {
+        // Arrange
+        NamedVector[] namedVectors =
+        [
+            new NamedVector("first", [1f, 2f]),
+            new NamedVector("second", [3f, 4f]),
+        ];
+
+        // Act - implicit conversion from NamedVector[] to VectorSearchInput to HybridVectorInput
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)namedVectors,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
+        Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_ImplicitConversion_NearTextInput_ProducesValidRequest()
+    {
+        // Arrange
+        var nearText = new NearTextInput("semantic query", Distance: 0.3f);
+
+        // Act - implicit conversion from NearTextInput to HybridVectorInput
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: nearText,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.NearText);
+        Assert.Equal(0.3, request.HybridSearch.NearText.Distance, precision: 5);
+    }
+
+    [Fact]
+    public async Task Hybrid_ImplicitConversion_NearVectorInput_ProducesValidRequest()
+    {
+        // Arrange
+        var nearVector = new NearVectorInput(new float[] { 1f, 2f, 3f }, Distance: 0.4f);
+
+        // Act - implicit conversion from NearVectorInput to HybridVectorInput
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: nearVector,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.NearVector);
+        Assert.Equal(0.4, request.HybridSearch.NearVector.Distance, precision: 5);
+    }
+
+    [Fact]
+    public async Task Hybrid_ImplicitConversion_VectorSearchInput_ProducesValidRequest()
+    {
+        // Arrange
+        var vectorSearch = new VectorSearchInput { { "named", new float[] { 1f, 2f } } };
+
+        // Act - implicit conversion from VectorSearchInput to HybridVectorInput
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: vectorSearch,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("named", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    #endregion
+
+    #region VectorSearchInput Dictionary Implicit Conversion Tests
+
+    [Fact]
+    public async Task Hybrid_DictionaryStringFloatArray_ProducesValidRequest()
+    {
+        // Arrange
+        Dictionary<string, float[]> dict = new() { ["first"] = [1f, 2f], ["second"] = [3f, 4f] };
+
+        // Act - implicit conversion from Dictionary<string, float[]>
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)dict,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
+        Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_DictionaryStringDoubleArray_ProducesValidRequest()
+    {
+        // Arrange
+        Dictionary<string, double[]> dict = new()
+        {
+            ["first"] = [1.0, 2.0],
+            ["second"] = [3.0, 4.0],
+        };
+
+        // Act - implicit conversion from Dictionary<string, double[]>
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)dict,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
+        Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_DictionaryStringVectorArray_ProducesValidRequest()
+    {
+        // Arrange
+        Dictionary<string, Vector[]> dict = new()
+        {
+            ["first"] = [new float[] { 1f, 2f }, new float[] { 5f, 6f }],
+            ["second"] = [new float[] { 3f, 4f }],
+        };
+
+        // Act - implicit conversion from Dictionary<string, Vector[]>
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)dict,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
+        Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_DictionaryStringFloat2D_ProducesValidRequest()
+    {
+        // Arrange - 2D arrays for ColBERT multi-vector
+        Dictionary<string, float[,]> dict = new()
+        {
+            ["colbert1"] = new float[,]
+            {
+                { 1f, 2f },
+                { 3f, 4f },
+            },
+            ["colbert2"] = new float[,]
+            {
+                { 5f, 6f },
+                { 7f, 8f },
+            },
+        };
+
+        // Act - implicit conversion from Dictionary<string, float[,]>
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)dict,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("colbert1", request.HybridSearch.Targets.TargetVectors);
+        Assert.Contains("colbert2", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_DictionaryStringDouble2D_ProducesValidRequest()
+    {
+        // Arrange - 2D arrays for ColBERT multi-vector
+        Dictionary<string, double[,]> dict = new()
+        {
+            ["colbert1"] = new double[,]
+            {
+                { 1.0, 2.0 },
+                { 3.0, 4.0 },
+            },
+        };
+
+        // Act - implicit conversion from Dictionary<string, double[,]>
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)dict,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("colbert1", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_DictionaryStringEnumerableFloatArray_ProducesValidRequest()
+    {
+        // Arrange
+        Dictionary<string, IEnumerable<float[]>> dict = new()
+        {
+            ["first"] = new List<float[]> { new[] { 1f, 2f }, new[] { 5f, 6f } },
+            ["second"] = new List<float[]> { new[] { 3f, 4f } },
+        };
+
+        // Act - implicit conversion from Dictionary<string, IEnumerable<float[]>>
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)dict,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
+        Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_DictionaryStringEnumerableDoubleArray_ProducesValidRequest()
+    {
+        // Arrange
+        Dictionary<string, IEnumerable<double[]>> dict = new()
+        {
+            ["first"] = new List<double[]> { new[] { 1.0, 2.0 } },
+        };
+
+        // Act - implicit conversion from Dictionary<string, IEnumerable<double[]>>
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)dict,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_DictionaryStringEnumerableFloat2D_ProducesValidRequest()
+    {
+        // Arrange - IEnumerable of 2D arrays for multiple ColBERT vectors
+        Dictionary<string, IEnumerable<float[,]>> dict = new()
+        {
+            ["colbert"] = new List<float[,]>
+            {
+                new float[,]
+                {
+                    { 1f, 2f },
+                    { 3f, 4f },
+                },
+                new float[,]
+                {
+                    { 5f, 6f },
+                    { 7f, 8f },
+                },
+            },
+        };
+
+        // Act - implicit conversion from Dictionary<string, IEnumerable<float[,]>>
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)dict,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("colbert", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_DictionaryStringEnumerableDouble2D_ProducesValidRequest()
+    {
+        // Arrange
+        Dictionary<string, IEnumerable<double[,]>> dict = new()
+        {
+            ["colbert"] = new List<double[,]>
+            {
+                new double[,]
+                {
+                    { 1.0, 2.0 },
+                    { 3.0, 4.0 },
+                },
+            },
+        };
+
+        // Act - implicit conversion from Dictionary<string, IEnumerable<double[,]>>
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)dict,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("colbert", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    #endregion
+
+    #region FactoryFn Implicit Conversion Tests
+
+    [Fact]
+    public async Task Hybrid_FactoryFn_Sum_ProducesValidRequest()
+    {
+        // Act - using FactoryFn implicit conversion
+        VectorSearchInput.FactoryFn factory = b =>
+            b.Sum(("first", new float[] { 1f, 2f }), ("second", new float[] { 3f, 4f }));
+
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)factory,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
+        Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
+        Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_FactoryFn_Average_ProducesValidRequest()
+    {
+        // Act - using FactoryFn implicit conversion
+        VectorSearchInput.FactoryFn factory = b =>
+            b.Average(("first", new float[] { 1f, 2f }), ("second", new float[] { 3f, 4f }));
+
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)factory,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+    }
+
+    [Fact]
+    public async Task Hybrid_FactoryFn_Minimum_ProducesValidRequest()
+    {
+        // Act - using FactoryFn implicit conversion
+        VectorSearchInput.FactoryFn factory = b =>
+            b.Minimum(("first", new float[] { 1f, 2f }), ("second", new float[] { 3f, 4f }));
+
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)factory,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
+    }
+
+    [Fact]
+    public async Task Hybrid_FactoryFn_ManualWeights_ProducesValidRequest()
+    {
+        // Act - using FactoryFn implicit conversion
+        VectorSearchInput.FactoryFn factory = b =>
+            b.ManualWeights(
+                ("first", 0.7, new float[] { 1f, 2f }),
+                ("second", 0.3, new float[] { 3f, 4f })
+            );
+
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)factory,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
+        Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+    }
+
+    [Fact]
+    public async Task Hybrid_FactoryFn_RelativeScore_ProducesValidRequest()
+    {
+        // Act - using FactoryFn implicit conversion
+        VectorSearchInput.FactoryFn factory = b =>
+            b.RelativeScore(
+                ("first", 0.6, new float[] { 1f, 2f }),
+                ("second", 0.4, new float[] { 3f, 4f })
+            );
+
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: (VectorSearchInput)factory,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(
+            V1.CombinationMethod.TypeRelativeScore,
+            request.HybridSearch.Targets.Combination
+        );
+    }
+
+    #endregion
+
+    #region TargetVectors Combination Methods Tests (All via implicit conversions)
+
+    [Fact]
+    public async Task Hybrid_TargetVectors_Sum_ViaLambda_ProducesValidRequest()
+    {
+        // Act - using lambda builder for TargetVectors
+        var nearText = new NearTextInput("query", TargetVectors: t => t.Sum("vec1", "vec2"));
+
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: nearText,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
+    }
+
+    [Fact]
+    public async Task Hybrid_TargetVectors_Average_ViaLambda_ProducesValidRequest()
+    {
+        // Act
+        var nearText = new NearTextInput("query", TargetVectors: t => t.Average("vec1", "vec2"));
+
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: nearText,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+    }
+
+    [Fact]
+    public async Task Hybrid_TargetVectors_Minimum_ViaLambda_ProducesValidRequest()
+    {
+        // Act
+        var nearText = new NearTextInput("query", TargetVectors: t => t.Minimum("vec1", "vec2"));
+
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: nearText,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
+    }
+
+    [Fact]
+    public async Task Hybrid_TargetVectors_ManualWeights_ViaLambda_ProducesValidRequest()
+    {
+        // Act
+        var nearText = new NearTextInput(
+            "query",
+            TargetVectors: t => t.ManualWeights(("vec1", 0.6), ("vec2", 0.4))
+        );
+
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: nearText,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
+        Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+    }
+
+    [Fact]
+    public async Task Hybrid_TargetVectors_RelativeScore_ViaLambda_ProducesValidRequest()
+    {
+        // Act
+        var nearText = new NearTextInput(
+            "query",
+            TargetVectors: t => t.RelativeScore(("vec1", 0.8), ("vec2", 0.2))
+        );
+
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: nearText,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(
+            V1.CombinationMethod.TypeRelativeScore,
+            request.HybridSearch.Targets.Combination
+        );
+    }
+
+    #endregion
+
+    #region Collection Initializer Syntax Tests
+
+    [Fact]
+    public async Task Hybrid_CollectionInitializer_SingleVector_ProducesValidRequest()
+    {
+        // Arrange - using collection initializer syntax
+        var input = new VectorSearchInput { { "named", new float[] { 1f, 2f, 3f } } };
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: input,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("named", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_CollectionInitializer_MultipleVectors_ProducesValidRequest()
+    {
+        // Arrange - using collection initializer syntax with multiple vectors
+        var input = new VectorSearchInput
+        {
+            { "first", new float[] { 1f, 2f } },
+            { "second", new float[] { 3f, 4f } },
+            { "third", new float[] { 5f, 6f } },
+        };
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: input,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
+        Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+        Assert.Contains("third", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_CollectionInitializer_MultipleVectorsSameName_ProducesValidRequest()
+    {
+        // Arrange - using collection initializer with multiple vectors for same target
+        var input = new VectorSearchInput
+        {
+            { "same", new float[] { 1f, 2f } },
+            { "same", new float[] { 3f, 4f } }, // Same name, different vector
+        };
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: input,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("same", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    [Fact]
+    public async Task Hybrid_CollectionInitializer_WithVectorsObject_ProducesValidRequest()
+    {
+        // Arrange - adding a Vectors object to VectorSearchInput
+        var vectors = new Vectors { { "fromVectors", new float[] { 1f, 2f } } };
+        var input = new VectorSearchInput { vectors };
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: input,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("fromVectors", request.HybridSearch.Targets.TargetVectors);
+    }
+
+    #endregion
+
+    #region NearVectorInput with All Combination Methods
+
+    [Fact]
+    public async Task Hybrid_NearVectorInput_MultiTarget_Average_ProducesValidRequest()
+    {
+        // Arrange
+        var vectorInput = VectorSearchInput.Combine(
+            TargetVectors.Average("vec1", "vec2"),
+            ("vec1", new float[] { 1f, 2f }),
+            ("vec2", new float[] { 3f, 4f })
+        );
+        var nearVector = new NearVectorInput(vectorInput);
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: nearVector,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+    }
+
+    [Fact]
+    public async Task Hybrid_NearVectorInput_MultiTarget_Minimum_ProducesValidRequest()
+    {
+        // Arrange
+        var vectorInput = VectorSearchInput.Combine(
+            TargetVectors.Minimum("vec1", "vec2"),
+            ("vec1", new float[] { 1f, 2f }),
+            ("vec2", new float[] { 3f, 4f })
+        );
+        var nearVector = new NearVectorInput(vectorInput);
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: nearVector,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
+    }
+
+    [Fact]
+    public async Task Hybrid_NearVectorInput_MultiTarget_RelativeScore_ProducesValidRequest()
+    {
+        // Arrange
+        var vectorInput = VectorSearchInput.Combine(
+            TargetVectors.RelativeScore(("vec1", 0.7), ("vec2", 0.3)),
+            ("vec1", new float[] { 1f, 2f }),
+            ("vec2", new float[] { 3f, 4f })
+        );
+        var nearVector = new NearVectorInput(vectorInput);
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: nearVector,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(
+            V1.CombinationMethod.TypeRelativeScore,
+            request.HybridSearch.Targets.Combination
+        );
+        Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+    }
+
+    #endregion
+
+    #region NearVectorInput Implicit Conversions
+
+    [Fact]
+    public async Task Hybrid_NearVectorInput_FromVectorSearchInput_Implicit_ProducesValidRequest()
+    {
+        // Arrange - implicit conversion from VectorSearchInput to NearVectorInput
+        VectorSearchInput vectorSearch = ("myVector", new float[] { 1f, 2f, 3f });
+        NearVectorInput nearVector = vectorSearch;
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: nearVector,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.NearVector);
+        Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
+    }
+
     #endregion
 }

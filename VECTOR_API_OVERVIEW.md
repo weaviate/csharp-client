@@ -4,14 +4,14 @@ Reference documentation for the vector search API in the Weaviate C# client.
 
 ## API Overview
 
-| Client | Method | Overloads | Notes |
-|--------|--------|-----------|-------|
-| QueryClient | NearVector | 4 | Vector-only search with lambda builders |
-| QueryClient | Hybrid | 7+ | Text + vectors, uses HybridInput |
-| GenerateClient | NearVector | 4 | With generative AI prompts |
-| GenerateClient | Hybrid | 6+ | Hybrid + generative, uses HybridInput |
-| AggregateClient | NearVector | 4 | With aggregation |
-| AggregateClient | Hybrid | 2 | Hybrid + aggregation |
+| Client          | Method     | Overloads | Notes                                   |
+|-----------------|------------|-----------|-----------------------------------------|
+| QueryClient     | NearVector | 4         | Vector-only search with lambda builders |
+| QueryClient     | Hybrid     | 7+        | Text + vectors, uses HybridInput        |
+| GenerateClient  | NearVector | 4         | With generative AI prompts              |
+| GenerateClient  | Hybrid     | 6+        | Hybrid + generative, uses HybridInput   |
+| AggregateClient | NearVector | 4         | With aggregation                        |
+| AggregateClient | Hybrid     | 2         | Hybrid + aggregation                    |
 ---
 
 ## QueryClient.NearVector
@@ -234,19 +234,28 @@ Central type for vector search inputs. Supports collection initializer syntax an
 
 ### Implicit Conversions
 
-| From Type | Example |
-|-----------|---------|
-| `float[]` | `new[] { 1f, 2f, 3f }` |
-| `double[]` | `new[] { 1.0, 2.0, 3.0 }` |
-| `Vector` | `new Vector(new VectorSingle<float>([1f, 2f]))` |
-| `Vectors` | `new Vectors { { "name", values } }` |
-| `NamedVector` | `new NamedVector("name", values)` |
-| `NamedVector[]` | `new[] { namedVector1, namedVector2 }` |
-| `Dictionary<string, float[]>` | `new Dictionary<string, float[]> { ["name"] = values }` |
-| `Dictionary<string, double[]>` | Same pattern |
-| `Dictionary<string, float[,]>` | For multi-vectors |
-| `Dictionary<string, double[,]>` | For multi-vectors |
-| `Dictionary<string, Vector[]>` | For multiple vectors per name |
+| From Type                                    | Example                                                 |
+|----------------------------------------------|---------------------------------------------------------|
+| `float[]`                                    | `new[] { 1f, 2f, 3f }`                                  |
+| `double[]`                                   | `new[] { 1.0, 2.0, 3.0 }`                               |
+| `Vector`                                     | `new Vector(new VectorSingle<float>([1f, 2f]))`         |
+| `Vectors`                                    | `new Vectors { { "name", values } }`                    |
+| `NamedVector`                                | `new NamedVector("name", values)`                       |
+| `NamedVector[]`                              | `new[] { namedVector1, namedVector2 }`                  |
+| `Dictionary<string, float[]>`                | `new Dictionary<string, float[]> { ["name"] = values }` |
+| `Dictionary<string, double[]>`               | Same pattern                                            |
+| `Dictionary<string, float[,]>`               | For multi-vectors (ColBERT)                             |
+| `Dictionary<string, double[,]>`              | For multi-vectors (ColBERT)                             |
+| `Dictionary<string, Vector[]>`               | For multiple vectors per name                           |
+| `Dictionary<string, IEnumerable<float[]>>`   | For multiple vectors per name                           |
+| `Dictionary<string, IEnumerable<double[]>>`  | For multiple vectors per name                           |
+| `Dictionary<string, IEnumerable<float[,]>>`  | For multiple multi-vectors                              |
+| `Dictionary<string, IEnumerable<double[,]>>` | For multiple multi-vectors                              |
+| `(string, float[])` tuple                    | `("name", new[] { 1f, 2f })`                            |
+| `(string, double[])` tuple                   | `("name", new[] { 1.0, 2.0 })`                          |
+| `(string, float[,])` tuple                   | `("colbert", multiVectorArray)` for ColBERT             |
+| `(string, double[,])` tuple                  | `("colbert", multiVectorArray)` for ColBERT             |
+| `FactoryFn`                                  | `b => b.Sum(("title", vec1), ("desc", vec2))`           |
 
 ### Collection Initializer Syntax
 
@@ -269,12 +278,12 @@ VectorSearchInput input = [
 
 Builder for multi-target vector search combinations using lambda syntax.
 
-| Method | Description |
-|--------|-------------|
-| `Sum(...)` | Multi-target with Sum combination |
-| `Average(...)` | Multi-target with Average combination |
-| `Minimum(...)` | Multi-target with Minimum combination |
-| `ManualWeights(...)` | Multi-target with manual weights |
+| Method               | Description                              |
+|----------------------|------------------------------------------|
+| `Sum(...)`           | Multi-target with Sum combination        |
+| `Average(...)`       | Multi-target with Average combination    |
+| `Minimum(...)`       | Multi-target with Minimum combination    |
+| `ManualWeights(...)` | Multi-target with manual weights         |
 | `RelativeScore(...)` | Multi-target with relative score weights |
 
 **Examples:**
@@ -301,21 +310,112 @@ v => v.RelativeScore(
 
 ---
 
-## HybridInput
+## VectorSearchInput.FactoryFn
+
+Delegate type for creating `VectorSearchInput` using a builder pattern. Enables passing lambda expressions directly where `VectorSearchInput` is expected via implicit conversion.
+
+```csharp
+public delegate VectorSearchInput FactoryFn(Builder builder);
+```
+
+**Example Usage:**
+
+```csharp
+// Declare and use explicitly
+VectorSearchInput.FactoryFn factory = b => b.Sum(
+    ("title", new[] { 1f, 2f }),
+    ("description", new[] { 3f, 4f })
+);
+VectorSearchInput input = factory; // implicit conversion
+
+// Or use directly in method calls (implicit conversion)
+await collection.Query.Hybrid(
+    query: "search",
+    vectors: b => b.Sum(("title", vec1), ("desc", vec2))
+);
+
+// All combination methods work with FactoryFn
+VectorSearchInput.FactoryFn sumFactory = b => b.Sum(("a", vec1), ("b", vec2));
+VectorSearchInput.FactoryFn avgFactory = b => b.Average(("a", vec1), ("b", vec2));
+VectorSearchInput.FactoryFn minFactory = b => b.Minimum(("a", vec1), ("b", vec2));
+VectorSearchInput.FactoryFn manualFactory = b => b.ManualWeights(("a", 0.7, vec1), ("b", 0.3, vec2));
+VectorSearchInput.FactoryFn relFactory = b => b.RelativeScore(("a", 0.8, vec1), ("b", 0.2, vec2));
+```
+
+---
+
+## HybridVectorInput
+
+Discriminated union for hybrid search vector inputs. Can hold exactly one of: `VectorSearchInput`, `NearTextInput`, or `NearVectorInput`. Used as the `vectors` parameter in Hybrid search methods.
+
+### Factory Methods
+
+```csharp
+HybridVectorInput.FromVectorSearch(VectorSearchInput vectorSearch)
+HybridVectorInput.FromNearText(NearTextInput nearText)
+HybridVectorInput.FromNearVector(NearVectorInput nearVector)
+```
+
+### Implicit Conversions
+
+| From Type             | Example                                     |
+|-----------------------|---------------------------------------------|
+| `VectorSearchInput`   | `new VectorSearchInput { { "name", vec } }` |
+| `NearTextInput`       | `new NearTextInput("banana")`               |
+| `NearVectorInput`     | `new NearVectorInput(vectors)`              |
+| `float[]`             | `new[] { 1f, 2f, 3f }`                      |
+| `double[]`            | `new[] { 1.0, 2.0, 3.0 }`                   |
+| `Vectors`             | `new Vectors { { "name", vec } }`           |
+| `Vector`              | `new Vector(...)`                           |
+| `NamedVector`         | `new NamedVector("name", values)`           |
+| `string`              | `"search text"` (creates NearText)          |
+| `(string, float[])`   | `("name", new[] { 1f, 2f })`                |
+| `(string, double[])`  | `("name", new[] { 1.0, 2.0 })`              |
+| `(string, float[,])`  | `("colbert", multiVectorArray)` for ColBERT |
+| `(string, double[,])` | `("colbert", multiVectorArray)` for ColBERT |
+
+**Examples:**
+
+```csharp
+// Implicit from float array
+await collection.Query.Hybrid(query: "text", vectors: new[] { 1f, 2f, 3f });
+
+// Implicit from string (becomes NearText)
+await collection.Query.Hybrid(query: null, vectors: (HybridVectorInput)"semantic search");
+
+// Implicit from NearTextInput
+await collection.Query.Hybrid(query: null, vectors: new NearTextInput("banana"));
+
+// Implicit from VectorSearchInput
+await collection.Query.Hybrid(query: null, vectors: new VectorSearchInput { { "title", vec } });
+
+// Implicit from tuple
+await collection.Query.Hybrid(query: null, vectors: ("myVector", new[] { 1f, 2f }));
+
+// Explicit factory method
+await collection.Query.Hybrid(
+    query: null,
+    vectors: HybridVectorInput.FromVectorSearch(vectorSearchInput)
+);
+```
+
+---
+
+## HybridInput (Legacy)
 
 Central type for hybrid search parameters. Contains the query text and vector inputs. Supports implicit conversions from common types.
 
 ### Implicit Conversions
 
-| From Type | Example | Description |
-|-----------|---------|-------------|
-| `string` | `"search query"` | Text-only search |
-| `VectorSearchInput` | `new[] { 1f, 2f, 3f }` | Vector-only search |
-| `NearTextInput` | `new NearTextInput("banana")` | Server-side vectorization |
-| `NearVectorInput` | `new NearVectorInput(vectors)` | Vector search with metadata |
-| `(string, VectorSearchInput)` | `("query", vectors)` | Text + vectors |
-| `(NearTextInput, VectorSearchInput)` | `(nearText, vectors)` | Near-text + vectors |
-| `(string, TargetVectors)` | `("query", targetVectors)` | Text with target vectors |
+| From Type                            | Example                        | Description                 |
+|--------------------------------------|--------------------------------|-----------------------------|
+| `string`                             | `"search query"`               | Text-only search            |
+| `VectorSearchInput`                  | `new[] { 1f, 2f, 3f }`         | Vector-only search          |
+| `NearTextInput`                      | `new NearTextInput("banana")`  | Server-side vectorization   |
+| `NearVectorInput`                    | `new NearVectorInput(vectors)` | Vector search with metadata |
+| `(string, VectorSearchInput)`        | `("query", vectors)`           | Text + vectors              |
+| `(NearTextInput, VectorSearchInput)` | `(nearText, vectors)`          | Near-text + vectors         |
+| `(string, TargetVectors)`            | `("query", targetVectors)`     | Text with target vectors    |
 
 **Direct Construction:**
 
