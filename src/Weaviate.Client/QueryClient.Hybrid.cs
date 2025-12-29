@@ -7,6 +7,47 @@ public partial class QueryClient
     /// <summary>
     /// Performs a hybrid search (keyword + vector search).
     /// </summary>
+    public Task<WeaviateResult> Hybrid(
+        string query,
+        float? alpha = null,
+        string[]? queryProperties = null,
+        HybridFusion? fusionType = null,
+        float? maxVectorDistance = null,
+        uint? limit = null,
+        uint? offset = null,
+        BM25Operator? bm25Operator = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        Hybrid(
+            query: query,
+            vectors: null,
+            alpha: alpha,
+            queryProperties: queryProperties,
+            fusionType: fusionType,
+            maxVectorDistance: maxVectorDistance,
+            limit: limit,
+            offset: offset,
+            bm25Operator: bm25Operator,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
+
+    /// <summary>
+    /// Performs a hybrid search (keyword + vector search).
+    /// </summary>
     public async Task<WeaviateResult> Hybrid(
         string? query,
         HybridVectorInput? vectors,
@@ -57,6 +98,49 @@ public partial class QueryClient
             cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
     }
+
+    /// <summary>
+    /// Performs a hybrid search (keyword + vector search) with grouping.
+    /// </summary>
+    public Task<GroupByResult> Hybrid(
+        string query,
+        Models.GroupByRequest groupBy,
+        float? alpha = null,
+        string[]? queryProperties = null,
+        HybridFusion? fusionType = null,
+        float? maxVectorDistance = null,
+        uint? limit = null,
+        uint? offset = null,
+        BM25Operator? bm25Operator = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        Hybrid(
+            query: query,
+            vectors: null,
+            groupBy: groupBy,
+            alpha: alpha,
+            queryProperties: queryProperties,
+            fusionType: fusionType,
+            maxVectorDistance: maxVectorDistance,
+            limit: limit,
+            offset: offset,
+            bm25Operator: bm25Operator,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
 
     /// <summary>
     /// Performs a hybrid search (keyword + vector search) with grouping.

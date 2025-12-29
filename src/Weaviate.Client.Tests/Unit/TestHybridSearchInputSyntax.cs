@@ -1830,4 +1830,31 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
     }
 
     #endregion
+
+    #region Extras
+    [Fact]
+    public async Task Extras()
+    {
+        await _collection.Query.NearVector(
+            v => v.Sum(("title", new[] { 1f, 2f }), ("description", new[] { 3f, 4f })),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var queryNearVector3 = await _collection.Query.Hybrid(
+            query: "fluffy playful",
+            vectors: null,
+            alpha: 0.7f,
+            limit: 5,
+            returnProperties: ["name", "breed", "color", "counter"],
+            returnMetadata: MetadataOptions.Score | MetadataOptions.Distance,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        await _collection.Query.Hybrid(
+            "search query",
+            v => v.Sum(("title", new[] { 1f, 2f }), ("description", new[] { 3f, 4f })),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+    }
+    #endregion
 }
