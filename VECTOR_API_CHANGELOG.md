@@ -31,11 +31,16 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
 | Client | Method | Before | After |
 |--------|--------|--------|-------|
 | QueryClient | NearVector | 10+ | 4 |
-| QueryClient | Hybrid | 4+ | 7 |
+| QueryClient | NearText | 2 | 4 |
+| QueryClient | Hybrid | 4+ | 9 |
 | GenerateClient | NearVector | 6+ | 4 |
-| GenerateClient | Hybrid | 4+ | 6 |
+| GenerateClient | NearText | 2 | 4 |
+| GenerateClient | Hybrid | 4+ | 8 |
 | AggregateClient | NearVector | 6+ | 4 |
-| AggregateClient | Hybrid | 3+ | 2 |
+| AggregateClient | NearText | 2 | 4 |
+| AggregateClient | Hybrid | 3+ | 4 |
+| TypedQueryClient | NearText | 2 | 4 |
+| TypedGenerateClient | NearText | 2 | 4 |
 
 #### API Changes
 
@@ -66,6 +71,23 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
 7. **NearTextInput includes TargetVectors**
    - Before: Separate `targetVector` parameter on Hybrid methods
    - After: `NearTextInput.TargetVectors` property is single source of truth
+
+8. **Convenience overloads for text-only Hybrid search**
+   - New: Overloads without `vectors` parameter for all Hybrid methods
+   - These delegate to main Hybrid method with `vectors: null`
+   - Simplifies pure text search: `Hybrid("query")` instead of `Hybrid("query", vectors: null)`
+
+9. **Convenience overloads for NearText target vectors**
+   - New: Overloads accepting `TargetVectors?` for all NearText methods (QueryClient, GenerateClient, AggregateClient, TypedQueryClient, TypedGenerateClient)
+   - Allows passing string arrays directly: `targets: new[] { "vec1", "vec2" }`
+   - Allows static factory methods: `targets: TargetVectors.Sum("vec1", "vec2")`
+   - Lambda builder syntax still available: `targets: tv => tv.Sum("vec1", "vec2")`
+   - Matches pattern already established by NearVector methods with VectorSearchInput
+
+10. **NearVectorInput FactoryFn constructor for consistency**
+   - New: Constructor accepting `VectorSearchInput.FactoryFn` for lambda builder syntax
+   - Enables: `new NearVectorInput(v => v.Sum(("title", vec1), ("desc", vec2)))`
+   - Matches pattern established by NearTextInput
 
 ### Migration Examples
 
@@ -141,11 +163,53 @@ await collection.Query.Hybrid(
 var targets = TargetVectors.RelativeScore(("title", 0.7), ("desc", 0.3));
 ```
 
+**NearText with target vectors:**
+
+```csharp
+// Before: lambda builder required
+await collection.Query.NearText(
+    "search query",
+    targets: tv => tv.Sum("title", "description")
+);
+
+// After: multiple options available
+// Option 1: String array (simplest)
+await collection.Query.NearText(
+    "search query",
+    targets: new[] { "title", "description" }
+);
+
+// Option 2: Static factory method
+await collection.Query.NearText(
+    "search query",
+    targets: TargetVectors.Sum("title", "description")
+);
+
+// Option 3: Lambda builder (still works)
+await collection.Query.NearText(
+    "search query",
+    targets: tv => tv.Sum("title", "description")
+);
+```
+
 **Simple vector search (no changes needed):**
 
 ```csharp
 // Works unchanged via implicit conversion
 await collection.Query.NearVector(new[] { 1f, 2f, 3f });
+```
+
+**NearVectorInput with lambda builder:**
+
+```csharp
+// Before: only accepts VectorSearchInput directly
+new NearVectorInput(new[] { 1f, 2f, 3f });
+
+// After: also accepts lambda builder
+new NearVectorInput(
+    v => v.Sum(("title", vec1), ("desc", vec2)),
+    Certainty: 0.8f
+);
 ```
 
 **Named vector with target:**

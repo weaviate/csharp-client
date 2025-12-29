@@ -7,11 +7,14 @@ Reference documentation for the vector search API in the Weaviate C# client.
 | Client          | Method     | Overloads | Notes                                   |
 |-----------------|------------|-----------|-----------------------------------------|
 | QueryClient     | NearVector | 4         | Vector-only search with lambda builders |
-| QueryClient     | Hybrid     | 7+        | Text + vectors, uses HybridInput        |
+| QueryClient     | NearText   | 4         | Text search with target vectors         |
+| QueryClient     | Hybrid     | 9+        | Text + vectors, uses HybridInput        |
 | GenerateClient  | NearVector | 4         | With generative AI prompts              |
-| GenerateClient  | Hybrid     | 6+        | Hybrid + generative, uses HybridInput   |
+| GenerateClient  | NearText   | 4         | With generative AI prompts              |
+| GenerateClient  | Hybrid     | 8+        | Hybrid + generative, uses HybridInput   |
 | AggregateClient | NearVector | 4         | With aggregation                        |
-| AggregateClient | Hybrid     | 2         | Hybrid + aggregation                    |
+| AggregateClient | NearText   | 4         | With aggregation                        |
+| AggregateClient | Hybrid     | 4         | Hybrid + aggregation                    |
 ---
 
 ## QueryClient.NearVector
@@ -70,21 +73,80 @@ await collection.Query.NearVector(
 
 ---
 
+## QueryClient.NearText
+
+```csharp
+// With TargetVectors.FactoryFn (lambda builder)
+Task<WeaviateResult> NearText(AutoArray<string> text, ..., TargetVectors.FactoryFn? targets = null, ...)
+Task<GroupByResult> NearText(AutoArray<string> text, GroupByRequest groupBy, ..., TargetVectors.FactoryFn? targets = null, ...)
+
+// With TargetVectors directly (convenience overloads)
+Task<WeaviateResult> NearText(AutoArray<string> text, ..., TargetVectors? targets = null, ...)
+Task<GroupByResult> NearText(AutoArray<string> text, GroupByRequest groupBy, ..., TargetVectors? targets = null, ...)
+```
+
+**Examples:**
+
+```csharp
+// Simple text search
+await collection.Query.NearText("banana");
+
+// With target vectors - string array (via implicit conversion)
+await collection.Query.NearText(
+    "banana",
+    targets: new[] { "title", "description" }
+);
+
+// With target vectors - static factory method
+await collection.Query.NearText(
+    "banana",
+    targets: TargetVectors.Sum("title", "description")
+);
+
+// With target vectors - lambda builder
+await collection.Query.NearText(
+    "banana",
+    targets: tv => tv.Sum("title", "description")
+);
+
+// With certainty threshold
+await collection.Query.NearText(
+    "banana",
+    certainty: 0.7f,
+    targets: new[] { "title" }
+);
+
+// With move parameters
+await collection.Query.NearText(
+    "banana",
+    moveTo: new Move("fruit", force: 0.5f),
+    moveAway: new Move("vegetable", force: 0.3f)
+);
+
+// With grouping
+await collection.Query.NearText(
+    "banana",
+    new GroupByRequest("category", objectsPerGroup: 3),
+    targets: TargetVectors.Sum("title", "description")
+);
+```
+
+---
+
 ## QueryClient.Hybrid
 
 ```csharp
-// Core overloads with HybridInput
-Task<WeaviateResult> Hybrid(HybridInput input, ...)
-Task<GroupByResult> Hybrid(HybridInput input, GroupByRequest groupBy, ...)
+// Convenience overloads for text-only search (no vectors parameter)
+Task<WeaviateResult> Hybrid(string query, ...)
+Task<GroupByResult> Hybrid(string query, GroupByRequest groupBy, ...)
 
-// Legacy Vectors overload
-Task<WeaviateResult> Hybrid(string? query, Vectors vectors, ...)
-Task<GroupByResult> Hybrid(string? query, GroupByRequest groupBy, Vectors vectors, ...)
+// Core overloads with HybridVectorInput
+Task<WeaviateResult> Hybrid(string? query, HybridVectorInput? vectors, ...)
+Task<GroupByResult> Hybrid(string? query, HybridVectorInput? vectors, GroupByRequest groupBy, ...)
 
 // Lambda builder convenience overloads
 Task<WeaviateResult> Hybrid(string? query, Func<VectorSearchInput.Builder, VectorSearchInput> vectorsBuilder, ...)
-Task<WeaviateResult> Hybrid(NearTextInput nearText, Func<VectorSearchInput.Builder, VectorSearchInput> vectorsBuilder, ...)
-Task<WeaviateResult> Hybrid(string query, Func<TargetVectorsBuilder, TargetVectors> targetVectorsBuilder, ...)
+Task<GroupByResult> Hybrid(string? query, Func<VectorSearchInput.Builder, VectorSearchInput> vectorsBuilder, GroupByRequest groupBy, ...)
 ```
 
 **Examples:**
@@ -191,6 +253,47 @@ await collection.Generate.NearVector(
 
 ---
 
+## GenerateClient.Hybrid
+
+```csharp
+// Convenience overloads for text-only search (no vectors parameter)
+Task<GenerativeWeaviateResult> Hybrid(string query, ..., SinglePrompt? singlePrompt = null, GroupedTask? groupedTask = null, ...)
+Task<GenerativeGroupByResult> Hybrid(string query, GroupByRequest groupBy, ..., SinglePrompt? singlePrompt = null, GroupedTask? groupedTask = null, ...)
+
+// Core overloads with HybridVectorInput
+Task<GenerativeWeaviateResult> Hybrid(string? query, HybridVectorInput? vectors, ..., SinglePrompt? singlePrompt = null, GroupedTask? groupedTask = null, ...)
+Task<GenerativeGroupByResult> Hybrid(string? query, HybridVectorInput? vectors, GroupByRequest groupBy, ..., SinglePrompt? singlePrompt = null, GroupedTask? groupedTask = null, ...)
+
+// Lambda builder convenience overloads
+Task<GenerativeWeaviateResult> Hybrid(string? query, Func<VectorSearchInput.Builder, VectorSearchInput> vectorsBuilder, ..., SinglePrompt? singlePrompt = null, GroupedTask? groupedTask = null, ...)
+Task<GenerativeGroupByResult> Hybrid(string? query, Func<VectorSearchInput.Builder, VectorSearchInput> vectorsBuilder, GroupByRequest groupBy, ..., SinglePrompt? singlePrompt = null, GroupedTask? groupedTask = null, ...)
+```
+
+**Examples:**
+
+```csharp
+// Text-only search with generative prompt
+await collection.Generate.Hybrid(
+    "search query",
+    singlePrompt: "Summarize this item"
+);
+
+// Text + vectors with generative prompt
+await collection.Generate.Hybrid(
+    "search query",
+    v => v.Sum(("title", new[] { 1f, 2f }), ("desc", new[] { 3f, 4f })),
+    groupedTask: new GroupedTask("Summarize all items")
+);
+
+// NearText with generative capabilities
+await collection.Generate.Hybrid(
+    new NearTextInput("banana", TargetVectors: new[] { "title", "description" }),
+    singlePrompt: "Describe this item"
+);
+```
+
+---
+
 ## AggregateClient.NearVector
 
 ```csharp
@@ -222,8 +325,13 @@ await collection.Aggregate.NearVector(
 ## AggregateClient.Hybrid
 
 ```csharp
-Task<AggregateResult> Hybrid(string? query = null, float alpha = 0.7f, Vectors? vectors = null, ...)
-Task<AggregateGroupByResult> Hybrid(string? query, Aggregate.GroupBy groupBy, float alpha = 0.7f, Vectors? vectors = null, ...)
+// Convenience overloads for text-only search (no vectors parameter)
+Task<AggregateResult> Hybrid(string query, float alpha = 0.7f, ...)
+Task<AggregateGroupByResult> Hybrid(string query, Aggregate.GroupBy groupBy, float alpha = 0.7f, ...)
+
+// Core overloads with HybridVectorInput
+Task<AggregateResult> Hybrid(string? query, HybridVectorInput? vectors, float alpha = 0.7f, ...)
+Task<AggregateGroupByResult> Hybrid(string? query, HybridVectorInput? vectors, Aggregate.GroupBy groupBy, float alpha = 0.7f, ...)
 ```
 
 ---
@@ -452,22 +560,38 @@ var input = new HybridInput(
 Wrapper for vector input in hybrid or near-vector searches with optional thresholds.
 
 ```csharp
-// From VectorSearchInput (implicit conversion)
+// Primary constructor
+public record NearVectorInput(
+    VectorSearchInput Vector,
+    float? Certainty = null,
+    float? Distance = null
+)
+
+// Constructor overload - accepts lambda builder (new)
+public NearVectorInput(
+    VectorSearchInput.FactoryFn Vector,
+    float? Certainty = null,
+    float? Distance = null
+)
+```
+
+**Examples:**
+
+```csharp
+// Simple vector (implicit conversion from float[])
 NearVectorInput input = new[] { 1f, 2f, 3f };
+
+// With lambda builder (new)
+new NearVectorInput(
+    v => v.Sum(("title", vec1), ("desc", vec2)),
+    Certainty: 0.8f
+)
 
 // With thresholds
 new NearVectorInput(
-    Vector: vectorSearchInput,
+    Vector: new[] { 1f, 2f, 3f },
     Certainty: 0.8f,
     Distance: null
-)
-
-// With lambda builder
-new NearVectorInput(
-    v => v.Sum(
-        ("title", new[] { 1f, 2f }),
-        ("description", new[] { 3f, 4f })
-    )
 )
 ```
 
@@ -478,19 +602,49 @@ new NearVectorInput(
 Server-side vectorization for hybrid or near-text searches.
 
 ```csharp
+// Primary constructor - accepts TargetVectors directly
+public record NearTextInput(
+    AutoArray<string> Query,
+    TargetVectors? TargetVectors = null,
+    float? Certainty = null,
+    float? Distance = null,
+    Move? MoveTo = null,
+    Move? MoveAway = null
+)
+
+// Constructor overload - accepts lambda builder
+public NearTextInput(
+    AutoArray<string> Query,
+    TargetVectors.FactoryFn TargetVectors,
+    float? Certainty = null,
+    float? Distance = null,
+    Move? MoveTo = null,
+    Move? MoveAway = null
+)
+```
+
+**Examples:**
+
+```csharp
 // Simple text (implicit conversion from string)
 NearTextInput input = "banana";
 
-// With target vectors (using static factory)
+// With target vectors - string array (implicit conversion)
+new NearTextInput(
+    Query: "banana",
+    TargetVectors: new[] { "title", "description" }
+)
+
+// With target vectors - static factory method
 new NearTextInput(
     Query: "banana",
     TargetVectors: TargetVectors.Sum("title", "description")
 )
 
-// With target vectors (using implicit conversion from string[])
+// With target vectors - lambda builder
 new NearTextInput(
     Query: "banana",
-    TargetVectors: new[] { "title", "description" }
+    TargetVectors: tv => tv.Sum("title", "description")
 )
 
 // With move parameters

@@ -36,7 +36,7 @@ public partial class TypedQueryClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        TargetVectors.FactoryFn? targets = null,
+        TargetVectors? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -98,7 +98,7 @@ public partial class TypedQueryClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
-        TargetVectors.FactoryFn? targets = null,
+        TargetVectors? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -127,4 +127,96 @@ public partial class TypedQueryClient<T>
         );
         return result.ToTyped<T>();
     }
+}
+
+/// <summary>
+/// Extension methods for TypedQueryClient NearText search with lambda target vector builders.
+/// </summary>
+public static class TypedQueryClientNearTextExtensions
+{
+    /// <summary>
+    /// Performs a near-text search using a lambda to build target vectors.
+    /// </summary>
+    public static async Task<Models.WeaviateResult<WeaviateObject<T>>> NearText<T>(
+        this TypedQueryClient<T> client,
+        AutoArray<string> text,
+        float? certainty = null,
+        float? distance = null,
+        Move? moveTo = null,
+        Move? moveAway = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        TargetVectors.FactoryFn? targets = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    )
+        where T : class, new() =>
+        await client.NearText(
+            text: text,
+            certainty: certainty,
+            distance: distance,
+            moveTo: moveTo,
+            moveAway: moveAway,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            targets: targets?.Invoke(new TargetVectors.Builder()),
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
+
+    /// <summary>
+    /// Performs a near-text search with group-by using a lambda to build target vectors.
+    /// </summary>
+    public static async Task<GroupByResult<T>> NearText<T>(
+        this TypedQueryClient<T> client,
+        AutoArray<string> text,
+        GroupByRequest groupBy,
+        float? certainty = null,
+        float? distance = null,
+        Move? moveTo = null,
+        Move? moveAway = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        TargetVectors.FactoryFn? targets = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    )
+        where T : class, new() =>
+        await client.NearText(
+            text: text,
+            groupBy: groupBy,
+            certainty: certainty,
+            distance: distance,
+            moveTo: moveTo,
+            moveAway: moveAway,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            targets: targets?.Invoke(new TargetVectors.Builder()),
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
 }

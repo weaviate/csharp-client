@@ -8,6 +8,20 @@ public record NearVectorInput(
     float? Distance = null
 )
 {
+    /// <summary>
+    /// Constructor overload accepting lambda builder for vector input.
+    /// </summary>
+    public NearVectorInput(
+        VectorSearchInput.FactoryFn Vector,
+        float? Certainty = null,
+        float? Distance = null
+    )
+        : this(
+            Vector: Vector(new VectorSearchInput.Builder()),
+            Certainty: Certainty,
+            Distance: Distance
+        ) { }
+
     public static implicit operator NearVectorInput(VectorSearchInput vectors) => new(vectors);
 };
 

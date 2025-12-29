@@ -20,7 +20,7 @@ public partial class GenerateClient
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
-    /// <param name="targetVector">Target vector name</param>
+    /// <param name="targets">Target vectors</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -41,7 +41,7 @@ public partial class GenerateClient
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
-        TargetVectors.FactoryFn? targets = null,
+        TargetVectors? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -59,7 +59,7 @@ public partial class GenerateClient
             moveAway: moveAway,
             offset: offset,
             autoLimit: autoLimit,
-            targetVector: targets?.Invoke(new TargetVectors.Builder()),
+            targetVector: targets,
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
@@ -92,7 +92,7 @@ public partial class GenerateClient
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
-    /// <param name="targetVector">Target vector name</param>
+    /// <param name="targets">Target vectors</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -114,7 +114,7 @@ public partial class GenerateClient
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
-        TargetVectors.FactoryFn? targets = null,
+        TargetVectors? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -138,7 +138,7 @@ public partial class GenerateClient
             rerank: rerank,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
-            targetVector: targets?.Invoke(new TargetVectors.Builder()),
+            targetVector: targets,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -148,4 +148,106 @@ public partial class GenerateClient
         );
         return result;
     }
+}
+
+/// <summary>
+/// Extension methods for GenerateClient NearText search with lambda target vector builders.
+/// </summary>
+public static class GenerateClientNearTextExtensions
+{
+    /// <summary>
+    /// Search near text with generative AI capabilities using a lambda to build target vectors.
+    /// </summary>
+    public static async Task<GenerativeWeaviateResult> NearText(
+        this GenerateClient client,
+        AutoArray<string> text,
+        float? certainty = null,
+        float? distance = null,
+        Move? moveTo = null,
+        Move? moveAway = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
+        TargetVectors.FactoryFn? targets = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        await client.NearText(
+            text: text,
+            certainty: certainty,
+            distance: distance,
+            moveTo: moveTo,
+            moveAway: moveAway,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedTask: groupedTask,
+            provider: provider,
+            targets: targets?.Invoke(new TargetVectors.Builder()),
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
+
+    /// <summary>
+    /// Search near text with generative AI capabilities and grouping using a lambda to build target vectors.
+    /// </summary>
+    public static async Task<GenerativeGroupByResult> NearText(
+        this GenerateClient client,
+        AutoArray<string> text,
+        GroupByRequest groupBy,
+        float? certainty = null,
+        float? distance = null,
+        Move? moveTo = null,
+        Move? moveAway = null,
+        uint? limit = null,
+        uint? offset = null,
+        uint? autoLimit = null,
+        Filter? filters = null,
+        Rerank? rerank = null,
+        SinglePrompt? singlePrompt = null,
+        GroupedTask? groupedTask = null,
+        GenerativeProvider? provider = null,
+        TargetVectors.FactoryFn? targets = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        await client.NearText(
+            text: text,
+            groupBy: groupBy,
+            certainty: certainty,
+            distance: distance,
+            moveTo: moveTo,
+            moveAway: moveAway,
+            limit: limit,
+            offset: offset,
+            autoLimit: autoLimit,
+            filters: filters,
+            rerank: rerank,
+            singlePrompt: singlePrompt,
+            groupedTask: groupedTask,
+            provider: provider,
+            targets: targets?.Invoke(new TargetVectors.Builder()),
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
 }

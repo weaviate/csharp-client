@@ -6,7 +6,7 @@ namespace Weaviate.Client.Tests.Integration;
 public partial class SearchTests : IntegrationTests
 {
     [Fact]
-    public async Task NearTextSearch()
+    public async Task Test_Search_NearText()
     {
         // Arrange
         var collectionClient = await CollectionFactory<TestDataValue>(
@@ -114,5 +114,67 @@ public partial class SearchTests : IntegrationTests
         Assert.NotNull(obj);
         Assert.Equal(guids[3], obj.UUID);
         Assert.Contains("default", obj.Vectors.Keys);
+    }
+
+    [Fact]
+    public async Task Test_Search_NearText_MultipleTargetVectors()
+    {
+        // Arrange
+        var collectionClient = await CollectionFactory(
+            null,
+            "Test collection with multiple vectors",
+            [Property.Text("title"), Property.Text("description")],
+            vectorConfig:
+            [
+                Configure.Vector(
+                    "title",
+                    v => v.Text2VecTransformers(),
+                    sourceProperties: ["title"]
+                ),
+                Configure.Vector(
+                    "description",
+                    v => v.Text2VecTransformers(),
+                    sourceProperties: ["description"]
+                ),
+            ]
+        );
+
+        // Insert test data with distinct title and description content
+        var data = new[]
+        {
+            new { Title = "Fruit recipes", Description = "How to bake delicious cakes" },
+            new { Title = "Baking guide", Description = "Mountain climbing safety tips" },
+            new { Title = "Apple desserts", Description = "Easy fruit-based recipes" },
+            new { Title = "Outdoor adventures", Description = "Hiking and climbing guide" },
+        };
+
+        var tasks = data.Select(d =>
+            collectionClient.Data.Insert(
+                d,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
+        Guid[] guids = await Task.WhenAll(tasks);
+
+        // Act - Search for "cake" across both title and description vectors using Sum combination
+        var retriever = await collectionClient.Query.NearText(
+            "cake",
+            // targets: tv => tv.Sum("title", "description"),
+            // targets: tv => tv.Targets(new[] { "title", "description" }),
+            targets: ["title", "description"],
+            returnProperties: ["title", "description"],
+            includeVectors: true,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var retrieved = retriever.Objects.ToList();
+
+        // Assert
+        Assert.NotNull(retrieved);
+        Assert.True(retrieved.Count > 0, "Should return at least one result");
+
+        // The first result should be the one with "cake" in description
+        Assert.Equal(guids[0].ToString(), retrieved[0].UUID.ToString());
+        Assert.Contains("title", retrieved[0].Vectors.Keys);
+        Assert.Contains("description", retrieved[0].Vectors.Keys);
     }
 }
