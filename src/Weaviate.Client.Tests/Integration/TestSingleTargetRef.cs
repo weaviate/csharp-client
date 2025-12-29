@@ -256,7 +256,7 @@ public partial class ReferenceTests : IntegrationTests
                 Property.Int("movie_id"),
             ],
             references: new Reference("forMovie", TargetCollection: movies.Name),
-            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers())
+            vectorConfig: Configure.Vector(v => v.Text2VecTransformers())
         );
 
         var moviesData = new[]

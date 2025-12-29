@@ -190,15 +190,11 @@ public class TestMultiVector : IntegrationTests
             [
                 (
                     "colbert",
-                    new Vector(
-                        new VectorMulti<float>(
-                            new[,]
-                            {
-                                { 1f, 2f },
-                                { 3f, 4f },
-                            }
-                        )
-                    )
+                    new[,]
+                    {
+                        { 1f, 2f },
+                        { 3f, 4f },
+                    }
                 ),
             ],
             cancellationToken: TestContext.Current.CancellationToken

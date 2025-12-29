@@ -11,7 +11,7 @@ public class TestNearQueries : IntegrationTests
             "",
             "Test collection description",
             [Property.Text("Name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers { })
+            vectorConfig: Configure.Vector(v => v.Text2VecTransformers())
         );
 
         var uuidBanana = await collectionClient.Data.Insert(
@@ -71,7 +71,7 @@ public class TestNearQueries : IntegrationTests
             "",
             "Test collection description",
             [Property.Text("Name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers { })
+            vectorConfig: Configure.Vector(v => v.Text2VecTransformers())
         );
 
         var uuidBanana = await collectionClient.Data.Insert(
@@ -117,7 +117,7 @@ public class TestNearQueries : IntegrationTests
             "",
             "Test collection description",
             [Property.Text("Name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers { })
+            vectorConfig: Configure.Vector(v => v.Text2VecTransformers())
         );
 
         var uuidBanana = await collectionClient.Data.Insert(
@@ -162,7 +162,7 @@ public class TestNearQueries : IntegrationTests
             "",
             "Test collection description",
             [Property.Text("Name"), Property.Int("Count")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers { })
+            vectorConfig: Configure.Vector(v => v.Text2VecTransformers())
         );
 
         var uuidBanana1 = await collectionClient.Data.Insert(

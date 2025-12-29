@@ -9,7 +9,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         await collection.Data.InsertMany(
@@ -63,7 +63,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Int("data"), Property.Text("text")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers())
+            vectorConfig: Configure.Vector(v => v.Text2VecTransformers())
         );
 
         // Insert test data
@@ -168,7 +168,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("this"), Property.Text("that")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         var insertData = Enumerable
@@ -216,7 +216,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Int("data")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         if (count > 0)
@@ -262,7 +262,7 @@ public partial class BasicTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Int("data")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         var insertData = Enumerable
