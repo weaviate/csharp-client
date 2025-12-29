@@ -13,11 +13,11 @@ public record NearVectorInput(
 
 public record NearTextInput(
     AutoArray<string> Query,
+    TargetVectors? TargetVectors = null,
     float? Certainty = null,
     float? Distance = null,
     Move? MoveTo = null,
-    Move? MoveAway = null,
-    TargetVectors? TargetVectors = null
+    Move? MoveAway = null
 )
 {
     /// <summary>
@@ -25,7 +25,7 @@ public record NearTextInput(
     /// </summary>
     public NearTextInput(
         AutoArray<string> Query,
-        Func<TargetVectorsBuilder, TargetVectors> targetVectorsBuilder,
+        TargetVectors.FactoryFn TargetVectors,
         float? Certainty = null,
         float? Distance = null,
         Move? MoveTo = null,
@@ -37,7 +37,7 @@ public record NearTextInput(
             Distance: Distance,
             MoveTo: MoveTo,
             MoveAway: MoveAway,
-            TargetVectors: targetVectorsBuilder(new TargetVectorsBuilder())
+            TargetVectors: TargetVectors(new TargetVectors.Builder())
         ) { }
 
     public static implicit operator NearTextInput(string query) => new(Query: query);

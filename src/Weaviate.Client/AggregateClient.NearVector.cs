@@ -69,7 +69,7 @@ public partial class AggregateClient
     /// Aggregate near vector using lambda builder.
     /// </summary>
     public async Task<AggregateResult> NearVector(
-        Func<VectorSearchInput.Builder, VectorSearchInput> vectors,
+        VectorSearchInput.FactoryFn vectors,
         double? certainty = null,
         double? distance = null,
         uint? limit = null,
@@ -93,7 +93,7 @@ public partial class AggregateClient
     /// Aggregate near vector with grouping using lambda builder.
     /// </summary>
     public async Task<AggregateGroupByResult> NearVector(
-        Func<VectorSearchInput.Builder, VectorSearchInput> vectors,
+        VectorSearchInput.FactoryFn vectors,
         Aggregate.GroupBy groupBy,
         double? certainty = null,
         double? distance = null,

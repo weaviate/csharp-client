@@ -299,7 +299,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
     /// Tests multiple vectors for the same target with Sum combination and distance verification.
     /// </summary>
     public static TheoryData<
-        Func<VectorSearchInput.Builder, VectorSearchInput>,
+        VectorSearchInput.FactoryFn,
         float[]
     > MultiTargetVectorsWithDistances =>
         new()
@@ -349,7 +349,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
     [Theory]
     [MemberData(nameof(MultiTargetVectorsWithDistances))]
     public async Task Test_SameTargetVector_MultipleInput(
-        Func<VectorSearchInput.Builder, VectorSearchInput> nearVectorInput,
+        VectorSearchInput.FactoryFn nearVectorInput,
         float[] expectedDistances
     )
     {

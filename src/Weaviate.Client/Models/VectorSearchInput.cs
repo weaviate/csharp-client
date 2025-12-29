@@ -199,6 +199,11 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
         new([new NamedVector(tuple.name, tuple.vectors)]);
 
     /// <summary>
+    /// Implicit conversion from FactoryFn to VectorSearchInput
+    /// </summary>
+    public static implicit operator VectorSearchInput(FactoryFn factory) => factory(new Builder());
+
+    /// <summary>
     /// Builder for creating VectorSearchInput with multi-target combinations via lambda syntax.
     /// </summary>
     public sealed class Builder
@@ -300,6 +305,12 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
             );
         }
     }
+
+    /// <summary>
+    /// Factory delegate for creating VectorSearchInput using a builder pattern.
+    /// Example: FactoryFn factory = b => b.Sum(("title", vec1), ("desc", vec2))
+    /// </summary>
+    public delegate VectorSearchInput FactoryFn(Builder builder);
 
     public static class CollectionBuilder
     {
