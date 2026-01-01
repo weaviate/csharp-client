@@ -2,7 +2,7 @@ using System.Net;
 
 namespace Weaviate.Client.Rest;
 
-public class WeaviateRestClientException : WeaviateClientException
+internal class WeaviateRestClientException : WeaviateClientException
 {
     private const string DefaultMessage =
         "An error occurred processing the response from the Weaviate REST API.";
@@ -22,7 +22,7 @@ public class WeaviateRestClientException : WeaviateClientException
         ) { }
 }
 
-public class WeaviateRestServerException : WeaviateServerException
+internal class WeaviateRestServerException : WeaviateServerException
 {
     private const string DefaultMessage =
         "An error occurred in the server while processing the request.";
@@ -49,7 +49,7 @@ public class WeaviateRestServerException : WeaviateServerException
 /// <summary>
 /// Exception thrown for invalid enum wire-format values.
 /// </summary>
-public class InvalidEnumWireFormatException : WeaviateClientException
+internal class InvalidEnumWireFormatException : WeaviateClientException
 {
     public InvalidEnumWireFormatException(string message)
         : base(message) { }

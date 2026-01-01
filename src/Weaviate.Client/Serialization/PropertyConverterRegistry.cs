@@ -9,7 +9,7 @@ namespace Weaviate.Client.Serialization;
 /// Registry for property converters. Maps C# types to Weaviate data types and provides
 /// serialization/deserialization through the appropriate converter.
 /// </summary>
-public class PropertyConverterRegistry
+internal class PropertyConverterRegistry
 {
     private readonly Dictionary<string, IPropertyConverter> _byDataType = new();
     private readonly Dictionary<Type, IPropertyConverter> _byType = new();

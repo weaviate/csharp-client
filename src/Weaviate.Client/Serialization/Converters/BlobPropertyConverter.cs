@@ -6,7 +6,7 @@ namespace Weaviate.Client.Serialization.Converters;
 /// Converter for Weaviate "blob" data type (no array variant).
 /// Stores binary data as Base64 strings.
 /// </summary>
-public class BlobPropertyConverter : PropertyConverterBase
+internal class BlobPropertyConverter : PropertyConverterBase
 {
     public override string DataType => "blob";
     public override bool SupportsArray => false;

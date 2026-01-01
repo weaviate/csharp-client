@@ -6,7 +6,7 @@ namespace Weaviate.Client.Serialization.Converters;
 /// Converter for Weaviate "int" and "int[]" data types.
 /// Maps to C# int, long, short, byte (and nullable variants).
 /// </summary>
-public class IntPropertyConverter : PropertyConverterBase
+internal class IntPropertyConverter : PropertyConverterBase
 {
     public override string DataType => "int";
 

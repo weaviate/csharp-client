@@ -20,7 +20,7 @@ public class TypeValidator
     /// <summary>
     /// Creates a new TypeValidator with the specified PropertyConverterRegistry.
     /// </summary>
-    public TypeValidator(PropertyConverterRegistry registry)
+    internal TypeValidator(PropertyConverterRegistry registry)
     {
         _registry = registry;
     }

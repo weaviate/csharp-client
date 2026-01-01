@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
 
-public static class HttpResponseMessageExtensions
+internal static class HttpResponseMessageExtensions
 {
     private static async Task<HttpStatusCode> EnsureExpectedStatusCodeAsync(
         this HttpResponseMessage response,

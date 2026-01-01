@@ -1,0 +1,87 @@
+#nullable enable
+Weaviate.Client.Models.AggregateGroupByResult.Group.Boolean(string! propertyName) -> Weaviate.Client.Models.Aggregate.Boolean?
+Weaviate.Client.Models.AggregateGroupByResult.Group.Date(string! propertyName) -> Weaviate.Client.Models.Aggregate.Date?
+Weaviate.Client.Models.AggregateGroupByResult.Group.Integer(string! propertyName) -> Weaviate.Client.Models.Aggregate.Integer?
+Weaviate.Client.Models.AggregateGroupByResult.Group.Match(string! propertyName, System.Action<Weaviate.Client.Models.Aggregate.Text!>? text = null, System.Action<Weaviate.Client.Models.Aggregate.Integer!>? integer = null, System.Action<Weaviate.Client.Models.Aggregate.Number!>? number = null, System.Action<Weaviate.Client.Models.Aggregate.Boolean!>? boolean = null, System.Action<Weaviate.Client.Models.Aggregate.Date!>? date = null) -> bool
+Weaviate.Client.Models.AggregateGroupByResult.Group.Match<TResult>(string! propertyName, System.Func<Weaviate.Client.Models.Aggregate.Text!, TResult>? text = null, System.Func<Weaviate.Client.Models.Aggregate.Integer!, TResult>? integer = null, System.Func<Weaviate.Client.Models.Aggregate.Number!, TResult>? number = null, System.Func<Weaviate.Client.Models.Aggregate.Boolean!, TResult>? boolean = null, System.Func<Weaviate.Client.Models.Aggregate.Date!, TResult>? date = null) -> TResult?
+Weaviate.Client.Models.AggregateGroupByResult.Group.Number(string! propertyName) -> Weaviate.Client.Models.Aggregate.Number?
+Weaviate.Client.Models.AggregateGroupByResult.Group.Property<T>(string! propertyName, System.Action<T!>! action) -> bool
+Weaviate.Client.Models.AggregateGroupByResult.Group.Property<T, TResult>(string! propertyName, System.Func<T!, TResult>! func) -> TResult?
+Weaviate.Client.Models.AggregateGroupByResult.Group.Text(string! propertyName) -> Weaviate.Client.Models.Aggregate.Text?
+Weaviate.Client.Models.AggregateGroupByResult.Group.TryGet<T>(string! propertyName, out T! aggregation) -> bool
+Weaviate.Client.Models.AggregateGroupByResult.Group.TryGetBoolean(string! propertyName, out Weaviate.Client.Models.Aggregate.Boolean! boolean) -> bool
+Weaviate.Client.Models.AggregateGroupByResult.Group.TryGetDate(string! propertyName, out Weaviate.Client.Models.Aggregate.Date! date) -> bool
+Weaviate.Client.Models.AggregateGroupByResult.Group.TryGetInteger(string! propertyName, out Weaviate.Client.Models.Aggregate.Integer! integer) -> bool
+Weaviate.Client.Models.AggregateGroupByResult.Group.TryGetNumber(string! propertyName, out Weaviate.Client.Models.Aggregate.Number! number) -> bool
+Weaviate.Client.Models.AggregateGroupByResult.Group.TryGetText(string! propertyName, out Weaviate.Client.Models.Aggregate.Text! text) -> bool
+Weaviate.Client.Models.AggregateResult.Boolean(string! propertyName) -> Weaviate.Client.Models.Aggregate.Boolean?
+Weaviate.Client.Models.AggregateResult.Date(string! propertyName) -> Weaviate.Client.Models.Aggregate.Date?
+Weaviate.Client.Models.AggregateResult.Integer(string! propertyName) -> Weaviate.Client.Models.Aggregate.Integer?
+Weaviate.Client.Models.AggregateResult.Match(string! propertyName, System.Action<Weaviate.Client.Models.Aggregate.Text!>? text = null, System.Action<Weaviate.Client.Models.Aggregate.Integer!>? integer = null, System.Action<Weaviate.Client.Models.Aggregate.Number!>? number = null, System.Action<Weaviate.Client.Models.Aggregate.Boolean!>? boolean = null, System.Action<Weaviate.Client.Models.Aggregate.Date!>? date = null) -> bool
+Weaviate.Client.Models.AggregateResult.Match<TResult>(string! propertyName, System.Func<Weaviate.Client.Models.Aggregate.Text!, TResult>? text = null, System.Func<Weaviate.Client.Models.Aggregate.Integer!, TResult>? integer = null, System.Func<Weaviate.Client.Models.Aggregate.Number!, TResult>? number = null, System.Func<Weaviate.Client.Models.Aggregate.Boolean!, TResult>? boolean = null, System.Func<Weaviate.Client.Models.Aggregate.Date!, TResult>? date = null) -> TResult?
+Weaviate.Client.Models.AggregateResult.Number(string! propertyName) -> Weaviate.Client.Models.Aggregate.Number?
+Weaviate.Client.Models.AggregateResult.Property<T>(string! propertyName, System.Action<T!>! action) -> bool
+Weaviate.Client.Models.AggregateResult.Property<T, TResult>(string! propertyName, System.Func<T!, TResult>! func) -> TResult?
+Weaviate.Client.Models.AggregateResult.Text(string! propertyName) -> Weaviate.Client.Models.Aggregate.Text?
+Weaviate.Client.Models.AggregateResult.TryGet<T>(string! propertyName, out T! aggregation) -> bool
+Weaviate.Client.Models.AggregateResult.TryGetBoolean(string! propertyName, out Weaviate.Client.Models.Aggregate.Boolean! boolean) -> bool
+Weaviate.Client.Models.AggregateResult.TryGetDate(string! propertyName, out Weaviate.Client.Models.Aggregate.Date! date) -> bool
+Weaviate.Client.Models.AggregateResult.TryGetInteger(string! propertyName, out Weaviate.Client.Models.Aggregate.Integer! integer) -> bool
+Weaviate.Client.Models.AggregateResult.TryGetNumber(string! propertyName, out Weaviate.Client.Models.Aggregate.Number! number) -> bool
+Weaviate.Client.Models.AggregateResult.TryGetText(string! propertyName, out Weaviate.Client.Models.Aggregate.Text! text) -> bool
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.AggregateGroupByResult() -> void
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.Group() -> void
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.GroupedBy.get -> Weaviate.Client.Models.AggregateGroupByResult.Group.By!
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.Properties.get -> T!
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.Properties.init -> void
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.TotalCount.get -> long
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.Untyped.get -> Weaviate.Client.Models.AggregateGroupByResult.Group!
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.Untyped.init -> void
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Groups.get -> System.Collections.Generic.IReadOnlyList<Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group!>!
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Groups.init -> void
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Untyped.get -> Weaviate.Client.Models.AggregateGroupByResult!
+Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Untyped.init -> void
+Weaviate.Client.Models.Typed.AggregateResult<T>
+Weaviate.Client.Models.Typed.AggregateResult<T>.AggregateResult() -> void
+Weaviate.Client.Models.Typed.AggregateResult<T>.Properties.get -> T!
+Weaviate.Client.Models.Typed.AggregateResult<T>.Properties.init -> void
+Weaviate.Client.Models.Typed.AggregateResult<T>.TotalCount.get -> long
+Weaviate.Client.Models.Typed.AggregateResult<T>.Untyped.get -> Weaviate.Client.Models.AggregateResult!
+Weaviate.Client.Models.Typed.AggregateResult<T>.Untyped.init -> void
+static Weaviate.Client.Models.Typed.TypedResultConverter.ToTyped<T>(this Weaviate.Client.Models.AggregateGroupByResult! result) -> Weaviate.Client.Models.Typed.AggregateGroupByResult<T!>!
+static Weaviate.Client.Models.Typed.TypedResultConverter.ToTyped<T>(this Weaviate.Client.Models.AggregateResult! result) -> Weaviate.Client.Models.Typed.AggregateResult<T!>!
+Weaviate.Client.Models.Typed.MetricsExtractor
+static Weaviate.Client.Models.Typed.MetricsExtractor.FromType<T>() -> Weaviate.Client.Models.Aggregate.Metric![]!
+static Weaviate.Client.Models.Typed.MetricsExtractor.FromType(System.Type! type) -> Weaviate.Client.Models.Aggregate.Metric![]!
+override Weaviate.Client.Models.Typed.AggregateResult<T>.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Typed.AggregateResult<T>.GetHashCode() -> int
+override Weaviate.Client.Models.Typed.AggregateResult<T>.ToString() -> string!
+override Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.GetHashCode() -> int
+override Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.ToString() -> string!
+override Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.GetHashCode() -> int
+override Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.ToString() -> string!
+virtual Weaviate.Client.Models.Typed.AggregateResult<T>.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.Typed.AggregateResult<T>.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.PrintMembers(System.Text.StringBuilder! builder) -> bool
+~Weaviate.Client.Models.Typed.AggregateResult<T>.AggregateResult(Weaviate.Client.Models.Typed.AggregateResult<T>! original) -> void
+~static Weaviate.Client.Models.Typed.AggregateResult<T>.operator !=(Weaviate.Client.Models.Typed.AggregateResult<T>? left, Weaviate.Client.Models.Typed.AggregateResult<T>? right) -> bool
+~static Weaviate.Client.Models.Typed.AggregateResult<T>.operator ==(Weaviate.Client.Models.Typed.AggregateResult<T>? left, Weaviate.Client.Models.Typed.AggregateResult<T>? right) -> bool
+~virtual Weaviate.Client.Models.Typed.AggregateResult<T>.<Clone>$() -> Weaviate.Client.Models.Typed.AggregateResult<T>!
+~virtual Weaviate.Client.Models.Typed.AggregateResult<T>.Equals(Weaviate.Client.Models.Typed.AggregateResult<T>? other) -> bool
+~Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.AggregateGroupByResult(Weaviate.Client.Models.Typed.AggregateGroupByResult<T>! original) -> void
+~static Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.operator !=(Weaviate.Client.Models.Typed.AggregateGroupByResult<T>? left, Weaviate.Client.Models.Typed.AggregateGroupByResult<T>? right) -> bool
+~static Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.operator ==(Weaviate.Client.Models.Typed.AggregateGroupByResult<T>? left, Weaviate.Client.Models.Typed.AggregateGroupByResult<T>? right) -> bool
+~virtual Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.<Clone>$() -> Weaviate.Client.Models.Typed.AggregateGroupByResult<T>!
+~virtual Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Equals(Weaviate.Client.Models.Typed.AggregateGroupByResult<T>? other) -> bool
+~Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.Group(Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group! original) -> void
+~static Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.operator !=(Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group? left, Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group? right) -> bool
+~static Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.operator ==(Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group? left, Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group? right) -> bool
+~virtual Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.<Clone>$() -> Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group!
+~virtual Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.Equals(Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group? other) -> bool

@@ -40,6 +40,12 @@
         "resolved": "2.71.0",
         "contentHash": "r8zHZm7kHdMrtujnkcuQ0BNDH2969at/8Va1ZzQgVblaQzR7tm8JlA3G+5Z5IFbvvf9PcAr1/VcoSR+g7j4Nyw=="
       },
+      "Microsoft.CodeAnalysis.PublicApiAnalyzers": {
+        "type": "Direct",
+        "requested": "[4.14.0, )",
+        "resolved": "4.14.0",
+        "contentHash": "5zBDSa8D1pfn5VyDzRekcYdVx/DGAzwegblVJhzdN0kvPt97TPr12haA6ZG0wS2WgBb1W42GeZJRiRtlNaoY1w=="
+      },
       "Microsoft.Extensions.Hosting.Abstractions": {
         "type": "Direct",
         "requested": "[9.0.8, )",
@@ -305,6 +311,12 @@
         "requested": "[2.71.0, )",
         "resolved": "2.71.0",
         "contentHash": "r8zHZm7kHdMrtujnkcuQ0BNDH2969at/8Va1ZzQgVblaQzR7tm8JlA3G+5Z5IFbvvf9PcAr1/VcoSR+g7j4Nyw=="
+      },
+      "Microsoft.CodeAnalysis.PublicApiAnalyzers": {
+        "type": "Direct",
+        "requested": "[4.14.0, )",
+        "resolved": "4.14.0",
+        "contentHash": "5zBDSa8D1pfn5VyDzRekcYdVx/DGAzwegblVJhzdN0kvPt97TPr12haA6ZG0wS2WgBb1W42GeZJRiRtlNaoY1w=="
       },
       "Microsoft.Extensions.Hosting.Abstractions": {
         "type": "Direct",

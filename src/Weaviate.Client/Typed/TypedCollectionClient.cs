@@ -70,7 +70,8 @@ public class TypedCollectionClient<T>
     public TypedGenerateClient<T> Generate => _generateClient;
 
     /// <summary>
-    /// Aggregate operations. Returns untyped AggregateClient since aggregates return metrics, not objects.
+    /// Aggregate operations for computing statistics over the collection.
+    /// Use the ToTyped&lt;T&gt;() extension method on results to map to strongly-typed objects.
     /// </summary>
     public AggregateClient Aggregate => _collectionClient.Aggregate;
 

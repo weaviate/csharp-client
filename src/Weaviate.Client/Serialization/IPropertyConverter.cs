@@ -7,7 +7,7 @@ namespace Weaviate.Client.Serialization;
 /// <summary>
 /// Converts property values between C# types and Weaviate REST/gRPC representations.
 /// </summary>
-public interface IPropertyConverter
+internal interface IPropertyConverter
 {
     /// <summary>
     /// The Weaviate data type string (e.g., "text", "int", "boolean").
@@ -68,7 +68,7 @@ public interface IPropertyConverter
 /// <summary>
 /// Base class for property converters with common functionality.
 /// </summary>
-public abstract class PropertyConverterBase : IPropertyConverter
+internal abstract class PropertyConverterBase : IPropertyConverter
 {
     public abstract string DataType { get; }
     public virtual bool SupportsArray => true;

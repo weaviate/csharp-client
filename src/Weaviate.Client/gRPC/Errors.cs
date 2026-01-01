@@ -1,6 +1,6 @@
 namespace Weaviate.Client.Grpc;
 
-public class WeaviateGrpcServerException : WeaviateServerException
+internal class WeaviateGrpcServerException : WeaviateServerException
 {
     private const string DefaultMessage =
         "An error occurred in the server while processing the request.";
