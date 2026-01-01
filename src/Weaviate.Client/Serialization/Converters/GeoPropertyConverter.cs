@@ -6,7 +6,7 @@ namespace Weaviate.Client.Serialization.Converters;
 /// <summary>
 /// Converter for Weaviate "geoCoordinates" data type (no array variant).
 /// </summary>
-public class GeoPropertyConverter : PropertyConverterBase
+internal class GeoPropertyConverter : PropertyConverterBase
 {
     public override string DataType => "geoCoordinates";
     public override bool SupportsArray => false;

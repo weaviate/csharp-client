@@ -6,7 +6,7 @@ namespace Weaviate.Client.Serialization.Converters;
 /// <summary>
 /// Converter for Weaviate "phoneNumber" data type (no array variant).
 /// </summary>
-public class PhonePropertyConverter : PropertyConverterBase
+internal class PhonePropertyConverter : PropertyConverterBase
 {
     public override string DataType => "phoneNumber";
     public override bool SupportsArray => false;

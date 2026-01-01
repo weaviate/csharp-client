@@ -5,7 +5,7 @@ namespace Weaviate.Client.Serialization.Converters;
 /// <summary>
 /// Converter for Weaviate "boolean" and "boolean[]" data types.
 /// </summary>
-public class BoolPropertyConverter : PropertyConverterBase
+internal class BoolPropertyConverter : PropertyConverterBase
 {
     public override string DataType => "boolean";
 
