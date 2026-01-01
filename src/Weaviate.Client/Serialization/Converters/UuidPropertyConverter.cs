@@ -5,7 +5,7 @@ namespace Weaviate.Client.Serialization.Converters;
 /// <summary>
 /// Converter for Weaviate "uuid" and "uuid[]" data types.
 /// </summary>
-public class UuidPropertyConverter : PropertyConverterBase
+internal class UuidPropertyConverter : PropertyConverterBase
 {
     public override string DataType => "uuid";
 

@@ -6,7 +6,7 @@ namespace Weaviate.Client.Serialization.Converters;
 /// Converter for Weaviate "number" and "number[]" data types.
 /// Maps to C# double, float, decimal (and nullable variants).
 /// </summary>
-public class NumberPropertyConverter : PropertyConverterBase
+internal class NumberPropertyConverter : PropertyConverterBase
 {
     public override string DataType => "number";
 

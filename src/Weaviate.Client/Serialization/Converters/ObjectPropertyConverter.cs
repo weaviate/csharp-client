@@ -6,7 +6,7 @@ namespace Weaviate.Client.Serialization.Converters;
 /// Converter for Weaviate "object" and "object[]" data types (nested objects).
 /// Delegates property conversion to the PropertyConverterRegistry.
 /// </summary>
-public class ObjectPropertyConverter : PropertyConverterBase
+internal class ObjectPropertyConverter : PropertyConverterBase
 {
     private readonly Func<PropertyConverterRegistry> _registryFactory;
 

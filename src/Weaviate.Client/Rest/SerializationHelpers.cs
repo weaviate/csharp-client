@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Rest;
 
-public class EnumMemberJsonConverter<T> : JsonConverter<T>
+internal class EnumMemberJsonConverter<T> : JsonConverter<T>
     where T : struct, Enum
 {
     private readonly Dictionary<T, string> _enumToString = new();
@@ -55,7 +55,7 @@ public class EnumMemberJsonConverter<T> : JsonConverter<T>
     }
 }
 
-public class EnumMemberJsonConverterFactory : JsonConverterFactory
+internal class EnumMemberJsonConverterFactory : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert)
     {
