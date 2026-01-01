@@ -12,6 +12,284 @@ public partial record AggregateGroupByResult
         public IReadOnlyDictionary<string, Aggregate.Property> Properties { get; init; } =
             new Dictionary<string, Aggregate.Property>();
         public long TotalCount { get; init; } = 0;
+
+        #region Typed Accessor Methods
+
+        /// <summary>
+        /// Gets the text aggregation for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <returns>The text aggregation, or null if not found or wrong type.</returns>
+        public Aggregate.Text? Text(string propertyName) =>
+            Properties.TryGetValue(propertyName, out var prop) ? prop as Aggregate.Text : null;
+
+        /// <summary>
+        /// Gets the integer aggregation for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <returns>The integer aggregation, or null if not found or wrong type.</returns>
+        public Aggregate.Integer? Integer(string propertyName) =>
+            Properties.TryGetValue(propertyName, out var prop) ? prop as Aggregate.Integer : null;
+
+        /// <summary>
+        /// Gets the number aggregation for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <returns>The number aggregation, or null if not found or wrong type.</returns>
+        public Aggregate.Number? Number(string propertyName) =>
+            Properties.TryGetValue(propertyName, out var prop) ? prop as Aggregate.Number : null;
+
+        /// <summary>
+        /// Gets the boolean aggregation for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <returns>The boolean aggregation, or null if not found or wrong type.</returns>
+        public Aggregate.Boolean? Boolean(string propertyName) =>
+            Properties.TryGetValue(propertyName, out var prop) ? prop as Aggregate.Boolean : null;
+
+        /// <summary>
+        /// Gets the date aggregation for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <returns>The date aggregation, or null if not found or wrong type.</returns>
+        public Aggregate.Date? Date(string propertyName) =>
+            Properties.TryGetValue(propertyName, out var prop) ? prop as Aggregate.Date : null;
+
+        #endregion
+
+        #region TryGet Methods
+
+        /// <summary>
+        /// Tries to get the text aggregation for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="text">The text aggregation if found and of correct type.</param>
+        /// <returns>True if the property exists and is a text aggregation; otherwise, false.</returns>
+        public bool TryGetText(string propertyName, out Aggregate.Text text)
+        {
+            if (Properties.TryGetValue(propertyName, out var prop) && prop is Aggregate.Text t)
+            {
+                text = t;
+                return true;
+            }
+
+            text = null!;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the integer aggregation for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="integer">The integer aggregation if found and of correct type.</param>
+        /// <returns>True if the property exists and is an integer aggregation; otherwise, false.</returns>
+        public bool TryGetInteger(string propertyName, out Aggregate.Integer integer)
+        {
+            if (Properties.TryGetValue(propertyName, out var prop) && prop is Aggregate.Integer i)
+            {
+                integer = i;
+                return true;
+            }
+
+            integer = null!;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the number aggregation for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="number">The number aggregation if found and of correct type.</param>
+        /// <returns>True if the property exists and is a number aggregation; otherwise, false.</returns>
+        public bool TryGetNumber(string propertyName, out Aggregate.Number number)
+        {
+            if (Properties.TryGetValue(propertyName, out var prop) && prop is Aggregate.Number n)
+            {
+                number = n;
+                return true;
+            }
+
+            number = null!;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the boolean aggregation for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="boolean">The boolean aggregation if found and of correct type.</param>
+        /// <returns>True if the property exists and is a boolean aggregation; otherwise, false.</returns>
+        public bool TryGetBoolean(string propertyName, out Aggregate.Boolean boolean)
+        {
+            if (Properties.TryGetValue(propertyName, out var prop) && prop is Aggregate.Boolean b)
+            {
+                boolean = b;
+                return true;
+            }
+
+            boolean = null!;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the date aggregation for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="date">The date aggregation if found and of correct type.</param>
+        /// <returns>True if the property exists and is a date aggregation; otherwise, false.</returns>
+        public bool TryGetDate(string propertyName, out Aggregate.Date date)
+        {
+            if (Properties.TryGetValue(propertyName, out var prop) && prop is Aggregate.Date d)
+            {
+                date = d;
+                return true;
+            }
+
+            date = null!;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the aggregation for the specified property as the specified type.
+        /// </summary>
+        /// <typeparam name="T">The expected aggregation type.</typeparam>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="aggregation">The aggregation if found and of correct type.</param>
+        /// <returns>True if the property exists and is of the specified type; otherwise, false.</returns>
+        public bool TryGet<T>(string propertyName, out T aggregation)
+            where T : Aggregate.Property
+        {
+            if (Properties.TryGetValue(propertyName, out var prop) && prop is T t)
+            {
+                aggregation = t;
+                return true;
+            }
+
+            aggregation = null!;
+            return false;
+        }
+
+        #endregion
+
+        #region Match Methods
+
+        /// <summary>
+        /// Executes an action on the property if it exists and matches the expected type.
+        /// </summary>
+        /// <typeparam name="T">The expected aggregation type.</typeparam>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="action">The action to execute if the property matches.</param>
+        /// <returns>True if the property was matched and the action executed; otherwise, false.</returns>
+        public bool Property<T>(string propertyName, Action<T> action)
+            where T : Aggregate.Property
+        {
+            if (Properties.TryGetValue(propertyName, out var prop) && prop is T t)
+            {
+                action(t);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Executes a function on the property if it exists and matches the expected type.
+        /// </summary>
+        /// <typeparam name="T">The expected aggregation type.</typeparam>
+        /// <typeparam name="TResult">The return type.</typeparam>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="func">The function to execute if the property matches.</param>
+        /// <returns>The result of the function, or default if the property doesn't match.</returns>
+        public TResult? Property<T, TResult>(string propertyName, Func<T, TResult> func)
+            where T : Aggregate.Property
+        {
+            if (Properties.TryGetValue(propertyName, out var prop) && prop is T t)
+            {
+                return func(t);
+            }
+
+            return default;
+        }
+
+        /// <summary>
+        /// Matches the property against all possible aggregation types and executes the corresponding action.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="text">Action to execute if the property is a text aggregation.</param>
+        /// <param name="integer">Action to execute if the property is an integer aggregation.</param>
+        /// <param name="number">Action to execute if the property is a number aggregation.</param>
+        /// <param name="boolean">Action to execute if the property is a boolean aggregation.</param>
+        /// <param name="date">Action to execute if the property is a date aggregation.</param>
+        /// <returns>True if the property was found and matched; otherwise, false.</returns>
+        public bool Match(
+            string propertyName,
+            Action<Aggregate.Text>? text = null,
+            Action<Aggregate.Integer>? integer = null,
+            Action<Aggregate.Number>? number = null,
+            Action<Aggregate.Boolean>? boolean = null,
+            Action<Aggregate.Date>? date = null
+        )
+        {
+            if (!Properties.TryGetValue(propertyName, out var prop))
+                return false;
+
+            switch (prop)
+            {
+                case Aggregate.Text t when text is not null:
+                    text(t);
+                    return true;
+                case Aggregate.Integer i when integer is not null:
+                    integer(i);
+                    return true;
+                case Aggregate.Number n when number is not null:
+                    number(n);
+                    return true;
+                case Aggregate.Boolean b when boolean is not null:
+                    boolean(b);
+                    return true;
+                case Aggregate.Date d when date is not null:
+                    date(d);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Matches the property against all possible aggregation types and returns the result of the corresponding function.
+        /// </summary>
+        /// <typeparam name="TResult">The return type.</typeparam>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="text">Function to execute if the property is a text aggregation.</param>
+        /// <param name="integer">Function to execute if the property is an integer aggregation.</param>
+        /// <param name="number">Function to execute if the property is a number aggregation.</param>
+        /// <param name="boolean">Function to execute if the property is a boolean aggregation.</param>
+        /// <param name="date">Function to execute if the property is a date aggregation.</param>
+        /// <returns>The result of the matched function, or default if no match.</returns>
+        public TResult? Match<TResult>(
+            string propertyName,
+            Func<Aggregate.Text, TResult>? text = null,
+            Func<Aggregate.Integer, TResult>? integer = null,
+            Func<Aggregate.Number, TResult>? number = null,
+            Func<Aggregate.Boolean, TResult>? boolean = null,
+            Func<Aggregate.Date, TResult>? date = null
+        )
+        {
+            if (!Properties.TryGetValue(propertyName, out var prop))
+                return default;
+
+            return prop switch
+            {
+                Aggregate.Text t when text is not null => text(t),
+                Aggregate.Integer i when integer is not null => integer(i),
+                Aggregate.Number n when number is not null => number(n),
+                Aggregate.Boolean b when boolean is not null => boolean(b),
+                Aggregate.Date d when date is not null => date(d),
+                _ => default,
+            };
+        }
+
+        #endregion
     }
 
     public List<Group> Groups { get; init; } = new();
@@ -90,6 +368,284 @@ public partial record AggregateResult
         new Dictionary<string, Aggregate.Property>();
 
     public long TotalCount { get; init; }
+
+    #region Typed Accessor Methods
+
+    /// <summary>
+    /// Gets the text aggregation for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <returns>The text aggregation, or null if not found or wrong type.</returns>
+    public Aggregate.Text? Text(string propertyName) =>
+        Properties.TryGetValue(propertyName, out var prop) ? prop as Aggregate.Text : null;
+
+    /// <summary>
+    /// Gets the integer aggregation for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <returns>The integer aggregation, or null if not found or wrong type.</returns>
+    public Aggregate.Integer? Integer(string propertyName) =>
+        Properties.TryGetValue(propertyName, out var prop) ? prop as Aggregate.Integer : null;
+
+    /// <summary>
+    /// Gets the number aggregation for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <returns>The number aggregation, or null if not found or wrong type.</returns>
+    public Aggregate.Number? Number(string propertyName) =>
+        Properties.TryGetValue(propertyName, out var prop) ? prop as Aggregate.Number : null;
+
+    /// <summary>
+    /// Gets the boolean aggregation for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <returns>The boolean aggregation, or null if not found or wrong type.</returns>
+    public Aggregate.Boolean? Boolean(string propertyName) =>
+        Properties.TryGetValue(propertyName, out var prop) ? prop as Aggregate.Boolean : null;
+
+    /// <summary>
+    /// Gets the date aggregation for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <returns>The date aggregation, or null if not found or wrong type.</returns>
+    public Aggregate.Date? Date(string propertyName) =>
+        Properties.TryGetValue(propertyName, out var prop) ? prop as Aggregate.Date : null;
+
+    #endregion
+
+    #region TryGet Methods
+
+    /// <summary>
+    /// Tries to get the text aggregation for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="text">The text aggregation if found and of correct type.</param>
+    /// <returns>True if the property exists and is a text aggregation; otherwise, false.</returns>
+    public bool TryGetText(string propertyName, out Aggregate.Text text)
+    {
+        if (Properties.TryGetValue(propertyName, out var prop) && prop is Aggregate.Text t)
+        {
+            text = t;
+            return true;
+        }
+
+        text = null!;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the integer aggregation for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="integer">The integer aggregation if found and of correct type.</param>
+    /// <returns>True if the property exists and is an integer aggregation; otherwise, false.</returns>
+    public bool TryGetInteger(string propertyName, out Aggregate.Integer integer)
+    {
+        if (Properties.TryGetValue(propertyName, out var prop) && prop is Aggregate.Integer i)
+        {
+            integer = i;
+            return true;
+        }
+
+        integer = null!;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the number aggregation for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="number">The number aggregation if found and of correct type.</param>
+    /// <returns>True if the property exists and is a number aggregation; otherwise, false.</returns>
+    public bool TryGetNumber(string propertyName, out Aggregate.Number number)
+    {
+        if (Properties.TryGetValue(propertyName, out var prop) && prop is Aggregate.Number n)
+        {
+            number = n;
+            return true;
+        }
+
+        number = null!;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the boolean aggregation for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="boolean">The boolean aggregation if found and of correct type.</param>
+    /// <returns>True if the property exists and is a boolean aggregation; otherwise, false.</returns>
+    public bool TryGetBoolean(string propertyName, out Aggregate.Boolean boolean)
+    {
+        if (Properties.TryGetValue(propertyName, out var prop) && prop is Aggregate.Boolean b)
+        {
+            boolean = b;
+            return true;
+        }
+
+        boolean = null!;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the date aggregation for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="date">The date aggregation if found and of correct type.</param>
+    /// <returns>True if the property exists and is a date aggregation; otherwise, false.</returns>
+    public bool TryGetDate(string propertyName, out Aggregate.Date date)
+    {
+        if (Properties.TryGetValue(propertyName, out var prop) && prop is Aggregate.Date d)
+        {
+            date = d;
+            return true;
+        }
+
+        date = null!;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the aggregation for the specified property as the specified type.
+    /// </summary>
+    /// <typeparam name="T">The expected aggregation type.</typeparam>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="aggregation">The aggregation if found and of correct type.</param>
+    /// <returns>True if the property exists and is of the specified type; otherwise, false.</returns>
+    public bool TryGet<T>(string propertyName, out T aggregation)
+        where T : Aggregate.Property
+    {
+        if (Properties.TryGetValue(propertyName, out var prop) && prop is T t)
+        {
+            aggregation = t;
+            return true;
+        }
+
+        aggregation = null!;
+        return false;
+    }
+
+    #endregion
+
+    #region Match Methods
+
+    /// <summary>
+    /// Executes an action on the property if it exists and matches the expected type.
+    /// </summary>
+    /// <typeparam name="T">The expected aggregation type.</typeparam>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="action">The action to execute if the property matches.</param>
+    /// <returns>True if the property was matched and the action executed; otherwise, false.</returns>
+    public bool Property<T>(string propertyName, Action<T> action)
+        where T : Aggregate.Property
+    {
+        if (Properties.TryGetValue(propertyName, out var prop) && prop is T t)
+        {
+            action(t);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Executes a function on the property if it exists and matches the expected type.
+    /// </summary>
+    /// <typeparam name="T">The expected aggregation type.</typeparam>
+    /// <typeparam name="TResult">The return type.</typeparam>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="func">The function to execute if the property matches.</param>
+    /// <returns>The result of the function, or default if the property doesn't match.</returns>
+    public TResult? Property<T, TResult>(string propertyName, Func<T, TResult> func)
+        where T : Aggregate.Property
+    {
+        if (Properties.TryGetValue(propertyName, out var prop) && prop is T t)
+        {
+            return func(t);
+        }
+
+        return default;
+    }
+
+    /// <summary>
+    /// Matches the property against all possible aggregation types and executes the corresponding action.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="text">Action to execute if the property is a text aggregation.</param>
+    /// <param name="integer">Action to execute if the property is an integer aggregation.</param>
+    /// <param name="number">Action to execute if the property is a number aggregation.</param>
+    /// <param name="boolean">Action to execute if the property is a boolean aggregation.</param>
+    /// <param name="date">Action to execute if the property is a date aggregation.</param>
+    /// <returns>True if the property was found and matched; otherwise, false.</returns>
+    public bool Match(
+        string propertyName,
+        Action<Aggregate.Text>? text = null,
+        Action<Aggregate.Integer>? integer = null,
+        Action<Aggregate.Number>? number = null,
+        Action<Aggregate.Boolean>? boolean = null,
+        Action<Aggregate.Date>? date = null
+    )
+    {
+        if (!Properties.TryGetValue(propertyName, out var prop))
+            return false;
+
+        switch (prop)
+        {
+            case Aggregate.Text t when text is not null:
+                text(t);
+                return true;
+            case Aggregate.Integer i when integer is not null:
+                integer(i);
+                return true;
+            case Aggregate.Number n when number is not null:
+                number(n);
+                return true;
+            case Aggregate.Boolean b when boolean is not null:
+                boolean(b);
+                return true;
+            case Aggregate.Date d when date is not null:
+                date(d);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
+    /// Matches the property against all possible aggregation types and returns the result of the corresponding function.
+    /// </summary>
+    /// <typeparam name="TResult">The return type.</typeparam>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="text">Function to execute if the property is a text aggregation.</param>
+    /// <param name="integer">Function to execute if the property is an integer aggregation.</param>
+    /// <param name="number">Function to execute if the property is a number aggregation.</param>
+    /// <param name="boolean">Function to execute if the property is a boolean aggregation.</param>
+    /// <param name="date">Function to execute if the property is a date aggregation.</param>
+    /// <returns>The result of the matched function, or default if no match.</returns>
+    public TResult? Match<TResult>(
+        string propertyName,
+        Func<Aggregate.Text, TResult>? text = null,
+        Func<Aggregate.Integer, TResult>? integer = null,
+        Func<Aggregate.Number, TResult>? number = null,
+        Func<Aggregate.Boolean, TResult>? boolean = null,
+        Func<Aggregate.Date, TResult>? date = null
+    )
+    {
+        if (!Properties.TryGetValue(propertyName, out var prop))
+            return default;
+
+        return prop switch
+        {
+            Aggregate.Text t when text is not null => text(t),
+            Aggregate.Integer i when integer is not null => integer(i),
+            Aggregate.Number n when number is not null => number(n),
+            Aggregate.Boolean b when boolean is not null => boolean(b),
+            Aggregate.Date d when date is not null => date(d),
+            _ => default,
+        };
+    }
+
+    #endregion
 
     internal static AggregateResult FromGrpcReply(V1.AggregateReply reply)
     {
