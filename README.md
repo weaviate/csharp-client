@@ -51,6 +51,7 @@ For more detailed information on specific features, please refer to the official
 - **[RBAC API Usage](docs/RBAC_API_USAGE.md)**: Managing users, roles, permissions, and groups
 - **[Backup API Usage](docs/BACKUP_API_USAGE.md)**: Creating and restoring backups
 - **[Nodes API Usage](docs/NODES_API_USAGE.md)**: Querying cluster node information
+- **[Aggregate Result Accessors](docs/AGGREGATE_RESULT_ACCESSORS.md)**: Type-safe access to aggregation results
 
 ---
 

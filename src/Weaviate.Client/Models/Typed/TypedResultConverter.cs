@@ -154,6 +154,30 @@ public static class TypedResultConverter
 
     #endregion
 
+    #region Aggregate Conversions
+
+    /// <summary>
+    /// Converts an untyped AggregateResult to a typed AggregateResult&lt;T&gt;.
+    /// Properties are mapped to the corresponding properties of type T.
+    /// </summary>
+    public static AggregateResult<T> ToTyped<T>(this AggregateResult result)
+        where T : class, new()
+    {
+        return AggregateResult<T>.FromUntyped(result);
+    }
+
+    /// <summary>
+    /// Converts an untyped AggregateGroupByResult to a typed AggregateGroupByResult&lt;T&gt;.
+    /// Properties within each group are mapped to the corresponding properties of type T.
+    /// </summary>
+    public static AggregateGroupByResult<T> ToTyped<T>(this AggregateGroupByResult result)
+        where T : class, new()
+    {
+        return AggregateGroupByResult<T>.FromUntyped(result);
+    }
+
+    #endregion
+
     #region Reverse Conversions (Typed to Untyped)
 
     /// <summary>
