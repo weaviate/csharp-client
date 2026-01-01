@@ -5,7 +5,7 @@ namespace Weaviate.Client.Serialization.Converters;
 /// <summary>
 /// Converter for Weaviate "text" and "text[]" data types.
 /// </summary>
-public class TextPropertyConverter : PropertyConverterBase
+internal class TextPropertyConverter : PropertyConverterBase
 {
     public override string DataType => "text";
     public override IReadOnlyList<System.Type> SupportedTypes => [typeof(string)];

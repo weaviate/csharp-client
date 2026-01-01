@@ -7,7 +7,7 @@ namespace Weaviate.Client.Serialization.Converters;
 /// Converter for Weaviate "date" and "date[]" data types.
 /// Uses ISO 8601 format for REST serialization.
 /// </summary>
-public class DatePropertyConverter : PropertyConverterBase
+internal class DatePropertyConverter : PropertyConverterBase
 {
     public override string DataType => "date";
 

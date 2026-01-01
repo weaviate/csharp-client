@@ -307,8 +307,6 @@ Weaviate.Client.GroupsOidcClient.AssignRoles(string! groupId, System.Collections
 Weaviate.Client.GroupsOidcClient.GetKnownGroupNames(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<string!>!>!
 Weaviate.Client.GroupsOidcClient.GetRoles(string! groupId, bool? includeFullRoles = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<Weaviate.Client.Models.RoleInfo!>!>!
 Weaviate.Client.GroupsOidcClient.RevokeRoles(string! groupId, System.Collections.Generic.IEnumerable<string!>! roles, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-Weaviate.Client.Grpc.WeaviateGrpcServerException
-Weaviate.Client.Grpc.WeaviateGrpcServerException.WeaviateGrpcServerException(System.Exception? innerException = null) -> void
 Weaviate.Client.ICredentials
 Weaviate.Client.ITokenService
 Weaviate.Client.ITokenService.GetAccessTokenAsync() -> System.Threading.Tasks.Task<string?>!
@@ -2874,20 +2872,6 @@ Weaviate.Client.ResourceType.Shard = Weaviate.Client.ResourceType.Collection | W
 Weaviate.Client.ResourceType.Tenant = Weaviate.Client.ResourceType.Object | Weaviate.Client.ResourceType.Reference -> Weaviate.Client.ResourceType
 Weaviate.Client.ResourceType.Unknown = Weaviate.Client.ResourceType.User | Weaviate.Client.ResourceType.Reference -> Weaviate.Client.ResourceType
 Weaviate.Client.ResourceType.User = 4 -> Weaviate.Client.ResourceType
-Weaviate.Client.Rest.EnumMemberJsonConverter<T>
-Weaviate.Client.Rest.EnumMemberJsonConverter<T>.EnumMemberJsonConverter() -> void
-Weaviate.Client.Rest.EnumMemberJsonConverterFactory
-Weaviate.Client.Rest.EnumMemberJsonConverterFactory.EnumMemberJsonConverterFactory() -> void
-Weaviate.Client.Rest.HttpResponseMessageExtensions
-Weaviate.Client.Rest.InvalidEnumWireFormatException
-Weaviate.Client.Rest.InvalidEnumWireFormatException.InvalidEnumWireFormatException(string! message) -> void
-Weaviate.Client.Rest.WeaviateRestClientException
-Weaviate.Client.Rest.WeaviateRestClientException.WeaviateRestClientException(System.Exception! innerException) -> void
-Weaviate.Client.Rest.WeaviateRestClientException.WeaviateRestClientException(string! message = "An error occurred processing the response from the Weaviate REST API.") -> void
-Weaviate.Client.Rest.WeaviateRestClientException.WeaviateRestClientException(string! message, System.Exception! innerException) -> void
-Weaviate.Client.Rest.WeaviateRestServerException
-Weaviate.Client.Rest.WeaviateRestServerException.StatusCode.get -> System.Net.HttpStatusCode?
-Weaviate.Client.Rest.WeaviateRestServerException.WeaviateRestServerException(System.Net.HttpStatusCode? statusCode = null, System.Exception? innerException = null) -> void
 Weaviate.Client.RetryOn
 Weaviate.Client.RetryOn.NetworkError = 8 -> Weaviate.Client.RetryOn
 Weaviate.Client.RetryOn.None = 0 -> Weaviate.Client.RetryOn
@@ -2919,38 +2903,6 @@ Weaviate.Client.RolesClient.GetUserAssignments(string! roleId, System.Threading.
 Weaviate.Client.RolesClient.HasPermission(string! id, Weaviate.Client.Models.PermissionScope! permission, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
 Weaviate.Client.RolesClient.ListAll(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<Weaviate.Client.Models.RoleInfo!>!>!
 Weaviate.Client.RolesClient.RemovePermissions(string! id, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.PermissionScope!>! permissions, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.RoleInfo!>!
-Weaviate.Client.Serialization.Converters.BlobPropertyConverter
-Weaviate.Client.Serialization.Converters.BlobPropertyConverter.BlobPropertyConverter() -> void
-Weaviate.Client.Serialization.Converters.BoolPropertyConverter
-Weaviate.Client.Serialization.Converters.BoolPropertyConverter.BoolPropertyConverter() -> void
-Weaviate.Client.Serialization.Converters.DatePropertyConverter
-Weaviate.Client.Serialization.Converters.DatePropertyConverter.DatePropertyConverter() -> void
-Weaviate.Client.Serialization.Converters.GeoPropertyConverter
-Weaviate.Client.Serialization.Converters.GeoPropertyConverter.GeoPropertyConverter() -> void
-Weaviate.Client.Serialization.Converters.IntPropertyConverter
-Weaviate.Client.Serialization.Converters.IntPropertyConverter.IntPropertyConverter() -> void
-Weaviate.Client.Serialization.Converters.NumberPropertyConverter
-Weaviate.Client.Serialization.Converters.NumberPropertyConverter.NumberPropertyConverter() -> void
-Weaviate.Client.Serialization.Converters.ObjectPropertyConverter
-Weaviate.Client.Serialization.Converters.ObjectPropertyConverter.ObjectPropertyConverter(System.Func<Weaviate.Client.Serialization.PropertyConverterRegistry!>! registryFactory) -> void
-Weaviate.Client.Serialization.Converters.PhonePropertyConverter
-Weaviate.Client.Serialization.Converters.PhonePropertyConverter.PhonePropertyConverter() -> void
-Weaviate.Client.Serialization.Converters.TextPropertyConverter
-Weaviate.Client.Serialization.Converters.TextPropertyConverter.TextPropertyConverter() -> void
-Weaviate.Client.Serialization.Converters.UuidPropertyConverter
-Weaviate.Client.Serialization.Converters.UuidPropertyConverter.UuidPropertyConverter() -> void
-Weaviate.Client.Serialization.IPropertyConverter
-Weaviate.Client.Serialization.IPropertyConverter.DataType.get -> string!
-Weaviate.Client.Serialization.IPropertyConverter.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-Weaviate.Client.Serialization.IPropertyConverter.FromGrpcArray(Google.Protobuf.WellKnownTypes.ListValue! values, System.Type! elementType) -> object?
-Weaviate.Client.Serialization.IPropertyConverter.FromRest(object? value, System.Type! targetType) -> object?
-Weaviate.Client.Serialization.IPropertyConverter.FromRestArray(System.Collections.Generic.IEnumerable<object?>! values, System.Type! elementType) -> object?
-Weaviate.Client.Serialization.IPropertyConverter.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-Weaviate.Client.Serialization.IPropertyConverter.SupportsArray.get -> bool
-Weaviate.Client.Serialization.IPropertyConverter.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-Weaviate.Client.Serialization.IPropertyConverter.ToGrpcArray(System.Collections.Generic.IEnumerable<object?>! values) -> Google.Protobuf.WellKnownTypes.ListValue!
-Weaviate.Client.Serialization.IPropertyConverter.ToRest(object? value) -> object?
-Weaviate.Client.Serialization.IPropertyConverter.ToRestArray(System.Collections.Generic.IEnumerable<object?>! values) -> object?
 Weaviate.Client.Serialization.PropertyBag
 Weaviate.Client.Serialization.PropertyBag.Add(System.Collections.Generic.KeyValuePair<string!, object?> item) -> void
 Weaviate.Client.Serialization.PropertyBag.Add(string! key, object? value) -> void
@@ -2984,15 +2936,6 @@ Weaviate.Client.Serialization.PropertyBag.TryGetValue(string! key, out object? v
 Weaviate.Client.Serialization.PropertyBag.Values.get -> System.Collections.Generic.ICollection<object?>!
 Weaviate.Client.Serialization.PropertyBag.this[string! key].get -> object?
 Weaviate.Client.Serialization.PropertyBag.this[string! key].set -> void
-Weaviate.Client.Serialization.PropertyConverterBase
-Weaviate.Client.Serialization.PropertyConverterBase.PropertyConverterBase() -> void
-Weaviate.Client.Serialization.PropertyConverterRegistry
-Weaviate.Client.Serialization.PropertyConverterRegistry.GetConverterByDataType(string! dataType) -> Weaviate.Client.Serialization.IPropertyConverter?
-Weaviate.Client.Serialization.PropertyConverterRegistry.GetConverterForType(System.Type! type) -> Weaviate.Client.Serialization.IPropertyConverter?
-Weaviate.Client.Serialization.PropertyConverterRegistry.PropertyConverterRegistry() -> void
-Weaviate.Client.Serialization.PropertyConverterRegistry.Register(Weaviate.Client.Serialization.IPropertyConverter! converter) -> void
-Weaviate.Client.Serialization.PropertyConverterRegistry.SerializeToRest(object! obj) -> System.Collections.Generic.IDictionary<string!, object?>!
-Weaviate.Client.Serialization.PropertyConverterRegistry.ToGrpcValue(object? value) -> Google.Protobuf.WellKnownTypes.Value!
 Weaviate.Client.TenantsClient
 Weaviate.Client.TenantsClient.Activate(Weaviate.Client.Models.Tenant![]! tenants, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
 Weaviate.Client.TenantsClient.Activate(string![]! tenantNames, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
@@ -3106,7 +3049,6 @@ Weaviate.Client.Validation.TypeValidationException.TypeValidationException(Weavi
 Weaviate.Client.Validation.TypeValidationException.TypeValidationException(string! message, Weaviate.Client.Validation.ValidationResult! result) -> void
 Weaviate.Client.Validation.TypeValidationException.ValidationResult.get -> Weaviate.Client.Validation.ValidationResult!
 Weaviate.Client.Validation.TypeValidator
-Weaviate.Client.Validation.TypeValidator.TypeValidator(Weaviate.Client.Serialization.PropertyConverterRegistry! registry) -> void
 Weaviate.Client.Validation.TypeValidator.ValidateType(System.Type! type, Weaviate.Client.Models.CollectionConfig! schema) -> Weaviate.Client.Validation.ValidationResult!
 Weaviate.Client.Validation.TypeValidator.ValidateType<T>(Weaviate.Client.Models.CollectionConfig! schema) -> Weaviate.Client.Validation.ValidationResult!
 Weaviate.Client.Validation.ValidationError
@@ -3300,12 +3242,6 @@ abstract Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase.<Clone>$()
 abstract Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase.Type.get -> string!
 abstract Weaviate.Client.Models.VectorIndexConfig.Type.get -> string!
 abstract Weaviate.Client.Models.VectorizerConfig.<Clone>$() -> Weaviate.Client.Models.VectorizerConfig!
-abstract Weaviate.Client.Serialization.PropertyConverterBase.DataType.get -> string!
-abstract Weaviate.Client.Serialization.PropertyConverterBase.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-abstract Weaviate.Client.Serialization.PropertyConverterBase.FromRest(object? value, System.Type! targetType) -> object?
-abstract Weaviate.Client.Serialization.PropertyConverterBase.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-abstract Weaviate.Client.Serialization.PropertyConverterBase.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-abstract Weaviate.Client.Serialization.PropertyConverterBase.ToRest(object? value) -> object?
 const Weaviate.Client.CollectionClient.ITERATOR_CACHE_SIZE = 100 -> uint
 const Weaviate.Client.Models.GenerativeConfig.AWS.TypeValue = "generative-aws" -> string!
 const Weaviate.Client.Models.GenerativeConfig.Anthropic.TypeValue = "generative-anthropic" -> string!
@@ -3382,7 +3318,6 @@ override Weaviate.Client.ClientConfiguration.ToString() -> string!
 override Weaviate.Client.CollectionsClient.Equals(object? obj) -> bool
 override Weaviate.Client.CollectionsClient.GetHashCode() -> int
 override Weaviate.Client.CollectionsClient.ToString() -> string!
-override Weaviate.Client.Grpc.WeaviateGrpcServerException.ToString() -> string!
 override Weaviate.Client.Models.Aggregate.Boolean.<Clone>$() -> Weaviate.Client.Models.Aggregate.Boolean!
 override Weaviate.Client.Models.Aggregate.Boolean.EqualityContract.get -> System.Type!
 override Weaviate.Client.Models.Aggregate.Boolean.Equals(object? obj) -> bool
@@ -4226,81 +4161,9 @@ override Weaviate.Client.Models.WeightedField.ToString() -> string!
 override Weaviate.Client.OAuthConfig.Equals(object? obj) -> bool
 override Weaviate.Client.OAuthConfig.GetHashCode() -> int
 override Weaviate.Client.OAuthConfig.ToString() -> string!
-override Weaviate.Client.Rest.EnumMemberJsonConverter<T>.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> T
-override Weaviate.Client.Rest.EnumMemberJsonConverter<T>.Write(System.Text.Json.Utf8JsonWriter! writer, T value, System.Text.Json.JsonSerializerOptions! options) -> void
-override Weaviate.Client.Rest.EnumMemberJsonConverterFactory.CanConvert(System.Type! typeToConvert) -> bool
-override Weaviate.Client.Rest.EnumMemberJsonConverterFactory.CreateConverter(System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> System.Text.Json.Serialization.JsonConverter!
-override Weaviate.Client.Rest.WeaviateRestServerException.ToString() -> string!
 override Weaviate.Client.RetryPolicy.Equals(object? obj) -> bool
 override Weaviate.Client.RetryPolicy.GetHashCode() -> int
 override Weaviate.Client.RetryPolicy.ToString() -> string!
-override Weaviate.Client.Serialization.Converters.BlobPropertyConverter.DataType.get -> string!
-override Weaviate.Client.Serialization.Converters.BlobPropertyConverter.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.BlobPropertyConverter.FromRest(object? value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.BlobPropertyConverter.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-override Weaviate.Client.Serialization.Converters.BlobPropertyConverter.SupportsArray.get -> bool
-override Weaviate.Client.Serialization.Converters.BlobPropertyConverter.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-override Weaviate.Client.Serialization.Converters.BlobPropertyConverter.ToRest(object? value) -> object?
-override Weaviate.Client.Serialization.Converters.BoolPropertyConverter.DataType.get -> string!
-override Weaviate.Client.Serialization.Converters.BoolPropertyConverter.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.BoolPropertyConverter.FromRest(object? value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.BoolPropertyConverter.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-override Weaviate.Client.Serialization.Converters.BoolPropertyConverter.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-override Weaviate.Client.Serialization.Converters.BoolPropertyConverter.ToRest(object? value) -> object?
-override Weaviate.Client.Serialization.Converters.DatePropertyConverter.DataType.get -> string!
-override Weaviate.Client.Serialization.Converters.DatePropertyConverter.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.DatePropertyConverter.FromRest(object? value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.DatePropertyConverter.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-override Weaviate.Client.Serialization.Converters.DatePropertyConverter.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-override Weaviate.Client.Serialization.Converters.DatePropertyConverter.ToRest(object? value) -> object?
-override Weaviate.Client.Serialization.Converters.GeoPropertyConverter.DataType.get -> string!
-override Weaviate.Client.Serialization.Converters.GeoPropertyConverter.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.GeoPropertyConverter.FromRest(object? value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.GeoPropertyConverter.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-override Weaviate.Client.Serialization.Converters.GeoPropertyConverter.SupportsArray.get -> bool
-override Weaviate.Client.Serialization.Converters.GeoPropertyConverter.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-override Weaviate.Client.Serialization.Converters.GeoPropertyConverter.ToRest(object? value) -> object?
-override Weaviate.Client.Serialization.Converters.IntPropertyConverter.DataType.get -> string!
-override Weaviate.Client.Serialization.Converters.IntPropertyConverter.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.IntPropertyConverter.FromRest(object? value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.IntPropertyConverter.FromRestArray(System.Collections.Generic.IEnumerable<object?>! values, System.Type! elementType) -> object?
-override Weaviate.Client.Serialization.Converters.IntPropertyConverter.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-override Weaviate.Client.Serialization.Converters.IntPropertyConverter.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-override Weaviate.Client.Serialization.Converters.IntPropertyConverter.ToRest(object? value) -> object?
-override Weaviate.Client.Serialization.Converters.IntPropertyConverter.ToRestArray(System.Collections.Generic.IEnumerable<object?>! values) -> System.Collections.Generic.IEnumerable<object?>!
-override Weaviate.Client.Serialization.Converters.NumberPropertyConverter.DataType.get -> string!
-override Weaviate.Client.Serialization.Converters.NumberPropertyConverter.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.NumberPropertyConverter.FromRest(object? value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.NumberPropertyConverter.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-override Weaviate.Client.Serialization.Converters.NumberPropertyConverter.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-override Weaviate.Client.Serialization.Converters.NumberPropertyConverter.ToRest(object? value) -> object?
-override Weaviate.Client.Serialization.Converters.ObjectPropertyConverter.DataType.get -> string!
-override Weaviate.Client.Serialization.Converters.ObjectPropertyConverter.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.ObjectPropertyConverter.FromRest(object? value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.ObjectPropertyConverter.FromRestArray(System.Collections.Generic.IEnumerable<object?>! values, System.Type! elementType) -> object?
-override Weaviate.Client.Serialization.Converters.ObjectPropertyConverter.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-override Weaviate.Client.Serialization.Converters.ObjectPropertyConverter.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-override Weaviate.Client.Serialization.Converters.ObjectPropertyConverter.ToRest(object? value) -> object?
-override Weaviate.Client.Serialization.Converters.PhonePropertyConverter.DataType.get -> string!
-override Weaviate.Client.Serialization.Converters.PhonePropertyConverter.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.PhonePropertyConverter.FromRest(object? value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.PhonePropertyConverter.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-override Weaviate.Client.Serialization.Converters.PhonePropertyConverter.SupportsArray.get -> bool
-override Weaviate.Client.Serialization.Converters.PhonePropertyConverter.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-override Weaviate.Client.Serialization.Converters.PhonePropertyConverter.ToRest(object? value) -> object?
-override Weaviate.Client.Serialization.Converters.TextPropertyConverter.DataType.get -> string!
-override Weaviate.Client.Serialization.Converters.TextPropertyConverter.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.TextPropertyConverter.FromRest(object? value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.TextPropertyConverter.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-override Weaviate.Client.Serialization.Converters.TextPropertyConverter.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-override Weaviate.Client.Serialization.Converters.TextPropertyConverter.ToRest(object? value) -> object?
-override Weaviate.Client.Serialization.Converters.TextPropertyConverter.ToRestArray(System.Collections.Generic.IEnumerable<object?>! values) -> System.Collections.Generic.IEnumerable<object?>!
-override Weaviate.Client.Serialization.Converters.UuidPropertyConverter.DataType.get -> string!
-override Weaviate.Client.Serialization.Converters.UuidPropertyConverter.FromGrpc(Google.Protobuf.WellKnownTypes.Value! value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.UuidPropertyConverter.FromRest(object? value, System.Type! targetType) -> object?
-override Weaviate.Client.Serialization.Converters.UuidPropertyConverter.SupportedTypes.get -> System.Collections.Generic.IReadOnlyList<System.Type!>!
-override Weaviate.Client.Serialization.Converters.UuidPropertyConverter.ToGrpc(object? value) -> Google.Protobuf.WellKnownTypes.Value!
-override Weaviate.Client.Serialization.Converters.UuidPropertyConverter.ToRest(object? value) -> object?
 override Weaviate.Client.WeaviateNotFoundException.ToString() -> string!
 override abstract Weaviate.Client.Models.Aggregate.Numeric<T>.<Clone>$() -> Weaviate.Client.Models.Aggregate.Numeric<T>!
 override abstract Weaviate.Client.Models.NestedFilter.<Clone>$() -> Weaviate.Client.Models.NestedFilter!
@@ -5014,18 +4877,10 @@ static Weaviate.Client.Models.WeightedField.operator ==(Weaviate.Client.Models.W
 static Weaviate.Client.Models.WeightedFields.implicit operator string![]?(Weaviate.Client.Models.WeightedFields? weightedFields) -> string![]?
 static Weaviate.Client.OAuthConfig.operator !=(Weaviate.Client.OAuthConfig? left, Weaviate.Client.OAuthConfig? right) -> bool
 static Weaviate.Client.OAuthConfig.operator ==(Weaviate.Client.OAuthConfig? left, Weaviate.Client.OAuthConfig? right) -> bool
-static Weaviate.Client.Rest.HttpResponseMessageExtensions.ManageStatusCode(this System.Net.Http.HttpResponseMessage! response, System.Collections.Generic.IEnumerable<System.Net.HttpStatusCode>! expectedCodes, string! error = "", Weaviate.Client.ResourceType resourceType = Weaviate.Client.ResourceType.Unknown) -> System.Threading.Tasks.Task!
 static Weaviate.Client.RetryPolicy.Default.get -> Weaviate.Client.RetryPolicy!
 static Weaviate.Client.RetryPolicy.None.get -> Weaviate.Client.RetryPolicy!
 static Weaviate.Client.RetryPolicy.operator !=(Weaviate.Client.RetryPolicy? left, Weaviate.Client.RetryPolicy? right) -> bool
 static Weaviate.Client.RetryPolicy.operator ==(Weaviate.Client.RetryPolicy? left, Weaviate.Client.RetryPolicy? right) -> bool
-static Weaviate.Client.Serialization.PropertyConverterBase.ConvertNumberToEnum(object! value, System.Type! enumType) -> object?
-static Weaviate.Client.Serialization.PropertyConverterBase.ConvertStringToEnum(string! value, System.Type! enumType) -> object?
-static Weaviate.Client.Serialization.PropertyConverterBase.CreateTypedArray(System.Collections.Generic.IList<object?>! items, System.Type! elementType) -> System.Array!
-static Weaviate.Client.Serialization.PropertyConverterBase.EnumToString(object? value) -> string?
-static Weaviate.Client.Serialization.PropertyConverterBase.IsEnumType(System.Type! type) -> bool
-static Weaviate.Client.Serialization.PropertyConverterRegistry.CreateDefault() -> Weaviate.Client.Serialization.PropertyConverterRegistry!
-static Weaviate.Client.Serialization.PropertyConverterRegistry.Default.get -> Weaviate.Client.Serialization.PropertyConverterRegistry!
 static Weaviate.Client.Validation.TypeValidator.Default.get -> Weaviate.Client.Validation.TypeValidator!
 static Weaviate.Client.Validation.ValidationResult.Failed(params Weaviate.Client.Validation.ValidationError![]! errors) -> Weaviate.Client.Validation.ValidationResult!
 static Weaviate.Client.Validation.ValidationResult.Success() -> Weaviate.Client.Validation.ValidationResult!
@@ -5596,11 +5451,6 @@ virtual Weaviate.Client.RetryPolicy.<Clone>$() -> Weaviate.Client.RetryPolicy!
 virtual Weaviate.Client.RetryPolicy.EqualityContract.get -> System.Type!
 virtual Weaviate.Client.RetryPolicy.Equals(Weaviate.Client.RetryPolicy? other) -> bool
 virtual Weaviate.Client.RetryPolicy.PrintMembers(System.Text.StringBuilder! builder) -> bool
-virtual Weaviate.Client.Serialization.PropertyConverterBase.FromGrpcArray(Google.Protobuf.WellKnownTypes.ListValue! values, System.Type! elementType) -> object?
-virtual Weaviate.Client.Serialization.PropertyConverterBase.FromRestArray(System.Collections.Generic.IEnumerable<object?>! values, System.Type! elementType) -> object?
-virtual Weaviate.Client.Serialization.PropertyConverterBase.SupportsArray.get -> bool
-virtual Weaviate.Client.Serialization.PropertyConverterBase.ToGrpcArray(System.Collections.Generic.IEnumerable<object?>! values) -> Google.Protobuf.WellKnownTypes.ListValue!
-virtual Weaviate.Client.Serialization.PropertyConverterBase.ToRestArray(System.Collections.Generic.IEnumerable<object?>! values) -> object?
 ~Weaviate.Client.Models.Typed.GenerativeGroupByObject<T>.GenerativeGroupByObject(Weaviate.Client.Models.Typed.GenerativeGroupByObject<T>! original) -> void
 ~Weaviate.Client.Models.Typed.GenerativeGroupByResult<T>.GenerativeGroupByResult(Weaviate.Client.Models.Typed.GenerativeGroupByResult<T>! original) -> void
 ~Weaviate.Client.Models.Typed.GenerativeWeaviateGroup<T>.GenerativeWeaviateGroup(Weaviate.Client.Models.Typed.GenerativeWeaviateGroup<T>! original) -> void
