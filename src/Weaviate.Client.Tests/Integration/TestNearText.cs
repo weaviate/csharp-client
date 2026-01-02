@@ -158,10 +158,7 @@ public partial class SearchTests : IntegrationTests
 
         // Act - Search for "cake" across both title and description vectors using Sum combination
         var retriever = await collectionClient.Query.NearText(
-            "cake",
-            // targets: tv => tv.Sum("title", "description"),
-            // targets: tv => tv.Targets(new[] { "title", "description" }),
-            targets: ["title", "description"],
+            q => q("cake").Sum("title", "description"),
             returnProperties: ["title", "description"],
             includeVectors: true,
             cancellationToken: TestContext.Current.CancellationToken

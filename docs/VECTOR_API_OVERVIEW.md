@@ -15,6 +15,7 @@ Reference documentation for the vector search API in the Weaviate C# client.
 | AggregateClient | NearVector | 4         | With aggregation                        |
 | AggregateClient | NearText   | 4         | With aggregation                        |
 | AggregateClient | Hybrid     | 4         | Hybrid + aggregation                    |
+
 ---
 
 ## QueryClient.NearVector

@@ -45,9 +45,11 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         // Assert
         var request = _getRequest();
         Assert.NotNull(request);
+        Assert.Equal(CollectionName, request.Collection);
         Assert.Equal("search text", request.HybridSearch.Query);
         Assert.Null(request.HybridSearch.NearText);
         Assert.Null(request.HybridSearch.NearVector);
+        Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
     }
 
     [Fact]
@@ -925,7 +927,8 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         await _collection.Query.Hybrid(
             query: "search query",
             vectors: b =>
-                b.Sum(("vector1", new float[] { 1f, 2f }), ("vector2", new float[] { 3f, 4f })),
+                b.NearVector()
+                    .Sum(("vector1", new float[] { 1f, 2f }), ("vector2", new float[] { 3f, 4f })),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -945,10 +948,11 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         await _collection.Query.Hybrid(
             query: null,
             vectors: b =>
-                b.ManualWeights(
-                    ("title", 0.7, new float[] { 1f, 2f }),
-                    ("description", 0.3, new float[] { 3f, 4f })
-                ),
+                b.NearVector()
+                    .ManualWeights(
+                        ("title", 0.7, new float[] { 1f, 2f }),
+                        ("description", 0.3, new float[] { 3f, 4f })
+                    ),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -967,7 +971,8 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         // Act
         await _collection.Query.Hybrid(
             query: "test",
-            vectors: b => b.Average(("vec1", new float[] { 1f }), ("vec2", new float[] { 2f })),
+            vectors: b =>
+                b.NearVector().Average(("vec1", new float[] { 1f }), ("vec2", new float[] { 2f })),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -1852,9 +1857,160 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
         await _collection.Query.Hybrid(
             "search query",
-            v => v.Sum(("title", new[] { 1f, 2f }), ("description", new[] { 3f, 4f })),
+            v => v.NearVector().Sum(("title", new[] { 1f, 2f }), ("description", new[] { 3f, 4f })),
             cancellationToken: TestContext.Current.CancellationToken
         );
     }
+    #endregion
+
+    #region HybridVectorInput.FactoryFn Lambda Builder Tests
+
+    [Fact]
+    public async Task Hybrid_HybridVectorInputBuilder_NearVector_ManualWeights_ProducesValidRequest()
+    {
+        // Act - using HybridVectorInput.FactoryFn with NearVector().ManualWeights()
+        await _collection.Query.Hybrid(
+            "test",
+            v =>
+                v.NearVector()
+                    .ManualWeights(
+                        ("title", 1.2, new[] { 1f, 2f }),
+                        ("description", 0.8, new[] { 3f, 4f })
+                    ),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.NearVector);
+        Assert.Equal(2, request.HybridSearch.NearVector.VectorForTargets.Count);
+        Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
+        Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+    }
+
+    [Fact]
+    public async Task Hybrid_HybridVectorInputBuilder_NearVector_Sum_ProducesValidRequest()
+    {
+        // Act - using HybridVectorInput.FactoryFn with NearVector().Sum()
+        await _collection.Query.Hybrid(
+            "test",
+            v => v.NearVector().Sum(("title", new[] { 1f, 2f }), ("description", new[] { 3f, 4f })),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.NearVector);
+        Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
+    }
+
+    [Fact]
+    public async Task Hybrid_HybridVectorInputBuilder_NearVector_WithCertainty_ProducesValidRequest()
+    {
+        // Act - using HybridVectorInput.FactoryFn with certainty parameter
+        await _collection.Query.Hybrid(
+            "test",
+            v =>
+                v.NearVector(certainty: 0.8f)
+                    .ManualWeights(
+                        ("title", 1.2, new[] { 1f, 2f }),
+                        ("description", 0.8, new[] { 3f, 4f })
+                    ),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.NearVector);
+        Assert.Equal(0.8f, request.HybridSearch.NearVector.Certainty);
+    }
+
+    [Fact]
+    public async Task Hybrid_HybridVectorInputBuilder_NearText_ManualWeights_ProducesValidRequest()
+    {
+        // Act - using HybridVectorInput.FactoryFn with NearText().ManualWeights()
+        await _collection.Query.Hybrid(
+            "test",
+            v =>
+                v.NearText(new[] { "concept1", "concept2" })
+                    .ManualWeights(("title", 1.2), ("description", 0.8)),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.NearText);
+        Assert.Equal(2, request.HybridSearch.NearText.Query.Count);
+        Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
+        Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+    }
+
+    [Fact]
+    public async Task Hybrid_HybridVectorInputBuilder_NearText_Average_ProducesValidRequest()
+    {
+        // Act - using HybridVectorInput.FactoryFn with NearText().Average()
+        await _collection.Query.Hybrid(
+            "test",
+            v => v.NearText(new[] { "concept1", "concept2" }).Average("title", "description"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.NearText);
+        Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+    }
+
+    [Fact]
+    public async Task Hybrid_HybridVectorInputBuilder_NearText_WithCertaintyAndMove_ProducesValidRequest()
+    {
+        // Act - using HybridVectorInput.FactoryFn with all NearText parameters
+        await _collection.Query.Hybrid(
+            "test",
+            v =>
+                v.NearText(
+                        new[] { "concept1" },
+                        certainty: 0.7f,
+                        moveTo: new Move(concepts: "positive", force: 0.5f),
+                        moveAway: new Move(concepts: "negative", force: 0.3f)
+                    )
+                    .Sum("title", "description"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.NearText);
+        Assert.Equal(0.7f, request.HybridSearch.NearText.Certainty);
+        Assert.NotNull(request.HybridSearch.NearText.MoveTo);
+        Assert.NotNull(request.HybridSearch.NearText.MoveAway);
+    }
+
+    [Fact]
+    public async Task Hybrid_HybridVectorInputBuilder_Vectors_DirectSyntax_ProducesValidRequest()
+    {
+        // Act - using HybridVectorInput.FactoryFn with .Vectors() direct syntax (no combination method)
+        await _collection.Query.Hybrid(
+            "test",
+            v => v.Vectors(("myVector", new[] { 1f, 2f })),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert - .Vectors() creates a VectorSearchInput which should populate Targets
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal("test", request.HybridSearch.Query);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
+        // Combination should be Unspecified when using .Vectors() without combination method
+        Assert.Equal(V1.CombinationMethod.Unspecified, request.HybridSearch.Targets.Combination);
+    }
+
     #endregion
 }

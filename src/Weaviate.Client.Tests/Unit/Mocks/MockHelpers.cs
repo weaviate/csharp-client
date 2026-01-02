@@ -108,6 +108,30 @@ public static class MockWeaviateClient
         return client;
     }
 
+    /// <summary>
+    /// Creates a WeaviateClient that captures gRPC Search requests.
+    /// Delegates to MockGrpcClient for consistency.
+    /// </summary>
+    internal static (
+        WeaviateClient Client,
+        Func<Weaviate.Client.Grpc.Protobuf.V1.SearchRequest?> GetCapturedRequest
+    ) CreateWithSearchCapture()
+    {
+        return MockGrpcClient.CreateWithSearchCapture();
+    }
+
+    /// <summary>
+    /// Creates a WeaviateClient that captures gRPC Aggregate requests.
+    /// Delegates to MockGrpcClient for consistency.
+    /// </summary>
+    internal static (
+        WeaviateClient Client,
+        Func<Weaviate.Client.Grpc.Protobuf.V1.AggregateRequest?> GetCapturedRequest
+    ) CreateWithAggregateCapture()
+    {
+        return MockGrpcClient.CreateWithAggregateCapture();
+    }
+
     // Legacy CreateWithHandler overloads consolidated into unified factory above.
 }
 
@@ -169,6 +193,20 @@ internal static class MockGrpcClient
     ) CreateWithSearchCapture()
     {
         return CreateWithRequestCapture<SearchRequest>("/weaviate.v1.Weaviate/Search");
+    }
+
+    /// <summary>
+    /// Creates a WeaviateClient that captures Aggregate requests.
+    /// </summary>
+    public static (
+        WeaviateClient Client,
+        Func<Grpc.Protobuf.V1.AggregateRequest?> GetCapturedRequest
+    ) CreateWithAggregateCapture()
+    {
+        return CreateWithRequestCapture<Grpc.Protobuf.V1.AggregateRequest>(
+            "/weaviate.v1.Weaviate/Aggregate",
+            () => new AggregateReply { Collection = "TestCollection" }
+        );
     }
 
     private static T DecodeGrpcRequest<T>(byte[] content)
