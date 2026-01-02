@@ -27,7 +27,7 @@ public partial class QueryClient
     ) =>
         Hybrid(
             query: query,
-            vectors: null,
+            vectors: (HybridVectorInput?)null,
             alpha: alpha,
             queryProperties: queryProperties,
             fusionType: fusionType,
@@ -123,7 +123,7 @@ public partial class QueryClient
     ) =>
         Hybrid(
             query: query,
-            vectors: null,
+            vectors: (HybridVectorInput?)null,
             groupBy: groupBy,
             alpha: alpha,
             queryProperties: queryProperties,
@@ -205,12 +205,22 @@ public partial class QueryClient
 public static class QueryClientHybridExtensions
 {
     /// <summary>
-    /// Performs a hybrid search (keyword + vector search) using a lambda to build vectors.
+    /// Performs a hybrid search (keyword + vector search) using a lambda to build HybridVectorInput.
+    /// This allows chaining NearVector or NearText configuration with target vectors.
     /// </summary>
+    /// <example>
+    /// await collection.Query.Hybrid(
+    ///     "test",
+    ///     v => v.NearVector().ManualWeights(
+    ///         ("title", 1.2, new[] { 1f, 2f }),
+    ///         ("description", 0.8, new[] { 3f, 4f })
+    ///     )
+    /// );
+    /// </example>
     public static async Task<WeaviateResult> Hybrid(
         this QueryClient client,
-        string? query,
-        VectorSearchInput.FactoryFn vectors,
+        string? query = null,
+        HybridVectorInput.FactoryFn? vectors = null,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -228,7 +238,7 @@ public static class QueryClientHybridExtensions
         CancellationToken cancellationToken = default
     )
     {
-        var vectorsLocal = vectors(new VectorSearchInput.Builder());
+        var vectorsLocal = vectors?.Invoke(VectorInputBuilderFactories.CreateHybridBuilder());
 
         return await client.Hybrid(
             query: query,
@@ -252,12 +262,13 @@ public static class QueryClientHybridExtensions
     }
 
     /// <summary>
-    /// Performs a hybrid search (keyword + vector search) with grouping using a lambda to build vectors.
+    /// Performs a hybrid search (keyword + vector search) with grouping using a lambda to build HybridVectorInput.
+    /// This allows chaining NearVector or NearText configuration with target vectors.
     /// </summary>
     public static async Task<GroupByResult> Hybrid(
         this QueryClient client,
         string? query,
-        VectorSearchInput.FactoryFn vectors,
+        HybridVectorInput.FactoryFn? vectors,
         GroupByRequest groupBy,
         float? alpha = null,
         string[]? queryProperties = null,
@@ -276,7 +287,7 @@ public static class QueryClientHybridExtensions
         CancellationToken cancellationToken = default
     )
     {
-        var vectorsLocal = vectors(new VectorSearchInput.Builder());
+        var vectorsLocal = vectors?.Invoke(VectorInputBuilderFactories.CreateHybridBuilder());
 
         return await client.Hybrid(
             query: query,

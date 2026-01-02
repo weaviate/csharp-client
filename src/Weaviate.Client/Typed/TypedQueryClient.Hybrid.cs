@@ -28,7 +28,7 @@ public partial class TypedQueryClient<T>
     ) =>
         Hybrid(
             query: query,
-            vectors: null,
+            vectors: (HybridVectorInput?)null,
             alpha: alpha,
             queryProperties: queryProperties,
             fusionType: fusionType,
@@ -115,7 +115,7 @@ public partial class TypedQueryClient<T>
     ) =>
         Hybrid(
             query: query,
-            vectors: null,
+            vectors: (HybridVectorInput?)null,
             groupBy: groupBy,
             alpha: alpha,
             queryProperties: queryProperties,
@@ -188,12 +188,32 @@ public partial class TypedQueryClient<T>
 public static class TypedQueryClientHybridExtensions
 {
     /// <summary>
-    /// Performs a hybrid search (keyword + vector search) using a lambda to build vectors.
+    /// Performs a hybrid search (keyword + vector search) using a lambda to build HybridVectorInput.
+    /// Supports NearVector, NearText, or direct vector input via .Vectors().
     /// </summary>
-    public static async Task<WeaviateResult<WeaviateObject<T>>> Hybrid<T>(
+    /// <example>
+    /// // Using NearVector with target vectors:
+    /// await collection.Query.AsTyped&lt;MyClass&gt;().Hybrid(
+    ///     "test",
+    ///     v => v.NearVector().ManualWeights(
+    ///         ("title", 1.2, new[] { 1f, 2f }),
+    ///         ("description", 0.8, new[] { 3f, 4f })
+    ///     )
+    /// );
+    ///
+    /// // Using direct vectors (no combination method):
+    /// await collection.Query.AsTyped&lt;MyClass&gt;().Hybrid(
+    ///     "test",
+    ///     v => v.Vectors(
+    ///         ("title", new[] { 1f, 2f }),
+    ///         ("description", new[] { 3f, 4f })
+    ///     )
+    /// );
+    /// </example>
+    public static async Task<Models.WeaviateResult<WeaviateObject<T>>> Hybrid<T>(
         this TypedQueryClient<T> client,
-        string? query,
-        VectorSearchInput.FactoryFn vectors,
+        string query,
+        HybridVectorInput.FactoryFn vectors,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -210,13 +230,10 @@ public static class TypedQueryClientHybridExtensions
         VectorQuery? includeVectors = null,
         CancellationToken cancellationToken = default
     )
-        where T : class, new()
-    {
-        var vectorsLocal = vectors(new VectorSearchInput.Builder());
-
-        return await client.Hybrid(
+        where T : class, new() =>
+        await client.Hybrid(
             query: query,
-            vectors: vectorsLocal,
+            vectors: vectors(VectorInputBuilderFactories.CreateHybridBuilder()),
             alpha: alpha,
             queryProperties: queryProperties,
             fusionType: fusionType,
@@ -233,15 +250,15 @@ public static class TypedQueryClientHybridExtensions
             includeVectors: includeVectors,
             cancellationToken: cancellationToken
         );
-    }
 
     /// <summary>
-    /// Performs a hybrid search (keyword + vector search) with grouping using a lambda to build vectors.
+    /// Performs a hybrid search (keyword + vector search) with grouping using a lambda to build HybridVectorInput.
+    /// Supports NearVector, NearText, or direct vector input via .Vectors().
     /// </summary>
     public static async Task<GroupByResult<T>> Hybrid<T>(
         this TypedQueryClient<T> client,
-        string? query,
-        VectorSearchInput.FactoryFn vectors,
+        string query,
+        HybridVectorInput.FactoryFn vectors,
         GroupByRequest groupBy,
         float? alpha = null,
         string[]? queryProperties = null,
@@ -259,13 +276,10 @@ public static class TypedQueryClientHybridExtensions
         VectorQuery? includeVectors = null,
         CancellationToken cancellationToken = default
     )
-        where T : class, new()
-    {
-        var vectorsLocal = vectors(new VectorSearchInput.Builder());
-
-        return await client.Hybrid(
+        where T : class, new() =>
+        await client.Hybrid(
             query: query,
-            vectors: vectorsLocal,
+            vectors: vectors(VectorInputBuilderFactories.CreateHybridBuilder()),
             groupBy: groupBy,
             alpha: alpha,
             queryProperties: queryProperties,
@@ -283,5 +297,4 @@ public static class TypedQueryClientHybridExtensions
             includeVectors: includeVectors,
             cancellationToken: cancellationToken
         );
-    }
 }

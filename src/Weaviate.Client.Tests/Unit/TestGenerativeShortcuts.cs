@@ -122,7 +122,7 @@ public class GenerativeShortcutsTests
         await client
             .Collections.Use("TestCollection")
             .Generate.NearText(
-                text: "artificial intelligence",
+                query: "artificial intelligence",
                 limit: 5,
                 singlePrompt: "Explain this concept",
                 provider: provider,

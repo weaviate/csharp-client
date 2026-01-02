@@ -31,7 +31,7 @@ public partial class TypedGenerateClient<T>
     ) =>
         Hybrid(
             query: query,
-            vectors: null,
+            vectors: (HybridVectorInput?)null,
             alpha: alpha,
             queryProperties: queryProperties,
             fusionType: fusionType,
@@ -130,7 +130,7 @@ public partial class TypedGenerateClient<T>
     ) =>
         Hybrid(
             query: query,
-            vectors: null,
+            vectors: (HybridVectorInput?)null,
             groupBy: groupBy,
             alpha: alpha,
             queryProperties: queryProperties,
@@ -212,12 +212,13 @@ public partial class TypedGenerateClient<T>
 public static class TypedGenerateClientHybridExtensions
 {
     /// <summary>
-    /// Hybrid search with generative AI capabilities using a lambda to build vectors.
+    /// Hybrid search with generative AI capabilities using a lambda to build HybridVectorInput.
+    /// This allows chaining NearVector or NearText configuration with target vectors.
     /// </summary>
     public static async Task<GenerativeWeaviateResult<T>> Hybrid<T>(
         this TypedGenerateClient<T> client,
-        string? query,
-        VectorSearchInput.FactoryFn vectors,
+        string query,
+        HybridVectorInput.FactoryFn vectors,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -237,15 +238,10 @@ public static class TypedGenerateClientHybridExtensions
         VectorQuery? includeVectors = null,
         CancellationToken cancellationToken = default
     )
-        where T : class, new()
-    {
-        var vectorsLocal = vectors is not null
-            ? HybridVectorInput.FromVectorSearch(vectors(new VectorSearchInput.Builder()))
-            : null;
-
-        return await client.Hybrid(
+        where T : class, new() =>
+        await client.Hybrid(
             query: query,
-            vectors: vectorsLocal,
+            vectors: vectors(VectorInputBuilderFactories.CreateHybridBuilder()),
             alpha: alpha,
             queryProperties: queryProperties,
             fusionType: fusionType,
@@ -265,15 +261,15 @@ public static class TypedGenerateClientHybridExtensions
             includeVectors: includeVectors,
             cancellationToken: cancellationToken
         );
-    }
 
     /// <summary>
-    /// Hybrid search with generative AI capabilities and grouping using a lambda to build vectors.
+    /// Hybrid search with generative AI capabilities and grouping using a lambda to build HybridVectorInput.
+    /// This allows chaining NearVector or NearText configuration with target vectors.
     /// </summary>
     public static async Task<GenerativeGroupByResult<T>> Hybrid<T>(
         this TypedGenerateClient<T> client,
-        string? query,
-        VectorSearchInput.FactoryFn vectors,
+        string query,
+        HybridVectorInput.FactoryFn vectors,
         GroupByRequest groupBy,
         float? alpha = null,
         string[]? queryProperties = null,
@@ -294,15 +290,10 @@ public static class TypedGenerateClientHybridExtensions
         VectorQuery? includeVectors = null,
         CancellationToken cancellationToken = default
     )
-        where T : class, new()
-    {
-        var vectorsLocal = vectors is not null
-            ? HybridVectorInput.FromVectorSearch(vectors(new VectorSearchInput.Builder()))
-            : null;
-
-        return await client.Hybrid(
+        where T : class, new() =>
+        await client.Hybrid(
             query: query,
-            vectors: vectorsLocal,
+            vectors: vectors(VectorInputBuilderFactories.CreateHybridBuilder()),
             groupBy: groupBy,
             alpha: alpha,
             queryProperties: queryProperties,
@@ -323,5 +314,4 @@ public static class TypedGenerateClientHybridExtensions
             includeVectors: includeVectors,
             cancellationToken: cancellationToken
         );
-    }
 }

@@ -6,6 +6,11 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public sealed class HybridVectorInput
 {
+    /// <summary>
+    /// Delegate for lambda builder pattern with HybridVectorInput.
+    /// </summary>
+    public delegate HybridVectorInput FactoryFn(HybridVectorInputBuilder builder);
+
     public VectorSearchInput? VectorSearch { get; }
     public NearTextInput? NearText { get; }
     public NearVectorInput? NearVector { get; }

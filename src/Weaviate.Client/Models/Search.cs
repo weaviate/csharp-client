@@ -9,6 +9,11 @@ public record NearVectorInput(
 )
 {
     /// <summary>
+    /// Delegate for lambda builder pattern with NearVectorInput.
+    /// </summary>
+    public delegate NearVectorInput FactoryFn(NearVectorInputBuilder builder);
+
+    /// <summary>
     /// Constructor overload accepting lambda builder for vector input.
     /// </summary>
     public NearVectorInput(
@@ -35,6 +40,11 @@ public record NearTextInput(
 )
 {
     /// <summary>
+    /// Delegate for lambda builder pattern with NearTextInput.
+    /// </summary>
+    public delegate NearTextInput FactoryFn(NearTextInputBuilder builder);
+
+    /// <summary>
     /// Constructor overload accepting lambda builder for target vectors.
     /// </summary>
     public NearTextInput(
@@ -53,8 +63,6 @@ public record NearTextInput(
             MoveAway: MoveAway,
             TargetVectors: TargetVectors(new TargetVectors.Builder())
         ) { }
-
-    public static implicit operator NearTextInput(string query) => new(Query: query);
 };
 
 public abstract record BM25Operator(string Operator)

@@ -208,4 +208,182 @@ public partial class TypedQueryClient<T>
             includeVectors,
             cancellationToken
         );
+
+    /// <summary>
+    /// Performs a near-vector search using a NearVectorInput record.
+    /// </summary>
+    /// <param name="input">Near-vector input containing vector, certainty, and distance.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
+    /// <param name="limit">Maximum number of results to return.</param>
+    /// <param name="offset">Number of results to skip.</param>
+    /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="returnProperties">Properties to return in the response.</param>
+    /// <param name="returnReferences">Cross-references to return.</param>
+    /// <param name="returnMetadata">Metadata to include in the response.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A strongly-typed result containing the search results.</returns>
+    public Task<Models.WeaviateResult<WeaviateObject<T>>> NearVector(
+        NearVectorInput input,
+        Filter? filters = null,
+        uint? autoLimit = null,
+        uint? limit = null,
+        uint? offset = null,
+        Rerank? rerank = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        NearVector(
+            vectors: input.Vector,
+            filters: filters,
+            certainty: input.Certainty,
+            distance: input.Distance,
+            autoLimit: autoLimit,
+            limit: limit,
+            offset: offset,
+            rerank: rerank,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
+
+    /// <summary>
+    /// Performs a near-vector search with group-by using a NearVectorInput record.
+    /// </summary>
+    /// <param name="input">Near-vector input containing vector, certainty, and distance.</param>
+    /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
+    /// <param name="limit">Maximum number of results to return.</param>
+    /// <param name="offset">Number of results to skip.</param>
+    /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="returnProperties">Properties to return in the response.</param>
+    /// <param name="returnReferences">Cross-references to return.</param>
+    /// <param name="returnMetadata">Metadata to include in the response.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A strongly-typed grouped result.</returns>
+    public Task<GroupByResult<T>> NearVector(
+        NearVectorInput input,
+        GroupByRequest groupBy,
+        Filter? filters = null,
+        uint? autoLimit = null,
+        uint? limit = null,
+        uint? offset = null,
+        Rerank? rerank = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        NearVector(
+            vectors: input.Vector,
+            groupBy: groupBy,
+            filters: filters,
+            certainty: input.Certainty,
+            distance: input.Distance,
+            autoLimit: autoLimit,
+            limit: limit,
+            offset: offset,
+            rerank: rerank,
+            returnProperties: returnProperties,
+            returnReferences: returnReferences,
+            returnMetadata: returnMetadata,
+            includeVectors: includeVectors,
+            cancellationToken: cancellationToken
+        );
+
+    /// <summary>
+    /// Performs a near-vector search using a lambda builder for NearVectorInput.
+    /// </summary>
+    /// <param name="inputBuilder">Lambda builder for creating NearVectorInput with target vectors.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
+    /// <param name="limit">Maximum number of results to return.</param>
+    /// <param name="offset">Number of results to skip.</param>
+    /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="returnProperties">Properties to return in the response.</param>
+    /// <param name="returnReferences">Cross-references to return.</param>
+    /// <param name="returnMetadata">Metadata to include in the response.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A strongly-typed result containing the search results.</returns>
+    public Task<Models.WeaviateResult<WeaviateObject<T>>> NearVector(
+        NearVectorInput.FactoryFn vectors,
+        Filter? filters = null,
+        uint? autoLimit = null,
+        uint? limit = null,
+        uint? offset = null,
+        Rerank? rerank = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        NearVector(
+            vectors(VectorInputBuilderFactories.CreateNearVectorBuilder()),
+            filters,
+            autoLimit,
+            limit,
+            offset,
+            rerank,
+            returnProperties,
+            returnReferences,
+            returnMetadata,
+            includeVectors,
+            cancellationToken
+        );
+
+    /// <summary>
+    /// Performs a near-vector search with group-by using a lambda builder for NearVectorInput.
+    /// </summary>
+    /// <param name="inputBuilder">Lambda builder for creating NearVectorInput with target vectors.</param>
+    /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
+    /// <param name="limit">Maximum number of results to return.</param>
+    /// <param name="offset">Number of results to skip.</param>
+    /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="returnProperties">Properties to return in the response.</param>
+    /// <param name="returnReferences">Cross-references to return.</param>
+    /// <param name="returnMetadata">Metadata to include in the response.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A strongly-typed grouped result.</returns>
+    public Task<GroupByResult<T>> NearVector(
+        NearVectorInput.FactoryFn vectors,
+        GroupByRequest groupBy,
+        Filter? filters = null,
+        uint? autoLimit = null,
+        uint? limit = null,
+        uint? offset = null,
+        Rerank? rerank = null,
+        AutoArray<string>? returnProperties = null,
+        IList<QueryReference>? returnReferences = null,
+        MetadataQuery? returnMetadata = null,
+        VectorQuery? includeVectors = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        NearVector(
+            vectors(VectorInputBuilderFactories.CreateNearVectorBuilder()),
+            groupBy,
+            filters,
+            autoLimit,
+            limit,
+            offset,
+            rerank,
+            returnProperties,
+            returnReferences,
+            returnMetadata,
+            includeVectors,
+            cancellationToken
+        );
 }

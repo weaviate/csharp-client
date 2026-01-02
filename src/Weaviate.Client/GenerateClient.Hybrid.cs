@@ -30,7 +30,7 @@ public partial class GenerateClient
     ) =>
         Hybrid(
             query: query,
-            vectors: null,
+            vectors: (HybridVectorInput?)null,
             alpha: alpha,
             queryProperties: queryProperties,
             fusionType: fusionType,
@@ -139,7 +139,7 @@ public partial class GenerateClient
     ) =>
         Hybrid(
             query: query,
-            vectors: null,
+            vectors: (HybridVectorInput?)null,
             groupBy: groupBy,
             alpha: alpha,
             queryProperties: queryProperties,
@@ -231,12 +231,23 @@ public partial class GenerateClient
 public static class GenerateClientHybridExtensions
 {
     /// <summary>
-    /// Hybrid search with generative AI capabilities using a lambda to build vectors.
+    /// Hybrid search with generative AI capabilities using a lambda to build HybridVectorInput.
+    /// This allows chaining NearVector or NearText configuration with target vectors.
     /// </summary>
+    /// <example>
+    /// await collection.Generate.Hybrid(
+    ///     "test",
+    ///     v => v.NearVector().ManualWeights(
+    ///         ("title", 1.2, new[] { 1f, 2f }),
+    ///         ("description", 0.8, new[] { 3f, 4f })
+    ///     ),
+    ///     singlePrompt: "Describe this item"
+    /// );
+    /// </example>
     public static async Task<GenerativeWeaviateResult> Hybrid(
         this GenerateClient client,
-        string? query,
-        VectorSearchInput.FactoryFn vectors,
+        string query,
+        HybridVectorInput.FactoryFn vectors,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -255,15 +266,10 @@ public static class GenerateClientHybridExtensions
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
         CancellationToken cancellationToken = default
-    )
-    {
-        var vectorsLocal = vectors is not null
-            ? HybridVectorInput.FromVectorSearch(vectors(new VectorSearchInput.Builder()))
-            : null;
-
-        return await client.Hybrid(
+    ) =>
+        await client.Hybrid(
             query: query,
-            vectors: vectorsLocal,
+            vectors: vectors(VectorInputBuilderFactories.CreateHybridBuilder()),
             alpha: alpha,
             queryProperties: queryProperties,
             fusionType: fusionType,
@@ -283,15 +289,15 @@ public static class GenerateClientHybridExtensions
             includeVectors: includeVectors,
             cancellationToken: cancellationToken
         );
-    }
 
     /// <summary>
-    /// Hybrid search with generative AI capabilities and grouping using a lambda to build vectors.
+    /// Hybrid search with generative AI capabilities and grouping using a lambda to build HybridVectorInput.
+    /// This allows chaining NearVector or NearText configuration with target vectors.
     /// </summary>
     public static async Task<GenerativeGroupByResult> Hybrid(
         this GenerateClient client,
-        string? query,
-        VectorSearchInput.FactoryFn vectors,
+        string query,
+        HybridVectorInput.FactoryFn vectors,
         GroupByRequest groupBy,
         float? alpha = null,
         string[]? queryProperties = null,
@@ -311,15 +317,10 @@ public static class GenerateClientHybridExtensions
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
         CancellationToken cancellationToken = default
-    )
-    {
-        var vectorsLocal = vectors is not null
-            ? HybridVectorInput.FromVectorSearch(vectors(new VectorSearchInput.Builder()))
-            : null;
-
-        return await client.Hybrid(
+    ) =>
+        await client.Hybrid(
             query: query,
-            vectors: vectorsLocal,
+            vectors: vectors(VectorInputBuilderFactories.CreateHybridBuilder()),
             groupBy: groupBy,
             alpha: alpha,
             queryProperties: queryProperties,
@@ -340,5 +341,4 @@ public static class GenerateClientHybridExtensions
             includeVectors: includeVectors,
             cancellationToken: cancellationToken
         );
-    }
 }
