@@ -18,7 +18,7 @@ public class TestQueries : IntegrationTests
         // Arrange
         var collection = await this.CollectionFactory<TestProperties>(
             properties: props,
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         var testData = new[]
@@ -75,12 +75,11 @@ public class TestQueries : IntegrationTests
         // Arrange
         var collection = await this.CollectionFactory<object>(
             properties: [Property.Text("text"), Property.Text("content")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided()),
-            generativeConfig: new GenerativeConfig.Custom
-            {
-                Type = "generative-dummy",
-                Config = new { ConfigOption = "ConfigValue" },
-            }
+            vectorConfig: Configure.Vector(v => v.SelfProvided()),
+            generativeConfig: Configure.Generative.Custom(
+                "generative-dummy",
+                new { ConfigOption = "ConfigValue" }
+            )
         );
 
         var testData = new[]
@@ -141,11 +140,10 @@ public class TestQueries : IntegrationTests
         var collection = await CollectionFactory(
             properties: [Property.Text("text")],
             vectorConfig: Configure.Vector(t => t.SelfProvided()),
-            generativeConfig: new GenerativeConfig.Custom
-            {
-                Type = "generative-dummy",
-                Config = new { ConfigOption = "ConfigValue" },
-            }
+            generativeConfig: Configure.Generative.Custom(
+                "generative-dummy",
+                new { ConfigOption = "ConfigValue" }
+            )
         );
 
         // Insert data
@@ -226,11 +224,10 @@ public class TestQueries : IntegrationTests
         var collection = await CollectionFactory(
             vectorConfig: Configure.Vector(t => t.SelfProvided()),
             properties: [Property.Text("text")],
-            generativeConfig: new GenerativeConfig.Custom
-            {
-                Type = "generative-dummy",
-                Config = new { ConfigOption = "ConfigValue" },
-            }
+            generativeConfig: Configure.Generative.Custom(
+                "generative-dummy",
+                new { ConfigOption = "ConfigValue" }
+            )
         );
 
         var result = await collection.Data.InsertMany(

@@ -1,10 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
-
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Weaviate.Client.Tests")]
 
 namespace Weaviate.Client;
 

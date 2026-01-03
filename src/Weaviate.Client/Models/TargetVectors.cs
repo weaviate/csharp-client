@@ -1,102 +1,235 @@
 namespace Weaviate.Client.Models;
 
+using System.Runtime.CompilerServices;
 using V1 = Grpc.Protobuf.V1;
 
-public class TargetVectors : IEnumerable<string>
+/// <summary>
+/// Base class for target vector configuration for text/media-based searches.
+/// Cannot be constructed directly - use lambda syntax with builder methods.
+/// </summary>
+[CollectionBuilder(typeof(TargetVectors), nameof(Create))]
+public abstract record TargetVectors : IEnumerable<string>
 {
-    public List<string> Targets { get; } = new List<string>();
-    internal V1.CombinationMethod Combination { get; } = V1.CombinationMethod.Unspecified;
-    public Dictionary<string, List<double>>? Weights { get; }
+    internal TargetVectors() { } // Prevent external inheritance
 
-    public TargetVectors() { }
+    /// <summary>
+    /// Factory delegate for creating VectorSearchInput using a builder pattern.
+    /// Example: FactoryFn factory = b => b.Sum(("title", vec1), ("desc", vec2))
+    /// </summary>
+    public delegate TargetVectors FactoryFn(Builder builder);
 
-    public void Add(string target)
+    public abstract IReadOnlyList<string> Targets { get; }
+    internal abstract V1.CombinationMethod Combination { get; }
+
+    public IEnumerator<string> GetEnumerator() => Targets.GetEnumerator();
+
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =>
+        GetEnumerator();
+
+    // Static helpers to build target vectors from VectorSearchInput
+    public static TargetVectors Sum(VectorSearchInput vectors)
     {
-        Targets.Add(target);
+        var targets = vectors.Targets ?? [.. vectors.Vectors.Keys];
+        return new SimpleTargetVectors(targets, V1.CombinationMethod.TypeSum);
     }
 
-    public void AddRange(IEnumerable<string> targets)
+    public static TargetVectors Average(VectorSearchInput vectors)
     {
-        Targets.AddRange(targets);
+        var targets = vectors.Targets ?? [.. vectors.Vectors.Keys];
+        return new SimpleTargetVectors(targets, V1.CombinationMethod.TypeAverage);
     }
 
-    public IEnumerator<string> GetEnumerator()
+    public static TargetVectors Minimum(VectorSearchInput vectors)
     {
-        return Targets.GetEnumerator();
+        var targets = vectors.Targets ?? [.. vectors.Vectors.Keys];
+        return new SimpleTargetVectors(targets, V1.CombinationMethod.TypeMin);
     }
 
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    // Static helpers for simple target vectors
+    public static TargetVectors Sum(params string[] targets) =>
+        new SimpleTargetVectors(targets, V1.CombinationMethod.TypeSum);
+
+    public static TargetVectors Average(params string[] targets) =>
+        new SimpleTargetVectors(targets, V1.CombinationMethod.TypeAverage);
+
+    public static TargetVectors Minimum(params string[] targets) =>
+        new SimpleTargetVectors(targets, V1.CombinationMethod.TypeMin);
+
+    // Static helpers for weighted target vectors
+    // Supports multiple weights per target (e.g., ManualWeights(("a", 1.0), ("a", 2.0)))
+    public static TargetVectors ManualWeights(params (string name, double weight)[] weights)
     {
-        return GetEnumerator();
+        var dict = weights
+            .GroupBy(w => w.name)
+            .ToDictionary(g => g.Key, g => (IReadOnlyList<double>)g.Select(w => w.weight).ToList());
+        return new WeightedTargetVectors(
+            targets: weights.Select(w => w.name).Distinct().ToList(),
+            combination: V1.CombinationMethod.TypeManual,
+            weights: dict
+        );
     }
 
-    internal IEnumerable<(string name, double? weight)> GetVectorWithWeights()
+    public static TargetVectors RelativeScore(params (string name, double weight)[] weights)
     {
-        foreach (var target in Targets)
+        var dict = weights
+            .GroupBy(w => w.name)
+            .ToDictionary(g => g.Key, g => (IReadOnlyList<double>)g.Select(w => w.weight).ToList());
+        return new WeightedTargetVectors(
+            targets: weights.Select(w => w.name).Distinct().ToList(),
+            combination: V1.CombinationMethod.TypeRelativeScore,
+            weights: dict
+        );
+    }
+
+    // Implicit conversion from string array for convenience
+    public static implicit operator TargetVectors(string[] targets) =>
+        new SimpleTargetVectors(targets, V1.CombinationMethod.Unspecified);
+
+    /// <summary>
+    /// Creates a TargetVectors from a collection expression.
+    /// Enables syntax like: targets: ["title", "description"]
+    /// </summary>
+    public static TargetVectors Create(ReadOnlySpan<string> targets) =>
+        new SimpleTargetVectors(targets.ToArray(), V1.CombinationMethod.Unspecified);
+
+    /// <summary>
+    /// Builder for creating TargetVectors via lambda syntax.
+    /// </summary>
+    public sealed class Builder
+    {
+        internal Builder() { }
+
+        /// <summary>
+        /// Specifies target vector names without a combination method.
+        /// </summary>
+        public SimpleTargetVectors Targets(params string[] names)
         {
-            if (Weights?.TryGetValue(target, out var weightList) ?? false)
-            {
-                foreach (var weight in weightList)
-                {
-                    yield return (target, weight);
-                }
-            }
-            else
-            {
-                yield return (target, null);
-            }
+            return new SimpleTargetVectors(
+                targets: names,
+                combination: V1.CombinationMethod.Unspecified
+            );
+        }
+
+        /// <summary>
+        /// Creates a multi-target configuration with Sum combination.
+        /// </summary>
+        public SimpleTargetVectors Sum(params string[] names)
+        {
+            return new SimpleTargetVectors(
+                targets: names,
+                combination: V1.CombinationMethod.TypeSum
+            );
+        }
+
+        /// <summary>
+        /// Creates a multi-target configuration with Average combination.
+        /// </summary>
+        public SimpleTargetVectors Average(params string[] names)
+        {
+            return new SimpleTargetVectors(
+                targets: names,
+                combination: V1.CombinationMethod.TypeAverage
+            );
+        }
+
+        /// <summary>
+        /// Creates a multi-target configuration with Minimum combination.
+        /// </summary>
+        public SimpleTargetVectors Minimum(params string[] names)
+        {
+            return new SimpleTargetVectors(
+                targets: names,
+                combination: V1.CombinationMethod.TypeMin
+            );
+        }
+
+        /// <summary>
+        /// Creates a multi-target configuration with ManualWeights.
+        /// Supports multiple weights per target.
+        /// </summary>
+        public WeightedTargetVectors ManualWeights(params (string name, double weight)[] weights)
+        {
+            var dict = weights
+                .GroupBy(w => w.name)
+                .ToDictionary(
+                    g => g.Key,
+                    g => (IReadOnlyList<double>)g.Select(w => w.weight).ToList()
+                );
+            return new WeightedTargetVectors(
+                targets: weights.Select(w => w.name).Distinct().ToList(),
+                combination: V1.CombinationMethod.TypeManual,
+                weights: dict
+            );
+        }
+
+        /// <summary>
+        /// Creates a multi-target configuration with RelativeScore.
+        /// Supports multiple weights per target.
+        /// </summary>
+        public WeightedTargetVectors RelativeScore(params (string name, double weight)[] weights)
+        {
+            var dict = weights
+                .GroupBy(w => w.name)
+                .ToDictionary(
+                    g => g.Key,
+                    g => (IReadOnlyList<double>)g.Select(w => w.weight).ToList()
+                );
+            return new WeightedTargetVectors(
+                targets: weights.Select(w => w.name).Distinct().ToList(),
+                combination: V1.CombinationMethod.TypeRelativeScore,
+                weights: dict
+            );
         }
     }
+}
 
-    private TargetVectors(IEnumerable<string> targets)
-    {
-        Targets.AddRange(targets);
-    }
-
-    private TargetVectors(
-        IEnumerable<string>? targets = null,
-        V1.CombinationMethod combination = V1.CombinationMethod.Unspecified,
-        Dictionary<string, List<double>>? weights = null
+/// <summary>
+/// Simple target vectors without weights (Sum, Average, Minimum, Targets).
+/// </summary>
+public sealed record SimpleTargetVectors : TargetVectors
+{
+    internal SimpleTargetVectors(
+        IReadOnlyList<string> targets,
+        V1.CombinationMethod combination = V1.CombinationMethod.Unspecified
     )
     {
-        Targets = [.. targets ?? weights?.Keys ?? Enumerable.Empty<string>()];
+        Targets = targets;
+        Combination = combination;
+    }
+
+    public override IReadOnlyList<string> Targets { get; }
+    internal override V1.CombinationMethod Combination { get; }
+}
+
+/// <summary>
+/// Weighted target vectors with per-target weights (ManualWeights, RelativeScore).
+/// </summary>
+public sealed record WeightedTargetVectors : TargetVectors
+{
+    internal WeightedTargetVectors(
+        IReadOnlyList<string> targets,
+        V1.CombinationMethod combination,
+        IReadOnlyDictionary<string, IReadOnlyList<double>> weights
+    )
+    {
+        Targets = targets;
         Combination = combination;
         Weights = weights;
     }
 
-    // Implicit conversion from string[]
-    public static implicit operator TargetVectors(string[] names) => [.. names];
+    public override IReadOnlyList<string> Targets { get; }
+    internal override V1.CombinationMethod Combination { get; }
+    public IReadOnlyDictionary<string, IReadOnlyList<double>> Weights { get; }
 
-    // Implicit conversion from List<string>
-    public static implicit operator TargetVectors(List<string> names) => [.. names];
-
-    // Sum
-    public static TargetVectors Sum(IEnumerable<string> names) =>
-        new(names, V1.CombinationMethod.TypeSum);
-
-    // Minimum
-    public static TargetVectors Minimum(IEnumerable<string> names) =>
-        new(names, V1.CombinationMethod.TypeMin);
-
-    // Average
-    public static TargetVectors Average(IEnumerable<string> names) =>
-        new(names, V1.CombinationMethod.TypeAverage);
-
-    // ManualWeights
-    public static TargetVectors ManualWeights(
-        params (string name, AutoArray<double> weight)[] weights
-    )
+    internal IEnumerable<(string name, double weight)> GetTargetWithWeights()
     {
-        var dict = weights.ToDictionary(w => w.name, w => w.weight.ToList());
-        return new TargetVectors(dict.Keys, V1.CombinationMethod.TypeManual, dict);
-    }
-
-    // RelativeScore
-    public static TargetVectors RelativeScore(
-        params (string name, AutoArray<double> weight)[] weights
-    )
-    {
-        var dict = weights.ToDictionary(w => w.name, w => w.weight.ToList());
-        return new TargetVectors(dict.Keys, V1.CombinationMethod.TypeRelativeScore, dict);
+        foreach (var target in Targets)
+        {
+            if (Weights.TryGetValue(target, out var weightList))
+            {
+                foreach (var weight in weightList)
+                    yield return (target, weight);
+            }
+        }
     }
 }

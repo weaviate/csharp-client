@@ -453,58 +453,82 @@ internal partial class WeaviateGrpcClient
         };
     }
 
-    private static (
+    /// <summary>
+    /// Converts a NamedVector to gRPC V1.Vectors format.
+    /// </summary>
+    private static V1.Vectors ConvertToGrpcVector(NamedVector namedVector)
+    {
+        return new V1.Vectors
+        {
+            Name = namedVector.Name,
+            Type = namedVector.IsMultiVector
+                ? V1.Vectors.Types.VectorType.MultiFp32
+                : V1.Vectors.Types.VectorType.SingleFp32,
+            VectorBytes = namedVector.ToByteString(),
+        };
+    }
+
+    internal static (
         V1.Targets? targets,
         IList<V1.VectorForTarget>? vectorForTargets,
         IList<V1.Vectors>? vectors
-    ) BuildTargetVector(TargetVectors? targetVector, IEnumerable<Vector>? vector = null)
+    ) BuildTargetVector(TargetVectors? targetVector, IEnumerable<NamedVector>? vector = null)
     {
         IList<V1.VectorForTarget>? vectorForTarget = null;
         IList<V1.Vectors>? vectors = null;
 
         vector ??= [];
 
-        targetVector ??= vector
-            .Select(v => v.Name)
-            .Where(tv => string.IsNullOrEmpty(tv) is false)
-            .ToHashSet()
-            .Order()
-            .ToArray();
+        // If no target vector specified, create one from vector names
+        targetVector ??= new SimpleTargetVectors(
+            [
+                .. vector
+                    .Select(v => v.Name)
+                    .Where(tv => string.IsNullOrEmpty(tv) is false)
+                    .ToHashSet()
+                    .Order(),
+            ]
+        );
 
         if (targetVector.Count() == 1 && vector.Count() == 1)
         {
             // If only one target vector is specified, use Vectors
             // This also covers the case where no target vector is specified and only one vector is provided
             // In this case, we assume the single provided vector is the target
-            vectors =
-            [
-                .. vector
-                    .Select(v => new V1.Vectors
-                    {
-                        Name = v.Name,
-                        Type = v.IsMultiVector
-                            ? V1.Vectors.Types.VectorType.MultiFp32
-                            : V1.Vectors.Types.VectorType.SingleFp32,
-                        VectorBytes = v.ToByteString(),
-                    })
-                    .OrderBy(v => v.Name),
-            ];
+            vectors = [.. vector.Select(v => ConvertToGrpcVector(v)).OrderBy(v => v.Name)];
 
             return (targetVector, vectorForTarget, vectors);
         }
 
         var vectorUniqueNames = vector.Select(v => v.Name).ToHashSet();
-        var vectorInstances = vector.GroupBy(v => v.Name).ToDictionary(g => g.Key, g => g.ToList());
-        var vectorInstanceWeights = targetVector
-            .GetVectorWithWeights()
-            .GroupBy(v => v.name)
-            .ToDictionary(g => g.Key, g => g.Select(w => w.weight).ToList());
+        var vectorsByName = vector.GroupBy(v => v.Name).ToDictionary(g => g.Key, g => g.ToList());
 
-        // If multiple target vectors are specified, use VectorForTargets.
-        // If multiple vectors are specified, ensure they align with the
-        // weights provided in the target vector.
-        bool vectorNamesMatch = vectorUniqueNames.SetEquals(targetVector);
-        bool vectorsMatchTargets = vectorInstances.Count == vectorInstanceWeights.Count;
+        // Get weights if targetVector is WeightedTargetVectors
+        Dictionary<string, List<double?>> vectorInstanceWeights;
+        if (targetVector is WeightedTargetVectors weighted)
+        {
+            vectorInstanceWeights = weighted
+                .GetTargetWithWeights()
+                .GroupBy(v => v.name)
+                .ToDictionary(g => g.Key, g => g.Select(w => (double?)w.weight).ToList());
+        }
+        else
+        {
+            // For SimpleTargetVectors, no weights
+            vectorInstanceWeights = targetVector.Targets.ToDictionary(
+                t => t,
+                t => new List<double?> { null }
+            );
+        }
+
+        // Determine if we should use VectorForTargets:
+        // 1. Multiple distinct target names, OR
+        // 2. Multiple vectors for the same target (e.g., Sum with same name)
+        // 3. A combination method is specified (Sum, Average, Minimum, etc.)
+        bool vectorNamesMatch = vectorUniqueNames.SetEquals(targetVector.Targets);
+        bool vectorsMatchTargets = vectorsByName.Count == vectorInstanceWeights.Count;
+        bool hasCombinationMethod = targetVector.Combination != V1.CombinationMethod.Unspecified;
+        bool hasMultipleVectorsPerTarget = vectorsByName.Any(kvp => kvp.Value.Count > 1);
         bool weightsCheck = true;
 
         if (
@@ -513,16 +537,24 @@ internal partial class WeaviateGrpcClient
         )
         {
             // Ensure all vectors are present and match the weights provided
-            bool allVectorsPresentAndMatchingWeights = vectorInstances.All(kv =>
-                vectorInstanceWeights.TryGetValue(kv.Key, out var count)
-                && count.Count == kv.Value.Count
+            bool allVectorsPresentAndMatchingWeights = vectorsByName.All(kv =>
+                vectorInstanceWeights.TryGetValue(kv.Key, out var weights)
+                && weights.Count == kv.Value.Count
             );
-            bool vectorsUseWeights = vector.Count() == targetVector.GetVectorWithWeights().Count();
+            bool vectorsUseWeights =
+                vector.Count() == vectorInstanceWeights.Sum(kvp => kvp.Value.Count);
 
             weightsCheck = allVectorsPresentAndMatchingWeights && vectorsUseWeights;
         }
 
-        if (targetVector.Count() > 1 && vectorNamesMatch && vectorsMatchTargets && weightsCheck)
+        // Use VectorForTargets when:
+        // - Multiple distinct targets with matching vectors, OR
+        // - Multiple vectors for the same target (e.g., Sum, or just multiple vectors with same name)
+        bool useVectorForTargets =
+            (targetVector.Count() > 1 && vectorNamesMatch && vectorsMatchTargets && weightsCheck)
+            || (hasMultipleVectorsPerTarget && vectorNamesMatch);
+
+        if (useVectorForTargets)
         {
             vectorForTarget =
             [
@@ -530,18 +562,7 @@ internal partial class WeaviateGrpcClient
                     .Select(name => new V1.VectorForTarget()
                     {
                         Name = name,
-                        Vectors =
-                        {
-                            vectorInstances[name]
-                                .Select(v => new V1.Vectors
-                                {
-                                    Name = v.Name,
-                                    Type = v.IsMultiVector
-                                        ? V1.Vectors.Types.VectorType.MultiFp32
-                                        : V1.Vectors.Types.VectorType.SingleFp32,
-                                    VectorBytes = v.ToByteString(),
-                                }),
-                        },
+                        Vectors = { vectorsByName[name].Select(v => ConvertToGrpcVector(v)) },
                     })
                     .OrderBy(vft => vft.Name),
             ];
@@ -549,19 +570,55 @@ internal partial class WeaviateGrpcClient
             return (targetVector, vectorForTarget, vectors);
         }
 
-        vectors =
-        [
-            .. vector.Select(v => new V1.Vectors
-            {
-                Name = v.Name,
-                Type = v.IsMultiVector
-                    ? V1.Vectors.Types.VectorType.MultiFp32
-                    : V1.Vectors.Types.VectorType.SingleFp32,
-                VectorBytes = v.ToByteString(),
-            }),
-        ];
+        vectors = [.. vector.Select(v => ConvertToGrpcVector(v))];
 
         return (targetVector, vectorForTarget, vectors);
+    }
+
+    /// <summary>
+    /// Overload for VectorSearchInput which contains both vectors and target configuration.
+    /// </summary>
+    internal static (
+        V1.Targets? targets,
+        IList<V1.VectorForTarget>? vectorForTargets,
+        IList<V1.Vectors>? vectors
+    ) BuildTargetVector(VectorSearchInput? vectorSearchInput)
+    {
+        if (vectorSearchInput == null)
+            return (null, null, null);
+
+        var namedVectors = vectorSearchInput.ToList();
+
+        // Create TargetVectors from VectorSearchInput configuration
+        TargetVectors targetVector;
+        if (vectorSearchInput.Weights != null && vectorSearchInput.Weights.Count > 0)
+        {
+            // Weighted targets
+            targetVector = new WeightedTargetVectors(
+                vectorSearchInput.Targets ?? [.. vectorSearchInput.Vectors.Keys],
+                vectorSearchInput.Combination,
+                vectorSearchInput.Weights
+            );
+        }
+        else if (vectorSearchInput.Targets != null)
+        {
+            // Simple targets with combination method
+            targetVector = new SimpleTargetVectors(
+                vectorSearchInput.Targets,
+                vectorSearchInput.Combination
+            );
+        }
+        else
+        {
+            // Default: use vector names as targets
+            targetVector = new SimpleTargetVectors(
+                [.. vectorSearchInput.Vectors.Keys],
+                vectorSearchInput.Combination
+            );
+        }
+
+        // Reuse the existing BuildTargetVector logic
+        return BuildTargetVector(targetVector, namedVectors);
     }
 
     private static V1.NearTextSearch BuildNearText(
@@ -573,7 +630,11 @@ internal partial class WeaviateGrpcClient
         TargetVectors? targetVector = null
     )
     {
-        var nearText = new V1.NearTextSearch { Query = { query }, Targets = targetVector ?? [] };
+        var nearText = new V1.NearTextSearch
+        {
+            Query = { query },
+            Targets = targetVector ?? new V1.Targets(),
+        };
 
         if (moveTo is not null)
         {
@@ -613,10 +674,9 @@ internal partial class WeaviateGrpcClient
     }
 
     private static V1.NearVector BuildNearVector(
-        NearVectorInput vector,
+        VectorSearchInput vectors,
         double? certainty,
-        double? distance,
-        TargetVectors? targetVector
+        double? distance
     )
     {
         V1.NearVector nearVector = new();
@@ -631,7 +691,7 @@ internal partial class WeaviateGrpcClient
             nearVector.Certainty = certainty.Value;
         }
 
-        var (targets, vectorForTarget, vectors) = BuildTargetVector(targetVector, vector);
+        var (targets, vectorForTarget, vectorsLocal) = BuildTargetVector(vectors);
 
         if (targets is not null)
         {
@@ -641,9 +701,9 @@ internal partial class WeaviateGrpcClient
         {
             nearVector.VectorForTargets.Add(vectorForTarget);
         }
-        else if (vectors is not null)
+        else if (vectorsLocal is not null)
         {
-            nearVector.Vectors.Add(vectors);
+            nearVector.Vectors.Add(vectorsLocal);
         }
 
         return nearVector;
@@ -677,25 +737,21 @@ internal partial class WeaviateGrpcClient
         }
     }
 
-    private static void BuildHybrid(
-        V1.SearchRequest request,
+    private static V1.Hybrid BuildHybrid(
         string? query = null,
         float? alpha = null,
-        Models.Vectors? vector = null,
-        HybridNearVector? nearVector = null,
-        HybridNearText? nearText = null,
+        HybridVectorInput? vectors = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
-        BM25Operator? bm25Operator = null,
-        TargetVectors? targetVector = null
+        BM25Operator? bm25Operator = null
     )
     {
-        request.HybridSearch = new V1.Hybrid();
+        var hybrid = new V1.Hybrid();
 
         if (!string.IsNullOrEmpty(query))
         {
-            request.HybridSearch.Query = query;
+            hybrid.Query = query;
         }
         else
         {
@@ -705,71 +761,73 @@ internal partial class WeaviateGrpcClient
 
         alpha ??= 0.7f; // Default alpha if not provided
 
-        request.HybridSearch.Alpha = alpha.Value;
+        hybrid.Alpha = alpha.Value;
 
-        if (vector is not null && nearText is null && nearVector is null)
+        // Pattern match on HybridVectorInput to build the appropriate search type
+        if (vectors != null)
         {
-            var (targets, vfts, vectors) = BuildTargetVector(targetVector, vector.Values);
-
-            if (vfts is not null)
-            {
-                nearVector = new HybridNearVector(
-                    vector,
-                    Certainty: null,
-                    Distance: null,
-                    targetVector: targetVector
-                );
-                vector = null; // Clear vector to avoid duplication
-            }
-            else if (vectors is not null)
-            {
-                request.HybridSearch.Vectors.Add(vectors);
-                request.HybridSearch.Targets = targets;
-            }
-        }
-
-        if (vector is null && nearText is not null && nearVector is null)
-        {
-            request.HybridSearch.NearText = BuildNearText(
-                [nearText.Query],
-                nearText.Distance,
-                nearText.Certainty,
-                nearText.MoveTo,
-                nearText.MoveAway,
-                targetVector
+            vectors.Match<object?>(
+                onVectorSearch: vectorSearchInput =>
+                {
+                    // Build target vectors from VectorSearchInput (includes combination method)
+                    var (targets, vfts, vectorsGrpc) = BuildTargetVector(vectorSearchInput);
+                    // Set targets for hybrid search
+                    if (targets is not null)
+                    {
+                        hybrid.Targets = targets;
+                    }
+                    // For Hybrid, vectors go in Vectors field (not VectorForTargets)
+                    // If VectorForTargets was computed, flatten them into Vectors
+                    if (vfts is not null)
+                    {
+                        foreach (var vft in vfts)
+                        {
+                            hybrid.Vectors.Add(vft.Vectors);
+                        }
+                    }
+                    else if (vectorsGrpc is not null)
+                    {
+                        hybrid.Vectors.Add(vectorsGrpc);
+                    }
+                    return null;
+                },
+                onNearText: nearText =>
+                {
+                    hybrid.NearText = BuildNearText(
+                        nearText.Query.ToArray(),
+                        nearText.Distance,
+                        nearText.Certainty,
+                        nearText.MoveTo,
+                        nearText.MoveAway,
+                        nearText.TargetVectors
+                    );
+                    // Move targets to Hybrid message (matching Python client behavior)
+                    hybrid.Targets = hybrid.NearText.Targets;
+                    hybrid.NearText.Targets = new V1.Targets();
+                    return null;
+                },
+                onNearVector: nearVector =>
+                {
+                    hybrid.NearVector = BuildNearVector(
+                        nearVector.Vector,
+                        nearVector.Certainty,
+                        nearVector.Distance
+                    );
+                    // Move targets to Hybrid message (matching Python client behavior)
+                    hybrid.Targets = hybrid.NearVector.Targets;
+                    hybrid.NearVector.Targets = new V1.Targets();
+                    return null;
+                }
             );
-
-            request.HybridSearch.Targets = request.HybridSearch.NearText.Targets;
-        }
-
-        if (
-            vector is null
-            && nearText is null
-            && nearVector is not null
-            && nearVector.Vector is not null
-        )
-        {
-            request.HybridSearch.NearVector = BuildNearVector(
-                nearVector.Vector,
-                nearVector.Certainty,
-                nearVector.Distance,
-                targetVector
-            );
-            request.HybridSearch.Targets = request.HybridSearch.NearVector.Targets;
-        }
-
-        if (vector is null && nearText is null && nearVector is null && targetVector is not null)
-        {
-            request.HybridSearch.Targets = targetVector ?? [];
         }
 
         if (queryProperties is not null)
         {
-            request.HybridSearch.Properties.AddRange(queryProperties);
+            hybrid.Properties.AddRange(queryProperties);
         }
         if (fusionType.HasValue)
         {
-            request.HybridSearch.FusionType = fusionType switch
+            hybrid.FusionType = fusionType switch
             {
                 HybridFusion.Ranked => V1.Hybrid.Types.FusionType.Ranked,
                 HybridFusion.RelativeScore => V1.Hybrid.Types.FusionType.RelativeScore,
@@ -778,11 +836,11 @@ internal partial class WeaviateGrpcClient
         }
         if (maxVectorDistance.HasValue)
         {
-            request.HybridSearch.VectorDistance = maxVectorDistance.Value;
+            hybrid.VectorDistance = maxVectorDistance.Value;
         }
         if (bm25Operator != null)
         {
-            request.HybridSearch.Bm25SearchOperator = new()
+            hybrid.Bm25SearchOperator = new()
             {
                 Operator = bm25Operator switch
                 {
@@ -793,28 +851,31 @@ internal partial class WeaviateGrpcClient
                 MinimumOrTokensMatch = (bm25Operator as BM25Operator.Or)?.MinimumMatch ?? 1,
             };
         }
+
+        return hybrid;
     }
 
-    private void BuildNearObject(
-        V1.SearchRequest request,
+    private static V1.NearObject BuildNearObject(
         Guid objectID,
         double? certainty,
         double? distance,
         TargetVectors? targetVector
     )
     {
-        request.NearObject = new V1.NearObject { Id = objectID.ToString() };
+        var nearObject = new V1.NearObject { Id = objectID.ToString() };
 
         if (certainty.HasValue)
         {
-            request.NearObject.Certainty = certainty.Value;
+            nearObject.Certainty = certainty.Value;
         }
 
         if (distance.HasValue)
         {
-            request.NearObject.Distance = distance.Value;
+            nearObject.Distance = distance.Value;
         }
 
-        request.NearObject.Targets = targetVector ?? [];
+        nearObject.Targets = targetVector ?? new V1.Targets();
+
+        return nearObject;
     }
 }

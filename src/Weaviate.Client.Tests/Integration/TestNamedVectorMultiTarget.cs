@@ -46,9 +46,13 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
 
+        var vectorsObj = new Vectors
+        {
+            { "first", new[] { 1f, 0f } },
+            { "second", new[] { 1f, 0f, 0f } },
+        };
         var objs = await collection.Query.NearVector(
-            new Vectors { { "first", new[] { 1f, 0f } }, { "second", new[] { 1f, 0f, 0f } } },
-            targetVector: ["first", "second"],
+            vectorsObj,
             cancellationToken: TestContext.Current.CancellationToken
         );
         var ids = objs.Select(o => o.UUID!.Value).OrderBy(x => x).ToList();
@@ -56,48 +60,29 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         Assert.Equal(expected, ids);
     }
 
-    public static TheoryData<NearVectorInput, string[]> MultiInputCombinations =>
+    public static TheoryData<VectorSearchInput> MultiInputCombinations =>
         new(
-            (
-                new NearVectorInput
-                {
-                    { "first", new[] { 0f, 1f } },
-                    { "second", new float[] { 1f, 0f, 0f }, new float[] { 0f, 0f, 1f } },
-                },
-                new[] { "first", "second" }
-            ),
-            (
-                new NearVectorInput
-                {
-                    { "first", new[] { 0f, 1f }, new[] { 0f, 1f } },
-                    { "second", new[] { 1f, 0f, 0f } },
-                },
-                new[] { "first", "second" }
-            ),
-            (
-                new NearVectorInput
-                {
-                    { "first", new float[] { 0f, 1f }, new float[] { 0f, 1f } },
-                    { "second", new float[] { 1f, 0f, 0f }, new float[] { 0f, 0f, 1f } },
-                },
-                new[] { "first", "second" }
-            ),
-            (
-                new NearVectorInput
-                {
-                    { "first", new float[] { 0f, 1f }, new float[] { 0f, 1f } },
-                    { "second", new float[] { 1f, 0f, 0f }, new float[] { 0f, 0f, 1f } },
-                },
-                new[] { "second", "first" }
-            )
+            [
+                ("first", new[] { 0f, 1f }),
+                ("second", new[] { 1f, 0f, 0f }),
+                ("second", new[] { 0f, 0f, 1f }),
+            ],
+            [
+                ("first", new[] { 0f, 1f }),
+                ("first", new[] { 0f, 1f }),
+                ("second", new[] { 1f, 0f, 0f }),
+            ],
+            [
+                ("first", new[] { 0f, 1f }),
+                ("first", new[] { 0f, 1f }),
+                ("second", new[] { 1f, 0f, 0f }),
+                ("second", new[] { 0f, 0f, 1f }),
+            ]
         );
 
     [Theory]
     [MemberData(nameof(MultiInputCombinations))]
-    public async Task Test_SameTargetVector_MultipleInputCombinations(
-        NearVectorInput nearVector,
-        string[] targetVector
-    )
+    public async Task Test_SameTargetVector_MultipleInputCombinations(VectorSearchInput nearVector)
     {
         RequireVersion("1.27.0");
 
@@ -130,8 +115,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         );
 
         var objs = await collection.Query.NearVector(
-            nearVector,
-            targetVector: targetVector,
+            vectors: nearVector,
             cancellationToken: TestContext.Current.CancellationToken
         );
         var ids = objs.Select(o => o.UUID!.Value).OrderBy(x => x).ToList();
@@ -144,64 +128,67 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         {
             new object[]
             {
-                new Vectors
-                {
-                    { "first", new[] { 0f, 1f } },
+                new NearVectorInput(
+                    Vector: new Vectors
                     {
-                        "second",
-                        new float[,]
+                        { "first", new[] { 0f, 1f } },
                         {
-                            { 1f, 0f, 0f },
-                            { 0f, 0f, 1f },
-                        }
-                    },
-                },
-                new[] { "first", "second" },
+                            "second",
+                            new float[,]
+                            {
+                                { 1f, 0f, 0f },
+                                { 0f, 0f, 1f },
+                            }
+                        },
+                    }
+                ),
             },
             new object[]
             {
-                new Vectors
-                {
+                new NearVectorInput(
+                    Vector: new Vectors
                     {
-                        "first",
-                        new float[,]
                         {
-                            { 0f, 1f },
-                            { 0f, 1f },
-                        }
-                    },
-                    { "second", new[] { 1f, 0f, 0f } },
-                },
-                new[] { "first", "second" },
+                            "first",
+                            new float[,]
+                            {
+                                { 0f, 1f },
+                                { 0f, 1f },
+                            }
+                        },
+                        { "second", new[] { 1f, 0f, 0f } },
+                    }
+                ),
             },
             new object[]
             {
-                new Vectors
-                {
+                new NearVectorInput(
+                    Vector: new Vectors
                     {
-                        "first",
-                        new float[,]
                         {
-                            { 0f, 1f },
-                            { 0f, 1f },
-                        }
-                    },
-                    {
-                        "second",
-                        new float[,]
+                            "first",
+                            new float[,]
+                            {
+                                { 0f, 1f },
+                                { 0f, 1f },
+                            }
+                        },
                         {
-                            { 1f, 0f, 0f },
-                            { 0f, 0f, 1f },
-                        }
-                    },
-                },
-                new[] { "first", "second" },
+                            "second",
+                            new float[,]
+                            {
+                                { 1f, 0f, 0f },
+                                { 0f, 0f, 1f },
+                            }
+                        },
+                    }
+                ),
             },
             // The following are equivalent to above, but mimic the Python HybridVector.near_vector usage
             new object[]
             {
-                new HybridNearVector(
-                    new Vectors
+                new NearVectorInput(
+                    Vector: new Vectors
                     {
                         { "first", new[] { 0f, 1f } },
                         {
@@ -216,12 +203,11 @@ public class TestNamedVectorMultiTarget : IntegrationTests
                     Certainty: null,
                     Distance: null
                 ),
-                new[] { "first", "second" },
             },
             new object[]
             {
-                new HybridNearVector(
-                    new Vectors
+                new NearVectorInput(
+                    Vector: new Vectors
                     {
                         {
                             "first",
@@ -234,12 +220,11 @@ public class TestNamedVectorMultiTarget : IntegrationTests
                         { "second", new[] { 1f, 0f, 0f } },
                     }
                 ),
-                new[] { "first", "second" },
             },
             new object[]
             {
-                new HybridNearVector(
-                    new Vectors
+                new NearVectorInput(
+                    Vector: new Vectors
                     {
                         {
                             "first",
@@ -259,15 +244,13 @@ public class TestNamedVectorMultiTarget : IntegrationTests
                         },
                     }
                 ),
-                new[] { "first", "second" },
             },
         };
 
     [Theory]
     [MemberData(nameof(HybridMultiInputCombinations))]
     public async Task Test_SameTargetVector_MultipleInputCombinations_Hybrid(
-        IHybridVectorInput nearVector,
-        string[] targetVector
+        HybridVectorInput nearVector
     )
     {
         RequireVersion("1.27.0");
@@ -303,7 +286,6 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         var objs = await collection.Query.Hybrid(
             query: null,
             vectors: nearVector,
-            targetVector: targetVector,
             returnMetadata: MetadataOptions.All,
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -312,35 +294,66 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         Assert.Equal(expected, ids);
     }
 
-    public static IEnumerable<object[]> MultiTargetVectorsWithDistances =>
-        new List<object[]>
+    /// <summary>
+    /// Ported from Python: test_same_target_vector_multiple_input
+    /// Tests multiple vectors for the same target with Sum combination and distance verification.
+    /// </summary>
+    public static TheoryData<
+        VectorSearchInput.FactoryFn,
+        float[]
+    > MultiTargetVectorsWithDistances =>
+        new()
         {
-            new object[] { TargetVectors.Sum(["first", "second"]), new float[] { 1.0f, 3.0f } },
-            new object[]
+            // Sum combination: first has 1 vector, second has 2 vectors
             {
-                TargetVectors.ManualWeights(("first", 1.0f), ("second", [1.0f, 1.0f])),
-                new float[] { 1.0f, 3.0f },
+                tv =>
+                    tv.Sum(
+                        ("first", new[] { 0f, 1f }),
+                        ("second", new[] { 1f, 0f, 0f }),
+                        ("second", new[] { 0f, 0f, 1f })
+                    ),
+                new[] { 1.0f, 3.0f }
             },
-            new object[]
+            // ManualWeights: weight 1 for each vector
             {
-                TargetVectors.ManualWeights(("first", 1.0f), ("second", [1.0f, 2.0f])),
-                new float[] { 2.0f, 4.0f },
+                tv =>
+                    tv.ManualWeights(
+                        ("first", 1.0, new[] { 0f, 1f }),
+                        ("second", 1.0, new[] { 1f, 0f, 0f }),
+                        ("second", 1.0, new[] { 0f, 0f, 1f })
+                    ),
+                new[] { 1.0f, 3.0f }
             },
-            new object[]
+            // ManualWeights: different weights (1 for first, 1 and 2 for second)
             {
-                TargetVectors.ManualWeights(("second", [1.0f, 2.0f]), ("first", 1.0f)),
-                new float[] { 2.0f, 4.0f },
+                tv =>
+                    tv.ManualWeights(
+                        ("first", 1.0, new[] { 0f, 1f }),
+                        ("second", 1.0, new[] { 1f, 0f, 0f }),
+                        ("second", 2.0, new[] { 0f, 0f, 1f })
+                    ),
+                new[] { 2.0f, 4.0f }
+            },
+            // ManualWeights: same weights but different order (second before first)
+            {
+                tv =>
+                    tv.ManualWeights(
+                        ("second", 1.0, new[] { 1f, 0f, 0f }),
+                        ("second", 2.0, new[] { 0f, 0f, 1f }),
+                        ("first", 1.0, new[] { 0f, 1f })
+                    ),
+                new[] { 2.0f, 4.0f }
             },
         };
 
     [Theory]
     [MemberData(nameof(MultiTargetVectorsWithDistances))]
     public async Task Test_SameTargetVector_MultipleInput(
-        TargetVectors targetVector,
+        VectorSearchInput.FactoryFn nearVectorInput,
         float[] expectedDistances
     )
     {
-        RequireVersion("1.26.0");
+        RequireVersion("1.27.0");
 
         var collection = await CollectionFactory(
             properties: Array.Empty<Property>(),
@@ -351,72 +364,64 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             }
         );
 
-        var inserts = (
-            await collection.Data.InsertMany(
-                [
-                    new BatchInsertRequest(
-                        Data: new { },
-                        Vectors: new Vectors
-                        {
-                            { "first", new[] { 1f, 0f } },
-                            { "second", new[] { 0f, 1f, 0f } },
-                        }
-                    ),
-                    new BatchInsertRequest(
-                        Data: new { },
-                        Vectors: new Vectors
-                        {
-                            { "first", new[] { 0f, 1f } },
-                            { "second", new[] { 1f, 0f, 0f } },
-                        }
-                    ),
-                ],
-                cancellationToken: TestContext.Current.CancellationToken
-            )
-        ).ToList();
-
-        var results = (
-            await collection.Query.FetchObjects(
-                returnMetadata: MetadataOptions.All,
-                cancellationToken: TestContext.Current.CancellationToken
-            )
-        ).ToList();
-
-        var uuid1 = results[0].UUID!.Value;
-        var uuid2 = results[1].UUID!.Value;
-
-        var objs = await collection.Query.NearVector(
-            new NearVectorInput
+        var uuid1 = await collection.Data.Insert(
+            new { },
+            vectors: new Vectors
+            {
+                { "first", new[] { 1f, 0f } },
+                { "second", new[] { 0f, 1f, 0f } },
+            },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var uuid2 = await collection.Data.Insert(
+            new { },
+            vectors: new Vectors
             {
                 { "first", new[] { 0f, 1f } },
-                { "second", new[] { 1f, 0f, 0f }, new[] { 0f, 0f, 1f } },
+                { "second", new[] { 1f, 0f, 0f } },
             },
-            targetVector: targetVector,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var objs = await collection.Query.NearVector(
+            nearVectorInput,
             returnMetadata: MetadataOptions.All,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        var ids = objs.Select(o => o.UUID!.Value).OrderBy(x => x).ToList();
-        var expected = new[] { uuid1, uuid2 }.OrderBy(x => x).ToList();
-        Assert.Equal(expected, ids);
-        Assert.Equal(expectedDistances.Length, objs.Count());
+
+        // uuid2 should be first (closer match)
+        Assert.Equal(2, objs.Count());
+        Assert.Equal(uuid2, objs.ElementAt(0).UUID);
+        Assert.Equal(uuid1, objs.ElementAt(1).UUID);
         Assert.Equal(expectedDistances[0], objs.ElementAt(0).Metadata.Distance);
         Assert.Equal(expectedDistances[1], objs.ElementAt(1).Metadata.Distance);
     }
 
-    public static IEnumerable<object[]> MultiTargetVectors =>
-        new List<object[]>
+    /// <summary>
+    /// Ported from Python: test_named_vector_multi_target
+    /// Tests various combination methods (Sum, Average, Minimum, ManualWeights, RelativeScore).
+    /// Uses VectorSearchInput.Combine to combine TargetVectors with shared vector data.
+    /// </summary>
+    private static readonly Vectors SharedQueryVectors = new()
+    {
+        { "first", new[] { 1f, 0f, 0f } },
+        { "second", new[] { 1f, 0f, 0f } },
+    };
+
+    public static TheoryData<TargetVectors, string> MultiTargetVectors =>
+        new()
         {
-            new object[] { (TargetVectors)new[] { "first", "second" } },
-            new object[] { TargetVectors.Sum(new[] { "first", "second" }) },
-            new object[] { TargetVectors.Minimum(new[] { "first", "second" }) },
-            new object[] { TargetVectors.Average(new[] { "first", "second" }) },
-            new object[] { TargetVectors.ManualWeights(("first", 1.2), ("second", 0.7)) },
-            new object[] { TargetVectors.RelativeScore(("first", 1.2), ("second", 0.7)) },
+            { new[] { "first", "second" }, "Targets" },
+            { TargetVectors.Sum("first", "second"), "Sum" },
+            { TargetVectors.Minimum("first", "second"), "Minimum" },
+            { TargetVectors.Average("first", "second"), "Average" },
+            { TargetVectors.ManualWeights(("first", 1.2), ("second", 0.7)), "ManualWeights" },
+            { TargetVectors.RelativeScore(("first", 1.2), ("second", 0.7)), "RelativeScore" },
         };
 
     [Theory]
     [MemberData(nameof(MultiTargetVectors))]
-    public async Task Test_NamedVector_MultiTarget(string[] targetVector)
+    public async Task Test_NamedVector_MultiTarget(TargetVectors targets, string combinationName)
     {
         RequireVersion("1.26.0");
 
@@ -429,6 +434,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             }
         );
 
+        // Both vectors are 3D so we can query with a single 3D vector
         var uuid1 = await collection.Data.Insert(
             new { },
             vectors: new Vectors
@@ -448,13 +454,17 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
 
+        // Query using VectorSearchInput.Combine to pair targets with shared vectors
         var objs = await collection.Query.NearVector(
-            new[] { 1f, 0f, 0f },
-            targetVector: targetVector,
+            VectorSearchInput.Combine(targets, SharedQueryVectors),
             cancellationToken: TestContext.Current.CancellationToken
         );
+
         var ids = objs.Select(o => o.UUID!.Value).OrderBy(x => x).ToList();
         var expected = new[] { uuid1, uuid2 }.OrderBy(x => x).ToList();
-        Assert.Equal(expected, ids);
+        Assert.True(
+            expected.SequenceEqual(ids),
+            $"Expected both objects to be returned with combination method: {combinationName}"
+        );
     }
 }
