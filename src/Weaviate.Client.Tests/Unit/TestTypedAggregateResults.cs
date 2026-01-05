@@ -992,4 +992,162 @@ public class TestTypedAggregateResults
     }
 
     #endregion
+
+    #region MetricsExtractor Attribute Tests
+
+    private class SelectiveMetrics
+    {
+        [NumberMetrics(Minimum = true, Maximum = true, Mean = true)]
+        public Aggregate.Number? Price { get; set; }
+
+        [TextMetrics(Count = true, TopOccurrences = true, MinOccurrences = 5)]
+        public Aggregate.Text? Category { get; set; }
+
+        [BooleanMetrics(TotalTrue = true, PercentageTrue = true)]
+        public Aggregate.Boolean? InStock { get; set; }
+    }
+
+    [Fact]
+    public void FromType_WithAttributes_EnablesOnlySpecifiedMetrics()
+    {
+        var metrics = MetricsExtractor.FromType<SelectiveMetrics>();
+
+        Assert.Equal(3, metrics.Length);
+
+        // Price: Only Min, Max, Mean
+        var price = metrics.OfType<Aggregate.Metric.Number>().First(m => m.Name == "price");
+        Assert.True(price.Minimum);
+        Assert.True(price.Maximum);
+        Assert.True(price.Mean);
+        Assert.False(price.Sum);
+        Assert.False(price.Count);
+        Assert.False(price.Median);
+
+        // Category: Count + TopOccurrences with MinOccurrences
+        var category = metrics.OfType<Aggregate.Metric.Text>().First(m => m.Name == "category");
+        Assert.True(category.Count);
+        Assert.True(category.TopOccurrencesCount);
+        Assert.True(category.TopOccurrencesValue);
+        Assert.Equal(5u, category.MinOccurrences);
+
+        // InStock: Only TotalTrue, PercentageTrue
+        var inStock = metrics.OfType<Aggregate.Metric.Boolean>().First(m => m.Name == "inStock");
+        Assert.True(inStock.TotalTrue);
+        Assert.True(inStock.PercentageTrue);
+        Assert.False(inStock.TotalFalse);
+        Assert.False(inStock.PercentageFalse);
+        Assert.False(inStock.Count);
+    }
+
+    [Fact]
+    public void FromType_NoAttribute_EnablesAll()
+    {
+        var metrics = MetricsExtractor.FromType<NoAttributeMetrics>();
+
+        var quantity = metrics.OfType<Aggregate.Metric.Integer>().First(m => m.Name == "quantity");
+        Assert.True(quantity.Count);
+        Assert.True(quantity.Sum);
+        Assert.True(quantity.Mean);
+        Assert.True(quantity.Minimum);
+        Assert.True(quantity.Maximum);
+        Assert.True(quantity.Median);
+        Assert.True(quantity.Mode);
+    }
+
+    private class NoAttributeMetrics
+    {
+        public Aggregate.Integer? Quantity { get; set; }
+    }
+
+    [Fact]
+    public void FromType_MixedAttributes_WorksCorrectly()
+    {
+        var metrics = MetricsExtractor.FromType<MixedAttributes>();
+
+        Assert.Equal(2, metrics.Length);
+
+        // Price has attribute - only specified metrics
+        var price = metrics.OfType<Aggregate.Metric.Number>().First(m => m.Name == "price");
+        Assert.True(price.Minimum);
+        Assert.True(price.Maximum);
+        Assert.False(price.Mean);
+        Assert.False(price.Sum);
+
+        // Quantity has no attribute - all metrics
+        var quantity = metrics.OfType<Aggregate.Metric.Integer>().First(m => m.Name == "quantity");
+        Assert.True(quantity.Count);
+        Assert.True(quantity.Sum);
+        Assert.True(quantity.Mean);
+    }
+
+    private class MixedAttributes
+    {
+        [NumberMetrics(Minimum = true, Maximum = true)]
+        public Aggregate.Number? Price { get; set; }
+
+        public Aggregate.Integer? Quantity { get; set; }
+    }
+
+    [Fact]
+    public void FromType_EmptyAttribute_EnablesAll()
+    {
+        var metrics = MetricsExtractor.FromType<EmptyAttributeMetrics>();
+
+        var price = metrics.OfType<Aggregate.Metric.Number>().First(m => m.Name == "price");
+
+        // Empty attribute with no true values - enables all
+        Assert.True(price.Count);
+        Assert.True(price.Sum);
+        Assert.True(price.Mean);
+        Assert.True(price.Minimum);
+        Assert.True(price.Maximum);
+        Assert.True(price.Median);
+        Assert.True(price.Mode);
+    }
+
+    private class EmptyAttributeMetrics
+    {
+        [NumberMetrics] // All properties default to false - enables all
+        public Aggregate.Number? Price { get; set; }
+    }
+
+    [Fact]
+    public void FromType_IntegerMetricsAttribute_EnablesOnlySpecifiedMetrics()
+    {
+        var metrics = MetricsExtractor.FromType<IntegerAttributeMetrics>();
+
+        var quantity = metrics.OfType<Aggregate.Metric.Integer>().First(m => m.Name == "quantity");
+        Assert.True(quantity.Sum);
+        Assert.True(quantity.Count);
+        Assert.False(quantity.Mean);
+        Assert.False(quantity.Minimum);
+        Assert.False(quantity.Maximum);
+    }
+
+    private class IntegerAttributeMetrics
+    {
+        [IntegerMetrics(Sum = true, Count = true)]
+        public Aggregate.Integer? Quantity { get; set; }
+    }
+
+    [Fact]
+    public void FromType_DateMetricsAttribute_EnablesOnlySpecifiedMetrics()
+    {
+        var metrics = MetricsExtractor.FromType<DateAttributeMetrics>();
+
+        var createdAt = metrics.OfType<Aggregate.Metric.Date>().First(m => m.Name == "createdAt");
+        Assert.True(createdAt.Minimum);
+        Assert.True(createdAt.Maximum);
+        Assert.False(createdAt.Median);
+        Assert.False(createdAt.Mode);
+        Assert.False(createdAt.Count);
+    }
+
+    private class DateAttributeMetrics
+    {
+        [DateMetrics(Minimum = true, Maximum = true)]
+        public Aggregate.Date? CreatedAt { get; set; }
+    }
+
+    #endregion
 }

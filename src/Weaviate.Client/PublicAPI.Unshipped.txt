@@ -85,3 +85,67 @@ virtual Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.PrintMember
 ~static Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.operator ==(Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group? left, Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group? right) -> bool
 ~virtual Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.<Clone>$() -> Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group!
 ~virtual Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group.Equals(Weaviate.Client.Models.Typed.AggregateGroupByResult<T>.Group? other) -> bool
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute.BooleanMetricsAttribute() -> void
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute.Count.get -> bool
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute.Count.init -> void
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute.PercentageFalse.get -> bool
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute.PercentageFalse.init -> void
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute.PercentageTrue.get -> bool
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute.PercentageTrue.init -> void
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute.TotalFalse.get -> bool
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute.TotalFalse.init -> void
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute.TotalTrue.get -> bool
+Weaviate.Client.Models.Typed.BooleanMetricsAttribute.TotalTrue.init -> void
+Weaviate.Client.Models.Typed.DateMetricsAttribute
+Weaviate.Client.Models.Typed.DateMetricsAttribute.Count.get -> bool
+Weaviate.Client.Models.Typed.DateMetricsAttribute.Count.init -> void
+Weaviate.Client.Models.Typed.DateMetricsAttribute.DateMetricsAttribute() -> void
+Weaviate.Client.Models.Typed.DateMetricsAttribute.Maximum.get -> bool
+Weaviate.Client.Models.Typed.DateMetricsAttribute.Maximum.init -> void
+Weaviate.Client.Models.Typed.DateMetricsAttribute.Median.get -> bool
+Weaviate.Client.Models.Typed.DateMetricsAttribute.Median.init -> void
+Weaviate.Client.Models.Typed.DateMetricsAttribute.Minimum.get -> bool
+Weaviate.Client.Models.Typed.DateMetricsAttribute.Minimum.init -> void
+Weaviate.Client.Models.Typed.DateMetricsAttribute.Mode.get -> bool
+Weaviate.Client.Models.Typed.DateMetricsAttribute.Mode.init -> void
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Count.get -> bool
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Count.init -> void
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.IntegerMetricsAttribute() -> void
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Maximum.get -> bool
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Maximum.init -> void
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Mean.get -> bool
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Mean.init -> void
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Median.get -> bool
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Median.init -> void
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Minimum.get -> bool
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Minimum.init -> void
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Mode.get -> bool
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Mode.init -> void
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Sum.get -> bool
+Weaviate.Client.Models.Typed.IntegerMetricsAttribute.Sum.init -> void
+Weaviate.Client.Models.Typed.NumberMetricsAttribute
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Count.get -> bool
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Count.init -> void
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Maximum.get -> bool
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Maximum.init -> void
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Mean.get -> bool
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Mean.init -> void
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Median.get -> bool
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Median.init -> void
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Minimum.get -> bool
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Minimum.init -> void
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Mode.get -> bool
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Mode.init -> void
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.NumberMetricsAttribute() -> void
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Sum.get -> bool
+Weaviate.Client.Models.Typed.NumberMetricsAttribute.Sum.init -> void
+Weaviate.Client.Models.Typed.TextMetricsAttribute
+Weaviate.Client.Models.Typed.TextMetricsAttribute.Count.get -> bool
+Weaviate.Client.Models.Typed.TextMetricsAttribute.Count.init -> void
+Weaviate.Client.Models.Typed.TextMetricsAttribute.MinOccurrences.get -> uint
+Weaviate.Client.Models.Typed.TextMetricsAttribute.MinOccurrences.init -> void
+Weaviate.Client.Models.Typed.TextMetricsAttribute.TextMetricsAttribute() -> void
+Weaviate.Client.Models.Typed.TextMetricsAttribute.TopOccurrences.get -> bool
+Weaviate.Client.Models.Typed.TextMetricsAttribute.TopOccurrences.init -> void

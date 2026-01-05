@@ -599,6 +599,74 @@ public class PriceAnalysis
 var metrics = MetricsExtractor.FromType<PriceAnalysis>();
 ```
 
+#### Selective Metrics with Type-Specific Attributes
+
+When using full `Aggregate.*` types, you can specify which metrics to query using type-specific attributes. This provides excellent IntelliSense guidance and reduces network traffic by querying only the metrics you need:
+
+```csharp
+using Weaviate.Client.Models.Typed;
+
+public class ProductStats
+{
+    // Query only Min, Max, Mean (not Sum, Median, Mode, Count)
+    [NumberMetrics(Minimum = true, Maximum = true, Mean = true)]
+    public Aggregate.Number? Price { get; set; }
+
+    // Query all Integer metrics (no attribute)
+    public Aggregate.Integer? Quantity { get; set; }
+
+    // Query Count and TopOccurrences with minimum threshold
+    [TextMetrics(Count = true, TopOccurrences = true, MinOccurrences = 5)]
+    public Aggregate.Text? Category { get; set; }
+
+    // Query only specific Boolean metrics
+    [BooleanMetrics(TotalTrue = true, PercentageTrue = true)]
+    public Aggregate.Boolean? Featured { get; set; }
+}
+
+var metrics = MetricsExtractor.FromType<ProductStats>();
+var result = await collection.Aggregate.OverAll(returnMetrics: metrics);
+var typed = result.ToTyped<ProductStats>();
+```
+
+**Available attributes:**
+
+| Attribute | Applicable Type | Available Properties |
+|-----------|----------------|---------------------|
+| `[TextMetrics]` | `Aggregate.Text` | `Count`, `TopOccurrences`, `MinOccurrences` |
+| `[IntegerMetrics]` | `Aggregate.Integer` | `Count`, `Sum`, `Mean`, `Minimum`, `Maximum`, `Median`, `Mode` |
+| `[NumberMetrics]` | `Aggregate.Number` | `Count`, `Sum`, `Mean`, `Minimum`, `Maximum`, `Median`, `Mode` |
+| `[BooleanMetrics]` | `Aggregate.Boolean` | `Count`, `TotalTrue`, `TotalFalse`, `PercentageTrue`, `PercentageFalse` |
+| `[DateMetrics]` | `Aggregate.Date` | `Count`, `Minimum`, `Maximum`, `Median`, `Mode` |
+
+**Benefits:**
+- Excellent IntelliSense showing available metrics for each type
+- Compile-time safety - C# compiler prevents mismatches
+- Reduces network traffic by querying only needed metrics
+- Clean, readable syntax with named boolean properties
+- Properties without attributes query all metrics (backward compatible)
+
+**Example with IntelliSense:**
+
+When you type `[NumberMetrics(` in your IDE, IntelliSense will show exactly which properties are available (Minimum, Maximum, Mean, Sum, Count, Median, Mode), making it clear what metrics can be queried for Number types.
+
+**MinOccurrences parameter:**
+
+The `TextMetrics` attribute includes a special `MinOccurrences` parameter that sets the minimum occurrence threshold for top occurrences:
+
+```csharp
+public class CategoryAnalysis
+{
+    // Only show categories that appear at least 10 times
+    [TextMetrics(TopOccurrences = true, MinOccurrences = 10)]
+    public Aggregate.Text? Category { get; set; }
+}
+```
+
+**Analyzer validation:**
+
+If you use the wrong attribute type (e.g., `[NumberMetrics]` on an `Aggregate.Text` property), you'll get a **WEAVIATE004** warning at compile time pointing out the mismatch.
+
 ### GroupBy with Typed Results
 
 Typed mapping also works with grouped aggregations using `ToTyped<T>()`:

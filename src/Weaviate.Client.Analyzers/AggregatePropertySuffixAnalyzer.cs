@@ -18,6 +18,7 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
 {
     public const string MissingSuffixDiagnosticId = "WEAVIATE002";
     public const string InvalidSuffixTypeDiagnosticId = "WEAVIATE003";
+    public const string WrongAttributeTypeDiagnosticId = "WEAVIATE004";
     private const string Category = "Usage";
 
     private static readonly LocalizableString MissingSuffixTitle =
@@ -52,6 +53,23 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: InvalidSuffixTypeDescription
+    );
+
+    private static readonly LocalizableString WrongAttributeTypeTitle =
+        "Wrong metrics attribute for aggregate type";
+    private static readonly LocalizableString WrongAttributeTypeMessageFormat =
+        "Property '{0}' is Aggregate.{1} but has [{2}Metrics] attribute";
+    private static readonly LocalizableString WrongAttributeTypeDescription =
+        "Use the metrics attribute that matches the aggregate property type.";
+
+    private static readonly DiagnosticDescriptor WrongAttributeTypeRule = new DiagnosticDescriptor(
+        WrongAttributeTypeDiagnosticId,
+        WrongAttributeTypeTitle,
+        WrongAttributeTypeMessageFormat,
+        Category,
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: WrongAttributeTypeDescription
     );
 
     /// <summary>
@@ -228,7 +246,7 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
     private const string MetricsExtractorFullName = "Weaviate.Client.Models.Typed.MetricsExtractor";
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(MissingSuffixRule, InvalidSuffixTypeRule);
+        ImmutableArray.Create(MissingSuffixRule, InvalidSuffixTypeRule, WrongAttributeTypeRule);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -357,9 +375,12 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         {
             var propertyType = property.Type;
 
-            // Skip if this is a full Aggregate.* type
+            // Check for wrong metrics attribute on Aggregate.* types
             if (IsAggregateType(propertyType))
+            {
+                ValidateMetricsAttribute(context, property, propertyType, typeArgumentSyntax);
                 continue;
+            }
 
             // Only analyze primitive/value types and string
             if (!IsPrimitiveOrValueType(propertyType))
@@ -524,5 +545,61 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
             SpecialType.System_Boolean => "bool",
             _ => type.ToDisplayString(),
         };
+    }
+
+    private static void ValidateMetricsAttribute(
+        SyntaxNodeAnalysisContext context,
+        IPropertySymbol property,
+        ITypeSymbol aggregateType,
+        TypeSyntax typeArgumentSyntax
+    )
+    {
+        var aggregateTypeName = GetAggregateTypeName(aggregateType);
+        if (aggregateTypeName == null)
+            return;
+
+        // Check if they're using the wrong attribute type
+        var attributes = property.GetAttributes();
+        var metricsAttrs = attributes
+            .Where(a => a.AttributeClass?.Name?.EndsWith("MetricsAttribute") == true)
+            .ToList();
+
+        if (metricsAttrs.Count == 0)
+            return; // No attribute is fine
+
+        var expectedAttrName = $"{aggregateTypeName}MetricsAttribute";
+        var wrongAttr = metricsAttrs.FirstOrDefault(a =>
+            a.AttributeClass?.Name != expectedAttrName
+        );
+
+        if (wrongAttr != null)
+        {
+            var wrongTypeName =
+                wrongAttr.AttributeClass?.Name?.Replace("MetricsAttribute", "") ?? "Unknown";
+            var diagnostic = Diagnostic.Create(
+                WrongAttributeTypeRule,
+                typeArgumentSyntax.GetLocation(),
+                property.Name,
+                aggregateTypeName,
+                wrongTypeName
+            );
+            context.ReportDiagnostic(diagnostic);
+        }
+    }
+
+    private static string? GetAggregateTypeName(ITypeSymbol type)
+    {
+        var displayName = type.ToDisplayString();
+        if (displayName == "Weaviate.Client.Models.Aggregate.Text")
+            return "Text";
+        if (displayName == "Weaviate.Client.Models.Aggregate.Integer")
+            return "Integer";
+        if (displayName == "Weaviate.Client.Models.Aggregate.Number")
+            return "Number";
+        if (displayName == "Weaviate.Client.Models.Aggregate.Boolean")
+            return "Boolean";
+        if (displayName == "Weaviate.Client.Models.Aggregate.Date")
+            return "Date";
+        return null;
     }
 }

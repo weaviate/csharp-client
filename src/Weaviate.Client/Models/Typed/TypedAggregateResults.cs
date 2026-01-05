@@ -491,8 +491,208 @@ public static class MetricsExtractor
                         metricsByField[fieldName] = builder;
                     }
 
-                    // Enable all flags for full aggregate types
-                    builder.EnableAll();
+                    // Check for type-specific metrics attributes
+                    var hasAttribute = false;
+                    var anyFlagsEnabled = false;
+
+                    if (metricType == MetricType.Text)
+                    {
+                        var attr = property.GetCustomAttribute<TextMetricsAttribute>();
+                        if (attr != null)
+                        {
+                            hasAttribute = true;
+                            if (attr.Count)
+                            {
+                                builder.EnableFlag("Count");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.TopOccurrences)
+                            {
+                                builder.EnableFlag("TopOccurrences");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.MinOccurrences > 0)
+                                builder.SetMinOccurrences(attr.MinOccurrences);
+                        }
+                    }
+                    else if (metricType == MetricType.Integer)
+                    {
+                        var attr = property.GetCustomAttribute<IntegerMetricsAttribute>();
+                        if (attr != null)
+                        {
+                            hasAttribute = true;
+                            if (attr.Count)
+                            {
+                                builder.EnableFlag("Count");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Sum)
+                            {
+                                builder.EnableFlag("Sum");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Mean)
+                            {
+                                builder.EnableFlag("Mean");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Minimum)
+                            {
+                                builder.EnableFlag("Minimum");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Maximum)
+                            {
+                                builder.EnableFlag("Maximum");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Median)
+                            {
+                                builder.EnableFlag("Median");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Mode)
+                            {
+                                builder.EnableFlag("Mode");
+                                anyFlagsEnabled = true;
+                            }
+                        }
+                    }
+                    else if (metricType == MetricType.Number)
+                    {
+                        var attr = property.GetCustomAttribute<NumberMetricsAttribute>();
+                        if (attr != null)
+                        {
+                            hasAttribute = true;
+                            if (attr.Count)
+                            {
+                                builder.EnableFlag("Count");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Sum)
+                            {
+                                builder.EnableFlag("Sum");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Mean)
+                            {
+                                builder.EnableFlag("Mean");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Minimum)
+                            {
+                                builder.EnableFlag("Minimum");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Maximum)
+                            {
+                                builder.EnableFlag("Maximum");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Median)
+                            {
+                                builder.EnableFlag("Median");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Mode)
+                            {
+                                builder.EnableFlag("Mode");
+                                anyFlagsEnabled = true;
+                            }
+                        }
+                    }
+                    else if (metricType == MetricType.Boolean)
+                    {
+                        var attr = property.GetCustomAttribute<BooleanMetricsAttribute>();
+                        if (attr != null)
+                        {
+                            hasAttribute = true;
+                            if (attr.Count)
+                            {
+                                builder.EnableFlag("Count");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.TotalTrue)
+                            {
+                                builder.EnableFlag("TotalTrue");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.TotalFalse)
+                            {
+                                builder.EnableFlag("TotalFalse");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.PercentageTrue)
+                            {
+                                builder.EnableFlag("PercentageTrue");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.PercentageFalse)
+                            {
+                                builder.EnableFlag("PercentageFalse");
+                                anyFlagsEnabled = true;
+                            }
+                        }
+                    }
+                    else if (metricType == MetricType.Date)
+                    {
+                        var attr = property.GetCustomAttribute<DateMetricsAttribute>();
+                        if (attr != null)
+                        {
+                            hasAttribute = true;
+                            if (attr.Count)
+                            {
+                                builder.EnableFlag("Count");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Minimum)
+                            {
+                                builder.EnableFlag("Minimum");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Maximum)
+                            {
+                                builder.EnableFlag("Maximum");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Median)
+                            {
+                                builder.EnableFlag("Median");
+                                anyFlagsEnabled = true;
+                            }
+
+                            if (attr.Mode)
+                            {
+                                builder.EnableFlag("Mode");
+                                anyFlagsEnabled = true;
+                            }
+                        }
+                    }
+
+                    // If no attribute OR attribute with no flags enabled, enable all
+                    if (!hasAttribute || !anyFlagsEnabled)
+                        builder.EnableAll();
                 }
 
                 continue;
@@ -607,6 +807,7 @@ public static class MetricsExtractor
         private bool _percentageFalse;
         private bool _topOccurrencesCount;
         private bool _topOccurrencesValue;
+        private uint? _minOccurrences;
 
         public MetricBuilder(string fieldName, MetricType type)
         {
@@ -629,6 +830,11 @@ public static class MetricsExtractor
             _percentageFalse = true;
             _topOccurrencesCount = true;
             _topOccurrencesValue = true;
+        }
+
+        public void SetMinOccurrences(uint minOccurrences)
+        {
+            _minOccurrences = minOccurrences;
         }
 
         public void EnableFlag(string suffix)
@@ -688,6 +894,7 @@ public static class MetricsExtractor
                     Count = _count,
                     TopOccurrencesCount = _topOccurrencesCount,
                     TopOccurrencesValue = _topOccurrencesValue,
+                    MinOccurrences = _minOccurrences,
                 },
                 MetricType.Integer => new Aggregate.Metric.Integer(_fieldName)
                 {
