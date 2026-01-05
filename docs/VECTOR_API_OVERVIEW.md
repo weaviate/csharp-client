@@ -4,17 +4,20 @@ Reference documentation for the vector search API in the Weaviate C# client.
 
 ## API Overview
 
-| Client          | Method     | Description                              |
-|-----------------|------------|------------------------------------------|
-| QueryClient     | NearVector | Vector similarity search                 |
-| QueryClient     | NearText   | Text-based semantic search               |
-| QueryClient     | Hybrid     | Combined keyword + vector search         |
-| GenerateClient  | NearVector | Vector search with generative AI         |
-| GenerateClient  | NearText   | Text search with generative AI           |
-| GenerateClient  | Hybrid     | Hybrid search with generative AI         |
-| AggregateClient | NearVector | Vector search with aggregation           |
-| AggregateClient | NearText   | Text search with aggregation             |
-| AggregateClient | Hybrid     | Hybrid search with aggregation           |
+| Client          | Method     | Description                                  |
+|-----------------|------------|----------------------------------------------|
+| QueryClient     | NearVector | Vector similarity search                     |
+| QueryClient     | NearText   | Text-based semantic search                   |
+| QueryClient     | NearMedia  | Media-based search (Image/Video/Audio/etc)   |
+| QueryClient     | Hybrid     | Combined keyword + vector search             |
+| GenerateClient  | NearVector | Vector search with generative AI             |
+| GenerateClient  | NearText   | Text search with generative AI               |
+| GenerateClient  | NearMedia  | Media search with generative AI              |
+| GenerateClient  | Hybrid     | Hybrid search with generative AI             |
+| AggregateClient | NearVector | Vector search with aggregation               |
+| AggregateClient | NearText   | Text search with aggregation                 |
+| AggregateClient | NearMedia  | Media search with aggregation                |
+| AggregateClient | Hybrid     | Hybrid search with aggregation               |
 
 ---
 
@@ -241,6 +244,124 @@ await collection.Query.NearText(
     q => q(["banana"]).Sum("title", "description"),
     groupBy: new GroupByRequest("category", objectsPerGroup: 3)
 );
+```
+
+---
+
+## QueryClient.NearMedia
+
+Media-based semantic search supporting Image, Video, Audio, Thermal, Depth, and IMU data.
+
+### Method Signatures
+
+```csharp
+// Lambda builder
+Task<WeaviateResult> NearMedia(
+    NearMediaInput.FactoryFn media,
+    ...
+)
+
+// Lambda builder with GroupBy
+Task<GroupByResult> NearMedia(
+    NearMediaInput.FactoryFn media,
+    GroupByRequest groupBy,
+    ...
+)
+```
+
+### Examples
+
+```csharp
+// Simple image search (no target vectors)
+await collection.Query.NearMedia(m => m.Image(imageBytes));
+
+// Video search
+await collection.Query.NearMedia(m => m.Video(videoBytes));
+
+// Audio search
+await collection.Query.NearMedia(m => m.Audio(audioBytes));
+
+// Thermal search
+await collection.Query.NearMedia(m => m.Thermal(thermalBytes));
+
+// Depth search
+await collection.Query.NearMedia(m => m.Depth(depthBytes));
+
+// IMU search
+await collection.Query.NearMedia(m => m.IMU(imuBytes));
+
+// With certainty
+await collection.Query.NearMedia(m => m.Image(imageBytes, certainty: 0.8f));
+
+// With distance
+await collection.Query.NearMedia(m => m.Image(imageBytes, distance: 0.3f));
+
+// With target vectors - Sum
+await collection.Query.NearMedia(
+    m => m.Image(imageBytes).Sum("title", "description")
+);
+
+// With target vectors - Average
+await collection.Query.NearMedia(
+    m => m.Video(videoBytes, certainty: 0.7f).Average("visual", "audio", "metadata")
+);
+
+// With target vectors - ManualWeights
+await collection.Query.NearMedia(
+    m => m.Audio(audioBytes, distance: 0.3f)
+        .ManualWeights(("title", 1.2), ("description", 0.8))
+);
+
+// With target vectors - Minimum
+await collection.Query.NearMedia(
+    m => m.Image(imageBytes).Minimum("v1", "v2", "v3")
+);
+
+// With target vectors - RelativeScore
+await collection.Query.NearMedia(
+    m => m.Video(videoBytes)
+        .RelativeScore(("visual", 0.7), ("audio", 0.3))
+);
+
+// With GroupBy
+await collection.Query.NearMedia(
+    m => m.Image(imageBytes).Sum("visual", "semantic"),
+    groupBy: new GroupByRequest("category", objectsPerGroup: 5)
+);
+
+// With filters and other parameters
+await collection.Query.NearMedia(
+    m => m.Image(imageBytes, certainty: 0.8f).Sum("v1", "v2"),
+    filters: Filter.ByProperty("status").Equal("active"),
+    limit: 10,
+    offset: 0,
+    autoLimit: 3,
+    returnMetadata: new MetadataQuery { Distance = true, Certainty = true }
+);
+```
+
+### Migration from Old API
+
+The old NearImage and NearMedia methods have been removed. Update your code as follows:
+
+```csharp
+// OLD (removed)
+await collection.Query.NearImage(imageBytes, certainty: 0.8, targets: t => t.Sum("v1", "v2"));
+
+// NEW (required)
+await collection.Query.NearMedia(m => m.Image(imageBytes, certainty: 0.8f).Sum("v1", "v2"));
+
+// OLD (removed)
+await collection.Query.NearMedia(videoBytes, NearMediaType.Video, distance: 0.3);
+
+// NEW (required)
+await collection.Query.NearMedia(m => m.Video(videoBytes, distance: 0.3f));
+
+// OLD (removed - for simple searches without targets)
+await collection.Query.NearImage(imageBytes);
+
+// NEW (required)
+await collection.Query.NearMedia(m => m.Image(imageBytes));
 ```
 
 ---

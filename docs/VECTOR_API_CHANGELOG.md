@@ -35,15 +35,20 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
 |--------|--------|--------|-------|
 | QueryClient | NearVector | 10+ | 4 |
 | QueryClient | NearText | 2 | 4 |
+| QueryClient | NearMedia | 2 | 2 |
 | QueryClient | Hybrid | 4+ | 9 |
 | GenerateClient | NearVector | 6+ | 4 |
 | GenerateClient | NearText | 2 | 4 |
+| GenerateClient | NearMedia | 2 | 2 |
 | GenerateClient | Hybrid | 4+ | 8 |
 | AggregateClient | NearVector | 6+ | 4 |
 | AggregateClient | NearText | 2 | 4 |
+| AggregateClient | NearMedia | 2 | 2 |
 | AggregateClient | Hybrid | 3+ | 4 |
 | TypedQueryClient | NearText | 2 | 4 |
+| TypedQueryClient | NearMedia | 2 | 2 |
 | TypedGenerateClient | NearText | 2 | 4 |
+| TypedGenerateClient | NearMedia | 2 | 2 |
 
 #### API Changes
 
@@ -100,7 +105,62 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
    - Available across all clients: QueryClient, GenerateClient, AggregateClient, TypedQueryClient
    - Unifies target vector configuration directly within the Hybrid method call
 
+12. **NearMedia lambda builder pattern for unified media search**
+   - **BREAKING CHANGE**: Old NearImage and NearMedia methods removed entirely
+   - New: Single `NearMedia` method using lambda builder pattern with `NearMediaInput.FactoryFn`
+   - Syntax: `m => m.Image(imageBytes).Sum("title", "description")`
+   - Syntax: `m => m.Video(videoBytes, certainty: 0.8f).ManualWeights(("visual", 1.2), ("audio", 0.8))`
+   - Supports all media types: Image, Video, Audio, Thermal, Depth, IMU
+   - Optional target vectors via implicit conversion: `m => m.Image(imageBytes)` works without `.Build()`
+   - Available across all clients: QueryClient, GenerateClient, AggregateClient, TypedQueryClient, TypedGenerateClient
+   - Certainty and distance configured in builder (not method parameters) for consistency with NearText/NearVector patterns
+
+#### Migration from Old NearMedia API
+
+**Simple image search:**
+
+```csharp
+// Before (removed)
+await collection.Query.NearImage(imageBytes);
+
+// After (required)
+await collection.Query.NearMedia(m => m.Image(imageBytes));
+```
+
+**With certainty and target vectors:**
+
+```csharp
+// Before (removed)
+await collection.Query.NearImage(imageBytes, certainty: 0.8, targets: t => t.Sum("v1", "v2"));
+
+// After (required)
+await collection.Query.NearMedia(m => m.Image(imageBytes, certainty: 0.8f).Sum("v1", "v2"));
+```
+
+**Media type specification:**
+
+```csharp
+// Before (removed)
+await collection.Query.NearMedia(videoBytes, NearMediaType.Video, distance: 0.3);
+
+// After (required)
+await collection.Query.NearMedia(m => m.Video(videoBytes, distance: 0.3f));
+```
+
+**All media types:**
+
+```csharp
+// All supported via unified lambda builder pattern
+await collection.Query.NearMedia(m => m.Image(imageBytes));
+await collection.Query.NearMedia(m => m.Video(videoBytes));
+await collection.Query.NearMedia(m => m.Audio(audioBytes));
+await collection.Query.NearMedia(m => m.Thermal(thermalBytes));
+await collection.Query.NearMedia(m => m.Depth(depthBytes));
+await collection.Query.NearMedia(m => m.IMU(imuBytes));
+```
+
 ### Migration Examples
+
 
 **Simple hybrid search:**
 

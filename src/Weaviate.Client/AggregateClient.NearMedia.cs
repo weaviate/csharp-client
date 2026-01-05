@@ -5,42 +5,45 @@ namespace Weaviate.Client;
 public partial class AggregateClient
 {
     /// <summary>
-    /// Aggregate near media.
+    /// Performs a near-media aggregation using media embeddings.
     /// </summary>
-    /// <param name="media">Media data</param>
-    /// <param name="mediaType">Type of media</param>
-    /// <param name="certainty">Certainty threshold</param>
-    /// <param name="distance">Distance threshold</param>
-    /// <param name="limit">Maximum number of results</param>
-    /// <param name="filters">Filters to apply</param>
-    /// <param name="targetVector">Target vector name</param>
-    /// <param name="totalCount">Whether to include total count</param>
-    /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <param name="returnMetrics">Metrics to aggregate</param>
-    /// <returns>Aggregate result</returns>
+    /// <example>
+    /// // Simple image aggregation
+    /// await collection.Aggregate.NearMedia(m => m.Image(imageBytes));
+    ///
+    /// // With target vectors and metrics
+    /// await collection.Aggregate.NearMedia(
+    ///     m => m.Video(videoBytes, certainty: 0.8f).Sum("v1", "v2"),
+    ///     returnMetrics: new[] { Aggregate.Metric.Mean, Aggregate.Metric.Count }
+    /// );
+    /// </example>
+    /// <param name="media">Lambda builder for creating NearMediaInput with media data and target vectors.</param>
+    /// <param name="filters">Filters to apply to the aggregation.</param>
+    /// <param name="limit">Maximum number of results to aggregate.</param>
+    /// <param name="totalCount">Whether to include total count in the result.</param>
+    /// <param name="returnMetrics">Metrics to calculate and return.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Aggregation results.</returns>
     public async Task<AggregateResult> NearMedia(
-        byte[] media,
-        NearMediaType mediaType,
-        double? certainty = null,
-        double? distance = null,
-        uint? limit = null,
+        NearMediaInput.FactoryFn media,
         Filter? filters = null,
-        TargetVectors.FactoryFn? targets = null,
+        uint? limit = null,
         bool totalCount = true,
         IEnumerable<Aggregate.Metric>? returnMetrics = null,
         CancellationToken cancellationToken = default
     )
     {
+        var input = media(VectorInputBuilderFactories.CreateNearMediaBuilder());
         var result = await _client.GrpcClient.AggregateNearMedia(
             _collectionName,
-            media,
-            mediaType,
-            certainty,
-            distance,
+            input.Media,
+            input.Type,
+            input.Certainty,
+            input.Distance,
             limit,
             filters,
             null,
-            targets?.Invoke(new TargetVectors.Builder()),
+            input.TargetVectors,
             totalCount,
             _collectionClient.Tenant,
             returnMetrics,
@@ -51,44 +54,45 @@ public partial class AggregateClient
     }
 
     /// <summary>
-    /// Aggregate near media with grouping.
+    /// Performs a near-media aggregation with group-by.
     /// </summary>
-    /// <param name="media">Media data</param>
-    /// <param name="mediaType">Type of media</param>
-    /// <param name="groupBy">Group by configuration</param>
-    /// <param name="certainty">Certainty threshold</param>
-    /// <param name="distance">Distance threshold</param>
-    /// <param name="limit">Maximum number of results</param>
-    /// <param name="filters">Filters to apply</param>
-    /// <param name="targetVector">Target vector name</param>
-    /// <param name="totalCount">Whether to include total count</param>
-    /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <param name="returnMetrics">Metrics to aggregate</param>
-    /// <returns>Grouped aggregate result</returns>
+    /// <example>
+    /// // Image aggregation with grouping
+    /// await collection.Aggregate.NearMedia(
+    ///     m => m.Image(imageBytes).Sum("visual", "semantic"),
+    ///     groupBy: new Aggregate.GroupBy("category"),
+    ///     returnMetrics: new[] { Aggregate.Metric.Count }
+    /// );
+    /// </example>
+    /// <param name="media">Lambda builder for creating NearMediaInput with media data and target vectors.</param>
+    /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="filters">Filters to apply to the aggregation.</param>
+    /// <param name="limit">Maximum number of results to aggregate.</param>
+    /// <param name="totalCount">Whether to include total count in the result.</param>
+    /// <param name="returnMetrics">Metrics to calculate and return.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Grouped aggregation results.</returns>
     public async Task<AggregateGroupByResult> NearMedia(
-        byte[] media,
-        NearMediaType mediaType,
+        NearMediaInput.FactoryFn media,
         Aggregate.GroupBy? groupBy,
-        double? certainty = null,
-        double? distance = null,
-        uint? limit = null,
         Filter? filters = null,
-        TargetVectors.FactoryFn? targets = null,
+        uint? limit = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     )
     {
+        var input = media(VectorInputBuilderFactories.CreateNearMediaBuilder());
         var result = await _client.GrpcClient.AggregateNearMedia(
             _collectionName,
-            media,
-            mediaType,
-            certainty,
-            distance,
+            input.Media,
+            input.Type,
+            input.Certainty,
+            input.Distance,
             limit,
             filters,
             groupBy,
-            targets?.Invoke(new TargetVectors.Builder()),
+            input.TargetVectors,
             totalCount,
             _collectionClient.Tenant,
             returnMetrics,
