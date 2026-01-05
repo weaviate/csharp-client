@@ -231,7 +231,7 @@ public record MultiVectorConfig
 {
     // Aggregation method for combining multiple vectors during search
     public string? Aggregation { get; init; } = "maxSim";
-    
+
     // Encoding configuration for compressing multi-vectors
     public EncodingConfig? Encoding { get; init; } = new MuveraEncoding();
 }
@@ -461,7 +461,7 @@ Use when you provide your own vectors.
 var config = Configure.Vectorizer.SelfProvided();
 ```
 
-**Wire Format:** `none`  
+**Wire Format:** `none`
 **Type:** Single Vector
 
 #### SelfProvided (Configure.MultiVectors)
@@ -470,7 +470,7 @@ var config = Configure.Vectorizer.SelfProvided();
 var config = Configure.MultiVectors.SelfProvided().New("colbert");
 ```
 
-**Wire Format:** `none`  
+**Wire Format:** `none`
 **Type:** Multi-Vector
 
 ### Text Vectorizers
@@ -492,7 +492,7 @@ var config = Configure.Vectors.Text2VecOpenAI(
 ).New("default", "title", "content");
 ```
 
-**Wire Format:** `text2vec-openai`  
+**Wire Format:** `text2vec-openai`
 **Type:** Single Vector
 
 **Parameters:**
@@ -518,7 +518,7 @@ var config = Configure.Vectors.Text2VecAzureOpenAI(
 ).New("default", "text");
 ```
 
-**Wire Format:** `text2vec-azure-openai`  
+**Wire Format:** `text2vec-azure-openai`
 **Type:** Single Vector
 
 **Required Parameters:**
@@ -539,7 +539,7 @@ var config = Configure.Vectors.Text2VecCohere(
 ).New("default", "content");
 ```
 
-**Wire Format:** `text2vec-cohere`  
+**Wire Format:** `text2vec-cohere`
 **Type:** Single Vector
 
 **Parameters:**
@@ -562,7 +562,7 @@ var config = Configure.Vectors.Text2VecHuggingFace(
 ).New("default", "text");
 ```
 
-**Wire Format:** `text2vec-huggingface`  
+**Wire Format:** `text2vec-huggingface`
 **Type:** Single Vector
 
 **Parameters:**
@@ -587,7 +587,7 @@ var config = Configure.Vectors.Text2VecTransformers(
 ).New("default", "description");
 ```
 
-**Wire Format:** `text2vec-transformers`  
+**Wire Format:** `text2vec-transformers`
 **Type:** Single Vector
 
 **Parameters:**
@@ -611,7 +611,7 @@ var config = Configure.Vectors.Text2VecGoogle(
 ).New("default", "text");
 ```
 
-**Wire Format:** `text2vec-palm`  
+**Wire Format:** `text2vec-palm`
 **Type:** Single Vector
 
 **Parameters:**
@@ -635,7 +635,7 @@ var config = Configure.Vectors.Text2VecAWS(
 ).New("default", "content");
 ```
 
-**Wire Format:** `text2vec-aws`  
+**Wire Format:** `text2vec-aws`
 **Type:** Single Vector
 
 **Required Parameters:**
@@ -655,7 +655,7 @@ var config = Configure.Vectors.Text2VecJinaAI(
 ).New("default", "text");
 ```
 
-**Wire Format:** `text2vec-jinaai`  
+**Wire Format:** `text2vec-jinaai`
 **Type:** Single Vector
 
 #### Text2VecVoyageAI
@@ -672,7 +672,7 @@ var config = Configure.Vectors.Text2VecVoyageAI(
 ).New("default", "content");
 ```
 
-**Wire Format:** `text2vec-voyageai`  
+**Wire Format:** `text2vec-voyageai`
 **Type:** Single Vector
 
 #### Text2VecOllama
@@ -687,7 +687,7 @@ var config = Configure.Vectors.Text2VecOllama(
 ).New("default", "text");
 ```
 
-**Wire Format:** `text2vec-ollama`  
+**Wire Format:** `text2vec-ollama`
 **Type:** Single Vector
 
 #### Text2VecWeaviate
@@ -703,7 +703,7 @@ var config = Configure.Vectors.Text2VecWeaviate(
 ).New("default", "content");
 ```
 
-**Wire Format:** `text2vec-weaviate`  
+**Wire Format:** `text2vec-weaviate`
 **Type:** Single Vector
 
 #### Text2VecDatabricks
@@ -718,7 +718,7 @@ var config = Configure.Vectors.Text2VecDatabricks(
 ).New("default", "text");
 ```
 
-**Wire Format:** `text2vec-databricks`  
+**Wire Format:** `text2vec-databricks`
 **Type:** Single Vector
 
 **Required Parameters:**
@@ -737,7 +737,7 @@ var config = Configure.Vectors.Text2VecNvidia(
 ).New("default", "content");
 ```
 
-**Wire Format:** `text2vec-nvidia`  
+**Wire Format:** `text2vec-nvidia`
 **Type:** Single Vector
 
 #### Text2VecMistral
@@ -752,7 +752,7 @@ var config = Configure.Vectors.Text2VecMistral(
 ).New("default", "text");
 ```
 
-**Wire Format:** `text2vec-mistral`  
+**Wire Format:** `text2vec-mistral`
 **Type:** Single Vector
 
 #### Text2VecMorph
@@ -767,7 +767,7 @@ var config = Configure.Vectors.Text2VecMorph(
 ).New("default", "content");
 ```
 
-**Wire Format:** `text2vec-morph`  
+**Wire Format:** `text2vec-morph`
 **Type:** Single Vector
 
 #### Text2VecModel2Vec
@@ -781,7 +781,7 @@ var config = Configure.Vectors.Text2VecModel2Vec(
 ).New("default", "text");
 ```
 
-**Wire Format:** `text2vec-model2vec`  
+**Wire Format:** `text2vec-model2vec`
 **Type:** Single Vector
 
 ### Multi-Media Vectorizers
@@ -801,7 +801,7 @@ var config = Configure.Vectors.Multi2VecClip(
 ).New("default");
 ```
 
-**Wire Format:** `multi2vec-clip`  
+**Wire Format:** `multi2vec-clip`
 **Type:** Single Vector
 
 **With Weighted Fields:**
@@ -835,7 +835,7 @@ var config = Configure.Vectors.Multi2VecBind(
 ).New("default");
 ```
 
-**Wire Format:** `multi2vec-bind`  
+**Wire Format:** `multi2vec-bind`
 **Type:** Single Vector
 
 **Supported Modalities:**
@@ -873,7 +873,7 @@ var config = Configure.Vectors.Multi2VecGoogle(
 ).New("default");
 ```
 
-**Wire Format:** `multi2vec-palm`  
+**Wire Format:** `multi2vec-palm`
 **Type:** Single Vector
 
 **Required Parameters:**
@@ -899,7 +899,7 @@ var config = Configure.Vectors.Multi2VecCohere(
 ).New("default");
 ```
 
-**Wire Format:** `multi2vec-cohere`  
+**Wire Format:** `multi2vec-cohere`
 **Type:** Single Vector
 
 #### Multi2VecAWS
@@ -917,7 +917,7 @@ var config = Configure.Vectors.Multi2VecAWS(
 ).New("default");
 ```
 
-**Wire Format:** `multi2vec-aws`  
+**Wire Format:** `multi2vec-aws`
 **Type:** Single Vector
 
 #### Multi2VecJinaAI
@@ -935,7 +935,7 @@ var config = Configure.Vectors.Multi2VecJinaAI(
 ).New("default");
 ```
 
-**Wire Format:** `multi2vec-jinaai`  
+**Wire Format:** `multi2vec-jinaai`
 **Type:** Single Vector
 
 #### Multi2VecVoyageAI
@@ -948,12 +948,13 @@ var config = Configure.Vectors.Multi2VecVoyageAI(
     imageFields: ["photo"],
     model: "voyage-multimodal-3",
     textFields: ["caption"],
+    videoFields: ["video"],
     truncate: false,
     vectorizeCollectionName: true
 ).New("default");
 ```
 
-**Wire Format:** `multi2vec-voyageai`  
+**Wire Format:** `multi2vec-voyageai`
 **Type:** Single Vector
 
 #### Multi2VecNvidia
@@ -969,7 +970,7 @@ var config = Configure.Vectors.Multi2VecNvidia(
 ).New("default");
 ```
 
-**Wire Format:** `multi2vec-nvidia`  
+**Wire Format:** `multi2vec-nvidia`
 **Type:** Single Vector
 
 ### Image Vectorizers
@@ -986,7 +987,7 @@ var config = Configure.Vectors.Img2VecNeural(
 ).New("default");
 ```
 
-**Wire Format:** `img2vec-neural`  
+**Wire Format:** `img2vec-neural`
 **Type:** Single Vector
 
 **Required Parameters:**
@@ -1007,7 +1008,7 @@ var config = Configure.Vectors.Ref2VecCentroid(
 ).New("default");
 ```
 
-**Wire Format:** `ref2vec-centroid`  
+**Wire Format:** `ref2vec-centroid`
 **Type:** Single Vector
 
 **Required Parameters:**
@@ -1044,7 +1045,7 @@ var config = Configure.MultiVectors.Text2MultiVecJinaAI(
 );
 ```
 
-**Wire Format:** `text2multivec-jinaai`  
+**Wire Format:** `text2multivec-jinaai`
 **Type:** Multi-Vector
 
 #### Multi2MultiVecJinaAI
@@ -1064,7 +1065,7 @@ var config = Configure.MultiVectors.Multi2MultiVecJinaAI(
 );
 ```
 
-**Wire Format:** `multi2multivec-jinaai`  
+**Wire Format:** `multi2multivec-jinaai`
 **Type:** Multi-Vector
 
 **With Weighted Fields:**
@@ -1128,11 +1129,11 @@ var collection = await client.Collections.Create(
         // Text embeddings
         Configure.Vectors.Text2VecOpenAI(model: "text-embedding-3-small")
             .New("text_vec", "title", "content"),
-        
+
         // Image embeddings
         Configure.Vectors.Img2VecNeural(imageFields: ["image"])
             .New("image_vec"),
-        
+
         // Multi-modal embeddings
         Configure.Vectors.Multi2VecClip(
             textFields: ["title"],
@@ -1158,7 +1159,7 @@ var collection = await client.Collections.Create(
         // Regular single vector
         Configure.Vectors.Text2VecOpenAI()
             .New("regular"),
-        
+
         // Multi-vector for fine-grained retrieval
         Configure.MultiVectors.Text2MultiVecJinaAI(model: "jina-colbert-v2")
             .New(
@@ -1328,11 +1329,11 @@ var collection = await client.Collections.Create(
         // Fast vector for initial retrieval
         Configure.Vectors.Text2VecOpenAI(model: "text-embedding-3-small")
             .New("fast", "title", "summary"),
-        
+
         // Detailed vector for reranking
         Configure.Vectors.Text2VecOpenAI(model: "text-embedding-3-large")
             .New("detailed", "title", "content"),
-        
+
         // Specialized domain vector
         Configure.Vectors.Text2VecCohere(model: "embed-english-v3.0")
             .New("cohere", "content")

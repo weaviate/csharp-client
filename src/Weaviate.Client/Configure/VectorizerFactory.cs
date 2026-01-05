@@ -242,7 +242,9 @@ public class VectorizerFactory
     public VectorizerConfig Multi2VecVoyageAI(
         WeightedFields imageFields,
         WeightedFields textFields,
+        WeightedFields videoFields,
         string? baseURL = null,
+        int? dimensions = null,
         string? model = null,
         bool? truncate = null,
         bool? vectorizeCollectionName = null
@@ -250,18 +252,26 @@ public class VectorizerFactory
         new Models.Vectorizer.Multi2VecVoyageAI
         {
             BaseURL = baseURL,
+            Dimensions = dimensions,
             ImageFields = imageFields,
             Model = model,
             TextFields = textFields,
+            VideoFields = videoFields,
             Truncate = truncate,
             VectorizeCollectionName = vectorizeCollectionName,
-            Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+            Weights = VectorizerWeights.FromWeightedFields(
+                imageFields,
+                textFields,
+                videoFields: videoFields
+            ),
         };
 
     public VectorizerConfig Multi2VecVoyageAI(
         string[]? imageFields = null,
         string[]? textFields = null,
+        string[]? videoFields = null,
         string? baseURL = null,
+        int? dimensions = null,
         string? model = null,
         bool? truncate = null,
         bool? vectorizeCollectionName = null
@@ -269,7 +279,9 @@ public class VectorizerFactory
         new Models.Vectorizer.Multi2VecVoyageAI
         {
             BaseURL = baseURL,
+            Dimensions = dimensions,
             ImageFields = imageFields,
+            VideoFields = videoFields,
             Model = model,
             TextFields = textFields,
             Truncate = truncate,
