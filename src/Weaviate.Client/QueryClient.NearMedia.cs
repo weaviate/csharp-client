@@ -47,7 +47,7 @@ public partial class QueryClient
         CancellationToken cancellationToken = default
     )
     {
-        var input = media(VectorInputBuilderFactories.CreateNearMediaBuilder());
+        var input = media(new NearMediaBuilder());
         return await _grpc.SearchNearMedia(
             _collectionClient.Name,
             media: input.Media,
@@ -111,7 +111,7 @@ public partial class QueryClient
         CancellationToken cancellationToken = default
     )
     {
-        var input = media(VectorInputBuilderFactories.CreateNearMediaBuilder());
+        var input = media(new NearMediaBuilder());
         return await _grpc.SearchNearMedia(
             _collectionClient.Name,
             media: input.Media,

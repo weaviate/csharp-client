@@ -33,7 +33,7 @@ public partial class AggregateClient
         CancellationToken cancellationToken = default
     )
     {
-        var input = media(VectorInputBuilderFactories.CreateNearMediaBuilder());
+        var input = media(new NearMediaBuilder());
         var result = await _client.GrpcClient.AggregateNearMedia(
             _collectionName,
             input.Media,
@@ -82,7 +82,7 @@ public partial class AggregateClient
         CancellationToken cancellationToken = default
     )
     {
-        var input = media(VectorInputBuilderFactories.CreateNearMediaBuilder());
+        var input = media(new NearMediaBuilder());
         var result = await _client.GrpcClient.AggregateNearMedia(
             _collectionName,
             input.Media,

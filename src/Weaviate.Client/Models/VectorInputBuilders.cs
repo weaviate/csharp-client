@@ -538,9 +538,4 @@ internal static class VectorInputBuilderFactories
     /// Creates a HybridVectorInputBuilder for use in lambda expressions.
     /// </summary>
     public static HybridVectorInputBuilder CreateHybridBuilder() => new();
-
-    /// <summary>
-    /// Creates a NearMediaInputBuilder delegate for use in lambda expressions.
-    /// </summary>
-    public static NearMediaInputBuilder CreateNearMediaBuilder() => () => new NearMediaBuilder();
 }
