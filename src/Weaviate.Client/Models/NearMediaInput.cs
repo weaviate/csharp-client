@@ -17,22 +17,17 @@ public record NearMediaInput(
     /// <summary>
     /// Delegate for lambda builder pattern with NearMediaInput.
     /// </summary>
-    public delegate NearMediaInput FactoryFn(NearMediaInputBuilder builder);
+    /// <example>
+    /// m => m.Image(imageBytes).Sum("vector1", "vector2")
+    /// m => m.Video(videoBytes).ManualWeights(("title", 1.2), ("desc", 0.8))
+    /// m => m.Audio(audioBytes).Build()  // No targets, uses default vector
+    /// </example>
+    public delegate NearMediaInput FactoryFn(INearMediaBuilderStart builder);
 }
 
 // ============================================================================
 // NearMedia Builder Infrastructure
 // ============================================================================
-
-/// <summary>
-/// Delegate for creating a NearMedia builder.
-/// </summary>
-/// <example>
-/// m => m.Image(imageBytes).Sum("vector1", "vector2")
-/// m => m.Video(videoBytes).ManualWeights(("title", 1.2), ("desc", 0.8))
-/// m => m.Audio(audioBytes)  // No targets, uses default vector
-/// </example>
-public delegate INearMediaBuilderStart NearMediaInputBuilder();
 
 /// <summary>
 /// Starting point for NearMedia builder - select media type first.

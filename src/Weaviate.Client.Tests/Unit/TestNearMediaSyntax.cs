@@ -38,7 +38,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Image(TestMediaBytes).Build(),
+            m => m.Image(TestMediaBytes).Build(),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -54,7 +54,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Video(TestMediaBytes).Build(),
+            m => m.Video(TestMediaBytes).Build(),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -70,7 +70,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Audio(TestMediaBytes).Build(),
+            m => m.Audio(TestMediaBytes).Build(),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -86,7 +86,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Thermal(TestMediaBytes).Build(),
+            m => m.Thermal(TestMediaBytes).Build(),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -102,7 +102,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Depth(TestMediaBytes).Build(),
+            m => m.Depth(TestMediaBytes).Build(),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -118,7 +118,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().IMU(TestMediaBytes).Build(),
+            m => m.IMU(TestMediaBytes).Build(),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -138,7 +138,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Image(TestMediaBytes, certainty: 0.8f).Build(),
+            m => m.Image(TestMediaBytes, certainty: 0.8f).Build(),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -154,7 +154,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Video(TestMediaBytes, distance: 0.3f).Build(),
+            m => m.Video(TestMediaBytes, distance: 0.3f).Build(),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -170,7 +170,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Audio(TestMediaBytes, certainty: 0.7f, distance: 0.2f).Build(),
+            m => m.Audio(TestMediaBytes, certainty: 0.7f, distance: 0.2f).Build(),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -191,7 +191,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Image(TestMediaBytes).Sum("title", "description"),
+            m => m.Image(TestMediaBytes).Sum("title", "description"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -211,7 +211,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Video(TestMediaBytes, certainty: 0.8f).Sum("visual", "audio", "metadata"),
+            m => m.Video(TestMediaBytes, certainty: 0.8f).Sum("visual", "audio", "metadata"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -234,7 +234,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Audio(TestMediaBytes).Average("title", "description"),
+            m => m.Audio(TestMediaBytes).Average("title", "description"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -257,8 +257,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
         // Act
         await _collection.Query.NearMedia(
             m =>
-                m()
-                    .Image(TestMediaBytes, distance: 0.3f)
+                m.Image(TestMediaBytes, distance: 0.3f)
                     .ManualWeights(("title", 1.2), ("description", 0.8)),
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -282,7 +281,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Thermal(TestMediaBytes).Minimum("v1", "v2", "v3"),
+            m => m.Thermal(TestMediaBytes).Minimum("v1", "v2", "v3"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -304,7 +303,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Depth(TestMediaBytes).RelativeScore(("visual", 0.7), ("depth", 0.3)),
+            m => m.Depth(TestMediaBytes).RelativeScore(("visual", 0.7), ("depth", 0.3)),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -326,7 +325,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Image(TestMediaBytes).Sum("title", "description"),
+            m => m.Image(TestMediaBytes).Sum("title", "description"),
             new GroupByRequest("category") { ObjectsPerGroup = 5 },
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -346,7 +345,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearMedia(
-            m => m().Video(TestMediaBytes, certainty: 0.75f).Build(),
+            m => m.Video(TestMediaBytes, certainty: 0.75f).Build(),
             new GroupByRequest("status") { ObjectsPerGroup = 3 },
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -370,7 +369,7 @@ public class TestNearMediaSyntax : IAsyncLifetime
     {
         // Act - Test with limit and autoLimit parameters
         await _collection.Query.NearMedia(
-            m => m().Image(TestMediaBytes, certainty: 0.8f).ManualWeights(("v1", 1.2), ("v2", 0.8)),
+            m => m.Image(TestMediaBytes, certainty: 0.8f).ManualWeights(("v1", 1.2), ("v2", 0.8)),
             limit: 10,
             autoLimit: 3,
             cancellationToken: TestContext.Current.CancellationToken
@@ -391,12 +390,12 @@ public class TestNearMediaSyntax : IAsyncLifetime
         // Test that all media types produce consistent target vector structure
         var mediaTypes = new[]
         {
-            (NearMediaInput.FactoryFn)(m => m().Image(TestMediaBytes).Sum("v1", "v2")),
-            (NearMediaInput.FactoryFn)(m => m().Video(TestMediaBytes).Sum("v1", "v2")),
-            (NearMediaInput.FactoryFn)(m => m().Audio(TestMediaBytes).Sum("v1", "v2")),
-            (NearMediaInput.FactoryFn)(m => m().Thermal(TestMediaBytes).Sum("v1", "v2")),
-            (NearMediaInput.FactoryFn)(m => m().Depth(TestMediaBytes).Sum("v1", "v2")),
-            (NearMediaInput.FactoryFn)(m => m().IMU(TestMediaBytes).Sum("v1", "v2")),
+            (NearMediaInput.FactoryFn)(m => m.Image(TestMediaBytes).Sum("v1", "v2")),
+            (NearMediaInput.FactoryFn)(m => m.Video(TestMediaBytes).Sum("v1", "v2")),
+            (NearMediaInput.FactoryFn)(m => m.Audio(TestMediaBytes).Sum("v1", "v2")),
+            (NearMediaInput.FactoryFn)(m => m.Thermal(TestMediaBytes).Sum("v1", "v2")),
+            (NearMediaInput.FactoryFn)(m => m.Depth(TestMediaBytes).Sum("v1", "v2")),
+            (NearMediaInput.FactoryFn)(m => m.IMU(TestMediaBytes).Sum("v1", "v2")),
         };
 
         foreach (var mediaBuilder in mediaTypes)
