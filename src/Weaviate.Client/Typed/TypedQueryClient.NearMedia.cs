@@ -6,18 +6,21 @@ namespace Weaviate.Client.Typed;
 public partial class TypedQueryClient<T>
 {
     /// <summary>
-    /// Performs a near-media search using media embeddings (image, video, audio, etc.).
+    /// Performs a near-media search using media embeddings.
     /// </summary>
-    /// <param name="media">The media data as a byte array.</param>
-    /// <param name="mediaType">The type of media (image, video, audio, etc.).</param>
-    /// <param name="certainty">Minimum certainty threshold (0-1).</param>
-    /// <param name="distance">Maximum distance threshold.</param>
+    /// <example>
+    /// // Simple image search
+    /// await typedQuery.NearMedia(m => m.Image(imageBytes));
+    ///
+    /// // With target vectors
+    /// await typedQuery.NearMedia(m => m.Video(videoBytes, certainty: 0.8f).Sum("v1", "v2"));
+    /// </example>
+    /// <param name="media">Lambda builder for creating NearMediaInput with media data and target vectors.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
-    /// <param name="autoLimit">Automatic result limit threshold.</param>
-    /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="targets">Target vector configuration for named vectors.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -25,16 +28,12 @@ public partial class TypedQueryClient<T>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
     public async Task<Models.WeaviateResult<WeaviateObject<T>>> NearMedia(
-        byte[] media,
-        NearMediaType mediaType,
-        double? certainty = null,
-        double? distance = null,
+        NearMediaInput.FactoryFn media,
+        Filter? filters = null,
+        uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
-        uint? autoLimit = null,
-        Filter? filters = null,
         Rerank? rerank = null,
-        TargetVectors.FactoryFn? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -44,14 +43,10 @@ public partial class TypedQueryClient<T>
     {
         var result = await _queryClient.NearMedia(
             media: media,
-            mediaType: mediaType,
-            certainty: certainty,
-            distance: distance,
+            filters: filters,
+            autoLimit: autoLimit,
             limit: limit,
             offset: offset,
-            autoLimit: autoLimit,
-            filters: filters,
-            targets: targets,
             rerank: rerank,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -65,17 +60,20 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a near-media search with group-by aggregation.
     /// </summary>
-    /// <param name="media">The media data as a byte array.</param>
-    /// <param name="mediaType">The type of media (image, video, audio, etc.).</param>
+    /// <example>
+    /// // Image search with grouping
+    /// await typedQuery.NearMedia(
+    ///     m => m.Image(imageBytes).Sum("visual", "semantic"),
+    ///     groupBy: new GroupByRequest("category", objectsPerGroup: 5)
+    /// );
+    /// </example>
+    /// <param name="media">Lambda builder for creating NearMediaInput with media data and target vectors.</param>
     /// <param name="groupBy">Group-by configuration.</param>
-    /// <param name="certainty">Minimum certainty threshold (0-1).</param>
-    /// <param name="distance">Maximum distance threshold.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
-    /// <param name="autoLimit">Automatic result limit threshold.</param>
-    /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="targets">Target vector configuration for named vectors.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -83,17 +81,13 @@ public partial class TypedQueryClient<T>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed grouped result.</returns>
     public async Task<GroupByResult<T>> NearMedia(
-        byte[] media,
-        NearMediaType mediaType,
+        NearMediaInput.FactoryFn media,
         GroupByRequest groupBy,
-        double? certainty = null,
-        double? distance = null,
+        Filter? filters = null,
+        uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
-        uint? autoLimit = null,
-        Filter? filters = null,
         Rerank? rerank = null,
-        TargetVectors.FactoryFn? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -103,16 +97,12 @@ public partial class TypedQueryClient<T>
     {
         var result = await _queryClient.NearMedia(
             media: media,
-            mediaType: mediaType,
             groupBy: groupBy,
-            certainty: certainty,
-            distance: distance,
+            filters: filters,
+            autoLimit: autoLimit,
             limit: limit,
             offset: offset,
-            autoLimit: autoLimit,
-            filters: filters,
             rerank: rerank,
-            targets: targets,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
