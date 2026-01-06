@@ -445,9 +445,10 @@ await collection.Query.Hybrid(
     )
 );
 
-// NearText with server-side vectorization
+// NearText with server-side vectorization (implicit conversion to HybridVectorInput)
 await collection.Query.Hybrid(
-    new NearTextInput("banana")
+    query: null,  // Keyword search query (null for vector-only search)
+    vectors: new NearTextInput("banana")  // Implicitly converts to HybridVectorInput
 );
 
 // NearText with target vectors
@@ -461,9 +462,29 @@ await collection.Query.Hybrid(
 // Lambda builder - NearText with targets
 await collection.Query.Hybrid(
     query: null,
-    vectors: v => v.NearText()
-        .Query(["banana"], certainty: 0.7f)
-        .Sum("title", "description")
+    vectors: v => v.NearText(["banana"], certainty: 0.7f).Sum("title", "description")
+);
+
+// NearVector with NearVectorInput record (with certainty)
+await collection.Query.Hybrid(
+    query: null,
+    vectors: new NearVectorInput(
+        new[] { 1f, 2f, 3f },
+        Certainty: 0.8f
+    )
+);
+
+// NearVector with multi-target vectors using NearVectorInput
+await collection.Query.Hybrid(
+    query: "search query",
+    vectors: new NearVectorInput(
+        VectorSearchInput.Combine(
+            TargetVectors.ManualWeights(("title", 0.7), ("description", 0.3)),
+            ("title", new[] { 1f, 2f }),
+            ("description", new[] { 3f, 4f })
+        ),
+        Distance: 0.5f
+    )
 );
 
 // Multi-vector (ColBERT)
