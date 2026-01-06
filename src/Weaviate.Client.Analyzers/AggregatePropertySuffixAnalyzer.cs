@@ -16,8 +16,8 @@ namespace Weaviate.Client.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
 {
-    public const string MissingSuffixDiagnosticId = "WEAVIATE002";
-    public const string InvalidSuffixTypeDiagnosticId = "WEAVIATE003";
+    public const string MissingSuffixDiagnosticId = "WEAVIATE005";
+    public const string InvalidSuffixTypeDiagnosticId = "WEAVIATE006";
     public const string WrongAttributeTypeDiagnosticId = "WEAVIATE004";
     private const string Category = "Usage";
 

@@ -577,15 +577,19 @@ public class TestTypedAggregateResults
 
         // First group (Tech)
         Assert.NotNull(typed.Groups[0].Properties.Title);
-        Assert.Equal(60, typed.Groups[0].Properties.Title.Count);
+        Assert.NotNull(typed.Groups[0].Properties.Title!.Count);
+        Assert.Equal(60, typed.Groups[0].Properties.Title!.Count!);
         Assert.NotNull(typed.Groups[0].Properties.WordCount);
-        Assert.Equal(2000.0, typed.Groups[0].Properties.WordCount.Mean);
+        Assert.NotNull(typed.Groups[0].Properties.WordCount!.Mean);
+        Assert.Equal(2000.0, typed.Groups[0].Properties.WordCount!.Mean!.Value);
 
         // Second group (Science)
         Assert.NotNull(typed.Groups[1].Properties.Title);
-        Assert.Equal(40, typed.Groups[1].Properties.Title.Count);
+        Assert.NotNull(typed.Groups[1].Properties.Title!.Count);
+        Assert.Equal(40, typed.Groups[1].Properties.Title!.Count!);
         Assert.NotNull(typed.Groups[1].Properties.WordCount);
-        Assert.Equal(3000.0, typed.Groups[1].Properties.WordCount.Mean);
+        Assert.NotNull(typed.Groups[1].Properties.WordCount!.Mean);
+        Assert.Equal(3000.0, typed.Groups[1].Properties.WordCount!.Mean!.Value);
     }
 
     [Fact]
