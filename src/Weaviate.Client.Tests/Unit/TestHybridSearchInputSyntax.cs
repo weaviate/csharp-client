@@ -614,6 +614,26 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
     }
 
+    [Fact]
+    public async Task Hybrid_NearTextInput_SimpleString_FromDocs_ProducesValidRequest()
+    {
+        // Validates corrected docs example at line 449-451
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: new NearTextInput("banana"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.True(string.IsNullOrEmpty(request.HybridSearch.Query)); // Verify query is null or empty
+        Assert.NotNull(request.HybridSearch.NearText);
+        Assert.Contains("banana", request.HybridSearch.NearText.Query);
+    }
+
     #endregion
 
     #region NearVectorInput Tests
@@ -747,6 +767,52 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+    }
+
+    [Fact]
+    public async Task Hybrid_NearVectorInput_WithCertainty_FromDocs_ProducesValidRequest()
+    {
+        // Validates new docs example for NearVectorInput in Hybrid
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: new NearVectorInput(new[] { 1f, 2f, 3f }, Certainty: 0.8f),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.True(string.IsNullOrEmpty(request.HybridSearch.Query)); // Verify query is null or empty
+        Assert.NotNull(request.HybridSearch.NearVector);
+        Assert.Equal(0.8f, request.HybridSearch.NearVector.Certainty, precision: 5);
+    }
+
+    [Fact]
+    public async Task Hybrid_NearVectorInput_MultiTarget_FromDocs_ProducesValidRequest()
+    {
+        // Validates new docs example for NearVectorInput with multi-target
+        var vectorInput = VectorSearchInput.Combine(
+            TargetVectors.ManualWeights(("title", 0.7), ("description", 0.3)),
+            ("title", new[] { 1f, 2f }),
+            ("description", new[] { 3f, 4f })
+        );
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: "search query",
+            vectors: new NearVectorInput(vectorInput, Distance: 0.5f),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal("search query", request.HybridSearch.Query);
+        Assert.NotNull(request.HybridSearch.NearVector);
+        Assert.Equal(0.5f, request.HybridSearch.NearVector.Distance, precision: 5);
+        Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
     }
 
     #endregion
@@ -2010,6 +2076,29 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
         // Combination should be Unspecified when using .Vectors() without combination method
         Assert.Equal(V1.CombinationMethod.Unspecified, request.HybridSearch.Targets.Combination);
+    }
+
+    [Fact]
+    public async Task Hybrid_NearTextBuilder_FromDocs_ProducesValidRequest()
+    {
+        // Validates corrected docs example at line 462-467
+
+        // Act
+        await _collection.Query.Hybrid(
+            query: null,
+            vectors: v => v.NearText(["banana"], certainty: 0.7f).Sum("title", "description"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.True(string.IsNullOrEmpty(request.HybridSearch.Query)); // Verify query is null or empty
+        Assert.NotNull(request.HybridSearch.NearText);
+        Assert.Contains("banana", request.HybridSearch.NearText.Query);
+        Assert.Equal(0.7f, request.HybridSearch.NearText.Certainty, precision: 5);
+        Assert.NotNull(request.HybridSearch.Targets);
+        Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
     }
 
     #endregion
