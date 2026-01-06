@@ -64,14 +64,30 @@ namespace Weaviate.Client
             {
                 Model = model
                 // Missing: BaseURL = baseURL
+                // Also missing: ImageFields, TextFields, VideoFields (no params)
             };
     }
 }";
 
-        var expected = VerifyCS
-            .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
-            .WithLocation(0)
-            .WithArguments("TestVectorizer", "BaseURL");
+        var expected = new[]
+        {
+            VerifyCS
+                .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
+                .WithLocation(0)
+                .WithArguments("TestVectorizer", "BaseURL"),
+            VerifyCS
+                .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
+                .WithLocation(0)
+                .WithArguments("TestVectorizer", "ImageFields"),
+            VerifyCS
+                .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
+                .WithLocation(0)
+                .WithArguments("TestVectorizer", "TextFields"),
+            VerifyCS
+                .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
+                .WithLocation(0)
+                .WithArguments("TestVectorizer", "VideoFields"),
+        };
 
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
@@ -90,12 +106,18 @@ namespace Weaviate.Client
     {
         public VectorizerConfig TestVectorizer(
             string? model = null,
-            string? baseURL = null
+            string? baseURL = null,
+            WeightedFields? imageFields = null,
+            WeightedFields? textFields = null,
+            WeightedFields? videoFields = null
         ) =>
             new Models.Vectorizer.TestVectorizer
             {
                 Model = model,
-                BaseURL = baseURL
+                BaseURL = baseURL,
+                ImageFields = imageFields,
+                TextFields = textFields,
+                VideoFields = videoFields
             };
     }
 }";
@@ -116,7 +138,7 @@ namespace Weaviate.Client
 
     public class VectorizerFactory
     {
-        public VectorizerConfig TestVectorizer(
+        public VectorizerConfig {|#0:TestVectorizer|}(
             WeightedFields imageFields,
             WeightedFields textFields,
             WeightedFields videoFields
@@ -126,15 +148,26 @@ namespace Weaviate.Client
                 ImageFields = imageFields,
                 TextFields = textFields,
                 VideoFields = videoFields,
-                {|#0:Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields)|}
+                {|#1:Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields)|}
             };
     }
 }";
 
-        var expected = VerifyCS
-            .Diagnostic(VectorizerFactoryAnalyzer.MissingWeightFieldDiagnosticId)
-            .WithLocation(0)
-            .WithArguments("TestVectorizer", "videoFields");
+        var expected = new[]
+        {
+            VerifyCS
+                .Diagnostic(VectorizerFactoryAnalyzer.MissingWeightFieldDiagnosticId)
+                .WithLocation(1)
+                .WithArguments("TestVectorizer", "videoFields"),
+            VerifyCS
+                .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
+                .WithLocation(0)
+                .WithArguments("TestVectorizer", "Model"),
+            VerifyCS
+                .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
+                .WithLocation(0)
+                .WithArguments("TestVectorizer", "BaseURL"),
+        };
 
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
@@ -155,10 +188,14 @@ namespace Weaviate.Client
         public VectorizerConfig TestVectorizer(
             WeightedFields imageFields,
             WeightedFields textFields,
-            WeightedFields videoFields
+            WeightedFields videoFields,
+            string? model = null,
+            string? baseURL = null
         ) =>
             new Models.Vectorizer.TestVectorizer
             {
+                Model = model,
+                BaseURL = baseURL,
                 ImageFields = imageFields,
                 TextFields = textFields,
                 VideoFields = videoFields,
@@ -186,10 +223,14 @@ namespace Weaviate.Client
         public VectorizerConfig TestVectorizer(
             WeightedFields imageFields,
             WeightedFields textFields,
-            WeightedFields videoFields
+            WeightedFields videoFields,
+            string? model = null,
+            string? baseURL = null
         ) =>
             new Models.Vectorizer.TestVectorizer
             {
+                Model = model,
+                BaseURL = baseURL,
                 ImageFields = imageFields,
                 TextFields = textFields,
                 VideoFields = videoFields,
@@ -214,11 +255,19 @@ namespace Weaviate.Client
     public class VectorizerFactory
     {
         public VectorizerConfig TestVectorizer(
-            string? model = null
+            string? model = null,
+            string? baseURL = null,
+            WeightedFields? imageFields = null,
+            WeightedFields? textFields = null,
+            WeightedFields? videoFields = null
         ) =>
             new Models.Vectorizer.TestVectorizer
             {
-                Model = model
+                Model = model,
+                BaseURL = baseURL,
+                ImageFields = imageFields,
+                TextFields = textFields,
+                VideoFields = videoFields
             };
     }
 }";
@@ -246,14 +295,30 @@ namespace Weaviate.Client
             {
                 Model = model
                 // Missing: BaseURL = baseURL
+                // Also missing: ImageFields, TextFields, VideoFields (no params)
             };
     }
 }";
 
-        var expected = VerifyCS
-            .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
-            .WithLocation(0)
-            .WithArguments("TestVectorizer", "BaseURL");
+        var expected = new[]
+        {
+            VerifyCS
+                .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
+                .WithLocation(0)
+                .WithArguments("TestVectorizer", "BaseURL"),
+            VerifyCS
+                .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
+                .WithLocation(0)
+                .WithArguments("TestVectorizer", "ImageFields"),
+            VerifyCS
+                .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
+                .WithLocation(0)
+                .WithArguments("TestVectorizer", "TextFields"),
+            VerifyCS
+                .Diagnostic(VectorizerFactoryAnalyzer.MissingPropertyDiagnosticId)
+                .WithLocation(0)
+                .WithArguments("TestVectorizer", "VideoFields"),
+        };
 
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }

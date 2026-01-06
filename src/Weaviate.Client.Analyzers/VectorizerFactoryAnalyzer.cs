@@ -16,11 +16,11 @@ public class VectorizerFactoryAnalyzer : DiagnosticAnalyzer
     private const string Category = "Usage";
 
     private static readonly LocalizableString MissingPropertyTitle =
-        "Vectorizer factory method missing property initialization";
+        "Vectorizer factory method missing property initialization or parameter";
     private static readonly LocalizableString MissingPropertyMessageFormat =
-        "Factory method creating '{0}' does not initialize property '{1}'";
+        "Factory method creating '{0}' does not have a way to set property '{1}'. Add a parameter for it or initialize it in the object initializer.";
     private static readonly LocalizableString MissingPropertyDescription =
-        "All properties of a vectorizer config should be initializable through the factory method.";
+        "All public properties of a vectorizer config should be initializable through factory method parameters or explicitly initialized in the object initializer to ensure completeness.";
 
     private static readonly LocalizableString MissingWeightFieldTitle =
         "Vectorizer factory method missing field in Weights calculation";
@@ -34,7 +34,7 @@ public class VectorizerFactoryAnalyzer : DiagnosticAnalyzer
         MissingPropertyTitle,
         MissingPropertyMessageFormat,
         Category,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description: MissingPropertyDescription
     );
@@ -44,7 +44,7 @@ public class VectorizerFactoryAnalyzer : DiagnosticAnalyzer
         MissingWeightFieldTitle,
         MissingWeightFieldMessageFormat,
         Category,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description: MissingWeightFieldDescription
     );
@@ -169,24 +169,27 @@ public class VectorizerFactoryAnalyzer : DiagnosticAnalyzer
             // Check if there's a corresponding parameter for this property
             var propertyNameLower = property.Name.ToLowerInvariant();
 
-            // Handle special mappings (e.g., BaseURL -> baseURL, VectorizeCollectionName -> vectorizeCollectionName)
+            // Convert PascalCase to camelCase for property name
+            var camelCasePropertyName =
+                property.Name.Length > 0
+                    ? char.ToLowerInvariant(property.Name[0]) + property.Name.Substring(1)
+                    : property.Name;
+
             var hasCorrespondingParameter =
                 parameterNames.Contains(propertyNameLower)
-                || parameterNames.Contains(
-                    property.Name.Substring(0, 1).ToLowerInvariant() + property.Name.Substring(1)
-                );
+                || parameterNames.Contains(camelCasePropertyName.ToLowerInvariant());
 
-            // Only warn if there's a parameter but it's not being used
-            if (hasCorrespondingParameter)
-            {
-                var diagnostic = Diagnostic.Create(
-                    MissingPropertyRule,
-                    methodDeclaration.Identifier.GetLocation(),
-                    namedType.Name,
-                    property.Name
-                );
-                context.ReportDiagnostic(diagnostic);
-            }
+            // Warn if property is not initialized AND either:
+            // 1. There's a corresponding parameter (parameter exists but not used), OR
+            // 2. There's NO parameter and property isn't initialized (property can't be set via factory)
+            // This ensures all properties can be set through the factory method
+            var diagnostic = Diagnostic.Create(
+                MissingPropertyRule,
+                methodDeclaration.Identifier.GetLocation(),
+                namedType.Name,
+                property.Name
+            );
+            context.ReportDiagnostic(diagnostic);
         }
     }
 
