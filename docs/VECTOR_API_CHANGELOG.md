@@ -359,8 +359,8 @@ await collection.Query.Hybrid(
     v => v.NearText(
             ["concept"],
             certainty: 0.7f,
-            moveTo: new Move(concepts: "positive", force: 0.5f),
-            moveAway: new Move(concepts: "negative", force: 0.3f)
+            moveTo: new Move("positive", 0.5f),
+            moveAway: new Move("negative", 0.3f)
         )
         .Sum("title", "description")
 );

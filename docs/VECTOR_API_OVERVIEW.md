@@ -196,8 +196,8 @@ await collection.Query.NearText(
 // With move parameters
 await collection.Query.NearText(
     "banana",
-    moveTo: new Move("fruit", force: 0.5f),
-    moveAway: new Move("vegetable", force: 0.3f)
+    moveTo: new Move("fruit", 0.5f),
+    moveAway: new Move("vegetable", 0.3f)
 );
 
 // Lambda builder - with target vectors (Sum)
