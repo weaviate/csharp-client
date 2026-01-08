@@ -307,7 +307,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             // Sum combination: first has 1 vector, second has 2 vectors
             {
                 tv =>
-                    tv.Sum(
+                    tv.TargetVectorsSum(
                         ("first", new[] { 0f, 1f }),
                         ("second", new[] { 1f, 0f, 0f }),
                         ("second", new[] { 0f, 0f, 1f })
@@ -317,7 +317,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             // ManualWeights: weight 1 for each vector
             {
                 tv =>
-                    tv.ManualWeights(
+                    tv.TargetVectorsManualWeights(
                         ("first", 1.0, new[] { 0f, 1f }),
                         ("second", 1.0, new[] { 1f, 0f, 0f }),
                         ("second", 1.0, new[] { 0f, 0f, 1f })
@@ -327,7 +327,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             // ManualWeights: different weights (1 for first, 1 and 2 for second)
             {
                 tv =>
-                    tv.ManualWeights(
+                    tv.TargetVectorsManualWeights(
                         ("first", 1.0, new[] { 0f, 1f }),
                         ("second", 1.0, new[] { 1f, 0f, 0f }),
                         ("second", 2.0, new[] { 0f, 0f, 1f })
@@ -337,7 +337,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             // ManualWeights: same weights but different order (second before first)
             {
                 tv =>
-                    tv.ManualWeights(
+                    tv.TargetVectorsManualWeights(
                         ("second", 1.0, new[] { 1f, 0f, 0f }),
                         ("second", 2.0, new[] { 0f, 0f, 1f }),
                         ("first", 1.0, new[] { 0f, 1f })

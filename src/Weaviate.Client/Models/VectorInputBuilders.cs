@@ -9,7 +9,7 @@ namespace Weaviate.Client.Models;
 /// to set certainty and distance parameters, then chainable to configure target vectors.
 /// </summary>
 /// <example>
-/// v => v(certainty: 0.8).ManualWeights(
+/// v => v(certainty: 0.8).TargetVectorsManualWeights(
 ///     ("title", 1.2, new[] { 1f, 2f }),
 ///     ("description", 0.8, new[] { 3f, 4f })
 /// )
@@ -28,31 +28,35 @@ public interface INearVectorBuilder
     /// Creates a NearVectorInput with manually weighted target vectors.
     /// </summary>
     /// <param name="targets">Tuples of (targetName, weight, vector)</param>
-    NearVectorInput ManualWeights(params (string Name, double Weight, Vector Vector)[] targets);
+    NearVectorInput TargetVectorsManualWeights(
+        params (string Name, double Weight, Vector Vector)[] targets
+    );
 
     /// <summary>
     /// Creates a NearVectorInput that sums all target vectors.
     /// </summary>
     /// <param name="targets">Tuples of (targetName, vector)</param>
-    NearVectorInput Sum(params (string Name, Vector Vector)[] targets);
+    NearVectorInput TargetVectorsSum(params (string Name, Vector Vector)[] targets);
 
     /// <summary>
     /// Creates a NearVectorInput that averages all target vectors.
     /// </summary>
     /// <param name="targets">Tuples of (targetName, vector)</param>
-    NearVectorInput Average(params (string Name, Vector Vector)[] targets);
+    NearVectorInput TargetVectorsAverage(params (string Name, Vector Vector)[] targets);
 
     /// <summary>
     /// Creates a NearVectorInput using minimum combination of target vectors.
     /// </summary>
     /// <param name="targets">Tuples of (targetName, vector)</param>
-    NearVectorInput Minimum(params (string Name, Vector Vector)[] targets);
+    NearVectorInput TargetVectorsMinimum(params (string Name, Vector Vector)[] targets);
 
     /// <summary>
     /// Creates a NearVectorInput using relative score combination of target vectors.
     /// </summary>
     /// <param name="targets">Tuples of (targetName, weight, vector)</param>
-    NearVectorInput RelativeScore(params (string Name, double Weight, Vector Vector)[] targets);
+    NearVectorInput TargetVectorsRelativeScore(
+        params (string Name, double Weight, Vector Vector)[] targets
+    );
 }
 
 /// <summary>
@@ -69,45 +73,51 @@ internal sealed class NearVectorBuilder : INearVectorBuilder
         _distance = distance;
     }
 
-    public NearVectorInput ManualWeights(
-        params (string Name, double Weight, Vector Vector)[] targets
+    public NearVectorInput TargetVectorsManualWeights(
+        params (string Name, double Weight, Vector Vector)[] targetVectors
     )
     {
         var builder = new VectorSearchInput.Builder();
-        var vectorSearchInput = builder.ManualWeights(
-            targets.Select(t => (t.Name, t.Weight, t.Vector)).ToArray()
+        var vectorSearchInput = builder.TargetVectorsManualWeights(
+            targetVectors.Select(t => (t.Name, t.Weight, t.Vector)).ToArray()
         );
         return new NearVectorInput(vectorSearchInput, _certainty, _distance);
     }
 
-    public NearVectorInput Sum(params (string Name, Vector Vector)[] targets)
+    public NearVectorInput TargetVectorsSum(params (string Name, Vector Vector)[] targetVectors)
     {
         var builder = new VectorSearchInput.Builder();
-        var vectorSearchInput = builder.Sum(targets.Select(t => (t.Name, t.Vector)).ToArray());
+        var vectorSearchInput = builder.TargetVectorsSum(
+            targetVectors.Select(t => (t.Name, t.Vector)).ToArray()
+        );
         return new NearVectorInput(vectorSearchInput, _certainty, _distance);
     }
 
-    public NearVectorInput Average(params (string Name, Vector Vector)[] targets)
+    public NearVectorInput TargetVectorsAverage(params (string Name, Vector Vector)[] targetVectors)
     {
         var builder = new VectorSearchInput.Builder();
-        var vectorSearchInput = builder.Average(targets.Select(t => (t.Name, t.Vector)).ToArray());
+        var vectorSearchInput = builder.TargetVectorsAverage(
+            targetVectors.Select(t => (t.Name, t.Vector)).ToArray()
+        );
         return new NearVectorInput(vectorSearchInput, _certainty, _distance);
     }
 
-    public NearVectorInput Minimum(params (string Name, Vector Vector)[] targets)
+    public NearVectorInput TargetVectorsMinimum(params (string Name, Vector Vector)[] targetVectors)
     {
         var builder = new VectorSearchInput.Builder();
-        var vectorSearchInput = builder.Minimum(targets.Select(t => (t.Name, t.Vector)).ToArray());
+        var vectorSearchInput = builder.TargetVectorsMinimum(
+            targetVectors.Select(t => (t.Name, t.Vector)).ToArray()
+        );
         return new NearVectorInput(vectorSearchInput, _certainty, _distance);
     }
 
-    public NearVectorInput RelativeScore(
-        params (string Name, double Weight, Vector Vector)[] targets
+    public NearVectorInput TargetVectorsRelativeScore(
+        params (string Name, double Weight, Vector Vector)[] targetVectors
     )
     {
         var builder = new VectorSearchInput.Builder();
-        var vectorSearchInput = builder.RelativeScore(
-            targets.Select(t => (t.Name, t.Weight, t.Vector)).ToArray()
+        var vectorSearchInput = builder.TargetVectorsRelativeScore(
+            targetVectors.Select(t => (t.Name, t.Weight, t.Vector)).ToArray()
         );
         return new NearVectorInput(vectorSearchInput, _certainty, _distance);
     }
@@ -144,31 +154,31 @@ public interface INearTextBuilder
     /// Creates a NearTextInput with manually weighted target vectors.
     /// </summary>
     /// <param name="targets">Tuples of (targetName, weight)</param>
-    NearTextInput ManualWeights(params (string Name, double Weight)[] targets);
+    NearTextInput TargetVectorsManualWeights(params (string Name, double Weight)[] targetVectors);
 
     /// <summary>
     /// Creates a NearTextInput that sums all target vectors.
     /// </summary>
     /// <param name="targetNames">Names of target vectors</param>
-    NearTextInput Sum(params string[] targetNames);
+    NearTextInput TargetVectorsSum(params string[] targetVectors);
 
     /// <summary>
     /// Creates a NearTextInput that averages all target vectors.
     /// </summary>
     /// <param name="targetNames">Names of target vectors</param>
-    NearTextInput Average(params string[] targetNames);
+    NearTextInput TargetVectorsAverage(params string[] targetVectors);
 
     /// <summary>
     /// Creates a NearTextInput using minimum combination of target vectors.
     /// </summary>
     /// <param name="targetNames">Names of target vectors</param>
-    NearTextInput Minimum(params string[] targetNames);
+    NearTextInput TargetVectorsMinimum(params string[] targetVectors);
 
     /// <summary>
     /// Creates a NearTextInput using relative score combination of target vectors.
     /// </summary>
     /// <param name="targets">Tuples of (targetName, weight)</param>
-    NearTextInput RelativeScore(params (string Name, double Weight)[] targets);
+    NearTextInput TargetVectorsRelativeScore(params (string Name, double Weight)[] targetVectors);
 }
 
 /// <summary>
@@ -198,34 +208,73 @@ internal sealed class NearTextBuilder : INearTextBuilder
         _moveAway = moveAway;
     }
 
-    public NearTextInput ManualWeights(params (string Name, double Weight)[] targets)
+    public NearTextInput TargetVectorsManualWeights(
+        params (string Name, double Weight)[] targetVectors
+    )
     {
-        var targetVectors = TargetVectors.ManualWeights(targets);
-        return new NearTextInput(_query, targetVectors, _certainty, _distance, _moveTo, _moveAway);
+        var targetVectorsObj = TargetVectors.ManualWeights(targetVectors);
+        return new NearTextInput(
+            _query,
+            targetVectorsObj,
+            _certainty,
+            _distance,
+            _moveTo,
+            _moveAway
+        );
     }
 
-    public NearTextInput Sum(params string[] targetNames)
+    public NearTextInput TargetVectorsSum(params string[] targetVectors)
     {
-        var targetVectors = TargetVectors.Sum(targetNames);
-        return new NearTextInput(_query, targetVectors, _certainty, _distance, _moveTo, _moveAway);
+        var targetVectorsObj = TargetVectors.Sum(targetVectors);
+        return new NearTextInput(
+            _query,
+            targetVectorsObj,
+            _certainty,
+            _distance,
+            _moveTo,
+            _moveAway
+        );
     }
 
-    public NearTextInput Average(params string[] targetNames)
+    public NearTextInput TargetVectorsAverage(params string[] targetVectors)
     {
-        var targetVectors = TargetVectors.Average(targetNames);
-        return new NearTextInput(_query, targetVectors, _certainty, _distance, _moveTo, _moveAway);
+        var targetVectorsObj = TargetVectors.Average(targetVectors);
+        return new NearTextInput(
+            _query,
+            targetVectorsObj,
+            _certainty,
+            _distance,
+            _moveTo,
+            _moveAway
+        );
     }
 
-    public NearTextInput Minimum(params string[] targetNames)
+    public NearTextInput TargetVectorsMinimum(params string[] targetVectors)
     {
-        var targetVectors = TargetVectors.Minimum(targetNames);
-        return new NearTextInput(_query, targetVectors, _certainty, _distance, _moveTo, _moveAway);
+        var targetVectorsObj = TargetVectors.Minimum(targetVectors);
+        return new NearTextInput(
+            _query,
+            targetVectorsObj,
+            _certainty,
+            _distance,
+            _moveTo,
+            _moveAway
+        );
     }
 
-    public NearTextInput RelativeScore(params (string Name, double Weight)[] targets)
+    public NearTextInput TargetVectorsRelativeScore(
+        params (string Name, double Weight)[] targetVectors
+    )
     {
-        var targetVectors = TargetVectors.RelativeScore(targets);
-        return new NearTextInput(_query, targetVectors, _certainty, _distance, _moveTo, _moveAway);
+        var targetVectorsObj = TargetVectors.RelativeScore(targetVectors);
+        return new NearTextInput(
+            _query,
+            targetVectorsObj,
+            _certainty,
+            _distance,
+            _moveTo,
+            _moveAway
+        );
     }
 }
 
@@ -248,9 +297,9 @@ public sealed class HybridVectorInputBuilder
     /// <summary>
     /// Configures hybrid search with NearVector and optional search parameters.
     /// </summary>
-    public IHybridNearVectorBuilder NearVector(float? certainty = null, float? distance = null)
+    public IHybridNearVectorBuilder NearVector()
     {
-        return new HybridNearVectorBuilder(certainty, distance);
+        return new HybridNearVectorBuilder();
     }
 
     /// <summary>
@@ -258,13 +307,11 @@ public sealed class HybridVectorInputBuilder
     /// </summary>
     public IHybridNearTextBuilder NearText(
         AutoArray<string> query,
-        float? certainty = null,
-        float? distance = null,
         Move? moveTo = null,
         Move? moveAway = null
     )
     {
-        return new HybridNearTextBuilder(query, certainty, distance, moveTo, moveAway);
+        return new HybridNearTextBuilder(query, moveTo, moveAway);
     }
 
     /// <summary>
@@ -300,27 +347,31 @@ public interface IHybridNearVectorBuilder
     /// <summary>
     /// Creates a HybridVectorInput with manually weighted target vectors for NearVector search.
     /// </summary>
-    HybridVectorInput ManualWeights(params (string Name, double Weight, Vector Vector)[] targets);
+    HybridVectorInput TargetVectorsManualWeights(
+        params (string Name, double Weight, Vector Vector)[] targets
+    );
 
     /// <summary>
     /// Creates a HybridVectorInput that sums all target vectors for NearVector search.
     /// </summary>
-    HybridVectorInput Sum(params (string Name, Vector Vector)[] targets);
+    HybridVectorInput TargetVectorsSum(params (string Name, Vector Vector)[] targets);
 
     /// <summary>
     /// Creates a HybridVectorInput that averages all target vectors for NearVector search.
     /// </summary>
-    HybridVectorInput Average(params (string Name, Vector Vector)[] targets);
+    HybridVectorInput TargetVectorsAverage(params (string Name, Vector Vector)[] targets);
 
     /// <summary>
     /// Creates a HybridVectorInput using minimum combination for NearVector search.
     /// </summary>
-    HybridVectorInput Minimum(params (string Name, Vector Vector)[] targets);
+    HybridVectorInput TargetVectorsMinimum(params (string Name, Vector Vector)[] targets);
 
     /// <summary>
     /// Creates a HybridVectorInput using relative score combination for NearVector search.
     /// </summary>
-    HybridVectorInput RelativeScore(params (string Name, double Weight, Vector Vector)[] targets);
+    HybridVectorInput TargetVectorsRelativeScore(
+        params (string Name, double Weight, Vector Vector)[] targets
+    );
 }
 
 /// <summary>
@@ -328,60 +379,59 @@ public interface IHybridNearVectorBuilder
 /// </summary>
 internal sealed class HybridNearVectorBuilder : IHybridNearVectorBuilder
 {
-    private readonly float? _certainty;
-    private readonly float? _distance;
+    public HybridNearVectorBuilder() { }
 
-    public HybridNearVectorBuilder(float? certainty, float? distance)
-    {
-        _certainty = certainty;
-        _distance = distance;
-    }
-
-    public HybridVectorInput ManualWeights(
+    public HybridVectorInput TargetVectorsManualWeights(
         params (string Name, double Weight, Vector Vector)[] targets
     )
     {
         var builder = new VectorSearchInput.Builder();
-        var vectorSearchInput = builder.ManualWeights(
+        var vectorSearchInput = builder.TargetVectorsManualWeights(
             targets.Select(t => (t.Name, t.Weight, t.Vector)).ToArray()
         );
-        var nearVectorInput = new NearVectorInput(vectorSearchInput, _certainty, _distance);
+        var nearVectorInput = new NearVectorInput(vectorSearchInput);
         return HybridVectorInput.FromNearVector(nearVectorInput);
     }
 
-    public HybridVectorInput Sum(params (string Name, Vector Vector)[] targets)
+    public HybridVectorInput TargetVectorsSum(params (string Name, Vector Vector)[] targets)
     {
         var builder = new VectorSearchInput.Builder();
-        var vectorSearchInput = builder.Sum(targets.Select(t => (t.Name, t.Vector)).ToArray());
-        var nearVectorInput = new NearVectorInput(vectorSearchInput, _certainty, _distance);
+        var vectorSearchInput = builder.TargetVectorsSum(
+            targets.Select(t => (t.Name, t.Vector)).ToArray()
+        );
+        var nearVectorInput = new NearVectorInput(vectorSearchInput);
         return HybridVectorInput.FromNearVector(nearVectorInput);
     }
 
-    public HybridVectorInput Average(params (string Name, Vector Vector)[] targets)
+    public HybridVectorInput TargetVectorsAverage(params (string Name, Vector Vector)[] targets)
     {
         var builder = new VectorSearchInput.Builder();
-        var vectorSearchInput = builder.Average(targets.Select(t => (t.Name, t.Vector)).ToArray());
-        var nearVectorInput = new NearVectorInput(vectorSearchInput, _certainty, _distance);
+        var vectorSearchInput = builder.TargetVectorsAverage(
+            targets.Select(t => (t.Name, t.Vector)).ToArray()
+        );
+        var nearVectorInput = new NearVectorInput(vectorSearchInput);
         return HybridVectorInput.FromNearVector(nearVectorInput);
     }
 
-    public HybridVectorInput Minimum(params (string Name, Vector Vector)[] targets)
+    public HybridVectorInput TargetVectorsMinimum(params (string Name, Vector Vector)[] targets)
     {
         var builder = new VectorSearchInput.Builder();
-        var vectorSearchInput = builder.Minimum(targets.Select(t => (t.Name, t.Vector)).ToArray());
-        var nearVectorInput = new NearVectorInput(vectorSearchInput, _certainty, _distance);
+        var vectorSearchInput = builder.TargetVectorsMinimum(
+            targets.Select(t => (t.Name, t.Vector)).ToArray()
+        );
+        var nearVectorInput = new NearVectorInput(vectorSearchInput);
         return HybridVectorInput.FromNearVector(nearVectorInput);
     }
 
-    public HybridVectorInput RelativeScore(
+    public HybridVectorInput TargetVectorsRelativeScore(
         params (string Name, double Weight, Vector Vector)[] targets
     )
     {
         var builder = new VectorSearchInput.Builder();
-        var vectorSearchInput = builder.RelativeScore(
+        var vectorSearchInput = builder.TargetVectorsRelativeScore(
             targets.Select(t => (t.Name, t.Weight, t.Vector)).ToArray()
         );
-        var nearVectorInput = new NearVectorInput(vectorSearchInput, _certainty, _distance);
+        var nearVectorInput = new NearVectorInput(vectorSearchInput);
         return HybridVectorInput.FromNearVector(nearVectorInput);
     }
 }
@@ -394,27 +444,27 @@ public interface IHybridNearTextBuilder
     /// <summary>
     /// Creates a HybridVectorInput with manually weighted target vectors for NearText search.
     /// </summary>
-    HybridVectorInput ManualWeights(params (string Name, double Weight)[] targets);
+    HybridVectorInput TargetVectorsManualWeights(params (string Name, double Weight)[] targets);
 
     /// <summary>
     /// Creates a HybridVectorInput that sums all target vectors for NearText search.
     /// </summary>
-    HybridVectorInput Sum(params string[] targetNames);
+    HybridVectorInput TargetVectorsSum(params string[] targetNames);
 
     /// <summary>
     /// Creates a HybridVectorInput that averages all target vectors for NearText search.
     /// </summary>
-    HybridVectorInput Average(params string[] targetNames);
+    HybridVectorInput TargetVectorsAverage(params string[] targetNames);
 
     /// <summary>
     /// Creates a HybridVectorInput using minimum combination for NearText search.
     /// </summary>
-    HybridVectorInput Minimum(params string[] targetNames);
+    HybridVectorInput TargetVectorsMinimum(params string[] targetNames);
 
     /// <summary>
     /// Creates a HybridVectorInput using relative score combination for NearText search.
     /// </summary>
-    HybridVectorInput RelativeScore(params (string Name, double Weight)[] targets);
+    HybridVectorInput TargetVectorsRelativeScore(params (string Name, double Weight)[] targets);
 }
 
 /// <summary>
@@ -423,91 +473,85 @@ public interface IHybridNearTextBuilder
 internal sealed class HybridNearTextBuilder : IHybridNearTextBuilder
 {
     private readonly string[] _query;
-    private readonly float? _certainty;
-    private readonly float? _distance;
     private readonly Move? _moveTo;
     private readonly Move? _moveAway;
 
-    public HybridNearTextBuilder(
-        AutoArray<string> query,
-        float? certainty,
-        float? distance,
-        Move? moveTo,
-        Move? moveAway
-    )
+    public HybridNearTextBuilder(AutoArray<string> query, Move? moveTo, Move? moveAway)
     {
         // Convert AutoArray to string[] for storage (AutoArray can't be stored as field)
         _query = query.ToArray();
-        _certainty = certainty;
-        _distance = distance;
         _moveTo = moveTo;
         _moveAway = moveAway;
     }
 
-    public HybridVectorInput ManualWeights(params (string Name, double Weight)[] targets)
+    public HybridVectorInput TargetVectorsManualWeights(
+        params (string Name, double Weight)[] targets
+    )
     {
         var targetVectors = TargetVectors.ManualWeights(targets);
         var nearTextInput = new NearTextInput(
             _query,
             targetVectors,
-            _certainty,
-            _distance,
+            null,
+            null,
             _moveTo,
             _moveAway
         );
         return HybridVectorInput.FromNearText(nearTextInput);
     }
 
-    public HybridVectorInput Sum(params string[] targetNames)
+    public HybridVectorInput TargetVectorsSum(params string[] targetNames)
     {
         var targetVectors = TargetVectors.Sum(targetNames);
         var nearTextInput = new NearTextInput(
             _query,
             targetVectors,
-            _certainty,
-            _distance,
+            null,
+            null,
             _moveTo,
             _moveAway
         );
         return HybridVectorInput.FromNearText(nearTextInput);
     }
 
-    public HybridVectorInput Average(params string[] targetNames)
+    public HybridVectorInput TargetVectorsAverage(params string[] targetNames)
     {
         var targetVectors = TargetVectors.Average(targetNames);
         var nearTextInput = new NearTextInput(
             _query,
             targetVectors,
-            _certainty,
-            _distance,
+            null,
+            null,
             _moveTo,
             _moveAway
         );
         return HybridVectorInput.FromNearText(nearTextInput);
     }
 
-    public HybridVectorInput Minimum(params string[] targetNames)
+    public HybridVectorInput TargetVectorsMinimum(params string[] targetNames)
     {
         var targetVectors = TargetVectors.Minimum(targetNames);
         var nearTextInput = new NearTextInput(
             _query,
             targetVectors,
-            _certainty,
-            _distance,
+            null,
+            null,
             _moveTo,
             _moveAway
         );
         return HybridVectorInput.FromNearText(nearTextInput);
     }
 
-    public HybridVectorInput RelativeScore(params (string Name, double Weight)[] targets)
+    public HybridVectorInput TargetVectorsRelativeScore(
+        params (string Name, double Weight)[] targets
+    )
     {
         var targetVectors = TargetVectors.RelativeScore(targets);
         var nearTextInput = new NearTextInput(
             _query,
             targetVectors,
-            _certainty,
-            _distance,
+            null,
+            null,
             _moveTo,
             _moveAway
         );

@@ -27,6 +27,11 @@ public abstract record TargetVectors : IEnumerable<string>
         GetEnumerator();
 
     // Static helpers to build target vectors from VectorSearchInput
+    public static TargetVectors Unspecified(AutoArray<string> vectors)
+    {
+        return new SimpleTargetVectors(vectors?.ToArray() ?? [], V1.CombinationMethod.Unspecified);
+    }
+
     public static TargetVectors Sum(VectorSearchInput vectors)
     {
         var targets = vectors.Targets ?? [.. vectors.Vectors.Keys];

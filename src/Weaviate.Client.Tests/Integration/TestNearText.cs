@@ -156,9 +156,9 @@ public partial class SearchTests : IntegrationTests
         );
         Guid[] guids = await Task.WhenAll(tasks);
 
-        // Act - Search for "cake" across both title and description vectors using Sum combination
+        // Act - Search for "cake" across both title and description vectors using TargetVectorsSum combination
         var retriever = await collectionClient.Query.NearText(
-            q => q("cake").Sum("title", "description"),
+            q => q("cake").TargetVectorsSum("title", "description"),
             returnProperties: ["title", "description"],
             includeVectors: true,
             cancellationToken: TestContext.Current.CancellationToken

@@ -323,7 +323,7 @@ public class BuildTargetVectorTest
     public void VectorSearchInput_WithBuilder_SumCombination()
     {
         // Arrange
-        var input = new VectorSearchInput.Builder().Sum(
+        var input = new VectorSearchInput.Builder().TargetVectorsSum(
             ("vector1", new[] { 1f, 2f }),
             ("vector2", new[] { 3f, 4f })
         );
@@ -341,7 +341,7 @@ public class BuildTargetVectorTest
     public void VectorSearchInput_WithBuilder_AverageCombination()
     {
         // Arrange
-        var input = new VectorSearchInput.Builder().Average(
+        var input = new VectorSearchInput.Builder().TargetVectorsAverage(
             ("vector1", new[] { 1f, 2f }),
             ("vector2", new[] { 3f, 4f })
         );
@@ -358,7 +358,7 @@ public class BuildTargetVectorTest
     public void VectorSearchInput_WithBuilder_ManualWeights()
     {
         // Arrange
-        var input = new VectorSearchInput.Builder().ManualWeights(
+        var input = new VectorSearchInput.Builder().TargetVectorsManualWeights(
             ("vector1", 0.7, new[] { 1f, 2f }),
             ("vector2", 0.3, new[] { 3f, 4f })
         );
@@ -459,7 +459,7 @@ public class BuildTargetVectorTest
     public void VectorSearchInput_SumWithSameName_UsesVectorForTargets()
     {
         // Arrange - using the builder syntax like in the failing test
-        var input = new VectorSearchInput.Builder().Sum(
+        var input = new VectorSearchInput.Builder().TargetVectorsSum(
             ("regular", new[] { 1f, 2f }),
             ("regular", new[] { 2f, 1f })
         );

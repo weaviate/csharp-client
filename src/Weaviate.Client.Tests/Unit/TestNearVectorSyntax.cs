@@ -108,7 +108,7 @@ public class TestNearVectorSyntax : IAsyncLifetime
     {
         // Arrange - Example from docs:
         // await collection.Query.NearVector(
-        //     v => v.Sum(
+        //     v => v.TargetVectorsSum(
         //         ("title", new[] { 1f, 2f }),
         //         ("description", new[] { 3f, 4f })
         //     )
@@ -116,7 +116,7 @@ public class TestNearVectorSyntax : IAsyncLifetime
 
         // Act
         await _collection.Query.NearVector(
-            v => v.Sum(("title", new[] { 1f, 2f }), ("description", new[] { 3f, 4f })),
+            v => v.TargetVectorsSum(("title", new[] { 1f, 2f }), ("description", new[] { 3f, 4f })),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -142,7 +142,7 @@ public class TestNearVectorSyntax : IAsyncLifetime
     {
         // Arrange - Example from docs:
         // await collection.Query.NearVector(
-        //     v => v.ManualWeights(
+        //     v => v.TargetVectorsManualWeights(
         //         ("title", 1.2, new[] { 1f, 2f }),
         //         ("description", 0.8, new[] { 3f, 4f })
         //     )
@@ -151,7 +151,7 @@ public class TestNearVectorSyntax : IAsyncLifetime
         // Act
         await _collection.Query.NearVector(
             v =>
-                v.ManualWeights(
+                v.TargetVectorsManualWeights(
                     ("title", 1.2, new[] { 1f, 2f }),
                     ("description", 0.8, new[] { 3f, 4f })
                 ),
@@ -260,7 +260,7 @@ public class TestNearVectorSyntax : IAsyncLifetime
     {
         // Arrange - Test NearVectorInput.FactoryFn with certainty parameter
         // await collection.Query.NearVector(
-        //     v => v(certainty: 0.8).ManualWeights(
+        //     v => v(certainty: 0.8).TargetVectorsManualWeights(
         //         ("title", 1.2, new[] { 1f, 2f }),
         //         ("description", 0.8, new[] { 3f, 4f })
         //     )
@@ -270,7 +270,7 @@ public class TestNearVectorSyntax : IAsyncLifetime
         await _collection.Query.NearVector(
             v =>
                 v(certainty: 0.8f)
-                    .ManualWeights(
+                    .TargetVectorsManualWeights(
                         ("title", 1.2, new[] { 1f, 2f }),
                         ("description", 0.8, new[] { 3f, 4f })
                     ),
@@ -294,7 +294,10 @@ public class TestNearVectorSyntax : IAsyncLifetime
         await _collection.Query.NearVector(
             v =>
                 v(distance: 0.5f)
-                    .Sum(("title", new[] { 1f, 2f }), ("description", new[] { 3f, 4f })),
+                    .TargetVectorsSum(
+                        ("title", new[] { 1f, 2f }),
+                        ("description", new[] { 3f, 4f })
+                    ),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -311,7 +314,12 @@ public class TestNearVectorSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearVector(
-            v => v().Average(("title", new[] { 1f, 2f }), ("description", new[] { 3f, 4f })),
+            v =>
+                v()
+                    .TargetVectorsAverage(
+                        ("title", new[] { 1f, 2f }),
+                        ("description", new[] { 3f, 4f })
+                    ),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -327,7 +335,12 @@ public class TestNearVectorSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearVector(
-            v => v().Minimum(("title", new[] { 1f, 2f }), ("description", new[] { 3f, 4f })),
+            v =>
+                v()
+                    .TargetVectorsMinimum(
+                        ("title", new[] { 1f, 2f }),
+                        ("description", new[] { 3f, 4f })
+                    ),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -345,7 +358,7 @@ public class TestNearVectorSyntax : IAsyncLifetime
         await _collection.Query.NearVector(
             v =>
                 v()
-                    .RelativeScore(
+                    .TargetVectorsRelativeScore(
                         ("title", 0.7, new[] { 1f, 2f }),
                         ("description", 0.3, new[] { 3f, 4f })
                     ),

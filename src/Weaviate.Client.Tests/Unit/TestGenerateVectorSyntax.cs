@@ -73,7 +73,7 @@ public class TestGenerateVectorSyntax : IAsyncLifetime
     {
         // Act - Lambda builder with Sum combination and generative prompts
         await _collection.Generate.NearVector(
-            v => v.Sum(("title", new[] { 1f, 2f }), ("desc", new[] { 3f, 4f })),
+            v => v.TargetVectorsSum(("title", new[] { 1f, 2f }), ("desc", new[] { 3f, 4f })),
             singlePrompt: "Describe this",
             groupedTask: new GroupedTask("Summarize all"),
             cancellationToken: TestContext.Current.CancellationToken
@@ -174,7 +174,9 @@ public class TestGenerateVectorSyntax : IAsyncLifetime
         // Act
         await _collection.Generate.Hybrid(
             "search query",
-            v => v.NearVector().Sum(("title", new[] { 1f, 2f }), ("desc", new[] { 3f, 4f })),
+            v =>
+                v.NearVector()
+                    .TargetVectorsSum(("title", new[] { 1f, 2f }), ("desc", new[] { 3f, 4f })),
             singlePrompt: "Explain",
             groupedTask: new GroupedTask("Compare"),
             cancellationToken: TestContext.Current.CancellationToken

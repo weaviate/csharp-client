@@ -71,7 +71,7 @@ await collection.Query.NearVector(
 
 // Lambda builder - Sum combination
 await collection.Query.NearVector(
-    v => v.Sum(
+    v => v.TargetVectorsSum(
         ("title", new[] { 1f, 2f }),
         ("description", new[] { 3f, 4f })
     )
@@ -79,7 +79,7 @@ await collection.Query.NearVector(
 
 // Lambda builder - ManualWeights
 await collection.Query.NearVector(
-    v => v.ManualWeights(
+    v => v.TargetVectorsManualWeights(
         ("title", 1.2, new[] { 1f, 2f }),
         ("description", 0.8, new[] { 3f, 4f })
     )
@@ -87,7 +87,7 @@ await collection.Query.NearVector(
 
 // Lambda builder - Average
 await collection.Query.NearVector(
-    v => v.Average(
+    v => v.TargetVectorsAverage(
         ("title", new[] { 1f, 2f }),
         ("description", new[] { 3f, 4f })
     )
@@ -95,7 +95,7 @@ await collection.Query.NearVector(
 
 // Lambda builder - Minimum
 await collection.Query.NearVector(
-    v => v.Minimum(
+    v => v.TargetVectorsMinimum(
         ("title", new[] { 1f, 2f }),
         ("description", new[] { 3f, 4f })
     )
@@ -103,7 +103,7 @@ await collection.Query.NearVector(
 
 // Lambda builder - RelativeScore
 await collection.Query.NearVector(
-    v => v.RelativeScore(
+    v => v.TargetVectorsRelativeScore(
         ("title", 0.7, new[] { 1f, 2f }),
         ("description", 0.3, new[] { 3f, 4f })
     )
@@ -203,25 +203,25 @@ await collection.Query.NearText(
 // Lambda builder - with target vectors (Sum)
 await collection.Query.NearText(
     q => q(["banana"], certainty: 0.7f)
-        .Sum("title", "description")
+        .TargetVectorsSum("title", "description")
 );
 
 // Lambda builder - with target vectors (Average)
 await collection.Query.NearText(
     q => q(["tropical", "fruit"])
-        .Average("title", "description", "category")
+        .TargetVectorsAverage("title", "description", "category")
 );
 
 // Lambda builder - with target vectors (ManualWeights)
 await collection.Query.NearText(
     q => q(["search query"])
-        .ManualWeights(("title", 0.8), ("description", 0.2))
+        .TargetVectorsManualWeights(("title", 0.8), ("description", 0.2))
 );
 
 // Lambda builder - with move parameters and targets
 await collection.Query.NearText(
     q => q(["banana"], moveTo: new Move("fruit", 0.5f))
-        .Sum("title", "description")
+        .TargetVectorsSum("title", "description")
 );
 
 // Using NearTextInput record
@@ -241,7 +241,7 @@ await collection.Query.NearText(
 
 // Lambda builder with GroupBy
 await collection.Query.NearText(
-    q => q(["banana"]).Sum("title", "description"),
+    q => q(["banana"]).TargetVectorsSum("title", "description"),
     groupBy: new GroupByRequest("category", objectsPerGroup: 3)
 );
 ```
@@ -321,40 +321,40 @@ await collection.Query.NearMedia(m => m.Image(imageBytes, distance: 0.3f));
 
 // With target vectors - Sum
 await collection.Query.NearMedia(
-    m => m.Image(imageBytes).Sum("title", "description")
+    m => m.Image(imageBytes).TargetVectorsSum("title", "description")
 );
 
 // With target vectors - Average
 await collection.Query.NearMedia(
-    m => m.Video(videoBytes, certainty: 0.7f).Average("visual", "audio", "metadata")
+    m => m.Video(videoBytes, certainty: 0.7f).TargetVectorsAverage("visual", "audio", "metadata")
 );
 
 // With target vectors - ManualWeights
 await collection.Query.NearMedia(
     m => m.Audio(audioBytes, distance: 0.3f)
-        .ManualWeights(("title", 1.2), ("description", 0.8))
+        .TargetVectorsManualWeights(("title", 1.2), ("description", 0.8))
 );
 
 // With target vectors - Minimum
 await collection.Query.NearMedia(
-    m => m.Image(imageBytes).Minimum("v1", "v2", "v3")
+    m => m.Image(imageBytes).TargetVectorsMinimum("v1", "v2", "v3")
 );
 
 // With target vectors - RelativeScore
 await collection.Query.NearMedia(
     m => m.Video(videoBytes)
-        .RelativeScore(("visual", 0.7), ("audio", 0.3))
+        .TargetVectorsRelativeScore(("visual", 0.7), ("audio", 0.3))
 );
 
 // With GroupBy
 await collection.Query.NearMedia(
-    m => m.Image(imageBytes).Sum("visual", "semantic"),
+    m => m.Image(imageBytes).TargetVectorsSum("visual", "semantic"),
     groupBy: new GroupByRequest("category", objectsPerGroup: 5)
 );
 
 // With filters and other parameters
 await collection.Query.NearMedia(
-    m => m.Image(imageBytes, certainty: 0.8f).Sum("v1", "v2"),
+    m => m.Image(imageBytes, certainty: 0.8f).TargetVectorsSum("v1", "v2"),
     filters: Filter.ByProperty("status").Equal("active"),
     limit: 10,
     offset: 0,
@@ -380,7 +380,7 @@ await collection.Query.NearMedia(
     imageBytes,
     NearMediaType.Image,
     certainty: 0.8,
-    targets: t => t.Sum("title", "description")
+    targetVectors: t => t.TargetVectorsSum("title", "description")
 );
 
 // Video with distance threshold
@@ -465,7 +465,7 @@ await collection.Query.Hybrid(
 // Lambda builder - NearVector with Sum
 await collection.Query.Hybrid(
     "search query",
-    v => v.NearVector().Sum(
+    v => v.NearVector().TargetVectorsSum(
         ("title", new[] { 1f, 2f }),
         ("description", new[] { 3f, 4f })
     )
@@ -474,7 +474,7 @@ await collection.Query.Hybrid(
 // Lambda builder - NearVector with ManualWeights
 await collection.Query.Hybrid(
     "search query",
-    v => v.NearVector(certainty: 0.7f).ManualWeights(
+    v => v.NearVector(certainty: 0.7f).TargetVectorsManualWeights(
         ("title", 1.2, new[] { 1f, 2f }),
         ("description", 0.8, new[] { 3f, 4f })
     )

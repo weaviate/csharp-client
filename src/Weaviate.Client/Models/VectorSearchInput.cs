@@ -213,7 +213,7 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
         /// <summary>
         /// Creates a multi-target query with Sum combination.
         /// </summary>
-        public VectorSearchInput Sum(params (string name, Vector vector)[] vectors)
+        public VectorSearchInput TargetVectorsSum(params (string name, Vector vector)[] vectors)
         {
             var vectorList = vectors.Select(v => new NamedVector(v.name, v.vector)).ToList();
             var targets = vectors.Select(v => v.name).Distinct().ToList();
@@ -228,7 +228,7 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
         /// <summary>
         /// Creates a multi-target query with Average combination.
         /// </summary>
-        public VectorSearchInput Average(params (string name, Vector vector)[] vectors)
+        public VectorSearchInput TargetVectorsAverage(params (string name, Vector vector)[] vectors)
         {
             var vectorList = vectors.Select(v => new NamedVector(v.name, v.vector)).ToList();
             var targets = vectors.Select(v => v.name).Distinct().ToList();
@@ -243,7 +243,7 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
         /// <summary>
         /// Creates a multi-target query with Minimum combination.
         /// </summary>
-        public VectorSearchInput Minimum(params (string name, Vector vector)[] vectors)
+        public VectorSearchInput TargetVectorsMinimum(params (string name, Vector vector)[] vectors)
         {
             var vectorList = vectors.Select(v => new NamedVector(v.name, v.vector)).ToList();
             var targets = vectors.Select(v => v.name).Distinct().ToList();
@@ -259,7 +259,7 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
         /// Creates a multi-target query with ManualWeights combination.
         /// Weight comes before the vector in each tuple.
         /// </summary>
-        public VectorSearchInput ManualWeights(
+        public VectorSearchInput TargetVectorsManualWeights(
             params (string name, double weight, Vector vector)[] entries
         )
         {
@@ -284,7 +284,7 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
         /// Creates a multi-target query with RelativeScore combination.
         /// Weight comes before the vector in each tuple.
         /// </summary>
-        public VectorSearchInput RelativeScore(
+        public VectorSearchInput TargetVectorsRelativeScore(
             params (string name, double weight, Vector vector)[] entries
         )
         {
