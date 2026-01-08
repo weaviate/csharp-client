@@ -446,4 +446,170 @@ public class TestNearMediaSyntax : IAsyncLifetime
     }
 
     #endregion
+
+    #region Implicit Conversion Tests (Without .Build())
+
+    [Fact]
+    public async Task NearMedia_Image_WithoutBuild_ImplicitConversion_ProducesValidRequest()
+    {
+        // Act - No .Build() call, tests implicit conversion
+        await _collection.Query.NearMedia(
+            m => m.Image(TestMediaBytes),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.NearImage);
+        Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearImage.Image);
+    }
+
+    [Fact]
+    public async Task NearMedia_Video_WithoutBuild_ImplicitConversion_ProducesValidRequest()
+    {
+        // Act - No .Build() call
+        await _collection.Query.NearMedia(
+            m => m.Video(TestMediaBytes),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.NearVideo);
+        Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearVideo.Video);
+    }
+
+    [Fact]
+    public async Task NearMedia_Audio_WithoutBuild_ImplicitConversion_ProducesValidRequest()
+    {
+        // Act - No .Build() call
+        await _collection.Query.NearMedia(
+            m => m.Audio(TestMediaBytes),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.NearAudio);
+        Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearAudio.Audio);
+    }
+
+    [Fact]
+    public async Task NearMedia_Thermal_WithCertainty_WithoutBuild_ImplicitConversion_ProducesValidRequest()
+    {
+        // Act - No .Build() call, with certainty parameter
+        await _collection.Query.NearMedia(
+            m => m.Thermal(TestMediaBytes, certainty: 0.85f),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.NearThermal);
+        Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearThermal.Thermal);
+        Assert.Equal(0.85, request.NearThermal.Certainty, precision: 5);
+    }
+
+    [Fact]
+    public async Task NearMedia_Depth_WithDistance_WithoutBuild_ImplicitConversion_ProducesValidRequest()
+    {
+        // Act - No .Build() call, with distance parameter
+        await _collection.Query.NearMedia(
+            m => m.Depth(TestMediaBytes, distance: 0.25f),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.NearDepth);
+        Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearDepth.Depth);
+        Assert.Equal(0.25, request.NearDepth.Distance, precision: 5);
+    }
+
+    [Fact]
+    public async Task NearMedia_IMU_WithBothParams_WithoutBuild_ImplicitConversion_ProducesValidRequest()
+    {
+        // Act - No .Build() call, with both certainty and distance
+        await _collection.Query.NearMedia(
+            m => m.IMU(TestMediaBytes, certainty: 0.9f, distance: 0.1f),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.NearImu);
+        Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearImu.Imu);
+        Assert.Equal(0.9, request.NearImu.Certainty, precision: 5);
+        Assert.Equal(0.1, request.NearImu.Distance, precision: 5);
+    }
+
+    [Fact]
+    public async Task NearMedia_AllMediaTypes_WithoutBuild_ImplicitConversion_ProducesConsistentRequests()
+    {
+        // Test that all media types work without .Build() via implicit conversion
+        var mediaTypes = new[]
+        {
+            (NearMediaInput.FactoryFn)(m => m.Image(TestMediaBytes)),
+            (NearMediaInput.FactoryFn)(m => m.Video(TestMediaBytes)),
+            (NearMediaInput.FactoryFn)(m => m.Audio(TestMediaBytes)),
+            (NearMediaInput.FactoryFn)(m => m.Thermal(TestMediaBytes)),
+            (NearMediaInput.FactoryFn)(m => m.Depth(TestMediaBytes)),
+            (NearMediaInput.FactoryFn)(m => m.IMU(TestMediaBytes)),
+        };
+
+        foreach (var mediaBuilder in mediaTypes)
+        {
+            // Reinitialize to clear previous request
+            await DisposeAsync();
+            await InitializeAsync();
+
+            // Act - No .Build() calls
+            await _collection.Query.NearMedia(
+                mediaBuilder,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+
+            // Assert
+            var request = _getRequest();
+            Assert.NotNull(request);
+
+            // Each media type should have its specific field set
+            var hasMediaField =
+                request.NearImage != null
+                || request.NearVideo != null
+                || request.NearAudio != null
+                || request.NearThermal != null
+                || request.NearDepth != null
+                || request.NearImu != null;
+            Assert.True(hasMediaField, "Request should have at least one media field set");
+        }
+    }
+
+    [Fact]
+    public async Task NearMedia_WithGroupBy_WithoutBuild_ImplicitConversion_ProducesValidRequest()
+    {
+        // Act - No .Build() call, with GroupBy
+        await _collection.Query.NearMedia(
+            m => m.Image(TestMediaBytes, certainty: 0.75f),
+            new GroupByRequest("status") { ObjectsPerGroup = 3 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.NearImage);
+        Assert.Equal(0.75, request.NearImage.Certainty, precision: 5);
+        Assert.NotNull(request.GroupBy);
+        Assert.Equal("status", request.GroupBy.Path[0]);
+        Assert.Equal(3, request.GroupBy.ObjectsPerGroup);
+    }
+
+    #endregion
 }
