@@ -1920,6 +1920,23 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region Extras
     [Fact]
+    public async Task Hybrid_HybridNearTextInputBuilder_NearText_NoMethod_ProducesValidRequest()
+    {
+        // Act - using HybridVectorInput.FactoryFn with NearVector().ManualWeights()
+        await _collection.Query.Hybrid(
+            "test",
+            v => v.NearText("query"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.HybridSearch.NearText);
+        Assert.Equal(V1.CombinationMethod.Unspecified, request.HybridSearch.Targets.Combination);
+    }
+
+    [Fact]
     public async Task Extras()
     {
         await _collection.Query.NearVector(
