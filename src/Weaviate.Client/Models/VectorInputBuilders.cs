@@ -297,7 +297,7 @@ public sealed class HybridVectorInputBuilder
     /// <summary>
     /// Configures hybrid search with NearVector and optional search parameters.
     /// </summary>
-    public IHybridNearVectorBuilder NearVector()
+    public HybridNearVectorBuilder NearVector()
     {
         return new HybridNearVectorBuilder();
     }
@@ -305,7 +305,7 @@ public sealed class HybridVectorInputBuilder
     /// <summary>
     /// Configures hybrid search with NearText and optional search parameters.
     /// </summary>
-    public IHybridNearTextBuilder NearText(
+    public HybridNearTextBuilder NearText(
         AutoArray<string> query,
         Move? moveTo = null,
         Move? moveAway = null
@@ -377,7 +377,8 @@ public interface IHybridNearVectorBuilder
 /// <summary>
 /// Internal implementation of IHybridNearVectorBuilder.
 /// </summary>
-internal sealed class HybridNearVectorBuilder : IHybridNearVectorBuilder
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public sealed class HybridNearVectorBuilder : IHybridNearVectorBuilder
 {
     public HybridNearVectorBuilder() { }
 
@@ -470,7 +471,8 @@ public interface IHybridNearTextBuilder
 /// <summary>
 /// Internal implementation of IHybridNearTextBuilder.
 /// </summary>
-internal sealed class HybridNearTextBuilder : IHybridNearTextBuilder
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public sealed class HybridNearTextBuilder : IHybridNearTextBuilder
 {
     private readonly string[] _query;
     private readonly Move? _moveTo;
@@ -482,6 +484,19 @@ internal sealed class HybridNearTextBuilder : IHybridNearTextBuilder
         _query = query.ToArray();
         _moveTo = moveTo;
         _moveAway = moveAway;
+    }
+
+    public static implicit operator HybridVectorInput(HybridNearTextBuilder builder)
+    {
+        var nearTextInput = new NearTextInput(
+            builder._query,
+            (Weaviate.Client.Models.TargetVectors?)null,
+            null,
+            null,
+            builder._moveTo,
+            builder._moveAway
+        );
+        return HybridVectorInput.FromNearText(nearTextInput);
     }
 
     public HybridVectorInput TargetVectorsManualWeights(
