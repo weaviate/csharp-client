@@ -81,31 +81,31 @@ public interface INearMediaBuilder
     /// Creates a NearMediaInput with manually weighted target vectors.
     /// </summary>
     /// <param name="targets">Tuples of (targetName, weight)</param>
-    NearMediaInput ManualWeights(params (string Name, double Weight)[] targets);
+    NearMediaInput TargetVectorsManualWeights(params (string Name, double Weight)[] targets);
 
     /// <summary>
     /// Creates a NearMediaInput that sums all target vectors.
     /// </summary>
     /// <param name="targets">Target vector names</param>
-    NearMediaInput Sum(params string[] targets);
+    NearMediaInput TargetVectorsSum(params string[] targets);
 
     /// <summary>
     /// Creates a NearMediaInput that averages all target vectors.
     /// </summary>
     /// <param name="targets">Target vector names</param>
-    NearMediaInput Average(params string[] targets);
+    NearMediaInput TargetVectorsAverage(params string[] targets);
 
     /// <summary>
     /// Creates a NearMediaInput using minimum combination of target vectors.
     /// </summary>
     /// <param name="targets">Target vector names</param>
-    NearMediaInput Minimum(params string[] targets);
+    NearMediaInput TargetVectorsMinimum(params string[] targets);
 
     /// <summary>
     /// Creates a NearMediaInput using relative score combination of target vectors.
     /// </summary>
     /// <param name="targets">Tuples of (targetName, weight)</param>
-    NearMediaInput RelativeScore(params (string Name, double Weight)[] targets);
+    NearMediaInput TargetVectorsRelativeScore(params (string Name, double Weight)[] targets);
 
     /// <summary>
     /// Completes the builder without specifying target vectors (uses default behavior).
@@ -177,7 +177,7 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         return this;
     }
 
-    public NearMediaInput ManualWeights(params (string Name, double Weight)[] targets)
+    public NearMediaInput TargetVectorsManualWeights(params (string Name, double Weight)[] targets)
     {
         ValidateMedia();
         return new NearMediaInput(
@@ -189,7 +189,7 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         );
     }
 
-    public NearMediaInput Sum(params string[] targets)
+    public NearMediaInput TargetVectorsSum(params string[] targets)
     {
         ValidateMedia();
         return new NearMediaInput(
@@ -201,7 +201,7 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         );
     }
 
-    public NearMediaInput Average(params string[] targets)
+    public NearMediaInput TargetVectorsAverage(params string[] targets)
     {
         ValidateMedia();
         return new NearMediaInput(
@@ -213,7 +213,7 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         );
     }
 
-    public NearMediaInput Minimum(params string[] targets)
+    public NearMediaInput TargetVectorsMinimum(params string[] targets)
     {
         ValidateMedia();
         return new NearMediaInput(
@@ -225,7 +225,7 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         );
     }
 
-    public NearMediaInput RelativeScore(params (string Name, double Weight)[] targets)
+    public NearMediaInput TargetVectorsRelativeScore(params (string Name, double Weight)[] targets)
     {
         ValidateMedia();
         return new NearMediaInput(
