@@ -66,7 +66,7 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
 
 4. **FactoryFn delegate enables lambda syntax**
    - New: `VectorSearchInput.FactoryFn` delegate with implicit conversion to `VectorSearchInput`
-   - Allows: `vectors: b => b.Sum(("title", vec1), ("desc", vec2))` syntax
+    - Allows: `vectors: b => b.TargetVectorsSum(("title", vec1), ("desc", vec2))` syntax
 
 5. **Targets embedded in VectorSearchInput**
    - Before: Separate `targets` parameter on some methods
@@ -74,7 +74,7 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
 
 6. **TargetVectors uses static factory methods**
    - Before: `new SimpleTargetVectors(["title", "description"])`
-   - After: `TargetVectors.Sum("title", "description")` or `new[] { "title", "description" }` (implicit)
+    - After: `TargetVectors.Sum("title", "description")` or `new[] { "title", "description" }` (implicit)
 
 7. **NearTextInput includes TargetVectors**
    - Before: Separate `targetVector` parameter on Hybrid methods
@@ -88,19 +88,19 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
 9. **Convenience overloads for NearText target vectors**
    - New: Overloads accepting `TargetVectors?` for all NearText methods (QueryClient, GenerateClient, AggregateClient, TypedQueryClient, TypedGenerateClient)
    - Allows passing string arrays directly: `targets: new[] { "vec1", "vec2" }`
-   - Allows static factory methods: `targets: TargetVectors.Sum("vec1", "vec2")`
-   - Lambda builder syntax still available: `targets: tv => tv.Sum("vec1", "vec2")`
+    - Allows static factory methods: `targetVectors: TargetVectors.Sum("vec1", "vec2")`
+    - Lambda builder syntax still available: `targetVectors: tv => tv.TargetVectorsSum("vec1", "vec2")`
    - Matches pattern already established by NearVector methods with VectorSearchInput
 
 10. **NearVectorInput FactoryFn constructor for consistency**
    - New: Constructor accepting `VectorSearchInput.FactoryFn` for lambda builder syntax
-   - Enables: `new NearVectorInput(v => v.Sum(("title", vec1), ("desc", vec2)))`
+    - Enables: `new NearVectorInput(v => v.TargetVectorsSum(("title", vec1), ("desc", vec2)))`
    - Matches pattern established by NearTextInput
 
 11. **HybridVectorInput lambda builder for unified target vector syntax**
    - New: `HybridVectorInput.FactoryFn` delegate enables lambda builder pattern for Hybrid search
-   - Syntax: `v => v.NearVector(certainty: 0.8).ManualWeights(("title", 1.2, vec1), ("desc", 0.8, vec2))`
-   - Syntax: `v => v.NearText(["query"]).ManualWeights(("title", 1.2), ("desc", 0.8))`
+    - Syntax: `v => v.NearVector(certainty: 0.8).TargetVectorsManualWeights(("title", 1.2, vec1), ("desc", 0.8, vec2))`
+    - Syntax: `v => v.NearText(["query"]).TargetVectorsManualWeights(("title", 1.2), ("desc", 0.8))`
    - Eliminates need to construct `NearVectorInput` or `NearTextInput` explicitly
    - Available across all clients: QueryClient, GenerateClient, AggregateClient, TypedQueryClient
    - Unifies target vector configuration directly within the Hybrid method call
@@ -108,8 +108,8 @@ Consolidated vector search API from 35+ overloads to ~20 core overloads with ext
 12. **NearMedia lambda builder pattern for unified media search**
    - **BREAKING CHANGE**: Old NearImage and NearMedia methods removed entirely
    - New: Single `NearMedia` method using lambda builder pattern with `NearMediaInput.FactoryFn`
-   - Syntax: `m => m.Image(imageBytes).Sum("title", "description")`
-   - Syntax: `m => m.Video(videoBytes, certainty: 0.8f).ManualWeights(("visual", 1.2), ("audio", 0.8))`
+    - Syntax: `m => m.Image(imageBytes).TargetVectorsSum("title", "description")`
+    - Syntax: `m => m.Video(videoBytes, certainty: 0.8f).TargetVectorsManualWeights(("visual", 1.2), ("audio", 0.8))`
    - Supports all media types: Image, Video, Audio, Thermal, Depth, IMU
    - Optional target vectors via implicit conversion: `m => m.Image(imageBytes)` works without `.Build()`
    - Available across all clients: QueryClient, GenerateClient, AggregateClient, TypedQueryClient, TypedGenerateClient
@@ -131,10 +131,10 @@ await collection.Query.NearMedia(m => m.Image(imageBytes));
 
 ```csharp
 // Before (removed)
-await collection.Query.NearImage(imageBytes, certainty: 0.8, targets: t => t.Sum("v1", "v2"));
+await collection.Query.NearImage(imageBytes, certainty: 0.8, targetVectors: t => t.TargetVectorsSum("v1", "v2"));
 
 // After (required)
-await collection.Query.NearMedia(m => m.Image(imageBytes, certainty: 0.8f).Sum("v1", "v2"));
+await collection.Query.NearMedia(m => m.Image(imageBytes, certainty: 0.8f).TargetVectorsSum("v1", "v2"));
 ```
 
 **Media type specification:**
@@ -214,7 +214,7 @@ await collection.Query.Hybrid(
 ```csharp
 await collection.Query.Hybrid(
     "search query",
-    v => v.Sum(
+    v => v.TargetVectorsSum(
         ("title", new[] { 1f, 2f }),
         ("description", new[] { 3f, 4f })
     )
@@ -225,13 +225,13 @@ await collection.Query.Hybrid(
 
 ```csharp
 // Use static factory methods
-var targets = TargetVectors.ManualWeights(("title", 1.2), ("desc", 0.8));
+var targetVectors = TargetVectors.ManualWeights(("title", 1.2), ("desc", 0.8));
 await collection.Query.Hybrid(
     new NearTextInput("banana", TargetVectors: targets)
 );
 
 // Or with RelativeScore
-var targets = TargetVectors.RelativeScore(("title", 0.7), ("desc", 0.3));
+var targetVectors = TargetVectors.RelativeScore(("title", 0.7), ("desc", 0.3));
 ```
 
 **NearText with target vectors:**
@@ -240,7 +240,7 @@ var targets = TargetVectors.RelativeScore(("title", 0.7), ("desc", 0.3));
 // Before: lambda builder required
 await collection.Query.NearText(
     "search query",
-    targets: tv => tv.Sum("title", "description")
+    targetVectors: tv => tv.TargetVectorsSum("title", "description")
 );
 
 // After: multiple options available
@@ -253,13 +253,13 @@ await collection.Query.NearText(
 // Option 2: Static factory method
 await collection.Query.NearText(
     "search query",
-    targets: TargetVectors.Sum("title", "description")
+    targetVectors: TargetVectors.Sum("title", "description")
 );
 
 // Option 3: Lambda builder (still works)
 await collection.Query.NearText(
     "search query",
-    targets: tv => tv.Sum("title", "description")
+    targetVectors: tv => tv.TargetVectorsSum("title", "description")
 );
 ```
 
@@ -278,7 +278,7 @@ new NearVectorInput(new[] { 1f, 2f, 3f });
 
 // After: also accepts lambda builder
 new NearVectorInput(
-    v => v.Sum(("title", vec1), ("desc", vec2)),
+    v => v.TargetVectorsSum(("title", vec1), ("desc", vec2)),
     Certainty: 0.8f
 );
 ```
@@ -297,7 +297,7 @@ await collection.Query.NearVector(v => v.Single("title", new[] { 1f, 2f, 3f }));
 
 ```csharp
 await collection.Query.NearVector(
-    v => v.ManualWeights(
+    v => v.TargetVectorsManualWeights(
         ("title", 1.2, new[] { 1f, 2f }),
         ("desc", 0.8, new[] { 3f, 4f })
     )

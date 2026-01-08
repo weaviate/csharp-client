@@ -102,9 +102,9 @@ public class TestNearTextSyntax : IAsyncLifetime
     [Fact]
     public async Task NearText_FactoryFn_Sum_ProducesValidRequest()
     {
-        // Act - Lambda builder for NearTextInput with Sum
+        // Act - Lambda builder for NearTextInput with TargetVectorsSum
         await _collection.Query.NearText(
-            v => v(["banana"]).Sum("title", "description"),
+            v => v(["banana"]).TargetVectorsSum("title", "description"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -118,9 +118,9 @@ public class TestNearTextSyntax : IAsyncLifetime
     [Fact]
     public async Task NearText_FactoryFn_ManualWeights_ProducesValidRequest()
     {
-        // Act - Lambda builder with ManualWeights
+        // Act - Lambda builder with TargetVectorsManualWeights
         await _collection.Query.NearText(
-            v => v(["banana"]).ManualWeights(("title", 1.2), ("description", 0.8)),
+            v => v(["banana"]).TargetVectorsManualWeights(("title", 1.2), ("description", 0.8)),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -137,7 +137,7 @@ public class TestNearTextSyntax : IAsyncLifetime
     {
         // Act - Lambda builder with certainty parameter
         await _collection.Query.NearText(
-            v => v(["banana"], certainty: 0.7f).Sum("title", "description"),
+            v => v(["banana"], certainty: 0.7f).TargetVectorsSum("title", "description"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -160,7 +160,7 @@ public class TestNearTextSyntax : IAsyncLifetime
                         moveTo: new Move(concepts: "fruit", force: 0.5f),
                         moveAway: new Move(concepts: "vegetable", force: 0.3f)
                     )
-                    .Average("title", "description"),
+                    .TargetVectorsAverage("title", "description"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -180,7 +180,7 @@ public class TestNearTextSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearText(
-            v => v(["banana"]).Average("title", "description"),
+            v => v(["banana"]).TargetVectorsAverage("title", "description"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -196,7 +196,7 @@ public class TestNearTextSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearText(
-            v => v(["banana"]).Minimum("title", "description"),
+            v => v(["banana"]).TargetVectorsMinimum("title", "description"),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -212,7 +212,7 @@ public class TestNearTextSyntax : IAsyncLifetime
     {
         // Act
         await _collection.Query.NearText(
-            v => v(["banana"]).RelativeScore(("title", 0.7), ("description", 0.3)),
+            v => v(["banana"]).TargetVectorsRelativeScore(("title", 0.7), ("description", 0.3)),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -252,7 +252,7 @@ public class TestNearTextSyntax : IAsyncLifetime
     {
         // Act - Lambda builder with GroupBy
         await _collection.Query.NearText(
-            v => v(["banana"]).Sum("title", "description"),
+            v => v(["banana"]).TargetVectorsSum("title", "description"),
             new GroupByRequest("category") { ObjectsPerGroup = 3 },
             cancellationToken: TestContext.Current.CancellationToken
         );

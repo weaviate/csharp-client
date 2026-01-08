@@ -70,7 +70,7 @@ public class TestAggregateVectorSyntax : IAsyncLifetime
     {
         // Act - Lambda builder with multi-target
         await _collection.Aggregate.NearVector(
-            v => v.Average(("title", new[] { 1f, 2f }), ("desc", new[] { 3f, 4f })),
+            v => v.TargetVectorsAverage(("title", new[] { 1f, 2f }), ("desc", new[] { 3f, 4f })),
             returnMetrics: [Metrics.ForProperty("price").Number(mean: true, count: true)],
             cancellationToken: TestContext.Current.CancellationToken
         );
