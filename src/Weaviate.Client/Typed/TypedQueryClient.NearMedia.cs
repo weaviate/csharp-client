@@ -42,11 +42,11 @@ public partial class TypedQueryClient<T>
     )
     {
         var result = await _queryClient.NearMedia(
-            media: media,
+            query: media,
             filters: filters,
-            autoLimit: autoLimit,
             limit: limit,
             offset: offset,
+            autoLimit: autoLimit,
             rerank: rerank,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -96,12 +96,12 @@ public partial class TypedQueryClient<T>
     )
     {
         var result = await _queryClient.NearMedia(
-            media: media,
+            query: media,
             groupBy: groupBy,
             filters: filters,
-            autoLimit: autoLimit,
             limit: limit,
             offset: offset,
+            autoLimit: autoLimit,
             rerank: rerank,
             returnProperties: returnProperties,
             returnReferences: returnReferences,

@@ -22,7 +22,13 @@ public record NearMediaInput(
     /// m => m.Video(videoBytes).ManualWeights(("title", 1.2), ("desc", 0.8))
     /// m => m.Audio(audioBytes).Build()  // No targets, uses default vector
     /// </example>
-    public delegate NearMediaInput FactoryFn(INearMediaBuilderStart builder);
+    public delegate NearMediaInput FactoryFn(NearMediaBuilder builder);
+
+    /// <summary>
+    /// Enables returning a <see cref="NearMediaBuilder"/> directly from a lambda via
+    /// its implicit conversion to <see cref="NearMediaInput"/>.
+    /// (The implicit operator is declared on NearMediaBuilder.)
+    /// </summary>
 }
 
 // ============================================================================
@@ -37,32 +43,32 @@ public interface INearMediaBuilderStart
     /// <summary>
     /// Creates a near-image search with optional target vectors.
     /// </summary>
-    INearMediaBuilder Image(byte[] media, float? certainty = null, float? distance = null);
+    NearMediaBuilder Image(byte[] media, float? certainty = null, float? distance = null);
 
     /// <summary>
     /// Creates a near-video search with optional target vectors.
     /// </summary>
-    INearMediaBuilder Video(byte[] media, float? certainty = null, float? distance = null);
+    NearMediaBuilder Video(byte[] media, float? certainty = null, float? distance = null);
 
     /// <summary>
     /// Creates a near-audio search with optional target vectors.
     /// </summary>
-    INearMediaBuilder Audio(byte[] media, float? certainty = null, float? distance = null);
+    NearMediaBuilder Audio(byte[] media, float? certainty = null, float? distance = null);
 
     /// <summary>
     /// Creates a near-thermal search with optional target vectors.
     /// </summary>
-    INearMediaBuilder Thermal(byte[] media, float? certainty = null, float? distance = null);
+    NearMediaBuilder Thermal(byte[] media, float? certainty = null, float? distance = null);
 
     /// <summary>
     /// Creates a near-depth search with optional target vectors.
     /// </summary>
-    INearMediaBuilder Depth(byte[] media, float? certainty = null, float? distance = null);
+    NearMediaBuilder Depth(byte[] media, float? certainty = null, float? distance = null);
 
     /// <summary>
     /// Creates a near-IMU search with optional target vectors.
     /// </summary>
-    INearMediaBuilder IMU(byte[] media, float? certainty = null, float? distance = null);
+    NearMediaBuilder IMU(byte[] media, float? certainty = null, float? distance = null);
 }
 
 /// <summary>
@@ -110,14 +116,14 @@ public interface INearMediaBuilder
 /// <summary>
 /// Internal implementation of INearMediaBuilder.
 /// </summary>
-internal sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
+public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
 {
     private byte[]? _media;
     private NearMediaType? _type;
     private float? _certainty;
     private float? _distance;
 
-    public INearMediaBuilder Image(byte[] media, float? certainty = null, float? distance = null)
+    public NearMediaBuilder Image(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
         _type = NearMediaType.Image;
@@ -126,7 +132,7 @@ internal sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuild
         return this;
     }
 
-    public INearMediaBuilder Video(byte[] media, float? certainty = null, float? distance = null)
+    public NearMediaBuilder Video(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
         _type = NearMediaType.Video;
@@ -135,7 +141,7 @@ internal sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuild
         return this;
     }
 
-    public INearMediaBuilder Audio(byte[] media, float? certainty = null, float? distance = null)
+    public NearMediaBuilder Audio(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
         _type = NearMediaType.Audio;
@@ -144,7 +150,7 @@ internal sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuild
         return this;
     }
 
-    public INearMediaBuilder Thermal(byte[] media, float? certainty = null, float? distance = null)
+    public NearMediaBuilder Thermal(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
         _type = NearMediaType.Thermal;
@@ -153,7 +159,7 @@ internal sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuild
         return this;
     }
 
-    public INearMediaBuilder Depth(byte[] media, float? certainty = null, float? distance = null)
+    public NearMediaBuilder Depth(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
         _type = NearMediaType.Depth;
@@ -162,7 +168,7 @@ internal sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuild
         return this;
     }
 
-    public INearMediaBuilder IMU(byte[] media, float? certainty = null, float? distance = null)
+    public NearMediaBuilder IMU(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
         _type = NearMediaType.IMU;

@@ -255,21 +255,44 @@ Media-based semantic search supporting Image, Video, Audio, Thermal, Depth, and 
 ### Method Signatures
 
 ```csharp
-// Lambda builder
+// Lambda builder (recommended)
 Task<WeaviateResult> NearMedia(
-    NearMediaInput.FactoryFn media,
+    NearMediaInput.FactoryFn query,
     ...
 )
 
-// Lambda builder with GroupBy
+// Lambda builder with GroupBy (recommended)
 Task<GroupByResult> NearMedia(
-    NearMediaInput.FactoryFn media,
+    NearMediaInput.FactoryFn query,
     GroupByRequest groupBy,
+    ...
+)
+
+// Direct byte[] input (alternative for non-lambda preference)
+Task<WeaviateResult> NearMedia(
+    byte[] media,
+    NearMediaType mediaType,
+    double? certainty = null,
+    double? distance = null,
+    TargetVectors.FactoryFn? targets = null,
+    ...
+)
+
+// Direct byte[] input with GroupBy (alternative)
+Task<GroupByResult> NearMedia(
+    byte[] media,
+    NearMediaType mediaType,
+    GroupByRequest groupBy,
+    double? certainty = null,
+    double? distance = null,
+    TargetVectors.FactoryFn? targets = null,
     ...
 )
 ```
 
 ### Examples
+
+#### Lambda Builder Approach (Recommended)
 
 ```csharp
 // Simple image search (no target vectors)
@@ -340,28 +363,40 @@ await collection.Query.NearMedia(
 );
 ```
 
-### Migration from Old API
+#### Alternative: Direct byte[] Approach
 
-The old NearImage and NearMedia methods have been removed. Update your code as follows:
+For those who prefer not to use lambdas, you can use the direct byte[] overloads:
 
 ```csharp
-// OLD (removed)
-await collection.Query.NearImage(imageBytes, certainty: 0.8, targets: t => t.Sum("v1", "v2"));
+// Simple search without target vectors
+await collection.Query.NearMedia(
+    imageBytes,
+    NearMediaType.Image,
+    certainty: 0.8
+);
 
-// NEW (required)
-await collection.Query.NearMedia(m => m.Image(imageBytes, certainty: 0.8f).Sum("v1", "v2"));
+// With target vectors using TargetVectors.FactoryFn
+await collection.Query.NearMedia(
+    imageBytes,
+    NearMediaType.Image,
+    certainty: 0.8,
+    targets: t => t.Sum("title", "description")
+);
 
-// OLD (removed)
-await collection.Query.NearMedia(videoBytes, NearMediaType.Video, distance: 0.3);
+// Video with distance threshold
+await collection.Query.NearMedia(
+    videoBytes,
+    NearMediaType.Video,
+    distance: 0.3
+);
 
-// NEW (required)
-await collection.Query.NearMedia(m => m.Video(videoBytes, distance: 0.3f));
-
-// OLD (removed - for simple searches without targets)
-await collection.Query.NearImage(imageBytes);
-
-// NEW (required)
-await collection.Query.NearMedia(m => m.Image(imageBytes));
+// With GroupBy
+await collection.Query.NearMedia(
+    imageBytes,
+    NearMediaType.Image,
+    groupBy: new GroupByRequest("category", objectsPerGroup: 5),
+    certainty: 0.8
+);
 ```
 
 ---
@@ -524,6 +559,18 @@ await collection.Generate.NearText(
     groupedTask: new GroupedTask("Compare all results")
 );
 
+// NearMedia with generation
+await collection.Generate.NearMedia(
+    m => m.Image(imageBytes),
+    singlePrompt: "Describe this image"
+);
+
+// NearMedia with target vectors and generation
+await collection.Generate.NearMedia(
+    m => m.Video(videoBytes, certainty: 0.8f).Sum("visual", "audio"),
+    groupedTask: new GroupedTask("Summarize all videos")
+);
+
 // Hybrid with generation
 await collection.Generate.Hybrid(
     "search query",
@@ -555,6 +602,12 @@ await collection.Aggregate.NearVector(
 await collection.Aggregate.NearText(
     "banana",
     returnMetrics: [Metrics.ForProperty("price").Number(mean: true)]
+);
+
+// NearMedia with aggregation
+await collection.Aggregate.NearMedia(
+    m => m.Image(imageBytes).Sum("visual", "semantic"),
+    returnMetrics: [Metrics.ForProperty("category").Text(count: true)]
 );
 
 // Hybrid with aggregation
@@ -646,6 +699,64 @@ q => q(["banana"], certainty: 0.7f)
 
 ---
 
+### NearMediaInput
+
+Input for near-media searches supporting multiple media types with optional target vectors.
+
+**Properties:**
+- `Media` - Media content as byte array
+- `Type` - Media type (Image, Video, Audio, Thermal, Depth, IMU)
+- `TargetVectors` - Target vectors for multi-vector collections
+- `Certainty` - Minimum certainty (0-1)
+- `Distance` - Maximum distance
+
+**Lambda Builder (via FactoryFn):**
+
+```csharp
+// Simple media without targets
+m => m.Image(imageBytes)
+m => m.Video(videoBytes)
+m => m.Audio(audioBytes)
+
+// With certainty/distance
+m => m.Image(imageBytes, certainty: 0.8f)
+m => m.Video(videoBytes, distance: 0.3f)
+
+// With target vectors - Sum
+m => m.Image(imageBytes).Sum("visual", "semantic")
+
+// With target vectors - ManualWeights
+m => m.Audio(audioBytes, certainty: 0.7f)
+    .ManualWeights(("title", 1.2), ("description", 0.8))
+
+// With target vectors - Average
+m => m.Video(videoBytes).Average("visual", "audio", "metadata")
+
+// With target vectors - Minimum
+m => m.Image(imageBytes).Minimum("v1", "v2", "v3")
+
+// With target vectors - RelativeScore
+m => m.Thermal(thermalBytes)
+    .RelativeScore(("thermal", 0.7), ("visual", 0.3))
+```
+
+**Direct Construction:**
+
+```csharp
+// Simple
+new NearMediaInput(imageBytes, NearMediaType.Image)
+
+// With targets
+new NearMediaInput(
+    imageBytes,
+    NearMediaType.Image,
+    TargetVectors: TargetVectors.Sum("visual", "semantic"),
+    Certainty: 0.8f
+)
+```
+
+---
+
 ### HybridVectorInput
 
 Discriminated union for hybrid search vectors. Can be `VectorSearchInput`, `NearTextInput`, or `NearVectorInput`.
@@ -712,6 +823,26 @@ TargetVectors targets = new[] { "title", "description" };
        q => q(["banana"]).Sum("title", "description")
    );
    ```
+
+4. **For NearMedia**, use lambda builder for concise syntax:
+   ```csharp
+   // Recommended
+   await collection.Query.NearMedia(m => m.Image(imageBytes).Sum("v1", "v2"));
+
+   // Alternative (for non-lambda preference)
+   await collection.Query.NearMedia(
+       imageBytes,
+       NearMediaType.Image,
+       targets: t => t.Sum("v1", "v2")
+   );
+   ```
+
+5. **Target vector combinations**: Choose the right method for your use case
+   - `Sum()` - Add all vectors (default, best for most cases)
+   - `Average()` - Average all vectors (normalized sum)
+   - `ManualWeights()` - Custom weights per vector
+   - `Minimum()` - Minimum value across vectors
+   - `RelativeScore()` - Weighted combination based on scores
 
 4. **For Hybrid with complex vectors**, use HybridVectorInput lambda:
    ```csharp
