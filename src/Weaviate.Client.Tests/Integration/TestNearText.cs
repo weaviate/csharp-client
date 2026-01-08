@@ -34,8 +34,8 @@ public partial class SearchTests : IntegrationTests
         // Act
         var retriever = await collectionClient.Query.NearText(
             "cake",
-            moveTo: new Move(1.0f, objects: [guids[0]]),
-            moveAway: new Move(0.5f, concepts: concepts),
+            moveTo: new Move(guids[0], 1.0f),
+            moveAway: new Move(concepts, 0.5f),
             returnProperties: ["value"],
             includeVectors: "default",
             cancellationToken: TestContext.Current.CancellationToken
