@@ -26,7 +26,7 @@ public partial class PaginationTests : IntegrationTests
 
         // Sanity: all inserts succeeded and we have stable IDs
         Assert.Equal(5, insert.Count);
-        var allIds = insert.Select(r => r.ID!.Value).ToArray();
+        var allIds = insert.Select(r => r.UUID!.Value).ToArray();
 
         // Act: fetch first page
         var page1 = await collection.Query.FetchObjects(

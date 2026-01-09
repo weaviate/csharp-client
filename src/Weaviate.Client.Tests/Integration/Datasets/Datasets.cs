@@ -202,7 +202,7 @@ public partial class FilterTests
                     Filter.Reference("ref").Property("name").HasLength().IsLessThan(6),
                     0
                 ),
-                ["RefIDEquals"] = (Filter.Reference("ref").ID.IsEqual(_reusableUuids[1]), 1),
+                ["RefIDEquals"] = (Filter.Reference("ref").UUID.IsEqual(_reusableUuids[1]), 1),
                 ["IndirectSelfRefLengthLessThan6"] = (
                     Filter
                         .Reference("ref2")
@@ -223,9 +223,9 @@ public partial class FilterTests
         public static Dictionary<string, Filter> Cases =>
             new()
             {
-                ["IdEquals"] = Filter.ID.IsEqual(_reusableUuids[0]),
-                ["IdContainsAny"] = Filter.ID.ContainsAny([_reusableUuids[0]]),
-                ["IdNotEqual"] = Filter.ID.IsNotEqual(_reusableUuids[1]),
+                ["IdEquals"] = Filter.UUID.IsEqual(_reusableUuids[0]),
+                ["IdContainsAny"] = Filter.UUID.ContainsAny([_reusableUuids[0]]),
+                ["IdNotEqual"] = Filter.UUID.IsNotEqual(_reusableUuids[1]),
                 ["IdWithProperty(_id)Equal"] = Filter.Property("_id").IsEqual(_reusableUuids[0]),
             };
 
@@ -287,11 +287,11 @@ public partial class BatchTests
                         [
                             BatchInsertRequest.Create(
                                 new { Name = "some name" },
-                                vectors: Vector.Create(1, 2, 3)
+                                vectors: new int[] { 1, 2, 3 }
                             ),
                             BatchInsertRequest.Create(
                                 new { Name = "some other name" },
-                                id: _reusableUuids[0]
+                                uuid: _reusableUuids[0]
                             ),
                         ],
                     ]
@@ -334,19 +334,19 @@ public partial class BatchTests
                         [
                             BatchInsertRequest.Create(
                                 new { Name = "Name 1" },
-                                id: _reusableUuids[0]
+                                uuid: _reusableUuids[0]
                             ),
                             BatchInsertRequest.Create(
                                 new { Name = "Name 2" },
-                                id: _reusableUuids[1]
+                                uuid: _reusableUuids[1]
                             ),
                             BatchInsertRequest.Create(
                                 new { Name = "Name 3" },
-                                id: _reusableUuids[2]
+                                uuid: _reusableUuids[2]
                             ),
                             BatchInsertRequest.Create(
                                 new { Name = "Name 4" },
-                                id: _reusableUuids[3]
+                                uuid: _reusableUuids[3]
                             ),
                         ],
                         [
@@ -366,19 +366,19 @@ public partial class BatchTests
                         [
                             BatchInsertRequest.Create(
                                 new { Name = "Name 1" },
-                                id: _reusableUuids[0]
+                                uuid: _reusableUuids[0]
                             ),
                             BatchInsertRequest.Create(
                                 new { Name = "Name 2" },
-                                id: _reusableUuids[1]
+                                uuid: _reusableUuids[1]
                             ),
                             BatchInsertRequest.Create(
                                 new { Name = "Name 3" },
-                                id: _reusableUuids[2]
+                                uuid: _reusableUuids[2]
                             ),
                             BatchInsertRequest.Create(
                                 new { Name = "Name 4" },
-                                id: _reusableUuids[3]
+                                uuid: _reusableUuids[3]
                             ),
                         ],
                         [
@@ -398,19 +398,19 @@ public partial class BatchTests
                         [
                             BatchInsertRequest.Create(
                                 new { Name = "Name 1" },
-                                id: _reusableUuids[0]
+                                uuid: _reusableUuids[0]
                             ),
                             BatchInsertRequest.Create(
                                 new { Name = "Name 2" },
-                                id: _reusableUuids[1]
+                                uuid: _reusableUuids[1]
                             ),
                             BatchInsertRequest.Create(
                                 new { Name = "Name 3" },
-                                id: _reusableUuids[2]
+                                uuid: _reusableUuids[2]
                             ),
                             BatchInsertRequest.Create(
                                 new { Name = "Name 4" },
-                                id: _reusableUuids[3]
+                                uuid: _reusableUuids[3]
                             ),
                         ],
                         [

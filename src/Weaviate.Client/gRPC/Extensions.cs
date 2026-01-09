@@ -27,20 +27,29 @@ internal partial class Targets
 {
     private static Targets ToGrpcTargets(Client.Models.TargetVectors targetVectors)
     {
-        List<string> targets = new(
-            (targetVectors.Weights?.Count ?? 0) == 0 ? targetVectors.Targets : []
-        );
-
+        List<string> targets;
         List<WeightsForTarget> weightsForTargets = new();
-        foreach (var w in targetVectors.Weights ?? [])
+
+        // Handle SimpleTargetVectors vs WeightedTargetVectors
+        if (targetVectors is Client.Models.WeightedTargetVectors weighted)
         {
-            foreach (var v in w.Value)
+            // For weighted targets, build weights list
+            targets = new();
+            foreach (var w in weighted.Weights)
             {
-                weightsForTargets.Add(
-                    new WeightsForTarget { Target = w.Key, Weight = Convert.ToSingle(v) }
-                );
-                targets.Add(w.Key);
+                foreach (var v in w.Value)
+                {
+                    weightsForTargets.Add(
+                        new WeightsForTarget { Target = w.Key, Weight = Convert.ToSingle(v) }
+                    );
+                    targets.Add(w.Key);
+                }
             }
+        }
+        else
+        {
+            // For simple targets, just use the target names
+            targets = new(targetVectors.Targets);
         }
 
         var grpcTargets = new Targets

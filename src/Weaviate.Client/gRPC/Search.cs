@@ -71,11 +71,10 @@ internal partial class WeaviateGrpcClient
 
     internal async Task<V1.SearchReply> SearchNearVector(
         string collection,
-        NearVectorInput vector,
+        VectorSearchInput vectors,
         GroupByRequest? groupBy = null,
         float? distance = null,
         float? certainty = null,
-        TargetVectors? targetVector = null,
         uint? limit = null,
         uint? autoLimit = null,
         uint? offset = null,
@@ -111,7 +110,7 @@ internal partial class WeaviateGrpcClient
             includeVectors: includeVectors
         );
 
-        request.NearVector = BuildNearVector(vector, certainty, distance, targetVector);
+        request.NearVector = BuildNearVector(vectors, certainty, distance);
 
         return await Search(request, cancellationToken);
     }
@@ -224,9 +223,7 @@ internal partial class WeaviateGrpcClient
         string collection,
         string? query = null,
         float? alpha = null,
-        Models.Vectors? vector = null,
-        HybridNearVector? nearVector = null,
-        HybridNearText? nearText = null,
+        HybridVectorInput? vectors = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
@@ -239,7 +236,6 @@ internal partial class WeaviateGrpcClient
         Rerank? rerank = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
-        TargetVectors? targetVector = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         AutoArray<string>? returnProperties = null,
@@ -249,13 +245,10 @@ internal partial class WeaviateGrpcClient
         CancellationToken cancellationToken = default
     )
     {
-        if (
-            !(vector is not null || nearVector is not null || nearText is not null)
-            && string.IsNullOrEmpty(query)
-        )
+        if (vectors is null && string.IsNullOrEmpty(query))
         {
             throw new ArgumentException(
-                "Either vector or query must be provided for hybrid search."
+                "Either vectors or query must be provided for hybrid search."
             );
         }
 
@@ -278,18 +271,14 @@ internal partial class WeaviateGrpcClient
             includeVectors: includeVectors
         );
 
-        BuildHybrid(
-            request,
+        request.HybridSearch = BuildHybrid(
             query,
             alpha,
-            vector,
-            nearVector,
-            nearText,
+            vectors,
             queryProperties,
             fusionType,
             maxVectorDistance,
-            bm25Operator,
-            targetVector
+            bm25Operator
         );
 
         return await Search(request, cancellationToken);
@@ -337,7 +326,7 @@ internal partial class WeaviateGrpcClient
             includeVectors: includeVectors
         );
 
-        BuildNearObject(request, objectID, certainty, distance, targetVector);
+        request.NearObject = BuildNearObject(objectID, certainty, distance, targetVector);
 
         return await Search(request, cancellationToken);
     }
@@ -402,7 +391,7 @@ internal partial class WeaviateGrpcClient
                     request.NearImage.Distance = distance.Value;
                 }
 
-                request.NearImage.Targets = targetVector ?? [];
+                request.NearImage.Targets = targetVector ?? new V1.Targets();
 
                 break;
             case NearMediaType.Video:
@@ -420,7 +409,7 @@ internal partial class WeaviateGrpcClient
                     request.NearVideo.Distance = distance.Value;
                 }
 
-                request.NearVideo.Targets = targetVector ?? [];
+                request.NearVideo.Targets = targetVector ?? new V1.Targets();
                 break;
             case NearMediaType.Audio:
                 request.NearAudio = new V1.NearAudioSearch
@@ -437,7 +426,7 @@ internal partial class WeaviateGrpcClient
                     request.NearAudio.Distance = distance.Value;
                 }
 
-                request.NearAudio.Targets = targetVector ?? [];
+                request.NearAudio.Targets = targetVector ?? new V1.Targets();
                 break;
             case NearMediaType.Depth:
                 request.NearDepth = new V1.NearDepthSearch
@@ -454,7 +443,7 @@ internal partial class WeaviateGrpcClient
                     request.NearDepth.Distance = distance.Value;
                 }
 
-                request.NearDepth.Targets = targetVector ?? [];
+                request.NearDepth.Targets = targetVector ?? new V1.Targets();
                 break;
             case NearMediaType.Thermal:
                 request.NearThermal = new V1.NearThermalSearch
@@ -471,7 +460,7 @@ internal partial class WeaviateGrpcClient
                     request.NearThermal.Distance = distance.Value;
                 }
 
-                request.NearThermal.Targets = targetVector ?? [];
+                request.NearThermal.Targets = targetVector ?? new V1.Targets();
                 break;
             case NearMediaType.IMU:
                 request.NearImu = new V1.NearIMUSearch { Imu = Convert.ToBase64String(media) };
@@ -485,7 +474,7 @@ internal partial class WeaviateGrpcClient
                     request.NearImu.Distance = distance.Value;
                 }
 
-                request.NearImu.Targets = targetVector ?? [];
+                request.NearImu.Targets = targetVector ?? new V1.Targets();
                 break;
             default:
                 throw new ArgumentException("Unsupported media type for near media search.");

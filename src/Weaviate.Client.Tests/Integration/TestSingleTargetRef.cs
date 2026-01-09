@@ -5,8 +5,8 @@ namespace Weaviate.Client.Tests.Integration;
 [Collection("ReferenceTests")]
 public partial class ReferenceTests : IntegrationTests
 {
-    readonly Guid TO_UUID = new Guid("8ad0d33c-8db1-4437-87f3-72161ca2a51a");
-    readonly Guid TO_UUID2 = new Guid("577887c1-4c6b-5594-aa62-f0c17883d9cf");
+    readonly Guid _to_UUID = new("8ad0d33c-8db1-4437-87f3-72161ca2a51a");
+    readonly Guid _to_UUID2 = new("577887c1-4c6b-5594-aa62-f0c17883d9cf");
 
     [Fact]
     public async Task Test_SingleTargetReferenceOps()
@@ -256,7 +256,7 @@ public partial class ReferenceTests : IntegrationTests
                 Property.Int("movie_id"),
             ],
             references: new Reference("forMovie", TargetCollection: movies.Name),
-            vectorConfig: new VectorConfig("default", new Vectorizer.Text2VecTransformers())
+            vectorConfig: Configure.Vector(v => v.Text2VecTransformers())
         );
 
         var moviesData = new[]
@@ -348,7 +348,7 @@ Undoubtedly worth a watch.",
 
 Martin Scorsese’s Goodfellas is without question one of the finest gangster movies ever made, a benchmark even. It’s that rare occasion for a genre film of this type where everything artistically comes together as one. Direction, script, editing, photography, driving soundtrack and crucially an ensemble cast firing on all cylinders. It’s grade “A” film making that marked a return to form for Scorsese whilst simultaneously showing the director at the summit of his directing abilities.
 
-The story itself, based on Nicholas Pileggi’s non-fiction book Wiseguy, pulls absolutely no punches in its stark realisation of the Mafia lifestyle. It’s often brutal, yet funny, unflinching yet stylish, but ultimately from first frame to last it holds the attention, toying with all the human emotions during the journey, tingling the senses of those who were by 1990 fed up of popcorn movie fodder. 
+The story itself, based on Nicholas Pileggi’s non-fiction book Wiseguy, pulls absolutely no punches in its stark realisation of the Mafia lifestyle. It’s often brutal, yet funny, unflinching yet stylish, but ultimately from first frame to last it holds the attention, toying with all the human emotions during the journey, tingling the senses of those who were by 1990 fed up of popcorn movie fodder.
 
 It’s not romanticism here, if anything it’s a debunking of the Mafia myth, but even as the blood flows and the dialogue crackles with electricity, it always remains icy cool, brought to us by a man who had is eyes and ears open while growing up in Queens, New York in the 40s and 50s. Eccellente! 9/10",
                 rating = (double?)9.0,
@@ -378,7 +378,7 @@ Martin Scorsese (the director) filmed this unfamiliar life and directed it in th
             new
             {
                 author_username = "Ruuz",
-                content = @"Doesn't really work if you actually spend the time to bother thinking about it, but so long as you don't _Home Alone_ is a pretty good time. There's really no likeable character, and it's honestly pretty mean spirited, but sometimes that's what you might need to defrag over Christmas. 
+                content = @"Doesn't really work if you actually spend the time to bother thinking about it, but so long as you don't _Home Alone_ is a pretty good time. There's really no likeable character, and it's honestly pretty mean spirited, but sometimes that's what you might need to defrag over Christmas.
 
 _Final rating:★★★ - I liked it. Would personally recommend you give it a go._",
                 rating = (double?)6.0,
@@ -428,13 +428,13 @@ It won’t make the regular rotation of our traditional holiday movies, but I am
 
         // Act
         var fun = await reviews.Query.NearText(
-            "Fun for the whole family",
+            (AutoArray<string>)"Fun for the whole family",
             limit: 2,
             cancellationToken: TestContext.Current.CancellationToken
         );
 
         var disappointed = await reviews.Query.NearText(
-            "Disappointed by this movie",
+            (AutoArray<string>)"Disappointed by this movie",
             limit: 2,
             returnReferences: [new QueryReference("forMovie", ["title"])],
             cancellationToken: TestContext.Current.CancellationToken

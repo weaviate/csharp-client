@@ -134,11 +134,11 @@ public partial class TenantTests : IntegrationTests
         Assert.Equal(0, result.Count(r => r.Error != null));
 
         var obj1 = await tenant1Collection.Query.FetchObjectByID(
-            result[0].ID!.Value,
+            result[0].UUID!.Value,
             cancellationToken: TestContext.Current.CancellationToken
         );
         var obj2 = await tenant1Collection.Query.FetchObjectByID(
-            result[1].ID!.Value,
+            result[1].UUID!.Value,
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -149,13 +149,13 @@ public partial class TenantTests : IntegrationTests
 
         Assert.Null(
             await tenant2Collection.Query.FetchObjectByID(
-                result[0].ID!.Value,
+                result[0].UUID!.Value,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         );
         Assert.Null(
             await tenant2Collection.Query.FetchObjectByID(
-                result[1].ID!.Value,
+                result[1].UUID!.Value,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         );

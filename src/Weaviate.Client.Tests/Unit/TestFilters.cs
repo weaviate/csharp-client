@@ -124,7 +124,7 @@ public partial class FilterTests
         // Arrange
         Guid id = Guid.NewGuid();
 
-        var f = Filter.ID.ContainsAny([id]);
+        var f = Filter.UUID.ContainsAny([id]);
 
         var expected = new Filters()
         {
@@ -220,7 +220,7 @@ public partial class FilterTests
         // Arrange
         var uuid1 = Guid.NewGuid();
         var uuid2 = Guid.NewGuid();
-        var f1 = Filter.Not(Filter.ID.ContainsAny(new[] { uuid1, uuid2 }));
+        var f1 = Filter.Not(Filter.UUID.ContainsAny(new[] { uuid1, uuid2 }));
 
         var expectedF1 = new Filters
         {

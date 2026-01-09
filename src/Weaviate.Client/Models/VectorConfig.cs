@@ -5,10 +5,10 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public record VectorConfig : IEquatable<VectorConfig>
 {
-    /// <param name="Name">The name of the vector configuration.</param>
-    /// <param name="Vectorizer">Configuration of a specific vectorizer used by this vector.</param>
-    /// <param name="VectorIndexConfig">Vector-index config, that is specific to the type of index selected in vectorIndexType.</param>
-    public VectorConfig(
+    /// <param name="name">The name of the vector configuration.</param>
+    /// <param name="vectorizer">Configuration of a specific vectorizer used by this vector.</param>
+    /// <param name="vectorIndexConfig">Vector-index config, that is specific to the type of index selected in vectorIndexType.</param>
+    internal VectorConfig(
         string name,
         VectorizerConfig? vectorizer = null,
         VectorIndexConfig? vectorIndexConfig = null

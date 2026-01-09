@@ -69,7 +69,7 @@ public partial class CollectionsTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("Name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         bool exists = await _weaviate.Collections.Exists(
@@ -91,6 +91,8 @@ public partial class CollectionsTests : IntegrationTests
         Assert.False(exists);
     }
 
+    // This test requires internal access to CollectionConfig.FromCollectionCreate
+#if ENABLE_INTERNAL_TESTS
     [Theory]
     [ClassData(typeof(DatasetCollectionCreateAndExport))]
     public async Task Test_Collections_Export_Cases(string key)
@@ -110,6 +112,7 @@ public partial class CollectionsTests : IntegrationTests
 
         Assert.Equal(expected, export);
     }
+#endif
 
     [Fact]
     public async Task Collection_Creates_And_Retrieves_Reranker_Config()
@@ -144,11 +147,10 @@ public partial class CollectionsTests : IntegrationTests
         // Arrange
         var collectionClient = await CollectionFactory(
             properties: [Property.Text("Name")],
-            generativeConfig: new GenerativeConfig.Custom
-            {
-                Type = "generative-dummy",
-                Config = new { ConfigOption = "ConfigValue" },
-            }
+            generativeConfig: Configure.Generative.Custom(
+                "generative-dummy",
+                new { ConfigOption = "ConfigValue" }
+            )
         );
 
         // Act
@@ -169,7 +171,7 @@ public partial class CollectionsTests : IntegrationTests
             name: "MyOwnSuffix",
             description: "My own description too",
             properties: [Property.Text("Name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         var export = await _weaviate.Collections.Export(
@@ -297,9 +299,9 @@ public partial class CollectionsTests : IntegrationTests
             properties: [Property.Text("Name"), Property.Int("SomeNumber")],
             references: null,
             collectionNamePartSeparator: "",
-            vectorConfig: new VectorConfig(
+            vectorConfig: Configure.Vector(
                 "nondefault",
-                new Vectorizer.Text2VecTransformers() { VectorizeCollectionName = false }
+                v => v.Text2VecTransformers(vectorizeCollectionName: false)
             ),
             invertedIndexConfig: new()
             {
@@ -438,12 +440,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.False(config?.Skip);
         Assert.Equal(1000000000000L, config?.VectorCacheMaxObjects);
 
-        // Obsolete properties should be null/empty for new VectorConfig usage
-#pragma warning disable CS0618 // Type or member is obsolete
         Assert.Null(export.VectorIndexConfig);
         Assert.Null(export.VectorIndexType);
         Assert.Equal("", export.Vectorizer);
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     [Fact]
@@ -455,9 +454,9 @@ public partial class CollectionsTests : IntegrationTests
             properties: [Property.Text("Name"), Property.Int("SomeNumber")],
             references: null,
             collectionNamePartSeparator: "",
-            vectorConfig: new VectorConfig(
+            vectorConfig: Configure.Vector(
                 "nondefault",
-                new Vectorizer.Text2VecTransformers() { VectorizeCollectionName = false }
+                v => v.Text2VecTransformers(vectorizeCollectionName: false)
             ),
             multiTenancyConfig: new()
             {
@@ -627,7 +626,7 @@ public partial class CollectionsTests : IntegrationTests
     public static IEnumerable<object?> GenerativeConfigData()
     {
         yield return null;
-        yield return new GenerativeConfig.Anyscale();
+        yield return Configure.Generative.Anyscale();
     }
 
     public static IEnumerable<VectorConfigList?> VectorizerConfigData()

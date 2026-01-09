@@ -56,7 +56,7 @@ public partial class BatchTests : IntegrationTests
         // Setup referenced collection ("To")
         var refCollection = await CollectionFactory(
             name: "To",
-            vectorConfig: new VectorConfig("default"),
+            vectorConfig: Configure.Vector(v => v.SelfProvided()),
             properties: [Property.Int("number")]
         );
         int numObjects = 10;
@@ -69,14 +69,14 @@ public partial class BatchTests : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        Guid[] uuidsTo = [.. refInsertResult.Select(r => r.ID!.Value)];
+        Guid[] uuidsTo = [.. refInsertResult.Select(r => r.UUID!.Value)];
 
         // Setup main collection ("From") with a reference property
         var collection = await CollectionFactory(
             name: "From",
             properties: Property.Int("num"),
             references: new Reference("ref", refCollection.Name),
-            vectorConfig: new VectorConfig("default")
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         // Insert objects into the main collection and get their UUIDs
@@ -85,7 +85,7 @@ public partial class BatchTests : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        Guid[] uuidsFrom = [.. fromInsertResult.Select(r => r.ID!.Value)];
+        Guid[] uuidsFrom = [.. fromInsertResult.Select(r => r.UUID!.Value)];
 
         // First batch: each "From" object references the "To" object with the same index
         var batchReturn1 = await collection.Data.ReferenceAddMany(

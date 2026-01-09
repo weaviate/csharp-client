@@ -1,5 +1,3 @@
-using Google.Protobuf;
-using Weaviate.Client.Grpc;
 using Weaviate.Client.Grpc.Protobuf.V1;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Generative;
@@ -124,7 +122,7 @@ public class GenerativeShortcutsTests
         await client
             .Collections.Use("TestCollection")
             .Generate.NearText(
-                text: "artificial intelligence",
+                query: "artificial intelligence",
                 limit: 5,
                 singlePrompt: "Explain this concept",
                 provider: provider,

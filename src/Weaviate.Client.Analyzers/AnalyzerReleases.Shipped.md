@@ -7,3 +7,4 @@ Rule ID     | Category | Severity | Notes
 WEAVIATE001 | Usage    | Warning  | AutoArrayUsageAnalyzer - AutoArray should only be used as method parameter
 WEAVIATE002 | Usage    | Error    | VectorizerFactoryAnalyzer - Missing property initialization
 WEAVIATE003 | Usage    | Error    | VectorizerFactoryAnalyzer - Missing field in Weights calculation
+WEAVIATE004 | Usage    | Error    | Hybrid search requires at least one of 'query' or 'vectors' parameters

@@ -1,3 +1,5 @@
+// These tests require internal access to ToDto() and WeaviateRestClient.
+#if ENABLE_INTERNAL_TESTS
 using System.Text.Json;
 using Weaviate.Client.Models;
 
@@ -175,7 +177,7 @@ public partial class CollectionsTests
         Assert.NotNull(obj1);
         Assert.Equal("Item1", obj1.Properties["name"]);
         Assert.True(obj1.Vectors.ContainsKey("default"));
-        Assert.Equal(4, obj1.Vectors["default"].Dimensions);
+        Assert.Equal((1, 4), obj1.Vectors["default"].Dimensions);
         float[] obj1Vector = obj1.Vectors["default"];
         Assert.Equal(vector1, obj1Vector);
 
@@ -508,3 +510,4 @@ public partial class CollectionsTests
         );
     }
 }
+#endif

@@ -10,7 +10,7 @@ public partial class BatchDeleteTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("Name")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         await collection.Data.InsertMany(
@@ -34,7 +34,7 @@ public partial class BatchDeleteTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("Name"), Property.Int("Age")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         await collection.Data.InsertMany(
@@ -70,7 +70,7 @@ public partial class BatchDeleteTests : IntegrationTests
     {
         var collection = await CollectionFactory(
             properties: [Property.Text("Name"), Property.Int("Age")],
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         await collection.Data.InsertMany(
@@ -106,7 +106,7 @@ public partial class BatchDeleteTests : IntegrationTests
     public async Task Test_Dry_Run(bool dryRun)
     {
         var collection = await CollectionFactory(
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         var uuid1 = await collection.Data.Insert(
@@ -119,7 +119,7 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         var result = await collection.Data.DeleteMany(
-            where: Filter.ID.IsEqual(uuid1),
+            where: Filter.UUID.IsEqual(uuid1),
             dryRun: dryRun,
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -164,7 +164,7 @@ public partial class BatchDeleteTests : IntegrationTests
     public async Task Test_Verbosity(bool verbose)
     {
         var collection = await CollectionFactory(
-            vectorConfig: new VectorConfig("default", new Vectorizer.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided())
         );
 
         var uuid1 = await collection.Data.Insert(
@@ -177,7 +177,7 @@ public partial class BatchDeleteTests : IntegrationTests
         );
 
         var result = await collection.Data.DeleteMany(
-            where: Filter.ID.IsEqual(uuid1),
+            where: Filter.UUID.IsEqual(uuid1),
             verbose: verbose,
             dryRun: false,
             cancellationToken: TestContext.Current.CancellationToken

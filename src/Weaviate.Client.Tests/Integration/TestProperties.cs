@@ -64,6 +64,7 @@ public partial class PropertyTests : IntegrationTests
             "testGeo",
             new GeoCoordinate(12.345f, 67.89f),
         };
+#if ENABLE_INTERNAL_TESTS
         yield return new object[]
         {
             new[] { Property.PhoneNumber("testPhone") },
@@ -80,6 +81,7 @@ public partial class PropertyTests : IntegrationTests
                 Valid = false,
             },
         };
+#endif
         yield return new object[]
         {
             new[] { Property.TextArray("testTextArray") },
@@ -188,7 +190,7 @@ public partial class PropertyTests : IntegrationTests
             )
         )
             .First()
-            .ID!.Value;
+            .UUID!.Value;
 
         var retrieved = await c.Query.FetchObjectByID(
             id,
@@ -320,7 +322,9 @@ public partial class PropertyTests : IntegrationTests
             TestUuid = Guid.NewGuid(),
             TestUuidArray = new[] { Guid.NewGuid(), Guid.NewGuid() },
             TestGeo = new GeoCoordinate(12.345f, 67.890f),
+#if ENABLE_INTERNAL_TESTS
             TestPhone = new PhoneNumber("+1 555-123-4567") { DefaultCountry = "US" },
+#endif
             TestObject = new TestNestedProperties
             {
                 TestText = "nestedText",
@@ -360,6 +364,7 @@ public partial class PropertyTests : IntegrationTests
 
         var concreteObj = obj?.As<TestProperties>();
 
+#if ENABLE_INTERNAL_TESTS
         testData.TestPhone = new PhoneNumber(testData.TestPhone.Input)
         {
             DefaultCountry = testData.TestPhone.DefaultCountry,
@@ -370,6 +375,7 @@ public partial class PropertyTests : IntegrationTests
             NationalFormatted = "(555) 123-4567",
             Valid = false,
         };
+#endif
 
         Assert.Equivalent(testData, concreteObj);
     }
@@ -401,7 +407,7 @@ public partial class PropertyTests : IntegrationTests
         {
             // Blobs must be explicitly requested in returnProperties
             var obj = await c.Query.FetchObjectByID(
-                r.ID!.Value,
+                r.UUID!.Value,
                 returnProperties: "testBlob",
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -561,7 +567,7 @@ public partial class PropertyTests : IntegrationTests
         foreach (var r in response)
         {
             var obj = await c.Query.FetchObjectByID(
-                r.ID!.Value,
+                r.UUID!.Value,
                 cancellationToken: TestContext.Current.CancellationToken
             );
 
@@ -820,7 +826,7 @@ public partial class PropertyTests : IntegrationTests
         foreach (var r in response)
         {
             var obj = await c.Query.FetchObjectByID(
-                r.ID!.Value,
+                r.UUID!.Value,
                 cancellationToken: TestContext.Current.CancellationToken
             );
             Assert.NotNull(obj);

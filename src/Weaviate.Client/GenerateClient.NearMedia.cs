@@ -5,41 +5,46 @@ namespace Weaviate.Client;
 public partial class GenerateClient
 {
     /// <summary>
-    /// Search near media with generative AI capabilities.
+    /// Performs a near-media search with generative AI capabilities.
     /// </summary>
-    /// <param name="media">Media data</param>
-    /// <param name="mediaType">Type of media</param>
-    /// <param name="certainty">Certainty threshold</param>
-    /// <param name="distance">Distance threshold</param>
-    /// <param name="limit">Maximum number of results</param>
-    /// <param name="offset">Offset for pagination</param>
-    /// <param name="autoLimit">Auto-limit threshold</param>
-    /// <param name="filters">Filters to apply</param>
-    /// <param name="rerank">Rerank configuration</param>
-    /// <param name="singlePrompt">Single prompt for generation</param>
-    /// <param name="groupedTask">Grouped prompt for generation</param>
-    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
-    /// <param name="targetVector">Target vector name</param>
-    /// <param name="returnProperties">Properties to return</param>
-    /// <param name="returnReferences">References to return</param>
-    /// <param name="returnMetadata">Metadata to return</param>
-    /// <param name="includeVectors">Vectors to include</param>
-    /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <returns>Generative result</returns>
+    /// <example>
+    /// // Simple image search with generation
+    /// await collection.Generate.NearMedia(
+    ///     m => m.Image(imageBytes),
+    ///     singlePrompt: "Describe this image"
+    /// );
+    ///
+    /// // With target vectors and generation
+    /// await collection.Generate.NearMedia(
+    ///     m => m.Video(videoBytes, certainty: 0.8f).Sum("v1", "v2"),
+    ///     singlePrompt: "Summarize this video"
+    /// );
+    /// </example>
+    /// <param name="media">Lambda builder for creating NearMediaInput with media data and target vectors.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="limit">Maximum number of results to return.</param>
+    /// <param name="offset">Number of results to skip.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
+    /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="singlePrompt">Single prompt for generative AI.</param>
+    /// <param name="groupedTask">Grouped task for generative AI.</param>
+    /// <param name="provider">Generative AI provider configuration.</param>
+    /// <param name="returnProperties">Properties to return in the response.</param>
+    /// <param name="returnReferences">Cross-references to return.</param>
+    /// <param name="returnMetadata">Metadata to include in the response.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Generative search result.</returns>
     public async Task<GenerativeWeaviateResult> NearMedia(
-        byte[] media,
-        NearMediaType mediaType,
-        double? certainty = null,
-        double? distance = null,
+        NearMediaInput.FactoryFn media,
+        Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
         uint? autoLimit = null,
-        Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
-        TargetVectors? targetVector = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -47,12 +52,13 @@ public partial class GenerateClient
         CancellationToken cancellationToken = default
     )
     {
+        var input = media(new NearMediaBuilder());
         var result = await _client.GrpcClient.SearchNearMedia(
             _collectionClient.Name,
-            media: media,
-            mediaType: mediaType,
-            certainty: certainty,
-            distance: distance,
+            media: input.Media,
+            mediaType: input.Type,
+            certainty: input.Certainty,
+            distance: input.Distance,
             limit: limit,
             offset: offset,
             autoLimit: autoLimit,
@@ -62,7 +68,7 @@ public partial class GenerateClient
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             tenant: _collectionClient.Tenant,
-            targetVector: targetVector,
+            targetVector: input.TargetVectors,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
@@ -75,43 +81,43 @@ public partial class GenerateClient
     }
 
     /// <summary>
-    /// Search near media with generative AI capabilities and grouping.
+    /// Performs a near-media search with generative AI capabilities and group-by aggregation.
     /// </summary>
-    /// <param name="media">Media data</param>
-    /// <param name="mediaType">Type of media</param>
-    /// <param name="groupBy">Group by configuration</param>
-    /// <param name="certainty">Certainty threshold</param>
-    /// <param name="distance">Distance threshold</param>
-    /// <param name="limit">Maximum number of results</param>
-    /// <param name="offset">Offset for pagination</param>
-    /// <param name="autoLimit">Auto-limit threshold</param>
-    /// <param name="filters">Filters to apply</param>
-    /// <param name="rerank">Rerank configuration</param>
-    /// <param name="singlePrompt">Single prompt for generation</param>
-    /// <param name="groupedTask">Grouped prompt for generation</param>
-    /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
-    /// <param name="targetVector">Target vector name</param>
-    /// <param name="returnProperties">Properties to return</param>
-    /// <param name="returnReferences">References to return</param>
-    /// <param name="returnMetadata">Metadata to return</param>
-    /// <param name="includeVectors">Vectors to include</param>
-    /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <returns>Generative group-by result</returns>
+    /// <example>
+    /// // Image search with grouping and generation
+    /// await collection.Generate.NearMedia(
+    ///     m => m.Image(imageBytes).Sum("visual", "semantic"),
+    ///     groupBy: new GroupByRequest("category", objectsPerGroup: 5),
+    ///     groupedTask: "Summarize each group"
+    /// );
+    /// </example>
+    /// <param name="media">Lambda builder for creating NearMediaInput with media data and target vectors.</param>
+    /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="limit">Maximum number of results to return.</param>
+    /// <param name="offset">Number of results to skip.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
+    /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="singlePrompt">Single prompt for generative AI.</param>
+    /// <param name="groupedTask">Grouped task for generative AI.</param>
+    /// <param name="provider">Generative AI provider configuration.</param>
+    /// <param name="returnProperties">Properties to return in the response.</param>
+    /// <param name="returnReferences">Cross-references to return.</param>
+    /// <param name="returnMetadata">Metadata to include in the response.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Generative grouped search result.</returns>
     public async Task<GenerativeGroupByResult> NearMedia(
-        byte[] media,
-        NearMediaType mediaType,
+        NearMediaInput.FactoryFn media,
         GroupByRequest groupBy,
-        double? certainty = null,
-        double? distance = null,
+        Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
         uint? autoLimit = null,
-        Filter? filters = null,
         Rerank? rerank = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
-        TargetVectors? targetVector = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -119,12 +125,13 @@ public partial class GenerateClient
         CancellationToken cancellationToken = default
     )
     {
+        var input = media(new NearMediaBuilder());
         var result = await _client.GrpcClient.SearchNearMedia(
             _collectionClient.Name,
-            media: media,
-            mediaType: mediaType,
-            certainty: certainty,
-            distance: distance,
+            media: input.Media,
+            mediaType: input.Type,
+            certainty: input.Certainty,
+            distance: input.Distance,
             limit: limit,
             offset: offset,
             autoLimit: autoLimit,
@@ -134,7 +141,7 @@ public partial class GenerateClient
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             tenant: _collectionClient.Tenant,
-            targetVector: targetVector,
+            targetVector: input.TargetVectors,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,

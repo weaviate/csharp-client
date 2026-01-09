@@ -96,11 +96,11 @@ public partial record AggregateResult
         return new AggregateResult
         {
             Properties = (
-                reply.SingleResult.Aggregations != null
+                reply.SingleResult?.Aggregations != null
                     ? reply.SingleResult.Aggregations
                     : new V1.AggregateReply.Types.Aggregations()
             ).Aggregations_.ToDictionary(x => x.Property, AggregateResult.FromGrpcProperty),
-            TotalCount = reply.SingleResult.ObjectsCount,
+            TotalCount = reply.SingleResult?.ObjectsCount ?? 0,
         };
     }
 

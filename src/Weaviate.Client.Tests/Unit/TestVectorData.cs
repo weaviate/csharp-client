@@ -5,24 +5,26 @@ namespace Weaviate.Client.Tests.Unit;
 public class VectorDataTests
 {
     [Fact]
-    public void Vector_Create_Returns_VectorSingle()
+    public void Vector_Create_Returns_Single_Vector()
     {
-        var vector = Vector.Create(1, 2, 3);
-        Assert.IsAssignableFrom<Vector>(vector);
-        Assert.IsType<VectorSingle<int>>(vector);
+        var vectors = new Vectors([1, 2, 3]);
+        Assert.True(vectors.ContainsKey("default"));
+        var vector = vectors["default"];
 
-        Assert.Equal(3, vector.Dimensions);
-        Assert.Equal(1, vector.Count);
+        Assert.IsAssignableFrom<Vector>(vector);
+        Assert.Equal((1, 3), vector.Dimensions);
+        Assert.Equal(3, vector.Count);
         Assert.False(vector.IsMultiVector);
 
-        Assert.Equal(new[] { 1, 2, 3 }, vector);
+        int[] values = vector;
+        Assert.Equal(new[] { 1, 2, 3 }, values);
         Assert.Equal(typeof(int), vector.ValueType);
     }
 
     [Fact]
-    public void Vector_Create_Returns_VectorMulti()
+    public void Vector_Create_Returns_Multi_Vector()
     {
-        var vector = Vector.Create(
+        var vectors = new Vectors(
             new[,]
             {
                 { 1, 2 },
@@ -30,19 +32,15 @@ public class VectorDataTests
                 { 5, 6 },
             }
         );
-        Assert.IsAssignableFrom<Vector>(vector);
-        Assert.IsType<VectorMulti<int>>(vector);
+        Assert.True(vectors.ContainsKey("default"));
+        var vector = vectors["default"];
 
-        Assert.Equal(3, vector.Dimensions);
-        Assert.Equal(2, vector.Count);
+        Assert.IsAssignableFrom<Vector>(vector);
+        Assert.Equal((3, 2), vector.Dimensions);
+        Assert.Equal(6, vector.Count);
         Assert.True(vector.IsMultiVector);
 
-        var vectorM = vector as VectorMulti<int>;
-        Assert.NotNull(vectorM);
-
-        Assert.Equal(new[] { 1, 2 }, vectorM[0]);
-        Assert.Equal(new[] { 3, 4 }, vectorM[1]);
-        Assert.Equal(typeof(int[]), vectorM.ValueType);
+        Assert.Equal(typeof(int[]), vector.ValueType);
 
         int[,] values = vector;
         Assert.Equal(1, values[0, 0]);
@@ -54,21 +52,20 @@ public class VectorDataTests
     }
 
     [Fact]
-    public void Implicit_Conversion_VectorSingle_To_VectorContainer()
+    public void Implicit_Conversion_Array_To_Vectors()
     {
-        var vector = Vector.Create(1.1, 2.2);
-        Vectors container = vector;
+        Vectors container = new[] { 1.1, 2.2 };
         Assert.True(container.ContainsKey("default"));
         var stored = container["default"];
         Assert.NotNull(stored);
-        Assert.Equal(new[] { 1.1, 2.2 }, stored);
+        double[] values = stored;
+        Assert.Equal(new[] { 1.1, 2.2 }, values);
     }
 
     [Fact]
-    public void Implicit_Conversion_VectorContainer_To_Array()
+    public void Implicit_Conversion_Vectors_NamedVector_To_Array()
     {
-        var vector = Vector.Create(1.1, 2.2);
-        Vectors container = vector;
+        Vectors container = new[] { 1.1, 2.2 };
         Assert.True(container.ContainsKey("default"));
         double[] stored = container["default"];
         Assert.NotNull(stored);
@@ -76,33 +73,47 @@ public class VectorDataTests
     }
 
     [Fact]
-    public void Implicit_Conversion_VectorMulti_To_VectorContainer()
+    public void Implicit_Conversion_MultiArray_To_Vectors()
     {
-        var multiVector = Vector.Create(
-            new[,]
-            {
-                { 1f, 2f },
-                { 3f, 4f },
-            }
-        );
-        Vectors container = multiVector;
+        Vectors container = new[,]
+        {
+            { 1f, 2f },
+            { 3f, 4f },
+        };
         Assert.True(container.ContainsKey("default"));
-        var stored = container["default"] as VectorMulti<float>;
+        var stored = container["default"];
         Assert.NotNull(stored);
-        Assert.Equal(2, stored.Dimensions);
-        Assert.Equal(new[] { 1f, 2f }, stored[0]);
-        Assert.Equal(new[] { 3f, 4f }, stored[1]);
+        Assert.Equal((2, 2), stored.Dimensions);
+        Assert.Equal(4, stored.Count);
+        Assert.True(stored.IsMultiVector);
+
+        float[,] values = stored;
+        Assert.Equal(1f, values[0, 0]);
+        Assert.Equal(2f, values[0, 1]);
+        Assert.Equal(3f, values[1, 0]);
+        Assert.Equal(4f, values[1, 1]);
     }
 
     [Fact]
     public void VectorContainer_Add_SingleVector()
     {
-        var container = new Vectors();
-        container.Add("vec", 10, 20, 30);
+        var container = new Vectors { { "vec", new[] { 10, 20, 30 } } };
         Assert.True(container.ContainsKey("vec"));
-        var vector = container["vec"] as VectorSingle<int>;
+        var vector = container["vec"];
         Assert.NotNull(vector);
-        Assert.Equal(new[] { 10, 20, 30 }, vector);
+        int[] values = vector;
+        Assert.Equal([10, 20, 30], values);
+    }
+
+    [Fact]
+    public void VectorContainer_Add_SingleVector_CollectionExpression()
+    {
+        var container = new Vectors("vec", [10, 20, 30]);
+        Assert.True(container.ContainsKey("vec"));
+        var vector = container["vec"];
+        Assert.NotNull(vector);
+        int[] values = vector;
+        Assert.Equal(new[] { 10, 20, 30 }, values);
     }
 
     [Fact]
@@ -118,35 +129,38 @@ public class VectorDataTests
             }
         );
         Assert.True(container.ContainsKey("multi"));
-        var multiVector = container["multi"] as VectorMulti<int>;
+        var multiVector = container["multi"];
         Assert.NotNull(multiVector);
-        Assert.Equal(2, multiVector.Count);
-        Assert.Equal(new[] { 1, 2 }, multiVector[0]);
-        Assert.Equal(new[] { 3, 4 }, multiVector[1]);
+        Assert.Equal((2, 2), multiVector.Dimensions);
+        Assert.Equal(4, multiVector.Count);
+
+        int[,] values = multiVector;
+        Assert.Equal(1, values[0, 0]);
+        Assert.Equal(2, values[0, 1]);
+        Assert.Equal(3, values[1, 0]);
+        Assert.Equal(4, values[1, 1]);
     }
 
     [Fact]
-    public void VectorSingle_EnumerableBehavior()
+    public void Vector_Single_EnumerableBehavior()
     {
-        var vector = Vector.Create(5, 6, 7);
+        Vector vector = new[] { 5, 6, 7 };
         var list = new List<int>(vector.Cast<int>());
         Assert.Equal(new[] { 5, 6, 7 }, list);
     }
 
     [Fact]
-    public void VectorMulti_EnumerableBehavior()
+    public void Vector_Multi_EnumerableBehavior()
     {
-        var multiVector = Vector.Create(
-            new[,]
-            {
-                { 8, 9 },
-                { 10, 11 },
-            }
-        );
-        var list = new List<int[]>(multiVector.Cast<int[]>());
-        Assert.Equal(2, list.Count);
-        Assert.Equal(new[] { 8, 9 }, list[0]);
-        Assert.Equal(new[] { 10, 11 }, list[1]);
+        Vector multiVector = new[,]
+        {
+            { 8, 9 },
+            { 10, 11 },
+        };
+        var list = multiVector.Cast<int[]>();
+        Assert.Equal(2, list.Count());
+        Assert.Equal(new[] { 8, 9 }, list.ElementAt(0));
+        Assert.Equal(new[] { 10, 11 }, list.ElementAt(1));
     }
 
     [Fact]
@@ -165,138 +179,25 @@ public class VectorDataTests
             },
         };
 
-        var v1 = Vector.Create(1f, 2f);
-        Vectors vc1 = v1;
+        Vectors vc1 = new[] { 1f, 2f };
+        var singleVector = vc1["default"];
+        Assert.False(singleVector.IsMultiVector);
+        Assert.Equal(typeof(float), singleVector.ValueType);
 
-        Assert.IsType<float>(vc1["default"][0]);
-
-        var v2 = Vector.Create(
-            new[,]
-            {
-                { 1f, 2f },
-                { 3f, 4f },
-            }
-        );
-        Vectors vc2 = v2;
-
-        Assert.IsType<float[]>(vc2["default"][0]);
+        Vectors vc2 = new[,]
+        {
+            { 1f, 2f },
+            { 3f, 4f },
+        };
+        var multiVector = vc2["default"];
+        Assert.True(multiVector.IsMultiVector);
+        Assert.Equal(typeof(float[]), multiVector.ValueType);
     }
 
     #region Equality Tests
-    [Fact]
-    public void VectorSingle_Equality_WithSameValues_ShouldBeEqual()
-    {
-        // Arrange: Create two single vectors with identical values
-        var vector1 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 3.0f });
-        var vector2 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 3.0f });
-
-        // Act & Assert
-        Assert.Equal(vector1, vector2);
-        Assert.True(vector1 == vector2);
-        Assert.False(vector1 != vector2);
-        Assert.Equal(vector1.GetHashCode(), vector2.GetHashCode());
-    }
-
-    [Fact]
-    public void VectorSingle_Equality_WithDifferentValues_ShouldNotBeEqual()
-    {
-        // Arrange: Create two single vectors with different values
-        var vector1 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 3.0f });
-        var vector2 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 4.0f });
-
-        // Act & Assert
-        Assert.NotEqual(vector1, vector2);
-        Assert.False(vector1 == vector2);
-        Assert.True(vector1 != vector2);
-    }
-
-    [Fact]
-    public void VectorSingle_Equality_WithDifferentNames_ShouldNotBeEqual()
-    {
-        // Arrange: Create two single vectors with same values but different names
-        var vector1 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 3.0f }) { Name = "vector1" };
-        var vector2 = new VectorSingle<float>(new[] { 1.0f, 2.0f, 3.0f }) { Name = "vector2" };
-
-        // Act & Assert
-        Assert.NotEqual(vector1, vector2);
-    }
-
-    [Fact]
-    public void VectorMulti_Equality_WithSameValues_ShouldBeEqual()
-    {
-        // Arrange: Create two multi-vectors with identical values
-        var vector1 = new VectorMulti<float>(
-            new[,]
-            {
-                { 1.0f, 2.0f, 3.0f },
-                { 4.0f, 5.0f, 6.0f },
-                { 7.0f, 8.0f, 9.0f },
-                { 10.0f, 11.0f, 12.0f },
-            }
-        );
-        var vector2 = new VectorMulti<float>(
-            new[,]
-            {
-                { 1.0f, 2.0f, 3.0f },
-                { 4.0f, 5.0f, 6.0f },
-                { 7.0f, 8.0f, 9.0f },
-                { 10.0f, 11.0f, 12.0f },
-            }
-        );
-
-        // Act & Assert
-        Assert.Equal(vector1, vector2);
-        Assert.True(vector1 == vector2);
-        Assert.False(vector1 != vector2);
-        Assert.Equal(vector1.GetHashCode(), vector2.GetHashCode());
-    }
-
-    [Fact]
-    public void VectorMulti_Equality_WithDifferentValues_ShouldNotBeEqual()
-    {
-        // Arrange: Create two multi-vectors with different values
-        var vector1 = new VectorMulti<float>(
-            new[,]
-            {
-                { 1.0f, 2.0f, 3.0f },
-                { 4.0f, 5.0f, 6.0f },
-            }
-        );
-        var vector2 = new VectorMulti<float>(
-            new[,]
-            {
-                { 1.0f, 2.0f, 3.0f },
-                { 4.0f, 5.0f, 7.0f }, // Different value
-            }
-        );
-
-        // Act & Assert
-        Assert.NotEqual(vector1, vector2);
-    }
-
-    [Fact]
-    public void VectorMulti_Equality_WithDifferentDimensions_ShouldNotBeEqual()
-    {
-        // Arrange: Create two multi-vectors with different dimensions
-        var vector1 = new VectorMulti<float>(
-            new[,]
-            {
-                { 1.0f, 2.0f, 3.0f },
-                { 4.0f, 5.0f, 6.0f },
-            }
-        );
-        var vector2 = new VectorMulti<float>(
-            new[,]
-            {
-                { 1.0f, 2.0f, 3.0f },
-                { 4.0f, 5.0f, 6.0f },
-                { 7.0f, 8.0f, 9.0f },
-            }
-        );
-
-        // Act & Assert
-        Assert.NotEqual(vector1, vector2);
-    }
+    // Note: VectorSingle<T> and VectorMulti<T> are now internal types.
+    // The equality tests have been removed as they tested internal implementation details.
+    // The public API (Vector, NamedVector, Vectors) should be tested for equality instead.
 
     [Fact]
     public void Vectors_Equality_WithIdenticalSingleVectors_ShouldBeEqual()
@@ -378,7 +279,7 @@ public class VectorDataTests
         vectors2.Add(new[] { 1.0f, 2.0f, 3.0f });
 
         // Method 3: Using Create method
-        var vectors3 = Vectors.Create(1.0f, 2.0f, 3.0f);
+        var vectors3 = new Vectors([1.0f, 2.0f, 3.0f]);
 
         // Act & Assert
         Assert.Equal(vectors1, vectors2);
@@ -466,49 +367,5 @@ public class VectorDataTests
         Assert.Equal(vectors1, vectors2);
     }
 
-    [Fact]
-    public void VectorSingle_Equality_WithIntegerType_ShouldBeEqual()
-    {
-        // Arrange: Test with integer type
-        var vector1 = new VectorSingle<int>(new[] { 1, 2, 3, 4, 5 });
-        var vector2 = new VectorSingle<int>(new[] { 1, 2, 3, 4, 5 });
-
-        // Act & Assert
-        Assert.Equal(vector1, vector2);
-    }
-
-    [Fact]
-    public void VectorMulti_Equality_WithDoubleType_ShouldBeEqual()
-    {
-        // Arrange: Test with double type
-        var vector1 = new VectorMulti<double>(
-            new[,]
-            {
-                { 1.0, 2.0 },
-                { 3.0, 4.0 },
-            }
-        );
-        var vector2 = new VectorMulti<double>(
-            new[,]
-            {
-                { 1.0, 2.0 },
-                { 3.0, 4.0 },
-            }
-        );
-
-        // Act & Assert
-        Assert.Equal(vector1, vector2);
-    }
-
-    [Fact]
-    public void VectorSingle_Equality_EmptyVectors_ShouldBeEqual()
-    {
-        // Arrange: Create two empty vectors
-        var vector1 = new VectorSingle<float>(Array.Empty<float>());
-        var vector2 = new VectorSingle<float>(Array.Empty<float>());
-
-        // Act & Assert
-        Assert.Equal(vector1, vector2);
-    }
     #endregion
 }
