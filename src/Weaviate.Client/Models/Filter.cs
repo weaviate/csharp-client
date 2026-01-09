@@ -126,7 +126,7 @@ public partial record Filter
 
     public static Filter Not(Filter filter) => new NotNestedFilter(filter);
 
-    public static TypedGuid ID => new(Property("_id"));
+    public static TypedGuid UUID => new(Property("_id"));
 
     public static PropertyFilter Property(string name) => new(name.Decapitalize());
 
@@ -380,7 +380,7 @@ public record ReferenceFilter : Filter
         }
     }
 
-    public new TypedGuid ID
+    public new TypedGuid UUID
     {
         get { return new TypedGuid(Property("_id")); }
     }

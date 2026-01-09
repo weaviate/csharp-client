@@ -672,7 +672,7 @@ public partial class FilterTests : IntegrationTests
         );
 
         // Act
-        var filter = Filter.Not(Filter.ID.ContainsAny(new[] { uuid1, uuid2 }));
+        var filter = Filter.Not(Filter.UUID.ContainsAny(new[] { uuid1, uuid2 }));
         var objects = await collection.Query.FetchObjects(
             filters: filter,
             cancellationToken: TestContext.Current.CancellationToken
