@@ -665,7 +665,7 @@ public class CategoryAnalysis
 
 **Analyzer validation:**
 
-If you use the wrong attribute type (e.g., `[NumberMetrics]` on an `Aggregate.Text` property), you'll get a **WEAVIATE004** warning at compile time pointing out the mismatch.
+If you use the wrong attribute type (e.g., `[NumberMetrics]` on an `Aggregate.Text` property), you'll get a **WEAVIATE007** warning at compile time pointing out the mismatch.
 
 ### GroupBy with Typed Results
 

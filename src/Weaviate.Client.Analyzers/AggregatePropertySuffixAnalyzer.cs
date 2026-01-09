@@ -18,7 +18,7 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
 {
     public const string MissingSuffixDiagnosticId = "WEAVIATE005";
     public const string InvalidSuffixTypeDiagnosticId = "WEAVIATE006";
-    public const string WrongAttributeTypeDiagnosticId = "WEAVIATE004";
+    public const string WrongAttributeTypeDiagnosticId = "WEAVIATE007";
     private const string Category = "Usage";
 
     private static readonly LocalizableString MissingSuffixTitle =
