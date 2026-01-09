@@ -1,0 +1,36 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": ["src/Weaviate.Client/**/*.csproj"]
+        }
+      ],
+      "dest": "api"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": ["api/index.md"]
+      },
+      {
+        "files": ["docs/**/*.md"]
+      }
+    ],
+    "resource": [
+      {
+        "files": ["docs/images/**"]
+      }
+    ],
+    "overwrite": [
+      {
+        "files": ["docs/overwrite/**/*.md"]
+      }
+    ],
+    "dest": "_site",
+    "globalMetadata": {
+      "_appTitle": "Weaviate C# Client Documentation"
+    }
+  }
+}
