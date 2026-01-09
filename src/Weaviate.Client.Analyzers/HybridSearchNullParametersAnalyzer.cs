@@ -10,7 +10,7 @@ namespace Weaviate.Client.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class HybridSearchNullParametersAnalyzer : DiagnosticAnalyzer
 {
-    public const string DiagnosticId = "WEAVIATE002";
+    public const string DiagnosticId = "WEAVIATE004";
     private const string Category = "Usage";
 
     private static readonly LocalizableString Title =
