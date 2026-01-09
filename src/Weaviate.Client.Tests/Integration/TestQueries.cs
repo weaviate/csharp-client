@@ -233,9 +233,9 @@ public class TestQueries : IntegrationTests
         var result = await collection.Data.InsertMany(
             new[]
             {
-                BatchInsertRequest.Create(new { text = "John Doe" }, id: _reusableUuids[0]),
-                BatchInsertRequest.Create(new { text = "Jane Doe" }, id: _reusableUuids[1]),
-                BatchInsertRequest.Create(new { text = "J. Doe" }, id: _reusableUuids[2]),
+                BatchInsertRequest.Create(new { text = "John Doe" }, uuid: _reusableUuids[0]),
+                BatchInsertRequest.Create(new { text = "Jane Doe" }, uuid: _reusableUuids[1]),
+                BatchInsertRequest.Create(new { text = "J. Doe" }, uuid: _reusableUuids[2]),
             },
             TestContext.Current.CancellationToken
         );

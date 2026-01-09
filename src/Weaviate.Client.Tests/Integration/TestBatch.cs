@@ -69,7 +69,7 @@ public partial class BatchTests : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        Guid[] uuidsTo = [.. refInsertResult.Select(r => r.ID!.Value)];
+        Guid[] uuidsTo = [.. refInsertResult.Select(r => r.UUID!.Value)];
 
         // Setup main collection ("From") with a reference property
         var collection = await CollectionFactory(
@@ -85,7 +85,7 @@ public partial class BatchTests : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        Guid[] uuidsFrom = [.. fromInsertResult.Select(r => r.ID!.Value)];
+        Guid[] uuidsFrom = [.. fromInsertResult.Select(r => r.UUID!.Value)];
 
         // First batch: each "From" object references the "To" object with the same index
         var batchReturn1 = await collection.Data.ReferenceAddMany(

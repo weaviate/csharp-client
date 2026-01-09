@@ -132,7 +132,7 @@ public partial class GenerateClient
         var result = await _client.GrpcClient.FetchObjects(
             _collectionName,
             returnProperties: returnProperties,
-            filters: Filter.ID.IsEqual(id),
+            filters: Filter.UUID.IsEqual(id),
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
             includeVectors: includeVectors,
@@ -185,8 +185,8 @@ public partial class GenerateClient
 
         Filter idFilter =
             ids.Count == 1
-                ? Filter.ID.IsEqual(ids.First())
-                : Filter.AnyOf([.. ids.Select(id => Filter.ID.IsEqual(id))]);
+                ? Filter.UUID.IsEqual(ids.First())
+                : Filter.AnyOf([.. ids.Select(id => Filter.UUID.IsEqual(id))]);
 
         if (filters is not null)
             idFilter = filters & idFilter;

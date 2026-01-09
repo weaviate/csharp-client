@@ -78,7 +78,7 @@ public partial class QueryClient
         var searchReply = await _grpc.FetchObjects(
             _collectionName,
             returnProperties: returnProperties,
-            filters: Filter.ID.IsEqual(id),
+            filters: Filter.UUID.IsEqual(id),
             tenant: _collectionClient.Tenant,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata?.Disable(MetadataOptions.Certainty),
@@ -109,8 +109,8 @@ public partial class QueryClient
             _collectionName,
             limit: limit,
             filters: filters != null
-                ? Filter.ID.IsEqual(ids.First()) & filters
-                : Filter.AnyOf([.. ids.Select(id => Filter.ID.IsEqual(id))]),
+                ? Filter.UUID.IsEqual(ids.First()) & filters
+                : Filter.AnyOf([.. ids.Select(id => Filter.UUID.IsEqual(id))]),
             sort: sort,
             tenant: _collectionClient.Tenant,
             rerank: rerank,

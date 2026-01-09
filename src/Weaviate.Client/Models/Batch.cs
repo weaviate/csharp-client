@@ -4,19 +4,19 @@ namespace Weaviate.Client.Models;
 
 public record BatchInsertRequest(
     object Data,
-    Guid? ID = null,
+    Guid? UUID = null,
     Vectors? Vectors = null,
     IEnumerable<ObjectReference>? References = null
 )
 {
     public static BatchInsertRequest Create(
         object data,
-        Guid? id = null,
+        Guid? uuid = null,
         Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null
     )
     {
-        return new BatchInsertRequest(data, id, vectors, references);
+        return new BatchInsertRequest(data, uuid, vectors, references);
     }
 
     public static BatchInsertRequest[] Create(IEnumerable<object> data)
@@ -24,9 +24,9 @@ public record BatchInsertRequest(
         return data.Select(d => new BatchInsertRequest(d)).ToArray();
     }
 
-    public static BatchInsertRequest[] Create(IEnumerable<(object data, Guid id)> requests)
+    public static BatchInsertRequest[] Create(IEnumerable<(object data, Guid uuid)> requests)
     {
-        return requests.Select(r => new BatchInsertRequest(r.data, r.id)).ToArray();
+        return requests.Select(r => new BatchInsertRequest(r.data, r.uuid)).ToArray();
     }
 
     public static BatchInsertRequest[] Create(
@@ -44,7 +44,11 @@ public record BatchInsertRequest(
     }
 }
 
-public record BatchInsertResponseEntry(int Index, Guid? ID = null, WeaviateException? Error = null);
+public record BatchInsertResponseEntry(
+    int Index,
+    Guid? UUID = null,
+    WeaviateException? Error = null
+);
 
 public record BatchInsertResponse : IEnumerable<BatchInsertResponseEntry>
 {

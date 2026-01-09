@@ -288,7 +288,7 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.NotNull(result);
         Assert.Equal(3, result.Objects.Count());
         Assert.Empty(result.Errors);
-        Assert.All(result.Objects, entry => Assert.NotEqual(Guid.Empty, entry.ID!.Value));
+        Assert.All(result.Objects, entry => Assert.NotEqual(Guid.Empty, entry.UUID!.Value));
     }
 
     [Fact]

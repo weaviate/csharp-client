@@ -216,7 +216,7 @@ public class DataClient
                     var o = new Grpc.Protobuf.V1.BatchObject
                     {
                         Collection = _collectionName,
-                        Uuid = (r.ID ?? Guid.NewGuid()).ToString(),
+                        Uuid = (r.UUID ?? Guid.NewGuid()).ToString(),
                         Properties = ObjectHelper.BuildBatchProperties(r.Data),
                         Tenant = _collectionClient.Tenant,
                     };

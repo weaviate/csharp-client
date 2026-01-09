@@ -190,7 +190,7 @@ public partial class PropertyTests : IntegrationTests
             )
         )
             .First()
-            .ID!.Value;
+            .UUID!.Value;
 
         var retrieved = await c.Query.FetchObjectByID(
             id,
@@ -407,7 +407,7 @@ public partial class PropertyTests : IntegrationTests
         {
             // Blobs must be explicitly requested in returnProperties
             var obj = await c.Query.FetchObjectByID(
-                r.ID!.Value,
+                r.UUID!.Value,
                 returnProperties: "testBlob",
                 cancellationToken: TestContext.Current.CancellationToken
             );
@@ -567,7 +567,7 @@ public partial class PropertyTests : IntegrationTests
         foreach (var r in response)
         {
             var obj = await c.Query.FetchObjectByID(
-                r.ID!.Value,
+                r.UUID!.Value,
                 cancellationToken: TestContext.Current.CancellationToken
             );
 
@@ -826,7 +826,7 @@ public partial class PropertyTests : IntegrationTests
         foreach (var r in response)
         {
             var obj = await c.Query.FetchObjectByID(
-                r.ID!.Value,
+                r.UUID!.Value,
                 cancellationToken: TestContext.Current.CancellationToken
             );
             Assert.NotNull(obj);
