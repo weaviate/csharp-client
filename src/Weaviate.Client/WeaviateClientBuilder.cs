@@ -443,6 +443,10 @@ public partial class WeaviateClientBuilder
         return await config.BuildAsync();
     }
 
+    /// <summary>
+    /// Implicitly converts a WeaviateClientBuilder to a Task that builds the client
+    /// </summary>
+    /// <param name="builder">The builder</param>
     public static implicit operator Task<WeaviateClient>(WeaviateClientBuilder builder) =>
         builder.BuildAsync();
 }

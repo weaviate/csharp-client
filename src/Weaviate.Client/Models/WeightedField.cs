@@ -5,6 +5,10 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public record WeightedField(string Name, double Weight)
 {
+    /// <summary>
+    /// Implicitly converts a tuple to a WeightedField
+    /// </summary>
+    /// <param name="tuple">The tuple containing name and weight</param>
     public static implicit operator WeightedField((string Name, double Weight) tuple) =>
         new(tuple.Name, tuple.Weight);
 };
@@ -44,6 +48,10 @@ public class WeightedFields : List<WeightedField>
     /// </summary>
     public double[] Weights => [.. this.Select(f => f.Weight)];
 
+    /// <summary>
+    /// Implicitly converts WeightedFields to a string array of field names
+    /// </summary>
+    /// <param name="weightedFields">The weighted fields</param>
     public static implicit operator string[]?(WeightedFields? weightedFields) =>
         weightedFields?.FieldNames;
 }

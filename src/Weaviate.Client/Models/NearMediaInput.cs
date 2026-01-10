@@ -343,6 +343,9 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         }
     }
 
-    // Implicit conversion to allow usage without calling Build()
+    /// <summary>
+    /// Implicitly converts a NearMediaBuilder to NearMediaInput
+    /// </summary>
+    /// <param name="builder">The builder</param>
     public static implicit operator NearMediaInput(NearMediaBuilder builder) => builder.Build();
 }

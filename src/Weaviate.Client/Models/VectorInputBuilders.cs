@@ -620,6 +620,10 @@ public sealed class HybridNearTextBuilder : IHybridNearTextBuilder
         _moveAway = moveAway;
     }
 
+    /// <summary>
+    /// Implicitly converts a HybridNearTextBuilder to HybridVectorInput
+    /// </summary>
+    /// <param name="builder">The builder</param>
     public static implicit operator HybridVectorInput(HybridNearTextBuilder builder)
     {
         var nearTextInput = new NearTextInput(
