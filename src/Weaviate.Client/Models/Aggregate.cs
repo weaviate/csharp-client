@@ -1176,6 +1176,10 @@ public static partial class Aggregate
     /// </summary>
     public record GroupBy(string Property, uint? Limit = null)
     {
+        /// <summary>
+        /// Implicitly converts a string to a GroupBy instance
+        /// </summary>
+        /// <param name="property">The property name</param>
         public static implicit operator GroupBy(string property) => new(property);
     };
 

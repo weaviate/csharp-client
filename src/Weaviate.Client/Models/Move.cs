@@ -23,12 +23,12 @@ public record Move
     /// <summary>
     /// Initializes a new instance of the <see cref="Move"/> class
     /// </summary>
-    /// <param name="uuids">The objects</param>
+    /// <param name="objects">The objects</param>
     /// <param name="force">The force</param>
-    public Move(AutoArray<Guid> uuids, float force)
+    public Move(AutoArray<Guid> objects, float force)
     {
         Force = force;
-        Objects = [.. uuids];
+        this.Objects = [.. objects];
         Concepts = null;
     }
 
