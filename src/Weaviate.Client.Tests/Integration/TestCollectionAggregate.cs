@@ -425,7 +425,7 @@ public partial class AggregatesTests : IntegrationTests
         ["move_away uuid1"] = (
             new Dictionary<string, object>
             {
-                { "move_away", new Move(objects: new[] { _reusableUuids[0] }, force: 0.000001f) },
+                { "move_away", new Move(uuids: new[] { _reusableUuids[0] }, force: 0.000001f) },
                 { "distance", 0.9 },
             },
             2
@@ -447,7 +447,7 @@ public partial class AggregatesTests : IntegrationTests
                 {
                     "move_to",
                     new Move(
-                        objects: new[] { _reusableUuids[0], _reusableUuids[1] },
+                        uuids: new[] { _reusableUuids[0], _reusableUuids[1] },
                         force: 0.000001f
                     )
                 },

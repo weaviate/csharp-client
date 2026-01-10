@@ -9,6 +9,9 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TypedGenerateClientTests
 {
+    /// <summary>
+    /// The test article class
+    /// </summary>
     private class TestArticle
     {
         /// <summary>
