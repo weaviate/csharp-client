@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using Weaviate.Client.Cache;
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Typed;
 using Weaviate.Client.Validation;

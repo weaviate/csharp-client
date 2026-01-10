@@ -1,4 +1,5 @@
 using System.Collections;
+using Weaviate.Client.Internal;
 
 namespace Weaviate.Client.Models;
 

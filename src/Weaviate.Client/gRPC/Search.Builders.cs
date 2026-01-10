@@ -1,3 +1,4 @@
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 using Rerank = Weaviate.Client.Models.Rerank;
 using V1 = Weaviate.Client.Grpc.Protobuf.V1;

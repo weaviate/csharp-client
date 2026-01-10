@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client;

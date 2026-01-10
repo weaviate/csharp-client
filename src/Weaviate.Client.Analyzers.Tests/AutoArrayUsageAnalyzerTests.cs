@@ -16,7 +16,7 @@ public class AutoArrayUsageAnalyzerTests
     /// </summary>
     private const string AutoArraySource =
         @"
-namespace Weaviate.Client.Models
+namespace Weaviate.Client.Internal
 {
     using System.Collections;
     using System.Collections.Generic;
@@ -73,7 +73,7 @@ namespace Weaviate.Client.Models
 
 namespace TestNamespace
 {
-    using Weaviate.Client.Models;
+    using Weaviate.Client.Internal;
 
     class TestClass
     {
@@ -101,7 +101,7 @@ namespace TestNamespace
 
 namespace TestNamespace
 {
-    using Weaviate.Client.Models;
+    using Weaviate.Client.Internal;
 
     class TestClass
     {
@@ -129,7 +129,7 @@ namespace TestNamespace
 
 namespace TestNamespace
 {
-    using Weaviate.Client.Models;
+    using Weaviate.Client.Internal;
 
     class TestClass
     {
@@ -154,7 +154,7 @@ namespace TestNamespace
 
 namespace TestNamespace
 {
-    using Weaviate.Client.Models;
+    using Weaviate.Client.Internal;
 
     class TestClass
     {
@@ -180,7 +180,7 @@ namespace TestNamespace
 
 namespace TestNamespace
 {
-    using Weaviate.Client.Models;
+    using Weaviate.Client.Internal;
 
     class TestClass
     {

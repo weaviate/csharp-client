@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Frozen;
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 using Weaviate.Client.Rest.Dto;
 using Weaviate.Client.Validation;

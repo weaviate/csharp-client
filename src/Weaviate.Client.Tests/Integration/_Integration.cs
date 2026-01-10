@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using dotenv.net;
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 
 [assembly: CaptureConsole]
