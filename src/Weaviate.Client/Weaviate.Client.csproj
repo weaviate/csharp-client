@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>1701;1702;</NoWarn>
+    <NoWarn>1701;1702;RS0016;RS0017;RS0026;RS0041</NoWarn>
     <DefineConstants>ENABLE_INTERNAL_TESTS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
