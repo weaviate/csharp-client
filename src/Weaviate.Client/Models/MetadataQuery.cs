@@ -5,7 +5,7 @@ namespace Weaviate.Client.Models;
 /// <summary>
 /// The vector query class
 /// </summary>
-/// <seealso cref="IEnumerable{string}"/>
+/// <seealso cref="IEnumerable{T}"/>
 public class VectorQuery : IEnumerable<string>
 {
     /// <summary>
@@ -62,13 +62,25 @@ public class VectorQuery : IEnumerable<string>
 
     // Implicit conversion from bool to VectorQuery
     // false stores null, true stores empty array
+    /// <summary>
+    /// Implicitly converts a boolean to a VectorQuery
+    /// </summary>
+    /// <param name="includeVectors">Whether to include all vectors</param>
     public static implicit operator VectorQuery(bool includeVectors) =>
         new(includeVectors ? [] : null);
 
     // Implicit conversion from string array to VectorQuery
+    /// <summary>
+    /// Implicitly converts a string array to a VectorQuery
+    /// </summary>
+    /// <param name="vectors">The vector names</param>
     public static implicit operator VectorQuery(string[] vectors) => new(vectors);
 
     // Implicit conversion from string to VectorQuery
+    /// <summary>
+    /// Implicitly converts a string to a VectorQuery
+    /// </summary>
+    /// <param name="vector">The vector name</param>
     public static implicit operator VectorQuery(string vector) => new[] { vector };
 }
 
@@ -162,6 +174,10 @@ public record MetadataQuery
     }
 
     // Implicit conversion from MetadataOptions to MetadataQuery
+    /// <summary>
+    /// Implicitly converts MetadataOptions to a MetadataQuery
+    /// </summary>
+    /// <param name="options">The metadata options</param>
     public static implicit operator MetadataQuery(MetadataOptions options) => new(options);
 
     /// <summary>

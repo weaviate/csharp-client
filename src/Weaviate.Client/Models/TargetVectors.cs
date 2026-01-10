@@ -149,7 +149,10 @@ public abstract record TargetVectors : IEnumerable<string>
         );
     }
 
-    // Implicit conversion from string array for convenience
+    /// <summary>
+    /// Implicitly converts a string array to TargetVectors
+    /// </summary>
+    /// <param name="targets">The target vector names</param>
     public static implicit operator TargetVectors(string[] targets) =>
         new SimpleTargetVectors(targets, V1.CombinationMethod.Unspecified);
 

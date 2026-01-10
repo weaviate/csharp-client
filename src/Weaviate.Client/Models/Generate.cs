@@ -46,6 +46,10 @@ public abstract record GenerativePrompt
 /// </summary>
 public record SinglePrompt(string Prompt) : GenerativePrompt
 {
+    /// <summary>
+    /// Implicitly converts a string to a SinglePrompt
+    /// </summary>
+    /// <param name="prompt">The prompt text</param>
     public static implicit operator SinglePrompt(string prompt) => new(prompt);
 }
 
@@ -54,5 +58,9 @@ public record SinglePrompt(string Prompt) : GenerativePrompt
 /// </summary>
 public record GroupedTask(string Task, params string[] Properties) : GenerativePrompt
 {
+    /// <summary>
+    /// Implicitly converts a string to a GroupedTask
+    /// </summary>
+    /// <param name="task">The task text</param>
     public static implicit operator GroupedTask(string task) => new(task);
 }

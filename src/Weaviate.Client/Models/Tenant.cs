@@ -89,6 +89,10 @@ public record Tenant
     /// </summary>
     public TenantActivityStatus Status { get; init; } = TenantActivityStatus.Hot;
 
+    /// <summary>
+    /// Implicitly converts a string to a Tenant
+    /// </summary>
+    /// <param name="name">The tenant name</param>
     public static implicit operator Tenant(string name) => new() { Name = name };
 
     /// <summary>

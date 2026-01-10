@@ -122,7 +122,7 @@ public abstract record TypedBase<T>
     protected PropertyFilter Internal { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TypedBase"/> class
+    /// Initializes a new instance of the <see cref="TypedBase{T}"/> class
     /// </summary>
     /// <param name="parent">The parent</param>
     protected TypedBase(PropertyFilter parent)
@@ -130,6 +130,10 @@ public abstract record TypedBase<T>
         Internal = parent;
     }
 
+    /// <summary>
+    /// Implicitly converts a TypedBase to a Filter
+    /// </summary>
+    /// <param name="filter">The typed filter</param>
     public static implicit operator Filter(TypedBase<T> filter)
     {
         return filter.Internal;
@@ -247,7 +251,7 @@ public record TypedValue<T>
     where T : struct
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="TypedValue"/> class
+    /// Initializes a new instance of the <see cref="TypedValue{T}"/> class
     /// </summary>
     /// <param name="parent">The parent</param>
     internal TypedValue(PropertyFilter parent)
@@ -468,6 +472,12 @@ public partial record Filter
     }
 
     #region Operators
+    /// <summary>
+    /// Combines two filters with an AND operation
+    /// </summary>
+    /// <param name="left">The left filter</param>
+    /// <param name="right">The right filter</param>
+    /// <returns>A new filter combining both operands with AND</returns>
     public static Filter operator &(Filter left, Filter right)
     {
         // If left is already an AND filter, combine with its operands
@@ -495,7 +505,12 @@ public partial record Filter
         }
     }
 
-    // OR operator (|)
+    /// <summary>
+    /// Combines two filters with an OR operation
+    /// </summary>
+    /// <param name="left">The left filter</param>
+    /// <param name="right">The right filter</param>
+    /// <returns>A new filter combining both operands with OR</returns>
     public static Filter operator |(Filter left, Filter right)
     {
         // If left is already an OR filter, combine with its operands

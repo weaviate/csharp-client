@@ -47,6 +47,12 @@ public record BatchReferenceReturn
         HasErrors = errors.Count > 0;
     }
 
+    /// <summary>
+    /// Combines two BatchReferenceReturn results
+    /// </summary>
+    /// <param name="left">The left operand</param>
+    /// <param name="right">The right operand</param>
+    /// <returns>A combined BatchReferenceReturn</returns>
     public static BatchReferenceReturn operator +(
         BatchReferenceReturn left,
         BatchReferenceReturn right

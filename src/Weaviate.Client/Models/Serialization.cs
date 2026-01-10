@@ -71,7 +71,7 @@ public class JsonConverterEmptyCollectionAsNull : JsonConverter<IEnumerable>
 /// <summary>
 /// The flexible string converter class
 /// </summary>
-/// <seealso cref="JsonConverter{string?}"/>
+/// <seealso cref="JsonConverter{T}"/>
 public class FlexibleStringConverter : JsonConverter<string?>
 {
     /// <summary>
@@ -124,7 +124,7 @@ public class FlexibleStringConverter : JsonConverter<string?>
 /// <summary>
 /// The flexible converter class
 /// </summary>
-/// <seealso cref="JsonConverter{T?}"/>
+/// <seealso cref="JsonConverter{T}"/>
 public class FlexibleConverter<T> : JsonConverter<T?>
     where T : struct
 {

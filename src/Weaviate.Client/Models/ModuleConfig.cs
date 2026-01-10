@@ -3,8 +3,8 @@ namespace Weaviate.Client.Models;
 /// <summary>
 /// The module config list class
 /// </summary>
-/// <seealso cref="Dictionary{string, object}"/>
-/// <seealso cref="IEquatable{ModuleConfigList}"/>
+/// <seealso cref="Dictionary{TKey, TValue}"/>
+/// <seealso cref="IEquatable{T}"/>
 public class ModuleConfigList : Dictionary<string, object>, IEquatable<ModuleConfigList>
 {
     /// <summary>

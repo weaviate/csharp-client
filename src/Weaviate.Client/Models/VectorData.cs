@@ -266,39 +266,119 @@ public class Vector : IEnumerable // Not sealed - allows NamedVector inheritance
     public bool IsMultiVector => _data.IsMultiVector;
 
     // Implicit conversions for ergonomic syntax
+    /// <summary>
+    /// Implicitly converts a float array to a Vector.
+    /// </summary>
+    /// <param name="values">The float array to convert.</param>
+    /// <returns>A Vector containing the float values.</returns>
     public static implicit operator Vector(float[] values) => new(new VectorSingle<float>(values));
 
+    /// <summary>
+    /// Implicitly converts a double array to a Vector.
+    /// </summary>
+    /// <param name="values">The double array to convert.</param>
+    /// <returns>A Vector containing the double values.</returns>
     public static implicit operator Vector(double[] values) =>
         new(new VectorSingle<double>(values));
 
+    /// <summary>
+    /// Implicitly converts an int array to a Vector.
+    /// </summary>
+    /// <param name="values">The int array to convert.</param>
+    /// <returns>A Vector containing the int values.</returns>
     public static implicit operator Vector(int[] values) => new(new VectorSingle<int>(values));
 
+    /// <summary>
+    /// Implicitly converts a long array to a Vector.
+    /// </summary>
+    /// <param name="values">The long array to convert.</param>
+    /// <returns>A Vector containing the long values.</returns>
     public static implicit operator Vector(long[] values) => new(new VectorSingle<long>(values));
 
+    /// <summary>
+    /// Implicitly converts a short array to a Vector.
+    /// </summary>
+    /// <param name="values">The short array to convert.</param>
+    /// <returns>A Vector containing the short values.</returns>
     public static implicit operator Vector(short[] values) => new(new VectorSingle<short>(values));
 
+    /// <summary>
+    /// Implicitly converts a byte array to a Vector.
+    /// </summary>
+    /// <param name="values">The byte array to convert.</param>
+    /// <returns>A Vector containing the byte values.</returns>
     public static implicit operator Vector(byte[] values) => new(new VectorSingle<byte>(values));
 
+    /// <summary>
+    /// Implicitly converts a bool array to a Vector.
+    /// </summary>
+    /// <param name="values">The bool array to convert.</param>
+    /// <returns>A Vector containing the bool values.</returns>
     public static implicit operator Vector(bool[] values) => new(new VectorSingle<bool>(values));
 
+    /// <summary>
+    /// Implicitly converts a decimal array to a Vector.
+    /// </summary>
+    /// <param name="values">The decimal array to convert.</param>
+    /// <returns>A Vector containing the decimal values.</returns>
     public static implicit operator Vector(decimal[] values) =>
         new(new VectorSingle<decimal>(values));
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional float array to a Vector.
+    /// </summary>
+    /// <param name="values">The two-dimensional float array to convert.</param>
+    /// <returns>A Vector containing the multi-dimensional float values.</returns>
     public static implicit operator Vector(float[,] values) => new(new VectorMulti<float>(values));
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional double array to a Vector.
+    /// </summary>
+    /// <param name="values">The two-dimensional double array to convert.</param>
+    /// <returns>A Vector containing the multi-dimensional double values.</returns>
     public static implicit operator Vector(double[,] values) =>
         new(new VectorMulti<double>(values));
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional int array to a Vector.
+    /// </summary>
+    /// <param name="values">The two-dimensional int array to convert.</param>
+    /// <returns>A Vector containing the multi-dimensional int values.</returns>
     public static implicit operator Vector(int[,] values) => new(new VectorMulti<int>(values));
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional long array to a Vector.
+    /// </summary>
+    /// <param name="values">The two-dimensional long array to convert.</param>
+    /// <returns>A Vector containing the multi-dimensional long values.</returns>
     public static implicit operator Vector(long[,] values) => new(new VectorMulti<long>(values));
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional short array to a Vector.
+    /// </summary>
+    /// <param name="values">The two-dimensional short array to convert.</param>
+    /// <returns>A Vector containing the multi-dimensional short values.</returns>
     public static implicit operator Vector(short[,] values) => new(new VectorMulti<short>(values));
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional byte array to a Vector.
+    /// </summary>
+    /// <param name="values">The two-dimensional byte array to convert.</param>
+    /// <returns>A Vector containing the multi-dimensional byte values.</returns>
     public static implicit operator Vector(byte[,] values) => new(new VectorMulti<byte>(values));
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional bool array to a Vector.
+    /// </summary>
+    /// <param name="values">The two-dimensional bool array to convert.</param>
+    /// <returns>A Vector containing the multi-dimensional bool values.</returns>
     public static implicit operator Vector(bool[,] values) => new(new VectorMulti<bool>(values));
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional decimal array to a Vector.
+    /// </summary>
+    /// <param name="values">The two-dimensional decimal array to convert.</param>
+    /// <returns>A Vector containing the multi-dimensional decimal values.</returns>
     public static implicit operator Vector(decimal[,] values) =>
         new(new VectorMulti<decimal>(values));
 
@@ -339,52 +419,148 @@ public class Vector : IEnumerable // Not sealed - allows NamedVector inheritance
 
     #region Implicit Operators to Native Arrays
     // SingleVector implicit operators (inverted)
+    /// <summary>
+    /// Implicitly converts a Vector to a double array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A double array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a single-dimension double vector.</exception>
     public static implicit operator double[](Vector vector) =>
         vector.GetData() is VectorSingle<double> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a float array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A float array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a single-dimension float vector.</exception>
     public static implicit operator float[](Vector vector) =>
         vector.GetData() is VectorSingle<float> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to an int array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>An int array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a single-dimension int vector.</exception>
     public static implicit operator int[](Vector vector) =>
         vector.GetData() is VectorSingle<int> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a long array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A long array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a single-dimension long vector.</exception>
     public static implicit operator long[](Vector vector) =>
         vector.GetData() is VectorSingle<long> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a short array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A short array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a single-dimension short vector.</exception>
     public static implicit operator short[](Vector vector) =>
         vector.GetData() is VectorSingle<short> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a byte array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A byte array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a single-dimension byte vector.</exception>
     public static implicit operator byte[](Vector vector) =>
         vector.GetData() is VectorSingle<byte> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a bool array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A bool array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a single-dimension bool vector.</exception>
     public static implicit operator bool[](Vector vector) =>
         vector.GetData() is VectorSingle<bool> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a decimal array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A decimal array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a single-dimension decimal vector.</exception>
     public static implicit operator decimal[](Vector vector) =>
         vector.GetData() is VectorSingle<decimal> v ? v.Values : throw new InvalidCastException();
 
     // MultiVector implicit operators (inverted)
+    /// <summary>
+    /// Implicitly converts a Vector to a two-dimensional double array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A two-dimensional double array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a multi-dimension double vector.</exception>
     public static implicit operator double[,](Vector vector) =>
         vector.GetData() is VectorMulti<double> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a two-dimensional float array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A two-dimensional float array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a multi-dimension float vector.</exception>
     public static implicit operator float[,](Vector vector) =>
         vector.GetData() is VectorMulti<float> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a two-dimensional int array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A two-dimensional int array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a multi-dimension int vector.</exception>
     public static implicit operator int[,](Vector vector) =>
         vector.GetData() is VectorMulti<int> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a two-dimensional long array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A two-dimensional long array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a multi-dimension long vector.</exception>
     public static implicit operator long[,](Vector vector) =>
         vector.GetData() is VectorMulti<long> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a two-dimensional short array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A two-dimensional short array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a multi-dimension short vector.</exception>
     public static implicit operator short[,](Vector vector) =>
         vector.GetData() is VectorMulti<short> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a two-dimensional byte array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A two-dimensional byte array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a multi-dimension byte vector.</exception>
     public static implicit operator byte[,](Vector vector) =>
         vector.GetData() is VectorMulti<byte> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a two-dimensional bool array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A two-dimensional bool array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a multi-dimension bool vector.</exception>
     public static implicit operator bool[,](Vector vector) =>
         vector.GetData() is VectorMulti<bool> v ? v.Values : throw new InvalidCastException();
 
+    /// <summary>
+    /// Implicitly converts a Vector to a two-dimensional decimal array.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A two-dimensional decimal array containing the vector values.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the vector is not a multi-dimension decimal vector.</exception>
     public static implicit operator decimal[,](Vector vector) =>
         vector.GetData() is VectorMulti<decimal> v ? v.Values : throw new InvalidCastException();
     #endregion
@@ -522,6 +698,11 @@ public sealed class NamedVector : Vector
     public NamedVector(Vector data)
         : this(data is NamedVector named ? named.Name : "default", data.GetData()) { }
 
+    /// <summary>
+    /// Implicitly converts a tuple of name and vector to a NamedVector.
+    /// </summary>
+    /// <param name="namedVector">A tuple containing the name and vector.</param>
+    /// <returns>A NamedVector with the specified name and vector data.</returns>
     public static implicit operator NamedVector((string name, Vector vector) namedVector) =>
         new(namedVector.name, namedVector.vector);
 }
@@ -573,99 +754,284 @@ public class Vectors : Internal.KeySortedList<string, Vector>
         : this(vectors.Select(v => new NamedVector(v.name, v.vector))) { }
 
     // Implicit conversions
+    /// <summary>
+    /// Implicitly converts a NamedVector to a Vectors collection.
+    /// </summary>
+    /// <param name="vector">The NamedVector to convert.</param>
+    /// <returns>A Vectors collection containing the single vector.</returns>
     public static implicit operator Vectors(NamedVector vector) => new(vector);
 
+    /// <summary>
+    /// Implicitly converts an array of NamedVectors to a Vectors collection.
+    /// </summary>
+    /// <param name="vector">The array of NamedVectors to convert.</param>
+    /// <returns>A Vectors collection containing the vectors.</returns>
     public static implicit operator Vectors(NamedVector[] vector) => new(vector);
 
+    /// <summary>
+    /// Implicitly converts a Vector to a Vectors collection.
+    /// </summary>
+    /// <param name="vector">The Vector to convert.</param>
+    /// <returns>A Vectors collection containing the single vector.</returns>
     public static implicit operator Vectors(Vector vector) => new(vector);
 
+    /// <summary>
+    /// Implicitly converts a tuple of name and vector to a Vectors collection.
+    /// </summary>
+    /// <param name="v">A tuple containing the name and vector.</param>
+    /// <returns>A Vectors collection containing the named vector.</returns>
     public static implicit operator Vectors((string name, Vector vector) v) =>
         new(v.name, v.vector);
 
+    /// <summary>
+    /// Implicitly converts an array of tuples containing names and vectors to a Vectors collection.
+    /// </summary>
+    /// <param name="v">An array of tuples containing names and vectors.</param>
+    /// <returns>A Vectors collection containing the named vectors.</returns>
     public static implicit operator Vectors((string name, Vector vector)[] v) => new(v);
 
     #region Implicit Operators: Vectors from Native Arrays
+    /// <summary>
+    /// Implicitly converts a float array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The float array to convert.</param>
+    /// <returns>A Vectors collection containing the float values.</returns>
     public static implicit operator Vectors(float[] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a double array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The double array to convert.</param>
+    /// <returns>A Vectors collection containing the double values.</returns>
     public static implicit operator Vectors(double[] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts an int array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The int array to convert.</param>
+    /// <returns>A Vectors collection containing the int values.</returns>
     public static implicit operator Vectors(int[] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a long array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The long array to convert.</param>
+    /// <returns>A Vectors collection containing the long values.</returns>
     public static implicit operator Vectors(long[] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a short array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The short array to convert.</param>
+    /// <returns>A Vectors collection containing the short values.</returns>
     public static implicit operator Vectors(short[] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a byte array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The byte array to convert.</param>
+    /// <returns>A Vectors collection containing the byte values.</returns>
     public static implicit operator Vectors(byte[] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a bool array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The bool array to convert.</param>
+    /// <returns>A Vectors collection containing the bool values.</returns>
     public static implicit operator Vectors(bool[] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a decimal array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The decimal array to convert.</param>
+    /// <returns>A Vectors collection containing the decimal values.</returns>
     public static implicit operator Vectors(decimal[] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional float array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The two-dimensional float array to convert.</param>
+    /// <returns>A Vectors collection containing the multi-dimensional float values.</returns>
     public static implicit operator Vectors(float[,] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional double array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The two-dimensional double array to convert.</param>
+    /// <returns>A Vectors collection containing the multi-dimensional double values.</returns>
     public static implicit operator Vectors(double[,] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional int array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The two-dimensional int array to convert.</param>
+    /// <returns>A Vectors collection containing the multi-dimensional int values.</returns>
     public static implicit operator Vectors(int[,] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional long array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The two-dimensional long array to convert.</param>
+    /// <returns>A Vectors collection containing the multi-dimensional long values.</returns>
     public static implicit operator Vectors(long[,] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional short array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The two-dimensional short array to convert.</param>
+    /// <returns>A Vectors collection containing the multi-dimensional short values.</returns>
     public static implicit operator Vectors(short[,] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional byte array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The two-dimensional byte array to convert.</param>
+    /// <returns>A Vectors collection containing the multi-dimensional byte values.</returns>
     public static implicit operator Vectors(byte[,] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional bool array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The two-dimensional bool array to convert.</param>
+    /// <returns>A Vectors collection containing the multi-dimensional bool values.</returns>
     public static implicit operator Vectors(bool[,] values) => new(values);
 
+    /// <summary>
+    /// Implicitly converts a two-dimensional decimal array to a Vectors collection.
+    /// </summary>
+    /// <param name="values">The two-dimensional decimal array to convert.</param>
+    /// <returns>A Vectors collection containing the multi-dimensional decimal values.</returns>
     public static implicit operator Vectors(decimal[,] values) => new(values);
     #endregion
 
     #region Implicit Operators: Vectors from Dictionary<string, T[]>
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to float arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named float vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, float[]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to double arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named double vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, double[]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to int arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named int vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, int[]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to long arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named long vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, long[]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to short arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named short vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, short[]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to byte arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named byte vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, byte[]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to bool arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named bool vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, bool[]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to decimal arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named decimal vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, decimal[]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
     #endregion
 
     #region Implicit Operators: Vectors from Dictionary<string, T[,]>
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to two-dimensional float arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named multi-dimensional float vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, float[,]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to two-dimensional double arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named multi-dimensional double vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, double[,]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to two-dimensional int arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named multi-dimensional int vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, int[,]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to two-dimensional long arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named multi-dimensional long vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, long[,]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to two-dimensional short arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named multi-dimensional short vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, short[,]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to two-dimensional byte arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named multi-dimensional byte vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, byte[,]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to two-dimensional bool arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named multi-dimensional bool vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, bool[,]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
 
+    /// <summary>
+    /// Implicitly converts a dictionary of string keys to two-dimensional decimal arrays to a Vectors collection.
+    /// </summary>
+    /// <param name="vectors">The dictionary to convert.</param>
+    /// <returns>A Vectors collection containing the named multi-dimensional decimal vectors.</returns>
     public static implicit operator Vectors(Dictionary<string, decimal[,]> vectors) =>
         new(vectors.Select(kvp => (kvp.Key, (Vector)kvp.Value)).ToArray());
     #endregion

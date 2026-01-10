@@ -60,13 +60,29 @@ public class AutoArray<T> : IEnumerable<T>
     private AutoArray(params T[] items)
         : this(items.AsEnumerable()) { }
 
+    /// <summary>
+    /// Implicitly converts a single item to an AutoArray
+    /// </summary>
+    /// <param name="item">The item</param>
     public static implicit operator AutoArray<T>(T item) => new(item);
 
+    /// <summary>
+    /// Implicitly converts an array to an AutoArray
+    /// </summary>
+    /// <param name="items">The items</param>
     [return: System.Diagnostics.CodeAnalysis.NotNullIfNotNull(nameof(items))]
     public static implicit operator AutoArray<T>?(T[]? items) => items is null ? null : [.. items];
 
+    /// <summary>
+    /// Implicitly converts a List to an AutoArray
+    /// </summary>
+    /// <param name="items">The items</param>
     public static implicit operator AutoArray<T>(List<T> items) => [.. items];
 
+    /// <summary>
+    /// Explicitly converts an AutoArray to an array
+    /// </summary>
+    /// <param name="list">The auto array</param>
     public static explicit operator T[](AutoArray<T> list) => [.. list._items];
 
     /// <summary>

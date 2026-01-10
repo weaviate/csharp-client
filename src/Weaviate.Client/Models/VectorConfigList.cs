@@ -47,11 +47,19 @@ public record VectorConfigList
         return ((IEnumerable)_internalList).GetEnumerator();
     }
 
+    /// <summary>
+    /// Implicitly converts a VectorConfig array to a VectorConfigList
+    /// </summary>
+    /// <param name="configs">The vector configs</param>
     public static implicit operator VectorConfigList(VectorConfig[] configs)
     {
         return new(configs);
     }
 
+    /// <summary>
+    /// Implicitly converts a single VectorConfig to a VectorConfigList
+    /// </summary>
+    /// <param name="config">The vector config</param>
     public static implicit operator VectorConfigList(VectorConfig config)
     {
         return new(config);
