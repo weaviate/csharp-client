@@ -6,16 +6,57 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
 {
+    /// <summary>
+    /// The status fetcher
+    /// </summary>
     private readonly Func<CancellationToken, Task<Backup>> _statusFetcher;
+
+    /// <summary>
+    /// The operation cancel
+    /// </summary>
     private readonly Func<CancellationToken, Task> _operationCancel;
+
+    /// <summary>
+    /// The cts
+    /// </summary>
     private readonly CancellationTokenSource _cts = new();
+
+    /// <summary>
+    /// The background refresh task
+    /// </summary>
     private readonly Task _backgroundRefreshTask;
+
+    /// <summary>
+    /// The current
+    /// </summary>
     private Backup _current;
+
+    /// <summary>
+    /// The is completed
+    /// </summary>
     private bool _isCompleted;
+
+    /// <summary>
+    /// The is successful
+    /// </summary>
     private bool _isSuccessful;
+
+    /// <summary>
+    /// The is canceled
+    /// </summary>
     private bool _isCanceled;
+
+    /// <summary>
+    /// The disposed
+    /// </summary>
     private bool _disposed;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BackupOperationBase"/> class
+    /// </summary>
+    /// <param name="initial">The initial</param>
+    /// <param name="statusFetcher">The status fetcher</param>
+    /// <param name="operationCancel">The operation cancel</param>
     protected BackupOperationBase(
         Backup initial,
         Func<CancellationToken, Task<Backup>> statusFetcher,
@@ -51,6 +92,9 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
     /// </summary>
     public bool IsCanceled => _isCanceled;
 
+    /// <summary>
+    /// Starts the background refresh
+    /// </summary>
     private Task StartBackgroundRefresh()
     {
         return Task.Run(async () =>
@@ -74,6 +118,10 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
         });
     }
 
+    /// <summary>
+    /// Refreshes the status internal using the specified cancellation token
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token</param>
     private async Task RefreshStatusInternal(CancellationToken cancellationToken = default)
     {
         if (_isCompleted)
@@ -190,6 +238,9 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
         _disposed = true;
     }
 
+    /// <summary>
+    /// Disposes this instance
+    /// </summary>
     public void Dispose()
     {
         Dispose(true);
@@ -221,6 +272,11 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Ises the terminal status using the specified status
+    /// </summary>
+    /// <param name="status">The status</param>
+    /// <returns>The bool</returns>
     private static bool IsTerminalStatus(BackupStatus? status)
     {
         return status == BackupStatus.Success

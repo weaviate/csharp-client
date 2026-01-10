@@ -11,11 +11,25 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TestNearTextSyntax : IAsyncLifetime
 {
+    /// <summary>
+    /// The collection name
+    /// </summary>
     private const string CollectionName = "TestCollection";
 
+    /// <summary>
+    /// The get request
+    /// </summary>
     private Func<Grpc.Protobuf.V1.SearchRequest?> _getRequest = null!;
+
+    /// <summary>
+    /// The collection
+    /// </summary>
     private CollectionClient _collection = null!;
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask InitializeAsync()
     {
         var (client, getRequest) = MockGrpcClient.CreateWithSearchCapture();
@@ -24,6 +38,10 @@ public class TestNearTextSyntax : IAsyncLifetime
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Disposes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
@@ -32,6 +50,9 @@ public class TestNearTextSyntax : IAsyncLifetime
 
     #region Simple NearTextInput Tests
 
+    /// <summary>
+    /// Tests that near text simple near text input produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_SimpleNearTextInput_ProducesValidRequest()
     {
@@ -54,6 +75,9 @@ public class TestNearTextSyntax : IAsyncLifetime
 
     #region NearTextInput With Target Vectors
 
+    /// <summary>
+    /// Tests that near text near text input with target vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_NearTextInput_WithTargetVectors_ProducesValidRequest()
     {
@@ -72,6 +96,9 @@ public class TestNearTextSyntax : IAsyncLifetime
         Assert.Equal(2, request.NearText.Targets.TargetVectors.Count);
     }
 
+    /// <summary>
+    /// Tests that near text near text input with certainty and targets produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_NearTextInput_WithCertaintyAndTargets_ProducesValidRequest()
     {
@@ -99,6 +126,9 @@ public class TestNearTextSyntax : IAsyncLifetime
 
     #region NearTextInput.FactoryFn Lambda Builder
 
+    /// <summary>
+    /// Tests that near text factory fn sum produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_FactoryFn_Sum_ProducesValidRequest()
     {
@@ -115,6 +145,9 @@ public class TestNearTextSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.NearText.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that near text factory fn manual weights produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_FactoryFn_ManualWeights_ProducesValidRequest()
     {
@@ -132,6 +165,9 @@ public class TestNearTextSyntax : IAsyncLifetime
         Assert.Equal(2, request.NearText.Targets.WeightsForTargets.Count);
     }
 
+    /// <summary>
+    /// Tests that near text factory fn with certainty produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_FactoryFn_WithCertainty_ProducesValidRequest()
     {
@@ -149,6 +185,9 @@ public class TestNearTextSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.NearText.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that near text factory fn with move parameters produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_FactoryFn_WithMoveParameters_ProducesValidRequest()
     {
@@ -175,6 +214,9 @@ public class TestNearTextSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.NearText.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that near text factory fn average produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_FactoryFn_Average_ProducesValidRequest()
     {
@@ -191,6 +233,9 @@ public class TestNearTextSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.NearText.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that near text factory fn minimum produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_FactoryFn_Minimum_ProducesValidRequest()
     {
@@ -207,6 +252,9 @@ public class TestNearTextSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeMin, request.NearText.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that near text factory fn relative score produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_FactoryFn_RelativeScore_ProducesValidRequest()
     {
@@ -228,6 +276,9 @@ public class TestNearTextSyntax : IAsyncLifetime
 
     #region GroupBy Tests
 
+    /// <summary>
+    /// Tests that near text with group by produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_WithGroupBy_ProducesValidRequest()
     {
@@ -247,6 +298,9 @@ public class TestNearTextSyntax : IAsyncLifetime
         Assert.Equal(3, request.GroupBy.ObjectsPerGroup);
     }
 
+    /// <summary>
+    /// Tests that near text factory fn with group by produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_FactoryFn_WithGroupBy_ProducesValidRequest()
     {
@@ -267,6 +321,9 @@ public class TestNearTextSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.NearText.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that near text with move parameters produces valid request
+    /// </summary>
     [Fact]
     public async Task NearText_WithMoveParameters_ProducesValidRequest()
     {

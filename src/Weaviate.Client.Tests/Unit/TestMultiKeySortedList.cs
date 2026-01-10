@@ -2,10 +2,19 @@ using Weaviate.Client.Internal;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The test multi key sorted list class
+/// </summary>
 public class TestMultiKeySortedList
 {
+    /// <summary>
+    /// The test item
+    /// </summary>
     private record TestItem(int Key, string Value);
 
+    /// <summary>
+    /// Tests that add with item adds to correct key
+    /// </summary>
     [Fact]
     public void Add_WithItem_AddsToCorrectKey()
     {
@@ -26,6 +35,9 @@ public class TestMultiKeySortedList
         Assert.Contains(item3, list[2]);
     }
 
+    /// <summary>
+    /// Tests that add with key and value adds to correct key
+    /// </summary>
     [Fact]
     public void Add_WithKeyAndValue_AddsToCorrectKey()
     {
@@ -40,6 +52,9 @@ public class TestMultiKeySortedList
         Assert.Equal(new[] { "third" }, list[2]);
     }
 
+    /// <summary>
+    /// Tests that add with key and array adds all values
+    /// </summary>
     [Fact]
     public void Add_WithKeyAndArray_AddsAllValues()
     {
@@ -53,6 +68,9 @@ public class TestMultiKeySortedList
         Assert.Equal(new[] { "third" }, list[2]);
     }
 
+    /// <summary>
+    /// Tests that contains key with existing key returns true
+    /// </summary>
     [Fact]
     public void ContainsKey_WithExistingKey_ReturnsTrue()
     {
@@ -61,6 +79,9 @@ public class TestMultiKeySortedList
         Assert.True(list.ContainsKey(1));
     }
 
+    /// <summary>
+    /// Tests that contains key with non existing key returns false
+    /// </summary>
     [Fact]
     public void ContainsKey_WithNonExistingKey_ReturnsFalse()
     {
@@ -69,6 +90,9 @@ public class TestMultiKeySortedList
         Assert.False(list.ContainsKey(1));
     }
 
+    /// <summary>
+    /// Tests that remove with existing key removes key and returns true
+    /// </summary>
     [Fact]
     public void Remove_WithExistingKey_RemovesKeyAndReturnsTrue()
     {
@@ -80,6 +104,9 @@ public class TestMultiKeySortedList
         Assert.False(list.ContainsKey(1));
     }
 
+    /// <summary>
+    /// Tests that remove with non existing key returns false
+    /// </summary>
     [Fact]
     public void Remove_WithNonExistingKey_ReturnsFalse()
     {
@@ -90,6 +117,9 @@ public class TestMultiKeySortedList
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that try get value with existing key returns true and values
+    /// </summary>
     [Fact]
     public void TryGetValue_WithExistingKey_ReturnsTrueAndValues()
     {
@@ -105,6 +135,9 @@ public class TestMultiKeySortedList
         Assert.Equal(new[] { "first", "second" }, values);
     }
 
+    /// <summary>
+    /// Tests that try get value with non existing key returns false and null
+    /// </summary>
     [Fact]
     public void TryGetValue_WithNonExistingKey_ReturnsFalseAndNull()
     {
@@ -116,6 +149,9 @@ public class TestMultiKeySortedList
         Assert.Null(values);
     }
 
+    /// <summary>
+    /// Tests that add key value pair adds values
+    /// </summary>
     [Fact]
     public void Add_KeyValuePair_AddsValues()
     {
@@ -127,6 +163,9 @@ public class TestMultiKeySortedList
         Assert.Equal(new[] { "first", "second" }, list[1]);
     }
 
+    /// <summary>
+    /// Tests that clear removes all items
+    /// </summary>
     [Fact]
     public void Clear_RemovesAllItems()
     {
@@ -143,6 +182,9 @@ public class TestMultiKeySortedList
         Assert.False(list.ContainsKey(2));
     }
 
+    /// <summary>
+    /// Tests that contains with matching key value pair returns true
+    /// </summary>
     [Fact]
     public void Contains_WithMatchingKeyValuePair_ReturnsTrue()
     {
@@ -157,6 +199,9 @@ public class TestMultiKeySortedList
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that contains with non matching values returns false
+    /// </summary>
     [Fact]
     public void Contains_WithNonMatchingValues_ReturnsFalse()
     {
@@ -171,6 +216,9 @@ public class TestMultiKeySortedList
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that contains with non existing key returns false
+    /// </summary>
     [Fact]
     public void Contains_WithNonExistingKey_ReturnsFalse()
     {
@@ -182,6 +230,9 @@ public class TestMultiKeySortedList
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that copy to copies all key value pairs
+    /// </summary>
     [Fact]
     public void CopyTo_CopiesAllKeyValuePairs()
     {
@@ -200,6 +251,9 @@ public class TestMultiKeySortedList
         Assert.Equal(new[] { "third" }, array[1].Value);
     }
 
+    /// <summary>
+    /// Tests that remove key value pair with matching pair removes and returns true
+    /// </summary>
     [Fact]
     public void Remove_KeyValuePair_WithMatchingPair_RemovesAndReturnsTrue()
     {
@@ -215,6 +269,9 @@ public class TestMultiKeySortedList
         Assert.False(list.ContainsKey(1));
     }
 
+    /// <summary>
+    /// Tests that remove key value pair with non matching pair returns false
+    /// </summary>
     [Fact]
     public void Remove_KeyValuePair_WithNonMatchingPair_ReturnsFalse()
     {
@@ -230,6 +287,9 @@ public class TestMultiKeySortedList
         Assert.True(list.ContainsKey(1));
     }
 
+    /// <summary>
+    /// Tests that get enumerator returns all key value pairs
+    /// </summary>
     [Fact]
     public void GetEnumerator_ReturnsAllKeyValuePairs()
     {
@@ -248,6 +308,9 @@ public class TestMultiKeySortedList
         Assert.Equal(new[] { "third" }, items[1].Value);
     }
 
+    /// <summary>
+    /// Tests that indexer get returns values
+    /// </summary>
     [Fact]
     public void Indexer_Get_ReturnsValues()
     {
@@ -261,6 +324,9 @@ public class TestMultiKeySortedList
         Assert.Equal(new[] { "first", "second" }, result);
     }
 
+    /// <summary>
+    /// Tests that indexer get with non existing key returns empty
+    /// </summary>
     [Fact]
     public void Indexer_Get_WithNonExistingKey_ReturnsEmpty()
     {
@@ -271,6 +337,9 @@ public class TestMultiKeySortedList
         Assert.Empty(result);
     }
 
+    /// <summary>
+    /// Tests that keys returns all keys
+    /// </summary>
     [Fact]
     public void Keys_ReturnsAllKeys()
     {
@@ -284,6 +353,9 @@ public class TestMultiKeySortedList
         Assert.Equal([1, 2, 3], list.Keys);
     }
 
+    /// <summary>
+    /// Tests that values returns all values
+    /// </summary>
     [Fact]
     public void Values_ReturnsAllValues()
     {
@@ -297,6 +369,9 @@ public class TestMultiKeySortedList
         Assert.Equal(["first", "second", "third"], list.Values);
     }
 
+    /// <summary>
+    /// Tests that i dictionary keys returns all keys
+    /// </summary>
     [Fact]
     public void IDictionary_Keys_ReturnsAllKeys()
     {
@@ -309,6 +384,9 @@ public class TestMultiKeySortedList
         Assert.Equal([1, 2], list.Keys);
     }
 
+    /// <summary>
+    /// Tests that i dictionary values returns all value arrays
+    /// </summary>
     [Fact]
     public void IDictionary_Values_ReturnsAllValueArrays()
     {
@@ -324,6 +402,9 @@ public class TestMultiKeySortedList
         Assert.Equal(new[] { "third" }, values[1]);
     }
 
+    /// <summary>
+    /// Tests that count returns number of keys
+    /// </summary>
     [Fact]
     public void Count_ReturnsNumberOfKeys()
     {
@@ -337,6 +418,9 @@ public class TestMultiKeySortedList
         Assert.Equal(2, list.Count);
     }
 
+    /// <summary>
+    /// Tests that is read only returns false
+    /// </summary>
     [Fact]
     public void IsReadOnly_ReturnsFalse()
     {
@@ -345,6 +429,9 @@ public class TestMultiKeySortedList
         Assert.False(list.IsReadOnly);
     }
 
+    /// <summary>
+    /// Tests that i dictionary indexer get returns array
+    /// </summary>
     [Fact]
     public void IDictionary_Indexer_Get_ReturnsArray()
     {
@@ -358,6 +445,9 @@ public class TestMultiKeySortedList
         Assert.Equal(new[] { "first", "second" }, result);
     }
 
+    /// <summary>
+    /// Tests that i dictionary indexer get with non existing key returns empty array
+    /// </summary>
     [Fact]
     public void IDictionary_Indexer_Get_WithNonExistingKey_ReturnsEmptyArray()
     {
@@ -368,6 +458,9 @@ public class TestMultiKeySortedList
         Assert.Empty(result);
     }
 
+    /// <summary>
+    /// Tests that i dictionary indexer set replaces values
+    /// </summary>
     [Fact]
     public void IDictionary_Indexer_Set_ReplacesValues()
     {
@@ -382,6 +475,9 @@ public class TestMultiKeySortedList
         Assert.Equal(new[] { "replaced1", "replaced2" }, result);
     }
 
+    /// <summary>
+    /// Tests that sorted order maintains sorted keys
+    /// </summary>
     [Fact]
     public void SortedOrder_MaintainsSortedKeys()
     {
@@ -395,6 +491,9 @@ public class TestMultiKeySortedList
         Assert.Equal([1, 3, 5], list.Keys);
     }
 
+    /// <summary>
+    /// Tests that multiple values per key maintains insertion order
+    /// </summary>
     [Fact]
     public void MultipleValuesPerKey_MaintainsInsertionOrder()
     {

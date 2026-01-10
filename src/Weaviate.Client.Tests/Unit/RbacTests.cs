@@ -3,8 +3,14 @@ using Weaviate.Client.Tests.Unit.Mocks;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The rbac tests class
+/// </summary>
 public class RbacTests
 {
+    /// <summary>
+    /// Tests that users client maps dto to model
+    /// </summary>
     [Fact]
     public async Task UsersClient_MapsDtoToModel()
     {
@@ -53,6 +59,9 @@ public class RbacTests
         Assert.False(env.Active);
     }
 
+    /// <summary>
+    /// Tests that roles client maps permissions
+    /// </summary>
     [Fact]
     public async Task RolesClient_MapsPermissions()
     {

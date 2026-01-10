@@ -3,8 +3,18 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The vector index config tests class
+/// </summary>
 public partial class VectorIndexConfigTests
 {
+    /// <summary>
+    /// Tests that vector index config hnsw from json
+    /// </summary>
+    /// <param name="bqEnabled">The bq enabled</param>
+    /// <param name="pqEnabled">The pq enabled</param>
+    /// <param name="sqEnabled">The sq enabled</param>
+    /// <param name="expectedQuantizer">The expected quantizer</param>
     [Theory]
     [InlineData(true, false, false, "bq")]
     [InlineData(false, true, false, "pq")]
@@ -32,6 +42,9 @@ public partial class VectorIndexConfigTests
         Assert.Null(hnsw!.MultiVector);
     }
 
+    /// <summary>
+    /// Tests that vector index config sets quantizer when provided
+    /// </summary>
     [Fact]
     public void VectorIndexConfig_Sets_Quantizer_When_Provided()
     {
@@ -59,6 +72,9 @@ public partial class VectorIndexConfigTests
         );
     }
 
+    /// <summary>
+    /// Tests that vector index config none quantizer sets skip default quantization
+    /// </summary>
     [Fact]
     public void VectorIndexConfig_None_Quantizer_Sets_SkipDefaultQuantization()
     {
@@ -82,6 +98,9 @@ public partial class VectorIndexConfigTests
         Assert.True(deserialized["skipDefaultQuantization"].ToString() == "True");
     }
 
+    /// <summary>
+    /// Tests that vector index config skip default quantization deserializes to none quantizer
+    /// </summary>
     [Fact]
     public void VectorIndexConfig_SkipDefaultQuantization_Deserializes_To_None_Quantizer()
     {

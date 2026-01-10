@@ -8,11 +8,26 @@ namespace Weaviate.Client.Serialization.Converters;
 /// </summary>
 internal class PhonePropertyConverter : PropertyConverterBase
 {
+    /// <summary>
+    /// Gets the value of the data type
+    /// </summary>
     public override string DataType => "phoneNumber";
+
+    /// <summary>
+    /// Gets the value of the supports array
+    /// </summary>
     public override bool SupportsArray => false;
 
+    /// <summary>
+    /// Gets the value of the supported types
+    /// </summary>
     public override IReadOnlyList<System.Type> SupportedTypes => [typeof(PhoneNumber)];
 
+    /// <summary>
+    /// Returns the rest using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The object</returns>
     public override object? ToRest(object? value)
     {
         if (value is not PhoneNumber phone)
@@ -21,6 +36,11 @@ internal class PhonePropertyConverter : PropertyConverterBase
         return phone.ToDto();
     }
 
+    /// <summary>
+    /// Returns the grpc using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The value</returns>
     public override Value ToGrpc(object? value)
     {
         if (value is not PhoneNumber phone)
@@ -35,6 +55,12 @@ internal class PhonePropertyConverter : PropertyConverterBase
         return Value.ForStruct(phoneStruct);
     }
 
+    /// <summary>
+    /// Creates the rest using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <param name="targetType">The target type</param>
+    /// <returns>The object</returns>
     public override object? FromRest(object? value, System.Type targetType)
     {
         if (value is null)
@@ -65,6 +91,12 @@ internal class PhonePropertyConverter : PropertyConverterBase
         return null;
     }
 
+    /// <summary>
+    /// Creates the grpc using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <param name="targetType">The target type</param>
+    /// <returns>The object</returns>
     public override object? FromGrpc(Value value, System.Type targetType)
     {
         if (value.KindCase == Value.KindOneofCase.NullValue)
@@ -83,6 +115,11 @@ internal class PhonePropertyConverter : PropertyConverterBase
         return null;
     }
 
+    /// <summary>
+    /// Creates the phone from dict using the specified dict
+    /// </summary>
+    /// <param name="dict">The dict</param>
+    /// <returns>The phone</returns>
     private static PhoneNumber CreatePhoneFromDict(IDictionary<string, object?> dict)
     {
         var input = dict.TryGetValue("input", out var inputVal) ? inputVal?.ToString() ?? "" : "";
@@ -113,6 +150,11 @@ internal class PhonePropertyConverter : PropertyConverterBase
         return phone;
     }
 
+    /// <summary>
+    /// Gets the value from proto using the specified v
+    /// </summary>
+    /// <param name="v">The </param>
+    /// <returns>The object</returns>
     private static object? GetValueFromProto(Value v)
     {
         return v.KindCase switch

@@ -8,9 +8,20 @@ namespace Weaviate.Client;
 /// </summary>
 public class UsersDatabaseClient
 {
+    /// <summary>
+    /// The client
+    /// </summary>
     private readonly WeaviateClient _client;
+
+    /// <summary>
+    /// The database
+    /// </summary>
     private const RbacUserType UserType = RbacUserType.Database;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UsersDatabaseClient"/> class
+    /// </summary>
+    /// <param name="client">The client</param>
     internal UsersDatabaseClient(WeaviateClient client) => _client = client;
 
     /// <summary>
@@ -133,6 +144,11 @@ public class UsersDatabaseClient
         return roles.Select(r => r.ToModel());
     }
 
+    /// <summary>
+    /// Returns the model using the specified dto
+    /// </summary>
+    /// <param name="dto">The dto</param>
+    /// <returns>The database user</returns>
     private static DatabaseUser ToModel(Rest.Dto.DBUserInfo dto)
     {
         var type = dto.DbUserType switch

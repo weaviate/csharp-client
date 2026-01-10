@@ -2,8 +2,28 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The query client class
+/// </summary>
 public partial class QueryClient
 {
+    /// <summary>Performs a near-text search using the specified parameters.</summary>
+    /// <param name="text">The search text.</param>
+    /// <param name="certainty">Certainty threshold for the search.</param>
+    /// <param name="distance">Distance threshold for the search.</param>
+    /// <param name="moveTo">Move-to configuration.</param>
+    /// <param name="moveAway">Move-away configuration.</param>
+    /// <param name="limit">Maximum number of results to return.</param>
+    /// <param name="offset">Number of results to skip.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="returnProperties">Properties to return in the response.</param>
+    /// <param name="returnReferences">Cross-references to return.</param>
+    /// <param name="returnMetadata">Metadata to include in the response.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Search results.</returns>
     public async Task<WeaviateResult> NearText(
         AutoArray<string> text,
         float? certainty = null,
@@ -43,6 +63,24 @@ public partial class QueryClient
             cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
+    /// <summary>Performs a near-text search with group-by using the specified parameters.</summary>
+    /// <param name="text">The search text.</param>
+    /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="certainty">Certainty threshold for the search.</param>
+    /// <param name="distance">Distance threshold for the search.</param>
+    /// <param name="moveTo">Move-to configuration.</param>
+    /// <param name="moveAway">Move-away configuration.</param>
+    /// <param name="limit">Maximum number of results to return.</param>
+    /// <param name="offset">Number of results to skip.</param>
+    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="returnProperties">Properties to return in the response.</param>
+    /// <param name="returnReferences">Cross-references to return.</param>
+    /// <param name="returnMetadata">Metadata to include in the response.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Grouped search results.</returns>
     public async Task<GroupByResult> NearText(
         AutoArray<string> text,
         GroupByRequest groupBy,
@@ -96,7 +134,7 @@ public partial class QueryClient
     ///         .Sum("title", "description")
     /// )
     /// </example>
-    /// <param name="inputBuilder">Lambda builder for creating NearTextInput with target vectors.</param>
+    /// <param name="query">Lambda builder for creating NearTextInput with target vectors.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -150,7 +188,7 @@ public partial class QueryClient
     /// <summary>
     /// Performs a near-text search with group-by using a lambda builder for NearTextInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearTextInput with target vectors.</param>
+    /// <param name="query">Lambda builder for creating NearTextInput with target vectors.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>

@@ -2,8 +2,18 @@ namespace Weaviate.Client.Grpc;
 
 using Protobuf.V1;
 
+/// <summary>
+/// The weaviate grpc client class
+/// </summary>
 internal partial class WeaviateGrpcClient
 {
+    /// <summary>
+    /// Tenantses the get using the specified name
+    /// </summary>
+    /// <param name="name">The name</param>
+    /// <param name="tenantNames">The tenant names</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing an enumerable of tenant</returns>
     internal async Task<IEnumerable<Tenant>> TenantsGet(
         string name,
         string[] tenantNames,

@@ -6,13 +6,30 @@ using Weaviate.Client.Validation;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The data client class
+/// </summary>
 public class DataClient
 {
+    /// <summary>
+    /// The collection client
+    /// </summary>
     private readonly CollectionClient _collectionClient;
 
+    /// <summary>
+    /// Gets the value of the  client
+    /// </summary>
     private WeaviateClient _client => _collectionClient.Client;
+
+    /// <summary>
+    /// Gets the value of the  collectionname
+    /// </summary>
     private string _collectionName => _collectionClient.Name;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DataClient"/> class
+    /// </summary>
+    /// <param name="collectionClient">The collection client</param>
     internal DataClient(CollectionClient collectionClient)
     {
         _collectionClient = collectionClient;
@@ -31,6 +48,11 @@ public class DataClient
         return TimeoutHelper.GetCancellationToken(effectiveTimeout, userToken);
     }
 
+    /// <summary>
+    /// Vectorses the to dto using the specified vectors
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <returns>The result</returns>
     public IDictionary<string, object>? VectorsToDto(Models.Vectors? vectors)
     {
         if (vectors == null || vectors.Count == 0)
@@ -46,6 +68,17 @@ public class DataClient
         return result;
     }
 
+    /// <summary>
+    /// Inserts the properties
+    /// </summary>
+    /// <param name="properties">The properties</param>
+    /// <param name="uuid">The uuid</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="references">The references</param>
+    /// <param name="validate">The validate</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <returns>A task containing the guid</returns>
     public async Task<Guid> Insert(
         object properties,
         Guid? uuid = null,
@@ -96,6 +129,14 @@ public class DataClient
         return response.Id!.Value;
     }
 
+    /// <summary>
+    /// Updates the uuid
+    /// </summary>
+    /// <param name="uuid">The uuid</param>
+    /// <param name="properties">The properties</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="references">The references</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task Update(
         Guid uuid,
         object properties,
@@ -127,6 +168,14 @@ public class DataClient
         );
     }
 
+    /// <summary>
+    /// Replaces the uuid
+    /// </summary>
+    /// <param name="uuid">The uuid</param>
+    /// <param name="properties">The properties</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="references">The references</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task Replace(
         Guid uuid,
         object properties,
@@ -158,6 +207,14 @@ public class DataClient
         );
     }
 
+    /// <summary>
+    /// Inserts the many using the specified properties
+    /// </summary>
+    /// <param name="properties">The properties</param>
+    /// <param name="validate">The validate</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <returns>A task containing the batch insert response</returns>
     public async Task<BatchInsertResponse> InsertMany(
         IEnumerable properties,
         bool validate = false,
@@ -188,6 +245,12 @@ public class DataClient
         );
     }
 
+    /// <summary>
+    /// Inserts the many using the specified request batches
+    /// </summary>
+    /// <param name="requestBatches">The request batches</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the batch insert response</returns>
     public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<BatchInsertRequest[]> requestBatches,
         CancellationToken cancellationToken = default
@@ -204,6 +267,12 @@ public class DataClient
         return new BatchInsertResponse(results);
     }
 
+    /// <summary>
+    /// Inserts the many using the specified requests
+    /// </summary>
+    /// <param name="requests">The requests</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the batch insert response</returns>
     public async Task<BatchInsertResponse> InsertMany(
         IEnumerable<BatchInsertRequest> requests,
         CancellationToken cancellationToken = default
@@ -287,6 +356,11 @@ public class DataClient
         return new BatchInsertResponse(results);
     }
 
+    /// <summary>
+    /// Deletes the by id using the specified uuid
+    /// </summary>
+    /// <param name="uuid">The uuid</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task DeleteByID(Guid uuid, CancellationToken cancellationToken = default)
     {
         await _client.RestClient.DeleteObject(
@@ -297,6 +371,11 @@ public class DataClient
         );
     }
 
+    /// <summary>
+    /// References the add using the specified reference
+    /// </summary>
+    /// <param name="reference">The reference</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task ReferenceAdd(
         DataReference reference,
         CancellationToken cancellationToken = default
@@ -312,6 +391,13 @@ public class DataClient
         );
     }
 
+    /// <summary>
+    /// References the add using the specified from
+    /// </summary>
+    /// <param name="from">The from</param>
+    /// <param name="fromProperty">The from property</param>
+    /// <param name="to">The to</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task ReferenceAdd(
         Guid from,
         string fromProperty,
@@ -329,6 +415,12 @@ public class DataClient
         );
     }
 
+    /// <summary>
+    /// References the add many using the specified references
+    /// </summary>
+    /// <param name="references">The references</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the batch reference return</returns>
     public async Task<BatchReferenceReturn> ReferenceAddMany(
         DataReference[] references,
         CancellationToken cancellationToken = default
@@ -367,6 +459,13 @@ public class DataClient
         return new BatchReferenceReturn(elapsedSeconds, errorsByIndex);
     }
 
+    /// <summary>
+    /// References the replace using the specified from
+    /// </summary>
+    /// <param name="from">The from</param>
+    /// <param name="fromProperty">The from property</param>
+    /// <param name="to">The to</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task ReferenceReplace(
         Guid from,
         string fromProperty,
@@ -384,6 +483,13 @@ public class DataClient
         );
     }
 
+    /// <summary>
+    /// References the delete using the specified from
+    /// </summary>
+    /// <param name="from">The from</param>
+    /// <param name="fromProperty">The from property</param>
+    /// <param name="to">The to</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task ReferenceDelete(
         Guid from,
         string fromProperty,
@@ -401,6 +507,14 @@ public class DataClient
         );
     }
 
+    /// <summary>
+    /// Deletes the many using the specified where
+    /// </summary>
+    /// <param name="where">The where</param>
+    /// <param name="dryRun">The dry run</param>
+    /// <param name="verbose">The verbose</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>The result</returns>
     public async Task<DeleteManyResult> DeleteMany(
         Filter where,
         bool dryRun = false,

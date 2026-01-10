@@ -2,6 +2,9 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The generate client class
+/// </summary>
 public partial class GenerateClient
 {
     /// <summary>
@@ -20,7 +23,6 @@ public partial class GenerateClient
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
-    /// <param name="targets">Target vectors</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -91,7 +93,6 @@ public partial class GenerateClient
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
-    /// <param name="targets">Target vectors</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -275,7 +276,7 @@ public partial class GenerateClient
     /// <summary>
     /// Performs a near-text search with generative AI using a lambda builder for NearTextInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearTextInput with target vectors.</param>
+    /// <param name="query"></param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -326,7 +327,7 @@ public partial class GenerateClient
     /// <summary>
     /// Performs a near-text search with generative AI and grouping using a lambda builder for NearTextInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearTextInput with target vectors.</param>
+    /// <param name="query"></param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>

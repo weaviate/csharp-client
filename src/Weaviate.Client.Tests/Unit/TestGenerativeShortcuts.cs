@@ -14,6 +14,9 @@ public class GenerativeShortcutsTests
 {
     #region Implicit Conversion Tests
 
+    /// <summary>
+    /// Tests that single prompt implicit conversion from string works
+    /// </summary>
     [Fact]
     public void SinglePrompt_ImplicitConversionFromString_Works()
     {
@@ -28,6 +31,9 @@ public class GenerativeShortcutsTests
         Assert.Equal(promptText, prompt.Prompt);
     }
 
+    /// <summary>
+    /// Tests that grouped task implicit conversion from string works
+    /// </summary>
     [Fact]
     public void GroupedTask_ImplicitConversionFromString_Works()
     {
@@ -46,6 +52,9 @@ public class GenerativeShortcutsTests
 
     #region Provider Enrichment Integration Tests
 
+    /// <summary>
+    /// Tests that generate client fetch objects with string prompt and provider enriches prompt
+    /// </summary>
     [Fact]
     public async Task GenerateClient_FetchObjects_WithStringPromptAndProvider_EnrichesPrompt()
     {
@@ -76,6 +85,9 @@ public class GenerativeShortcutsTests
         Assert.Equal(0.7f, providerQuery.Openai.Temperature);
     }
 
+    /// <summary>
+    /// Tests that generate client fetch objects with string grouped task and provider enriches task
+    /// </summary>
     [Fact]
     public async Task GenerateClient_FetchObjects_WithStringGroupedTaskAndProvider_EnrichesTask()
     {
@@ -111,6 +123,9 @@ public class GenerativeShortcutsTests
         Assert.Equal(2048, providerQuery.Anthropic.MaxTokens);
     }
 
+    /// <summary>
+    /// Tests that generate client near text with string prompt and provider enriches prompt
+    /// </summary>
     [Fact]
     public async Task GenerateClient_NearText_WithStringPromptAndProvider_EnrichesPrompt()
     {
@@ -142,6 +157,9 @@ public class GenerativeShortcutsTests
         Assert.Equal(1024, providerQuery.Cohere.MaxTokens);
     }
 
+    /// <summary>
+    /// Tests that generate client prompt with existing provider not overridden by parameter
+    /// </summary>
     [Fact]
     public async Task GenerateClient_PromptWithExistingProvider_NotOverriddenByParameter()
     {
@@ -164,6 +182,9 @@ public class GenerativeShortcutsTests
         );
     }
 
+    /// <summary>
+    /// Tests that generate client prompt without provider enriched by parameter
+    /// </summary>
     [Fact]
     public async Task GenerateClient_PromptWithoutProvider_EnrichedByParameter()
     {
@@ -198,6 +219,10 @@ public class GenerativeShortcutsTests
 
     #region Helper Methods
 
+    /// <summary>
+    /// Creates the client with request capture
+    /// </summary>
+    /// <returns>A weaviate client client and func of search request get captured request</returns>
     private static (
         WeaviateClient Client,
         Func<SearchRequest?> GetCapturedRequest

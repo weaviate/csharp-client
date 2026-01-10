@@ -196,6 +196,11 @@ internal static class AggregatePropertyMapper
         return MapToType<T>(readOnly);
     }
 
+    /// <summary>
+    /// Ises the aggregate type using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The bool</returns>
     private static bool IsAggregateType(Type type)
     {
         return type == typeof(Aggregate.Text)
@@ -722,6 +727,11 @@ public static class MetricsExtractor
         return metricsByField.Values.Select(b => b.Build()).ToArray();
     }
 
+    /// <summary>
+    /// Ises the aggregate type using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The bool</returns>
     private static bool IsAggregateType(Type type)
     {
         return type == typeof(Aggregate.Text)
@@ -732,6 +742,11 @@ public static class MetricsExtractor
             || type == typeof(Aggregate.Property);
     }
 
+    /// <summary>
+    /// Gets the metric type from aggregate type using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The metric type</returns>
     private static MetricType GetMetricTypeFromAggregateType(Type type)
     {
         if (type == typeof(Aggregate.Text))
@@ -747,6 +762,12 @@ public static class MetricsExtractor
         return MetricType.Unknown;
     }
 
+    /// <summary>
+    /// Gets the metric type from suffix using the specified suffix
+    /// </summary>
+    /// <param name="suffix">The suffix</param>
+    /// <param name="propertyType">The property type</param>
+    /// <returns>The metric type</returns>
     private static MetricType GetMetricTypeFromSuffix(string suffix, Type propertyType)
     {
         // Check if property is DateTime (for Date suffixes)
@@ -780,41 +801,141 @@ public static class MetricsExtractor
         };
     }
 
+    /// <summary>
+    /// The metric type enum
+    /// </summary>
     private enum MetricType
     {
+        /// <summary>
+        /// The unknown metric type
+        /// </summary>
         Unknown,
+
+        /// <summary>
+        /// The text metric type
+        /// </summary>
         Text,
+
+        /// <summary>
+        /// The integer metric type
+        /// </summary>
         Integer,
+
+        /// <summary>
+        /// The number metric type
+        /// </summary>
         Number,
+
+        /// <summary>
+        /// The boolean metric type
+        /// </summary>
         Boolean,
+
+        /// <summary>
+        /// The date metric type
+        /// </summary>
         Date,
     }
 
+    /// <summary>
+    /// The metric builder class
+    /// </summary>
     private sealed class MetricBuilder
     {
+        /// <summary>
+        /// The field name
+        /// </summary>
         private readonly string _fieldName;
+
+        /// <summary>
+        /// The type
+        /// </summary>
         private readonly MetricType _type;
+
+        /// <summary>
+        /// The count
+        /// </summary>
         private bool _count;
+
+        /// <summary>
+        /// The sum
+        /// </summary>
         private bool _sum;
+
+        /// <summary>
+        /// The mean
+        /// </summary>
         private bool _mean;
+
+        /// <summary>
+        /// The minimum
+        /// </summary>
         private bool _minimum;
+
+        /// <summary>
+        /// The maximum
+        /// </summary>
         private bool _maximum;
+
+        /// <summary>
+        /// The median
+        /// </summary>
         private bool _median;
+
+        /// <summary>
+        /// The mode
+        /// </summary>
         private bool _mode;
+
+        /// <summary>
+        /// The total true
+        /// </summary>
         private bool _totalTrue;
+
+        /// <summary>
+        /// The total false
+        /// </summary>
         private bool _totalFalse;
+
+        /// <summary>
+        /// The percentage true
+        /// </summary>
         private bool _percentageTrue;
+
+        /// <summary>
+        /// The percentage false
+        /// </summary>
         private bool _percentageFalse;
+
+        /// <summary>
+        /// The top occurrences count
+        /// </summary>
         private bool _topOccurrencesCount;
+
+        /// <summary>
+        /// The top occurrences value
+        /// </summary>
         private bool _topOccurrencesValue;
+
+        /// <summary>
+        /// The min occurrences
+        /// </summary>
         private uint? _minOccurrences;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MetricBuilder"/> class
+        /// </summary>
+        /// <param name="fieldName">The field name</param>
+        /// <param name="type">The type</param>
         public MetricBuilder(string fieldName, MetricType type)
         {
             _fieldName = fieldName;
             _type = type;
         }
 
+        /// <summary>
+        /// Enables the all
+        /// </summary>
         public void EnableAll()
         {
             _count = true;
@@ -832,11 +953,19 @@ public static class MetricsExtractor
             _topOccurrencesValue = true;
         }
 
+        /// <summary>
+        /// Sets the min occurrences using the specified min occurrences
+        /// </summary>
+        /// <param name="minOccurrences">The min occurrences</param>
         public void SetMinOccurrences(uint minOccurrences)
         {
             _minOccurrences = minOccurrences;
         }
 
+        /// <summary>
+        /// Enables the flag using the specified suffix
+        /// </summary>
+        /// <param name="suffix">The suffix</param>
         public void EnableFlag(string suffix)
         {
             switch (suffix)
@@ -885,6 +1014,11 @@ public static class MetricsExtractor
             }
         }
 
+        /// <summary>
+        /// Builds this instance
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Unknown metric type: {_type}</exception>
+        /// <returns>The aggregate metric</returns>
         public Aggregate.Metric Build()
         {
             return _type switch

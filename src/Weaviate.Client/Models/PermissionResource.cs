@@ -1,40 +1,105 @@
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// Represents a backup resource, optionally scoped to a collection.
+/// </summary>
+/// <param name="Collection">Optional collection name to scope the backup resource to</param>
 public record BackupsResource(string? Collection);
 
+/// <summary>
+/// Represents a data resource, optionally scoped to a collection and tenant. Defaults to all ("*").
+/// </summary>
+/// <param name="Collection">Optional collection name (defaults to "*" for all collections)</param>
+/// <param name="Tenant">Optional tenant name (defaults to "*" for all tenants)</param>
 public record DataResource(string? Collection = "*", string? Tenant = "*");
 
+/// <summary>
+/// Represents a nodes resource, optionally scoped to a collection and verbosity.
+/// </summary>
+/// <param name="Collection">Optional collection name (defaults to "*" for all collections)</param>
+/// <param name="Verbosity">Optional verbosity level (defaults to Minimal)</param>
 public record NodesResource(
     string? Collection = "*",
     NodeVerbosity? Verbosity = NodeVerbosity.Minimal
 );
 
+/// <summary>
+/// Represents a users resource, optionally scoped to a user or all users ("*").
+/// </summary>
+/// <param name="Users">Optional user name or "*" for all users (defaults to "*")</param>
 public record UsersResource(string? Users = "*");
 
+/// <summary>
+/// Represents a groups resource, optionally scoped to a group and group type.
+/// </summary>
+/// <param name="Group">Optional group name (defaults to "*" for all groups)</param>
+/// <param name="GroupType">Optional group type (defaults to Oidc)</param>
 public record GroupsResource(string? Group = "*", RbacGroupType? GroupType = RbacGroupType.Oidc);
 
+/// <summary>
+/// Represents a tenants resource, optionally scoped to a collection and tenant.
+/// </summary>
+/// <param name="Collection">Optional collection name (defaults to "*" for all collections)</param>
+/// <param name="Tenant">Optional tenant name (defaults to "*" for all tenants)</param>
 public record TenantsResource(string? Collection = "*", string? Tenant = "*");
 
+/// <summary>
+/// Represents a roles resource, optionally scoped to a role and scope.
+/// </summary>
+/// <param name="Role">Optional role name (defaults to "*" for all roles)</param>
+/// <param name="Scope">Optional scope for role matching (defaults to Match)</param>
 public record RolesResource(string? Role = "*", RolesScope? Scope = RolesScope.Match);
 
+/// <summary>
+/// Represents a collections resource, optionally scoped to a collection.
+/// </summary>
+/// <param name="Collection">Optional collection name to scope the resource to</param>
 public record CollectionsResource(string? Collection);
 
+/// <summary>
+/// Represents a replicate resource, optionally scoped to a collection and shard.
+/// </summary>
+/// <param name="Collection">Optional collection name (defaults to "*" for all collections)</param>
+/// <param name="Shard">Optional shard name (defaults to "*" for all shards)</param>
 public record ReplicateResource(string? Collection = "*", string? Shard = "*");
 
+/// <summary>
+/// Represents an aliases resource, optionally scoped to a collection and alias.
+/// </summary>
+/// <param name="Collection">Optional collection name (defaults to "*" for all collections)</param>
+/// <param name="Alias">Optional alias name (defaults to "*" for all aliases)</param>
 public record AliasesResource(string? Collection = "*", string? Alias = "*");
 
+/// <summary>
+/// The permission resource extensions class
+/// </summary>
 internal static class PermissionResourceExtensions
 {
+    /// <summary>
+    /// Returns the dto using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <returns>The rest dto backups</returns>
     internal static Rest.Dto.Backups ToDto(this BackupsResource resource)
     {
         return new Rest.Dto.Backups { Collection = resource.Collection };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <returns>The rest dto data</returns>
     internal static Rest.Dto.Data ToDto(this DataResource resource)
     {
         return new Rest.Dto.Data { Collection = resource.Collection, Tenant = resource.Tenant };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <returns>The rest dto nodes</returns>
     internal static Rest.Dto.Nodes ToDto(this NodesResource resource)
     {
         return new Rest.Dto.Nodes
@@ -46,11 +111,21 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <returns>The rest dto users</returns>
     internal static Rest.Dto.Users ToDto(this UsersResource resource)
     {
         return new Rest.Dto.Users { Users1 = resource.Users };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <returns>The rest dto groups</returns>
     internal static Rest.Dto.Groups ToDto(this GroupsResource resource)
     {
         return new Rest.Dto.Groups
@@ -62,11 +137,21 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <returns>The rest dto tenants</returns>
     internal static Rest.Dto.Tenants ToDto(this TenantsResource resource)
     {
         return new Rest.Dto.Tenants { Collection = resource.Collection, Tenant = resource.Tenant };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <returns>The rest dto roles</returns>
     internal static Rest.Dto.Roles ToDto(this RolesResource resource)
     {
         return new Rest.Dto.Roles
@@ -76,21 +161,42 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <returns>The rest dto collections</returns>
     internal static Rest.Dto.Collections ToDto(this CollectionsResource resource)
     {
         return new Rest.Dto.Collections { Collection = resource.Collection };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <returns>The rest dto replicate</returns>
     internal static Rest.Dto.Replicate ToDto(this ReplicateResource resource)
     {
         return new Rest.Dto.Replicate { Collection = resource.Collection, Shard = resource.Shard };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <returns>The rest dto aliases</returns>
     internal static Rest.Dto.Aliases ToDto(this AliasesResource resource)
     {
         return new Rest.Dto.Aliases { Collection = resource.Collection, Alias = resource.Alias };
     }
 
+    /// <summary>
+    /// Returns the model using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <param name="permissions">The permissions</param>
+    /// <returns>The permission scope</returns>
     internal static PermissionScope ToModel(
         this Rest.Dto.Aliases resource,
         IEnumerable<Rest.Dto.Permission> permissions
@@ -110,6 +216,12 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the model using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <param name="permissions">The permissions</param>
+    /// <returns>The permission scope</returns>
     internal static PermissionScope ToModel(
         this Rest.Dto.Data resource,
         IEnumerable<Rest.Dto.Permission> permissions
@@ -126,6 +238,12 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the model using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <param name="permissions">The permissions</param>
+    /// <returns>The permission scope</returns>
     internal static PermissionScope ToModel(
         this Rest.Dto.Backups resource,
         IEnumerable<Rest.Dto.Permission> permissions
@@ -142,6 +260,12 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the model using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <param name="permissions">The permissions</param>
+    /// <returns>The permission scope</returns>
     internal static PermissionScope ToModel(
         this Rest.Dto.Nodes resource,
         IEnumerable<Rest.Dto.Permission> permissions
@@ -158,6 +282,12 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the model using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <param name="permissions">The permissions</param>
+    /// <returns>The permission scope</returns>
     internal static PermissionScope ToModel(
         this Rest.Dto.Roles resource,
         IEnumerable<Rest.Dto.Permission> permissions
@@ -174,6 +304,12 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the model using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <param name="permissions">The permissions</param>
+    /// <returns>The permission scope</returns>
     internal static PermissionScope ToModel(
         this Rest.Dto.Users resource,
         IEnumerable<Rest.Dto.Permission> permissions
@@ -191,6 +327,12 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the model using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <param name="permissions">The permissions</param>
+    /// <returns>The permission scope</returns>
     internal static PermissionScope ToModel(
         this Rest.Dto.Tenants resource,
         IEnumerable<Rest.Dto.Permission> permissions
@@ -210,6 +352,12 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the model using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <param name="permissions">The permissions</param>
+    /// <returns>The permission scope</returns>
     internal static PermissionScope ToModel(
         this Rest.Dto.Groups resource,
         IEnumerable<Rest.Dto.Permission> permissions
@@ -230,6 +378,12 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the model using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <param name="permissions">The permissions</param>
+    /// <returns>The permission scope</returns>
     internal static PermissionScope ToModel(
         this Rest.Dto.Replicate resource,
         IEnumerable<Rest.Dto.Permission> permissions
@@ -249,6 +403,12 @@ internal static class PermissionResourceExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the model using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <param name="permissions">The permissions</param>
+    /// <returns>The permission scope</returns>
     internal static PermissionScope ToModel(
         this Rest.Dto.Collections resource,
         IEnumerable<Rest.Dto.Permission> permissions

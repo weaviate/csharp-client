@@ -12,11 +12,25 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TestNearVectorSyntax : IAsyncLifetime
 {
+    /// <summary>
+    /// The collection name
+    /// </summary>
     private const string CollectionName = "TestCollection";
 
+    /// <summary>
+    /// The get request
+    /// </summary>
     private Func<Grpc.Protobuf.V1.SearchRequest?> _getRequest = null!;
+
+    /// <summary>
+    /// The collection
+    /// </summary>
     private CollectionClient _collection = null!;
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask InitializeAsync()
     {
         var (client, getRequest) = MockGrpcClient.CreateWithSearchCapture();
@@ -25,6 +39,10 @@ public class TestNearVectorSyntax : IAsyncLifetime
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Disposes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
@@ -33,6 +51,9 @@ public class TestNearVectorSyntax : IAsyncLifetime
 
     #region Simple Float Array (Implicit Conversion)
 
+    /// <summary>
+    /// Tests that near vector simple float array produces valid request
+    /// </summary>
     [Fact]
     public async Task NearVector_SimpleFloatArray_ProducesValidRequest()
     {
@@ -59,6 +80,9 @@ public class TestNearVectorSyntax : IAsyncLifetime
 
     #region Named Vectors
 
+    /// <summary>
+    /// Tests that near vector named vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task NearVector_NamedVectors_ProducesValidRequest()
     {
@@ -103,6 +127,9 @@ public class TestNearVectorSyntax : IAsyncLifetime
 
     #region Lambda Builder - Sum Combination
 
+    /// <summary>
+    /// Tests that near vector lambda builder sum produces valid request
+    /// </summary>
     [Fact]
     public async Task NearVector_LambdaBuilder_Sum_ProducesValidRequest()
     {
@@ -137,6 +164,9 @@ public class TestNearVectorSyntax : IAsyncLifetime
 
     #region Lambda Builder - ManualWeights
 
+    /// <summary>
+    /// Tests that near vector lambda builder manual weights produces valid request
+    /// </summary>
     [Fact]
     public async Task NearVector_LambdaBuilder_ManualWeights_ProducesValidRequest()
     {
@@ -185,6 +215,9 @@ public class TestNearVectorSyntax : IAsyncLifetime
 
     #region Multi-Vector (ColBERT-style)
 
+    /// <summary>
+    /// Tests that near vector multi vector col bert style produces valid request
+    /// </summary>
     [Fact]
     public async Task NearVector_MultiVector_ColBERTStyle_ProducesValidRequest()
     {
@@ -226,6 +259,9 @@ public class TestNearVectorSyntax : IAsyncLifetime
 
     #region With GroupBy
 
+    /// <summary>
+    /// Tests that near vector with group by produces valid request
+    /// </summary>
     [Fact]
     public async Task NearVector_WithGroupBy_ProducesValidRequest()
     {
@@ -255,6 +291,9 @@ public class TestNearVectorSyntax : IAsyncLifetime
 
     #region NearVectorInput.FactoryFn Lambda Builder
 
+    /// <summary>
+    /// Tests that near vector near vector input factory fn with certainty produces valid request
+    /// </summary>
     [Fact]
     public async Task NearVector_NearVectorInputFactoryFn_WithCertainty_ProducesValidRequest()
     {
@@ -285,6 +324,9 @@ public class TestNearVectorSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeManual, request.NearVector.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that near vector near vector input factory fn with distance produces valid request
+    /// </summary>
     [Fact]
     public async Task NearVector_NearVectorInputFactoryFn_WithDistance_ProducesValidRequest()
     {
@@ -309,6 +351,9 @@ public class TestNearVectorSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.NearVector.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that near vector near vector input factory fn average produces valid request
+    /// </summary>
     [Fact]
     public async Task NearVector_NearVectorInputFactoryFn_Average_ProducesValidRequest()
     {
@@ -330,6 +375,9 @@ public class TestNearVectorSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.NearVector.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that near vector near vector input factory fn minimum produces valid request
+    /// </summary>
     [Fact]
     public async Task NearVector_NearVectorInputFactoryFn_Minimum_ProducesValidRequest()
     {
@@ -351,6 +399,9 @@ public class TestNearVectorSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeMin, request.NearVector.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that near vector near vector input factory fn relative score produces valid request
+    /// </summary>
     [Fact]
     public async Task NearVector_NearVectorInputFactoryFn_RelativeScore_ProducesValidRequest()
     {

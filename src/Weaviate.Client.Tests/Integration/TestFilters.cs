@@ -2,9 +2,16 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The filter tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("FilterTests")]
 public partial class FilterTests : IntegrationTests
 {
+    /// <summary>
+    /// Tests that filtering
+    /// </summary>
     [Fact]
     public async Task Filtering()
     {
@@ -33,6 +40,9 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(uuid_A1, objs[0].UUID);
     }
 
+    /// <summary>
+    /// Tests that filtering with metadata dates
+    /// </summary>
     [Fact]
     public async Task FilteringWithMetadataDates()
     {
@@ -77,6 +87,9 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(objA1.UUID, obj.UUID);
     }
 
+    /// <summary>
+    /// Tests that filtering with expressions
+    /// </summary>
     [Fact]
     public async Task FilteringWithExpressions()
     {
@@ -105,6 +118,10 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(uuid_A2, objs[0].UUID);
     }
 
+    /// <summary>
+    /// Tests that filtering references
+    /// </summary>
+    /// <param name="key">The key</param>
     [Theory]
     [ClassData(typeof(DatasetFilteringReferences))]
     public async Task FilteringReferences(string key)
@@ -181,6 +198,10 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(uuidsFrom[expected], objs.First().UUID);
     }
 
+    /// <summary>
+    /// Tests that filter by id
+    /// </summary>
+    /// <param name="key">The key</param>
     [Theory]
     [ClassData(typeof(DatasetFilterByID))]
     public async Task FilterByID(string key)
@@ -215,6 +236,10 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(_reusableUuids[0], objects[0].UUID);
     }
 
+    /// <summary>
+    /// Tests that filtering with ref count
+    /// </summary>
+    /// <param name="key">The key</param>
     [Theory]
     [ClassData(typeof(DatasetRefCountFilter))]
     public async Task FilteringWithRefCount(string key)
@@ -264,6 +289,9 @@ public partial class FilterTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that filter by nested reference count
+    /// </summary>
     [Fact]
     public async Task FilterByNestedReferenceCount()
     {
@@ -317,6 +345,9 @@ public partial class FilterTests : IntegrationTests
         Assert.Equal(uuid21, objs[0].UUID);
     }
 
+    /// <summary>
+    /// Tests that time filter contains
+    /// </summary>
     [Fact]
     public async Task TimeFilterContains()
     {
@@ -369,6 +400,10 @@ public partial class FilterTests : IntegrationTests
         Assert.True(objs.All(obj => obj.UUID != null && expectedUuids.Contains(obj.UUID.Value)));
     }
 
+    /// <summary>
+    /// Tests that time filtering
+    /// </summary>
+    /// <param name="key">The key</param>
     [Theory]
     [ClassData(typeof(DatasetTimeFilter))]
     public async Task TimeFiltering(string key)
@@ -422,6 +457,10 @@ public partial class FilterTests : IntegrationTests
         Assert.True(objs.All(obj => obj.UUID != null && expectedUuids.Contains(obj.UUID.Value)));
     }
 
+    /// <summary>
+    /// Tests that filter array types
+    /// </summary>
+    /// <param name="key">The key</param>
     [Theory]
     [ClassData(typeof(DatasetFilterArrayTypes))]
     public async Task FilterArrayTypes(string key)
@@ -483,6 +522,10 @@ public partial class FilterTests : IntegrationTests
         Assert.True(objects.All(obj => expectedUuids.Contains(obj.UUID!.Value)));
     }
 
+    /// <summary>
+    /// Tests that filter contains
+    /// </summary>
+    /// <param name="test">The test</param>
     [Theory]
     [ClassData(typeof(DatasetFilterContains))]
     public async Task FilterContains(string test)
@@ -598,6 +641,9 @@ public partial class FilterTests : IntegrationTests
         Assert.True(objects.All(obj => expectedUuids.Contains(obj.UUID!.Value)));
     }
 
+    /// <summary>
+    /// Tests that filter contains none integration
+    /// </summary>
     [Fact]
     public async Task Filter_ContainsNone_Integration()
     {
@@ -644,6 +690,9 @@ public partial class FilterTests : IntegrationTests
         Assert.Contains(idD, ids);
     }
 
+    /// <summary>
+    /// Tests that filter not contains any integration
+    /// </summary>
     [Fact]
     public async Task Filter_Not_ContainsAny_Integration()
     {
@@ -685,6 +734,9 @@ public partial class FilterTests : IntegrationTests
         Assert.Contains(idC, ids);
     }
 
+    /// <summary>
+    /// Tests that filter is null integration
+    /// </summary>
     [Fact]
     public async Task Filter_IsNull_Integration()
     {

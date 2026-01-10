@@ -6,16 +6,39 @@ namespace Weaviate.Client;
 
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
+/// <summary>
+/// Provides factory methods for creating various vectorizer configuration objects used in Weaviate.
+/// </summary>
 public class VectorizerFactory
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VectorizerFactory"/> class
+    /// </summary>
     internal VectorizerFactory() { }
 
 #pragma warning disable CA1822 // Mark members as static
+    /// <summary>
+    /// Creates a configuration for a self-provided vectorizer.
+    /// </summary>
+    /// <returns>SelfProvided vectorizer configuration.</returns>
     public VectorizerConfig SelfProvided() => new Models.Vectorizer.SelfProvided();
 
+    /// <summary>
+    /// Creates a configuration for the Img2VecNeural vectorizer.
+    /// </summary>
+    /// <param name="imageFields">Array of image field names.</param>
+    /// <returns>Img2VecNeural vectorizer configuration.</returns>
     public VectorizerConfig Img2VecNeural(string[] imageFields) =>
         new Models.Vectorizer.Img2VecNeural { ImageFields = imageFields };
 
+    /// <summary>
+    /// Creates a configuration for the Text2VecWeaviate vectorizer.
+    /// </summary>
+    /// <param name="baseURL">Optional base URL for the model.</param>
+    /// <param name="dimensions">Number of vector dimensions.</param>
+    /// <param name="model">Model name to use.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
+    /// <returns>Text2VecWeaviate vectorizer configuration.</returns>
     public VectorizerConfig Text2VecWeaviate(
         string? baseURL = null,
         int? dimensions = null,
@@ -30,6 +53,16 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Creates a configuration for the Multi2VecAWSBedrock vectorizer using weighted fields.
+    /// </summary>
+    /// <param name="imageFields">Weighted image fields.</param>
+    /// <param name="textFields">Weighted text fields.</param>
+    /// <param name="region">AWS region.</param>
+    /// <param name="model">Model name to use.</param>
+    /// <param name="dimensions">Number of vector dimensions.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
+    /// <returns>Multi2VecAWSBedrock vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecAWSBedrock(
         WeightedFields imageFields,
         WeightedFields textFields,
@@ -49,6 +82,16 @@ public class VectorizerFactory
             Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
         };
 
+    /// <summary>
+    /// Creates a configuration for the Multi2VecAWSBedrock vectorizer using string arrays.
+    /// </summary>
+    /// <param name="imageFields">Array of image field names.</param>
+    /// <param name="textFields">Array of text field names.</param>
+    /// <param name="region">AWS region.</param>
+    /// <param name="model">Model name to use.</param>
+    /// <param name="dimensions">Number of vector dimensions.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
+    /// <returns>Multi2VecAWSBedrock vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecAWSBedrock(
         string[]? imageFields = null,
         string[]? textFields = null,
@@ -67,6 +110,14 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Creates a configuration for the Multi2VecClip vectorizer using weighted fields.
+    /// </summary>
+    /// <param name="imageFields">Weighted image fields.</param>
+    /// <param name="textFields">Weighted text fields.</param>
+    /// <param name="inferenceUrl">Inference URL for the model.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
+    /// <returns>Multi2VecClip vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecClip(
         WeightedFields imageFields,
         WeightedFields textFields,
@@ -82,6 +133,14 @@ public class VectorizerFactory
             Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
         };
 
+    /// <summary>
+    /// Creates a configuration for the Multi2VecClip vectorizer using string arrays.
+    /// </summary>
+    /// <param name="imageFields">Array of image field names.</param>
+    /// <param name="textFields">Array of text field names.</param>
+    /// <param name="inferenceUrl">Inference URL for the model.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
+    /// <returns>Multi2VecClip vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecClip(
         string[]? imageFields = null,
         string[]? textFields = null,
@@ -96,6 +155,17 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Creates a configuration for the Multi2VecCohere vectorizer using weighted fields.
+    /// </summary>
+    /// <param name="imageFields">Weighted image fields.</param>
+    /// <param name="textFields">Weighted text fields.</param>
+    /// <param name="baseURL">Optional base URL for the model.</param>
+    /// <param name="model">Model name to use.</param>
+    /// <param name="dimensions">Number of vector dimensions.</param>
+    /// <param name="truncate">Truncation strategy.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
+    /// <returns>Multi2VecCohere vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecCohere(
         WeightedFields imageFields,
         WeightedFields textFields,
@@ -117,6 +187,17 @@ public class VectorizerFactory
             Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
         };
 
+    /// <summary>
+    /// Creates a configuration for the Multi2VecCohere vectorizer using string arrays.
+    /// </summary>
+    /// <param name="imageFields">Array of image field names.</param>
+    /// <param name="textFields">Array of text field names.</param>
+    /// <param name="baseURL">Optional base URL for the model.</param>
+    /// <param name="model">Model name to use.</param>
+    /// <param name="dimensions">Number of vector dimensions.</param>
+    /// <param name="truncate">Truncation strategy.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
+    /// <returns>Multi2VecCohere vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecCohere(
         string[]? imageFields = null,
         string[]? textFields = null,
@@ -137,6 +218,18 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Creates a configuration for the Multi2VecBind vectorizer using weighted fields for multiple modalities.
+    /// </summary>
+    /// <param name="imageFields">Weighted image fields.</param>
+    /// <param name="textFields">Weighted text fields.</param>
+    /// <param name="audioFields">Weighted audio fields.</param>
+    /// <param name="depthFields">Weighted depth fields.</param>
+    /// <param name="imuFields">Weighted IMU fields.</param>
+    /// <param name="thermalFields">Weighted thermal fields.</param>
+    /// <param name="videoFields">Weighted video fields.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
+    /// <returns>Multi2VecBind vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecBind(
         WeightedFields imageFields,
         WeightedFields textFields,
@@ -168,6 +261,18 @@ public class VectorizerFactory
             ),
         };
 
+    /// <summary>
+    /// Multis the 2 vec bind using the specified image fields
+    /// </summary>
+    /// <param name="imageFields">The image fields</param>
+    /// <param name="textFields">The text fields</param>
+    /// <param name="audioFields">The audio fields</param>
+    /// <param name="depthFields">The depth fields</param>
+    /// <param name="imuFields">The imu fields</param>
+    /// <param name="thermalFields">The thermal fields</param>
+    /// <param name="videoFields">The video fields</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecBind(
         string[]? imageFields = null,
         string[]? textFields = null,
@@ -190,6 +295,19 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Multis the 2 vec google using the specified project id
+    /// </summary>
+    /// <param name="projectId">The project id</param>
+    /// <param name="location">The location</param>
+    /// <param name="imageFields">The image fields</param>
+    /// <param name="textFields">The text fields</param>
+    /// <param name="videoFields">The video fields</param>
+    /// <param name="videoIntervalSeconds">The video interval seconds</param>
+    /// <param name="model">The model</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogle(
         string projectId,
         string location,
@@ -215,6 +333,19 @@ public class VectorizerFactory
             Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields, videoFields),
         };
 
+    /// <summary>
+    /// Multis the 2 vec google using the specified project id
+    /// </summary>
+    /// <param name="projectId">The project id</param>
+    /// <param name="location">The location</param>
+    /// <param name="imageFields">The image fields</param>
+    /// <param name="textFields">The text fields</param>
+    /// <param name="videoFields">The video fields</param>
+    /// <param name="videoIntervalSeconds">The video interval seconds</param>
+    /// <param name="model">The model</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogle(
         string projectId,
         string location,
@@ -239,6 +370,18 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Multis the 2 vec voyage ai using the specified image fields
+    /// </summary>
+    /// <param name="imageFields">The image fields</param>
+    /// <param name="textFields">The text fields</param>
+    /// <param name="videoFields">The video fields</param>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="model">The model</param>
+    /// <param name="truncate">The truncate</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecVoyageAI(
         WeightedFields imageFields,
         WeightedFields textFields,
@@ -266,6 +409,18 @@ public class VectorizerFactory
             ),
         };
 
+    /// <summary>
+    /// Multis the 2 vec voyage ai using the specified image fields
+    /// </summary>
+    /// <param name="imageFields">The image fields</param>
+    /// <param name="textFields">The text fields</param>
+    /// <param name="videoFields">The video fields</param>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="model">The model</param>
+    /// <param name="truncate">The truncate</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecVoyageAI(
         string[]? imageFields = null,
         string[]? textFields = null,
@@ -288,6 +443,12 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Refs the 2 vec centroid using the specified reference properties
+    /// </summary>
+    /// <param name="referenceProperties">The reference properties</param>
+    /// <param name="method">The method</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Ref2VecCentroid(string[] referenceProperties, string method = "mean") =>
         new Models.Vectorizer.Ref2VecCentroid
         {
@@ -295,6 +456,13 @@ public class VectorizerFactory
             Method = method,
         };
 
+    /// <summary>
+    /// Texts the 2 vec aws bedrock using the specified region
+    /// </summary>
+    /// <param name="region">The region</param>
+    /// <param name="model">The model</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecAWSBedrock(
         string region,
         string model,
@@ -311,6 +479,15 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec aws sagemaker using the specified region
+    /// </summary>
+    /// <param name="region">The region</param>
+    /// <param name="endpoint">The endpoint</param>
+    /// <param name="targetModel">The target model</param>
+    /// <param name="targetVariant">The target variant</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecAWSSagemaker(
         string region,
         string endpoint,
@@ -329,6 +506,16 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec azure open ai using the specified deployment id
+    /// </summary>
+    /// <param name="deploymentId">The deployment id</param>
+    /// <param name="resourceName">The resource name</param>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="model">The model</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecAzureOpenAI(
         string deploymentId,
         string resourceName,
@@ -347,6 +534,15 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec cohere using the specified base url
+    /// </summary>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="model">The model</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="truncate">The truncate</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecCohere(
         string? baseURL = null,
         string? model = null,
@@ -363,6 +559,13 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec databricks using the specified endpoint
+    /// </summary>
+    /// <param name="endpoint">The endpoint</param>
+    /// <param name="instruction">The instruction</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecDatabricks(
         string endpoint,
         string? instruction = null,
@@ -375,6 +578,18 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec hugging face using the specified endpoint url
+    /// </summary>
+    /// <param name="endpointURL">The endpoint url</param>
+    /// <param name="model">The model</param>
+    /// <param name="passageModel">The passage model</param>
+    /// <param name="queryModel">The query model</param>
+    /// <param name="useCache">The use cache</param>
+    /// <param name="useGPU">The use gpu</param>
+    /// <param name="waitForModel">The wait for model</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecHuggingFace(
         string? endpointURL = null,
         string? model = null,
@@ -397,6 +612,14 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec nvidia using the specified base url
+    /// </summary>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="model">The model</param>
+    /// <param name="truncate">The truncate</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecNvidia(
         string? baseURL = null,
         string? model = null,
@@ -411,6 +634,14 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Multis the 2 vec nvidia using the specified base url
+    /// </summary>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="model">The model</param>
+    /// <param name="properties">The properties</param>
+    /// <param name="truncate">The truncate</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecNvidia(
         string? baseURL = null,
         string? model = null,
@@ -425,6 +656,13 @@ public class VectorizerFactory
             Truncate = truncate,
         };
 
+    /// <summary>
+    /// Texts the 2 vec mistral using the specified base url
+    /// </summary>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="model">The model</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecMistral(
         string? baseURL = null,
         string? model = null,
@@ -437,6 +675,12 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec model 2 vec using the specified inference url
+    /// </summary>
+    /// <param name="inferenceURL">The inference url</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecModel2Vec(
         string? inferenceURL = null,
         bool? vectorizeCollectionName = null
@@ -447,6 +691,13 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec morph using the specified base url
+    /// </summary>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="model">The model</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecMorph(
         string? baseURL = null,
         string? model = null,
@@ -459,6 +710,13 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec ollama using the specified api endpoint
+    /// </summary>
+    /// <param name="apiEndpoint">The api endpoint</param>
+    /// <param name="model">The model</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecOllama(
         string? apiEndpoint = null,
         string? model = null,
@@ -471,6 +729,16 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec open ai using the specified base url
+    /// </summary>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="model">The model</param>
+    /// <param name="modelVersion">The model version</param>
+    /// <param name="type">The type</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecOpenAI(
         string? baseURL = null,
         int? dimensions = null,
@@ -489,6 +757,17 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec google vertex using the specified api endpoint
+    /// </summary>
+    /// <param name="apiEndpoint">The api endpoint</param>
+    /// <param name="model">The model</param>
+    /// <param name="projectId">The project id</param>
+    /// <param name="titleProperty">The title property</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="taskType">The task type</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecGoogleVertex(
         string? apiEndpoint = null,
         string? model = null,
@@ -509,6 +788,15 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec google gemini using the specified model
+    /// </summary>
+    /// <param name="model">The model</param>
+    /// <param name="titleProperty">The title property</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="taskType">The task type</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecGoogleGemini(
         string? model = null,
         string? titleProperty = null,
@@ -527,6 +815,16 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec transformers using the specified inference url
+    /// </summary>
+    /// <param name="inferenceUrl">The inference url</param>
+    /// <param name="passageInferenceUrl">The passage inference url</param>
+    /// <param name="queryInferenceUrl">The query inference url</param>
+    /// <param name="poolingStrategy">The pooling strategy</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecTransformers(
         string? inferenceUrl = null,
         string? passageInferenceUrl = null,
@@ -545,6 +843,15 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec voyage ai using the specified base url
+    /// </summary>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="model">The model</param>
+    /// <param name="truncate">The truncate</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecVoyageAI(
         string? baseURL = null,
         string? model = null,
@@ -561,6 +868,14 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Texts the 2 vec jina ai using the specified model
+    /// </summary>
+    /// <param name="model">The model</param>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecJinaAI(
         string? model = null,
         string? baseURL = null,
@@ -575,6 +890,16 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Multis the 2 vec jina ai using the specified image fields
+    /// </summary>
+    /// <param name="imageFields">The image fields</param>
+    /// <param name="textFields">The text fields</param>
+    /// <param name="model">The model</param>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecJinaAI(
         string[]? imageFields = null,
         string[]? textFields = null,
@@ -593,6 +918,16 @@ public class VectorizerFactory
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
+    /// <summary>
+    /// Multis the 2 vec jina ai using the specified image fields
+    /// </summary>
+    /// <param name="imageFields">The image fields</param>
+    /// <param name="textFields">The text fields</param>
+    /// <param name="model">The model</param>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecJinaAI(
         WeightedFields imageFields,
         WeightedFields textFields,

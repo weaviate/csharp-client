@@ -10,9 +10,24 @@ namespace Weaviate.Client.Tests.Unit.Mocks;
 /// </summary>
 public class MockHttpMessageHandler : HttpMessageHandler
 {
+    /// <summary>
+    /// The responses
+    /// </summary>
     private readonly Queue<MockHttpResponse> _responses = new();
+
+    /// <summary>
+    /// The requests
+    /// </summary>
     private readonly List<HttpRequestMessage> _requests = new();
+
+    /// <summary>
+    /// The request handler
+    /// </summary>
     private Func<HttpRequestMessage, Task<HttpResponseMessage>>? _requestHandler;
+
+    /// <summary>
+    /// The request handler with token
+    /// </summary>
     private Func<
         HttpRequestMessage,
         CancellationToken,
@@ -116,6 +131,14 @@ public class MockHttpMessageHandler : HttpMessageHandler
         _requestHandler = null;
     }
 
+    /// <summary>
+    /// Sends the request
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="InvalidOperationException">Expected request to '{mockResponse.ExpectedEndpoint}' but got '{request.RequestUri?.PathAndQuery}'</exception>
+    /// <exception cref="InvalidOperationException">No mock response available. Use AddResponse() or SetHandler() to configure responses.</exception>
+    /// <returns>The response</returns>
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken
@@ -192,9 +215,28 @@ public class MockHttpMessageHandler : HttpMessageHandler
 /// </summary>
 public class MockHttpResponse
 {
+    /// <summary>
+    /// Gets or sets the value of the status code
+    /// </summary>
     public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;
+
+    /// <summary>
+    /// Gets or sets the value of the content
+    /// </summary>
     public string? Content { get; set; }
+
+    /// <summary>
+    /// Gets or sets the value of the content type
+    /// </summary>
     public string? ContentType { get; set; } = "application/json";
+
+    /// <summary>
+    /// Gets or sets the value of the headers
+    /// </summary>
     public Dictionary<string, string> Headers { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the value of the expected endpoint
+    /// </summary>
     public string? ExpectedEndpoint { get; set; }
 }

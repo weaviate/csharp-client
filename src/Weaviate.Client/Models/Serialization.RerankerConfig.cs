@@ -2,8 +2,18 @@ using System.Text.Json;
 
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// The reranker config serialization class
+/// </summary>
 internal static class RerankerConfigSerialization
 {
+    /// <summary>
+    /// Factories the type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <param name="config">The config</param>
+    /// <exception cref="WeaviateClientException">Unable to create RerankerConfig</exception>
+    /// <returns>The reranker config</returns>
     internal static IRerankerConfig? Factory(string? type, object? config)
     {
         ArgumentException.ThrowIfNullOrEmpty(type);

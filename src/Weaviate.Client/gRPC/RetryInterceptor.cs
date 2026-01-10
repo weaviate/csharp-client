@@ -9,15 +9,36 @@ namespace Weaviate.Client.Grpc;
 /// </summary>
 internal class RetryInterceptor : Interceptor
 {
+    /// <summary>
+    /// The policy
+    /// </summary>
     private readonly RetryPolicy _policy;
+
+    /// <summary>
+    /// The logger
+    /// </summary>
     private readonly ILogger? _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RetryInterceptor"/> class
+    /// </summary>
+    /// <param name="policy">The policy</param>
+    /// <param name="logger">The logger</param>
     public RetryInterceptor(RetryPolicy policy, ILogger? logger = null)
     {
         _policy = policy;
         _logger = logger;
     }
 
+    /// <summary>
+    /// Asyncs the unary call using the specified request
+    /// </summary>
+    /// <typeparam name="TRequest">The request</typeparam>
+    /// <typeparam name="TResponse">The response</typeparam>
+    /// <param name="request">The request</param>
+    /// <param name="context">The context</param>
+    /// <param name="continuation">The continuation</param>
+    /// <returns>An async unary call of t response</returns>
     public override AsyncUnaryCall<TResponse> AsyncUnaryCall<TRequest, TResponse>(
         TRequest request,
         ClientInterceptorContext<TRequest, TResponse> context,
@@ -34,6 +55,17 @@ internal class RetryInterceptor : Interceptor
         );
     }
 
+    /// <summary>
+    /// Retries the request
+    /// </summary>
+    /// <typeparam name="TRequest">The request</typeparam>
+    /// <typeparam name="TResponse">The response</typeparam>
+    /// <param name="request">The request</param>
+    /// <param name="context">The context</param>
+    /// <param name="continuation">The continuation</param>
+    /// <exception cref="RpcException"></exception>
+    /// <exception cref="WeaviateTimeoutException"></exception>
+    /// <returns>A task containing the response</returns>
     private async Task<TResponse> RetryAsync<TRequest, TResponse>(
         TRequest request,
         ClientInterceptorContext<TRequest, TResponse> context,
@@ -104,6 +136,12 @@ internal class RetryInterceptor : Interceptor
         );
     }
 
+    /// <summary>
+    /// Shoulds the retry grpc using the specified ex
+    /// </summary>
+    /// <param name="ex">The ex</param>
+    /// <param name="attempt">The attempt</param>
+    /// <returns>The bool</returns>
     private bool ShouldRetryGrpc(RpcException ex, int attempt)
     {
         if (attempt >= _policy.MaxRetries)
@@ -112,6 +150,12 @@ internal class RetryInterceptor : Interceptor
         return _policy.ShouldRetryGrpcStatus(ex.StatusCode);
     }
 
+    /// <summary>
+    /// Shoulds the retry exception using the specified ex
+    /// </summary>
+    /// <param name="ex">The ex</param>
+    /// <param name="attempt">The attempt</param>
+    /// <returns>The bool</returns>
     private bool ShouldRetryException(Exception ex, int attempt)
     {
         if (attempt >= _policy.MaxRetries)

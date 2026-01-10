@@ -3,8 +3,16 @@ using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
 
+/// <summary>
+/// The weaviate rest client class
+/// </summary>
 internal partial class WeaviateRestClient
 {
+    /// <summary>
+    /// Users the own info get using the specified cancellation token
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto user own info</returns>
     internal async Task<Dto.UserOwnInfo?> UserOwnInfoGet(
         CancellationToken cancellationToken = default
     )
@@ -30,6 +38,12 @@ internal partial class WeaviateRestClient
             : null;
     }
 
+    /// <summary>
+    /// Userses the db list using the specified include last used time
+    /// </summary>
+    /// <param name="includeLastUsedTime">The include last used time</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing an enumerable of dto db user info</returns>
     internal async Task<IEnumerable<Dto.DBUserInfo>> UsersDbList(
         bool? includeLastUsedTime = null,
         CancellationToken cancellationToken = default
@@ -46,6 +60,13 @@ internal partial class WeaviateRestClient
         return users ?? Array.Empty<Dto.DBUserInfo>();
     }
 
+    /// <summary>
+    /// Users the db get using the specified user id
+    /// </summary>
+    /// <param name="userId">The user id</param>
+    /// <param name="includeLastUsedTime">The include last used time</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto db user info</returns>
     internal async Task<Dto.DBUserInfo> UserDbGet(
         string userId,
         bool? includeLastUsedTime = null,
@@ -62,6 +83,12 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.DBUserInfo>(cancellationToken);
     }
 
+    /// <summary>
+    /// Users the db create using the specified user id
+    /// </summary>
+    /// <param name="userId">The user id</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto user api key</returns>
     internal async Task<Dto.UserApiKey> UserDbCreate(
         string userId,
         CancellationToken cancellationToken = default
@@ -82,6 +109,12 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.UserApiKey>(cancellationToken);
     }
 
+    /// <summary>
+    /// Users the db delete using the specified user id
+    /// </summary>
+    /// <param name="userId">The user id</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the bool</returns>
     internal async Task<bool> UserDbDelete(
         string userId,
         CancellationToken cancellationToken = default
@@ -101,6 +134,12 @@ internal partial class WeaviateRestClient
         return response.StatusCode == HttpStatusCode.NoContent;
     }
 
+    /// <summary>
+    /// Users the db rotate key using the specified user id
+    /// </summary>
+    /// <param name="userId">The user id</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto user api key</returns>
     internal async Task<Dto.UserApiKey> UserDbRotateKey(
         string userId,
         CancellationToken cancellationToken = default
@@ -121,6 +160,12 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.UserApiKey>(cancellationToken);
     }
 
+    /// <summary>
+    /// Users the db activate using the specified user id
+    /// </summary>
+    /// <param name="userId">The user id</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the bool</returns>
     internal async Task<bool> UserDbActivate(
         string userId,
         CancellationToken cancellationToken = default
@@ -141,6 +186,13 @@ internal partial class WeaviateRestClient
         return response.StatusCode == HttpStatusCode.OK;
     }
 
+    /// <summary>
+    /// Users the db deactivate using the specified user id
+    /// </summary>
+    /// <param name="userId">The user id</param>
+    /// <param name="revokeKey">The revoke key</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the bool</returns>
     internal async Task<bool> UserDbDeactivate(
         string userId,
         bool? revokeKey = null,

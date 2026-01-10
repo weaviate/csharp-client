@@ -2,9 +2,16 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The batch delete tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("BatchDeleteTests")]
 public partial class BatchDeleteTests : IntegrationTests
 {
+    /// <summary>
+    /// Tests that test delete many return
+    /// </summary>
     [Fact]
     public async Task Test_Delete_Many_Return()
     {
@@ -29,6 +36,9 @@ public partial class BatchDeleteTests : IntegrationTests
         Assert.Equal(1, result.Successful);
     }
 
+    /// <summary>
+    /// Tests that test delete many or
+    /// </summary>
     [Fact]
     public async Task Test_Delete_Many_Or()
     {
@@ -65,6 +75,9 @@ public partial class BatchDeleteTests : IntegrationTests
         Assert.Equal("Tim", objects.Objects.First().Properties["name"]!);
     }
 
+    /// <summary>
+    /// Tests that test delete many and
+    /// </summary>
     [Fact]
     public async Task Test_Delete_Many_And()
     {
@@ -100,6 +113,10 @@ public partial class BatchDeleteTests : IntegrationTests
         Assert.Equal("Tommy", (string)objects.Objects.First().Properties["name"]!);
     }
 
+    /// <summary>
+    /// Tests that test dry run
+    /// </summary>
+    /// <param name="dryRun">The dry run</param>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -158,6 +175,10 @@ public partial class BatchDeleteTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test verbosity
+    /// </summary>
+    /// <param name="verbose">The verbose</param>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]

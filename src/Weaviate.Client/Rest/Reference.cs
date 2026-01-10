@@ -4,8 +4,20 @@ using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client.Rest;
 
+/// <summary>
+/// The weaviate rest client class
+/// </summary>
 internal partial class WeaviateRestClient
 {
+    /// <summary>
+    /// References the add using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="from">The from</param>
+    /// <param name="fromProperty">The from property</param>
+    /// <param name="to">The to</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     internal async Task ReferenceAdd(
         string collectionName,
         Guid from,
@@ -40,6 +52,15 @@ internal partial class WeaviateRestClient
         );
     }
 
+    /// <summary>
+    /// References the replace using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="from">The from</param>
+    /// <param name="fromProperty">The from property</param>
+    /// <param name="to">The to</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     internal async Task ReferenceReplace(
         string collectionName,
         Guid from,
@@ -74,6 +95,15 @@ internal partial class WeaviateRestClient
         );
     }
 
+    /// <summary>
+    /// References the delete using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="from">The from</param>
+    /// <param name="fromProperty">The from property</param>
+    /// <param name="to">The to</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     internal async Task ReferenceDelete(
         string collectionName,
         Guid from,
@@ -110,6 +140,15 @@ internal partial class WeaviateRestClient
         );
     }
 
+    /// <summary>
+    /// References the add many using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="references">The references</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="consistencyLevel">The consistency level</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the batch reference response array</returns>
     internal async Task<BatchReferenceResponse[]> ReferenceAddMany(
         string collectionName,
         Models.DataReference[] references,

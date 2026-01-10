@@ -6,17 +6,45 @@ using System.Threading.Tasks;
 using Weaviate.Client.Models;
 using Xunit;
 
+/// <summary>
+/// The test rbac roles class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Trait("Category", "RBAC")]
 public class TestRbacRoles : IntegrationTests
 {
+    /// <summary>
+    /// Gets the value of the rest port
+    /// </summary>
     public override ushort RestPort => 8092;
+
+    /// <summary>
+    /// Gets the value of the grpc port
+    /// </summary>
     public override ushort GrpcPort => 50063;
+
+    /// <summary>
+    /// The admin api key
+    /// </summary>
     private const string ADMIN_API_KEY = "admin-key";
+
+    /// <summary>
+    /// Gets the value of the credentials
+    /// </summary>
     public override ICredentials? Credentials => Auth.ApiKey(ADMIN_API_KEY);
 
+    /// <summary>
+    /// Makes the role name using the specified suffix
+    /// </summary>
+    /// <param name="suffix">The suffix</param>
+    /// <returns>The string</returns>
     private static string MakeRoleName(string suffix) =>
         $"test-role-{suffix}-{Random.Shared.Next(1, 1_000_000)}";
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public override async ValueTask InitializeAsync()
     {
         await base.InitializeAsync();
@@ -24,6 +52,9 @@ public class TestRbacRoles : IntegrationTests
         RequireVersion("1.30.0");
     }
 
+    /// <summary>
+    /// Tests that list roles
+    /// </summary>
     [Fact]
     public async Task ListRoles()
     {
@@ -33,6 +64,9 @@ public class TestRbacRoles : IntegrationTests
         Assert.Contains(roles, r => r.Name == "viewer");
     }
 
+    /// <summary>
+    /// Tests that create role with permissions
+    /// </summary>
     [Fact]
     public async Task CreateRoleWithPermissions()
     {
@@ -66,6 +100,9 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that create role conflict
+    /// </summary>
     [Fact]
     public async Task CreateRoleConflict()
     {
@@ -93,6 +130,9 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that get role
+    /// </summary>
     [Fact]
     public async Task GetRole()
     {
@@ -117,6 +157,9 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that delete role
+    /// </summary>
     [Fact]
     public async Task DeleteRole()
     {
@@ -137,6 +180,9 @@ public class TestRbacRoles : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that add permissions to existing
+    /// </summary>
     [Fact]
     public async Task AddPermissionsToExisting()
     {
@@ -166,6 +212,9 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that remove permissions from existing
+    /// </summary>
     [Fact]
     public async Task RemovePermissionsFromExisting()
     {
@@ -197,6 +246,9 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that has permission
+    /// </summary>
     [Fact]
     public async Task HasPermission()
     {
@@ -229,6 +281,9 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that has permission non existent role
+    /// </summary>
     [Fact]
     public async Task HasPermissionNonExistentRole()
     {
@@ -245,6 +300,9 @@ public class TestRbacRoles : IntegrationTests
         Assert.False(has);
     }
 
+    /// <summary>
+    /// Tests that user assignments
+    /// </summary>
     [Fact]
     public async Task UserAssignments()
     {
@@ -306,6 +364,9 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that get user roles
+    /// </summary>
     [Fact]
     public async Task GetUserRoles()
     {
@@ -354,6 +415,9 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test role with data permissions merges correctly
+    /// </summary>
     [Fact]
     public async Task Test_RoleWithDataPermissions_MergesCorrectly()
     {
@@ -419,6 +483,9 @@ public class TestRbacRoles : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test role with multiple data permissions merges correctly
+    /// </summary>
     [Fact]
     public async Task Test_RoleWithMultipleDataPermissions_MergesCorrectly()
     {

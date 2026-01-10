@@ -4,8 +4,17 @@ using V1 = Weaviate.Client.Grpc.Protobuf.V1;
 
 namespace Weaviate.Client.Grpc;
 
+/// <summary>
+/// The weaviate grpc client class
+/// </summary>
 internal partial class WeaviateGrpcClient
 {
+    /// <summary>
+    /// Searches the request
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the search reply</returns>
     private async Task<V1.SearchReply> Search(
         V1.SearchRequest request,
         CancellationToken cancellationToken = default
@@ -27,6 +36,27 @@ internal partial class WeaviateGrpcClient
         }
     }
 
+    /// <summary>
+    /// Fetches the objects using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="sort">The sort</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="after">The after</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="consistencyLevel">The consistency level</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the search reply</returns>
     internal async Task<V1.SearchReply> FetchObjects(
         string collection,
         Filter? filters = null,
@@ -69,6 +99,29 @@ internal partial class WeaviateGrpcClient
         return await Search(req, cancellationToken);
     }
 
+    /// <summary>
+    /// Searches the near vector using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="consistencyLevel">The consistency level</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the search reply</returns>
     internal async Task<V1.SearchReply> SearchNearVector(
         string collection,
         VectorSearchInput vectors,
@@ -115,6 +168,32 @@ internal partial class WeaviateGrpcClient
         return await Search(request, cancellationToken);
     }
 
+    /// <summary>
+    /// Searches the near text using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="query">The query</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="moveTo">The move to</param>
+    /// <param name="moveAway">The move away</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="consistencyLevel">The consistency level</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="targetVector">The target vector</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the search reply</returns>
     internal async Task<V1.SearchReply> SearchNearText(
         string collection,
         string[] query,
@@ -171,6 +250,30 @@ internal partial class WeaviateGrpcClient
         return await Search(request, cancellationToken);
     }
 
+    /// <summary>
+    /// Searches the bm 25 using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="query">The query</param>
+    /// <param name="searchFields">The search fields</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="searchOperator">The search operator</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="after">The after</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="consistencyLevel">The consistency level</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the search reply</returns>
     internal async Task<V1.SearchReply> SearchBM25(
         string collection,
         string query,
@@ -219,6 +322,34 @@ internal partial class WeaviateGrpcClient
         return await Search(request, cancellationToken);
     }
 
+    /// <summary>
+    /// Searches the hybrid using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="query">The query</param>
+    /// <param name="alpha">The alpha</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="queryProperties">The query properties</param>
+    /// <param name="fusionType">The fusion type</param>
+    /// <param name="maxVectorDistance">The max vector distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="consistencyLevel">The consistency level</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="ArgumentException">Either vectors or query must be provided for hybrid search.</exception>
+    /// <returns>A task containing the search reply</returns>
     internal async Task<V1.SearchReply> SearchHybrid(
         string collection,
         string? query = null,
@@ -284,6 +415,30 @@ internal partial class WeaviateGrpcClient
         return await Search(request, cancellationToken);
     }
 
+    /// <summary>
+    /// Searches the near object using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="objectID">The object id</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="targetVector">The target vector</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="consistencyLevel">The consistency level</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the search reply</returns>
     internal async Task<V1.SearchReply> SearchNearObject(
         string collection,
         Guid objectID,
@@ -331,6 +486,32 @@ internal partial class WeaviateGrpcClient
         return await Search(request, cancellationToken);
     }
 
+    /// <summary>
+    /// Searches the near media using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="media">The media</param>
+    /// <param name="mediaType">The media type</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="targetVector">The target vector</param>
+    /// <param name="consistencyLevel">The consistency level</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="ArgumentException">Unsupported media type for near media search.</exception>
+    /// <returns>A task containing the search reply</returns>
     internal async Task<V1.SearchReply> SearchNearMedia(
         string collection,
         byte[] media,

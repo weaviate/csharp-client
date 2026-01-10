@@ -3,9 +3,17 @@ using Weaviate.Client.Tests.Common;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The property tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("PropertiesTests")]
 public partial class PropertyTests : IntegrationTests
 {
+    /// <summary>
+    /// Properties the test data
+    /// </summary>
+    /// <returns>An enumerable of object array</returns>
     public static IEnumerable<object[]> PropertyTestData()
     {
         yield return new object[]
@@ -162,6 +170,13 @@ public partial class PropertyTests : IntegrationTests
         // Add more property types as needed
     }
 
+    /// <summary>
+    /// Tests that property of any type should save and retrieve
+    /// </summary>
+    /// <param name="props">The props</param>
+    /// <param name="obj">The obj</param>
+    /// <param name="propertyName">The property name</param>
+    /// <param name="expected">The expected</param>
     [Theory]
     [MemberData(nameof(PropertyTestData))]
     public async Task Property_OfAnyType_Should_SaveAndRetrieve(
@@ -255,6 +270,9 @@ public partial class PropertyTests : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that all properties save retrieve
+    /// </summary>
     [Fact]
     public async Task AllPropertiesSaveRetrieve()
     {
@@ -380,6 +398,9 @@ public partial class PropertyTests : IntegrationTests
         Assert.Equivalent(testData, concreteObj);
     }
 
+    /// <summary>
+    /// Tests that test batch insert blob with arrays
+    /// </summary>
     [Fact]
     public async Task Test_BatchInsertBlob_WithArrays()
     {
@@ -420,6 +441,9 @@ public partial class PropertyTests : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test batch insert with arrays
+    /// </summary>
     [Fact]
     public async Task Test_BatchInsert_WithArrays()
     {
@@ -579,6 +603,9 @@ public partial class PropertyTests : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test properties extra options
+    /// </summary>
     [Fact]
     public async Task Test_Properties_Extra_Options()
     {
@@ -656,6 +683,9 @@ public partial class PropertyTests : IntegrationTests
 #pragma warning restore CS0612 // Type or member is obsolete
     }
 
+    /// <summary>
+    /// Tests that test floating point precision single value
+    /// </summary>
     [Fact]
     public async Task Test_FloatingPoint_Precision_SingleValue()
     {
@@ -742,6 +772,9 @@ public partial class PropertyTests : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test floating point precision arrays
+    /// </summary>
     [Fact]
     public async Task Test_FloatingPoint_Precision_Arrays()
     {
@@ -799,6 +832,9 @@ public partial class PropertyTests : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test floating point precision batch insert
+    /// </summary>
     [Fact]
     public async Task Test_FloatingPoint_Precision_BatchInsert()
     {
@@ -851,6 +887,9 @@ public partial class PropertyTests : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test floating point edge cases
+    /// </summary>
     [Fact]
     public async Task Test_FloatingPoint_EdgeCases()
     {

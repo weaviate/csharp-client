@@ -11,12 +11,30 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TestNearMediaSyntax : IAsyncLifetime
 {
+    /// <summary>
+    /// The collection name
+    /// </summary>
     private const string CollectionName = "TestCollection";
+
+    /// <summary>
+    /// The test media bytes
+    /// </summary>
     private static readonly byte[] TestMediaBytes = new byte[] { 1, 2, 3, 4, 5 };
 
+    /// <summary>
+    /// The get request
+    /// </summary>
     private Func<Grpc.Protobuf.V1.SearchRequest?> _getRequest = null!;
+
+    /// <summary>
+    /// The collection
+    /// </summary>
     private CollectionClient _collection = null!;
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask InitializeAsync()
     {
         var (client, getRequest) = MockGrpcClient.CreateWithSearchCapture();
@@ -25,6 +43,10 @@ public class TestNearMediaSyntax : IAsyncLifetime
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Disposes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
@@ -33,6 +55,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
 
     #region Simple Media Type Tests
 
+    /// <summary>
+    /// Tests that near media image without target vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Image_WithoutTargetVectors_ProducesValidRequest()
     {
@@ -49,6 +74,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearImage.Image);
     }
 
+    /// <summary>
+    /// Tests that near media video without target vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Video_WithoutTargetVectors_ProducesValidRequest()
     {
@@ -65,6 +93,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearVideo.Video);
     }
 
+    /// <summary>
+    /// Tests that near media audio without target vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Audio_WithoutTargetVectors_ProducesValidRequest()
     {
@@ -81,6 +112,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearAudio.Audio);
     }
 
+    /// <summary>
+    /// Tests that near media thermal without target vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Thermal_WithoutTargetVectors_ProducesValidRequest()
     {
@@ -97,6 +131,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearThermal.Thermal);
     }
 
+    /// <summary>
+    /// Tests that near media depth without target vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Depth_WithoutTargetVectors_ProducesValidRequest()
     {
@@ -113,6 +150,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearDepth.Depth);
     }
 
+    /// <summary>
+    /// Tests that near media imu without target vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_IMU_WithoutTargetVectors_ProducesValidRequest()
     {
@@ -133,6 +173,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
 
     #region Certainty and Distance Tests
 
+    /// <summary>
+    /// Tests that near media image with certainty produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Image_WithCertainty_ProducesValidRequest()
     {
@@ -149,6 +192,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(0.8, request.NearImage.Certainty, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that near media video with distance produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Video_WithDistance_ProducesValidRequest()
     {
@@ -165,6 +211,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(0.3, request.NearVideo.Distance, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that near media audio with both certainty and distance produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Audio_WithBothCertaintyAndDistance_ProducesValidRequest()
     {
@@ -186,6 +235,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
 
     #region Target Vectors - Sum
 
+    /// <summary>
+    /// Tests that near media image with sum produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Image_WithSum_ProducesValidRequest()
     {
@@ -206,6 +258,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Contains("description", request.NearImage.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that near media video with sum produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Video_WithSum_ProducesValidRequest()
     {
@@ -231,6 +286,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
 
     #region Target Vectors - Average
 
+    /// <summary>
+    /// Tests that near media audio with average produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Audio_WithAverage_ProducesValidRequest()
     {
@@ -253,6 +311,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
 
     #region Target Vectors - ManualWeights
 
+    /// <summary>
+    /// Tests that near media image with manual weights produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Image_WithManualWeights_ProducesValidRequest()
     {
@@ -278,6 +339,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
 
     #region Target Vectors - Minimum
 
+    /// <summary>
+    /// Tests that near media thermal with minimum produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Thermal_WithMinimum_ProducesValidRequest()
     {
@@ -300,6 +364,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
 
     #region Target Vectors - RelativeScore
 
+    /// <summary>
+    /// Tests that near media depth with relative score produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Depth_WithRelativeScore_ProducesValidRequest()
     {
@@ -323,6 +390,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
 
     #region GroupBy Tests
 
+    /// <summary>
+    /// Tests that near media image with group by produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Image_WithGroupBy_ProducesValidRequest()
     {
@@ -343,6 +413,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.NearImage.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that near media video with group by without targets produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Video_WithGroupBy_WithoutTargets_ProducesValidRequest()
     {
@@ -367,6 +440,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
 
     #region Complex Scenarios
 
+    /// <summary>
+    /// Tests that near media image with limit and auto limit produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Image_WithLimitAndAutoLimit_ProducesValidRequest()
     {
@@ -389,6 +465,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(3, (int)request.Autocut);
     }
 
+    /// <summary>
+    /// Tests that near media all media types with same targets produce consistent requests
+    /// </summary>
     [Fact]
     public async Task NearMedia_AllMediaTypes_WithSameTargets_ProduceConsistentRequests()
     {
@@ -454,6 +533,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
 
     #region Implicit Conversion Tests (Without .Build())
 
+    /// <summary>
+    /// Tests that near media image without build implicit conversion produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Image_WithoutBuild_ImplicitConversion_ProducesValidRequest()
     {
@@ -470,6 +552,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearImage.Image);
     }
 
+    /// <summary>
+    /// Tests that near media video without build implicit conversion produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Video_WithoutBuild_ImplicitConversion_ProducesValidRequest()
     {
@@ -486,6 +571,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearVideo.Video);
     }
 
+    /// <summary>
+    /// Tests that near media audio without build implicit conversion produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Audio_WithoutBuild_ImplicitConversion_ProducesValidRequest()
     {
@@ -502,6 +590,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(Convert.ToBase64String(TestMediaBytes), request.NearAudio.Audio);
     }
 
+    /// <summary>
+    /// Tests that near media thermal with certainty without build implicit conversion produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Thermal_WithCertainty_WithoutBuild_ImplicitConversion_ProducesValidRequest()
     {
@@ -519,6 +610,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(0.85, request.NearThermal.Certainty, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that near media depth with distance without build implicit conversion produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_Depth_WithDistance_WithoutBuild_ImplicitConversion_ProducesValidRequest()
     {
@@ -536,6 +630,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(0.25, request.NearDepth.Distance, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that near media imu with both params without build implicit conversion produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_IMU_WithBothParams_WithoutBuild_ImplicitConversion_ProducesValidRequest()
     {
@@ -554,6 +651,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         Assert.Equal(0.1, request.NearImu.Distance, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that near media all media types without build implicit conversion produces consistent requests
+    /// </summary>
     [Fact]
     public async Task NearMedia_AllMediaTypes_WithoutBuild_ImplicitConversion_ProducesConsistentRequests()
     {
@@ -596,6 +696,9 @@ public class TestNearMediaSyntax : IAsyncLifetime
         }
     }
 
+    /// <summary>
+    /// Tests that near media with group by without build implicit conversion produces valid request
+    /// </summary>
     [Fact]
     public async Task NearMedia_WithGroupBy_WithoutBuild_ImplicitConversion_ProducesValidRequest()
     {

@@ -2,8 +2,15 @@ namespace Weaviate.Client.Tests.Integration;
 
 using Weaviate.Client.Models;
 
+/// <summary>
+/// The test multi vector class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 public class TestMultiVector : IntegrationTests
 {
+    /// <summary>
+    /// Tests that test should create collection with multi vectors and have muvera encoding config
+    /// </summary>
     [Fact]
     public async Task Test_Should_Create_Collection_With_MultiVectors_And_Have_MuveraEncodingConfig()
     {
@@ -39,6 +46,9 @@ public class TestMultiVector : IntegrationTests
         Assert.NotNull(vic.MultiVector.Encoding);
     }
 
+    /// <summary>
+    /// Tests that test should create collection with multi vectors
+    /// </summary>
     [Fact]
     public async Task Test_Should_Create_Collection_With_MultiVectors()
     {
@@ -62,6 +72,9 @@ public class TestMultiVector : IntegrationTests
         Assert.Contains(collection.VectorConfig.Keys, k => k == "colbert");
     }
 
+    /// <summary>
+    /// Tests that test should get config of created collection
+    /// </summary>
     [Fact]
     public async Task Test_Should_Get_Config_Of_Created_Collection()
     {
@@ -94,6 +107,9 @@ public class TestMultiVector : IntegrationTests
         Assert.NotNull(colbertIndexConfig.MultiVector);
     }
 
+    /// <summary>
+    /// Tests that test multi vector self provided
+    /// </summary>
     [Fact]
     public async Task Test_MultiVector_SelfProvided()
     {
@@ -247,6 +263,9 @@ public class TestMultiVector : IntegrationTests
         Assert.Single(objs);
     }
 
+    /// <summary>
+    /// Tests that test collection fetch and insert with multivector
+    /// </summary>
     [Fact]
     public async Task Test_Collection_Fetch_And_Insert_With_Multivector()
     {

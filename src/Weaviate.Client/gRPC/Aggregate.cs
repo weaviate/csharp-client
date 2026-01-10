@@ -3,8 +3,23 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Grpc;
 
+/// <summary>
+/// The weaviate grpc client class
+/// </summary>
 internal partial class WeaviateGrpcClient
 {
+    /// <summary>
+    /// Bases the aggregate request using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="filter">The filter</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="totalCount">The total count</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="metrics">The metrics</param>
+    /// <exception cref="NotSupportedException">Metric type {m.GetType()} is not supported.</exception>
+    /// <returns>The </returns>
     private static Grpc.Protobuf.V1.AggregateRequest BaseAggregateRequest(
         string collection,
         Filter? filter = null,
@@ -128,6 +143,12 @@ internal partial class WeaviateGrpcClient
         return r;
     }
 
+    /// <summary>
+    /// Aggregates the request
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the aggregate reply</returns>
     private async Task<AggregateReply> Aggregate(
         Grpc.Protobuf.V1.AggregateRequest request,
         CancellationToken cancellationToken = default
@@ -149,6 +170,17 @@ internal partial class WeaviateGrpcClient
         }
     }
 
+    /// <summary>
+    /// Aggregates the over all using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="filter">The filter</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="totalCount">The total count</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="metrics">The metrics</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the aggregate reply</returns>
     internal async Task<AggregateReply> AggregateOverAll(
         string collection,
         Filter? filter,
@@ -172,6 +204,24 @@ internal partial class WeaviateGrpcClient
         return await Aggregate(request, cancellationToken);
     }
 
+    /// <summary>
+    /// Aggregates the near text using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="query">The query</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="moveTo">The move to</param>
+    /// <param name="moveAway">The move away</param>
+    /// <param name="filter">The filter</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="targetVector">The target vector</param>
+    /// <param name="totalCount">The total count</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="metrics">The metrics</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the aggregate reply</returns>
     internal async Task<AggregateReply> AggregateNearText(
         string collection,
         string[] query,
@@ -211,6 +261,21 @@ internal partial class WeaviateGrpcClient
         return await Aggregate(request, cancellationToken);
     }
 
+    /// <summary>
+    /// Aggregates the near vector using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="filter">The filter</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="totalCount">The total count</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="metrics">The metrics</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the aggregate reply</returns>
     internal async Task<AggregateReply> AggregateNearVector(
         string collection,
         VectorSearchInput vectors,
@@ -240,6 +305,24 @@ internal partial class WeaviateGrpcClient
         return await Aggregate(request, cancellationToken);
     }
 
+    /// <summary>
+    /// Aggregates the hybrid using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="query">The query</param>
+    /// <param name="alpha">The alpha</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="queryProperties">The query properties</param>
+    /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="maxVectorDistance">The max vector distance</param>
+    /// <param name="filter">The filter</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="objectLimit">The object limit</param>
+    /// <param name="totalCount">The total count</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="metrics">The metrics</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the aggregate reply</returns>
     internal async Task<AggregateReply> AggregateHybrid(
         string collection,
         string? query,
@@ -280,6 +363,22 @@ internal partial class WeaviateGrpcClient
         return await Aggregate(request, cancellationToken);
     }
 
+    /// <summary>
+    /// Aggregates the near object using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="objectID">The object id</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="targetVector">The target vector</param>
+    /// <param name="totalCount">The total count</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="metrics">The metrics</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the aggregate reply</returns>
     internal async Task<AggregateReply> AggregateNearObject(
         string collection,
         Guid objectID,
@@ -323,6 +422,24 @@ internal partial class WeaviateGrpcClient
         return await Aggregate(request, cancellationToken);
     }
 
+    /// <summary>
+    /// Aggregates the near media using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="media">The media</param>
+    /// <param name="mediaType">The media type</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="filter">The filter</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="targetVector">The target vector</param>
+    /// <param name="totalCount">The total count</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="metrics">The metrics</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="ArgumentException">Unsupported media type for aggregate near media.</exception>
+    /// <returns>A task containing the aggregate reply</returns>
     internal async Task<AggregateReply> AggregateNearMedia(
         string collection,
         byte[] media,

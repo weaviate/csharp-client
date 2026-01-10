@@ -1,13 +1,43 @@
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// The backup status enum
+/// </summary>
 public enum BackupStatus
 {
+    /// <summary>
+    /// The unknown backup status
+    /// </summary>
     Unknown,
+
+    /// <summary>
+    /// The started backup status
+    /// </summary>
     Started,
+
+    /// <summary>
+    /// The transferring backup status
+    /// </summary>
     Transferring,
+
+    /// <summary>
+    /// The transferred backup status
+    /// </summary>
     Transferred,
+
+    /// <summary>
+    /// The success backup status
+    /// </summary>
     Success,
+
+    /// <summary>
+    /// The failed backup status
+    /// </summary>
     Failed,
+
+    /// <summary>
+    /// The canceled backup status
+    /// </summary>
     Canceled,
 }
 
@@ -137,7 +167,14 @@ public abstract record BackupBackend
 /// </summary>
 internal record EmptyBackend() : BackupBackend
 {
+    /// <summary>
+    /// Gets the value of the provider
+    /// </summary>
     public override BackupStorageProvider Provider => BackupStorageProvider.None;
+
+    /// <summary>
+    /// Gets the value of the path
+    /// </summary>
     public override string? Path => null;
 }
 
@@ -156,6 +193,10 @@ public record FilesystemBackend : BackupBackend
     /// </summary>
     public override BackupStorageProvider Provider => BackupStorageProvider.Filesystem;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FilesystemBackend"/> class
+    /// </summary>
+    /// <param name="path">The path</param>
     public FilesystemBackend(string? path = null)
     {
         Path = path;
@@ -182,6 +223,12 @@ public record ObjectStorageBackend : BackupBackend
     /// </summary>
     public override string? Path { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectStorageBackend"/> class
+    /// </summary>
+    /// <param name="provider">The provider</param>
+    /// <param name="bucket">The bucket</param>
+    /// <param name="path">The path</param>
     public ObjectStorageBackend(
         BackupStorageProvider provider,
         string? bucket = null,
@@ -194,8 +241,16 @@ public record ObjectStorageBackend : BackupBackend
     }
 }
 
+/// <summary>
+/// The backup status extensions class
+/// </summary>
 public static class BackupStatusExtensions
 {
+    /// <summary>
+    /// Returns the backup status using the specified status
+    /// </summary>
+    /// <param name="status">The status</param>
+    /// <returns>The backup status</returns>
     public static BackupStatus ToBackupStatus(this string? status)
     {
         return status?.ToUpperInvariant() switch
@@ -224,6 +279,9 @@ public record Backup(
     string? Error
 )
 {
+    /// <summary>
+    /// Gets the value of the status
+    /// </summary>
     public BackupStatus Status => StatusRaw.ToBackupStatus();
 }
 
@@ -259,9 +317,15 @@ public record BackupRestoreRequest(
 /// </summary>
 public enum UserRestoreOption
 {
+    /// <summary>
+    /// The no restore user restore option
+    /// </summary>
     [System.Runtime.Serialization.EnumMember(Value = "noRestore")]
     NoRestore,
 
+    /// <summary>
+    /// The all user restore option
+    /// </summary>
     [System.Runtime.Serialization.EnumMember(Value = "all")]
     All,
 }
@@ -271,9 +335,15 @@ public enum UserRestoreOption
 /// </summary>
 public enum RolesRestoreOption
 {
+    /// <summary>
+    /// The no restore roles restore option
+    /// </summary>
     [System.Runtime.Serialization.EnumMember(Value = "noRestore")]
     NoRestore,
 
+    /// <summary>
+    /// The all roles restore option
+    /// </summary>
     [System.Runtime.Serialization.EnumMember(Value = "all")]
     All,
 }

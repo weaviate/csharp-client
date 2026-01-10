@@ -6,8 +6,14 @@ using VerifyCS = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<We
 
 namespace Weaviate.Client.Analyzers.Tests;
 
+/// <summary>
+/// The auto array usage analyzer tests class
+/// </summary>
 public class AutoArrayUsageAnalyzerTests
 {
+    /// <summary>
+    /// The auto array source
+    /// </summary>
     private const string AutoArraySource =
         @"
 namespace Weaviate.Client.Models
@@ -55,6 +61,9 @@ namespace Weaviate.Client.Models
     }
 }";
 
+    /// <summary>
+    /// Tests that field declaration reports diagnostic
+    /// </summary>
     [Fact]
     public async Task FieldDeclaration_ReportsDiagnostic()
     {
@@ -80,6 +89,9 @@ namespace TestNamespace
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that property declaration reports diagnostic
+    /// </summary>
     [Fact]
     public async Task PropertyDeclaration_ReportsDiagnostic()
     {
@@ -105,6 +117,9 @@ namespace TestNamespace
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that method parameter no diagnostic
+    /// </summary>
     [Fact]
     public async Task MethodParameter_NoDiagnostic()
     {
@@ -127,6 +142,9 @@ namespace TestNamespace
         await VerifyCS.VerifyAnalyzerAsync(testCode);
     }
 
+    /// <summary>
+    /// Tests that local variable no diagnostic
+    /// </summary>
     [Fact]
     public async Task LocalVariable_NoDiagnostic()
     {
@@ -150,6 +168,9 @@ namespace TestNamespace
         await VerifyCS.VerifyAnalyzerAsync(testCode);
     }
 
+    /// <summary>
+    /// Tests that multiple fields in declaration reports diagnostic for each
+    /// </summary>
     [Fact]
     public async Task MultipleFieldsInDeclaration_ReportsDiagnosticForEach()
     {
@@ -182,6 +203,9 @@ namespace TestNamespace
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that non auto array field no diagnostic
+    /// </summary>
     [Fact]
     public async Task NonAutoArrayField_NoDiagnostic()
     {

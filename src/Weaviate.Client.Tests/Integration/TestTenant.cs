@@ -2,9 +2,17 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The tenant tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("TenantTests")]
 public partial class TenantTests : IntegrationTests
 {
+    /// <summary>
+    /// Tests that collection length tenant
+    /// </summary>
+    /// <param name="howMany">The how many</param>
     [Theory]
     [InlineData(1)]
     [InlineData(10000)]
@@ -54,6 +62,10 @@ public partial class TenantTests : IntegrationTests
         Assert.Equal(0UL, tenant3Count);
     }
 
+    /// <summary>
+    /// Tests that delete by id tenant
+    /// </summary>
+    /// <param name="tenant">The tenant</param>
     [Theory]
     [InlineData("tenant1")]
     public async Task DeleteByIdTenant(string tenant)
@@ -97,6 +109,9 @@ public partial class TenantTests : IntegrationTests
         Assert.Null(fetchedAfterDelete);
     }
 
+    /// <summary>
+    /// Tests that insert many with tenant
+    /// </summary>
     [Fact]
     public async Task InsertManyWithTenant()
     {
@@ -161,6 +176,9 @@ public partial class TenantTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that replace with tenant
+    /// </summary>
     [Fact]
     public async Task ReplaceWithTenant()
     {
@@ -212,6 +230,9 @@ public partial class TenantTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that tenants update
+    /// </summary>
     [Fact]
     public async Task TenantsUpdate()
     {
@@ -241,6 +262,9 @@ public partial class TenantTests : IntegrationTests
         Assert.Equal("other name", obj.Properties["name"]);
     }
 
+    /// <summary>
+    /// Tests that update with tenant
+    /// </summary>
     [Fact]
     public async Task UpdateWithTenant()
     {
@@ -291,6 +315,9 @@ public partial class TenantTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that tenants crud and get by names
+    /// </summary>
     [Fact]
     public async Task TenantsCrudAndGetByNames()
     {
@@ -332,6 +359,9 @@ public partial class TenantTests : IntegrationTests
         Assert.Empty(tenants);
     }
 
+    /// <summary>
+    /// Tests that search with tenant
+    /// </summary>
     [Fact]
     public async Task SearchWithTenant()
     {
@@ -374,6 +404,9 @@ public partial class TenantTests : IntegrationTests
         Assert.Empty(objects2);
     }
 
+    /// <summary>
+    /// Tests that fetch object by id with tenant
+    /// </summary>
     [Fact]
     public async Task FetchObjectByIdWithTenant()
     {
@@ -428,6 +461,9 @@ public partial class TenantTests : IntegrationTests
         Assert.Null(obj4);
     }
 
+    /// <summary>
+    /// Tests that fetch objects with tenant
+    /// </summary>
     [Fact]
     public async Task FetchObjectsWithTenant()
     {
@@ -481,6 +517,9 @@ public partial class TenantTests : IntegrationTests
         Assert.Equal("some other name", objects3[0].Properties["name"]);
     }
 
+    /// <summary>
+    /// Tests that exist with tenant
+    /// </summary>
     [Fact]
     public async Task ExistWithTenant()
     {
@@ -535,6 +574,9 @@ public partial class TenantTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that update tenant activity status
+    /// </summary>
     [Fact]
     public async Task UpdateTenantActivityStatus()
     {
@@ -588,6 +630,9 @@ public partial class TenantTests : IntegrationTests
         Assert.Equal(TenantActivityStatus.Inactive, tenants["1"].Status);
     }
 
+    /// <summary>
+    /// Tests that tenant with activity
+    /// </summary>
     [Fact]
     public async Task TenantWithActivity()
     {
@@ -621,6 +666,9 @@ public partial class TenantTests : IntegrationTests
         Assert.Equal(TenantActivityStatus.Active, tenants["5"].Status); // Default is ACTIVE
     }
 
+    /// <summary>
+    /// Tests that tenant exists
+    /// </summary>
     [Fact]
     public async Task TenantExists()
     {
@@ -646,6 +694,10 @@ public partial class TenantTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tenants the cases
+    /// </summary>
+    /// <returns>An enumerable of object array</returns>
     public static IEnumerable<object[]> TenantCases()
     {
         yield return new object[] { "tenant1" };
@@ -653,6 +705,10 @@ public partial class TenantTests : IntegrationTests
         yield return new object[] { "tenant3" };
     }
 
+    /// <summary>
+    /// Tests that tenant get by name
+    /// </summary>
+    /// <param name="tenantCase">The tenant case</param>
     [Theory]
     [MemberData(nameof(TenantCases))]
     public async Task TenantGetByName(string tenantCase)
@@ -676,6 +732,9 @@ public partial class TenantTests : IntegrationTests
         Assert.Equal(tenantCase, tenant.Name);
     }
 
+    /// <summary>
+    /// Tests that auto tenant toggling
+    /// </summary>
     [Fact]
     public async Task AutoTenantToggling()
     {
@@ -705,6 +764,10 @@ public partial class TenantTests : IntegrationTests
         Assert.False(collection.MultiTenancyConfig?.AutoTenantCreation);
     }
 
+    /// <summary>
+    /// Frozens the tenant cases
+    /// </summary>
+    /// <returns>An enumerable of object array</returns>
     public static IEnumerable<object[]> FrozenTenantCases()
     {
         yield return new object[]
@@ -720,6 +783,10 @@ public partial class TenantTests : IntegrationTests
         };
     }
 
+    /// <summary>
+    /// Tests that tenants create with read only activity status
+    /// </summary>
+    /// <param name="tenants">The tenants</param>
     [Theory]
     [MemberData(nameof(FrozenTenantCases))]
     public async Task TenantsCreateWithReadOnlyActivityStatus(object tenants)
@@ -744,6 +811,10 @@ public partial class TenantTests : IntegrationTests
         });
     }
 
+    /// <summary>
+    /// Reads the only update tenant cases
+    /// </summary>
+    /// <returns>An enumerable of object array</returns>
     public static IEnumerable<object[]> ReadOnlyUpdateTenantCases()
     {
         yield return new object[]
@@ -764,6 +835,10 @@ public partial class TenantTests : IntegrationTests
         };
     }
 
+    /// <summary>
+    /// Tests that tenants update with read only activity status
+    /// </summary>
+    /// <param name="tenants">The tenants</param>
     [Theory]
     [MemberData(nameof(ReadOnlyUpdateTenantCases))]
     public async Task TenantsUpdateWithReadOnlyActivityStatus(object tenants)
@@ -788,6 +863,9 @@ public partial class TenantTests : IntegrationTests
         });
     }
 
+    /// <summary>
+    /// Tests that tenants create and update 1001 tenants
+    /// </summary>
     [Fact]
     public async Task TenantsCreateAndUpdate1001Tenants()
     {
@@ -829,6 +907,9 @@ public partial class TenantTests : IntegrationTests
         Assert.All(tenants, t => Assert.Equal(TenantActivityStatus.Inactive, t.Status));
     }
 
+    /// <summary>
+    /// Tests that tenants auto tenant creation
+    /// </summary>
     [Fact]
     public async Task TenantsAutoTenantCreation()
     {
@@ -878,6 +959,9 @@ public partial class TenantTests : IntegrationTests
         Assert.Equal(0, batchResult.Count(r => r.HasErrors));
     }
 
+    /// <summary>
+    /// Tests that tenants deactivate then activate
+    /// </summary>
     [Fact]
     public async Task TenantsDeactivateThenActivate()
     {
@@ -928,6 +1012,9 @@ public partial class TenantTests : IntegrationTests
         Assert.Equal("some name", objects[0].Properties["name"]);
     }
 
+    /// <summary>
+    /// Tests that with tenant on different clients
+    /// </summary>
     [Fact]
     public async Task WithTenantOnDifferentClients()
     {

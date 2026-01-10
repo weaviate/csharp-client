@@ -5,14 +5,29 @@ using Weaviate.Client;
 using Weaviate.Client.Models;
 using Xunit;
 
+/// <summary>
+/// The test backups class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Trait("Category", "Slow")]
 [Collection("TestBackups")]
 [CollectionDefinition("TestBackups", DisableParallelization = true)]
 public class TestBackups : IntegrationTests
 {
+    /// <summary>
+    /// The filesystem backend
+    /// </summary>
     static readonly BackupBackend _backend = new FilesystemBackend(); // typical default backend
+
+    /// <summary>
+    /// The from seconds
+    /// </summary>
     static readonly TimeSpan _pollingTimeout = TimeSpan.FromSeconds(5);
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public override async ValueTask InitializeAsync()
     {
         await base.InitializeAsync();
@@ -97,6 +112,9 @@ public class TestBackups : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test create list status cancel backup
+    /// </summary>
     [Fact]
     public async Task Test_Create_List_Status_Cancel_Backup()
     {
@@ -147,6 +165,9 @@ public class TestBackups : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test create and restore backup with waiting
+    /// </summary>
     [Fact]
     public async Task Test_Create_And_Restore_Backup_With_Waiting()
     {
@@ -234,6 +255,9 @@ public class TestBackups : IntegrationTests
         Assert.Equal(5, paragraphsAfter.Objects.Count);
     }
 
+    /// <summary>
+    /// Tests that test create and restore backup without waiting
+    /// </summary>
     [Fact]
     public async Task Test_Create_And_Restore_Backup_Without_Waiting()
     {
@@ -296,6 +320,9 @@ public class TestBackups : IntegrationTests
         Assert.Equal(3, objectsAfter.Objects.Count);
     }
 
+    /// <summary>
+    /// Tests that test create and restore single collection backup with waiting
+    /// </summary>
     [Fact]
     public async Task Test_Create_And_Restore_Single_Collection_Backup_With_Waiting()
     {
@@ -346,6 +373,9 @@ public class TestBackups : IntegrationTests
         Assert.Equal(4, after.Objects.Count);
     }
 
+    /// <summary>
+    /// Tests that test fail backup on non existing collection
+    /// </summary>
     [Fact]
     public async Task Test_Fail_Backup_On_NonExisting_Collection()
     {
@@ -378,6 +408,9 @@ public class TestBackups : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test fail creating duplicate backup
+    /// </summary>
     [Fact]
     public async Task Test_Fail_Creating_Duplicate_Backup()
     {
@@ -418,6 +451,9 @@ public class TestBackups : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test fail restoring backup for existing collection
+    /// </summary>
     [Fact]
     public async Task Test_Fail_Restoring_Backup_For_Existing_Collection()
     {
@@ -457,6 +493,9 @@ public class TestBackups : IntegrationTests
         Assert.NotNull(restoreResp.Error);
     }
 
+    /// <summary>
+    /// Tests that test cancel running backup
+    /// </summary>
     [Fact]
     public async Task Test_Cancel_Running_Backup()
     {
@@ -499,6 +538,9 @@ public class TestBackups : IntegrationTests
         Assert.Equal(BackupStatus.Canceled, status.Status);
     }
 
+    /// <summary>
+    /// Tests that test list backups
+    /// </summary>
     [Fact]
     public async Task Test_List_Backups()
     {
@@ -540,6 +582,9 @@ public class TestBackups : IntegrationTests
         await operation.WaitForCompletion(cancellationToken: TestContext.Current.CancellationToken);
     }
 
+    /// <summary>
+    /// Tests that test overwrite alias false should not conflict
+    /// </summary>
     [Fact]
     public async Task Test_Overwrite_Alias_False_Should_Not_Conflict()
     {
@@ -631,6 +676,9 @@ public class TestBackups : IntegrationTests
             .Query.FetchObjects(cancellationToken: TestContext.Current.CancellationToken);
     }
 
+    /// <summary>
+    /// Tests that test overwrite alias true should replace existing alias
+    /// </summary>
     [Fact]
     public async Task Test_Overwrite_Alias_True_Should_Replace_Existing_Alias()
     {
@@ -714,6 +762,9 @@ public class TestBackups : IntegrationTests
         Assert.Equal("original", objects.Objects.First().Properties["title"]);
     }
 
+    /// <summary>
+    /// Tests that test concurrent backup conflict
+    /// </summary>
     [Fact]
     public async Task TestConcurrentBackupConflict()
     {
@@ -793,6 +844,9 @@ public class TestBackups : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test concurrent restore conflict
+    /// </summary>
     [Fact]
     public async Task TestConcurrentRestoreConflict()
     {

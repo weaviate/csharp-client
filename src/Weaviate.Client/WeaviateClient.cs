@@ -1,12 +1,18 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The main entry point for interacting with a Weaviate server. Provides access to collections, cluster, and other management APIs.
+/// </summary>
 public partial class WeaviateClient : IDisposable
 {
+    /// <summary>
+    /// The grpc port
+    /// </summary>
     private static readonly Lazy<ClientConfiguration> _defaultOptions = new(() =>
         new()
         {
@@ -17,9 +23,21 @@ public partial class WeaviateClient : IDisposable
     );
 
     // Async initialization support
+    /// <summary>
+    /// The initialization task
+    /// </summary>
     private readonly Lazy<Task>? _initializationTask;
+
+    /// <summary>
+    /// The config for async init
+    /// </summary>
     private readonly ClientConfiguration? _configForAsyncInit;
 
+    /// <summary>
+    /// Fetches the server metadata from the Weaviate instance.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The server metadata.</returns>
     public async Task<Models.MetaInfo> GetMeta(CancellationToken cancellationToken = default)
     {
         await EnsureInitializedAsync();
@@ -38,6 +56,9 @@ public partial class WeaviateClient : IDisposable
         };
     }
 
+    /// <summary>
+    /// The meta cache
+    /// </summary>
     private Models.MetaInfo? _metaCache;
 
     /// <summary>
@@ -96,6 +117,9 @@ public partial class WeaviateClient : IDisposable
         return await IsReady(cancellationToken);
     }
 
+    /// <summary>
+    /// Gets the default client configuration options.
+    /// </summary>
     public static ClientConfiguration DefaultOptions => _defaultOptions.Value;
 
     /// <summary>
@@ -111,24 +135,68 @@ public partial class WeaviateClient : IDisposable
         );
     }
 
+    /// <summary>
+    /// The is disposed
+    /// </summary>
     private bool _isDisposed = false;
+
+    /// <summary>
+    /// The weaviate client
+    /// </summary>
     private readonly ILogger<WeaviateClient> _logger = LoggerFactory
         .Create(builder => builder.AddConsole())
         .CreateLogger<WeaviateClient>();
 
+    /// <summary>
+    /// Gets or sets the value of the rest client
+    /// </summary>
     internal WeaviateRestClient RestClient { get; private set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the value of the grpc client
+    /// </summary>
     internal WeaviateGrpcClient GrpcClient { get; private set; } = null!;
 
+    /// <summary>
+    /// Gets the client configuration used by this instance.
+    /// </summary>
     public ClientConfiguration Configuration { get; }
 
+    /// <summary>
+    /// Gets the collections client for managing and accessing collections.
+    /// </summary>
     public CollectionsClient Collections { get; }
+
+    /// <summary>
+    /// Gets the cluster client for cluster management operations.
+    /// </summary>
     public ClusterClient Cluster { get; }
+
+    /// <summary>
+    /// Gets the alias client for managing collection aliases.
+    /// </summary>
     public AliasClient Alias { get; }
+
+    /// <summary>
+    /// Gets the users client for managing users.
+    /// </summary>
     public UsersClient Users { get; }
+
+    /// <summary>
+    /// Gets the roles client for managing roles.
+    /// </summary>
     public RolesClient Roles { get; }
+
+    /// <summary>
+    /// Gets the groups client for managing groups.
+    /// </summary>
     public GroupsClient Groups { get; }
 
+    /// <summary>
+    /// Ises the weaviate domain using the specified url
+    /// </summary>
+    /// <param name="url">The url</param>
+    /// <returns>The bool</returns>
     static bool IsWeaviateDomain(string url)
     {
         return url.ToLower().Contains("weaviate.io")
@@ -445,6 +513,9 @@ public partial class WeaviateClient : IDisposable
         );
     }
 
+    /// <summary>
+    /// Disposes the WeaviateClient and releases all resources.
+    /// </summary>
     public void Dispose()
     {
         if (_isDisposed)

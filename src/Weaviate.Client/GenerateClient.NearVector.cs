@@ -2,6 +2,9 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The generate client class
+/// </summary>
 public partial class GenerateClient
 {
     /// <summary>
@@ -284,7 +287,7 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities using a lambda builder for NearVectorInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearVectorInput with target vectors.</param>
+    /// <param name="vectors"></param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
@@ -335,7 +338,7 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities and grouping using a lambda builder for NearVectorInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearVectorInput with target vectors.</param>
+    /// <param name="vectors"></param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>

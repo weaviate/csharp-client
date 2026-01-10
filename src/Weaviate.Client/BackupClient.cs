@@ -3,15 +3,30 @@ using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The weaviate client class
+/// </summary>
 public partial class WeaviateClient
 {
+    /// <summary>
+    /// The backups
+    /// </summary>
     private BackupClient? _backups;
 
+    /// <summary>
+    /// A client for managing backups in the Weaviate cluster.
+    /// </summary>
     public BackupClient Backup => _backups ??= new(this);
 }
 
+/// <summary>
+/// Provides backup and restore operations for Weaviate collections, including creation, status tracking, cancellation, and restore.
+/// </summary>
 public class BackupClient
 {
+    /// <summary>
+    /// The client
+    /// </summary>
     private readonly WeaviateClient _client;
 
     /// <summary>
@@ -20,6 +35,10 @@ public class BackupClient
     /// </summary>
     public static BackupClientConfig Config { get; set; } = BackupClientConfig.Default;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BackupClient"/> class
+    /// </summary>
+    /// <param name="client">The client</param>
     internal BackupClient(WeaviateClient client)
     {
         _client = client;
@@ -76,6 +95,11 @@ public class BackupClient
         return await operation.WaitForCompletion(timeout, cancellationToken);
     }
 
+    /// <summary>
+    /// Builds the backup create request using the specified request
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>The rest dto backup create request</returns>
     private Rest.Dto.BackupCreateRequest BuildBackupCreateRequest(
         Models.BackupCreateRequest request
     )
@@ -239,6 +263,11 @@ public class BackupClient
         return await operation.WaitForCompletion(timeout, cancellationToken);
     }
 
+    /// <summary>
+    /// Builds the backup restore request using the specified request
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>The rest dto backup restore request</returns>
     private Rest.Dto.BackupRestoreRequest BuildBackupRestoreRequest(
         Models.BackupRestoreRequest request
     )
@@ -300,6 +329,13 @@ public class BackupClient
         return ToModel(status, backend);
     }
 
+    /// <summary>
+    /// Parses the backend using the specified backend str
+    /// </summary>
+    /// <param name="backendStr">The backend str</param>
+    /// <param name="bucket">The bucket</param>
+    /// <param name="path">The path</param>
+    /// <returns>The backup backend</returns>
     private static BackupBackend ParseBackend(string? backendStr, string? bucket, string? path)
     {
         var provider = backendStr?.ToLowerInvariant() switch
@@ -319,6 +355,11 @@ public class BackupClient
             : new ObjectStorageBackend(provider, bucket, path);
     }
 
+    /// <summary>
+    /// Returns the model using the specified dto
+    /// </summary>
+    /// <param name="dto">The dto</param>
+    /// <returns>The backup</returns>
     private static Backup ToModel(Rest.Dto.BackupCreateResponse dto) =>
         new(
             dto.Id ?? string.Empty,
@@ -330,6 +371,12 @@ public class BackupClient
             dto.Error
         );
 
+    /// <summary>
+    /// Returns the model using the specified dto
+    /// </summary>
+    /// <param name="dto">The dto</param>
+    /// <param name="backend">The backend</param>
+    /// <returns>The backup</returns>
     private static Backup ToModel(Rest.Dto.BackupCreateStatusResponse dto, BackupBackend backend) =>
         new(
             dto.Id ?? string.Empty,
@@ -341,6 +388,11 @@ public class BackupClient
             dto.Error
         );
 
+    /// <summary>
+    /// Returns the model using the specified dto
+    /// </summary>
+    /// <param name="dto">The dto</param>
+    /// <returns>The backup</returns>
     private static Backup ToModel(Rest.Dto.BackupRestoreResponse dto) =>
         new(
             dto.Id ?? string.Empty,
@@ -352,6 +404,12 @@ public class BackupClient
             dto.Error
         );
 
+    /// <summary>
+    /// Returns the model using the specified dto
+    /// </summary>
+    /// <param name="dto">The dto</param>
+    /// <param name="backend">The backend</param>
+    /// <returns>The backup</returns>
     private static Backup ToModel(
         Rest.Dto.BackupRestoreStatusResponse dto,
         BackupBackend backend
@@ -366,6 +424,11 @@ public class BackupClient
             dto.Error
         );
 
+    /// <summary>
+    /// Returns the model list item using the specified dto
+    /// </summary>
+    /// <param name="dto">The dto</param>
+    /// <returns>The backup</returns>
     private static Backup ToModelListItem(Rest.Dto.Anonymous3 dto) =>
         new(
             dto.Id ?? string.Empty,

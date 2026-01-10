@@ -3,8 +3,14 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The collection tests class
+/// </summary>
 public class CollectionTests
 {
+    /// <summary>
+    /// Tests that collections are equal
+    /// </summary>
     [Fact]
     public void Collections_Are_Equal()
     {
@@ -43,6 +49,9 @@ public class CollectionTests
         Assert.Equal(c1, c2);
     }
 
+    /// <summary>
+    /// Tests that collection equals null returns false
+    /// </summary>
     [Fact]
     public void Collection_Equals_Null_Returns_False()
     {
@@ -56,6 +65,9 @@ public class CollectionTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that collection equals self returns true
+    /// </summary>
     [Fact]
     public void Collection_Equals_Self_Returns_True()
     {
@@ -69,6 +81,9 @@ public class CollectionTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that collection equals different objects returns false
+    /// </summary>
     [Fact]
     public void Collection_Equals_DifferentObjects_Returns_False()
     {
@@ -83,6 +98,9 @@ public class CollectionTests
         Assert.NotSame(collection1, collection2);
     }
 
+    /// <summary>
+    /// Tests that collection equals mismatching returns false
+    /// </summary>
     [Fact]
     public void Collection_Equals_Mismatching_Returns_False()
     {
@@ -96,6 +114,9 @@ public class CollectionTests
         Assert.NotEqual(collection1, collection2);
     }
 
+    /// <summary>
+    /// Tests that collection equals inverted index config matches returns true
+    /// </summary>
     [Fact]
     public void Collection_Equals_InvertedIndexConfig_Matches_Returns_True()
     {
@@ -115,6 +136,9 @@ public class CollectionTests
         Assert.Equal(collection1, collection2);
     }
 
+    /// <summary>
+    /// Tests that collection equals inverted index config does not match returns false
+    /// </summary>
     [Fact]
     public void Collection_Equals_InvertedIndexConfig_DoesNotMatch_Returns_False()
     {
@@ -131,6 +155,9 @@ public class CollectionTests
         Assert.NotEqual(collection1, collection2);
     }
 
+    /// <summary>
+    /// Tests that collection equals module config matches returns true
+    /// </summary>
     [Fact]
     public void Collection_Equals_ModuleConfig_Matches_Returns_True()
     {
@@ -145,6 +172,9 @@ public class CollectionTests
         Assert.NotSame(collection1, collection2);
     }
 
+    /// <summary>
+    /// Tests that collection equals module config does not match returns false
+    /// </summary>
     [Fact]
     public void Collection_Equals_ModuleConfig_DoesNotMatch_Returns_False()
     {
@@ -159,6 +189,9 @@ public class CollectionTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that collection equals multi tenancy config matches returns true
+    /// </summary>
     [Fact]
     public void Collection_Equals_MultiTenancyConfig_Matches_Returns_True()
     {
@@ -179,6 +212,9 @@ public class CollectionTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that collection equals multi tenancy config does not match returns false
+    /// </summary>
     [Fact]
     public void Collection_Equals_MultiTenancyConfig_DoesNotMatch_Returns_False()
     {
@@ -196,6 +232,9 @@ public class CollectionTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that collection equals replication config matches returns true
+    /// </summary>
     [Fact]
     public void Collection_Equals_ReplicationConfig_Matches_Returns_True()
     {
@@ -216,6 +255,9 @@ public class CollectionTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that collection equals replication config does not match returns false
+    /// </summary>
     [Fact]
     public void Collection_Equals_ReplicationConfig_DoesNotMatch_Returns_False()
     {
@@ -233,6 +275,9 @@ public class CollectionTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that collection equals sharding config matches returns true
+    /// </summary>
     [Fact]
     public void Collection_Equals_ShardingConfig_Matches_Returns_True()
     {
@@ -247,6 +292,9 @@ public class CollectionTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that collection equals sharding config does not match returns false
+    /// </summary>
     [Fact]
     public void Collection_Equals_ShardingConfig_DoesNotMatch_Returns_False()
     {
@@ -261,6 +309,9 @@ public class CollectionTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that collection equals vector config matches returns true
+    /// </summary>
     [Fact]
     public void Collection_Equals_VectorConfig_Matches_Returns_True()
     {
@@ -275,6 +326,9 @@ public class CollectionTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that collection generative deserializes into i generative config
+    /// </summary>
     [Fact]
     public void Collection_Generative_Deserializes_Into_IGenerativeConfig()
     {
@@ -293,6 +347,9 @@ public class CollectionTests
         Assert.IsAssignableFrom<IGenerativeConfig>(config);
     }
 
+    /// <summary>
+    /// Tests that collection rerank deserializes into i reranker config
+    /// </summary>
     [Fact]
     public void Collection_Rerank_Deserializes_Into_IRerankerConfig()
     {
@@ -311,6 +368,9 @@ public class CollectionTests
         Assert.IsAssignableFrom<IRerankerConfig>(config);
     }
 
+    /// <summary>
+    /// Tests that collection import export are equal
+    /// </summary>
     [Fact]
     public void Collection_Import_Export_Are_Equal()
     {
@@ -461,6 +521,9 @@ public class CollectionTests
         );
     }
 
+    /// <summary>
+    /// Tests that to collection config create params throws when legacy settings present
+    /// </summary>
     [Fact]
     public void ToCollectionConfigCreateParams_Throws_WhenLegacySettingsPresent()
     {
@@ -478,6 +541,9 @@ public class CollectionTests
         Assert.Contains("legacy settings", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>
+    /// Tests that to collection config create params succeeds when no legacy settings
+    /// </summary>
     [Fact]
     public void ToCollectionConfigCreateParams_Succeeds_WhenNoLegacySettings()
     {

@@ -9,6 +9,9 @@ namespace Weaviate.Client.Validation;
 /// </summary>
 public class TypeValidator
 {
+    /// <summary>
+    /// The registry
+    /// </summary>
     private readonly PropertyConverterRegistry _registry;
 
     /// <summary>
@@ -97,6 +100,13 @@ public class TypeValidator
         return ValidationResult.WithIssues(errors, warnings);
     }
 
+    /// <summary>
+    /// Validates the property using the specified cs property
+    /// </summary>
+    /// <param name="csProperty">The cs property</param>
+    /// <param name="schemaProperties">The schema properties</param>
+    /// <param name="errors">The errors</param>
+    /// <param name="warnings">The warnings</param>
     private void ValidateProperty(
         PropertyInfo csProperty,
         IList<Property>? schemaProperties,
@@ -216,6 +226,14 @@ public class TypeValidator
         }
     }
 
+    /// <summary>
+    /// Validates the nested object using the specified cs property
+    /// </summary>
+    /// <param name="csProperty">The cs property</param>
+    /// <param name="schemaProp">The schema prop</param>
+    /// <param name="isArray">The is array</param>
+    /// <param name="errors">The errors</param>
+    /// <param name="warnings">The warnings</param>
     private void ValidateNestedObject(
         PropertyInfo csProperty,
         Property schemaProp,
@@ -257,6 +275,12 @@ public class TypeValidator
         }
     }
 
+    /// <summary>
+    /// Ares the types compatible using the specified cs data type
+    /// </summary>
+    /// <param name="csDataType">The cs data type</param>
+    /// <param name="schemaDataType">The schema data type</param>
+    /// <returns>The bool</returns>
     private bool AreTypesCompatible(string csDataType, string schemaDataType)
     {
         // Exact match
@@ -270,6 +294,11 @@ public class TypeValidator
         return false;
     }
 
+    /// <summary>
+    /// Gets the collection element type using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The type</returns>
     private Type? GetCollectionElementType(Type type)
     {
         // Handle arrays
@@ -287,6 +316,11 @@ public class TypeValidator
         return null;
     }
 
+    /// <summary>
+    /// Returns the camel case using the specified str
+    /// </summary>
+    /// <param name="str">The str</param>
+    /// <returns>The string</returns>
     private string ToCamelCase(string str)
     {
         if (string.IsNullOrEmpty(str) || char.IsLower(str[0]))

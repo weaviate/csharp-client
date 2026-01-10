@@ -12,6 +12,9 @@ namespace Example;
 /// </summary>
 public class MultipleClientsExample
 {
+    /// <summary>
+    /// Runs
+    /// </summary>
     public static async Task Run()
     {
         var host = Host.CreateDefaultBuilder()
@@ -74,9 +77,21 @@ public class MultipleClientsExample
 /// </summary>
 public class MultiDatabaseService
 {
+    /// <summary>
+    /// The client factory
+    /// </summary>
     private readonly IWeaviateClientFactory _clientFactory;
+
+    /// <summary>
+    /// The logger
+    /// </summary>
     private readonly ILogger<MultiDatabaseService> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MultiDatabaseService"/> class
+    /// </summary>
+    /// <param name="clientFactory">The client factory</param>
+    /// <param name="logger">The logger</param>
     public MultiDatabaseService(
         IWeaviateClientFactory clientFactory,
         ILogger<MultiDatabaseService> logger
@@ -86,6 +101,9 @@ public class MultiDatabaseService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Demonstrates the multiple clients
+    /// </summary>
     public async Task DemonstrateMultipleClientsAsync()
     {
         _logger.LogInformation("=== Multiple Weaviate Clients Example ===\n");
@@ -104,6 +122,11 @@ public class MultiDatabaseService
         await TestLocallyAsync(localClient);
     }
 
+    /// <summary>
+    /// Syncs the data between environments using the specified prod client
+    /// </summary>
+    /// <param name="prodClient">The prod client</param>
+    /// <param name="stagingClient">The staging client</param>
     private async Task SyncDataBetweenEnvironmentsAsync(
         WeaviateClient prodClient,
         WeaviateClient stagingClient
@@ -130,6 +153,10 @@ public class MultiDatabaseService
         _logger.LogInformation("Synced to staging environment");
     }
 
+    /// <summary>
+    /// Tests the locally using the specified local client
+    /// </summary>
+    /// <param name="localClient">The local client</param>
     private async Task TestLocallyAsync(WeaviateClient localClient)
     {
         _logger.LogInformation("\nTesting locally...");
@@ -147,13 +174,24 @@ public class MultiDatabaseService
 /// </summary>
 public class OnDemandClientService
 {
+    /// <summary>
+    /// The client factory
+    /// </summary>
     private readonly IWeaviateClientFactory _clientFactory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OnDemandClientService"/> class
+    /// </summary>
+    /// <param name="clientFactory">The client factory</param>
     public OnDemandClientService(IWeaviateClientFactory clientFactory)
     {
         _clientFactory = clientFactory;
     }
 
+    /// <summary>
+    /// Processes the data from environment using the specified environment
+    /// </summary>
+    /// <param name="environment">The environment</param>
     public async Task ProcessDataFromEnvironmentAsync(string environment)
     {
         // Get the appropriate client based on runtime logic
@@ -171,6 +209,9 @@ public class OnDemandClientService
 /// </summary>
 public class ConfigurationBasedMultiClientExample
 {
+    /// <summary>
+    /// Runs
+    /// </summary>
     public static async Task RunAsync()
     {
         /*

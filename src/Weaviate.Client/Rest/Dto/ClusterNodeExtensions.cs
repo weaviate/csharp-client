@@ -91,6 +91,11 @@ internal partial record NodeShardStatus
         };
     }
 
+    /// <summary>
+    /// Parses the vector indexing status using the specified status
+    /// </summary>
+    /// <param name="status">The status</param>
+    /// <returns>The vector indexing status</returns>
     private static VectorIndexingStatus ParseVectorIndexingStatus(object? status)
     {
         if (status == null)
@@ -106,6 +111,11 @@ internal partial record NodeShardStatus
         };
     }
 
+    /// <summary>
+    /// Parses the boolean value using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The bool</returns>
     private static bool ParseBooleanValue(object? value)
     {
         if (value == null)

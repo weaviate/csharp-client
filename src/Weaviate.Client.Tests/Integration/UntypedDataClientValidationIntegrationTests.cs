@@ -3,14 +3,31 @@ using Xunit;
 
 namespace Weaviate.Client.Tests.Integration
 {
+    /// <summary>
+    /// The untyped data client validation integration tests class
+    /// </summary>
+    /// <seealso cref="IntegrationTests"/>
     public class UntypedDataClientValidationIntegrationTests : IntegrationTests
     {
+        /// <summary>
+        /// The simple model class
+        /// </summary>
         public class SimpleModel
         {
+            /// <summary>
+            /// Gets or sets the value of the name
+            /// </summary>
             public string Name { get; set; } = string.Empty;
+
+            /// <summary>
+            /// Gets or sets the value of the age
+            /// </summary>
             public int Age { get; set; }
         }
 
+        /// <summary>
+        /// The int
+        /// </summary>
         private readonly CollectionCreateParams _config = new()
         {
             Name = "People",
@@ -29,6 +46,9 @@ namespace Weaviate.Client.Tests.Integration
             },
         };
 
+        /// <summary>
+        /// Tests that insert with invalid type throws validation exception
+        /// </summary>
         [Fact]
         public async Task Insert_WithInvalidType_ThrowsValidationException()
         {
@@ -54,6 +74,9 @@ namespace Weaviate.Client.Tests.Integration
             });
         }
 
+        /// <summary>
+        /// Tests that insert many with invalid type throws validation exception
+        /// </summary>
         [Fact]
         public async Task InsertMany_WithInvalidType_ThrowsValidationException()
         {
@@ -81,6 +104,9 @@ namespace Weaviate.Client.Tests.Integration
             Assert.Single(insertResponse.Errors);
         }
 
+        /// <summary>
+        /// Tests that insert with valid type succeeds
+        /// </summary>
         [Fact]
         public async Task Insert_WithValidType_Succeeds()
         {

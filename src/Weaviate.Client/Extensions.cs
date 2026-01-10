@@ -8,8 +8,14 @@ using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The weaviate extensions class
+/// </summary>
 public static class WeaviateExtensions
 {
+    /// <summary>
+    /// The rest json serializer options
+    /// </summary>
     static readonly Func<object?, IDictionary<string, object>?> _objectToDict = v =>
         v is null
             ? null
@@ -18,6 +24,12 @@ public static class WeaviateExtensions
                 WeaviateRestClient.RestJsonSerializerOptions
             );
 
+    /// <summary>
+    /// Dicts the to object using the specified v
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="v">The </param>
+    /// <returns>The</returns>
     static T? _dictToObject<T>(IDictionary<string, object>? v) =>
         v is null
             ? default
@@ -26,6 +38,13 @@ public static class WeaviateExtensions
                 WeaviateRestClient.RestJsonSerializerOptions
             );
 
+    /// <summary>
+    /// Merges the properties using the specified properties
+    /// </summary>
+    /// <param name="properties">The properties</param>
+    /// <param name="references">The references</param>
+    /// <param name="vectorConfig">The vector config</param>
+    /// <returns>A list of rest dto property</returns>
     internal static List<Rest.Dto.Property>? MergeProperties(
         IEnumerable<Property>? properties,
         IEnumerable<Reference>? references,
@@ -53,6 +72,11 @@ public static class WeaviateExtensions
         return props.Count != 0 ? props : null;
     }
 
+    /// <summary>
+    /// Unmerges the properties using the specified properties dto
+    /// </summary>
+    /// <param name="propertiesDto">The properties dto</param>
+    /// <returns>The property array properties reference array references</returns>
     internal static (Property[] properties, Reference[] references) UnmergeProperties(
         IList<Rest.Dto.Property> propertiesDto
     )
@@ -81,6 +105,11 @@ public static class WeaviateExtensions
         return (props.ToArray(), refs.ToArray());
     }
 
+    /// <summary>
+    /// Returns the dto using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <returns>The data</returns>
     internal static Rest.Dto.Class ToDto(this CollectionConfig collection)
     {
         var moduleConfig = new ModuleConfigList();
@@ -191,6 +220,11 @@ public static class WeaviateExtensions
         return data;
     }
 
+    /// <summary>
+    /// Returns the model using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <returns>The collection config export</returns>
     internal static CollectionConfigExport ToModel(this Rest.Dto.Class collection)
     {
         var makeVectorConfig = (string name, Rest.Dto.VectorConfig v) =>
@@ -348,6 +382,13 @@ public static class WeaviateExtensions
         };
     }
 
+    /// <summary>
+    /// Creates the byte string using the specified byte string
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="byteString">The byte string</param>
+    /// <exception cref="NotSupportedException">The type '{typeof(T).FullName}' is not supported by FromByteString&lt;T&gt;.</exception>
+    /// <returns>An enumerable of t</returns>
     internal static IEnumerable<T> FromByteString<T>(this Google.Protobuf.ByteString byteString)
         where T : struct
     {
@@ -379,6 +420,12 @@ public static class WeaviateExtensions
         }
     }
 
+    /// <summary>
+    /// Creates the byte string using the specified vector
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="vector">The vector</param>
+    /// <returns>The named vector</returns>
     internal static NamedVector FromByteString<T>(this Grpc.Protobuf.V1.Vectors vector)
         where T : struct
     {
@@ -396,6 +443,13 @@ public static class WeaviateExtensions
         }
     }
 
+    /// <summary>
+    /// Vectors the from byte string single using the specified byte string
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="byteString">The byte string</param>
+    /// <param name="vectorName">The vector name</param>
+    /// <returns>The named vector</returns>
     private static NamedVector VectorFromByteStringSingle<T>(
         Google.Protobuf.ByteString byteString,
         string vectorName
@@ -406,6 +460,15 @@ public static class WeaviateExtensions
         return (vectorName, new Vector(data));
     }
 
+    /// <summary>
+    /// Vectors the from byte string multi using the specified byte string
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="byteString">The byte string</param>
+    /// <param name="vectorName">The vector name</param>
+    /// <exception cref="InvalidOperationException">Cannot determine size of type {typeof(T).Name}.</exception>
+    /// <exception cref="NotSupportedException">The type '{typeof(T).FullName}' is not supported by FromByteStringMulti&lt;T&gt;.</exception>
+    /// <returns>The named vector</returns>
     private static NamedVector VectorFromByteStringMulti<T>(
         Google.Protobuf.ByteString byteString,
         string vectorName
@@ -463,6 +526,12 @@ public static class WeaviateExtensions
         return (vectorName, new Vector(data));
     }
 
+    /// <summary>
+    /// Returns the stream using the specified items
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="items">The items</param>
+    /// <returns>The stream</returns>
     internal static Stream ToStream<T>(this IEnumerable<T> items)
         where T : struct
     {
@@ -499,6 +568,13 @@ public static class WeaviateExtensions
         return stream;
     }
 
+    /// <summary>
+    /// Returns the stream using the specified items
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="items">The items</param>
+    /// <exception cref="ArgumentException">dimension cannot be zero.</exception>
+    /// <returns>The stream</returns>
     internal static Stream ToStream<T>(this IEnumerable<T[]> items)
         where T : struct
     {
@@ -542,6 +618,12 @@ public static class WeaviateExtensions
         return stream;
     }
 
+    /// <summary>
+    /// Returns the byte string using the specified vector
+    /// </summary>
+    /// <param name="vector">The vector</param>
+    /// <exception cref="NotSupportedException">The type '{vector.ValueType.FullName}' is not supported by ToByteString.</exception>
+    /// <returns>The google protobuf byte string</returns>
     internal static Google.Protobuf.ByteString ToByteString(this Vector vector)
     {
         if (vector is null || vector.Count == 0)
@@ -573,6 +655,12 @@ public static class WeaviateExtensions
         );
     }
 
+    /// <summary>
+    /// Returns the multi dimensional byte string using the specified vector
+    /// </summary>
+    /// <param name="vector">The vector</param>
+    /// <exception cref="NotSupportedException">The type '{vector.ValueType.FullName}' is not supported by ToMultiDimensionalByteString.</exception>
+    /// <returns>The google protobuf byte string</returns>
     internal static Google.Protobuf.ByteString ToMultiDimensionalByteString(this Vector vector)
     {
         if (vector == null || vector.Count == 0)
@@ -647,6 +735,12 @@ public static class WeaviateExtensions
         return Google.Protobuf.ByteString.FromStream(ms);
     }
 
+    /// <summary>
+    /// Returns the byte string using the specified items
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="items">The items</param>
+    /// <returns>The google protobuf byte string</returns>
     internal static Google.Protobuf.ByteString ToByteString<T>(this IEnumerable<T[]>? items)
         where T : struct
     {
@@ -660,6 +754,12 @@ public static class WeaviateExtensions
         return Google.Protobuf.ByteString.FromStream(stream);
     }
 
+    /// <summary>
+    /// Returns the byte string using the specified items
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="items">The items</param>
+    /// <returns>The google protobuf byte string</returns>
     internal static Google.Protobuf.ByteString ToByteString<T>(this IEnumerable<T>? items)
         where T : struct
     {
@@ -745,6 +845,11 @@ public static class WeaviateExtensions
             });
     }
 
+    /// <summary>
+    /// Capitalizes the str
+    /// </summary>
+    /// <param name="str">The str</param>
+    /// <returns>The string</returns>
     internal static string Capitalize(this string str)
     {
         if (string.IsNullOrEmpty(str))
@@ -752,6 +857,11 @@ public static class WeaviateExtensions
         return char.ToUpper(str[0]) + str[1..];
     }
 
+    /// <summary>
+    /// Decapitalizes the str
+    /// </summary>
+    /// <param name="str">The str</param>
+    /// <returns>The string</returns>
     internal static string Decapitalize(this string str)
     {
         if (string.IsNullOrEmpty(str))
@@ -759,6 +869,11 @@ public static class WeaviateExtensions
         return char.ToLower(str[0]) + str[1..];
     }
 
+    /// <summary>
+    /// Ises the native type using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The bool</returns>
     internal static bool IsNativeType(this Type type)
     {
         // Handle nullable types

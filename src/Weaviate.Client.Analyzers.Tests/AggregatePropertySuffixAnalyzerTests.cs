@@ -5,8 +5,14 @@ using VerifyCS = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<We
 
 namespace Weaviate.Client.Analyzers.Tests;
 
+/// <summary>
+/// The aggregate property suffix analyzer tests class
+/// </summary>
 public class AggregatePropertySuffixAnalyzerTests
 {
+    /// <summary>
+    /// The test stub code
+    /// </summary>
     private const string TestStubCode =
         @"
 using System;
@@ -76,6 +82,9 @@ namespace Weaviate.Client.Models.Typed
 
     #region WEAVIATE005 - Missing Suffix Tests
 
+    /// <summary>
+    /// Tests that missing suffix on to typed call reports diagnostic
+    /// </summary>
     [Fact]
     public async Task MissingSuffix_OnToTypedCall_ReportsDiagnostic()
     {
@@ -110,6 +119,9 @@ namespace Test
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that valid suffix as count no diagnostic
+    /// </summary>
     [Fact]
     public async Task ValidSuffixAsCount_NoDiagnostic()
     {
@@ -143,6 +155,9 @@ namespace Test
 
     #region WEAVIATE006 - Invalid Suffix Type Tests
 
+    /// <summary>
+    /// Tests that invalid suffix type count on string reports diagnostic
+    /// </summary>
     [Fact]
     public async Task InvalidSuffixType_CountOnString_ReportsDiagnostic()
     {
@@ -181,6 +196,9 @@ namespace Test
 
     #region WEAVIATE004 - Wrong Attribute Type Tests
 
+    /// <summary>
+    /// Tests that wrong attribute type number metrics on text reports diagnostic
+    /// </summary>
     [Fact]
     public async Task WrongAttributeType_NumberMetricsOnText_ReportsDiagnostic()
     {
@@ -217,6 +235,9 @@ namespace Test
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that valid attribute type number metrics on number no diagnostic
+    /// </summary>
     [Fact]
     public async Task ValidAttributeType_NumberMetricsOnNumber_NoDiagnostic()
     {

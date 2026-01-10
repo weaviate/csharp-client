@@ -2,8 +2,14 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The basic tests class
+/// </summary>
 public partial class BasicTests
 {
+    /// <summary>
+    /// Tests that test iterator
+    /// </summary>
     [Fact]
     public async Task Test_Iterator()
     {
@@ -29,6 +35,13 @@ public partial class BasicTests
         Assert.Contains("Name 2", names);
     }
 
+    /// <summary>
+    /// Tests that test iterator arguments
+    /// </summary>
+    /// <param name="includeVector">The include vector</param>
+    /// <param name="returnFullMetadata">The return full metadata</param>
+    /// <param name="returnSpecificProperties">The return specific properties</param>
+    /// <param name="cacheSize">The cache size</param>
     [Theory]
     [InlineData(false, null, null, null)]
     [InlineData(true, null, null, null)]
@@ -163,6 +176,9 @@ public partial class BasicTests
         }
     }
 
+    /// <summary>
+    /// Tests that test iterator with default generic
+    /// </summary>
     [Fact]
     public async Task Test_Iterator_With_Default_Generic()
     {
@@ -201,6 +217,10 @@ public partial class BasicTests
         }
     }
 
+    /// <summary>
+    /// Tests that test iterator basic
+    /// </summary>
+    /// <param name="count">The count</param>
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
@@ -257,6 +277,9 @@ public partial class BasicTests
         }
     }
 
+    /// <summary>
+    /// Tests that test iterator with after
+    /// </summary>
     [Fact]
     public async Task Test_Iterator_With_After()
     {

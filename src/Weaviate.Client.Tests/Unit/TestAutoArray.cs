@@ -2,8 +2,14 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The test auto array class
+/// </summary>
 public class TestAutoArray
 {
+    /// <summary>
+    /// Tests that implicit conversion from single item creates single value
+    /// </summary>
     [Fact]
     public void ImplicitConversion_FromSingleItem_CreatesSingleValue()
     {
@@ -13,6 +19,9 @@ public class TestAutoArray
         Assert.Equal("test", result.First());
     }
 
+    /// <summary>
+    /// Tests that implicit conversion from array preserves items
+    /// </summary>
     [Fact]
     public void ImplicitConversion_FromArray_PreservesItems()
     {
@@ -23,6 +32,9 @@ public class TestAutoArray
         Assert.Equal(items, result);
     }
 
+    /// <summary>
+    /// Tests that implicit conversion from list preserves items
+    /// </summary>
     [Fact]
     public void ImplicitConversion_FromList_PreservesItems()
     {
@@ -33,6 +45,9 @@ public class TestAutoArray
         Assert.Equal(items, result);
     }
 
+    /// <summary>
+    /// Tests that implicit conversion from empty array creates empty collection
+    /// </summary>
     [Fact]
     public void ImplicitConversion_FromEmptyArray_CreatesEmptyCollection()
     {
@@ -41,6 +56,9 @@ public class TestAutoArray
         Assert.Empty(result);
     }
 
+    /// <summary>
+    /// Tests that implicit conversion from null array returns null
+    /// </summary>
     [Fact]
     public void ImplicitConversion_FromNullArray_ReturnsNull()
     {
@@ -51,6 +69,9 @@ public class TestAutoArray
         Assert.Null(result);
     }
 
+    /// <summary>
+    /// Tests that explicit conversion to array returns copy
+    /// </summary>
     [Fact]
     public void ExplicitConversion_ToArray_ReturnsCopy()
     {
@@ -61,6 +82,9 @@ public class TestAutoArray
         Assert.Equal(new[] { "one", "two", "three" }, copy);
     }
 
+    /// <summary>
+    /// Tests that add with single item appends value
+    /// </summary>
     [Fact]
     public void Add_WithSingleItem_AppendsValue()
     {
@@ -71,6 +95,9 @@ public class TestAutoArray
         Assert.Equal(new[] { "one", "two", "three" }, values);
     }
 
+    /// <summary>
+    /// Tests that add with array appends values
+    /// </summary>
     [Fact]
     public void Add_WithArray_AppendsValues()
     {
@@ -82,6 +109,9 @@ public class TestAutoArray
         Assert.Equal(new[] { "original", "one", "two", "three" }, values);
     }
 
+    /// <summary>
+    /// Tests that add with null array does nothing
+    /// </summary>
     [Fact]
     public void Add_WithNullArray_DoesNothing()
     {
@@ -94,6 +124,9 @@ public class TestAutoArray
         Assert.Equal(original, values);
     }
 
+    /// <summary>
+    /// Tests that add with empty array makes no changes
+    /// </summary>
     [Fact]
     public void Add_WithEmptyArray_MakesNoChanges()
     {
@@ -104,6 +137,9 @@ public class TestAutoArray
         Assert.Equal(new[] { "one", "two" }, values);
     }
 
+    /// <summary>
+    /// Tests that enumerating generic interface returns sequence
+    /// </summary>
     [Fact]
     public void Enumerating_GenericInterface_ReturnsSequence()
     {
@@ -119,6 +155,9 @@ public class TestAutoArray
         Assert.Equal(items, result);
     }
 
+    /// <summary>
+    /// Tests that enumerating non generic interface returns sequence
+    /// </summary>
     [Fact]
     public void Enumerating_NonGenericInterface_ReturnsSequence()
     {
@@ -135,6 +174,9 @@ public class TestAutoArray
         Assert.Equal(items, result);
     }
 
+    /// <summary>
+    /// Tests that supports complex types
+    /// </summary>
     [Fact]
     public void SupportsComplexTypes()
     {
@@ -148,6 +190,9 @@ public class TestAutoArray
         Assert.Contains(obj2, values);
     }
 
+    /// <summary>
+    /// Tests that implicit conversion passes through method parameters
+    /// </summary>
     [Fact]
     public void ImplicitConversion_PassesThroughMethodParameters()
     {
@@ -158,11 +203,19 @@ public class TestAutoArray
         Assert.Equal(2, multiple.Count());
     }
 
+    /// <summary>
+    /// Accepts the one or many using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The value</returns>
     private static AutoArray<string> AcceptOneOrMany(AutoArray<string> value)
     {
         return value;
     }
 
+    /// <summary>
+    /// Tests that collection expression with single item creates single item collection
+    /// </summary>
     [Fact]
     public void CollectionExpression_WithSingleItem_CreatesSingleItemCollection()
     {
@@ -172,6 +225,9 @@ public class TestAutoArray
         Assert.Equal(new[] { 1 }, x);
     }
 
+    /// <summary>
+    /// Tests that collection expression with multiple items creates collection
+    /// </summary>
     [Fact]
     public void CollectionExpression_WithMultipleItems_CreatesCollection()
     {
@@ -181,6 +237,9 @@ public class TestAutoArray
         Assert.Equal(new[] { 1, 2, 3 }, y);
     }
 
+    /// <summary>
+    /// Tests that collection expression with empty expression creates empty collection
+    /// </summary>
     [Fact]
     public void CollectionExpression_WithEmptyExpression_CreatesEmptyCollection()
     {
@@ -189,6 +248,9 @@ public class TestAutoArray
         Assert.Empty(empty);
     }
 
+    /// <summary>
+    /// Tests that collection expression with strings preserves values
+    /// </summary>
     [Fact]
     public void CollectionExpression_WithStrings_PreservesValues()
     {
@@ -197,6 +259,9 @@ public class TestAutoArray
         Assert.Equal(new[] { "one", "two", "three" }, values);
     }
 
+    /// <summary>
+    /// Tests that collection expression with complex types works correctly
+    /// </summary>
     [Fact]
     public void CollectionExpression_WithComplexTypes_WorksCorrectly()
     {
@@ -210,6 +275,9 @@ public class TestAutoArray
         Assert.Contains(obj2, values);
     }
 
+    /// <summary>
+    /// Tests that collection expression can be enumerated
+    /// </summary>
     [Fact]
     public void CollectionExpression_CanBeEnumerated()
     {
@@ -224,6 +292,9 @@ public class TestAutoArray
         Assert.Equal(60, sum);
     }
 
+    /// <summary>
+    /// Tests that collection expression can be converted to array
+    /// </summary>
     [Fact]
     public void CollectionExpression_CanBeConvertedToArray()
     {
@@ -234,6 +305,9 @@ public class TestAutoArray
         Assert.Equal(new[] { "x", "y", "z" }, array);
     }
 
+    /// <summary>
+    /// Tests that collection expression can be passed as parameter
+    /// </summary>
     [Fact]
     public void CollectionExpression_CanBePassedAsParameter()
     {
@@ -242,6 +316,9 @@ public class TestAutoArray
         Assert.Equal(new[] { 1, 2, 3 }, result);
     }
 
+    /// <summary>
+    /// Tests that collection expression supports add after creation
+    /// </summary>
     [Fact]
     public void CollectionExpression_SupportsAddAfterCreation()
     {
@@ -251,6 +328,9 @@ public class TestAutoArray
         Assert.Equal(new[] { "one", "two", "three" }, values);
     }
 
+    /// <summary>
+    /// Tests that collection expression with duplicates preserves duplicates
+    /// </summary>
     [Fact]
     public void CollectionExpression_WithDuplicates_PreservesDuplicates()
     {
@@ -260,6 +340,9 @@ public class TestAutoArray
         Assert.Equal(new[] { 1, 2, 1, 3, 2 }, values);
     }
 
+    /// <summary>
+    /// Tests that implicit conversion and collection expression both work
+    /// </summary>
     [Fact]
     public void ImplicitConversion_AndCollectionExpression_BothWork()
     {
@@ -277,14 +360,29 @@ public class TestAutoArray
         Assert.Equal(new[] { 1, 2, 3 }, fromArray);
     }
 
+    /// <summary>
+    /// Accepts the one or many using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The value</returns>
     private static AutoArray<int> AcceptOneOrMany(AutoArray<int> value)
     {
         return value;
     }
 
+    /// <summary>
+    /// The test class
+    /// </summary>
     private class TestClass
     {
+        /// <summary>
+        /// Gets or sets the value of the id
+        /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the name
+        /// </summary>
         public string Name { get; set; } = string.Empty;
     }
 }

@@ -15,10 +15,29 @@ public class TestTypedAggregateResults
     /// </summary>
     private class ArticleAggregations
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public Aggregate.Text? Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the word count
+        /// </summary>
         public Aggregate.Integer? WordCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the rating
+        /// </summary>
         public Aggregate.Number? Rating { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the is published
+        /// </summary>
         public Aggregate.Boolean? IsPublished { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the published date
+        /// </summary>
         public Aggregate.Date? PublishedDate { get; set; }
     }
 
@@ -28,18 +47,33 @@ public class TestTypedAggregateResults
     private class ArticleSummary
     {
         // Text aggregation - extract count
+        /// <summary>
+        /// Gets or sets the value of the title count
+        /// </summary>
         public long? TitleCount { get; set; }
 
         // Number aggregation - extract mean
+        /// <summary>
+        /// Gets or sets the value of the rating mean
+        /// </summary>
         public double? RatingMean { get; set; }
 
         // Integer aggregation - extract sum
+        /// <summary>
+        /// Gets or sets the value of the word count sum
+        /// </summary>
         public long? WordCountSum { get; set; }
 
         // Boolean aggregation - extract percentage true
+        /// <summary>
+        /// Gets or sets the value of the is published percentage true
+        /// </summary>
         public double? IsPublishedPercentageTrue { get; set; }
 
         // Date aggregation - extract minimum
+        /// <summary>
+        /// Gets or sets the value of the published date minimum
+        /// </summary>
         public DateTime? PublishedDateMinimum { get; set; }
     }
 
@@ -49,21 +83,75 @@ public class TestTypedAggregateResults
     private class NumericSuffixTests
     {
         // Integer suffixes
+        /// <summary>
+        /// Gets or sets the value of the quantity count
+        /// </summary>
         public long? QuantityCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity sum
+        /// </summary>
         public long? QuantitySum { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity mean
+        /// </summary>
         public double? QuantityMean { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity average
+        /// </summary>
         public double? QuantityAverage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity min
+        /// </summary>
         public long? QuantityMin { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity minimum
+        /// </summary>
         public long? QuantityMinimum { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity max
+        /// </summary>
         public long? QuantityMax { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity maximum
+        /// </summary>
         public long? QuantityMaximum { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity median
+        /// </summary>
         public double? QuantityMedian { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity mode
+        /// </summary>
         public long? QuantityMode { get; set; }
 
         // Number suffixes
+        /// <summary>
+        /// Gets or sets the value of the price sum
+        /// </summary>
         public double? PriceSum { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the price mean
+        /// </summary>
         public double? PriceMean { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the price min
+        /// </summary>
         public double? PriceMin { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the price max
+        /// </summary>
         public double? PriceMax { get; set; }
     }
 
@@ -72,10 +160,29 @@ public class TestTypedAggregateResults
     /// </summary>
     private class BooleanSuffixTests
     {
+        /// <summary>
+        /// Gets or sets the value of the in stock total true
+        /// </summary>
         public long? InStockTotalTrue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the in stock total false
+        /// </summary>
         public long? InStockTotalFalse { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the in stock percentage true
+        /// </summary>
         public double? InStockPercentageTrue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the in stock percentage false
+        /// </summary>
         public double? InStockPercentageFalse { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the in stock count
+        /// </summary>
         public long? InStockCount { get; set; }
     }
 
@@ -84,8 +191,19 @@ public class TestTypedAggregateResults
     /// </summary>
     private class TextSuffixTests
     {
+        /// <summary>
+        /// Gets or sets the value of the category count
+        /// </summary>
         public long? CategoryCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the category top occurrence
+        /// </summary>
         public string? CategoryTopOccurrence { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the category top occurrences
+        /// </summary>
         public List<Aggregate.TopOccurrence<string>>? CategoryTopOccurrences { get; set; }
     }
 
@@ -94,10 +212,29 @@ public class TestTypedAggregateResults
     /// </summary>
     private class DateSuffixTests
     {
+        /// <summary>
+        /// Gets or sets the value of the created at minimum
+        /// </summary>
         public DateTime? CreatedAtMinimum { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the created at maximum
+        /// </summary>
         public DateTime? CreatedAtMaximum { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the created at median
+        /// </summary>
         public DateTime? CreatedAtMedian { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the created at mode
+        /// </summary>
         public DateTime? CreatedAtMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the created at count
+        /// </summary>
         public long? CreatedAtCount { get; set; }
     }
 
@@ -107,16 +244,32 @@ public class TestTypedAggregateResults
     private class MixedMappingTests
     {
         // Full type mapping
+        /// <summary>
+        /// Gets or sets the value of the price
+        /// </summary>
         public Aggregate.Number? Price { get; set; }
 
         // Suffix-based extraction from same field
+        /// <summary>
+        /// Gets or sets the value of the price mean
+        /// </summary>
         public double? PriceMean { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the price sum
+        /// </summary>
         public double? PriceSum { get; set; }
 
         // Another full type
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public Aggregate.Text? Title { get; set; }
 
         // Suffix extraction
+        /// <summary>
+        /// Gets or sets the value of the title count
+        /// </summary>
         public long? TitleCount { get; set; }
     }
 
@@ -124,6 +277,10 @@ public class TestTypedAggregateResults
 
     #region Test Data
 
+    /// <summary>
+    /// Creates the test aggregate result
+    /// </summary>
+    /// <returns>The aggregate result</returns>
     private static AggregateResult CreateTestAggregateResult()
     {
         return new AggregateResult
@@ -180,6 +337,10 @@ public class TestTypedAggregateResults
         };
     }
 
+    /// <summary>
+    /// Creates the test group by result
+    /// </summary>
+    /// <returns>The aggregate group by result</returns>
     private static AggregateGroupByResult CreateTestGroupByResult()
     {
         return new AggregateGroupByResult
@@ -270,6 +431,9 @@ public class TestTypedAggregateResults
 
     #region Full Aggregate Type Mapping Tests
 
+    /// <summary>
+    /// Tests that to typed maps full aggregate types
+    /// </summary>
     [Fact]
     public void ToTyped_MapsFullAggregateTypes()
     {
@@ -298,6 +462,9 @@ public class TestTypedAggregateResults
         );
     }
 
+    /// <summary>
+    /// Tests that to typed preserves total count
+    /// </summary>
     [Fact]
     public void ToTyped_PreservesTotalCount()
     {
@@ -308,6 +475,9 @@ public class TestTypedAggregateResults
         Assert.Equal(100, typed.TotalCount);
     }
 
+    /// <summary>
+    /// Tests that to typed preserves untyped result
+    /// </summary>
     [Fact]
     public void ToTyped_PreservesUntypedResult()
     {
@@ -322,6 +492,9 @@ public class TestTypedAggregateResults
 
     #region Suffix-Based Mapping Tests
 
+    /// <summary>
+    /// Tests that to typed extracts values by suffix
+    /// </summary>
     [Fact]
     public void ToTyped_ExtractsValuesBySuffix()
     {
@@ -339,6 +512,9 @@ public class TestTypedAggregateResults
         );
     }
 
+    /// <summary>
+    /// Tests that to typed integer suffixes extract correct values
+    /// </summary>
     [Fact]
     public void ToTyped_IntegerSuffixes_ExtractCorrectValues()
     {
@@ -374,6 +550,9 @@ public class TestTypedAggregateResults
         Assert.Equal(10, typed.Properties.QuantityMode);
     }
 
+    /// <summary>
+    /// Tests that to typed number suffixes extract correct values
+    /// </summary>
     [Fact]
     public void ToTyped_NumberSuffixes_ExtractCorrectValues()
     {
@@ -401,6 +580,9 @@ public class TestTypedAggregateResults
         Assert.Equal(50.0, typed.Properties.PriceMax);
     }
 
+    /// <summary>
+    /// Tests that to typed boolean suffixes extract correct values
+    /// </summary>
     [Fact]
     public void ToTyped_BooleanSuffixes_ExtractCorrectValues()
     {
@@ -429,6 +611,9 @@ public class TestTypedAggregateResults
         Assert.Equal(100, typed.Properties.InStockCount);
     }
 
+    /// <summary>
+    /// Tests that to typed text suffixes extract correct values
+    /// </summary>
     [Fact]
     public void ToTyped_TextSuffixes_ExtractCorrectValues()
     {
@@ -458,6 +643,9 @@ public class TestTypedAggregateResults
         Assert.Equal("Electronics", typed.Properties.CategoryTopOccurrences[0].Value);
     }
 
+    /// <summary>
+    /// Tests that to typed date suffixes extract correct values
+    /// </summary>
     [Fact]
     public void ToTyped_DateSuffixes_ExtractCorrectValues()
     {
@@ -495,6 +683,9 @@ public class TestTypedAggregateResults
 
     #region Mixed Mapping Tests
 
+    /// <summary>
+    /// Tests that to typed mixed full types and suffixes
+    /// </summary>
     [Fact]
     public void ToTyped_MixedFullTypesAndSuffixes()
     {
@@ -535,6 +726,9 @@ public class TestTypedAggregateResults
 
     #region GroupBy Result Tests
 
+    /// <summary>
+    /// Tests that group by to typed maps all groups
+    /// </summary>
     [Fact]
     public void GroupByToTyped_MapsAllGroups()
     {
@@ -545,6 +739,9 @@ public class TestTypedAggregateResults
         Assert.Equal(2, typed.Groups.Count);
     }
 
+    /// <summary>
+    /// Tests that group by to typed preserves grouped by info
+    /// </summary>
     [Fact]
     public void GroupByToTyped_PreservesGroupedByInfo()
     {
@@ -557,6 +754,9 @@ public class TestTypedAggregateResults
         Assert.Equal("Science", typed.Groups[1].GroupedBy.Value);
     }
 
+    /// <summary>
+    /// Tests that group by to typed preserves total count per group
+    /// </summary>
     [Fact]
     public void GroupByToTyped_PreservesTotalCountPerGroup()
     {
@@ -568,6 +768,9 @@ public class TestTypedAggregateResults
         Assert.Equal(40, typed.Groups[1].TotalCount);
     }
 
+    /// <summary>
+    /// Tests that group by to typed maps full types per group
+    /// </summary>
     [Fact]
     public void GroupByToTyped_MapsFullTypesPerGroup()
     {
@@ -592,6 +795,9 @@ public class TestTypedAggregateResults
         Assert.Equal(3000.0, typed.Groups[1].Properties.WordCount!.Mean!.Value);
     }
 
+    /// <summary>
+    /// Tests that group by to typed extracts suffix values per group
+    /// </summary>
     [Fact]
     public void GroupByToTyped_ExtractsSuffixValuesPerGroup()
     {
@@ -610,6 +816,9 @@ public class TestTypedAggregateResults
         Assert.Equal(120000, typed.Groups[1].Properties.WordCountSum);
     }
 
+    /// <summary>
+    /// Tests that group by to typed preserves untyped result
+    /// </summary>
     [Fact]
     public void GroupByToTyped_PreservesUntypedResult()
     {
@@ -626,6 +835,9 @@ public class TestTypedAggregateResults
 
     #region Edge Cases
 
+    /// <summary>
+    /// Tests that to typed handles empty properties
+    /// </summary>
     [Fact]
     public void ToTyped_HandlesEmptyProperties()
     {
@@ -642,6 +854,9 @@ public class TestTypedAggregateResults
         Assert.Null(typed.Properties.WordCount);
     }
 
+    /// <summary>
+    /// Tests that group by to typed handles empty groups
+    /// </summary>
     [Fact]
     public void GroupByToTyped_HandlesEmptyGroups()
     {
@@ -652,6 +867,9 @@ public class TestTypedAggregateResults
         Assert.Empty(typed.Groups);
     }
 
+    /// <summary>
+    /// Tests that to typed ignores properties without matching suffix
+    /// </summary>
     [Fact]
     public void ToTyped_IgnoresPropertiesWithoutMatchingSuffix()
     {
@@ -671,6 +889,9 @@ public class TestTypedAggregateResults
         Assert.Null(typed.Properties.RatingMean);
     }
 
+    /// <summary>
+    /// Tests that to typed handles null values
+    /// </summary>
     [Fact]
     public void ToTyped_HandlesNullValues()
     {
@@ -693,6 +914,9 @@ public class TestTypedAggregateResults
         Assert.Null(typed.Properties.WordCountSum);
     }
 
+    /// <summary>
+    /// Tests that to typed handles case insensitive field matching
+    /// </summary>
     [Fact]
     public void ToTyped_HandlesCaseInsensitiveFieldMatching()
     {
@@ -712,6 +936,9 @@ public class TestTypedAggregateResults
         Assert.Equal(4.5, typed.Properties.Rating.Mean);
     }
 
+    /// <summary>
+    /// Tests that to typed wrong suffix for aggregation type returns null
+    /// </summary>
     [Fact]
     public void ToTyped_WrongSuffixForAggregationType_ReturnsNull()
     {
@@ -746,10 +973,29 @@ public class TestTypedAggregateResults
     /// </summary>
     private class FullAggregateTypeMetrics
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public Aggregate.Text? Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity
+        /// </summary>
         public Aggregate.Integer? Quantity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the price
+        /// </summary>
         public Aggregate.Number? Price { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the in stock
+        /// </summary>
         public Aggregate.Boolean? InStock { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the created at
+        /// </summary>
         public Aggregate.Date? CreatedAt { get; set; }
     }
 
@@ -758,10 +1004,29 @@ public class TestTypedAggregateResults
     /// </summary>
     private class SuffixBasedMetrics
     {
+        /// <summary>
+        /// Gets or sets the value of the price mean
+        /// </summary>
         public double? PriceMean { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity sum
+        /// </summary>
         public long? QuantitySum { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the title count
+        /// </summary>
         public long? TitleCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the in stock percentage true
+        /// </summary>
         public double? InStockPercentageTrue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the created at minimum
+        /// </summary>
         public DateTime? CreatedAtMinimum { get; set; }
     }
 
@@ -770,9 +1035,24 @@ public class TestTypedAggregateResults
     /// </summary>
     private class MultipleSuffixesPerField
     {
+        /// <summary>
+        /// Gets or sets the value of the price mean
+        /// </summary>
         public double? PriceMean { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the price min
+        /// </summary>
         public double? PriceMin { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the price max
+        /// </summary>
         public double? PriceMax { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the price count
+        /// </summary>
         public long? PriceCount { get; set; }
     }
 
@@ -781,11 +1061,25 @@ public class TestTypedAggregateResults
     /// </summary>
     private class MixedMetrics
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public Aggregate.Text? Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the price mean
+        /// </summary>
         public double? PriceMean { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the quantity sum
+        /// </summary>
         public long? QuantitySum { get; set; }
     }
 
+    /// <summary>
+    /// Tests that from type extracts full aggregate types
+    /// </summary>
     [Fact]
     public void FromType_ExtractsFullAggregateTypes()
     {
@@ -837,6 +1131,9 @@ public class TestTypedAggregateResults
         Assert.True(dateMetric.Mode);
     }
 
+    /// <summary>
+    /// Tests that from type extracts suffix based metrics
+    /// </summary>
     [Fact]
     public void FromType_ExtractsSuffixBasedMetrics()
     {
@@ -885,6 +1182,9 @@ public class TestTypedAggregateResults
         Assert.False(dateMetric.Maximum);
     }
 
+    /// <summary>
+    /// Tests that from type combines multiple suffixes for same field
+    /// </summary>
     [Fact]
     public void FromType_CombinesMultipleSuffixesForSameField()
     {
@@ -903,6 +1203,9 @@ public class TestTypedAggregateResults
         Assert.False(priceMetric.Sum); // Not specified in the type
     }
 
+    /// <summary>
+    /// Tests that from type handles mixed types
+    /// </summary>
     [Fact]
     public void FromType_HandlesMixedTypes()
     {
@@ -928,6 +1231,9 @@ public class TestTypedAggregateResults
         Assert.False(priceMetric.Sum);
     }
 
+    /// <summary>
+    /// Tests that from type ignores properties without suffix
+    /// </summary>
     [Fact]
     public void FromType_IgnoresPropertiesWithoutSuffix()
     {
@@ -937,13 +1243,30 @@ public class TestTypedAggregateResults
         Assert.Empty(metrics);
     }
 
+    /// <summary>
+    /// The properties without suffix class
+    /// </summary>
     private class PropertiesWithoutSuffix
     {
+        /// <summary>
+        /// Gets or sets the value of the name
+        /// </summary>
         public string? Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the price
+        /// </summary>
         public int? Price { get; set; } // No suffix
+
+        /// <summary>
+        /// Gets or sets the value of the rating
+        /// </summary>
         public double? Rating { get; set; } // No suffix
     }
 
+    /// <summary>
+    /// Tests that from type handles text suffixes
+    /// </summary>
     [Fact]
     public void FromType_HandlesTextSuffixes()
     {
@@ -958,11 +1281,20 @@ public class TestTypedAggregateResults
         Assert.True(textMetric.TopOccurrencesValue);
     }
 
+    /// <summary>
+    /// The text suffix metrics class
+    /// </summary>
     private class TextSuffixMetrics
     {
+        /// <summary>
+        /// Gets or sets the value of the title top occurrence
+        /// </summary>
         public string? TitleTopOccurrence { get; set; }
     }
 
+    /// <summary>
+    /// Tests that from type handles boolean suffixes
+    /// </summary>
     [Fact]
     public void FromType_HandlesBooleanSuffixes()
     {
@@ -979,14 +1311,35 @@ public class TestTypedAggregateResults
         Assert.True(boolMetric.PercentageFalse);
     }
 
+    /// <summary>
+    /// The boolean suffix metrics class
+    /// </summary>
     private class BooleanSuffixMetrics
     {
+        /// <summary>
+        /// Gets or sets the value of the active total true
+        /// </summary>
         public long? ActiveTotalTrue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the active total false
+        /// </summary>
         public long? ActiveTotalFalse { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the active percentage true
+        /// </summary>
         public double? ActivePercentageTrue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the active percentage false
+        /// </summary>
         public double? ActivePercentageFalse { get; set; }
     }
 
+    /// <summary>
+    /// Tests that from type non generic overload works
+    /// </summary>
     [Fact]
     public void FromType_NonGenericOverload_Works()
     {
@@ -999,18 +1352,33 @@ public class TestTypedAggregateResults
 
     #region MetricsExtractor Attribute Tests
 
+    /// <summary>
+    /// The selective metrics class
+    /// </summary>
     private class SelectiveMetrics
     {
+        /// <summary>
+        /// Gets or sets the value of the price
+        /// </summary>
         [NumberMetrics(Minimum = true, Maximum = true, Mean = true)]
         public Aggregate.Number? Price { get; set; }
 
+        /// <summary>
+        /// Gets or sets the value of the category
+        /// </summary>
         [TextMetrics(Count = true, TopOccurrences = true, MinOccurrences = 5)]
         public Aggregate.Text? Category { get; set; }
 
+        /// <summary>
+        /// Gets or sets the value of the in stock
+        /// </summary>
         [BooleanMetrics(TotalTrue = true, PercentageTrue = true)]
         public Aggregate.Boolean? InStock { get; set; }
     }
 
+    /// <summary>
+    /// Tests that from type with attributes enables only specified metrics
+    /// </summary>
     [Fact]
     public void FromType_WithAttributes_EnablesOnlySpecifiedMetrics()
     {
@@ -1043,6 +1411,9 @@ public class TestTypedAggregateResults
         Assert.False(inStock.Count);
     }
 
+    /// <summary>
+    /// Tests that from type no attribute enables all
+    /// </summary>
     [Fact]
     public void FromType_NoAttribute_EnablesAll()
     {
@@ -1058,11 +1429,20 @@ public class TestTypedAggregateResults
         Assert.True(quantity.Mode);
     }
 
+    /// <summary>
+    /// The no attribute metrics class
+    /// </summary>
     private class NoAttributeMetrics
     {
+        /// <summary>
+        /// Gets or sets the value of the quantity
+        /// </summary>
         public Aggregate.Integer? Quantity { get; set; }
     }
 
+    /// <summary>
+    /// Tests that from type mixed attributes works correctly
+    /// </summary>
     [Fact]
     public void FromType_MixedAttributes_WorksCorrectly()
     {
@@ -1084,14 +1464,26 @@ public class TestTypedAggregateResults
         Assert.True(quantity.Mean);
     }
 
+    /// <summary>
+    /// The mixed attributes class
+    /// </summary>
     private class MixedAttributes
     {
+        /// <summary>
+        /// Gets or sets the value of the price
+        /// </summary>
         [NumberMetrics(Minimum = true, Maximum = true)]
         public Aggregate.Number? Price { get; set; }
 
+        /// <summary>
+        /// Gets or sets the value of the quantity
+        /// </summary>
         public Aggregate.Integer? Quantity { get; set; }
     }
 
+    /// <summary>
+    /// Tests that from type empty attribute enables all
+    /// </summary>
     [Fact]
     public void FromType_EmptyAttribute_EnablesAll()
     {
@@ -1109,12 +1501,21 @@ public class TestTypedAggregateResults
         Assert.True(price.Mode);
     }
 
+    /// <summary>
+    /// The empty attribute metrics class
+    /// </summary>
     private class EmptyAttributeMetrics
     {
+        /// <summary>
+        /// Gets or sets the value of the price
+        /// </summary>
         [NumberMetrics] // All properties default to false - enables all
         public Aggregate.Number? Price { get; set; }
     }
 
+    /// <summary>
+    /// Tests that from type integer metrics attribute enables only specified metrics
+    /// </summary>
     [Fact]
     public void FromType_IntegerMetricsAttribute_EnablesOnlySpecifiedMetrics()
     {
@@ -1128,12 +1529,21 @@ public class TestTypedAggregateResults
         Assert.False(quantity.Maximum);
     }
 
+    /// <summary>
+    /// The integer attribute metrics class
+    /// </summary>
     private class IntegerAttributeMetrics
     {
+        /// <summary>
+        /// Gets or sets the value of the quantity
+        /// </summary>
         [IntegerMetrics(Sum = true, Count = true)]
         public Aggregate.Integer? Quantity { get; set; }
     }
 
+    /// <summary>
+    /// Tests that from type date metrics attribute enables only specified metrics
+    /// </summary>
     [Fact]
     public void FromType_DateMetricsAttribute_EnablesOnlySpecifiedMetrics()
     {
@@ -1147,8 +1557,14 @@ public class TestTypedAggregateResults
         Assert.False(createdAt.Count);
     }
 
+    /// <summary>
+    /// The date attribute metrics class
+    /// </summary>
     private class DateAttributeMetrics
     {
+        /// <summary>
+        /// Gets or sets the value of the created at
+        /// </summary>
         [DateMetrics(Minimum = true, Maximum = true)]
         public Aggregate.Date? CreatedAt { get; set; }
     }

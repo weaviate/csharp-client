@@ -14,9 +14,24 @@ namespace Weaviate.Client.Typed;
 public class TypedCollectionClient<T>
     where T : class, new()
 {
+    /// <summary>
+    /// The collection client
+    /// </summary>
     private readonly CollectionClient _collectionClient;
+
+    /// <summary>
+    /// The data client
+    /// </summary>
     private readonly TypedDataClient<T> _dataClient;
+
+    /// <summary>
+    /// The query client
+    /// </summary>
     private readonly TypedQueryClient<T> _queryClient;
+
+    /// <summary>
+    /// The generate client
+    /// </summary>
     private readonly TypedGenerateClient<T> _generateClient;
 
     /// <summary>

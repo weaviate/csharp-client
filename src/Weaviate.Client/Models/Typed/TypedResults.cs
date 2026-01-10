@@ -9,10 +9,25 @@ namespace Weaviate.Client.Models.Typed;
 public record WeaviateObject<T>
     where T : class, new()
 {
+    /// <summary>
+    /// The untyped
+    /// </summary>
     private readonly WeaviateObject _untyped;
+
+    /// <summary>
+    /// The object
+    /// </summary>
     private T? _object;
+
+    /// <summary>
+    /// The object loaded
+    /// </summary>
     private bool _objectLoaded = false;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateObject"/> class
+    /// </summary>
+    /// <param name="untyped">The untyped</param>
     protected WeaviateObject(WeaviateObject untyped)
     {
         _untyped = untyped;
@@ -131,6 +146,10 @@ public record WeaviateObject<T>
 public record GroupByObject<T> : WeaviateObject<T>
     where T : class, new()
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GroupByObject"/> class
+    /// </summary>
+    /// <param name="untyped">The untyped</param>
     protected GroupByObject(WeaviateObject untyped)
         : base(untyped) { }
 
@@ -210,12 +229,21 @@ public record GroupByResult<T>(
 public record GenerativeWeaviateObject<T> : WeaviateObject<T>
     where T : class, new()
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GenerativeWeaviateObject"/> class
+    /// </summary>
+    /// <param name="untyped">The untyped</param>
     protected GenerativeWeaviateObject(GenerativeWeaviateObject untyped)
         : base(untyped)
     {
         Generative = untyped.Generative;
     }
 
+    /// <summary>
+    /// Creates the untyped using the specified obj
+    /// </summary>
+    /// <param name="obj">The obj</param>
+    /// <returns>A generative weaviate object of t</returns>
     public static GenerativeWeaviateObject<T> FromUntyped(GenerativeWeaviateObject obj)
     {
         return new GenerativeWeaviateObject<T>(obj);
@@ -234,6 +262,10 @@ public record GenerativeWeaviateObject<T> : WeaviateObject<T>
 public record GenerativeGroupByObject<T> : GenerativeWeaviateObject<T>
     where T : class, new()
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GenerativeGroupByObject"/> class
+    /// </summary>
+    /// <param name="untyped">The untyped</param>
     protected GenerativeGroupByObject(GenerativeGroupByObject untyped)
         : base(untyped)
     {
@@ -285,6 +317,9 @@ public record GenerativeGroupByResult<T>(
 ) : GroupByResult<GenerativeGroupByObject<T>, GenerativeWeaviateGroup<T>>(Objects, Groups)
     where T : class, new()
 {
+    /// <summary>
+    /// The generative reply
+    /// </summary>
     private static readonly GenerativeGroupByResult<T> _empty = new(
         Array.Empty<GenerativeGroupByObject<T>>(),
         new Dictionary<string, GenerativeWeaviateGroup<T>>(),
@@ -305,6 +340,9 @@ public record GenerativeGroupByResult<T>(
 public record GenerativeWeaviateResult<T> : Models.WeaviateResult<GenerativeWeaviateObject<T>>
     where T : class, new()
 {
+    /// <summary>
+    /// The empty
+    /// </summary>
     private static readonly GenerativeWeaviateResult<T> _empty = new()
     {
         Generative = GenerativeResult.Empty,

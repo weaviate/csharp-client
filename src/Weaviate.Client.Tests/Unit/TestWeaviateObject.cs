@@ -2,8 +2,14 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The weaviate object tests class
+/// </summary>
 public partial class WeaviateObjectTests
 {
+    /// <summary>
+    /// Tests that weaviate object methods for typed property access
+    /// </summary>
     [Fact]
     public void WeaviateObject_Methods_For_Typed_Property_Access()
     {

@@ -3,9 +3,19 @@ using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
 
+/// <summary>
+/// The weaviate rest client class
+/// </summary>
 internal partial class WeaviateRestClient
 {
     // Tenants API
+    /// <summary>
+    /// Tenantses the add using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="tenants">The tenants</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing an enumerable of rest dto tenant</returns>
     internal async Task<IEnumerable<Rest.Dto.Tenant>> TenantsAdd(
         string collectionName,
         Rest.Dto.Tenant[] tenants,
@@ -37,6 +47,14 @@ internal partial class WeaviateRestClient
         return result ?? Enumerable.Empty<Rest.Dto.Tenant>();
     }
 
+    /// <summary>
+    /// Tenants the update using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="tenants">The tenants</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="ArgumentNullException">Tenant names cannot be null.</exception>
+    /// <returns>A task containing an enumerable of rest dto tenant</returns>
     internal async Task<IEnumerable<Rest.Dto.Tenant>> TenantUpdate(
         string collectionName,
         Rest.Dto.Tenant[] tenants,
@@ -74,6 +92,13 @@ internal partial class WeaviateRestClient
         return result ?? Enumerable.Empty<Rest.Dto.Tenant>();
     }
 
+    /// <summary>
+    /// Tenantses the delete using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="tenantNames">The tenant names</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="ArgumentException">Tenant names cannot be null or empty. </exception>
     internal async Task TenantsDelete(
         string collectionName,
         IEnumerable<string> tenantNames,

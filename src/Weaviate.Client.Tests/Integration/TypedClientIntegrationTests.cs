@@ -12,30 +12,75 @@ namespace Weaviate.Client.Tests.Integration;
 public class TypedClientIntegrationTests : IntegrationTests
 {
     // Model that matches the schema
+    /// <summary>
+    /// The article class
+    /// </summary>
     private class Article
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the content
+        /// </summary>
         public string Content { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the view count
+        /// </summary>
         public int ViewCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the published date
+        /// </summary>
         public DateTime PublishedDate { get; set; }
     }
 
     // Model with incompatible types
+    /// <summary>
+    /// The incompatible article class
+    /// </summary>
     private class IncompatibleArticle
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the content
+        /// </summary>
         public string Content { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the view count
+        /// </summary>
         public string ViewCount { get; set; } = string.Empty; // Wrong type - should be int
+
+        /// <summary>
+        /// Gets or sets the value of the published date
+        /// </summary>
         public DateTime PublishedDate { get; set; }
     }
 
     // Model with missing required properties
+    /// <summary>
+    /// The incomplete article class
+    /// </summary>
     private class IncompleteArticle
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public string Title { get; set; } = string.Empty;
         // Missing Content, ViewCount, PublishedDate
     }
 
+    /// <summary>
+    /// The date
+    /// </summary>
     private readonly CollectionCreateParams _articleConfig = new()
     {
         Name = "Articles",
@@ -50,6 +95,9 @@ public class TypedClientIntegrationTests : IntegrationTests
 
     #region Validation Scenarios
 
+    /// <summary>
+    /// Tests that use with validation type compatible succeeds
+    /// </summary>
     [Fact]
     public async Task Use_WithValidationType_Compatible_Succeeds()
     {
@@ -68,6 +116,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.IsType<TypedCollectionClient<Article>>(typedClient);
     }
 
+    /// <summary>
+    /// Tests that use with validation type incompatible type throws exception
+    /// </summary>
     [Fact]
     public async Task Use_WithValidationType_IncompatibleType_ThrowsException()
     {
@@ -87,6 +138,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.Contains("ViewCount", exception.Message);
     }
 
+    /// <summary>
+    /// Tests that use without validation always succeeds
+    /// </summary>
     [Fact]
     public async Task Use_WithoutValidation_AlwaysSucceeds()
     {
@@ -104,6 +158,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.IsType<TypedCollectionClient<IncompatibleArticle>>(typedClient);
     }
 
+    /// <summary>
+    /// Tests that validate type on typed collection client returns validation result
+    /// </summary>
     [Fact]
     public async Task ValidateType_OnTypedCollectionClient_ReturnsValidationResult()
     {
@@ -125,6 +182,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.Empty(validationResult.Errors);
     }
 
+    /// <summary>
+    /// Tests that validate type with incompatible type returns errors
+    /// </summary>
     [Fact]
     public async Task ValidateType_WithIncompatibleType_ReturnsErrors()
     {
@@ -147,6 +207,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.Contains(validationResult.Errors, e => e.PropertyName == "ViewCount");
     }
 
+    /// <summary>
+    /// Tests that validation extension validate type or throw throws on incompatible
+    /// </summary>
     [Fact]
     public async Task ValidationExtension_ValidateTypeOrThrow_ThrowsOnIncompatible()
     {
@@ -166,6 +229,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.Contains("Articles", exception.Message);
     }
 
+    /// <summary>
+    /// Tests that validation extension validate type returns result
+    /// </summary>
     [Fact]
     public async Task ValidationExtension_ValidateType_ReturnsResult()
     {
@@ -188,6 +254,9 @@ public class TypedClientIntegrationTests : IntegrationTests
 
     #region Typed Workflow - CRUD Operations
 
+    /// <summary>
+    /// Tests that typed workflow insert single object succeeds
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_Insert_SingleObject_Succeeds()
     {
@@ -215,6 +284,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.NotEqual(Guid.Empty, id);
     }
 
+    /// <summary>
+    /// Tests that typed workflow insert with specific id succeeds
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_Insert_WithSpecificId_Succeeds()
     {
@@ -244,6 +316,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.Equal(expectedId, id);
     }
 
+    /// <summary>
+    /// Tests that typed workflow insert many multiple objects succeeds
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_InsertMany_MultipleObjects_Succeeds()
     {
@@ -291,6 +366,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.All(result.Objects, entry => Assert.NotEqual(Guid.Empty, entry.UUID!.Value));
     }
 
+    /// <summary>
+    /// Tests that typed workflow fetch objects with after parameter paginates correctly
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_FetchObjects_WithAfterParameter_PaginatesCorrectly()
     {
@@ -345,6 +423,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.Single(res2.Objects);
     }
 
+    /// <summary>
+    /// Tests that typed workflow query fetch objects returns typed results
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_Query_FetchObjects_ReturnsTypedResults()
     {
@@ -386,6 +467,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that typed workflow query bm 25 search returns typed results
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_Query_BM25Search_ReturnsTypedResults()
     {
@@ -437,6 +521,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that typed workflow update replace object succeeds
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_Update_ReplaceObject_Succeeds()
     {
@@ -484,6 +571,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.Equal(100, result.Object.ViewCount);
     }
 
+    /// <summary>
+    /// Tests that typed workflow delete by id succeeds
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_Delete_ById_Succeeds()
     {
@@ -517,6 +607,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.Null(result);
     }
 
+    /// <summary>
+    /// Tests that typed workflow count returns object count
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_Count_ReturnsObjectCount()
     {
@@ -563,6 +656,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.Equal(3ul, count);
     }
 
+    /// <summary>
+    /// Tests that typed workflow iterator iterates all objects
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_Iterator_IteratesAllObjects()
     {
@@ -622,6 +718,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.Contains(iteratedObjects, a => a.Title == "Iterate 3");
     }
 
+    /// <summary>
+    /// Tests that typed workflow with tenant creates new typed client
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_WithTenant_CreatesNewTypedClient()
     {
@@ -652,6 +751,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.IsType<TypedCollectionClient<Article>>(tenantClient);
     }
 
+    /// <summary>
+    /// Tests that typed workflow with consistency level creates new typed client
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_WithConsistencyLevel_CreatesNewTypedClient()
     {
@@ -670,6 +772,9 @@ public class TypedClientIntegrationTests : IntegrationTests
         Assert.IsType<TypedCollectionClient<Article>>(consistentClient);
     }
 
+    /// <summary>
+    /// Tests that typed workflow untyped returns underlying collection client
+    /// </summary>
     [Fact]
     public async Task TypedWorkflow_Untyped_ReturnsUnderlyingCollectionClient()
     {
@@ -692,6 +797,9 @@ public class TypedClientIntegrationTests : IntegrationTests
 
     #region Type Safety
 
+    /// <summary>
+    /// Tests that type safety compile time type checking enforces correct types
+    /// </summary>
     [Fact]
     public async Task TypeSafety_CompileTimeTypeChecking_EnforcesCorrectTypes()
     {

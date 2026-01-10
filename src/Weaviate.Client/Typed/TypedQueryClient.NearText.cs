@@ -3,6 +3,9 @@ using Weaviate.Client.Models.Typed;
 
 namespace Weaviate.Client.Typed;
 
+/// <summary>
+/// The typed query client class
+/// </summary>
 public partial class TypedQueryClient<T>
 {
     /// <summary>
@@ -18,7 +21,6 @@ public partial class TypedQueryClient<T>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="targets">Target vector configuration for named vectors.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -77,7 +79,6 @@ public partial class TypedQueryClient<T>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="targets">Target vector configuration for named vectors.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -220,7 +221,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a near-text search using a lambda builder for NearTextInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearTextInput with target vectors.</param>
+    /// <param name="query"></param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -262,7 +263,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a near-text search with group-by using a lambda builder for NearTextInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearTextInput with target vectors.</param>
+    /// <param name="query"></param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>

@@ -10,10 +10,25 @@ using Xunit;
 /// </summary>
 public class TestRbacGroups : IntegrationTests
 {
+    /// <summary>
+    /// Gets the value of the rest port
+    /// </summary>
     public override ushort RestPort => 8092;
+
+    /// <summary>
+    /// Gets the value of the grpc port
+    /// </summary>
     public override ushort GrpcPort => 50063;
+
+    /// <summary>
+    /// The admin api key
+    /// </summary>
     private const string ADMIN_API_KEY = "admin-key";
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public override async ValueTask InitializeAsync()
     {
         await base.InitializeAsync();
@@ -21,8 +36,14 @@ public class TestRbacGroups : IntegrationTests
         RequireVersion("1.32.0");
     }
 
+    /// <summary>
+    /// Gets the value of the credentials
+    /// </summary>
     public override ICredentials? Credentials => Auth.ApiKey(ADMIN_API_KEY);
 
+    /// <summary>
+    /// Tests that list groups
+    /// </summary>
     [Fact, Trait("Category", "RBAC")]
     public async Task ListGroups()
     {
@@ -34,6 +55,9 @@ public class TestRbacGroups : IntegrationTests
         _ = groups.ToList();
     }
 
+    /// <summary>
+    /// Tests that get group roles
+    /// </summary>
     [Fact, Trait("Category", "RBAC")]
     public async Task GetGroupRoles()
     {

@@ -6,18 +6,42 @@ using Weaviate.Client.Tests.Unit.Mocks;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The test well known class
+/// </summary>
 public class TestWellKnown
 {
+    /// <summary>
+    /// The fake handler class
+    /// </summary>
+    /// <seealso cref="HttpMessageHandler"/>
     private class FakeHandler : HttpMessageHandler
     {
+        /// <summary>
+        /// The responder
+        /// </summary>
         private readonly Func<HttpRequestMessage, HttpResponseMessage> _responder;
+
+        /// <summary>
+        /// Gets the value of the requests
+        /// </summary>
         public List<HttpRequestMessage> Requests { get; } = new();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FakeHandler"/> class
+        /// </summary>
+        /// <param name="responder">The responder</param>
         public FakeHandler(Func<HttpRequestMessage, HttpResponseMessage> responder)
         {
             _responder = responder;
         }
 
+        /// <summary>
+        /// Sends the request
+        /// </summary>
+        /// <param name="request">The request</param>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <returns>A task containing the http response message</returns>
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken
@@ -51,6 +75,9 @@ public class TestWellKnown
         }
     }
 
+    /// <summary>
+    /// Tests that live returns true on 200
+    /// </summary>
     [Fact]
     public async Task Live_ReturnsTrue_On200()
     {
@@ -65,6 +92,9 @@ public class TestWellKnown
         );
     }
 
+    /// <summary>
+    /// Tests that is ready returns true on 200
+    /// </summary>
     [Fact]
     public async Task IsReady_ReturnsTrue_On200()
     {
@@ -82,6 +112,9 @@ public class TestWellKnown
         Assert.True(await client.IsReady(TestContext.Current.CancellationToken));
     }
 
+    /// <summary>
+    /// Tests that wait until ready succeeds before timeout
+    /// </summary>
     [Fact]
     public async Task WaitUntilReady_SucceedsBeforeTimeout()
     {
@@ -111,6 +144,9 @@ public class TestWellKnown
         Assert.True(calls >= 3);
     }
 
+    /// <summary>
+    /// Tests that wait until ready times out
+    /// </summary>
     [Fact]
     public async Task WaitUntilReady_TimesOut()
     {
@@ -128,6 +164,9 @@ public class TestWellKnown
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that wait until ready cancellation
+    /// </summary>
     [Fact]
     public async Task WaitUntilReady_Cancellation()
     {

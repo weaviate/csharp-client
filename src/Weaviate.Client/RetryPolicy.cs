@@ -137,6 +137,11 @@ public record RetryPolicy
         };
     }
 
+    /// <summary>
+    /// Ises the network error using the specified ex
+    /// </summary>
+    /// <param name="ex">The ex</param>
+    /// <returns>The bool</returns>
     private static bool IsNetworkError(HttpRequestException ex)
     {
         // Check for common network-related inner exceptions

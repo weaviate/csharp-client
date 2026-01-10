@@ -2,6 +2,9 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The aggregate client class
+/// </summary>
 public partial class AggregateClient
 {
     /// <summary>
@@ -12,7 +15,7 @@ public partial class AggregateClient
     /// <param name="distance">Distance threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="filters">Filters to apply</param>
-    /// <param name="targetVector">Target vector name</param>
+    /// <param name="targetVectors">Target vectors factory function</param>
     /// <param name="totalCount">Whether to include total count</param>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <param name="returnMetrics">Metrics to aggregate</param>
@@ -23,7 +26,7 @@ public partial class AggregateClient
         double? distance = null,
         uint? limit = null,
         Filter? filters = null,
-        TargetVectors.FactoryFn? targets = null,
+        TargetVectors.FactoryFn? targetVectors = null,
         bool totalCount = true,
         CancellationToken cancellationToken = default,
         IEnumerable<Aggregate.Metric>? returnMetrics = null
@@ -37,7 +40,7 @@ public partial class AggregateClient
             limit: limit,
             filters: filters,
             groupBy: null,
-            targetVector: targets?.Invoke(new TargetVectors.Builder()),
+            targetVector: targetVectors?.Invoke(new TargetVectors.Builder()),
             totalCount: totalCount,
             _collectionClient.Tenant,
             metrics: returnMetrics,
@@ -56,7 +59,7 @@ public partial class AggregateClient
     /// <param name="distance">Distance threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="filters">Filters to apply</param>
-    /// <param name="targetVector">Target vector name</param>
+    /// <param name="targetVectors">Target vectors factory function</param>
     /// <param name="totalCount">Whether to include total count</param>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <param name="returnMetrics">Metrics to aggregate</param>
@@ -68,7 +71,7 @@ public partial class AggregateClient
         double? distance = null,
         uint? limit = null,
         Filter? filters = null,
-        TargetVectors.FactoryFn? targets = null,
+        TargetVectors.FactoryFn? targetVectors = null,
         bool totalCount = true,
         CancellationToken cancellationToken = default,
         IEnumerable<Aggregate.Metric>? returnMetrics = null
@@ -82,7 +85,7 @@ public partial class AggregateClient
             limit: limit,
             filters: filters,
             groupBy: groupBy,
-            targetVector: targets?.Invoke(new TargetVectors.Builder()),
+            targetVector: targetVectors?.Invoke(new TargetVectors.Builder()),
             totalCount: totalCount,
             _collectionClient.Tenant,
             metrics: returnMetrics,

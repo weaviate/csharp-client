@@ -8,9 +8,24 @@ namespace Weaviate.Client.Models;
 /// </summary>
 internal interface IVectorData
 {
+    /// <summary>
+    /// Gets the value of the dimensions
+    /// </summary>
     (int rows, int cols) Dimensions { get; }
+
+    /// <summary>
+    /// Gets the value of the count
+    /// </summary>
     int Count { get; }
+
+    /// <summary>
+    /// Gets the value of the value type
+    /// </summary>
     Type ValueType { get; }
+
+    /// <summary>
+    /// Gets the value of the is multi vector
+    /// </summary>
     bool IsMultiVector { get; }
 }
 
@@ -20,15 +35,43 @@ internal interface IVectorData
 internal sealed record VectorSingle<T>(T[] Values) : IVectorData, IEnumerable<T>
     where T : struct
 {
+    /// <summary>
+    /// Gets the value of the dimensions
+    /// </summary>
     public (int rows, int cols) Dimensions => (1, Values.Length);
+
+    /// <summary>
+    /// Gets the value of the count
+    /// </summary>
     public int Count => Values.Length;
+
+    /// <summary>
+    /// Gets the value of the value type
+    /// </summary>
     public Type ValueType => typeof(T);
+
+    /// <summary>
+    /// Gets the value of the is multi vector
+    /// </summary>
     public bool IsMultiVector => false;
 
+    /// <summary>
+    /// Gets the enumerator
+    /// </summary>
+    /// <returns>An enumerator of t</returns>
     public IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)Values).GetEnumerator();
 
+    /// <summary>
+    /// Gets the enumerator
+    /// </summary>
+    /// <returns>The enumerator</returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+    /// <summary>
+    /// Equalses the other
+    /// </summary>
+    /// <param name="other">The other</param>
+    /// <returns>The bool</returns>
     public bool Equals(VectorSingle<T>? other)
     {
         if (other is null)
@@ -40,6 +83,10 @@ internal sealed record VectorSingle<T>(T[] Values) : IVectorData, IEnumerable<T>
         return Values.SequenceEqual(other.Values);
     }
 
+    /// <summary>
+    /// Gets the hash code
+    /// </summary>
+    /// <returns>The int</returns>
     public override int GetHashCode()
     {
         var hash = new HashCode();
@@ -57,14 +104,39 @@ internal sealed record VectorSingle<T>(T[] Values) : IVectorData, IEnumerable<T>
 internal sealed record VectorMulti<T>(T[,] Values) : IVectorData, IEnumerable<T[]>
     where T : struct
 {
+    /// <summary>
+    /// The get length
+    /// </summary>
     private readonly int _rows = Values.GetLength(0);
+
+    /// <summary>
+    /// The get length
+    /// </summary>
     private readonly int _cols = Values.GetLength(1);
 
+    /// <summary>
+    /// Gets the value of the dimensions
+    /// </summary>
     public (int rows, int cols) Dimensions => (_rows, _cols);
+
+    /// <summary>
+    /// Gets the value of the count
+    /// </summary>
     public int Count => _rows * _cols;
+
+    /// <summary>
+    /// Gets the value of the value type
+    /// </summary>
     public Type ValueType => typeof(T[]);
+
+    /// <summary>
+    /// Gets the value of the is multi vector
+    /// </summary>
     public bool IsMultiVector => true;
 
+    /// <summary>
+    /// The result
+    /// </summary>
     public T[] this[Index row]
     {
         get
@@ -80,6 +152,10 @@ internal sealed record VectorMulti<T>(T[,] Values) : IVectorData, IEnumerable<T[
         }
     }
 
+    /// <summary>
+    /// Gets the enumerator
+    /// </summary>
+    /// <returns>An enumerator of t array</returns>
     public IEnumerator<T[]> GetEnumerator()
     {
         for (int i = 0; i < _rows; i++)
@@ -88,8 +164,17 @@ internal sealed record VectorMulti<T>(T[,] Values) : IVectorData, IEnumerable<T[
         }
     }
 
+    /// <summary>
+    /// Gets the enumerator
+    /// </summary>
+    /// <returns>The enumerator</returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+    /// <summary>
+    /// Equalses the other
+    /// </summary>
+    /// <param name="other">The other</param>
+    /// <returns>The bool</returns>
     public bool Equals(VectorMulti<T>? other)
     {
         if (other is null)
@@ -113,6 +198,10 @@ internal sealed record VectorMulti<T>(T[,] Values) : IVectorData, IEnumerable<T[
         return true;
     }
 
+    /// <summary>
+    /// Gets the hash code
+    /// </summary>
+    /// <returns>The int</returns>
     public override int GetHashCode()
     {
         var hash = new HashCode();
@@ -136,9 +225,16 @@ internal sealed record VectorMulti<T>(T[,] Values) : IVectorData, IEnumerable<T[
 [CollectionBuilder(typeof(VectorBuilder), nameof(VectorBuilder.Create))]
 public class Vector : IEnumerable // Not sealed - allows NamedVector inheritance
 {
+    /// <summary>
+    /// The data
+    /// </summary>
     private readonly IVectorData _data;
 
     // Internal constructor for VectorSearchInputBuilder and derived classes
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Vector"/> class
+    /// </summary>
+    /// <param name="data">The data</param>
     internal Vector(IVectorData data)
     {
         _data = data;
@@ -149,9 +245,24 @@ public class Vector : IEnumerable // Not sealed - allows NamedVector inheritance
     /// </summary>
     internal IVectorData GetData() => _data;
 
+    /// <summary>
+    /// Gets the value of the dimensions
+    /// </summary>
     public (int rows, int cols) Dimensions => _data.Dimensions;
+
+    /// <summary>
+    /// Gets the value of the count
+    /// </summary>
     public int Count => _data.Count;
+
+    /// <summary>
+    /// Gets the value of the value type
+    /// </summary>
     public Type ValueType => _data.ValueType;
+
+    /// <summary>
+    /// Gets the value of the is multi vector
+    /// </summary>
     public bool IsMultiVector => _data.IsMultiVector;
 
     // Implicit conversions for ergonomic syntax
@@ -200,6 +311,10 @@ public class Vector : IEnumerable // Not sealed - allows NamedVector inheritance
         return handler(_data);
     }
 
+    /// <summary>
+    /// Gets the enumerator
+    /// </summary>
+    /// <returns>The enumerator</returns>
     public IEnumerator GetEnumerator() =>
         _data switch
         {
@@ -282,6 +397,13 @@ public class Vector : IEnumerable // Not sealed - allows NamedVector inheritance
 /// </summary>
 internal static class VectorBuilder
 {
+    /// <summary>
+    /// Creates the values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <exception cref="ArgumentException">Cannot create a Vector from an empty collection. </exception>
+    /// <exception cref="NotSupportedException">Type {first.GetType()} is not supported for Vector creation.</exception>
+    /// <returns>The vector</returns>
     public static Vector Create(ReadOnlySpan<object> values)
     {
         if (values.Length == 0)
@@ -307,20 +429,60 @@ internal static class VectorBuilder
         };
     }
 
+    /// <summary>
+    /// Creates the values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <returns>The vector</returns>
     public static Vector Create(ReadOnlySpan<double> values) => values.ToArray();
 
+    /// <summary>
+    /// Creates the values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <returns>The vector</returns>
     public static Vector Create(ReadOnlySpan<float> values) => values.ToArray();
 
+    /// <summary>
+    /// Creates the values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <returns>The vector</returns>
     public static Vector Create(ReadOnlySpan<int> values) => values.ToArray();
 
+    /// <summary>
+    /// Creates the values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <returns>The vector</returns>
     public static Vector Create(ReadOnlySpan<long> values) => values.ToArray();
 
+    /// <summary>
+    /// Creates the values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <returns>The vector</returns>
     public static Vector Create(ReadOnlySpan<short> values) => values.ToArray();
 
+    /// <summary>
+    /// Creates the values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <returns>The vector</returns>
     public static Vector Create(ReadOnlySpan<byte> values) => values.ToArray();
 
+    /// <summary>
+    /// Creates the values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <returns>The vector</returns>
     public static Vector Create(ReadOnlySpan<bool> values) => values.ToArray();
 
+    /// <summary>
+    /// Creates the values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <returns>The vector</returns>
     public static Vector Create(ReadOnlySpan<decimal> values) => values.ToArray();
 }
 
@@ -330,8 +492,16 @@ internal static class VectorBuilder
 /// </summary>
 public sealed class NamedVector : Vector
 {
+    /// <summary>
+    /// Gets or inits the value of the name
+    /// </summary>
     public string Name { get; init; } = "default";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NamedVector"/> class
+    /// </summary>
+    /// <param name="name">The name</param>
+    /// <param name="data">The data</param>
     internal NamedVector(string name, IVectorData data)
         : base(data)
     {
@@ -361,9 +531,16 @@ public sealed class NamedVector : Vector
 /// </summary>
 public class Vectors : Internal.KeySortedList<string, Vector>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Vectors"/> class
+    /// </summary>
     public Vectors()
         : base(v => (v as NamedVector)?.Name ?? "default") { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Vectors"/> class
+    /// </summary>
+    /// <param name="vector">The vector</param>
     public Vectors(IEnumerable<Vector> vector)
         : this()
     {
@@ -373,12 +550,25 @@ public class Vectors : Internal.KeySortedList<string, Vector>
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Vectors"/> class
+    /// </summary>
+    /// <param name="vector">The vector</param>
     public Vectors(params Vector[] vector)
         : this(vector.AsEnumerable()) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Vectors"/> class
+    /// </summary>
+    /// <param name="name">The name</param>
+    /// <param name="vector">The vector</param>
     public Vectors(string name, Vector vector)
         : this((name, vector)) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Vectors"/> class
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
     public Vectors(params (string name, Vector vector)[] vectors)
         : this(vectors.Select(v => new NamedVector(v.name, v.vector))) { }
 

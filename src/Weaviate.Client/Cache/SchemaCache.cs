@@ -10,7 +10,14 @@ namespace Weaviate.Client.Cache;
 /// </summary>
 public class SchemaCache
 {
+    /// <summary>
+    /// The cache
+    /// </summary>
     private readonly ConcurrentDictionary<string, CachedSchema> _cache = new();
+
+    /// <summary>
+    /// The ttl
+    /// </summary>
     private readonly TimeSpan _ttl;
 
     /// <summary>
@@ -101,9 +108,19 @@ public class SchemaCache
         return DateTime.UtcNow - cached.FetchedAt < _ttl;
     }
 
+    /// <summary>
+    /// The cached schema
+    /// </summary>
     private record CachedSchema
     {
+        /// <summary>
+        /// Gets or inits the value of the config
+        /// </summary>
         public required CollectionConfig Config { get; init; }
+
+        /// <summary>
+        /// Gets or inits the value of the fetched at
+        /// </summary>
         public DateTime FetchedAt { get; init; }
     }
 }

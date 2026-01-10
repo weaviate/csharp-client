@@ -5,9 +5,17 @@ using Google.Protobuf;
 
 namespace Weaviate.Client.Tests;
 
+/// <summary>
+/// The helpers class
+/// </summary>
 public static class Helpers
 {
     // Useful for collection names, backups, aliases, etc.
+    /// <summary>
+    /// Generates the unique identifier using the specified name
+    /// </summary>
+    /// <param name="name">The name</param>
+    /// <returns>The string</returns>
     public static string GenerateUniqueIdentifier(string name)
     {
         // Sanitize the collection name
@@ -17,6 +25,11 @@ public static class Helpers
         return string.Concat(name, randomPart).ToLowerInvariant();
     }
 
+    /// <summary>
+    /// Sanitizes the collection name using the specified name
+    /// </summary>
+    /// <param name="name">The name</param>
+    /// <returns>The string</returns>
     public static string SanitizeCollectionName(string name)
     {
         name = name.Replace("[", "")
@@ -84,15 +97,32 @@ public static class Helpers
     }
 }
 
+/// <summary>
+/// The logging handler class
+/// </summary>
+/// <seealso cref="DelegatingHandler"/>
 public class LoggingHandler : DelegatingHandler
 {
+    /// <summary>
+    /// The log
+    /// </summary>
     private readonly Action<string> _log;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoggingHandler"/> class
+    /// </summary>
+    /// <param name="log">The log</param>
     public LoggingHandler(Action<string> log)
     {
         _log = log;
     }
 
+    /// <summary>
+    /// Sends the request
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>The response</returns>
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken
@@ -153,6 +183,9 @@ public class LoggingHandler : DelegatingHandler
     }
 }
 
+/// <summary>
+/// The json comparer class
+/// </summary>
 public static class JsonComparer
 {
     /// <summary>

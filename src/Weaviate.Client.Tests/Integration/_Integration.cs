@@ -7,15 +7,41 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The integration tests class
+/// </summary>
+/// <seealso cref="IAsyncDisposable"/>
+/// <seealso cref="IAsyncLifetime"/>
 public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetime
 {
+    /// <summary>
+    /// The env file
+    /// </summary>
     private const string ENV_FILE = "development.env";
+
+    /// <summary>
+    /// The delete collections after test
+    /// </summary>
     const bool _deleteCollectionsAfterTest = true;
+
+    /// <summary>
+    /// The collections
+    /// </summary>
     List<string> _collections = new();
 
+    /// <summary>
+    /// The weaviate
+    /// </summary>
     protected WeaviateClient _weaviate = null!;
+
+    /// <summary>
+    /// The http message handler
+    /// </summary>
     protected HttpMessageHandler? _httpMessageHandler;
 
+    /// <summary>
+    /// The new guid
+    /// </summary>
     protected static readonly Guid[] _reusableUuids =
     [
         Guid.NewGuid(),
@@ -24,6 +50,9 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         Guid.NewGuid(),
     ];
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IntegrationTests"/> class
+    /// </summary>
     public IntegrationTests()
     {
         if (File.Exists(ENV_FILE))
@@ -40,11 +69,25 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         };
     }
 
+    /// <summary>
+    /// Gets the value of the credentials
+    /// </summary>
     public virtual ICredentials? Credentials => null;
 
+    /// <summary>
+    /// Gets the value of the rest port
+    /// </summary>
     public virtual ushort RestPort => 8080;
+
+    /// <summary>
+    /// Gets the value of the grpc port
+    /// </summary>
     public virtual ushort GrpcPort => 50051; // default local gRPC port
 
+    /// <summary>
+    /// Disposes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public virtual async ValueTask DisposeAsync()
     {
         if (_deleteCollectionsAfterTest && _collections.Count > 0)
@@ -54,6 +97,12 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         _weaviate.Dispose();
     }
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Weaviate not ready on REST:{RestPort} gRPC:{GrpcPort}. Expected a running instance for integration tests.</exception>
+    /// <exception cref="InvalidOperationException">Weaviate readiness check failed during test initialization </exception>
+    /// <returns>The value task</returns>
     public virtual async ValueTask InitializeAsync()
     {
         // Build the client asynchronously
@@ -102,6 +151,12 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         RequireVersion(Weaviate.Client.Tests.Common.ServerVersions.MinSupported);
     }
 
+    /// <summary>
+    /// Makes the unique collection name using the specified suffix
+    /// </summary>
+    /// <param name="suffix">The suffix</param>
+    /// <param name="collectionNamePartSeparator">The collection name part separator</param>
+    /// <returns>The string</returns>
     public string MakeUniqueCollectionName(string? suffix, string collectionNamePartSeparator = "_")
     {
         var strings = new string?[]
@@ -116,6 +171,13 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         return string.Join(collectionNamePartSeparator, strings);
     }
 
+    /// <summary>
+    /// Makes the unique collection name using the specified suffix
+    /// </summary>
+    /// <typeparam name="TData">The data</typeparam>
+    /// <param name="suffix">The suffix</param>
+    /// <param name="collectionNamePartSeparator">The collection name part separator</param>
+    /// <returns>The string</returns>
     public string MakeUniqueCollectionName<TData>(
         string? suffix,
         string collectionNamePartSeparator = "_"
@@ -134,6 +196,12 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         return string.Join(collectionNamePartSeparator, strings);
     }
 
+    /// <summary>
+    /// Collections the factory using the specified c
+    /// </summary>
+    /// <typeparam name="TData">The data</typeparam>
+    /// <param name="c">The </param>
+    /// <returns>The collection client</returns>
     public async Task<CollectionClient> CollectionFactory<TData>(CollectionCreateParams c)
     {
         await _weaviate.Collections.Delete(c.Name);
@@ -145,6 +213,23 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         return collectionClient;
     }
 
+    /// <summary>
+    /// Collections the factory using the specified name
+    /// </summary>
+    /// <typeparam name="TData">The data</typeparam>
+    /// <param name="name">The name</param>
+    /// <param name="description">The description</param>
+    /// <param name="properties">The properties</param>
+    /// <param name="references">The references</param>
+    /// <param name="vectorConfig">The vector config</param>
+    /// <param name="multiTenancyConfig">The multi tenancy config</param>
+    /// <param name="invertedIndexConfig">The inverted index config</param>
+    /// <param name="replicationConfig">The replication config</param>
+    /// <param name="shardingConfig">The sharding config</param>
+    /// <param name="rerankerConfig">The reranker config</param>
+    /// <param name="generativeConfig">The generative config</param>
+    /// <param name="collectionNamePartSeparator">The collection name part separator</param>
+    /// <returns>A task containing the collection client</returns>
     public async Task<CollectionClient> CollectionFactory<TData>(
         string? name = null,
         string? description = null,
@@ -191,6 +276,22 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         return await CollectionFactory<TData>(c);
     }
 
+    /// <summary>
+    /// Collections the factory using the specified name
+    /// </summary>
+    /// <param name="name">The name</param>
+    /// <param name="description">The description</param>
+    /// <param name="properties">The properties</param>
+    /// <param name="references">The references</param>
+    /// <param name="vectorConfig">The vector config</param>
+    /// <param name="multiTenancyConfig">The multi tenancy config</param>
+    /// <param name="invertedIndexConfig">The inverted index config</param>
+    /// <param name="replicationConfig">The replication config</param>
+    /// <param name="shardingConfig">The sharding config</param>
+    /// <param name="rerankerConfig">The reranker config</param>
+    /// <param name="generativeConfig">The generative config</param>
+    /// <param name="collectionNamePartSeparator">The collection name part separator</param>
+    /// <returns>A task containing the collection client</returns>
     protected async Task<CollectionClient> CollectionFactory(
         string? name = null,
         string? description = null,
@@ -222,6 +323,13 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         );
     }
 
+    /// <summary>
+    /// Versions the is in range using the specified version
+    /// </summary>
+    /// <param name="version">The version</param>
+    /// <param name="minimumVersion">The minimum version</param>
+    /// <param name="maximumVersion">The maximum version</param>
+    /// <returns>The bool</returns>
     protected static bool VersionIsInRange(
         System.Version version,
         string minimumVersion,
@@ -234,6 +342,12 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         );
     }
 
+    /// <summary>
+    /// Servers the version is in range using the specified minimum version
+    /// </summary>
+    /// <param name="minimumVersion">The minimum version</param>
+    /// <param name="maximumVersion">The maximum version</param>
+    /// <returns>The bool</returns>
     protected bool ServerVersionIsInRange(string minimumVersion, string? maximumVersion = null)
     {
         if (_weaviate.WeaviateVersion == null)
@@ -243,6 +357,12 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         return VersionIsInRange(_weaviate.WeaviateVersion, minimumVersion, maximumVersion);
     }
 
+    /// <summary>
+    /// Requires the version using the specified minimum version
+    /// </summary>
+    /// <param name="minimumVersion">The minimum version</param>
+    /// <param name="maximumVersion">The maximum version</param>
+    /// <param name="message">The message</param>
     protected void RequireVersion(
         string minimumVersion,
         string? maximumVersion = null,

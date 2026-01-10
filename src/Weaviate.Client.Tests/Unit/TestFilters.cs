@@ -4,8 +4,17 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The filter tests class
+/// </summary>
 public partial class FilterTests
 {
+    /// <summary>
+    /// Tests that filter type supported operations
+    /// </summary>
+    /// <param name="t">The </param>
+    /// <param name="expectedMethodList">The expected method list</param>
+    /// <param name="unexpectedMethodList">The unexpected method list</param>
     [Theory]
     [InlineData(
         typeof(TypedGuid),
@@ -34,6 +43,9 @@ public partial class FilterTests
         Assert.Empty(actualMethods.Intersect(unexpectedMethodList));
     }
 
+    /// <summary>
+    /// Tests that filter by referenc chaining change previous filter because refs
+    /// </summary>
     [Fact]
     public void FilterByReferencChainingChangePreviousFilterBecauseRefs()
     {
@@ -54,6 +66,9 @@ public partial class FilterTests
         Assert.NotNull(f1.InternalFilter.Target.SingleTarget.Target);
     }
 
+    /// <summary>
+    /// Tests that filter by reference creates proper grpc message 1
+    /// </summary>
     [Fact]
     public void FilterByReferenceCreatesProperGrpcMessage_1()
     {
@@ -77,6 +92,9 @@ public partial class FilterTests
         Assert.Equal(expected, f.InternalFilter);
     }
 
+    /// <summary>
+    /// Tests that filter by reference creates proper grpc message 2
+    /// </summary>
     [Fact]
     public void FilterByReferenceCreatesProperGrpcMessage_2()
     {
@@ -100,6 +118,9 @@ public partial class FilterTests
         Assert.Equal(expected, f.InternalFilter);
     }
 
+    /// <summary>
+    /// Tests that filter by reference creates proper grpc message 3
+    /// </summary>
     [Fact]
     public void FilterByReferenceCreatesProperGrpcMessage_3()
     {
@@ -118,6 +139,9 @@ public partial class FilterTests
         Assert.Equal(expected, f.InternalFilter);
     }
 
+    /// <summary>
+    /// Tests that filter request creates proper grpc message 4
+    /// </summary>
     [Fact]
     public void FilterRequestCreatesProperGrpcMessage_4()
     {
@@ -138,6 +162,9 @@ public partial class FilterTests
         Assert.Equal(expected, f.InternalFilter);
     }
 
+    /// <summary>
+    /// Tests that filter property length
+    /// </summary>
     [Fact]
     public void Filter_Property_Length()
     {
@@ -156,6 +183,9 @@ public partial class FilterTests
         Assert.Equal(expected, f.InternalFilter);
     }
 
+    /// <summary>
+    /// Tests that filter uui ds contains any
+    /// </summary>
     [Fact]
     public void Filter_UUIDs_ContainsAny()
     {
@@ -174,6 +204,9 @@ public partial class FilterTests
         Assert.Equal(expected, f.InternalFilter);
     }
 
+    /// <summary>
+    /// Tests that filter all of and any of
+    /// </summary>
     [Fact]
     public void Filter_AllOf_And_AnyOf()
     {
@@ -193,6 +226,9 @@ public partial class FilterTests
         Assert.Equal(expectedAnyOf.InternalFilter, fAnyOf.InternalFilter);
     }
 
+    /// <summary>
+    /// Tests that filter contains none
+    /// </summary>
     [Fact]
     public void Filter_ContainsNone()
     {
@@ -214,6 +250,9 @@ public partial class FilterTests
         Assert.Equal(expectedF1, f1.InternalFilter);
     }
 
+    /// <summary>
+    /// Tests that filter not
+    /// </summary>
     [Fact]
     public void Filter_Not()
     {

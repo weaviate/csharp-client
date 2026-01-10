@@ -10,12 +10,22 @@ namespace Weaviate.Client.Serialization;
 /// </summary>
 public class PropertyBag : IDictionary<string, object?>
 {
+    /// <summary>
+    /// The ordinal ignore case
+    /// </summary>
     private readonly Dictionary<string, object?> _properties = new(
         StringComparer.OrdinalIgnoreCase
     );
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PropertyBag"/> class.
+    /// </summary>
     public PropertyBag() { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PropertyBag"/> class with the specified properties.
+    /// </summary>
+    /// <param name="properties">The initial properties to add to the bag.</param>
     public PropertyBag(IDictionary<string, object?> properties)
     {
         foreach (var kvp in properties)
@@ -231,43 +241,115 @@ public class PropertyBag : IDictionary<string, object?>
 
     #region IDictionary Implementation
 
+
+    /// <summary>
+    /// Gets or sets the property value with the specified key.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>The property value, or null if not found.</returns>
     public object? this[string key]
     {
         get => _properties.TryGetValue(key, out var value) ? value : null;
         set => _properties[key] = value;
     }
 
+    /// <summary>
+    /// Gets the collection of property keys.
+    /// </summary>
     public ICollection<string> Keys => _properties.Keys;
+
+    /// <summary>
+    /// Gets the collection of property values.
+    /// </summary>
     public ICollection<object?> Values => _properties.Values;
+
+    /// <summary>
+    /// Gets the number of properties in the bag.
+    /// </summary>
     public int Count => _properties.Count;
+
+    /// <summary>
+    /// Gets a value indicating whether the property bag is read-only.
+    /// </summary>
     public bool IsReadOnly => false;
 
+    /// <summary>
+    /// Adds the key
+    /// </summary>
+    /// <param name="key">The key</param>
+    /// <param name="value">The value</param>
     public void Add(string key, object? value) => _properties.Add(key, value);
 
+    /// <summary>
+    /// Adds the item
+    /// </summary>
+    /// <param name="item">The item</param>
     public void Add(KeyValuePair<string, object?> item) => _properties.Add(item.Key, item.Value);
 
+    /// <summary>
+    /// Clears this instance
+    /// </summary>
     public void Clear() => _properties.Clear();
 
+    /// <summary>
+    /// Containses the item
+    /// </summary>
+    /// <param name="item">The item</param>
+    /// <returns>The bool</returns>
     public bool Contains(KeyValuePair<string, object?> item) =>
         _properties.TryGetValue(item.Key, out var value) && Equals(value, item.Value);
 
+    /// <summary>
+    /// Containses the key using the specified key
+    /// </summary>
+    /// <param name="key">The key</param>
+    /// <returns>The bool</returns>
     public bool ContainsKey(string key) => _properties.ContainsKey(key);
 
+    /// <summary>
+    /// Copies the to using the specified array
+    /// </summary>
+    /// <param name="array">The array</param>
+    /// <param name="arrayIndex">The array index</param>
     public void CopyTo(KeyValuePair<string, object?>[] array, int arrayIndex)
     {
         ((ICollection<KeyValuePair<string, object?>>)_properties).CopyTo(array, arrayIndex);
     }
 
+    /// <summary>
+    /// Gets the enumerator
+    /// </summary>
+    /// <returns>An enumerator of key value pair string and object</returns>
     public IEnumerator<KeyValuePair<string, object?>> GetEnumerator() =>
         _properties.GetEnumerator();
 
+    /// <summary>
+    /// Removes the key
+    /// </summary>
+    /// <param name="key">The key</param>
+    /// <returns>The bool</returns>
     public bool Remove(string key) => _properties.Remove(key);
 
+    /// <summary>
+    /// Removes the item
+    /// </summary>
+    /// <param name="item">The item</param>
+    /// <returns>The bool</returns>
     public bool Remove(KeyValuePair<string, object?> item) => _properties.Remove(item.Key);
 
+    /// <summary>
+    /// Tries the get value using the specified key
+    /// </summary>
+    /// <param name="key">The key</param>
+    /// <param name="value">The value</param>
+    /// <returns>The bool</returns>
     public bool TryGetValue(string key, [MaybeNullWhen(false)] out object? value) =>
         _properties.TryGetValue(key, out value);
 
+    /// <summary>
+    /// Gets the enumerator
+    /// </summary>
+    /// <returns>The enumerator</returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #endregion

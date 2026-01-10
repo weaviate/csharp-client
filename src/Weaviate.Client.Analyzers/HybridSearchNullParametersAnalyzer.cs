@@ -7,19 +7,44 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Weaviate.Client.Analyzers;
 
+/// <summary>
+/// The hybrid search null parameters analyzer class
+/// </summary>
+/// <seealso cref="DiagnosticAnalyzer"/>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class HybridSearchNullParametersAnalyzer : DiagnosticAnalyzer
 {
+    /// <summary>
+    /// The diagnostic id
+    /// </summary>
     public const string DiagnosticId = "WEAVIATE004";
+
+    /// <summary>
+    /// The category
+    /// </summary>
     private const string Category = "Usage";
 
+    /// <summary>
+    /// The title
+    /// </summary>
     private static readonly LocalizableString Title =
         "Hybrid search requires at least one of 'query' or 'vectors' parameters";
+
+    /// <summary>
+    /// The message format
+    /// </summary>
     private static readonly LocalizableString MessageFormat =
         "At least one of 'query' or 'vectors' must be provided for hybrid search. Both parameters cannot be null.";
+
+    /// <summary>
+    /// The description
+    /// </summary>
     private static readonly LocalizableString Description =
         "Hybrid search methods require either a keyword query (for BM25 search) or vector input (for vector search), or both. Calling Hybrid() with both parameters as null will throw an ArgumentException at runtime.";
 
+    /// <summary>
+    /// The description
+    /// </summary>
     private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
         DiagnosticId,
         Title,
@@ -30,9 +55,16 @@ public class HybridSearchNullParametersAnalyzer : DiagnosticAnalyzer
         description: Description
     );
 
+    /// <summary>
+    /// Gets the value of the supported diagnostics
+    /// </summary>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create(Rule);
 
+    /// <summary>
+    /// Initializes the context
+    /// </summary>
+    /// <param name="context">The context</param>
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -42,6 +74,10 @@ public class HybridSearchNullParametersAnalyzer : DiagnosticAnalyzer
         context.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
     }
 
+    /// <summary>
+    /// Analyzes the invocation using the specified context
+    /// </summary>
+    /// <param name="context">The context</param>
     private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
@@ -134,6 +170,11 @@ public class HybridSearchNullParametersAnalyzer : DiagnosticAnalyzer
         }
     }
 
+    /// <summary>
+    /// Ises the weaviate client type using the specified type symbol
+    /// </summary>
+    /// <param name="typeSymbol">The type symbol</param>
+    /// <returns>The bool</returns>
     private static bool IsWeaviateClientType(INamedTypeSymbol typeSymbol)
     {
         if (typeSymbol == null)
@@ -164,6 +205,13 @@ public class HybridSearchNullParametersAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
+    /// <summary>
+    /// Determines the parameter using the specified argument
+    /// </summary>
+    /// <param name="argument">The argument</param>
+    /// <param name="methodSymbol">The method symbol</param>
+    /// <param name="semanticModel">The semantic model</param>
+    /// <returns>The parameter symbol</returns>
     private static IParameterSymbol? DetermineParameter(
         ArgumentSyntax argument,
         IMethodSymbol methodSymbol,
@@ -189,6 +237,11 @@ public class HybridSearchNullParametersAnalyzer : DiagnosticAnalyzer
         return methodSymbol.Parameters[index];
     }
 
+    /// <summary>
+    /// Ises the null literal using the specified expression
+    /// </summary>
+    /// <param name="expression">The expression</param>
+    /// <returns>The bool</returns>
     private static bool IsNullLiteral(ExpressionSyntax expression)
     {
         // Check for literal null

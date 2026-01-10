@@ -70,15 +70,57 @@ internal interface IPropertyConverter
 /// </summary>
 internal abstract class PropertyConverterBase : IPropertyConverter
 {
+    /// <summary>
+    /// Gets the value of the data type
+    /// </summary>
     public abstract string DataType { get; }
+
+    /// <summary>
+    /// Gets the value of the supports array
+    /// </summary>
     public virtual bool SupportsArray => true;
+
+    /// <summary>
+    /// Gets the value of the supported types
+    /// </summary>
     public abstract IReadOnlyList<System.Type> SupportedTypes { get; }
 
+    /// <summary>
+    /// Returns the rest using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The object</returns>
     public abstract object? ToRest(object? value);
+
+    /// <summary>
+    /// Returns the grpc using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The value</returns>
     public abstract Value ToGrpc(object? value);
+
+    /// <summary>
+    /// Creates the rest using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <param name="targetType">The target type</param>
+    /// <returns>The object</returns>
     public abstract object? FromRest(object? value, System.Type targetType);
+
+    /// <summary>
+    /// Creates the grpc using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <param name="targetType">The target type</param>
+    /// <returns>The object</returns>
     public abstract object? FromGrpc(Value value, System.Type targetType);
 
+    /// <summary>
+    /// Returns the rest array using the specified values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <exception cref="NotSupportedException">Array not supported for {DataType}</exception>
+    /// <returns>The object</returns>
     public virtual object? ToRestArray(IEnumerable<object?> values)
     {
         if (!SupportsArray)
@@ -87,6 +129,12 @@ internal abstract class PropertyConverterBase : IPropertyConverter
         return values.Select(ToRest).ToArray();
     }
 
+    /// <summary>
+    /// Returns the grpc array using the specified values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <exception cref="NotSupportedException">Array not supported for {DataType}</exception>
+    /// <returns>The list</returns>
     public virtual ListValue ToGrpcArray(IEnumerable<object?> values)
     {
         if (!SupportsArray)
@@ -100,6 +148,13 @@ internal abstract class PropertyConverterBase : IPropertyConverter
         return list;
     }
 
+    /// <summary>
+    /// Creates the rest array using the specified values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <param name="elementType">The element type</param>
+    /// <exception cref="NotSupportedException">Array not supported for {DataType}</exception>
+    /// <returns>The object</returns>
     public virtual object? FromRestArray(IEnumerable<object?> values, System.Type elementType)
     {
         if (!SupportsArray)
@@ -109,6 +164,13 @@ internal abstract class PropertyConverterBase : IPropertyConverter
         return CreateTypedArray(converted, elementType);
     }
 
+    /// <summary>
+    /// Creates the grpc array using the specified values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <param name="elementType">The element type</param>
+    /// <exception cref="NotSupportedException">Array not supported for {DataType}</exception>
+    /// <returns>The object</returns>
     public virtual object? FromGrpcArray(ListValue values, System.Type elementType)
     {
         if (!SupportsArray)
@@ -118,6 +180,12 @@ internal abstract class PropertyConverterBase : IPropertyConverter
         return CreateTypedArray(converted, elementType);
     }
 
+    /// <summary>
+    /// Creates the typed array using the specified items
+    /// </summary>
+    /// <param name="items">The items</param>
+    /// <param name="elementType">The element type</param>
+    /// <returns>The array</returns>
     protected static Array CreateTypedArray(IList<object?> items, System.Type elementType)
     {
         var array = Array.CreateInstance(elementType, items.Count);

@@ -2,21 +2,47 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The test data class
+/// </summary>
 internal class TestData
 {
+    /// <summary>
+    /// Gets or sets the value of the name
+    /// </summary>
     public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the value of the size
+    /// </summary>
     public int Size { get; set; } = 0;
 }
 
+/// <summary>
+/// The test data value class
+/// </summary>
 internal class TestDataValue
 {
+    /// <summary>
+    /// Gets or sets the value of the value
+    /// </summary>
     public string Value { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// The filter tests class
+/// </summary>
 public partial class FilterTests
 {
+    /// <summary>
+    /// The dataset filter array types class
+    /// </summary>
+    /// <seealso cref="TheoryData{string}"/>
     public class DatasetFilterArrayTypes : TheoryData<string>
     {
+        /// <summary>
+        /// The is less than equal
+        /// </summary>
         public static Dictionary<string, (Filter, int[])> Cases = new()
         {
             ["Test 1"] = (Filter.Property("texts").IsLike("*nana"), new int[] { 1 }),
@@ -27,20 +53,53 @@ public partial class FilterTests
             ["Test 6"] = (Filter.Property("floats").IsLessThanEqual(3), new int[] { 0, 1 }),
         };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatasetFilterArrayTypes"/> class
+        /// </summary>
         public DatasetFilterArrayTypes()
             : base(Cases.Keys) { }
     }
 
     // Define test constants
+    /// <summary>
+    /// The utc now
+    /// </summary>
     private static readonly DateTime NOW = DateTime.UtcNow;
+
+    /// <summary>
+    /// The add hours
+    /// </summary>
     private static readonly DateTime LATER = NOW.AddHours(1);
+
+    /// <summary>
+    /// The add days
+    /// </summary>
     private static readonly DateTime MUCH_LATER = NOW.AddDays(1);
+
+    /// <summary>
+    /// The new guid
+    /// </summary>
     private static readonly Guid UUID1 = Guid.NewGuid();
+
+    /// <summary>
+    /// The new guid
+    /// </summary>
     private static readonly Guid UUID2 = Guid.NewGuid();
+
+    /// <summary>
+    /// The new guid
+    /// </summary>
     private static readonly Guid UUID3 = Guid.NewGuid();
 
+    /// <summary>
+    /// The dataset filter contains class
+    /// </summary>
+    /// <seealso cref="TheoryData{string}"/>
     public class DatasetFilterContains : TheoryData<string>
     {
+        /// <summary>
+        /// The uuid
+        /// </summary>
         public static Dictionary<string, (Filter, int[])> Cases = new()
         {
             ["ContainsAny ints 1,4"] = (
@@ -166,12 +225,22 @@ public partial class FilterTests
             ),
         };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatasetFilterContains"/> class
+        /// </summary>
         public DatasetFilterContains()
             : base(Cases.Keys) { }
     }
 
+    /// <summary>
+    /// The dataset ref count filter class
+    /// </summary>
+    /// <seealso cref="TheoryData{string}"/>
     public class DatasetRefCountFilter : TheoryData<string>
     {
+        /// <summary>
+        /// Gets the value of the cases
+        /// </summary>
         public static Dictionary<string, (Filter, int[])> Cases =>
             new()
             {
@@ -185,12 +254,22 @@ public partial class FilterTests
                 ),
             };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatasetRefCountFilter"/> class
+        /// </summary>
         public DatasetRefCountFilter()
             : base(Cases.Keys) { }
     }
 
+    /// <summary>
+    /// The dataset filtering references class
+    /// </summary>
+    /// <seealso cref="TheoryData{string}"/>
     public class DatasetFilteringReferences : TheoryData<string>
     {
+        /// <summary>
+        /// Gets the value of the cases
+        /// </summary>
         public static Dictionary<string, (Filter, int)> Cases =>
             new()
             {
@@ -214,12 +293,22 @@ public partial class FilterTests
                 ),
             };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatasetFilteringReferences"/> class
+        /// </summary>
         public DatasetFilteringReferences()
             : base(Cases.Keys) { }
     }
 
+    /// <summary>
+    /// The dataset filter by id class
+    /// </summary>
+    /// <seealso cref="TheoryData{string}"/>
     public class DatasetFilterByID : TheoryData<string>
     {
+        /// <summary>
+        /// Gets the value of the cases
+        /// </summary>
         public static Dictionary<string, Filter> Cases =>
             new()
             {
@@ -229,12 +318,22 @@ public partial class FilterTests
                 ["IdWithProperty(_id)Equal"] = Filter.Property("_id").IsEqual(_reusableUuids[0]),
             };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatasetFilterByID"/> class
+        /// </summary>
         public DatasetFilterByID()
             : base(Cases.Keys) { }
     }
 
+    /// <summary>
+    /// The dataset time filter class
+    /// </summary>
+    /// <seealso cref="TheoryData{string}"/>
     public class DatasetTimeFilter : TheoryData<string>
     {
+        /// <summary>
+        /// Gets the value of the cases
+        /// </summary>
         public static Dictionary<
             string,
             (int filterValue, int[] results, Func<DateTime, Filter> filterFunc)
@@ -257,15 +356,28 @@ public partial class FilterTests
                 ),
             };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatasetTimeFilter"/> class
+        /// </summary>
         public DatasetTimeFilter()
             : base(Cases.Keys) { }
     }
 }
 
+/// <summary>
+/// The batch tests class
+/// </summary>
 public partial class BatchTests
 {
+    /// <summary>
+    /// The dataset batch insert many class
+    /// </summary>
+    /// <seealso cref="TheoryData{string}"/>
     public class DatasetBatchInsertMany : TheoryData<string>
     {
+        /// <summary>
+        /// Gets the value of the cases
+        /// </summary>
         public static Dictionary<
             string,
             (
@@ -435,6 +547,9 @@ public partial class BatchTests
                 ),
             };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatasetBatchInsertMany"/> class
+        /// </summary>
         public DatasetBatchInsertMany()
             : base(Cases.Keys) { }
     }

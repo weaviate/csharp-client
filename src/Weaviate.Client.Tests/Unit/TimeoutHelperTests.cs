@@ -1,8 +1,14 @@
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The timeout helper tests class
+/// </summary>
 [Collection("Unit Tests")]
 public class TimeoutHelperTests
 {
+    /// <summary>
+    /// Tests that get cancellation token with timeout cancels after timeout
+    /// </summary>
     [Fact]
     public async Task GetCancellationToken_WithTimeout_CancelsAfterTimeout()
     {
@@ -20,6 +26,9 @@ public class TimeoutHelperTests
         Assert.True(token.IsCancellationRequested);
     }
 
+    /// <summary>
+    /// Tests that get cancellation token no timeout returns provided token
+    /// </summary>
     [Fact]
     public void GetCancellationToken_NoTimeout_ReturnsProvidedToken()
     {
@@ -33,6 +42,9 @@ public class TimeoutHelperTests
         Assert.Equal(cts.Token, token);
     }
 
+    /// <summary>
+    /// Tests that get cancellation token zero timeout returns provided token
+    /// </summary>
     [Fact]
     public void GetCancellationToken_ZeroTimeout_ReturnsProvidedToken()
     {
@@ -46,6 +58,9 @@ public class TimeoutHelperTests
         Assert.Equal(cts.Token, token);
     }
 
+    /// <summary>
+    /// Tests that is timeout cancellation with timeout exception returns true
+    /// </summary>
     [Fact]
     public async Task IsTimeoutCancellation_WithTimeoutException_ReturnsTrue()
     {
@@ -66,6 +81,9 @@ public class TimeoutHelperTests
         Assert.Equal(timeout, TimeoutHelper.GetTimeout());
     }
 
+    /// <summary>
+    /// Tests that is timeout cancellation with user cancellation returns false
+    /// </summary>
     [Fact]
     public async Task IsTimeoutCancellation_WithUserCancellation_ReturnsFalse()
     {
@@ -82,6 +100,9 @@ public class TimeoutHelperTests
         Assert.False(TimeoutHelper.IsTimeoutCancellation(exception));
     }
 
+    /// <summary>
+    /// Tests that timeout context cleared between operations
+    /// </summary>
     [Fact]
     public async Task TimeoutContext_ClearedBetweenOperations()
     {
@@ -105,6 +126,9 @@ public class TimeoutHelperTests
         Assert.False(TimeoutHelper.IsTimeoutCancellation(ex));
     }
 
+    /// <summary>
+    /// Tests that timeout context preserved across async boundaries
+    /// </summary>
     [Fact]
     public async Task TimeoutContext_PreservedAcrossAsyncBoundaries()
     {
@@ -129,6 +153,9 @@ public class TimeoutHelperTests
         );
     }
 
+    /// <summary>
+    /// Tests that get cancellation token with operation description stores operation
+    /// </summary>
     [Fact]
     public void GetCancellationToken_WithOperationDescription_StoresOperation()
     {
@@ -147,6 +174,9 @@ public class TimeoutHelperTests
         Assert.Equal(operation, TimeoutHelper.GetOperation());
     }
 
+    /// <summary>
+    /// Tests that get cancellation token with config and default uses config
+    /// </summary>
     [Fact]
     public void GetCancellationToken_WithConfigAndDefault_UsesConfig()
     {
@@ -166,6 +196,9 @@ public class TimeoutHelperTests
         Assert.Equal(configTimeout, TimeoutHelper.GetTimeout());
     }
 
+    /// <summary>
+    /// Tests that get cancellation token with null config uses default
+    /// </summary>
     [Fact]
     public void GetCancellationToken_WithNullConfig_UsesDefault()
     {
@@ -185,6 +218,9 @@ public class TimeoutHelperTests
         Assert.Equal(defaultTimeout, TimeoutHelper.GetTimeout());
     }
 
+    /// <summary>
+    /// Tests that is timeout cancellation with non cancellation exception returns false
+    /// </summary>
     [Fact]
     public void IsTimeoutCancellation_WithNonCancellationException_ReturnsFalse()
     {
@@ -198,6 +234,9 @@ public class TimeoutHelperTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that is timeout cancellation with operation canceled exception checks context
+    /// </summary>
     [Fact]
     public void IsTimeoutCancellation_WithOperationCanceledException_ChecksContext()
     {
@@ -220,6 +259,9 @@ public class TimeoutHelperTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that get operation with no context returns null
+    /// </summary>
     [Fact]
     public void GetOperation_WithNoContext_ReturnsNull()
     {
@@ -236,6 +278,9 @@ public class TimeoutHelperTests
         Assert.Null(operation);
     }
 
+    /// <summary>
+    /// Tests that get timeout with no context returns null
+    /// </summary>
     [Fact]
     public void GetTimeout_WithNoContext_ReturnsNull()
     {

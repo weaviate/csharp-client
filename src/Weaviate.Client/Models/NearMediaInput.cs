@@ -6,6 +6,11 @@ namespace Weaviate.Client;
 /// Input for near-media searches (Image, Video, Audio, Thermal, etc.).
 /// Supports optional target vectors for multi-vector collections.
 /// </summary>
+/// <param name="Media">The media content as a byte array</param>
+/// <param name="Type">The type of media (Image, Video, Audio, Thermal, Depth, IMU)</param>
+/// <param name="TargetVectors">Optional target vectors for multi-vector collections</param>
+/// <param name="Certainty">Optional certainty threshold for the search</param>
+/// <param name="Distance">Optional distance threshold for the search</param>
 public record NearMediaInput(
     byte[] Media,
     NearMediaType Type,
@@ -23,12 +28,6 @@ public record NearMediaInput(
     /// m => m.Audio(audioBytes).Build()  // No targets, uses default vector
     /// </example>
     public delegate NearMediaInput FactoryFn(NearMediaBuilder builder);
-
-    /// <summary>
-    /// Enables returning a <see cref="NearMediaBuilder"/> directly from a lambda via
-    /// its implicit conversion to <see cref="NearMediaInput"/>.
-    /// (The implicit operator is declared on NearMediaBuilder.)
-    /// </summary>
 }
 
 // ============================================================================
@@ -118,11 +117,33 @@ public interface INearMediaBuilder
 /// </summary>
 public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
 {
+    /// <summary>
+    /// The media
+    /// </summary>
     private byte[]? _media;
+
+    /// <summary>
+    /// The type
+    /// </summary>
     private NearMediaType? _type;
+
+    /// <summary>
+    /// The certainty
+    /// </summary>
     private float? _certainty;
+
+    /// <summary>
+    /// The distance
+    /// </summary>
     private float? _distance;
 
+    /// <summary>
+    /// Images the media
+    /// </summary>
+    /// <param name="media">The media</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <returns>The near media builder</returns>
     public NearMediaBuilder Image(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
@@ -132,6 +153,13 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         return this;
     }
 
+    /// <summary>
+    /// Videoes the media
+    /// </summary>
+    /// <param name="media">The media</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <returns>The near media builder</returns>
     public NearMediaBuilder Video(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
@@ -141,6 +169,13 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         return this;
     }
 
+    /// <summary>
+    /// Audioes the media
+    /// </summary>
+    /// <param name="media">The media</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <returns>The near media builder</returns>
     public NearMediaBuilder Audio(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
@@ -150,6 +185,13 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         return this;
     }
 
+    /// <summary>
+    /// Thermals the media
+    /// </summary>
+    /// <param name="media">The media</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <returns>The near media builder</returns>
     public NearMediaBuilder Thermal(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
@@ -159,6 +201,13 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         return this;
     }
 
+    /// <summary>
+    /// Depths the media
+    /// </summary>
+    /// <param name="media">The media</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <returns>The near media builder</returns>
     public NearMediaBuilder Depth(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
@@ -168,6 +217,13 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         return this;
     }
 
+    /// <summary>
+    /// Imus the media
+    /// </summary>
+    /// <param name="media">The media</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <returns>The near media builder</returns>
     public NearMediaBuilder IMU(byte[] media, float? certainty = null, float? distance = null)
     {
         _media = media;
@@ -177,6 +233,11 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         return this;
     }
 
+    /// <summary>
+    /// Targets the vectors manual weights using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The near media input</returns>
     public NearMediaInput TargetVectorsManualWeights(params (string Name, double Weight)[] targets)
     {
         ValidateMedia();
@@ -189,6 +250,11 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         );
     }
 
+    /// <summary>
+    /// Targets the vectors sum using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The near media input</returns>
     public NearMediaInput TargetVectorsSum(params string[] targets)
     {
         ValidateMedia();
@@ -201,6 +267,11 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         );
     }
 
+    /// <summary>
+    /// Targets the vectors average using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The near media input</returns>
     public NearMediaInput TargetVectorsAverage(params string[] targets)
     {
         ValidateMedia();
@@ -213,6 +284,11 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         );
     }
 
+    /// <summary>
+    /// Targets the vectors minimum using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The near media input</returns>
     public NearMediaInput TargetVectorsMinimum(params string[] targets)
     {
         ValidateMedia();
@@ -225,6 +301,11 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         );
     }
 
+    /// <summary>
+    /// Targets the vectors relative score using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The near media input</returns>
     public NearMediaInput TargetVectorsRelativeScore(params (string Name, double Weight)[] targets)
     {
         ValidateMedia();
@@ -237,12 +318,20 @@ public sealed class NearMediaBuilder : INearMediaBuilderStart, INearMediaBuilder
         );
     }
 
+    /// <summary>
+    /// Builds this instance
+    /// </summary>
+    /// <returns>The near media input</returns>
     public NearMediaInput Build()
     {
         ValidateMedia();
         return new NearMediaInput(_media!, _type!.Value, null, _certainty, _distance);
     }
 
+    /// <summary>
+    /// Validates the media
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
     private void ValidateMedia()
     {
         if (_media == null || _type == null)

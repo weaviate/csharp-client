@@ -9,9 +9,21 @@ namespace Weaviate.Client.DependencyInjection;
 /// </summary>
 internal class WeaviateInitializationService : IHostedService
 {
+    /// <summary>
+    /// The client
+    /// </summary>
     private readonly WeaviateClient _client;
+
+    /// <summary>
+    /// The logger
+    /// </summary>
     private readonly ILogger<WeaviateInitializationService> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateInitializationService"/> class
+    /// </summary>
+    /// <param name="client">The client</param>
+    /// <param name="logger">The logger</param>
     public WeaviateInitializationService(
         WeaviateClient client,
         ILogger<WeaviateInitializationService> logger
@@ -21,6 +33,10 @@ internal class WeaviateInitializationService : IHostedService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Starts the cancellation token
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Initializing Weaviate client...");
@@ -43,6 +59,10 @@ internal class WeaviateInitializationService : IHostedService
         }
     }
 
+    /// <summary>
+    /// Stops the cancellation token
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token</param>
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Stopping Weaviate client initialization service");

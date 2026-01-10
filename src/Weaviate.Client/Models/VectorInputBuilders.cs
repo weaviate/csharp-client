@@ -64,15 +64,32 @@ public interface INearVectorBuilder
 /// </summary>
 internal sealed class NearVectorBuilder : INearVectorBuilder
 {
+    /// <summary>
+    /// The certainty
+    /// </summary>
     private readonly float? _certainty;
+
+    /// <summary>
+    /// The distance
+    /// </summary>
     private readonly float? _distance;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NearVectorBuilder"/> class
+    /// </summary>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
     public NearVectorBuilder(float? certainty = null, float? distance = null)
     {
         _certainty = certainty;
         _distance = distance;
     }
 
+    /// <summary>
+    /// Targets the vectors manual weights using the specified target vectors
+    /// </summary>
+    /// <param name="targetVectors">The target vectors</param>
+    /// <returns>The near vector input</returns>
     public NearVectorInput TargetVectorsManualWeights(
         params (string Name, double Weight, Vector Vector)[] targetVectors
     )
@@ -84,6 +101,11 @@ internal sealed class NearVectorBuilder : INearVectorBuilder
         return new NearVectorInput(vectorSearchInput, _certainty, _distance);
     }
 
+    /// <summary>
+    /// Targets the vectors sum using the specified target vectors
+    /// </summary>
+    /// <param name="targetVectors">The target vectors</param>
+    /// <returns>The near vector input</returns>
     public NearVectorInput TargetVectorsSum(params (string Name, Vector Vector)[] targetVectors)
     {
         var builder = new VectorSearchInput.Builder();
@@ -93,6 +115,11 @@ internal sealed class NearVectorBuilder : INearVectorBuilder
         return new NearVectorInput(vectorSearchInput, _certainty, _distance);
     }
 
+    /// <summary>
+    /// Targets the vectors average using the specified target vectors
+    /// </summary>
+    /// <param name="targetVectors">The target vectors</param>
+    /// <returns>The near vector input</returns>
     public NearVectorInput TargetVectorsAverage(params (string Name, Vector Vector)[] targetVectors)
     {
         var builder = new VectorSearchInput.Builder();
@@ -102,6 +129,11 @@ internal sealed class NearVectorBuilder : INearVectorBuilder
         return new NearVectorInput(vectorSearchInput, _certainty, _distance);
     }
 
+    /// <summary>
+    /// Targets the vectors minimum using the specified target vectors
+    /// </summary>
+    /// <param name="targetVectors">The target vectors</param>
+    /// <returns>The near vector input</returns>
     public NearVectorInput TargetVectorsMinimum(params (string Name, Vector Vector)[] targetVectors)
     {
         var builder = new VectorSearchInput.Builder();
@@ -111,6 +143,11 @@ internal sealed class NearVectorBuilder : INearVectorBuilder
         return new NearVectorInput(vectorSearchInput, _certainty, _distance);
     }
 
+    /// <summary>
+    /// Targets the vectors relative score using the specified target vectors
+    /// </summary>
+    /// <param name="targetVectors">The target vectors</param>
+    /// <returns>The near vector input</returns>
     public NearVectorInput TargetVectorsRelativeScore(
         params (string Name, double Weight, Vector Vector)[] targetVectors
     )
@@ -153,31 +190,31 @@ public interface INearTextBuilder
     /// <summary>
     /// Creates a NearTextInput with manually weighted target vectors.
     /// </summary>
-    /// <param name="targets">Tuples of (targetName, weight)</param>
+    /// <param name="targetVectors"></param>
     NearTextInput TargetVectorsManualWeights(params (string Name, double Weight)[] targetVectors);
 
     /// <summary>
     /// Creates a NearTextInput that sums all target vectors.
     /// </summary>
-    /// <param name="targetNames">Names of target vectors</param>
+    /// <param name="targetVectors"></param>
     NearTextInput TargetVectorsSum(params string[] targetVectors);
 
     /// <summary>
     /// Creates a NearTextInput that averages all target vectors.
     /// </summary>
-    /// <param name="targetNames">Names of target vectors</param>
+    /// <param name="targetVectors"></param>
     NearTextInput TargetVectorsAverage(params string[] targetVectors);
 
     /// <summary>
     /// Creates a NearTextInput using minimum combination of target vectors.
     /// </summary>
-    /// <param name="targetNames">Names of target vectors</param>
+    /// <param name="targetVectors"></param>
     NearTextInput TargetVectorsMinimum(params string[] targetVectors);
 
     /// <summary>
     /// Creates a NearTextInput using relative score combination of target vectors.
     /// </summary>
-    /// <param name="targets">Tuples of (targetName, weight)</param>
+    /// <param name="targetVectors"></param>
     NearTextInput TargetVectorsRelativeScore(params (string Name, double Weight)[] targetVectors);
 }
 
@@ -186,12 +223,39 @@ public interface INearTextBuilder
 /// </summary>
 internal sealed class NearTextBuilder : INearTextBuilder
 {
+    /// <summary>
+    /// The query
+    /// </summary>
     private readonly string[] _query;
+
+    /// <summary>
+    /// The certainty
+    /// </summary>
     private readonly float? _certainty;
+
+    /// <summary>
+    /// The distance
+    /// </summary>
     private readonly float? _distance;
+
+    /// <summary>
+    /// The move to
+    /// </summary>
     private readonly Move? _moveTo;
+
+    /// <summary>
+    /// The move away
+    /// </summary>
     private readonly Move? _moveAway;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NearTextBuilder"/> class
+    /// </summary>
+    /// <param name="query">The query</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="moveTo">The move to</param>
+    /// <param name="moveAway">The move away</param>
     public NearTextBuilder(
         AutoArray<string> query,
         float? certainty,
@@ -208,6 +272,11 @@ internal sealed class NearTextBuilder : INearTextBuilder
         _moveAway = moveAway;
     }
 
+    /// <summary>
+    /// Targets the vectors manual weights using the specified target vectors
+    /// </summary>
+    /// <param name="targetVectors">The target vectors</param>
+    /// <returns>The near text input</returns>
     public NearTextInput TargetVectorsManualWeights(
         params (string Name, double Weight)[] targetVectors
     )
@@ -223,6 +292,11 @@ internal sealed class NearTextBuilder : INearTextBuilder
         );
     }
 
+    /// <summary>
+    /// Targets the vectors sum using the specified target vectors
+    /// </summary>
+    /// <param name="targetVectors">The target vectors</param>
+    /// <returns>The near text input</returns>
     public NearTextInput TargetVectorsSum(params string[] targetVectors)
     {
         var targetVectorsObj = TargetVectors.Sum(targetVectors);
@@ -236,6 +310,11 @@ internal sealed class NearTextBuilder : INearTextBuilder
         );
     }
 
+    /// <summary>
+    /// Targets the vectors average using the specified target vectors
+    /// </summary>
+    /// <param name="targetVectors">The target vectors</param>
+    /// <returns>The near text input</returns>
     public NearTextInput TargetVectorsAverage(params string[] targetVectors)
     {
         var targetVectorsObj = TargetVectors.Average(targetVectors);
@@ -249,6 +328,11 @@ internal sealed class NearTextBuilder : INearTextBuilder
         );
     }
 
+    /// <summary>
+    /// Targets the vectors minimum using the specified target vectors
+    /// </summary>
+    /// <param name="targetVectors">The target vectors</param>
+    /// <returns>The near text input</returns>
     public NearTextInput TargetVectorsMinimum(params string[] targetVectors)
     {
         var targetVectorsObj = TargetVectors.Minimum(targetVectors);
@@ -262,6 +346,11 @@ internal sealed class NearTextBuilder : INearTextBuilder
         );
     }
 
+    /// <summary>
+    /// Targets the vectors relative score using the specified target vectors
+    /// </summary>
+    /// <param name="targetVectors">The target vectors</param>
+    /// <returns>The near text input</returns>
     public NearTextInput TargetVectorsRelativeScore(
         params (string Name, double Weight)[] targetVectors
     )
@@ -380,8 +469,16 @@ public interface IHybridNearVectorBuilder
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public sealed class HybridNearVectorBuilder : IHybridNearVectorBuilder
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HybridNearVectorBuilder"/> class
+    /// </summary>
     public HybridNearVectorBuilder() { }
 
+    /// <summary>
+    /// Targets the vectors manual weights using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The hybrid vector input</returns>
     public HybridVectorInput TargetVectorsManualWeights(
         params (string Name, double Weight, Vector Vector)[] targets
     )
@@ -394,6 +491,11 @@ public sealed class HybridNearVectorBuilder : IHybridNearVectorBuilder
         return HybridVectorInput.FromNearVector(nearVectorInput);
     }
 
+    /// <summary>
+    /// Targets the vectors sum using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The hybrid vector input</returns>
     public HybridVectorInput TargetVectorsSum(params (string Name, Vector Vector)[] targets)
     {
         var builder = new VectorSearchInput.Builder();
@@ -404,6 +506,11 @@ public sealed class HybridNearVectorBuilder : IHybridNearVectorBuilder
         return HybridVectorInput.FromNearVector(nearVectorInput);
     }
 
+    /// <summary>
+    /// Targets the vectors average using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The hybrid vector input</returns>
     public HybridVectorInput TargetVectorsAverage(params (string Name, Vector Vector)[] targets)
     {
         var builder = new VectorSearchInput.Builder();
@@ -414,6 +521,11 @@ public sealed class HybridNearVectorBuilder : IHybridNearVectorBuilder
         return HybridVectorInput.FromNearVector(nearVectorInput);
     }
 
+    /// <summary>
+    /// Targets the vectors minimum using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The hybrid vector input</returns>
     public HybridVectorInput TargetVectorsMinimum(params (string Name, Vector Vector)[] targets)
     {
         var builder = new VectorSearchInput.Builder();
@@ -424,6 +536,11 @@ public sealed class HybridNearVectorBuilder : IHybridNearVectorBuilder
         return HybridVectorInput.FromNearVector(nearVectorInput);
     }
 
+    /// <summary>
+    /// Targets the vectors relative score using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The hybrid vector input</returns>
     public HybridVectorInput TargetVectorsRelativeScore(
         params (string Name, double Weight, Vector Vector)[] targets
     )
@@ -474,10 +591,27 @@ public interface IHybridNearTextBuilder
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public sealed class HybridNearTextBuilder : IHybridNearTextBuilder
 {
+    /// <summary>
+    /// The query
+    /// </summary>
     private readonly string[] _query;
+
+    /// <summary>
+    /// The move to
+    /// </summary>
     private readonly Move? _moveTo;
+
+    /// <summary>
+    /// The move away
+    /// </summary>
     private readonly Move? _moveAway;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HybridNearTextBuilder"/> class
+    /// </summary>
+    /// <param name="query">The query</param>
+    /// <param name="moveTo">The move to</param>
+    /// <param name="moveAway">The move away</param>
     public HybridNearTextBuilder(AutoArray<string> query, Move? moveTo, Move? moveAway)
     {
         // Convert AutoArray to string[] for storage (AutoArray can't be stored as field)
@@ -499,6 +633,11 @@ public sealed class HybridNearTextBuilder : IHybridNearTextBuilder
         return HybridVectorInput.FromNearText(nearTextInput);
     }
 
+    /// <summary>
+    /// Targets the vectors manual weights using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The hybrid vector input</returns>
     public HybridVectorInput TargetVectorsManualWeights(
         params (string Name, double Weight)[] targets
     )
@@ -515,6 +654,11 @@ public sealed class HybridNearTextBuilder : IHybridNearTextBuilder
         return HybridVectorInput.FromNearText(nearTextInput);
     }
 
+    /// <summary>
+    /// Targets the vectors sum using the specified target names
+    /// </summary>
+    /// <param name="targetNames">The target names</param>
+    /// <returns>The hybrid vector input</returns>
     public HybridVectorInput TargetVectorsSum(params string[] targetNames)
     {
         var targetVectors = TargetVectors.Sum(targetNames);
@@ -529,6 +673,11 @@ public sealed class HybridNearTextBuilder : IHybridNearTextBuilder
         return HybridVectorInput.FromNearText(nearTextInput);
     }
 
+    /// <summary>
+    /// Targets the vectors average using the specified target names
+    /// </summary>
+    /// <param name="targetNames">The target names</param>
+    /// <returns>The hybrid vector input</returns>
     public HybridVectorInput TargetVectorsAverage(params string[] targetNames)
     {
         var targetVectors = TargetVectors.Average(targetNames);
@@ -543,6 +692,11 @@ public sealed class HybridNearTextBuilder : IHybridNearTextBuilder
         return HybridVectorInput.FromNearText(nearTextInput);
     }
 
+    /// <summary>
+    /// Targets the vectors minimum using the specified target names
+    /// </summary>
+    /// <param name="targetNames">The target names</param>
+    /// <returns>The hybrid vector input</returns>
     public HybridVectorInput TargetVectorsMinimum(params string[] targetNames)
     {
         var targetVectors = TargetVectors.Minimum(targetNames);
@@ -557,6 +711,11 @@ public sealed class HybridNearTextBuilder : IHybridNearTextBuilder
         return HybridVectorInput.FromNearText(nearTextInput);
     }
 
+    /// <summary>
+    /// Targets the vectors relative score using the specified targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The hybrid vector input</returns>
     public HybridVectorInput TargetVectorsRelativeScore(
         params (string Name, double Weight)[] targets
     )
@@ -578,6 +737,9 @@ public sealed class HybridNearTextBuilder : IHybridNearTextBuilder
 // Factory Function Delegates
 // ============================================================================
 
+/// <summary>
+/// The vector input builder factories class
+/// </summary>
 internal static class VectorInputBuilderFactories
 {
     /// <summary>

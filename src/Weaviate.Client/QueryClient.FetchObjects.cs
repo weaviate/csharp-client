@@ -2,9 +2,27 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The query client class
+/// </summary>
 public partial class QueryClient
 {
     #region Objects
+    /// <summary>
+    /// Fetches the objects using the specified group by
+    /// </summary>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="after">The after</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="sort">The sort</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the group by result</returns>
     public async Task<GroupByResult> FetchObjects(
         Models.GroupByRequest groupBy,
         Guid? after = null,
@@ -37,6 +55,21 @@ public partial class QueryClient
         );
     }
 
+    /// <summary>
+    /// Fetches the objects using the specified after
+    /// </summary>
+    /// <param name="after">The after</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="sort">The sort</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the weaviate result</returns>
     public async Task<WeaviateResult> FetchObjects(
         Guid? after = null,
         uint? limit = null,
@@ -66,6 +99,16 @@ public partial class QueryClient
             cancellationToken: CreateTimeoutCancellationToken(cancellationToken)
         );
 
+    /// <summary>
+    /// Fetches the object by id using the specified id
+    /// </summary>
+    /// <param name="id">The id</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>The first object</returns>
     public async Task<WeaviateObject?> FetchObjectByID(
         Guid id,
         AutoArray<string>? returnProperties = null,
@@ -93,6 +136,20 @@ public partial class QueryClient
         return firstObject;
     }
 
+    /// <summary>
+    /// Fetches the objects by i ds using the specified ids
+    /// </summary>
+    /// <param name="ids">The ids</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="sort">The sort</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the weaviate result</returns>
     public async Task<WeaviateResult> FetchObjectsByIDs(
         HashSet<Guid> ids,
         uint? limit = null,

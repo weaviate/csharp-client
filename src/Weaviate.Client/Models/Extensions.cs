@@ -1,7 +1,15 @@
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// The models to dto extensions class
+/// </summary>
 internal static class ModelsToDtoExtensions
 {
+    /// <summary>
+    /// Returns the dto using the specified model
+    /// </summary>
+    /// <param name="model">The model</param>
+    /// <returns>The rest dto geo coordinates</returns>
     internal static Rest.Dto.GeoCoordinates ToDto(this Models.GeoCoordinate model)
     {
         return new Rest.Dto.GeoCoordinates
@@ -11,6 +19,11 @@ internal static class ModelsToDtoExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified model
+    /// </summary>
+    /// <param name="model">The model</param>
+    /// <returns>The rest dto phone number</returns>
     internal static Rest.Dto.PhoneNumber ToDto(this Models.PhoneNumber model)
     {
         return new Rest.Dto.PhoneNumber
@@ -25,6 +38,11 @@ internal static class ModelsToDtoExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the nested property dto using the specified property
+    /// </summary>
+    /// <param name="property">The property</param>
+    /// <returns>The rest dto nested property</returns>
     internal static Rest.Dto.NestedProperty ToNestedPropertyDto(this Models.Property property)
     {
         return new Rest.Dto.NestedProperty
@@ -42,6 +60,11 @@ internal static class ModelsToDtoExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified reference
+    /// </summary>
+    /// <param name="reference">The reference</param>
+    /// <returns>The rest dto property</returns>
     internal static Rest.Dto.Property ToDto(this Models.Reference reference)
     {
         IReferenceBase refProp = reference;
@@ -54,6 +77,12 @@ internal static class ModelsToDtoExtensions
         };
     }
 
+    /// <summary>
+    /// Returns the dto using the specified property
+    /// </summary>
+    /// <param name="property">The property</param>
+    /// <param name="vectorizers">The vectorizers</param>
+    /// <returns>The rest dto property</returns>
     internal static Rest.Dto.Property ToDto(
         this Models.Property property,
         IEnumerable<string?>? vectorizers = null

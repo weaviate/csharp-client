@@ -11,6 +11,9 @@ namespace Example;
 /// </summary>
 public class DependencyInjectionExample
 {
+    /// <summary>
+    /// Runs
+    /// </summary>
     public static async Task Run()
     {
         // Build host with dependency injection
@@ -52,9 +55,21 @@ public class DependencyInjectionExample
 /// </summary>
 public class CatService
 {
+    /// <summary>
+    /// The weaviate
+    /// </summary>
     private readonly WeaviateClient _weaviate;
+
+    /// <summary>
+    /// The logger
+    /// </summary>
     private readonly ILogger<CatService> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CatService"/> class
+    /// </summary>
+    /// <param name="weaviate">The weaviate</param>
+    /// <param name="logger">The logger</param>
     public CatService(WeaviateClient weaviate, ILogger<CatService> logger)
     {
         _weaviate = weaviate;
@@ -67,6 +82,9 @@ public class CatService
         );
     }
 
+    /// <summary>
+    /// Demonstrates the usage
+    /// </summary>
     public async Task DemonstrateUsageAsync()
     {
         // Check if client is initialized
@@ -149,6 +167,9 @@ public class CatService
 /// </summary>
 public class ConfigurationExample
 {
+    /// <summary>
+    /// Runs
+    /// </summary>
     public static async Task RunAsync()
     {
         var host = Host.CreateDefaultBuilder()
@@ -180,6 +201,9 @@ public class ConfigurationExample
 /// </summary>
 public class LazyInitializationExample
 {
+    /// <summary>
+    /// Runs
+    /// </summary>
     public static async Task RunAsync()
     {
         var host = Host.CreateDefaultBuilder()
@@ -213,6 +237,9 @@ public class LazyInitializationExample
 /// </summary>
 public class ConnectHelperExample
 {
+    /// <summary>
+    /// Runs
+    /// </summary>
     public static async Task RunAsync()
     {
         // These still work! Fully async, no blocking

@@ -11,17 +11,45 @@ namespace Weaviate.Client.Serialization;
 /// </summary>
 internal class PropertyConverterRegistry
 {
+    /// <summary>
+    /// The by data type
+    /// </summary>
     private readonly Dictionary<string, IPropertyConverter> _byDataType = new();
+
+    /// <summary>
+    /// The by type
+    /// </summary>
     private readonly Dictionary<Type, IPropertyConverter> _byType = new();
+
+    /// <summary>
+    /// The readable property cache
+    /// </summary>
     private readonly ConcurrentDictionary<Type, PropertyInfo[]> _readablePropertyCache = new();
+
+    /// <summary>
+    /// The writable property cache
+    /// </summary>
     private readonly ConcurrentDictionary<Type, PropertyInfo[]> _writablePropertyCache = new();
 
+    /// <summary>
+    /// The create default
+    /// </summary>
     private static readonly Lazy<PropertyConverterRegistry> _default = new(() => CreateDefault());
 
+    /// <summary>
+    /// Gets the value of the default
+    /// </summary>
     public static PropertyConverterRegistry Default => _default.Value;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PropertyConverterRegistry"/> class
+    /// </summary>
     public PropertyConverterRegistry() { }
 
+    /// <summary>
+    /// Creates the default
+    /// </summary>
+    /// <returns>The registry</returns>
     public static PropertyConverterRegistry CreateDefault()
     {
         var registry = new PropertyConverterRegistry();
@@ -45,6 +73,10 @@ internal class PropertyConverterRegistry
         return registry;
     }
 
+    /// <summary>
+    /// Registers the converter
+    /// </summary>
+    /// <param name="converter">The converter</param>
     public void Register(IPropertyConverter converter)
     {
         _byDataType[converter.DataType] = converter;
@@ -76,11 +108,21 @@ internal class PropertyConverterRegistry
         }
     }
 
+    /// <summary>
+    /// Gets the converter by data type using the specified data type
+    /// </summary>
+    /// <param name="dataType">The data type</param>
+    /// <returns>The property converter</returns>
     public IPropertyConverter? GetConverterByDataType(string dataType)
     {
         return _byDataType.TryGetValue(dataType, out var converter) ? converter : null;
     }
 
+    /// <summary>
+    /// Gets the converter for type using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The property converter</returns>
     public IPropertyConverter? GetConverterForType(Type type)
     {
         // Direct lookup
@@ -287,6 +329,11 @@ internal class PropertyConverterRegistry
         return instance;
     }
 
+    /// <summary>
+    /// Gets the readable properties using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The property info array</returns>
     private PropertyInfo[] GetReadableProperties(Type type)
     {
         return _readablePropertyCache.GetOrAdd(
@@ -298,6 +345,11 @@ internal class PropertyConverterRegistry
         );
     }
 
+    /// <summary>
+    /// Gets the writable properties using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The property info array</returns>
     private PropertyInfo[] GetWritableProperties(Type type)
     {
         return _writablePropertyCache.GetOrAdd(
@@ -309,6 +361,12 @@ internal class PropertyConverterRegistry
         );
     }
 
+    /// <summary>
+    /// Tries the set property using the specified prop
+    /// </summary>
+    /// <param name="prop">The prop</param>
+    /// <param name="instance">The instance</param>
+    /// <param name="value">The value</param>
     private static void TrySetProperty(PropertyInfo prop, object instance, object? value)
     {
         try
@@ -342,6 +400,11 @@ internal class PropertyConverterRegistry
         }
     }
 
+    /// <summary>
+    /// Ises the collection type using the specified generic def
+    /// </summary>
+    /// <param name="genericDef">The generic def</param>
+    /// <returns>The bool</returns>
     private static bool IsCollectionType(Type genericDef)
     {
         return genericDef == typeof(List<>)
@@ -350,6 +413,11 @@ internal class PropertyConverterRegistry
             || genericDef == typeof(IEnumerable<>);
     }
 
+    /// <summary>
+    /// Ises the array or collection using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The bool</returns>
     private static bool IsArrayOrCollection(Type type)
     {
         if (type == typeof(string) || type == typeof(byte[]))
@@ -367,6 +435,11 @@ internal class PropertyConverterRegistry
         return false;
     }
 
+    /// <summary>
+    /// Gets the element type using the specified collection type
+    /// </summary>
+    /// <param name="collectionType">The collection type</param>
+    /// <returns>The type</returns>
     private static Type GetElementType(Type collectionType)
     {
         if (collectionType.IsArray)
@@ -378,6 +451,12 @@ internal class PropertyConverterRegistry
         return typeof(object);
     }
 
+    /// <summary>
+    /// Converts the array to rest using the specified enumerable
+    /// </summary>
+    /// <param name="enumerable">The enumerable</param>
+    /// <param name="converter">The converter</param>
+    /// <returns>The object</returns>
     private static object ConvertArrayToRest(
         System.Collections.IEnumerable enumerable,
         IPropertyConverter converter
@@ -407,6 +486,12 @@ internal class PropertyConverterRegistry
         };
     }
 
+    /// <summary>
+    /// Creates the typed array using the specified items
+    /// </summary>
+    /// <param name="items">The items</param>
+    /// <param name="elementType">The element type</param>
+    /// <returns>The array</returns>
     private static Array CreateTypedArray(IList<object?> items, Type elementType)
     {
         var array = Array.CreateInstance(elementType, items.Count);
@@ -417,6 +502,11 @@ internal class PropertyConverterRegistry
         return array;
     }
 
+    /// <summary>
+    /// Decapitalizes the name using the specified name
+    /// </summary>
+    /// <param name="name">The name</param>
+    /// <returns>The string</returns>
     private static string DecapitalizeName(string name)
     {
         if (string.IsNullOrEmpty(name))
@@ -425,6 +515,11 @@ internal class PropertyConverterRegistry
         return char.ToLowerInvariant(name[0]) + name[1..];
     }
 
+    /// <summary>
+    /// Capitalizes the keys using the specified dict
+    /// </summary>
+    /// <param name="dict">The dict</param>
+    /// <returns>A dictionary of string and object</returns>
     private static IDictionary<string, object?> CapitalizeKeys(IDictionary<string, object?> dict)
     {
         return dict.ToDictionary(

@@ -8,9 +8,20 @@ namespace Weaviate.Client;
 /// </summary>
 public class UsersOidcClient
 {
+    /// <summary>
+    /// The client
+    /// </summary>
     private readonly WeaviateClient _client;
+
+    /// <summary>
+    /// The oidc
+    /// </summary>
     private const RbacUserType UserType = RbacUserType.Oidc;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UsersOidcClient"/> class
+    /// </summary>
+    /// <param name="client">The client</param>
     internal UsersOidcClient(WeaviateClient client) => _client = client;
 
     /// <summary>

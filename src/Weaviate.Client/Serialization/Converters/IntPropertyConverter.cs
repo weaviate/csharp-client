@@ -8,8 +8,14 @@ namespace Weaviate.Client.Serialization.Converters;
 /// </summary>
 internal class IntPropertyConverter : PropertyConverterBase
 {
+    /// <summary>
+    /// Gets the value of the data type
+    /// </summary>
     public override string DataType => "int";
 
+    /// <summary>
+    /// Gets the value of the supported types
+    /// </summary>
     public override IReadOnlyList<System.Type> SupportedTypes =>
         [
             typeof(int),
@@ -22,6 +28,11 @@ internal class IntPropertyConverter : PropertyConverterBase
             typeof(byte?),
         ];
 
+    /// <summary>
+    /// Returns the rest using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The object</returns>
     public override object? ToRest(object? value)
     {
         if (value is null)
@@ -37,11 +48,21 @@ internal class IntPropertyConverter : PropertyConverterBase
         return Convert.ToInt64(value);
     }
 
+    /// <summary>
+    /// Returns the rest array using the specified values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <returns>An enumerable of object</returns>
     public override IEnumerable<object?> ToRestArray(IEnumerable<object?> values)
     {
         return values.Select(v => (object?)(v is null ? 0L : Convert.ToInt64(v))).ToArray();
     }
 
+    /// <summary>
+    /// Returns the grpc using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The value</returns>
     public override Value ToGrpc(object? value)
     {
         if (value is null)
@@ -51,6 +72,12 @@ internal class IntPropertyConverter : PropertyConverterBase
         return new Value { NumberValue = longValue };
     }
 
+    /// <summary>
+    /// Creates the rest using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <param name="targetType">The target type</param>
+    /// <returns>The object</returns>
     public override object? FromRest(object? value, System.Type targetType)
     {
         if (value is null)
@@ -78,6 +105,12 @@ internal class IntPropertyConverter : PropertyConverterBase
         return (int)longValue;
     }
 
+    /// <summary>
+    /// Creates the rest array using the specified values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <param name="elementType">The element type</param>
+    /// <returns>The object</returns>
     public override object? FromRestArray(IEnumerable<object?> values, System.Type elementType)
     {
         var underlying = Nullable.GetUnderlyingType(elementType) ?? elementType;
@@ -85,6 +118,12 @@ internal class IntPropertyConverter : PropertyConverterBase
         return CreateTypedArray(items, underlying);
     }
 
+    /// <summary>
+    /// Creates the grpc using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <param name="targetType">The target type</param>
+    /// <returns>The object</returns>
     public override object? FromGrpc(Value value, System.Type targetType)
     {
         if (value.KindCase == Value.KindOneofCase.NullValue)

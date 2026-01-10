@@ -2,13 +2,26 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The pagination tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 public partial class PaginationTests : IntegrationTests
 {
+    /// <summary>
+    /// The item class
+    /// </summary>
     private class Item
     {
+        /// <summary>
+        /// Gets or sets the value of the name
+        /// </summary>
         public string Name { get; set; } = string.Empty;
     }
 
+    /// <summary>
+    /// Tests that fetch objects after cursor paginates
+    /// </summary>
     [Fact]
     public async Task FetchObjects_AfterCursor_Paginates()
     {

@@ -8,6 +8,9 @@ namespace Weaviate.Client.Typed;
 public partial class TypedGenerateClient<T>
     where T : class, new()
 {
+    /// <summary>
+    /// The generate client
+    /// </summary>
     private readonly GenerateClient _generateClient;
 
     /// <summary>

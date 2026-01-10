@@ -8,15 +8,42 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public enum NodeStatus
 {
+    /// <summary>
+    /// The unknown node status
+    /// </summary>
     Unknown,
+
+    /// <summary>
+    /// The healthy node status
+    /// </summary>
     Healthy,
+
+    /// <summary>
+    /// The unhealthy node status
+    /// </summary>
     Unhealthy,
+
+    /// <summary>
+    /// The unavailable node status
+    /// </summary>
     Unavailable,
+
+    /// <summary>
+    /// The timeout node status
+    /// </summary>
     Timeout,
 }
 
+/// <summary>
+/// The node status extensions class
+/// </summary>
 public static class NodeStatusExtensions
 {
+    /// <summary>
+    /// Returns the node status using the specified status
+    /// </summary>
+    /// <param name="status">The status</param>
+    /// <returns>The node status</returns>
     public static NodeStatus ToNodeStatus(this string? status)
     {
         return status?.ToUpperInvariant() switch
@@ -214,14 +241,26 @@ public record ClusterNodeVerbose : ClusterNode
     }
 }
 
+/// <summary>
+/// The vector indexing status enum
+/// </summary>
 public enum VectorIndexingStatus
 {
+    /// <summary>
+    /// The read only vector indexing status
+    /// </summary>
     [EnumMember(Value = "READONLY")]
     ReadOnly,
 
+    /// <summary>
+    /// The indexing vector indexing status
+    /// </summary>
     [EnumMember(Value = "INDEXING")]
     Indexing,
 
+    /// <summary>
+    /// The ready vector indexing status
+    /// </summary>
     [EnumMember(Value = "READY")]
     Ready,
 }

@@ -4,10 +4,16 @@ using V1 = Weaviate.Client.Grpc.Protobuf.V1;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The build target vector test class
+/// </summary>
 public class BuildTargetVectorTest
 {
     #region Single Vector Tests
 
+    /// <summary>
+    /// Tests that single vector no target specified creates target from vector name
+    /// </summary>
     [Fact]
     public void SingleVector_NoTargetSpecified_CreatesTargetFromVectorName()
     {
@@ -30,6 +36,9 @@ public class BuildTargetVectorTest
         Assert.Equal("myVector", vectors[0].Name);
     }
 
+    /// <summary>
+    /// Tests that single vector single target specified uses provided target
+    /// </summary>
     [Fact]
     public void SingleVector_SingleTargetSpecified_UsesProvidedTarget()
     {
@@ -52,6 +61,9 @@ public class BuildTargetVectorTest
         Assert.Single(vectors);
     }
 
+    /// <summary>
+    /// Tests that single vector default name creates target from vector name
+    /// </summary>
     [Fact]
     public void SingleVector_DefaultName_CreatesTargetFromVectorName()
     {
@@ -74,6 +86,9 @@ public class BuildTargetVectorTest
 
     #region Multiple Vector Tests
 
+    /// <summary>
+    /// Tests that multiple vectors no target specified creates targets from all vector names
+    /// </summary>
     [Fact]
     public void MultipleVectors_NoTargetSpecified_CreatesTargetsFromAllVectorNames()
     {
@@ -97,6 +112,9 @@ public class BuildTargetVectorTest
         Assert.Contains("vector2", targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that multiple vectors matching targets uses vector for targets
+    /// </summary>
     [Fact]
     public void MultipleVectors_MatchingTargets_UsesVectorForTargets()
     {
@@ -125,6 +143,9 @@ public class BuildTargetVectorTest
         Assert.Equal("vector2", vectorForTargets[1].Name);
     }
 
+    /// <summary>
+    /// Tests that multiple vectors targets are ordered
+    /// </summary>
     [Fact]
     public void MultipleVectors_TargetsAreOrdered()
     {
@@ -151,6 +172,9 @@ public class BuildTargetVectorTest
 
     #region Combination Method Tests
 
+    /// <summary>
+    /// Tests that simple target vectors sum combination sets combination method
+    /// </summary>
     [Fact]
     public void SimpleTargetVectors_SumCombination_SetsCombinationMethod()
     {
@@ -169,6 +193,9 @@ public class BuildTargetVectorTest
         Assert.Equal(V1.CombinationMethod.TypeSum, targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that simple target vectors average combination sets combination method
+    /// </summary>
     [Fact]
     public void SimpleTargetVectors_AverageCombination_SetsCombinationMethod()
     {
@@ -187,6 +214,9 @@ public class BuildTargetVectorTest
         Assert.Equal(V1.CombinationMethod.TypeAverage, targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that simple target vectors minimum combination sets combination method
+    /// </summary>
     [Fact]
     public void SimpleTargetVectors_MinimumCombination_SetsCombinationMethod()
     {
@@ -209,6 +239,9 @@ public class BuildTargetVectorTest
 
     #region Weighted Target Vector Tests
 
+    /// <summary>
+    /// Tests that weighted target vectors manual weights sets weights and combination
+    /// </summary>
     [Fact]
     public void WeightedTargetVectors_ManualWeights_SetsWeightsAndCombination()
     {
@@ -238,6 +271,9 @@ public class BuildTargetVectorTest
         Assert.Equal(0.3f, weight2.Weight, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that weighted target vectors relative score sets weights and combination
+    /// </summary>
     [Fact]
     public void WeightedTargetVectors_RelativeScore_SetsWeightsAndCombination()
     {
@@ -265,6 +301,9 @@ public class BuildTargetVectorTest
 
     #region VectorSearchInput Tests
 
+    /// <summary>
+    /// Tests that vector search input single vector builds correctly
+    /// </summary>
     [Fact]
     public void VectorSearchInput_SingleVector_BuildsCorrectly()
     {
@@ -280,6 +319,9 @@ public class BuildTargetVectorTest
         Assert.Equal("myVector", targets.TargetVectors[0]);
     }
 
+    /// <summary>
+    /// Tests that vector search input null returns all nulls
+    /// </summary>
     [Fact]
     public void VectorSearchInput_Null_ReturnsAllNulls()
     {
@@ -294,6 +336,9 @@ public class BuildTargetVectorTest
         Assert.Null(vectors);
     }
 
+    /// <summary>
+    /// Tests that vector search input multi vector builds correctly
+    /// </summary>
     [Fact]
     public void VectorSearchInput_MultiVector_BuildsCorrectly()
     {
@@ -319,6 +364,9 @@ public class BuildTargetVectorTest
         Assert.Equal(V1.Vectors.Types.VectorType.MultiFp32, vectors[0].Type);
     }
 
+    /// <summary>
+    /// Tests that vector search input with builder sum combination
+    /// </summary>
     [Fact]
     public void VectorSearchInput_WithBuilder_SumCombination()
     {
@@ -337,6 +385,9 @@ public class BuildTargetVectorTest
         Assert.Equal(2, targets.TargetVectors.Count);
     }
 
+    /// <summary>
+    /// Tests that vector search input with builder average combination
+    /// </summary>
     [Fact]
     public void VectorSearchInput_WithBuilder_AverageCombination()
     {
@@ -354,6 +405,9 @@ public class BuildTargetVectorTest
         Assert.Equal(V1.CombinationMethod.TypeAverage, targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that vector search input with builder manual weights
+    /// </summary>
     [Fact]
     public void VectorSearchInput_WithBuilder_ManualWeights()
     {
@@ -376,6 +430,9 @@ public class BuildTargetVectorTest
 
     #region VectorType Tests
 
+    /// <summary>
+    /// Tests that single vector float array has correct vector type
+    /// </summary>
     [Fact]
     public void SingleVector_FloatArray_HasCorrectVectorType()
     {
@@ -394,6 +451,9 @@ public class BuildTargetVectorTest
         Assert.Equal(V1.Vectors.Types.VectorType.SingleFp32, vectors[0].Type);
     }
 
+    /// <summary>
+    /// Tests that multi vector 2 d array has correct vector type
+    /// </summary>
     [Fact]
     public void MultiVector_2DArray_HasCorrectVectorType()
     {
@@ -423,6 +483,9 @@ public class BuildTargetVectorTest
 
     #region Multiple Vectors Same Name (Sum/Average)
 
+    /// <summary>
+    /// Tests that multiple vectors same name sum combination uses vector for targets
+    /// </summary>
     [Fact]
     public void MultipleVectorsSameName_SumCombination_UsesVectorForTargets()
     {
@@ -455,6 +518,9 @@ public class BuildTargetVectorTest
         Assert.Null(vectorsResult);
     }
 
+    /// <summary>
+    /// Tests that vector search input sum with same name uses vector for targets
+    /// </summary>
     [Fact]
     public void VectorSearchInput_SumWithSameName_UsesVectorForTargets()
     {
@@ -486,6 +552,9 @@ public class BuildTargetVectorTest
 
     #region Edge Cases
 
+    /// <summary>
+    /// Tests that empty vector list no target specified returns empty targets
+    /// </summary>
     [Fact]
     public void EmptyVectorList_NoTargetSpecified_ReturnsEmptyTargets()
     {
@@ -500,6 +569,9 @@ public class BuildTargetVectorTest
         Assert.Empty(targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that duplicate vector names deduplicates targets
+    /// </summary>
     [Fact]
     public void DuplicateVectorNames_DeduplicatesTargets()
     {
@@ -526,6 +598,9 @@ public class BuildTargetVectorTest
 
     #region VectorSearchInput.Combine Tests
 
+    /// <summary>
+    /// Tests that combine with tuple array creates correct vector search input
+    /// </summary>
     [Fact]
     public void Combine_WithTupleArray_CreatesCorrectVectorSearchInput()
     {
@@ -546,6 +621,9 @@ public class BuildTargetVectorTest
         Assert.Contains("second", result.Vectors.Keys);
     }
 
+    /// <summary>
+    /// Tests that combine with vectors creates correct vector search input
+    /// </summary>
     [Fact]
     public void Combine_WithVectors_CreatesCorrectVectorSearchInput()
     {
@@ -562,6 +640,9 @@ public class BuildTargetVectorTest
         Assert.Contains("second", result.Vectors.Keys);
     }
 
+    /// <summary>
+    /// Tests that combine with named vector list creates correct vector search input
+    /// </summary>
     [Fact]
     public void Combine_WithNamedVectorList_CreatesCorrectVectorSearchInput()
     {
@@ -583,6 +664,9 @@ public class BuildTargetVectorTest
         Assert.Equal(2, result.Vectors["second"].Length);
     }
 
+    /// <summary>
+    /// Tests that combine with weighted targets preserves weights
+    /// </summary>
     [Fact]
     public void Combine_WithWeightedTargets_PreservesWeights()
     {
@@ -599,6 +683,9 @@ public class BuildTargetVectorTest
         Assert.Equal(0.3, result.Weights["second"][0]);
     }
 
+    /// <summary>
+    /// Tests that combine with multiple weights per target preserves all weights
+    /// </summary>
     [Fact]
     public void Combine_WithMultipleWeightsPerTarget_PreservesAllWeights()
     {
@@ -626,6 +713,9 @@ public class BuildTargetVectorTest
         Assert.Equal(2.0, result.Weights["second"][1]);
     }
 
+    /// <summary>
+    /// Tests that combine preserves target order
+    /// </summary>
     [Fact]
     public void Combine_PreservesTargetOrder()
     {

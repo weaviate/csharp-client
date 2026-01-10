@@ -10,6 +10,9 @@ using V1 = Grpc.Protobuf.V1;
 [CollectionBuilder(typeof(TargetVectors), nameof(Create))]
 public abstract record TargetVectors : IEnumerable<string>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TargetVectors"/> class
+    /// </summary>
     internal TargetVectors() { } // Prevent external inheritance
 
     /// <summary>
@@ -18,32 +21,67 @@ public abstract record TargetVectors : IEnumerable<string>
     /// </summary>
     public delegate TargetVectors FactoryFn(Builder builder);
 
+    /// <summary>
+    /// Gets the value of the targets
+    /// </summary>
     public abstract IReadOnlyList<string> Targets { get; }
+
+    /// <summary>
+    /// Gets the value of the combination
+    /// </summary>
     internal abstract V1.CombinationMethod Combination { get; }
 
+    /// <summary>
+    /// Gets the enumerator
+    /// </summary>
+    /// <returns>An enumerator of string</returns>
     public IEnumerator<string> GetEnumerator() => Targets.GetEnumerator();
 
+    /// <summary>
+    /// Gets the enumerator
+    /// </summary>
+    /// <returns>The system collections enumerator</returns>
     System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =>
         GetEnumerator();
 
     // Static helpers to build target vectors from VectorSearchInput
+    /// <summary>
+    /// Unspecifieds the vectors
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <returns>The target vectors</returns>
     public static TargetVectors Unspecified(AutoArray<string> vectors)
     {
         return new SimpleTargetVectors(vectors?.ToArray() ?? [], V1.CombinationMethod.Unspecified);
     }
 
+    /// <summary>
+    /// Sums the vectors
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <returns>The target vectors</returns>
     public static TargetVectors Sum(VectorSearchInput vectors)
     {
         var targets = vectors.Targets ?? [.. vectors.Vectors.Keys];
         return new SimpleTargetVectors(targets, V1.CombinationMethod.TypeSum);
     }
 
+    /// <summary>
+    /// Averages the vectors
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <returns>The target vectors</returns>
     public static TargetVectors Average(VectorSearchInput vectors)
     {
         var targets = vectors.Targets ?? [.. vectors.Vectors.Keys];
         return new SimpleTargetVectors(targets, V1.CombinationMethod.TypeAverage);
     }
 
+    /// <summary>
+    /// Minimums the vectors
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <returns>The target vectors</returns>
     public static TargetVectors Minimum(VectorSearchInput vectors)
     {
         var targets = vectors.Targets ?? [.. vectors.Vectors.Keys];
@@ -51,17 +89,37 @@ public abstract record TargetVectors : IEnumerable<string>
     }
 
     // Static helpers for simple target vectors
+    /// <summary>
+    /// Sums the targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The target vectors</returns>
     public static TargetVectors Sum(params string[] targets) =>
         new SimpleTargetVectors(targets, V1.CombinationMethod.TypeSum);
 
+    /// <summary>
+    /// Averages the targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The target vectors</returns>
     public static TargetVectors Average(params string[] targets) =>
         new SimpleTargetVectors(targets, V1.CombinationMethod.TypeAverage);
 
+    /// <summary>
+    /// Minimums the targets
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <returns>The target vectors</returns>
     public static TargetVectors Minimum(params string[] targets) =>
         new SimpleTargetVectors(targets, V1.CombinationMethod.TypeMin);
 
     // Static helpers for weighted target vectors
     // Supports multiple weights per target (e.g., ManualWeights(("a", 1.0), ("a", 2.0)))
+    /// <summary>
+    /// Manuals the weights using the specified weights
+    /// </summary>
+    /// <param name="weights">The weights</param>
+    /// <returns>The target vectors</returns>
     public static TargetVectors ManualWeights(params (string name, double weight)[] weights)
     {
         var dict = weights
@@ -74,6 +132,11 @@ public abstract record TargetVectors : IEnumerable<string>
         );
     }
 
+    /// <summary>
+    /// Relatives the score using the specified weights
+    /// </summary>
+    /// <param name="weights">The weights</param>
+    /// <returns>The target vectors</returns>
     public static TargetVectors RelativeScore(params (string name, double weight)[] weights)
     {
         var dict = weights
@@ -102,6 +165,9 @@ public abstract record TargetVectors : IEnumerable<string>
     /// </summary>
     public sealed class Builder
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Builder"/> class
+        /// </summary>
         internal Builder() { }
 
         /// <summary>
@@ -193,6 +259,11 @@ public abstract record TargetVectors : IEnumerable<string>
 /// </summary>
 public sealed record SimpleTargetVectors : TargetVectors
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SimpleTargetVectors"/> class
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <param name="combination">The combination</param>
     internal SimpleTargetVectors(
         IReadOnlyList<string> targets,
         V1.CombinationMethod combination = V1.CombinationMethod.Unspecified
@@ -202,7 +273,14 @@ public sealed record SimpleTargetVectors : TargetVectors
         Combination = combination;
     }
 
+    /// <summary>
+    /// Gets the value of the targets
+    /// </summary>
     public override IReadOnlyList<string> Targets { get; }
+
+    /// <summary>
+    /// Gets the value of the combination
+    /// </summary>
     internal override V1.CombinationMethod Combination { get; }
 }
 
@@ -211,6 +289,12 @@ public sealed record SimpleTargetVectors : TargetVectors
 /// </summary>
 public sealed record WeightedTargetVectors : TargetVectors
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeightedTargetVectors"/> class
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <param name="combination">The combination</param>
+    /// <param name="weights">The weights</param>
     internal WeightedTargetVectors(
         IReadOnlyList<string> targets,
         V1.CombinationMethod combination,
@@ -222,10 +306,25 @@ public sealed record WeightedTargetVectors : TargetVectors
         Weights = weights;
     }
 
+    /// <summary>
+    /// Gets the value of the targets
+    /// </summary>
     public override IReadOnlyList<string> Targets { get; }
+
+    /// <summary>
+    /// Gets the value of the combination
+    /// </summary>
     internal override V1.CombinationMethod Combination { get; }
+
+    /// <summary>
+    /// Gets the value of the weights
+    /// </summary>
     public IReadOnlyDictionary<string, IReadOnlyList<double>> Weights { get; }
 
+    /// <summary>
+    /// Gets the target with weights
+    /// </summary>
+    /// <returns>An enumerable of string name and double weight</returns>
     internal IEnumerable<(string name, double weight)> GetTargetWithWeights()
     {
         foreach (var target in Targets)

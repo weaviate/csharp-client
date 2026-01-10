@@ -2,8 +2,15 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The test aggregate result accessors class
+/// </summary>
 public class TestAggregateResultAccessors
 {
+    /// <summary>
+    /// Creates the test result
+    /// </summary>
+    /// <returns>The aggregate result</returns>
     private static AggregateResult CreateTestResult()
     {
         return new AggregateResult
@@ -62,6 +69,9 @@ public class TestAggregateResultAccessors
 
     #region Typed Accessor Tests
 
+    /// <summary>
+    /// Tests that text returns text aggregation when property exists
+    /// </summary>
     [Fact]
     public void Text_ReturnsTextAggregation_WhenPropertyExists()
     {
@@ -75,6 +85,9 @@ public class TestAggregateResultAccessors
         Assert.Equal("hello", text.TopOccurrences[0].Value);
     }
 
+    /// <summary>
+    /// Tests that text returns null when property does not exist
+    /// </summary>
     [Fact]
     public void Text_ReturnsNull_WhenPropertyDoesNotExist()
     {
@@ -85,6 +98,9 @@ public class TestAggregateResultAccessors
         Assert.Null(text);
     }
 
+    /// <summary>
+    /// Tests that text returns null when property is wrong type
+    /// </summary>
     [Fact]
     public void Text_ReturnsNull_WhenPropertyIsWrongType()
     {
@@ -95,6 +111,9 @@ public class TestAggregateResultAccessors
         Assert.Null(text);
     }
 
+    /// <summary>
+    /// Tests that integer returns integer aggregation when property exists
+    /// </summary>
     [Fact]
     public void Integer_ReturnsIntegerAggregation_WhenPropertyExists()
     {
@@ -109,6 +128,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(50.5, integer.Mean);
     }
 
+    /// <summary>
+    /// Tests that number returns number aggregation when property exists
+    /// </summary>
     [Fact]
     public void Number_ReturnsNumberAggregation_WhenPropertyExists()
     {
@@ -122,6 +144,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(99.5, number.Maximum);
     }
 
+    /// <summary>
+    /// Tests that boolean returns boolean aggregation when property exists
+    /// </summary>
     [Fact]
     public void Boolean_ReturnsBooleanAggregation_WhenPropertyExists()
     {
@@ -136,6 +161,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(0.6, boolean.PercentageTrue);
     }
 
+    /// <summary>
+    /// Tests that date returns date aggregation when property exists
+    /// </summary>
     [Fact]
     public void Date_ReturnsDateAggregation_WhenPropertyExists()
     {
@@ -153,6 +181,9 @@ public class TestAggregateResultAccessors
 
     #region TryGet Tests
 
+    /// <summary>
+    /// Tests that try get text returns true when property exists
+    /// </summary>
     [Fact]
     public void TryGetText_ReturnsTrue_WhenPropertyExists()
     {
@@ -165,6 +196,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(10, text.Count);
     }
 
+    /// <summary>
+    /// Tests that try get text returns false when property does not exist
+    /// </summary>
     [Fact]
     public void TryGetText_ReturnsFalse_WhenPropertyDoesNotExist()
     {
@@ -175,6 +209,9 @@ public class TestAggregateResultAccessors
         Assert.False(success);
     }
 
+    /// <summary>
+    /// Tests that try get text returns false when property is wrong type
+    /// </summary>
     [Fact]
     public void TryGetText_ReturnsFalse_WhenPropertyIsWrongType()
     {
@@ -185,6 +222,9 @@ public class TestAggregateResultAccessors
         Assert.False(success);
     }
 
+    /// <summary>
+    /// Tests that try get integer returns true when property exists
+    /// </summary>
     [Fact]
     public void TryGetInteger_ReturnsTrue_WhenPropertyExists()
     {
@@ -197,6 +237,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(20, integer.Count);
     }
 
+    /// <summary>
+    /// Tests that try get number returns true when property exists
+    /// </summary>
     [Fact]
     public void TryGetNumber_ReturnsTrue_WhenPropertyExists()
     {
@@ -209,6 +252,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(15, number.Count);
     }
 
+    /// <summary>
+    /// Tests that try get boolean returns true when property exists
+    /// </summary>
     [Fact]
     public void TryGetBoolean_ReturnsTrue_WhenPropertyExists()
     {
@@ -221,6 +267,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(50, boolean.Count);
     }
 
+    /// <summary>
+    /// Tests that try get date returns true when property exists
+    /// </summary>
     [Fact]
     public void TryGetDate_ReturnsTrue_WhenPropertyExists()
     {
@@ -233,6 +282,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(25, date.Count);
     }
 
+    /// <summary>
+    /// Tests that try get generic returns true when property exists and matches type
+    /// </summary>
     [Fact]
     public void TryGet_Generic_ReturnsTrue_WhenPropertyExistsAndMatchesType()
     {
@@ -245,6 +297,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(10, text.Count);
     }
 
+    /// <summary>
+    /// Tests that try get generic returns false when property is wrong type
+    /// </summary>
     [Fact]
     public void TryGet_Generic_ReturnsFalse_WhenPropertyIsWrongType()
     {
@@ -259,6 +314,9 @@ public class TestAggregateResultAccessors
 
     #region Property Lambda Tests
 
+    /// <summary>
+    /// Tests that property action executes action when property matches
+    /// </summary>
     [Fact]
     public void Property_Action_ExecutesAction_WhenPropertyMatches()
     {
@@ -271,6 +329,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(10, capturedCount);
     }
 
+    /// <summary>
+    /// Tests that property action returns false when property does not match
+    /// </summary>
     [Fact]
     public void Property_Action_ReturnsFalse_WhenPropertyDoesNotMatch()
     {
@@ -283,6 +344,9 @@ public class TestAggregateResultAccessors
         Assert.False(executed);
     }
 
+    /// <summary>
+    /// Tests that property func returns result when property matches
+    /// </summary>
     [Fact]
     public void Property_Func_ReturnsResult_WhenPropertyMatches()
     {
@@ -293,6 +357,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(10, count);
     }
 
+    /// <summary>
+    /// Tests that property func returns default when property does not match
+    /// </summary>
     [Fact]
     public void Property_Func_ReturnsDefault_WhenPropertyDoesNotMatch()
     {
@@ -303,6 +370,9 @@ public class TestAggregateResultAccessors
         Assert.Null(count);
     }
 
+    /// <summary>
+    /// Tests that property func with value type returns value when matches
+    /// </summary>
     [Fact]
     public void Property_Func_WithValueType_ReturnsValue_WhenMatches()
     {
@@ -317,6 +387,9 @@ public class TestAggregateResultAccessors
 
     #region Match Tests
 
+    /// <summary>
+    /// Tests that match action executes correct action for text property
+    /// </summary>
     [Fact]
     public void Match_Action_ExecutesCorrectAction_ForTextProperty()
     {
@@ -351,6 +424,9 @@ public class TestAggregateResultAccessors
         Assert.Equal("text", capturedType);
     }
 
+    /// <summary>
+    /// Tests that match action executes correct action for integer property
+    /// </summary>
     [Fact]
     public void Match_Action_ExecutesCorrectAction_ForIntegerProperty()
     {
@@ -373,6 +449,9 @@ public class TestAggregateResultAccessors
         Assert.Equal("integer", capturedType);
     }
 
+    /// <summary>
+    /// Tests that match action executes correct action for number property
+    /// </summary>
     [Fact]
     public void Match_Action_ExecutesCorrectAction_ForNumberProperty()
     {
@@ -391,6 +470,9 @@ public class TestAggregateResultAccessors
         Assert.Equal("number", capturedType);
     }
 
+    /// <summary>
+    /// Tests that match action executes correct action for boolean property
+    /// </summary>
     [Fact]
     public void Match_Action_ExecutesCorrectAction_ForBooleanProperty()
     {
@@ -409,6 +491,9 @@ public class TestAggregateResultAccessors
         Assert.Equal("boolean", capturedType);
     }
 
+    /// <summary>
+    /// Tests that match action executes correct action for date property
+    /// </summary>
     [Fact]
     public void Match_Action_ExecutesCorrectAction_ForDateProperty()
     {
@@ -427,6 +512,9 @@ public class TestAggregateResultAccessors
         Assert.Equal("date", capturedType);
     }
 
+    /// <summary>
+    /// Tests that match action returns false when property does not exist
+    /// </summary>
     [Fact]
     public void Match_Action_ReturnsFalse_WhenPropertyDoesNotExist()
     {
@@ -449,6 +537,9 @@ public class TestAggregateResultAccessors
         Assert.False(executed);
     }
 
+    /// <summary>
+    /// Tests that match action returns false when no matching handler
+    /// </summary>
     [Fact]
     public void Match_Action_ReturnsFalse_WhenNoMatchingHandler()
     {
@@ -468,6 +559,9 @@ public class TestAggregateResultAccessors
         Assert.False(executed);
     }
 
+    /// <summary>
+    /// Tests that match func returns correct value for text property
+    /// </summary>
     [Fact]
     public void Match_Func_ReturnsCorrectValue_ForTextProperty()
     {
@@ -482,6 +576,9 @@ public class TestAggregateResultAccessors
         Assert.Equal("Text with 10 items", description);
     }
 
+    /// <summary>
+    /// Tests that match func returns correct value for integer property
+    /// </summary>
     [Fact]
     public void Match_Func_ReturnsCorrectValue_ForIntegerProperty()
     {
@@ -496,6 +593,9 @@ public class TestAggregateResultAccessors
         Assert.Equal("Integer range [1, 100]", description);
     }
 
+    /// <summary>
+    /// Tests that match func returns default when property does not exist
+    /// </summary>
     [Fact]
     public void Match_Func_ReturnsDefault_WhenPropertyDoesNotExist()
     {
@@ -510,6 +610,9 @@ public class TestAggregateResultAccessors
         Assert.Null(description);
     }
 
+    /// <summary>
+    /// Tests that match func returns default when no matching handler
+    /// </summary>
     [Fact]
     public void Match_Func_ReturnsDefault_WhenNoMatchingHandler()
     {
@@ -524,6 +627,10 @@ public class TestAggregateResultAccessors
 
     #region GroupByResult Tests
 
+    /// <summary>
+    /// Creates the test group by result
+    /// </summary>
+    /// <returns>The aggregate group by result</returns>
     private static AggregateGroupByResult CreateTestGroupByResult()
     {
         return new AggregateGroupByResult
@@ -580,6 +687,9 @@ public class TestAggregateResultAccessors
         };
     }
 
+    /// <summary>
+    /// Tests that group text returns text aggregation when property exists
+    /// </summary>
     [Fact]
     public void Group_Text_ReturnsTextAggregation_WhenPropertyExists()
     {
@@ -592,6 +702,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(5, text.Count);
     }
 
+    /// <summary>
+    /// Tests that group try get text returns true when property exists
+    /// </summary>
     [Fact]
     public void Group_TryGetText_ReturnsTrue_WhenPropertyExists()
     {
@@ -605,6 +718,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(5, text.Count);
     }
 
+    /// <summary>
+    /// Tests that group property action executes action when property matches
+    /// </summary>
     [Fact]
     public void Group_Property_Action_ExecutesAction_WhenPropertyMatches()
     {
@@ -618,6 +734,9 @@ public class TestAggregateResultAccessors
         Assert.Equal(5, capturedCount);
     }
 
+    /// <summary>
+    /// Tests that group match action executes correct action
+    /// </summary>
     [Fact]
     public void Group_Match_Action_ExecutesCorrectAction()
     {
@@ -641,6 +760,9 @@ public class TestAggregateResultAccessors
         Assert.Equal("text", capturedType);
     }
 
+    /// <summary>
+    /// Tests that group match func returns correct value
+    /// </summary>
     [Fact]
     public void Group_Match_Func_ReturnsCorrectValue()
     {

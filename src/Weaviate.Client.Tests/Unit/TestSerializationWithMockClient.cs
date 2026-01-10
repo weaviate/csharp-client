@@ -19,35 +19,113 @@ public class SerializationWithMockClientTests
     public class AllPropertiesModel
     {
         // Simple types
+        /// <summary>
+        /// Gets or sets the value of the text prop
+        /// </summary>
         public string? TextProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the int prop
+        /// </summary>
         public int IntProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the number prop
+        /// </summary>
         public double NumberProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the bool prop
+        /// </summary>
         public bool BoolProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the date prop
+        /// </summary>
         public DateTime DateProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the uuid prop
+        /// </summary>
         public Guid UuidProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the blob prop
+        /// </summary>
         public byte[]? BlobProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the geo prop
+        /// </summary>
         public GeoCoordinate? GeoProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the phone prop
+        /// </summary>
         public PhoneNumber? PhoneProp { get; set; }
 
         // Array types
+        /// <summary>
+        /// Gets or sets the value of the text array prop
+        /// </summary>
         public string[]? TextArrayProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the int array prop
+        /// </summary>
         public int[]? IntArrayProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the number array prop
+        /// </summary>
         public double[]? NumberArrayProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the bool array prop
+        /// </summary>
         public bool[]? BoolArrayProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the date array prop
+        /// </summary>
         public DateTime[]? DateArrayProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the uuid array prop
+        /// </summary>
         public Guid[]? UuidArrayProp { get; set; }
 
         // Nested object
+        /// <summary>
+        /// Gets or sets the value of the object prop
+        /// </summary>
         public NestedObject? ObjectProp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the object array prop
+        /// </summary>
         public NestedObject[]? ObjectArrayProp { get; set; }
     }
 
+    /// <summary>
+    /// The nested object class
+    /// </summary>
     public class NestedObject
     {
+        /// <summary>
+        /// Gets or sets the value of the name
+        /// </summary>
         public string? Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the value
+        /// </summary>
         public int Value { get; set; }
     }
 
+    /// <summary>
+    /// Tests that insert with all property types serializes correctly
+    /// </summary>
     [Fact]
     public async Task Insert_WithAllPropertyTypes_SerializesCorrectly()
     {
@@ -181,6 +259,9 @@ public class SerializationWithMockClientTests
         Assert.Equal(2, objArray[1].GetProperty("value").GetInt64());
     }
 
+    /// <summary>
+    /// Tests that deserialization with all property types works correctly
+    /// </summary>
     [Fact]
     public void Deserialization_WithAllPropertyTypes_WorksCorrectly()
     {
@@ -311,6 +392,9 @@ public class SerializationWithMockClientTests
         Assert.Equal(2, item.ObjectArrayProp[1].Value);
     }
 
+    /// <summary>
+    /// Tests that insert with nullable properties handles nulls correctly
+    /// </summary>
     [Fact]
     public async Task Insert_WithNullableProperties_HandlesNullsCorrectly()
     {

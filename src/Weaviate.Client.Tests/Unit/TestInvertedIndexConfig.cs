@@ -3,8 +3,14 @@ using Weaviate.Client.Rest;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The inverted index config tests class
+/// </summary>
 public class InvertedIndexConfigTests
 {
+    /// <summary>
+    /// Tests that equals null returns false
+    /// </summary>
     [Fact]
     public void Equals_Null_Returns_False()
     {
@@ -18,6 +24,9 @@ public class InvertedIndexConfigTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals self returns true
+    /// </summary>
     [Fact]
     public void Equals_Self_Returns_True()
     {
@@ -31,6 +40,9 @@ public class InvertedIndexConfigTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that equals different configs returns false
+    /// </summary>
     [Fact]
     public void Equals_Different_Configs_Returns_False()
     {
@@ -46,6 +58,9 @@ public class InvertedIndexConfigTests
         Assert.NotSame(config1, config2);
     }
 
+    /// <summary>
+    /// Tests that equals configs with different bm 25 returns false
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Different_Bm25_Returns_False()
     {
@@ -60,6 +75,9 @@ public class InvertedIndexConfigTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals configs with same bm 25 returns true
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Same_Bm25_Returns_True()
     {
@@ -74,6 +92,9 @@ public class InvertedIndexConfigTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that equals configs with different cleanup interval seconds returns false
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Different_CleanupIntervalSeconds_Returns_False()
     {
@@ -88,6 +109,9 @@ public class InvertedIndexConfigTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals configs with same cleanup interval seconds returns true
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Same_CleanupIntervalSeconds_Returns_True()
     {
@@ -102,6 +126,9 @@ public class InvertedIndexConfigTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that equals configs with different index null state returns false
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Different_IndexNullState_Returns_False()
     {
@@ -116,6 +143,9 @@ public class InvertedIndexConfigTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals configs with same index null state returns true
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Same_IndexNullState_Returns_True()
     {
@@ -130,6 +160,9 @@ public class InvertedIndexConfigTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that equals configs with different index property length returns false
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Different_IndexPropertyLength_Returns_False()
     {
@@ -144,6 +177,9 @@ public class InvertedIndexConfigTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals configs with same index property length returns true
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Same_IndexPropertyLength_Returns_True()
     {
@@ -158,6 +194,9 @@ public class InvertedIndexConfigTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that equals configs with different index timestamps returns false
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Different_IndexTimestamps_Returns_False()
     {
@@ -172,6 +211,9 @@ public class InvertedIndexConfigTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals configs with same index timestamps returns true
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Same_IndexTimestamps_Returns_True()
     {
@@ -186,6 +228,9 @@ public class InvertedIndexConfigTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that equals configs with different stopwords returns false
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Different_Stopwords_Returns_False()
     {
@@ -201,6 +246,9 @@ public class InvertedIndexConfigTests
         Assert.NotSame(config1, config2);
     }
 
+    /// <summary>
+    /// Tests that equals configs with same stopwords returns true
+    /// </summary>
     [Fact]
     public void Equals_Configs_With_Same_Stopwords_Returns_True()
     {
@@ -215,6 +263,9 @@ public class InvertedIndexConfigTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that deserialize inverted index config
+    /// </summary>
     [Fact]
     public void Deserialize_InvertedIndexConfig()
     {
@@ -261,6 +312,9 @@ public class InvertedIndexConfigTests
         Assert.Equal(["minus"], config.Stopwords.Removals);
     }
 
+    /// <summary>
+    /// Tests that serialize inverted index config
+    /// </summary>
     [Fact]
     public void Serialize_InvertedIndexConfig()
     {

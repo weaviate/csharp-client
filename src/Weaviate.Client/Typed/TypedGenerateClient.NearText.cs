@@ -3,6 +3,9 @@ using Weaviate.Client.Models.Typed;
 
 namespace Weaviate.Client.Typed;
 
+/// <summary>
+/// The typed generate client class
+/// </summary>
 public partial class TypedGenerateClient<T>
 {
     /// <summary>
@@ -21,7 +24,6 @@ public partial class TypedGenerateClient<T>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
-    /// <param name="targets">Target vectors to search</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -89,7 +91,6 @@ public partial class TypedGenerateClient<T>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
-    /// <param name="targets">Target vectors to search</param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>

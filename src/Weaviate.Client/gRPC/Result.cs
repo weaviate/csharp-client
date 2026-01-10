@@ -4,8 +4,17 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Grpc;
 
+/// <summary>
+/// The weaviate grpc client class
+/// </summary>
 internal partial class WeaviateGrpcClient
 {
+    /// <summary>
+    /// Makes the props request using the specified fields
+    /// </summary>
+    /// <param name="fields">The fields</param>
+    /// <param name="reference">The reference</param>
+    /// <returns>The req</returns>
     private static Grpc.Protobuf.V1.PropertiesRequest? MakePropsRequest(
         string[]? fields,
         IList<QueryReference>? reference
@@ -36,6 +45,11 @@ internal partial class WeaviateGrpcClient
         return req;
     }
 
+    /// <summary>
+    /// Makes the ref props request using the specified reference
+    /// </summary>
+    /// <param name="reference">The reference</param>
+    /// <returns>The grpc protobuf ref properties request</returns>
     private static Grpc.Protobuf.V1.RefPropertiesRequest? MakeRefPropsRequest(
         QueryReference? reference
     )
@@ -61,6 +75,11 @@ internal partial class WeaviateGrpcClient
         };
     }
 
+    /// <summary>
+    /// Builds the metadata from result using the specified metadata
+    /// </summary>
+    /// <param name="metadata">The metadata</param>
+    /// <returns>The metadata</returns>
     internal static Metadata BuildMetadataFromResult(Grpc.Protobuf.V1.MetadataResult metadata)
     {
         return new Metadata
@@ -80,6 +99,11 @@ internal partial class WeaviateGrpcClient
         };
     }
 
+    /// <summary>
+    /// Builds the vectors from result using the specified metadata result
+    /// </summary>
+    /// <param name="metadataResult">The metadata result</param>
+    /// <returns>The vectors</returns>
     internal static Vectors BuildVectorsFromResult(Grpc.Protobuf.V1.MetadataResult metadataResult)
     {
         if (metadataResult.VectorBytes != null && metadataResult.VectorBytes.Length > 0)
@@ -92,6 +116,13 @@ internal partial class WeaviateGrpcClient
         return new Vectors(vectors.Select(vector => vector.FromByteString<float>()));
     }
 
+    /// <summary>
+    /// Builds the group by object from result using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="groupName">The group name</param>
+    /// <param name="obj">The obj</param>
+    /// <returns>The group by object</returns>
     internal static GroupByObject BuildGroupByObjectFromResult(
         string collection,
         string groupName,
@@ -107,6 +138,11 @@ internal partial class WeaviateGrpcClient
         };
     }
 
+    /// <summary>
+    /// Makes the non refs using the specified result
+    /// </summary>
+    /// <param name="result">The result</param>
+    /// <returns>The eo base</returns>
     private static ExpandoObject MakeNonRefs(Grpc.Protobuf.V1.Properties result)
     {
         var eoBase = new ExpandoObject();
@@ -180,6 +216,11 @@ internal partial class WeaviateGrpcClient
         return eoBase;
     }
 
+    /// <summary>
+    /// Makes the list value using the specified list
+    /// </summary>
+    /// <param name="list">The list</param>
+    /// <returns>The list</returns>
     private static IList MakeListValue(Grpc.Protobuf.V1.ListValue list)
     {
         switch (list.KindCase)
@@ -208,6 +249,13 @@ internal partial class WeaviateGrpcClient
         }
     }
 
+    /// <summary>
+    /// Builds the object from result using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="metadata">The metadata</param>
+    /// <param name="properties">The properties</param>
+    /// <returns>The weaviate object</returns>
     internal static WeaviateObject BuildObjectFromResult(
         string collection,
         Grpc.Protobuf.V1.MetadataResult metadata,
@@ -227,6 +275,11 @@ internal partial class WeaviateGrpcClient
         };
     }
 
+    /// <summary>
+    /// Builds the generative reply from result using the specified generative
+    /// </summary>
+    /// <param name="generative">The generative</param>
+    /// <returns>A list of models generative reply</returns>
     internal static IList<Models.GenerativeReply> BuildGenerativeReplyFromResult(
         IEnumerable<Grpc.Protobuf.V1.GenerativeReply>? generative
     )
@@ -240,6 +293,14 @@ internal partial class WeaviateGrpcClient
                 .ToList() ?? [];
     }
 
+    /// <summary>
+    /// Builds the generative object from result using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="metadata">The metadata</param>
+    /// <param name="properties">The properties</param>
+    /// <param name="generative">The generative</param>
+    /// <returns>The generative weaviate object</returns>
     internal static GenerativeWeaviateObject BuildGenerativeObjectFromResult(
         string collection,
         Grpc.Protobuf.V1.MetadataResult metadata,
@@ -261,6 +322,11 @@ internal partial class WeaviateGrpcClient
         };
     }
 
+    /// <summary>
+    /// Builds the generative result using the specified generative
+    /// </summary>
+    /// <param name="generative">The generative</param>
+    /// <returns>The generative result</returns>
     private static GenerativeResult BuildGenerativeResult(
         Grpc.Protobuf.V1.GenerativeResult? generative
     )
@@ -268,6 +334,11 @@ internal partial class WeaviateGrpcClient
         return new GenerativeResult(BuildGenerativeReplyFromResult(generative?.Values));
     }
 
+    /// <summary>
+    /// Makes the refs using the specified ref props
+    /// </summary>
+    /// <param name="refProps">The ref props</param>
+    /// <returns>The result</returns>
     internal static IDictionary<string, IList<WeaviateObject>> MakeRefs(
         Google.Protobuf.Collections.RepeatedField<Grpc.Protobuf.V1.RefPropertiesResult> refProps
     )
@@ -284,6 +355,11 @@ internal partial class WeaviateGrpcClient
         return result;
     }
 
+    /// <summary>
+    /// Builds the result using the specified reply
+    /// </summary>
+    /// <param name="reply">The reply</param>
+    /// <returns>The weaviate result</returns>
     internal static WeaviateResult BuildResult(Protobuf.V1.SearchReply? reply)
     {
         if (reply?.Results == null || reply.Results.Count == 0)
@@ -300,6 +376,11 @@ internal partial class WeaviateGrpcClient
         };
     }
 
+    /// <summary>
+    /// Builds the group by result using the specified reply
+    /// </summary>
+    /// <param name="reply">The reply</param>
+    /// <returns>The models group by result</returns>
     internal static Models.GroupByResult BuildGroupByResult(Protobuf.V1.SearchReply? reply)
     {
         if (reply?.GroupByResults == null || reply.GroupByResults.Count == 0)
@@ -325,6 +406,11 @@ internal partial class WeaviateGrpcClient
         return new Models.GroupByResult(objects, groups);
     }
 
+    /// <summary>
+    /// Builds the generative result using the specified reply
+    /// </summary>
+    /// <param name="reply">The reply</param>
+    /// <returns>The generative weaviate result</returns>
     internal static GenerativeWeaviateResult BuildGenerativeResult(Protobuf.V1.SearchReply? reply)
     {
         if (reply == null || reply?.Results == null || reply.Results.Count == 0)
@@ -347,6 +433,13 @@ internal partial class WeaviateGrpcClient
         };
     }
 
+    /// <summary>
+    /// Builds the generative group by object from result using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="groupName">The group name</param>
+    /// <param name="obj">The obj</param>
+    /// <returns>The generative group by object</returns>
     internal static GenerativeGroupByObject BuildGenerativeGroupByObjectFromResult(
         string collection,
         string groupName,
@@ -373,6 +466,11 @@ internal partial class WeaviateGrpcClient
         };
     }
 
+    /// <summary>
+    /// Builds the generative group by result using the specified reply
+    /// </summary>
+    /// <param name="reply">The reply</param>
+    /// <returns>The result</returns>
     internal static Models.GenerativeGroupByResult BuildGenerativeGroupByResult(
         Protobuf.V1.SearchReply? reply
     )

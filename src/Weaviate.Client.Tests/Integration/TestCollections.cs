@@ -2,9 +2,16 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The collections tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("TestCollections")]
 public partial class CollectionsTests : IntegrationTests
 {
+    /// <summary>
+    /// Tests that collection client creates and retrieves collection
+    /// </summary>
     [Fact]
     public async Task CollectionClient_Creates_And_Retrieves_Collection()
     {
@@ -29,6 +36,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal("Test collection description", config.Description);
     }
 
+    /// <summary>
+    /// Tests that test collections list
+    /// </summary>
     [Fact]
     public async Task Test_Collections_List()
     {
@@ -64,6 +74,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Superset<string>(collectionNames, list);
     }
 
+    /// <summary>
+    /// Tests that test collections exists
+    /// </summary>
     [Fact]
     public async Task Test_Collections_Exists()
     {
@@ -80,6 +93,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.True(exists);
     }
 
+    /// <summary>
+    /// Tests that test collections not exists
+    /// </summary>
     [Fact]
     public async Task Test_Collections_Not_Exists()
     {
@@ -114,6 +130,9 @@ public partial class CollectionsTests : IntegrationTests
     }
 #endif
 
+    /// <summary>
+    /// Tests that collection creates and retrieves reranker config
+    /// </summary>
     [Fact]
     public async Task Collection_Creates_And_Retrieves_Reranker_Config()
     {
@@ -141,6 +160,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.IsType<Reranker.Custom>(collection.RerankerConfig);
     }
 
+    /// <summary>
+    /// Tests that collection creates and retrieves generative config
+    /// </summary>
     [Fact]
     public async Task Collection_Creates_And_Retrieves_Generative_Config()
     {
@@ -164,6 +186,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.IsType<GenerativeConfig.Custom>(collection.GenerativeConfig);
     }
 
+    /// <summary>
+    /// Tests that test collections export
+    /// </summary>
     [Fact]
     public async Task Test_Collections_Export()
     {
@@ -290,6 +315,9 @@ public partial class CollectionsTests : IntegrationTests
 #pragma warning restore CS0618 // Type or member is obsolete
     }
 
+    /// <summary>
+    /// Tests that test collections export non default values sharding
+    /// </summary>
     [Fact]
     public async Task Test_Collections_Export_NonDefaultValues_Sharding()
     {
@@ -445,6 +473,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal("", export.Vectorizer);
     }
 
+    /// <summary>
+    /// Tests that test collections export non default values multi tenacy
+    /// </summary>
     [Fact]
     public async Task Test_Collections_Export_NonDefaultValues_MultiTenacy()
     {
@@ -601,6 +632,9 @@ public partial class CollectionsTests : IntegrationTests
 #pragma warning restore CS0618 // Type or member is obsolete
     }
 
+    /// <summary>
+    /// Tests that test collection config add vector
+    /// </summary>
     [Fact]
     public async Task Test_Collection_Config_Add_Vector()
     {
@@ -623,12 +657,20 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(2, c.VectorConfig.Count);
     }
 
+    /// <summary>
+    /// Generatives the config data
+    /// </summary>
+    /// <returns>An enumerable of object</returns>
     public static IEnumerable<object?> GenerativeConfigData()
     {
         yield return null;
         yield return Configure.Generative.Anyscale();
     }
 
+    /// <summary>
+    /// Vectorizers the config data
+    /// </summary>
+    /// <returns>An enumerable of vector config list</returns>
     public static IEnumerable<VectorConfigList?> VectorizerConfigData()
     {
         yield return null;
@@ -643,6 +685,10 @@ public partial class CollectionsTests : IntegrationTests
         ];
     }
 
+    /// <summary>
+    /// Adds the property test data
+    /// </summary>
+    /// <returns>An enumerable of object array</returns>
     public static IEnumerable<object?[]> AddPropertyTestData()
     {
         foreach (var generativeConfig in GenerativeConfigData())
@@ -654,6 +700,11 @@ public partial class CollectionsTests : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test config add property
+    /// </summary>
+    /// <param name="generativeConfig">The generative config</param>
+    /// <param name="vectorizerConfig">The vectorizer config</param>
     [Theory]
     [MemberData(nameof(AddPropertyTestData))]
     public async Task Test_Config_Add_Property(
@@ -676,6 +727,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Contains(config.Properties, p => p.Name == "description");
     }
 
+    /// <summary>
+    /// Tests that test collection config update
+    /// </summary>
     [Fact]
     public async Task Test_Collection_Config_Update()
     {
@@ -997,6 +1051,9 @@ public partial class CollectionsTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test update generative reranker
+    /// </summary>
     [Fact]
     public async Task TestUpdateGenerativeReranker()
     {
@@ -1018,6 +1075,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.IsType<Reranker.Custom>(config.RerankerConfig);
     }
 
+    /// <summary>
+    /// Tests that test sq and rq
+    /// </summary>
     [Fact]
     public async Task Test_sq_and_rq()
     {
@@ -1112,6 +1172,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(456, rqQuantizer.RescoreLimit);
     }
 
+    /// <summary>
+    /// Tests that test flat rq
+    /// </summary>
     [Fact]
     public async Task Test_flat_rq()
     {
@@ -1171,6 +1234,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(456, rqQuantizer.RescoreLimit);
     }
 
+    /// <summary>
+    /// Tests that test skip default quantization
+    /// </summary>
     [Fact]
     public async Task Test_skip_default_quantization()
     {
@@ -1225,6 +1291,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(100, sqQuantizer.RescoreLimit);
     }
 
+    /// <summary>
+    /// Tests that test return blob property
+    /// </summary>
     [Fact]
     public async Task Test_Return_Blob_Property()
     {
@@ -1266,6 +1335,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(blobData, objs[1].Properties["blob"]);
     }
 
+    /// <summary>
+    /// Tests that test collection query rerank
+    /// </summary>
     [Fact]
     public async Task Test_Collection_Query_Rerank()
     {

@@ -38,6 +38,11 @@ internal sealed class VectorizerAttribute : Attribute
     /// </summary>
     public VectorType VectorType { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VectorizerAttribute"/> class
+    /// </summary>
+    /// <param name="identifier">The identifier</param>
+    /// <param name="vectorType">The vector type</param>
     public VectorizerAttribute(string identifier, VectorType vectorType = VectorType.Vector)
     {
         Identifier = identifier;

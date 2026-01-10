@@ -2,20 +2,43 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The collection client class
+/// </summary>
 public partial class CollectionClient
 {
+    /// <summary>
+    /// A client for managing tenants in the Weaviate cluster.
+    /// </summary>
     public TenantsClient Tenants => new(this);
 }
 
+/// <summary>
+/// The tenants client class
+/// </summary>
 public class TenantsClient
 {
+    /// <summary>
+    /// The collection client
+    /// </summary>
     private readonly CollectionClient _collectionClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TenantsClient"/> class
+    /// </summary>
+    /// <param name="collectionClient">The collection client</param>
     internal TenantsClient(CollectionClient collectionClient)
     {
         _collectionClient = collectionClient;
     }
 
+    /// <summary>
+    /// Creates the tenants
+    /// </summary>
+    /// <param name="tenants">The tenants</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="ArgumentException">At least one tenant must be provided. </exception>
+    /// <returns>A task containing an enumerable of tenant</returns>
     public async Task<IEnumerable<Tenant>> Create(
         AutoArray<Tenant> tenants,
         CancellationToken cancellationToken = default
@@ -50,6 +73,13 @@ public class TenantsClient
         });
     }
 
+    /// <summary>
+    /// Updates the tenants
+    /// </summary>
+    /// <param name="tenants">The tenants</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="ArgumentException">At least one tenant must be provided. </exception>
+    /// <returns>A task containing an enumerable of tenant</returns>
     public async Task<IEnumerable<Tenant>> Update(
         AutoArray<Tenant> tenants,
         CancellationToken cancellationToken = default
@@ -93,6 +123,12 @@ public class TenantsClient
         });
     }
 
+    /// <summary>
+    /// Deletes the tenant names
+    /// </summary>
+    /// <param name="tenantNames">The tenant names</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="ArgumentException">At least one tenant name must be provided. </exception>
     public async Task Delete(
         AutoArray<string> tenantNames,
         CancellationToken cancellationToken = default
@@ -112,15 +148,32 @@ public class TenantsClient
         );
     }
 
+    /// <summary>
+    /// Gets the tenant name
+    /// </summary>
+    /// <param name="tenantName">The tenant name</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the tenant</returns>
     public async Task<Tenant?> Get(string tenantName, CancellationToken cancellationToken = default)
     {
         var tenants = await List(new[] { tenantName }, cancellationToken);
         return tenants.FirstOrDefault();
     }
 
+    /// <summary>
+    /// Lists the cancellation token
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing an enumerable of tenant</returns>
     public async Task<IEnumerable<Tenant>> List(CancellationToken cancellationToken = default) =>
         await List(Array.Empty<string>(), cancellationToken);
 
+    /// <summary>
+    /// Lists the tenant names
+    /// </summary>
+    /// <param name="tenantNames">The tenant names</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing an enumerable of tenant</returns>
     public async Task<IEnumerable<Tenant>> List(
         string[] tenantNames,
         CancellationToken cancellationToken = default
@@ -135,6 +188,12 @@ public class TenantsClient
         return response.Select(t => Tenant.FromGrpc(t));
     }
 
+    /// <summary>
+    /// Existses the tenant name
+    /// </summary>
+    /// <param name="tenantName">The tenant name</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the bool</returns>
     public async Task<bool> Exists(string tenantName, CancellationToken cancellationToken = default)
     {
         var response = await _collectionClient.Client.GrpcClient.TenantsGet(
@@ -146,6 +205,12 @@ public class TenantsClient
         return response.Any();
     }
 
+    /// <summary>
+    /// Activates the tenants
+    /// </summary>
+    /// <param name="tenants">The tenants</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the bool</returns>
     public async Task<bool> Activate(
         Tenant[] tenants,
         CancellationToken cancellationToken = default
@@ -155,6 +220,12 @@ public class TenantsClient
         return true;
     }
 
+    /// <summary>
+    /// Activates the tenant names
+    /// </summary>
+    /// <param name="tenantNames">The tenant names</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the bool</returns>
     public async Task<bool> Activate(
         string[] tenantNames,
         CancellationToken cancellationToken = default
@@ -174,6 +245,12 @@ public class TenantsClient
         return true;
     }
 
+    /// <summary>
+    /// Deactivates the tenants
+    /// </summary>
+    /// <param name="tenants">The tenants</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the bool</returns>
     public async Task<bool> Deactivate(
         Tenant[] tenants,
         CancellationToken cancellationToken = default
@@ -183,6 +260,12 @@ public class TenantsClient
         return true;
     }
 
+    /// <summary>
+    /// Deactivates the tenant names
+    /// </summary>
+    /// <param name="tenantNames">The tenant names</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the bool</returns>
     public async Task<bool> Deactivate(
         string[] tenantNames,
         CancellationToken cancellationToken = default
@@ -202,6 +285,12 @@ public class TenantsClient
         return true;
     }
 
+    /// <summary>
+    /// Offloads the tenant names
+    /// </summary>
+    /// <param name="tenantNames">The tenant names</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the bool</returns>
     public async Task<bool> Offload(
         string[] tenantNames,
         CancellationToken cancellationToken = default

@@ -13,15 +13,34 @@ public class RetryHandlerTimeoutTests
     /// </summary>
     private class TimeoutMockHttpHandler : HttpMessageHandler
     {
+        /// <summary>
+        /// The timeout
+        /// </summary>
         private readonly TimeSpan _timeout;
+
+        /// <summary>
+        /// The operation
+        /// </summary>
         private readonly string? _operation;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimeoutMockHttpHandler"/> class
+        /// </summary>
+        /// <param name="timeout">The timeout</param>
+        /// <param name="operation">The operation</param>
         public TimeoutMockHttpHandler(TimeSpan timeout, string? operation = null)
         {
             _timeout = timeout;
             _operation = operation;
         }
 
+        /// <summary>
+        /// Sends the request
+        /// </summary>
+        /// <param name="request">The request</param>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <exception cref="TaskCanceledException">Simulated timeout</exception>
+        /// <returns>A task containing the http response message</returns>
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken
@@ -48,14 +67,32 @@ public class RetryHandlerTimeoutTests
     /// </summary>
     private class FlakeyHttpHandler : HttpMessageHandler
     {
+        /// <summary>
+        /// The failures before success
+        /// </summary>
         private readonly int _failuresBeforeSuccess;
+
+        /// <summary>
+        /// The attempt count
+        /// </summary>
         private int _attemptCount = 0;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FlakeyHttpHandler"/> class
+        /// </summary>
+        /// <param name="failuresBeforeSuccess">The failures before success</param>
         public FlakeyHttpHandler(int failuresBeforeSuccess)
         {
             _failuresBeforeSuccess = failuresBeforeSuccess;
         }
 
+        /// <summary>
+        /// Sends the request
+        /// </summary>
+        /// <param name="request">The request</param>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <exception cref="HttpRequestException">Simulated network failure </exception>
+        /// <returns>A task containing the http response message</returns>
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken
@@ -81,6 +118,9 @@ public class RetryHandlerTimeoutTests
         }
     }
 
+    /// <summary>
+    /// Tests that retry handler timeout after all retries throws timeout exception
+    /// </summary>
     [Fact]
     public async Task RetryHandler_TimeoutAfterAllRetries_ThrowsTimeoutException()
     {
@@ -118,6 +158,9 @@ public class RetryHandlerTimeoutTests
         Assert.Contains("Test operation", ex.Message);
     }
 
+    /// <summary>
+    /// Tests that retry handler timeout with no operation uses default message
+    /// </summary>
     [Fact]
     public async Task RetryHandler_TimeoutWithNoOperation_UsesDefaultMessage()
     {
@@ -153,6 +196,9 @@ public class RetryHandlerTimeoutTests
         Assert.Contains("The operation timed out", ex.Message);
     }
 
+    /// <summary>
+    /// Tests that retry handler non timeout exception does not wrap in timeout exception
+    /// </summary>
     [Fact]
     public async Task RetryHandler_NonTimeoutException_DoesNotWrapInTimeoutException()
     {
@@ -174,6 +220,9 @@ public class RetryHandlerTimeoutTests
         });
     }
 
+    /// <summary>
+    /// Tests that retry handler success after retries does not throw timeout
+    /// </summary>
     [Fact]
     public async Task RetryHandler_SuccessAfterRetries_DoesNotThrowTimeout()
     {
@@ -198,6 +247,9 @@ public class RetryHandlerTimeoutTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
+    /// <summary>
+    /// Tests that retry handler timeout during retry preserves original timeout
+    /// </summary>
     [Fact]
     public async Task RetryHandler_TimeoutDuringRetry_PreservesOriginalTimeout()
     {
@@ -234,6 +286,9 @@ public class RetryHandlerTimeoutTests
         Assert.Equal(operation, ex.Operation);
     }
 
+    /// <summary>
+    /// Tests that retry handler multiple requests timeout context isolated
+    /// </summary>
     [Fact]
     public async Task RetryHandler_MultipleRequests_TimeoutContextIsolated()
     {

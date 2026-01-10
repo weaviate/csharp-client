@@ -6,7 +6,14 @@ namespace Weaviate.Client.Tests.Unit.Mocks;
 /// </summary>
 public sealed class DelayingHandler : DelegatingHandler
 {
+    /// <summary>
+    /// The delay
+    /// </summary>
     private readonly TimeSpan _delay;
+
+    /// <summary>
+    /// The should delay
+    /// </summary>
     private readonly Func<HttpRequestMessage, bool> _shouldDelay;
 
     /// <summary>
@@ -36,6 +43,12 @@ public sealed class DelayingHandler : DelegatingHandler
         InnerHandler = inner ?? new HttpClientHandler();
     }
 
+    /// <summary>
+    /// Sends the request
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the http response message</returns>
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken

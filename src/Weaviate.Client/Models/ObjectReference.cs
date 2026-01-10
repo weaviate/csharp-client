@@ -1,7 +1,15 @@
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// The object reference
+/// </summary>
 public record ObjectReference(string Name, IEnumerable<Guid> TargetID)
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectReference"/> class
+    /// </summary>
+    /// <param name="Name">The name</param>
+    /// <param name="TargetID">The target id</param>
     public ObjectReference(string Name, params Guid[] TargetID)
         : this(Name, (IEnumerable<Guid>)TargetID) { }
 

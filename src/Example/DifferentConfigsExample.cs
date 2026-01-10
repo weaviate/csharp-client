@@ -11,6 +11,9 @@ namespace Example;
 /// </summary>
 public class DifferentConfigsExample
 {
+    /// <summary>
+    /// Runs
+    /// </summary>
     public static async Task Run()
     {
         var host = Host.CreateDefaultBuilder()
@@ -124,15 +127,28 @@ public class DifferentConfigsExample
     }
 }
 
+/// <summary>
+/// The multi config service class
+/// </summary>
 public class MultiConfigService
 {
+    /// <summary>
+    /// The factory
+    /// </summary>
     private readonly IWeaviateClientFactory _factory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MultiConfigService"/> class
+    /// </summary>
+    /// <param name="factory">The factory</param>
     public MultiConfigService(IWeaviateClientFactory factory)
     {
         _factory = factory;
     }
 
+    /// <summary>
+    /// Shows the different configs
+    /// </summary>
     public async Task ShowDifferentConfigsAsync()
     {
         Console.WriteLine("=== Different Client Configurations ===\n");
@@ -194,6 +210,10 @@ public class MultiConfigService
         await UseAnalyticsClient(analyticsClient);
     }
 
+    /// <summary>
+    /// Uses the production client using the specified client
+    /// </summary>
+    /// <param name="client">The client</param>
     private async Task UseProductionClient(WeaviateClient client)
     {
         // Production has strict timeouts and requires auth
@@ -202,6 +222,10 @@ public class MultiConfigService
         // This will use 30s query timeout configured above
     }
 
+    /// <summary>
+    /// Uses the local client using the specified client
+    /// </summary>
+    /// <param name="client">The client</param>
     private async Task UseLocalClient(WeaviateClient client)
     {
         // Local has no auth and longer timeouts for debugging
@@ -210,6 +234,10 @@ public class MultiConfigService
         // This will use 300s query timeout - perfect for debugging
     }
 
+    /// <summary>
+    /// Uses the analytics client using the specified client
+    /// </summary>
+    /// <param name="client">The client</param>
     private async Task UseAnalyticsClient(WeaviateClient client)
     {
         // Analytics has custom ports and longer timeouts for slow queries
@@ -219,14 +247,34 @@ public class MultiConfigService
     }
 }
 
+/// <summary>
+/// The product class
+/// </summary>
 public class Product
 {
+    /// <summary>
+    /// Gets or sets the value of the name
+    /// </summary>
     public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the value of the price
+    /// </summary>
     public decimal Price { get; set; }
 }
 
+/// <summary>
+/// The metric class
+/// </summary>
 public class Metric
 {
+    /// <summary>
+    /// Gets or sets the value of the name
+    /// </summary>
     public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the value of the value
+    /// </summary>
     public double Value { get; set; }
 }

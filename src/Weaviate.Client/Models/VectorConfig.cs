@@ -39,11 +39,20 @@ public record VectorConfig : IEquatable<VectorConfig>
     /// </summary>
     public VectorIndexConfig? VectorIndexConfig { get; }
 
+    /// <summary>
+    /// Gets the hash code
+    /// </summary>
+    /// <returns>The int</returns>
     public override int GetHashCode()
     {
         return base.GetHashCode();
     }
 
+    /// <summary>
+    /// Equalses the other
+    /// </summary>
+    /// <param name="other">The other</param>
+    /// <returns>The bool</returns>
     public virtual bool Equals(VectorConfig? other)
     {
         if (other is null)

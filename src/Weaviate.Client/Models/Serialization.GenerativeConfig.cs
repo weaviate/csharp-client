@@ -2,8 +2,18 @@ using System.Text.Json;
 
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// The generative config serialization class
+/// </summary>
 internal static class GenerativeConfigSerialization
 {
+    /// <summary>
+    /// Factories the type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <param name="config">The config</param>
+    /// <exception cref="WeaviateClientException">Unable to create GenerativeConfig</exception>
+    /// <returns>The generative config</returns>
     internal static IGenerativeConfig? Factory(string? type, object? config)
     {
         ArgumentException.ThrowIfNullOrEmpty(type);

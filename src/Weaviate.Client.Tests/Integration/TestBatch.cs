@@ -2,9 +2,17 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The batch tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("BatchTests")]
 public partial class BatchTests : IntegrationTests
 {
+    /// <summary>
+    /// Tests that insert many
+    /// </summary>
+    /// <param name="key">The key</param>
     [Theory]
     [ClassData(typeof(DatasetBatchInsertMany))]
     public async Task InsertMany(string key)
@@ -50,6 +58,9 @@ public partial class BatchTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test batch reference add many
+    /// </summary>
     [Fact]
     public async Task Test_Batch_ReferenceAddMany()
     {

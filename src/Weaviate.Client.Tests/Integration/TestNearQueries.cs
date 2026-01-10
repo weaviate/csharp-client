@@ -2,8 +2,15 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The test near queries class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 public class TestNearQueries : IntegrationTests
 {
+    /// <summary>
+    /// Tests that near object returns all objects with metadata
+    /// </summary>
     [Fact]
     public async Task NearObject_Returns_All_Objects_With_Metadata()
     {
@@ -64,6 +71,9 @@ public class TestNearQueries : IntegrationTests
         Assert.Equal(3, objectsCertainty.Count);
     }
 
+    /// <summary>
+    /// Tests that near object limit returns correct objects
+    /// </summary>
     [Fact]
     public async Task NearObject_Limit_Returns_Correct_Objects()
     {
@@ -110,6 +120,9 @@ public class TestNearQueries : IntegrationTests
         Assert.Equal(uuidFruit, objs[1].UUID);
     }
 
+    /// <summary>
+    /// Tests that near object offset returns correct objects
+    /// </summary>
     [Fact]
     public async Task NearObject_Offset_Returns_Correct_Objects()
     {
@@ -155,6 +168,9 @@ public class TestNearQueries : IntegrationTests
         Assert.Equal(uuidFruit, objs[0].UUID);
     }
 
+    /// <summary>
+    /// Tests that near object group by returns correct groups
+    /// </summary>
     [Fact]
     public async Task NearObject_GroupBy_Returns_Correct_Groups()
     {

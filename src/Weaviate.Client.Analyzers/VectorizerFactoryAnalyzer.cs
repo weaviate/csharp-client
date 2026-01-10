@@ -7,28 +7,67 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Weaviate.Client.Analyzers;
 
+/// <summary>
+/// The vectorizer factory analyzer class
+/// </summary>
+/// <seealso cref="DiagnosticAnalyzer"/>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class VectorizerFactoryAnalyzer : DiagnosticAnalyzer
 {
+    /// <summary>
+    /// The missing property diagnostic id
+    /// </summary>
     public const string MissingPropertyDiagnosticId = "WEAVIATE002";
+
+    /// <summary>
+    /// The missing weight field diagnostic id
+    /// </summary>
     public const string MissingWeightFieldDiagnosticId = "WEAVIATE003";
 
+    /// <summary>
+    /// The category
+    /// </summary>
     private const string Category = "Usage";
 
+    /// <summary>
+    /// The missing property title
+    /// </summary>
     private static readonly LocalizableString MissingPropertyTitle =
         "Vectorizer factory method missing property initialization or parameter";
+
+    /// <summary>
+    /// The missing property message format
+    /// </summary>
     private static readonly LocalizableString MissingPropertyMessageFormat =
         "Factory method creating '{0}' does not have a way to set property '{1}'. Add a parameter for it or initialize it in the object initializer.";
+
+    /// <summary>
+    /// The missing property description
+    /// </summary>
     private static readonly LocalizableString MissingPropertyDescription =
         "All public properties of a vectorizer config should be initializable through factory method parameters or explicitly initialized in the object initializer to ensure completeness.";
 
+    /// <summary>
+    /// The missing weight field title
+    /// </summary>
     private static readonly LocalizableString MissingWeightFieldTitle =
         "Vectorizer factory method missing field in Weights calculation";
+
+    /// <summary>
+    /// The missing weight field message format
+    /// </summary>
     private static readonly LocalizableString MissingWeightFieldMessageFormat =
         "Factory method creating '{0}' with WeightedFields should include '{1}' in Weights calculation";
+
+    /// <summary>
+    /// The missing weight field description
+    /// </summary>
     private static readonly LocalizableString MissingWeightFieldDescription =
         "When a factory method accepts WeightedFields parameters, all of them should be included in the VectorizerWeights.FromWeightedFields() call.";
 
+    /// <summary>
+    /// The missing property description
+    /// </summary>
     private static readonly DiagnosticDescriptor MissingPropertyRule = new DiagnosticDescriptor(
         MissingPropertyDiagnosticId,
         MissingPropertyTitle,
@@ -39,6 +78,9 @@ public class VectorizerFactoryAnalyzer : DiagnosticAnalyzer
         description: MissingPropertyDescription
     );
 
+    /// <summary>
+    /// The missing weight field description
+    /// </summary>
     private static readonly DiagnosticDescriptor MissingWeightFieldRule = new DiagnosticDescriptor(
         MissingWeightFieldDiagnosticId,
         MissingWeightFieldTitle,
@@ -49,9 +91,16 @@ public class VectorizerFactoryAnalyzer : DiagnosticAnalyzer
         description: MissingWeightFieldDescription
     );
 
+    /// <summary>
+    /// Gets the value of the supported diagnostics
+    /// </summary>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create(MissingPropertyRule, MissingWeightFieldRule);
 
+    /// <summary>
+    /// Initializes the context
+    /// </summary>
+    /// <param name="context">The context</param>
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -61,6 +110,10 @@ public class VectorizerFactoryAnalyzer : DiagnosticAnalyzer
         context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration, SyntaxKind.MethodDeclaration);
     }
 
+    /// <summary>
+    /// Analyzes the method declaration using the specified context
+    /// </summary>
+    /// <param name="context">The context</param>
     private static void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context)
     {
         var methodDeclaration = (MethodDeclarationSyntax)context.Node;
@@ -116,6 +169,14 @@ public class VectorizerFactoryAnalyzer : DiagnosticAnalyzer
         AnalyzeWeightsCalculation(context, methodDeclaration, objectCreation, namedType);
     }
 
+    /// <summary>
+    /// Analyzes the property initialization using the specified context
+    /// </summary>
+    /// <param name="context">The context</param>
+    /// <param name="methodDeclaration">The method declaration</param>
+    /// <param name="objectCreation">The object creation</param>
+    /// <param name="namedType">The named type</param>
+    /// <param name="semanticModel">The semantic model</param>
     private static void AnalyzePropertyInitialization(
         SyntaxNodeAnalysisContext context,
         MethodDeclarationSyntax methodDeclaration,
@@ -193,6 +254,13 @@ public class VectorizerFactoryAnalyzer : DiagnosticAnalyzer
         }
     }
 
+    /// <summary>
+    /// Analyzes the weights calculation using the specified context
+    /// </summary>
+    /// <param name="context">The context</param>
+    /// <param name="methodDeclaration">The method declaration</param>
+    /// <param name="objectCreation">The object creation</param>
+    /// <param name="namedType">The named type</param>
     private static void AnalyzeWeightsCalculation(
         SyntaxNodeAnalysisContext context,
         MethodDeclarationSyntax methodDeclaration,
@@ -273,6 +341,11 @@ public class VectorizerFactoryAnalyzer : DiagnosticAnalyzer
         }
     }
 
+    /// <summary>
+    /// Ises the vectorizer config using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The bool</returns>
     private static bool IsVectorizerConfig(INamedTypeSymbol type)
     {
         // Check if type inherits from VectorizerConfig

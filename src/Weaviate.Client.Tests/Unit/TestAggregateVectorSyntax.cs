@@ -9,11 +9,25 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TestAggregateVectorSyntax : IAsyncLifetime
 {
+    /// <summary>
+    /// The collection name
+    /// </summary>
     private const string CollectionName = "TestCollection";
 
+    /// <summary>
+    /// The get request
+    /// </summary>
     private Func<Grpc.Protobuf.V1.AggregateRequest?> _getRequest = null!;
+
+    /// <summary>
+    /// The collection
+    /// </summary>
     private CollectionClient _collection = null!;
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask InitializeAsync()
     {
         var (client, getRequest) = MockGrpcClient.CreateWithAggregateCapture();
@@ -22,6 +36,10 @@ public class TestAggregateVectorSyntax : IAsyncLifetime
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Disposes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
@@ -30,6 +48,9 @@ public class TestAggregateVectorSyntax : IAsyncLifetime
 
     #region AggregateClient.NearVector Tests
 
+    /// <summary>
+    /// Tests that aggregate near vector with metrics produces valid request
+    /// </summary>
     [Fact]
     public async Task Aggregate_NearVector_WithMetrics_ProducesValidRequest()
     {
@@ -46,6 +67,9 @@ public class TestAggregateVectorSyntax : IAsyncLifetime
         Assert.NotNull(request.NearVector);
     }
 
+    /// <summary>
+    /// Tests that aggregate near vector with group by produces valid request
+    /// </summary>
     [Fact]
     public async Task Aggregate_NearVector_WithGroupBy_ProducesValidRequest()
     {
@@ -65,6 +89,9 @@ public class TestAggregateVectorSyntax : IAsyncLifetime
         Assert.Equal("category", request.GroupBy.Property);
     }
 
+    /// <summary>
+    /// Tests that aggregate near vector lambda builder produces valid request
+    /// </summary>
     [Fact]
     public async Task Aggregate_NearVector_LambdaBuilder_ProducesValidRequest()
     {
@@ -85,6 +112,9 @@ public class TestAggregateVectorSyntax : IAsyncLifetime
 
     #region AggregateClient.NearText Tests
 
+    /// <summary>
+    /// Tests that aggregate near text with metrics produces valid request
+    /// </summary>
     [Fact]
     public async Task Aggregate_NearText_WithMetrics_ProducesValidRequest()
     {
@@ -102,6 +132,9 @@ public class TestAggregateVectorSyntax : IAsyncLifetime
         Assert.Equal("banana", request.NearText.Query[0]);
     }
 
+    /// <summary>
+    /// Tests that aggregate near text with target vectors and group by produces valid request
+    /// </summary>
     [Fact]
     public async Task Aggregate_NearText_WithTargetVectors_AndGroupBy_ProducesValidRequest()
     {
@@ -126,6 +159,9 @@ public class TestAggregateVectorSyntax : IAsyncLifetime
 
     #region AggregateClient.Hybrid Tests
 
+    /// <summary>
+    /// Tests that aggregate hybrid text only with metrics produces valid request
+    /// </summary>
     [Fact]
     public async Task Aggregate_Hybrid_TextOnly_WithMetrics_ProducesValidRequest()
     {
@@ -142,6 +178,9 @@ public class TestAggregateVectorSyntax : IAsyncLifetime
         // AggregateRequest structure validated - hybrid search parameters handled internally
     }
 
+    /// <summary>
+    /// Tests that aggregate hybrid with vectors and group by produces valid request
+    /// </summary>
     [Fact]
     public async Task Aggregate_Hybrid_WithVectors_AndGroupBy_ProducesValidRequest()
     {
@@ -161,6 +200,9 @@ public class TestAggregateVectorSyntax : IAsyncLifetime
         Assert.Equal("category", request.GroupBy.Property);
     }
 
+    /// <summary>
+    /// Tests that aggregate hybrid near text input with metrics produces valid request
+    /// </summary>
     [Fact]
     public async Task Aggregate_Hybrid_NearTextInput_WithMetrics_ProducesValidRequest()
     {

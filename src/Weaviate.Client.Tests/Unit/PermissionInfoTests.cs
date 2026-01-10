@@ -4,8 +4,14 @@ using Weaviate.Client.Tests.Unit.Mocks;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The permission info tests class
+/// </summary>
 public class PermissionInfoTests
 {
+    /// <summary>
+    /// Tests that roles client create role pipeline maps permission info
+    /// </summary>
     [Fact]
     public async Task RolesClient_CreateRole_PipelineMapsPermissionInfo()
     {
@@ -67,6 +73,9 @@ public class PermissionInfoTests
         Assert.True(perm is Permissions.Roles { Read: true });
     }
 
+    /// <summary>
+    /// Tests that roles client get role with future action throws weaviate client exception
+    /// </summary>
     [Fact]
     public async Task RolesClient_GetRole_WithFutureAction_ThrowsWeaviateClientException()
     {
@@ -94,6 +103,9 @@ public class PermissionInfoTests
         Assert.Contains("client", ex.Message.ToLower());
     }
 
+    /// <summary>
+    /// Tests that permission info to model maps all resource scopes
+    /// </summary>
     [Fact]
     public void PermissionInfo_ToModel_MapsAllResourceScopes()
     {

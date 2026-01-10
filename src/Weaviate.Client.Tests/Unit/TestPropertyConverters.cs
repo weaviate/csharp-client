@@ -5,10 +5,16 @@ using Weaviate.Client.Serialization.Converters;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The test property converters class
+/// </summary>
 public class TestPropertyConverters
 {
     #region TextPropertyConverter Tests
 
+    /// <summary>
+    /// Tests that text converter to rest returns string
+    /// </summary>
     [Fact]
     public void TextConverter_ToRest_ReturnsString()
     {
@@ -17,6 +23,9 @@ public class TestPropertyConverters
         Assert.Null(converter.ToRest(null));
     }
 
+    /// <summary>
+    /// Tests that text converter to grpc returns string value
+    /// </summary>
     [Fact]
     public void TextConverter_ToGrpc_ReturnsStringValue()
     {
@@ -26,6 +35,9 @@ public class TestPropertyConverters
         Assert.Equal("hello", result.StringValue);
     }
 
+    /// <summary>
+    /// Tests that text converter from rest returns string
+    /// </summary>
     [Fact]
     public void TextConverter_FromRest_ReturnsString()
     {
@@ -33,6 +45,9 @@ public class TestPropertyConverters
         Assert.Equal("hello", converter.FromRest("hello", typeof(string)));
     }
 
+    /// <summary>
+    /// Tests that text converter from grpc returns string
+    /// </summary>
     [Fact]
     public void TextConverter_FromGrpc_ReturnsString()
     {
@@ -41,6 +56,9 @@ public class TestPropertyConverters
         Assert.Equal("hello", converter.FromGrpc(grpcValue, typeof(string)));
     }
 
+    /// <summary>
+    /// Tests that text converter array round trip
+    /// </summary>
     [Fact]
     public void TextConverter_Array_RoundTrip()
     {
@@ -59,6 +77,9 @@ public class TestPropertyConverters
 
     #region IntPropertyConverter Tests
 
+    /// <summary>
+    /// Tests that int converter to rest converts all to long
+    /// </summary>
     [Fact]
     public void IntConverter_ToRest_ConvertsAllToLong()
     {
@@ -69,6 +90,9 @@ public class TestPropertyConverters
         Assert.Equal(42L, converter.ToRest((byte)42));
     }
 
+    /// <summary>
+    /// Tests that int converter to grpc returns number value
+    /// </summary>
     [Fact]
     public void IntConverter_ToGrpc_ReturnsNumberValue()
     {
@@ -78,6 +102,9 @@ public class TestPropertyConverters
         Assert.Equal(42, result.NumberValue);
     }
 
+    /// <summary>
+    /// Tests that int converter from rest returns correct type
+    /// </summary>
     [Fact]
     public void IntConverter_FromRest_ReturnsCorrectType()
     {
@@ -94,6 +121,9 @@ public class TestPropertyConverters
         Assert.Equal(42L, resultLong);
     }
 
+    /// <summary>
+    /// Tests that int converter from grpc returns correct type
+    /// </summary>
     [Fact]
     public void IntConverter_FromGrpc_ReturnsCorrectType()
     {
@@ -115,6 +145,9 @@ public class TestPropertyConverters
 
     #region NumberPropertyConverter Tests
 
+    /// <summary>
+    /// Tests that number converter to rest handles various number types
+    /// </summary>
     [Fact]
     public void NumberConverter_ToRest_HandlesVariousNumberTypes()
     {
@@ -124,6 +157,9 @@ public class TestPropertyConverters
         Assert.Equal(3.14, converter.ToRest(3.14m));
     }
 
+    /// <summary>
+    /// Tests that number converter from rest converts to target type
+    /// </summary>
     [Fact]
     public void NumberConverter_FromRest_ConvertsToTargetType()
     {
@@ -137,6 +173,9 @@ public class TestPropertyConverters
 
     #region BoolPropertyConverter Tests
 
+    /// <summary>
+    /// Tests that bool converter to rest returns bool
+    /// </summary>
     [Fact]
     public void BoolConverter_ToRest_ReturnsBool()
     {
@@ -145,6 +184,9 @@ public class TestPropertyConverters
         Assert.Equal(false, converter.ToRest(false));
     }
 
+    /// <summary>
+    /// Tests that bool converter to grpc returns bool value
+    /// </summary>
     [Fact]
     public void BoolConverter_ToGrpc_ReturnsBoolValue()
     {
@@ -154,6 +196,9 @@ public class TestPropertyConverters
         Assert.True(result.BoolValue);
     }
 
+    /// <summary>
+    /// Tests that bool converter from grpc returns bool
+    /// </summary>
     [Fact]
     public void BoolConverter_FromGrpc_ReturnsBool()
     {
@@ -166,6 +211,9 @@ public class TestPropertyConverters
 
     #region DatePropertyConverter Tests
 
+    /// <summary>
+    /// Tests that date converter to rest returns round trip format
+    /// </summary>
     [Fact]
     public void DateConverter_ToRest_ReturnsRoundTripFormat()
     {
@@ -175,6 +223,9 @@ public class TestPropertyConverters
         Assert.Equal("2024-01-15T10:30:00.0000000Z", result);
     }
 
+    /// <summary>
+    /// Tests that date converter from rest parses iso 8601
+    /// </summary>
     [Fact]
     public void DateConverter_FromRest_ParsesIso8601()
     {
@@ -191,6 +242,9 @@ public class TestPropertyConverters
         Assert.Equal(30, dt.Minute);
     }
 
+    /// <summary>
+    /// Tests that date converter from rest to date time offset
+    /// </summary>
     [Fact]
     public void DateConverter_FromRest_ToDateTimeOffset()
     {
@@ -203,6 +257,9 @@ public class TestPropertyConverters
 
     #region UuidPropertyConverter Tests
 
+    /// <summary>
+    /// Tests that uuid converter to rest returns guid string
+    /// </summary>
     [Fact]
     public void UuidConverter_ToRest_ReturnsGuidString()
     {
@@ -212,6 +269,9 @@ public class TestPropertyConverters
         Assert.Equal("12345678-1234-1234-1234-123456789012", result);
     }
 
+    /// <summary>
+    /// Tests that uuid converter from rest parses guid
+    /// </summary>
     [Fact]
     public void UuidConverter_FromRest_ParsesGuid()
     {
@@ -225,6 +285,9 @@ public class TestPropertyConverters
 
     #region BlobPropertyConverter Tests
 
+    /// <summary>
+    /// Tests that blob converter to rest returns base 64
+    /// </summary>
     [Fact]
     public void BlobConverter_ToRest_ReturnsBase64()
     {
@@ -234,6 +297,9 @@ public class TestPropertyConverters
         Assert.Equal(Convert.ToBase64String(bytes), result);
     }
 
+    /// <summary>
+    /// Tests that blob converter from rest decodes base 64
+    /// </summary>
     [Fact]
     public void BlobConverter_FromRest_DecodesBase64()
     {
@@ -244,6 +310,9 @@ public class TestPropertyConverters
         Assert.Equal(new byte[] { 1, 2, 3, 4 }, result);
     }
 
+    /// <summary>
+    /// Tests that blob converter does not support array
+    /// </summary>
     [Fact]
     public void BlobConverter_DoesNotSupportArray()
     {
@@ -255,6 +324,9 @@ public class TestPropertyConverters
 
     #region GeoPropertyConverter Tests
 
+    /// <summary>
+    /// Tests that geo converter to rest returns dto
+    /// </summary>
     [Fact]
     public void GeoConverter_ToRest_ReturnsDto()
     {
@@ -268,6 +340,9 @@ public class TestPropertyConverters
         Assert.Equal(13.405, dto.Longitude!.Value, 2);
     }
 
+    /// <summary>
+    /// Tests that geo converter from rest parses dictionary
+    /// </summary>
     [Fact]
     public void GeoConverter_FromRest_ParsesDictionary()
     {
@@ -281,6 +356,9 @@ public class TestPropertyConverters
         Assert.Equal(13.405f, geo.Longitude, 2);
     }
 
+    /// <summary>
+    /// Tests that geo converter does not support array
+    /// </summary>
     [Fact]
     public void GeoConverter_DoesNotSupportArray()
     {
@@ -292,6 +370,9 @@ public class TestPropertyConverters
 
     #region PhonePropertyConverter Tests
 
+    /// <summary>
+    /// Tests that phone converter to rest returns dto
+    /// </summary>
     [Fact]
     public void PhoneConverter_ToRest_ReturnsDto()
     {
@@ -305,6 +386,9 @@ public class TestPropertyConverters
         Assert.Equal("DE", dto.DefaultCountry);
     }
 
+    /// <summary>
+    /// Tests that phone converter from rest parses dictionary
+    /// </summary>
     [Fact]
     public void PhoneConverter_FromRest_ParsesDictionary()
     {
@@ -322,6 +406,9 @@ public class TestPropertyConverters
         Assert.Equal("DE", phone.DefaultCountry);
     }
 
+    /// <summary>
+    /// Tests that phone converter does not support array
+    /// </summary>
     [Fact]
     public void PhoneConverter_DoesNotSupportArray()
     {
@@ -333,6 +420,9 @@ public class TestPropertyConverters
 
     #region PropertyConverterRegistry Tests
 
+    /// <summary>
+    /// Tests that registry get converter by data type returns correct converter
+    /// </summary>
     [Fact]
     public void Registry_GetConverterByDataType_ReturnsCorrectConverter()
     {
@@ -349,6 +439,9 @@ public class TestPropertyConverters
         Assert.IsType<PhonePropertyConverter>(registry.GetConverterByDataType("phoneNumber"));
     }
 
+    /// <summary>
+    /// Tests that registry get converter by data type handles array types
+    /// </summary>
     [Fact]
     public void Registry_GetConverterByDataType_HandlesArrayTypes()
     {
@@ -358,6 +451,9 @@ public class TestPropertyConverters
         Assert.IsType<IntPropertyConverter>(registry.GetConverterByDataType("int[]"));
     }
 
+    /// <summary>
+    /// Tests that registry get converter for type returns correct converter
+    /// </summary>
     [Fact]
     public void Registry_GetConverterForType_ReturnsCorrectConverter()
     {
@@ -374,6 +470,9 @@ public class TestPropertyConverters
         Assert.IsType<PhonePropertyConverter>(registry.GetConverterForType(typeof(PhoneNumber)));
     }
 
+    /// <summary>
+    /// Tests that registry get converter for type handles nullable types
+    /// </summary>
     [Fact]
     public void Registry_GetConverterForType_HandlesNullableTypes()
     {
@@ -384,6 +483,9 @@ public class TestPropertyConverters
         Assert.IsType<DatePropertyConverter>(registry.GetConverterForType(typeof(DateTime?)));
     }
 
+    /// <summary>
+    /// Tests that registry get converter for type handles array types
+    /// </summary>
     [Fact]
     public void Registry_GetConverterForType_HandlesArrayTypes()
     {
@@ -397,16 +499,45 @@ public class TestPropertyConverters
 
     #region PropertyConverterRegistry Serialization Tests
 
+    /// <summary>
+    /// The test data class
+    /// </summary>
     public class TestDataClass
     {
+        /// <summary>
+        /// Gets or sets the value of the name
+        /// </summary>
         public string? Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the age
+        /// </summary>
         public int Age { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the score
+        /// </summary>
         public double Score { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the is active
+        /// </summary>
         public bool IsActive { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the created at
+        /// </summary>
         public DateTime CreatedAt { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the id
+        /// </summary>
         public Guid Id { get; set; }
     }
 
+    /// <summary>
+    /// Tests that registry serialize to rest serializes all properties
+    /// </summary>
     [Fact]
     public void Registry_SerializeToRest_SerializesAllProperties()
     {
@@ -431,6 +562,9 @@ public class TestPropertyConverters
         Assert.Equal("12345678-1234-1234-1234-123456789012", result["id"]);
     }
 
+    /// <summary>
+    /// Tests that registry build concrete type from properties deserializes all properties
+    /// </summary>
     [Fact]
     public void Registry_BuildConcreteTypeFromProperties_DeserializesAllProperties()
     {
@@ -460,6 +594,9 @@ public class TestPropertyConverters
 
     #region PropertyBag Tests
 
+    /// <summary>
+    /// Tests that property bag get string returns string value
+    /// </summary>
     [Fact]
     public void PropertyBag_GetString_ReturnsStringValue()
     {
@@ -467,6 +604,9 @@ public class TestPropertyConverters
         Assert.Equal("Test", bag.GetString("name"));
     }
 
+    /// <summary>
+    /// Tests that property bag get int converts from double
+    /// </summary>
     [Fact]
     public void PropertyBag_GetInt_ConvertsFromDouble()
     {
@@ -474,6 +614,9 @@ public class TestPropertyConverters
         Assert.Equal(42, bag.GetInt("count"));
     }
 
+    /// <summary>
+    /// Tests that property bag get bool returns bool value
+    /// </summary>
     [Fact]
     public void PropertyBag_GetBool_ReturnsBoolValue()
     {
@@ -481,6 +624,9 @@ public class TestPropertyConverters
         Assert.True(bag.GetBool("active"));
     }
 
+    /// <summary>
+    /// Tests that property bag get date time parses string
+    /// </summary>
     [Fact]
     public void PropertyBag_GetDateTime_ParsesString()
     {
@@ -490,6 +636,9 @@ public class TestPropertyConverters
         Assert.Equal(2024, result.Value.Year);
     }
 
+    /// <summary>
+    /// Tests that property bag get guid parses string
+    /// </summary>
     [Fact]
     public void PropertyBag_GetGuid_ParsesString()
     {
@@ -499,6 +648,9 @@ public class TestPropertyConverters
         Assert.Equal(Guid.Parse("12345678-1234-1234-1234-123456789012"), result.Value);
     }
 
+    /// <summary>
+    /// Tests that property bag get geo parses dictionary
+    /// </summary>
     [Fact]
     public void PropertyBag_GetGeo_ParsesDictionary()
     {
@@ -515,6 +667,9 @@ public class TestPropertyConverters
         Assert.Equal(52.52f, result.Latitude, 2);
     }
 
+    /// <summary>
+    /// Tests that property bag case insensitive
+    /// </summary>
     [Fact]
     public void PropertyBag_CaseInsensitive()
     {
@@ -523,6 +678,9 @@ public class TestPropertyConverters
         Assert.Equal("Test", bag.GetString("NAME"));
     }
 
+    /// <summary>
+    /// Tests that property bag get missing returns null
+    /// </summary>
     [Fact]
     public void PropertyBag_GetMissing_ReturnsNull()
     {

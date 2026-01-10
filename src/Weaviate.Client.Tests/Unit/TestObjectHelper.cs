@@ -4,8 +4,14 @@ using Weaviate.Client.Tests.Common;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The object helper tests class
+/// </summary>
 public partial class ObjectHelperTests
 {
+    /// <summary>
+    /// Tests that test build batch properties with blob
+    /// </summary>
     [Fact]
     public void Test_BuildBatchProperties_WithBlob()
     {
@@ -23,6 +29,9 @@ public partial class ObjectHelperTests
         );
     }
 
+    /// <summary>
+    /// Tests that test nested recursive object
+    /// </summary>
     [Fact]
     public void TestNestedRecursiveObject()
     {
@@ -82,6 +91,9 @@ public partial class ObjectHelperTests
         Assert.Equivalent(testData, concrete);
     }
 
+    /// <summary>
+    /// Tests that test build dynamic object properties geo coordinate
+    /// </summary>
     [Fact]
     public void TestBuildDynamicObjectPropertiesGeoCoordinate()
     {
@@ -97,6 +109,9 @@ public partial class ObjectHelperTests
         Assert.Equal(geo.TestingPropertyType.Longitude, concrete!.TestingPropertyType.Longitude);
     }
 
+    /// <summary>
+    /// Tests that test build dynamic object
+    /// </summary>
     [Fact]
     public void TestBuildDynamicObject()
     {
@@ -138,6 +153,11 @@ public partial class ObjectHelperTests
         Assert.Equal(162L, obj[1]["review_id"]);
     }
 
+    /// <summary>
+    /// Tests that test is native type check
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <param name="expected">The expected</param>
     [Theory]
     [InlineData(typeof(bool), true)]
     [InlineData(typeof(bool[]), true)]
@@ -182,6 +202,9 @@ public partial class ObjectHelperTests
         Assert.Equal(expected, result);
     }
 
+    /// <summary>
+    /// Tests that test batch properties build
+    /// </summary>
     [Fact]
     public void Test_BatchProperties_Build()
     {
@@ -336,6 +359,9 @@ public partial class ObjectHelperTests
         Assert.Equal(333.0, arrayDeepNested["testInt"].NumberValue);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object null input returns empty dictionary
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_NullInput_ReturnsEmptyDictionary()
     {
@@ -350,6 +376,9 @@ public partial class ObjectHelperTests
         Assert.Empty(result);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object simple properties maps correctly
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_SimpleProperties_MapsCorrectly()
     {
@@ -372,6 +401,9 @@ public partial class ObjectHelperTests
         Assert.Equal(95.5, result["score"]);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object null properties are skipped
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_NullProperties_AreSkipped()
     {
@@ -392,6 +424,9 @@ public partial class ObjectHelperTests
         Assert.False(result.ContainsKey("email"));
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object date time converts to iso 8601
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_DateTime_ConvertsToIso8601()
     {
@@ -406,6 +441,9 @@ public partial class ObjectHelperTests
         Assert.Equal("2025-10-24T15:30:00.0000000Z", result["createdAt"]);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object date time local time converts to utc
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_DateTime_LocalTime_ConvertsToUtc()
     {
@@ -421,6 +459,9 @@ public partial class ObjectHelperTests
         Assert.Equal(expectedUtc, result["createdAt"]);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object geo coordinate converts to geo coordinates
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_GeoCoordinate_ConvertsToGeoCoordinates()
     {
@@ -438,6 +479,9 @@ public partial class ObjectHelperTests
         Assert.Equal(13.4050f, geoResult.Longitude);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object nested object recursively processed
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_NestedObject_RecursivelyProcessed()
     {
@@ -467,6 +511,9 @@ public partial class ObjectHelperTests
         Assert.Equal("Berlin", address["city"]);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object deeply nested object recursively processed
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_DeeplyNestedObject_RecursivelyProcessed()
     {
@@ -492,6 +539,9 @@ public partial class ObjectHelperTests
         Assert.Equal(42L, level3["count"]);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object mixed types all handled correctly
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_MixedTypes_AllHandledCorrectly()
     {
@@ -526,6 +576,9 @@ public partial class ObjectHelperTests
         Assert.Equal(-74.0060f, geoResult.Longitude);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object array properties are included
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_ArrayProperties_AreIncluded()
     {
@@ -550,6 +603,9 @@ public partial class ObjectHelperTests
         Assert.Equal(1L, numbers[0]);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object complex scenario with multiple features
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_ComplexScenario_WithMultipleFeatures()
     {
@@ -593,6 +649,9 @@ public partial class ObjectHelperTests
         Assert.Equal(2025L, details["year"]);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object write only property is skipped
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_WriteOnlyProperty_IsSkipped()
     {
@@ -608,6 +667,9 @@ public partial class ObjectHelperTests
         Assert.False(result.ContainsKey("writeOnlyProperty"));
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object empty object returns empty dictionary
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_EmptyObject_ReturnsEmptyDictionary()
     {
@@ -622,17 +684,33 @@ public partial class ObjectHelperTests
         Assert.Empty(result);
     }
 
+    /// <summary>
+    /// The test class with write only class
+    /// </summary>
     private class TestClassWithWriteOnly
     {
+        /// <summary>
+        /// Gets or sets the value of the readable property
+        /// </summary>
         public string ReadableProperty { get; set; } = string.Empty;
 
+        /// <summary>
+        /// The empty
+        /// </summary>
         private string _writeOnly = string.Empty;
+
+        /// <summary>
+        /// Sets the value of the write only property
+        /// </summary>
         public string WriteOnlyProperty
         {
             set => _writeOnly = value;
         }
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object multi level object returns object dto
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_MultiLevelObject_ReturnsObjectDto()
     {
@@ -687,6 +765,9 @@ public partial class ObjectHelperTests
         Assert.NotNull(result);
     }
 
+    /// <summary>
+    /// Tests that test unmarshall properties enum from string with enum member attribute
+    /// </summary>
     [Fact]
     public void TestUnmarshallProperties_EnumFromString_WithEnumMemberAttribute()
     {
@@ -704,6 +785,9 @@ public partial class ObjectHelperTests
         Assert.Equal(TestStatus.Active, result.TestEnum);
     }
 
+    /// <summary>
+    /// Tests that test unmarshall properties enum from string with enum name
+    /// </summary>
     [Fact]
     public void TestUnmarshallProperties_EnumFromString_WithEnumName()
     {
@@ -721,6 +805,9 @@ public partial class ObjectHelperTests
         Assert.Equal(TestStatus.Active, result.TestEnum);
     }
 
+    /// <summary>
+    /// Tests that test unmarshall properties enum from string case insensitive
+    /// </summary>
     [Fact]
     public void TestUnmarshallProperties_EnumFromString_CaseInsensitive()
     {
@@ -738,6 +825,9 @@ public partial class ObjectHelperTests
         Assert.Equal(TestStatus.Pending, result.TestEnum);
     }
 
+    /// <summary>
+    /// Tests that test unmarshall properties enum from string without enum member attribute
+    /// </summary>
     [Fact]
     public void TestUnmarshallProperties_EnumFromString_WithoutEnumMemberAttribute()
     {
@@ -755,6 +845,9 @@ public partial class ObjectHelperTests
         Assert.Equal(TestStatus.Archived, result.TestEnum);
     }
 
+    /// <summary>
+    /// Tests that test unmarshall properties enum from number
+    /// </summary>
     [Fact]
     public void TestUnmarshallProperties_EnumFromNumber()
     {
@@ -769,6 +862,9 @@ public partial class ObjectHelperTests
         Assert.Equal(TestStatus.Inactive, result.TestEnum);
     }
 
+    /// <summary>
+    /// Tests that test unmarshall properties enum from string invalid value throws exception
+    /// </summary>
     [Fact]
     public void TestUnmarshallProperties_EnumFromString_InvalidValue_ThrowsException()
     {
@@ -783,6 +879,9 @@ public partial class ObjectHelperTests
         Assert.Contains("TestStatus", exception.Message);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object with expando object
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_WithExpandoObject()
     {
@@ -801,6 +900,9 @@ public partial class ObjectHelperTests
         Assert.Equal(true, result["active"]);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object with nested expando object
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_WithNestedExpandoObject()
     {
@@ -824,6 +926,9 @@ public partial class ObjectHelperTests
         Assert.Equal("Netherlands", addressDict["country"]);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object with expando containing array
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_WithExpandoContainingArray()
     {
@@ -844,6 +949,9 @@ public partial class ObjectHelperTests
         Assert.Equal("tag2", tags[1]);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object with expando containing nested expando array
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_WithExpandoContainingNestedExpandoArray()
     {
@@ -876,6 +984,9 @@ public partial class ObjectHelperTests
         Assert.Equal("second", secondItem["value"]);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object with null returns empty dictionary
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_WithNull_ReturnsEmptyDictionary()
     {
@@ -886,6 +997,9 @@ public partial class ObjectHelperTests
         Assert.Empty(result);
     }
 
+    /// <summary>
+    /// Tests that test build data transfer object with expando containing date time should convert
+    /// </summary>
     [Fact]
     public void TestBuildDataTransferObject_WithExpandoContainingDateTimeShouldConvert()
     {

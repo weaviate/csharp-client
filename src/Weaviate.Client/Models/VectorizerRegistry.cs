@@ -7,6 +7,9 @@ namespace Weaviate.Client.Models;
 /// </summary>
 internal static class VectorizerRegistry
 {
+    /// <summary>
+    /// The build registry
+    /// </summary>
     private static readonly Lazy<Dictionary<string, VectorizerInfo>> _registry = new(BuildRegistry);
 
     /// <summary>
@@ -45,6 +48,10 @@ internal static class VectorizerRegistry
             && info.VectorType.HasFlag(VectorType.Vector);
     }
 
+    /// <summary>
+    /// Builds the registry
+    /// </summary>
+    /// <returns>The registry</returns>
     private static Dictionary<string, VectorizerInfo> BuildRegistry()
     {
         var registry = new Dictionary<string, VectorizerInfo>();

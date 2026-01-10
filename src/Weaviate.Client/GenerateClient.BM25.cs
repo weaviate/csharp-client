@@ -2,6 +2,9 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The generate client class
+/// </summary>
 public partial class GenerateClient
 {
     /// <summary>

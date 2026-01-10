@@ -1,7 +1,14 @@
 namespace Weaviate.Client.Tests.Integration
 {
+    /// <summary>
+    /// The well known integration tests class
+    /// </summary>
+    /// <seealso cref="IntegrationTests"/>
     public class WellKnownIntegrationTests : IntegrationTests
     {
+        /// <summary>
+        /// Tests that server is ready should return true
+        /// </summary>
         [Fact]
         public async Task ServerIsReady_ShouldReturnTrue()
         {
@@ -15,6 +22,9 @@ namespace Weaviate.Client.Tests.Integration
             Assert.True(isReady, "The server should be ready.");
         }
 
+        /// <summary>
+        /// Tests that live should return true
+        /// </summary>
         [Fact]
         public async Task Live_ShouldReturnTrue()
         {
@@ -28,6 +38,9 @@ namespace Weaviate.Client.Tests.Integration
             Assert.True(isLive, "The server should be live.");
         }
 
+        /// <summary>
+        /// Tests that wait until ready should complete successfully
+        /// </summary>
         [Fact]
         public async Task WaitUntilReady_ShouldCompleteSuccessfully()
         {

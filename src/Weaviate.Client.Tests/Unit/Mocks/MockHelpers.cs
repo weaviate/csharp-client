@@ -91,6 +91,10 @@ public static class MockWeaviateClient
         return (client, leaf);
     }
 
+    /// <summary>
+    /// Creates the with mock handler
+    /// </summary>
+    /// <returns>The weaviate client client mock http message handler handler</returns>
     public static (WeaviateClient Client, MockHttpMessageHandler Handler) CreateWithMockHandler()
     {
         return CreateWithMockHandler(handlerChainFactory: null, autoMeta: true);
@@ -209,6 +213,12 @@ internal static class MockGrpcClient
         );
     }
 
+    /// <summary>
+    /// Decodes the grpc request using the specified content
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="content">The content</param>
+    /// <returns>The</returns>
     private static T DecodeGrpcRequest<T>(byte[] content)
         where T : Google.Protobuf.IMessage<T>, new()
     {

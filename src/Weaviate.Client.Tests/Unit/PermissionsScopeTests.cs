@@ -2,8 +2,14 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The permissions scope tests class
+/// </summary>
 public class PermissionsScopeTests
 {
+    /// <summary>
+    /// Tests that alias group by correctly aggregates permissions
+    /// </summary>
     [Fact]
     public void Alias_GroupBy_CorrectlyAggregatesPermissions()
     {
@@ -94,6 +100,9 @@ public class PermissionsScopeTests
         Assert.False(alias3.Delete);
     }
 
+    /// <summary>
+    /// Tests that cluster aggregates read permission
+    /// </summary>
     [Fact]
     public void Cluster_Aggregates_ReadPermission()
     {
@@ -106,6 +115,9 @@ public class PermissionsScopeTests
         Assert.True(clusters[0].Read);
     }
 
+    /// <summary>
+    /// Tests that nodes aggregates read permission
+    /// </summary>
     [Fact]
     public void Nodes_Aggregates_ReadPermission()
     {
@@ -126,6 +138,9 @@ public class PermissionsScopeTests
         Assert.True(nodes[0].Read);
     }
 
+    /// <summary>
+    /// Tests that roles aggregates all actions
+    /// </summary>
     [Fact]
     public void Roles_Aggregates_AllActions()
     {
@@ -165,6 +180,9 @@ public class PermissionsScopeTests
         Assert.True(roles[0].Delete);
     }
 
+    /// <summary>
+    /// Tests that users aggregates all actions
+    /// </summary>
     [Fact]
     public void Users_Aggregates_AllActions()
     {
@@ -206,6 +224,9 @@ public class PermissionsScopeTests
         Assert.True(users[0].AssignAndRevoke);
     }
 
+    /// <summary>
+    /// Tests that tenants aggregates all actions
+    /// </summary>
     [Fact]
     public void Tenants_Aggregates_AllActions()
     {
@@ -245,6 +266,9 @@ public class PermissionsScopeTests
         Assert.True(tenants[0].Delete);
     }
 
+    /// <summary>
+    /// Tests that groups aggregates all actions
+    /// </summary>
     [Fact]
     public void Groups_Aggregates_AllActions()
     {
@@ -272,6 +296,9 @@ public class PermissionsScopeTests
         Assert.True(groups[0].Read);
     }
 
+    /// <summary>
+    /// Tests that replicate aggregates all actions
+    /// </summary>
     [Fact]
     public void Replicate_Aggregates_AllActions()
     {
@@ -314,6 +341,9 @@ public class PermissionsScopeTests
         Assert.True(replicate[0].Delete);
     }
 
+    /// <summary>
+    /// Tests that collections aggregates all actions
+    /// </summary>
     [Fact]
     public void Collections_Aggregates_AllActions()
     {
@@ -352,6 +382,9 @@ public class PermissionsScopeTests
         Assert.True(collections[0].Delete);
     }
 
+    /// <summary>
+    /// Tests that backups aggregates manage backups only
+    /// </summary>
     [Fact]
     public void Backups_Aggregates_ManageBackupsOnly()
     {
@@ -369,6 +402,9 @@ public class PermissionsScopeTests
         Assert.True(backups[0].Manage);
     }
 
+    /// <summary>
+    /// Tests that all permission actions are mentioned
+    /// </summary>
     [Fact]
     public void AllPermissionActions_AreMentioned()
     {
@@ -428,6 +464,9 @@ public class PermissionsScopeTests
         }
     }
 
+    /// <summary>
+    /// Tests that data aggregates all actions
+    /// </summary>
     [Fact]
     public void Data_Aggregates_AllActions()
     {

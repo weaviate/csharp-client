@@ -1,12 +1,24 @@
 namespace Weaviate.Client.Grpc.Protobuf.V1;
 
+/// <summary>
+/// The aggregate reply class
+/// </summary>
 internal partial class AggregateReply
 {
+    /// <summary>
+    /// Gets or sets the value of the collection
+    /// </summary>
     public string Collection { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// The search reply class
+/// </summary>
 internal partial class SearchReply
 {
+    /// <summary>
+    /// Gets or sets the value of the collection
+    /// </summary>
     public string Collection { get; set; } = string.Empty;
 
     public static implicit operator Client.Models.GroupByResult(SearchReply reply) =>
@@ -23,8 +35,16 @@ internal partial class SearchReply
         Client.Grpc.WeaviateGrpcClient.BuildGenerativeResult(reply);
 }
 
+/// <summary>
+/// The targets class
+/// </summary>
 internal partial class Targets
 {
+    /// <summary>
+    /// Returns the grpc targets using the specified target vectors
+    /// </summary>
+    /// <param name="targetVectors">The target vectors</param>
+    /// <returns>The grpc targets</returns>
     private static Targets ToGrpcTargets(Client.Models.TargetVectors targetVectors)
     {
         List<string> targets;

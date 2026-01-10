@@ -4,25 +4,105 @@ using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 
+/// <summary>
+/// The weaviate client builder class
+/// </summary>
 public partial class WeaviateClientBuilder
 {
+    /// <summary>
+    /// The rest endpoint
+    /// </summary>
     private string _restEndpoint = "localhost";
+
+    /// <summary>
+    /// The rest path
+    /// </summary>
     private string _restPath = "v1/";
+
+    /// <summary>
+    /// The grpc endpoint
+    /// </summary>
     private string _grpcEndpoint = "localhost";
+
+    /// <summary>
+    /// The grpc path
+    /// </summary>
     private string _grpcPath = "";
+
+    /// <summary>
+    /// The rest port
+    /// </summary>
     private ushort _restPort = 8080;
+
+    /// <summary>
+    /// The grpc port
+    /// </summary>
     private ushort _grpcPort = 50051;
+
+    /// <summary>
+    /// The use ssl
+    /// </summary>
     private bool _useSsl = false;
+
+    /// <summary>
+    /// The headers
+    /// </summary>
     private Dictionary<string, string> _headers = new();
+
+    /// <summary>
+    /// The credentials
+    /// </summary>
     private ICredentials? _credentials = null;
+
+    /// <summary>
+    /// The http message handler
+    /// </summary>
     private HttpMessageHandler? _httpMessageHandler = null;
+
+    /// <summary>
+    /// The default timeout
+    /// </summary>
     private TimeSpan? _defaultTimeout = null;
+
+    /// <summary>
+    /// The init timeout
+    /// </summary>
     private TimeSpan? _initTimeout = null;
+
+    /// <summary>
+    /// The insert timeout
+    /// </summary>
     private TimeSpan? _insertTimeout = null;
+
+    /// <summary>
+    /// The query timeout
+    /// </summary>
     private TimeSpan? _queryTimeout = null;
+
+    /// <summary>
+    /// The retry policy
+    /// </summary>
     private RetryPolicy? _retryPolicy = null;
+
+    /// <summary>
+    /// The custom handlers
+    /// </summary>
     private readonly List<DelegatingHandler> _customHandlers = new();
 
+    /// <summary>
+    /// Customs the rest endpoint
+    /// </summary>
+    /// <param name="restEndpoint">The rest endpoint</param>
+    /// <param name="restPath">The rest path</param>
+    /// <param name="grpcEndpoint">The grpc endpoint</param>
+    /// <param name="grpcPath">The grpc path</param>
+    /// <param name="restPort">The rest port</param>
+    /// <param name="grpcPort">The grpc port</param>
+    /// <param name="useSsl">The use ssl</param>
+    /// <param name="headers">The headers</param>
+    /// <param name="credentials">The credentials</param>
+    /// <param name="httpMessageHandler">The http message handler</param>
+    /// <returns>The weaviate client builder</returns>
     public static WeaviateClientBuilder Custom(
         string restEndpoint = "localhost",
         string restPath = "v1/",
@@ -49,6 +129,17 @@ public partial class WeaviateClientBuilder
             .WithHttpMessageHandler(httpMessageHandler);
     }
 
+    /// <summary>
+    /// Locals the credentials
+    /// </summary>
+    /// <param name="credentials">The credentials</param>
+    /// <param name="hostname">The hostname</param>
+    /// <param name="restPort">The rest port</param>
+    /// <param name="grpcPort">The grpc port</param>
+    /// <param name="useSsl">The use ssl</param>
+    /// <param name="headers">The headers</param>
+    /// <param name="httpMessageHandler">The http message handler</param>
+    /// <returns>The weaviate client builder</returns>
     public static WeaviateClientBuilder Local(
         ICredentials? credentials = null,
         string hostname = "localhost",
@@ -68,6 +159,14 @@ public partial class WeaviateClientBuilder
             .WithHttpMessageHandler(httpMessageHandler)
             .WithHeaders(headers);
 
+    /// <summary>
+    /// Clouds the rest endpoint
+    /// </summary>
+    /// <param name="restEndpoint">The rest endpoint</param>
+    /// <param name="apiKey">The api key</param>
+    /// <param name="headers">The headers</param>
+    /// <param name="httpMessageHandler">The http message handler</param>
+    /// <returns>The weaviate client builder</returns>
     public static WeaviateClientBuilder Cloud(
         string restEndpoint,
         string? apiKey = null,
@@ -84,48 +183,88 @@ public partial class WeaviateClientBuilder
             .WithHeaders(headers)
             .WithHttpMessageHandler(httpMessageHandler);
 
+    /// <summary>
+    /// Adds the rest endpoint using the specified endpoint
+    /// </summary>
+    /// <param name="endpoint">The endpoint</param>
+    /// <returns>The weaviate client builder</returns>
     public WeaviateClientBuilder WithRestEndpoint(string endpoint)
     {
         _restEndpoint = endpoint;
         return this;
     }
 
+    /// <summary>
+    /// Adds the rest path using the specified path
+    /// </summary>
+    /// <param name="path">The path</param>
+    /// <returns>The weaviate client builder</returns>
     public WeaviateClientBuilder WithRestPath(string path)
     {
         _restPath = path;
         return this;
     }
 
+    /// <summary>
+    /// Adds the grpc endpoint using the specified endpoint
+    /// </summary>
+    /// <param name="endpoint">The endpoint</param>
+    /// <returns>The weaviate client builder</returns>
     public WeaviateClientBuilder WithGrpcEndpoint(string endpoint)
     {
         _grpcEndpoint = endpoint;
         return this;
     }
 
+    /// <summary>
+    /// Adds the grpc path using the specified path
+    /// </summary>
+    /// <param name="path">The path</param>
+    /// <returns>The weaviate client builder</returns>
     public WeaviateClientBuilder WithGrpcPath(string path)
     {
         _grpcPath = path;
         return this;
     }
 
+    /// <summary>
+    /// Adds the rest port using the specified port
+    /// </summary>
+    /// <param name="port">The port</param>
+    /// <returns>The weaviate client builder</returns>
     public WeaviateClientBuilder WithRestPort(ushort port)
     {
         _restPort = port;
         return this;
     }
 
+    /// <summary>
+    /// Adds the grpc port using the specified port
+    /// </summary>
+    /// <param name="port">The port</param>
+    /// <returns>The weaviate client builder</returns>
     public WeaviateClientBuilder WithGrpcPort(ushort port)
     {
         _grpcPort = port;
         return this;
     }
 
+    /// <summary>
+    /// Uses the ssl using the specified use ssl
+    /// </summary>
+    /// <param name="useSsl">The use ssl</param>
+    /// <returns>The weaviate client builder</returns>
     public WeaviateClientBuilder UseSsl(bool useSsl = true)
     {
         _useSsl = useSsl;
         return this;
     }
 
+    /// <summary>
+    /// Adds the headers using the specified headers
+    /// </summary>
+    /// <param name="headers">The headers</param>
+    /// <returns>The weaviate client builder</returns>
     public WeaviateClientBuilder WithHeaders(Dictionary<string, string>? headers)
     {
         if (headers != null)
@@ -139,12 +278,23 @@ public partial class WeaviateClientBuilder
         return this;
     }
 
+    /// <summary>
+    /// Adds the header using the specified key
+    /// </summary>
+    /// <param name="key">The key</param>
+    /// <param name="value">The value</param>
+    /// <returns>The weaviate client builder</returns>
     public WeaviateClientBuilder WithHeader(string key, string value)
     {
         _headers[key] = value;
         return this;
     }
 
+    /// <summary>
+    /// Adds the credentials using the specified credentials
+    /// </summary>
+    /// <param name="credentials">The credentials</param>
+    /// <returns>The weaviate client builder</returns>
     public WeaviateClientBuilder WithCredentials(ICredentials? credentials)
     {
         if (credentials == null)
@@ -154,6 +304,11 @@ public partial class WeaviateClientBuilder
         return this;
     }
 
+    /// <summary>
+    /// Adds the http message handler using the specified handler
+    /// </summary>
+    /// <param name="handler">The handler</param>
+    /// <returns>The weaviate client builder</returns>
     public WeaviateClientBuilder WithHttpMessageHandler(HttpMessageHandler? handler)
     {
         if (handler == null)

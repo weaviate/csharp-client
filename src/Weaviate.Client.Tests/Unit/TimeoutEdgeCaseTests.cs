@@ -7,6 +7,9 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TimeoutEdgeCaseTests
 {
+    /// <summary>
+    /// Tests that concurrent operations timeout context not shared
+    /// </summary>
     [Fact(Skip = "AsyncLocal context flow with high concurrency is unreliable in test environment")]
     public async Task ConcurrentOperations_TimeoutContextNotShared()
     {
@@ -47,6 +50,9 @@ public class TimeoutEdgeCaseTests
         await Task.WhenAll(tasks);
     }
 
+    /// <summary>
+    /// Tests that nested async calls timeout context preserved
+    /// </summary>
     [Fact(Skip = "AsyncLocal context detection with non-cancelled timeout token is unreliable")]
     public async Task NestedAsyncCalls_TimeoutContextPreserved()
     {
@@ -78,6 +84,9 @@ public class TimeoutEdgeCaseTests
         Assert.Equal(outerOperation, TimeoutHelper.GetOperation());
     }
 
+    /// <summary>
+    /// Tests that nested async calls with task run timeout context preserved
+    /// </summary>
     [Fact(
         Skip = "AsyncLocal context does not reliably flow to Task.Run without ExecutionContext capture"
     )]
@@ -109,6 +118,9 @@ public class TimeoutEdgeCaseTests
         );
     }
 
+    /// <summary>
+    /// Tests that weaviate timeout exception message formatting with all properties
+    /// </summary>
     [Fact]
     public void WeaviateTimeoutException_MessageFormatting_WithAllProperties()
     {
@@ -127,6 +139,9 @@ public class TimeoutEdgeCaseTests
         Assert.Equal(operation, ex.Operation);
     }
 
+    /// <summary>
+    /// Tests that weaviate timeout exception message formatting with timeout only
+    /// </summary>
     [Fact]
     public void WeaviateTimeoutException_MessageFormatting_WithTimeoutOnly()
     {
@@ -144,6 +159,9 @@ public class TimeoutEdgeCaseTests
         Assert.Null(ex.Operation);
     }
 
+    /// <summary>
+    /// Tests that weaviate timeout exception message formatting with operation only
+    /// </summary>
     [Fact]
     public void WeaviateTimeoutException_MessageFormatting_WithOperationOnly()
     {
@@ -161,6 +179,9 @@ public class TimeoutEdgeCaseTests
         Assert.Equal(operation, ex.Operation);
     }
 
+    /// <summary>
+    /// Tests that weaviate timeout exception message formatting with no properties
+    /// </summary>
     [Fact]
     public void WeaviateTimeoutException_MessageFormatting_WithNoProperties()
     {
@@ -174,6 +195,9 @@ public class TimeoutEdgeCaseTests
         Assert.Null(ex.Operation);
     }
 
+    /// <summary>
+    /// Tests that weaviate timeout exception with inner exception preserves inner
+    /// </summary>
     [Fact]
     public void WeaviateTimeoutException_WithInnerException_PreservesInner()
     {
@@ -191,6 +215,9 @@ public class TimeoutEdgeCaseTests
         Assert.Equal("Original timeout", ex.InnerException.Message);
     }
 
+    /// <summary>
+    /// Tests that sequential operations context cleared between calls
+    /// </summary>
     [Fact]
     public async Task SequentialOperations_ContextClearedBetweenCalls()
     {
@@ -225,6 +252,9 @@ public class TimeoutEdgeCaseTests
         Assert.False(TimeoutHelper.IsTimeoutCancellation(ex));
     }
 
+    /// <summary>
+    /// Tests that zero timeout clears context
+    /// </summary>
     [Fact]
     public async Task ZeroTimeout_ClearsContext()
     {
@@ -250,6 +280,9 @@ public class TimeoutEdgeCaseTests
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Tests that timeout context works with operation canceled exception
+    /// </summary>
     [Fact]
     public void TimeoutContext_WorksWithOperationCanceledException()
     {
@@ -273,6 +306,9 @@ public class TimeoutEdgeCaseTests
         Assert.Equal("OC test", TimeoutHelper.GetOperation());
     }
 
+    /// <summary>
+    /// Tests that rapid sequential timeouts each maintains own context
+    /// </summary>
     [Fact]
     public async Task RapidSequentialTimeouts_EachMaintainsOwnContext()
     {
@@ -302,6 +338,9 @@ public class TimeoutEdgeCaseTests
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Tests that parallel operations high concurrency context isolation
+    /// </summary>
     [Fact]
     public async Task ParallelOperations_HighConcurrency_ContextIsolation()
     {
@@ -335,6 +374,9 @@ public class TimeoutEdgeCaseTests
         Assert.All(results, result => Assert.True(result));
     }
 
+    /// <summary>
+    /// Tests that config timeout fallback to default works correctly
+    /// </summary>
     [Fact]
     public void ConfigTimeout_FallbackToDefault_WorksCorrectly()
     {
@@ -356,6 +398,9 @@ public class TimeoutEdgeCaseTests
         Assert.Equal(operation, TimeoutHelper.GetOperation());
     }
 
+    /// <summary>
+    /// Tests that config timeout overrides default works correctly
+    /// </summary>
     [Fact]
     public void ConfigTimeout_OverridesDefault_WorksCorrectly()
     {
