@@ -2,10 +2,19 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The property tests class
+/// </summary>
 public partial class PropertyTests
 {
+    /// <summary>
+    /// Gets the value of the property cases keys
+    /// </summary>
     public static TheoryData<string> PropertyCasesKeys => [.. PropertyCases.Keys];
 
+    /// <summary>
+    /// The new
+    /// </summary>
     private static Dictionary<string, (PropertyFactory, PropertyFactory)> PropertyCases = new()
     {
         ["Text"] = (Property.Text, Property<string>.New),
@@ -27,6 +36,10 @@ public partial class PropertyTests
         ["ObjectArray"] = (Property.ObjectArray, Property<object[]>.New),
     };
 
+    /// <summary>
+    /// Tests that property data type helpers
+    /// </summary>
+    /// <param name="key">The key</param>
     [Theory]
     [MemberData(nameof(PropertyCasesKeys))]
     public void Property_DataType_Helpers(string key)
@@ -37,6 +50,9 @@ public partial class PropertyTests
         Assert.Equivalent(p1, p2);
     }
 
+    /// <summary>
+    /// Tests that equals should return true for identical properties
+    /// </summary>
     [Fact]
     public void Equals_Should_Return_True_For_Identical_Properties()
     {
@@ -66,6 +82,9 @@ public partial class PropertyTests
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Tests that equals should return false when names differ
+    /// </summary>
     [Fact]
     public void Equals_Should_Return_False_When_Names_Differ()
     {
@@ -80,6 +99,9 @@ public partial class PropertyTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals should return false when data types differ
+    /// </summary>
     [Fact]
     public void Equals_Should_Return_False_When_DataTypes_Differ()
     {
@@ -94,6 +116,9 @@ public partial class PropertyTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals should return false when descriptions differ
+    /// </summary>
     [Fact]
     public void Equals_Should_Return_False_When_Descriptions_Differ()
     {
@@ -108,6 +133,9 @@ public partial class PropertyTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals should return false when index filterable differs
+    /// </summary>
     [Fact]
     public void Equals_Should_Return_False_When_IndexFilterable_Differs()
     {
@@ -122,6 +150,9 @@ public partial class PropertyTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals should return false when index range filters differs
+    /// </summary>
     [Fact]
     public void Equals_Should_Return_False_When_IndexRangeFilters_Differs()
     {
@@ -136,6 +167,9 @@ public partial class PropertyTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals should return false when index searchable differs
+    /// </summary>
     [Fact]
     public void Equals_Should_Return_False_When_IndexSearchable_Differs()
     {
@@ -150,6 +184,9 @@ public partial class PropertyTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that equals should return false when property tokenization differs
+    /// </summary>
     [Fact]
     public void Equals_Should_Return_False_When_PropertyTokenization_Differs()
     {
@@ -170,26 +207,67 @@ public partial class PropertyTests
         Assert.False(result);
     }
 
+    /// <summary>
+    /// The test class
+    /// </summary>
     private class TestClass
     {
+        /// <summary>
+        /// Gets or sets the value of the name
+        /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the age
+        /// </summary>
         public int Age { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the is active
+        /// </summary>
         public bool IsActive { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the created at
+        /// </summary>
         public DateTime CreatedAt { get; set; }
     }
 
+    /// <summary>
+    /// The test class with array property class
+    /// </summary>
     private class TestClassWithArrayProperty
     {
+        /// <summary>
+        /// Gets or sets the value of the items
+        /// </summary>
         public TestClass[] Items { get; set; } = Array.Empty<TestClass>();
     }
 
+    /// <summary>
+    /// The nested class
+    /// </summary>
     private class NestedClass
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the details
+        /// </summary>
         public NestedClass? Details { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the details array
+        /// </summary>
         public NestedClass[]? DetailsArray { get; set; } = null;
     }
 
+    /// <summary>
+    /// Tests that from class should generate properties for simple
+    /// </summary>
     [Fact]
     public void FromClass_ShouldGeneratePropertiesForSimpleClass()
     {
@@ -205,6 +283,9 @@ public partial class PropertyTests
         Assert.Contains(properties, p => p.Name == "createdAt" && p.DataType == DataType.Date);
     }
 
+    /// <summary>
+    /// Tests that from class should generate properties for object array
+    /// </summary>
     [Fact]
     public void FromClass_ShouldGeneratePropertiesForObjectArray()
     {
@@ -215,6 +296,9 @@ public partial class PropertyTests
         Assert.Equal(4, properties.Length);
     }
 
+    /// <summary>
+    /// Tests that from class should generate properties for object array property
+    /// </summary>
     [Fact]
     public void FromClass_ShouldGeneratePropertiesForObjectArrayProperty()
     {
@@ -227,6 +311,9 @@ public partial class PropertyTests
         Assert.Equal(4, properties[0].NestedProperties!.Length);
     }
 
+    /// <summary>
+    /// Tests that from class should generate properties for nested
+    /// </summary>
     [Fact]
     public void FromClass_ShouldGeneratePropertiesForNestedClass()
     {
@@ -257,8 +344,14 @@ public partial class PropertyTests
         Assert.Null(detailsArrayProperty.NestedProperties[0].NestedProperties);
     }
 
+    /// <summary>
+    /// The empty class
+    /// </summary>
     class EmptyClass { }
 
+    /// <summary>
+    /// Tests that from class should handle empty
+    /// </summary>
     [Fact]
     public void FromClass_ShouldHandleEmptyClass()
     {
@@ -271,8 +364,14 @@ public partial class PropertyTests
         Assert.Empty(properties);
     }
 
+    /// <summary>
+    /// The unsupported class
+    /// </summary>
     class UnsupportedClass
     {
+        /// <summary>
+        /// Gets or sets the value of the unsupported property
+        /// </summary>
         public object UnsupportedProperty { get; set; } = new object();
     }
 }

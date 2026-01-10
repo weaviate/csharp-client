@@ -3,8 +3,18 @@ using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client.Rest;
 
+/// <summary>
+/// The weaviate rest client class
+/// </summary>
 internal partial class WeaviateRestClient
 {
+    /// <summary>
+    /// Nodeses the collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="verbosity">The verbosity</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing a list of dto node status</returns>
     internal async Task<IList<Dto.NodeStatus>> Nodes(
         string? collection,
         string verbosity,

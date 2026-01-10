@@ -2,12 +2,26 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The reference tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("ReferenceTests")]
 public partial class ReferenceTests : IntegrationTests
 {
+    /// <summary>
+    /// The to uuid
+    /// </summary>
     readonly Guid _to_UUID = new("8ad0d33c-8db1-4437-87f3-72161ca2a51a");
+
+    /// <summary>
+    /// The to uuid2
+    /// </summary>
     readonly Guid _to_UUID2 = new("577887c1-4c6b-5594-aa62-f0c17883d9cf");
 
+    /// <summary>
+    /// Tests that test single target reference ops
+    /// </summary>
     [Fact]
     public async Task Test_SingleTargetReferenceOps()
     {
@@ -118,6 +132,9 @@ public partial class ReferenceTests : IntegrationTests
         Assert.Contains(refsB2, r => r.UUID == uuid_A3);
     }
 
+    /// <summary>
+    /// Tests that test single target reference basic
+    /// </summary>
     [Fact]
     public async Task Test_SingleTargetReference_Basic()
     {
@@ -227,6 +244,9 @@ public partial class ReferenceTests : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test single target reference complex
+    /// </summary>
     [Fact]
     public async Task Test_SingleTargetReference_Complex()
     {

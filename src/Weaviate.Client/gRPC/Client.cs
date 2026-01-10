@@ -7,13 +7,40 @@ using Microsoft.Extensions.Logging;
 
 namespace Weaviate.Client.Grpc;
 
+/// <summary>
+/// The weaviate grpc client class
+/// </summary>
+/// <seealso cref="IDisposable"/>
 internal partial class WeaviateGrpcClient : IDisposable
 {
+    /// <summary>
+    /// The channel
+    /// </summary>
     private readonly GrpcChannel _channel;
+
+    /// <summary>
+    /// The default headers
+    /// </summary>
     internal Metadata? _defaultHeaders = null;
+
+    /// <summary>
+    /// The grpc client
+    /// </summary>
     private readonly Grpc.Protobuf.V1.Weaviate.WeaviateClient _grpcClient;
+
+    /// <summary>
+    /// The logger
+    /// </summary>
     private readonly ILogger<WeaviateGrpcClient> _logger;
+
+    /// <summary>
+    /// The timeout
+    /// </summary>
     private readonly TimeSpan? _timeout;
+
+    /// <summary>
+    /// The retry policy
+    /// </summary>
     private readonly RetryPolicy? _retryPolicy;
 
     /// <summary>
@@ -67,6 +94,12 @@ internal partial class WeaviateGrpcClient : IDisposable
         }
     }
 
+    /// <summary>
+    /// Auths the interceptor factory using the specified token service
+    /// </summary>
+    /// <param name="tokenService">The token service</param>
+    /// <param name="logger">The logger</param>
+    /// <returns>The async auth interceptor</returns>
     static AsyncAuthInterceptor _AuthInterceptorFactory(ITokenService tokenService, ILogger logger)
     {
         return async (context, metadata) =>
@@ -116,6 +149,14 @@ internal partial class WeaviateGrpcClient : IDisposable
         return new WeaviateGrpcClient(channel, wcdHost, timeout, retryPolicy, headers, logger);
     }
 
+    /// <summary>
+    /// Creates the channel using the specified grpc uri
+    /// </summary>
+    /// <param name="grpcUri">The grpc uri</param>
+    /// <param name="tokenService">The token service</param>
+    /// <param name="maxMessageSize">The max message size</param>
+    /// <param name="logger">The logger</param>
+    /// <returns>The grpc channel</returns>
     private static GrpcChannel CreateChannel(
         Uri grpcUri,
         ITokenService? tokenService,
@@ -161,6 +202,12 @@ internal partial class WeaviateGrpcClient : IDisposable
         return GrpcChannel.ForAddress(grpcUri, options);
     }
 
+    /// <summary>
+    /// Performs the health check using the specified channel
+    /// </summary>
+    /// <param name="channel">The channel</param>
+    /// <exception cref="WeaviateClientException"></exception>
+    /// <exception cref="WeaviateClientException"></exception>
     private static void PerformHealthCheck(GrpcChannel channel)
     {
         var healthClient = new Health.HealthClient(channel);
@@ -212,6 +259,9 @@ internal partial class WeaviateGrpcClient : IDisposable
         return options;
     }
 
+    /// <summary>
+    /// Disposes this instance
+    /// </summary>
     public void Dispose()
     {
         _channel.Dispose();

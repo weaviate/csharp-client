@@ -5,13 +5,36 @@ namespace Weaviate.Client;
 
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
+/// <summary>
+/// A factory for creating generative configurations.
+/// </summary>
 public class GenerativeConfigFactory
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GenerativeConfigFactory"/> class
+    /// </summary>
     internal GenerativeConfigFactory() { }
 #pragma warning disable CA1822 // Mark members as static
+    /// <summary>
+    /// Create a custom generative configuration.
+    /// </summary>
+    /// <param name="type">The type of the generative module.</param>
+    /// <param name="config">The configuration of the generative module.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig Custom(string type, object? config = null) =>
         new GenerativeConfig.Custom { Type = type, Config = config ?? new { } };
 
+    /// <summary>
+    /// Create a generative configuration for AWS Bedrock.
+    /// </summary>
+    /// <param name="region">The AWS region.</param>
+    /// <param name="model">The model to use.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="stopSequences">The stop sequences.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="topP">The top P.</param>
+    /// <param name="topK">The top K.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig AWSBedrock(
         string region,
         string model,
@@ -36,6 +59,19 @@ public class GenerativeConfigFactory
             TopK = topK,
         };
 
+    /// <summary>
+    /// Create a generative configuration for AWS Sagemaker.
+    /// </summary>
+    /// <param name="region">The AWS region.</param>
+    /// <param name="endpoint">The Sagemaker endpoint.</param>
+    /// <param name="targetModel">The target model.</param>
+    /// <param name="targetVariant">The target variant.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="stopSequences">The stop sequences.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="topP">The top P.</param>
+    /// <param name="topK">The top K.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig AWSSagemaker(
         string region,
         string endpoint,
@@ -62,6 +98,17 @@ public class GenerativeConfigFactory
             TopK = topK,
         };
 
+    /// <summary>
+    /// Create a generative configuration for Anthropic.
+    /// </summary>
+    /// <param name="baseURL">The base URL.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="model">The model to use.</param>
+    /// <param name="stopSequences">The stop sequences.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="topK">The top K.</param>
+    /// <param name="topP">The top P.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig Anthropic(
         string? baseURL = null,
         int? maxTokens = null,
@@ -82,6 +129,13 @@ public class GenerativeConfigFactory
             TopP = topP,
         };
 
+    /// <summary>
+    /// Create a generative configuration for Anyscale.
+    /// </summary>
+    /// <param name="baseURL">The base URL.</param>
+    /// <param name="model">The model to use.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig Anyscale(
         string? baseURL = null,
         string? model = null,
@@ -94,6 +148,16 @@ public class GenerativeConfigFactory
             Temperature = temperature,
         };
 
+    /// <summary>
+    /// Create a generative configuration for Cohere.
+    /// </summary>
+    /// <param name="k">The k value.</param>
+    /// <param name="model">The model to use.</param>
+    /// <param name="baseURL">The base URL.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="stopSequences">The stop sequences.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig Cohere(
         int? k = null,
         string? model = null,
@@ -112,6 +176,15 @@ public class GenerativeConfigFactory
             Temperature = temperature,
         };
 
+    /// <summary>
+    /// Create a generative configuration for Databricks.
+    /// </summary>
+    /// <param name="endpoint">The Databricks endpoint.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="topK">The top K.</param>
+    /// <param name="topP">The top P.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig Databricks(
         string endpoint,
         int? maxTokens = null,
@@ -128,6 +201,14 @@ public class GenerativeConfigFactory
             TopP = topP,
         };
 
+    /// <summary>
+    /// Create a generative configuration for FriendliAI.
+    /// </summary>
+    /// <param name="baseURL">The base URL.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="model">The model to use.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig FriendliAI(
         string? baseURL = null,
         int? maxTokens = null,
@@ -142,6 +223,14 @@ public class GenerativeConfigFactory
             Temperature = temperature,
         };
 
+    /// <summary>
+    /// Create a generative configuration for Mistral.
+    /// </summary>
+    /// <param name="baseURL">The base URL.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="model">The model to use.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig Mistral(
         string? baseURL = null,
         int? maxTokens = null,
@@ -156,6 +245,15 @@ public class GenerativeConfigFactory
             Temperature = temperature,
         };
 
+    /// <summary>
+    /// Create a generative configuration for Nvidia.
+    /// </summary>
+    /// <param name="baseURL">The base URL.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="model">The model to use.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="topP">The top P.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig Nvidia(
         string? baseURL = null,
         int? maxTokens = null,
@@ -172,9 +270,29 @@ public class GenerativeConfigFactory
             TopP = topP,
         };
 
+    /// <summary>
+    /// Create a generative configuration for Ollama.
+    /// </summary>
+    /// <param name="apiEndpoint">The API endpoint.</param>
+    /// <param name="model">The model to use.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig Ollama(string? apiEndpoint = null, string? model = null) =>
         new GenerativeConfig.Ollama { ApiEndpoint = apiEndpoint, Model = model };
 
+    /// <summary>
+    /// Create a generative configuration for OpenAI.
+    /// </summary>
+    /// <param name="model">The model to use.</param>
+    /// <param name="baseURL">The base URL.</param>
+    /// <param name="frequencyPenalty">The frequency penalty.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="presencePenalty">The presence penalty.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="topP">The top P.</param>
+    /// <param name="apiVersion">The API version.</param>
+    /// <param name="reasoningEffort">The reasoning effort.</param>
+    /// <param name="verbosity">The verbosity.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig OpenAI(
         string? model = null,
         string? baseURL = null,
@@ -201,6 +319,22 @@ public class GenerativeConfigFactory
             Verbosity = verbosity,
         };
 
+    /// <summary>
+    /// Create a generative configuration for Azure OpenAI.
+    /// </summary>
+    /// <param name="resourceName">The resource name.</param>
+    /// <param name="deploymentId">The deployment ID.</param>
+    /// <param name="model">The model to use.</param>
+    /// <param name="baseURL">The base URL.</param>
+    /// <param name="frequencyPenalty">The frequency penalty.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="presencePenalty">The presence penalty.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="topP">The top P.</param>
+    /// <param name="apiVersion">The API version.</param>
+    /// <param name="reasoningEffort">The reasoning effort.</param>
+    /// <param name="verbosity">The verbosity.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig AzureOpenAI(
         string resourceName,
         string deploymentId,
@@ -231,6 +365,19 @@ public class GenerativeConfigFactory
             Verbosity = verbosity,
         };
 
+    /// <summary>
+    /// Create a generative configuration for Google Vertex.
+    /// </summary>
+    /// <param name="apiEndpoint">The API endpoint.</param>
+    /// <param name="maxOutputTokens">The maximum number of output tokens.</param>
+    /// <param name="model">The model to use.</param>
+    /// <param name="projectId">The project ID.</param>
+    /// <param name="endpointId">The endpoint ID.</param>
+    /// <param name="region">The region.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="topK">The top K.</param>
+    /// <param name="topP">The top P.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig GoogleVertex(
         string? apiEndpoint = null,
         int? maxOutputTokens = null,
@@ -255,6 +402,15 @@ public class GenerativeConfigFactory
             TopP = topP,
         };
 
+    /// <summary>
+    /// Create a generative configuration for Google Gemini.
+    /// </summary>
+    /// <param name="maxOutputTokens">The maximum number of output tokens.</param>
+    /// <param name="model">The model to use.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="topK">The top K.</param>
+    /// <param name="topP">The top P.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig GoogleGemini(
         int? maxOutputTokens = null,
         string? model = null,
@@ -271,6 +427,15 @@ public class GenerativeConfigFactory
             TopP = topP,
         };
 
+    /// <summary>
+    /// Create a generative configuration for XAI.
+    /// </summary>
+    /// <param name="baseURL">The base URL.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="model">The model to use.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="topP">The top P.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig XAI(
         string? baseURL = null,
         int? maxTokens = null,
@@ -287,6 +452,17 @@ public class GenerativeConfigFactory
             TopP = topP,
         };
 
+    /// <summary>
+    /// Create a generative configuration for Contextual AI.
+    /// </summary>
+    /// <param name="model">The model to use.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="topP">The top P.</param>
+    /// <param name="maxNewTokens">The maximum number of new tokens.</param>
+    /// <param name="systemPrompt">The system prompt.</param>
+    /// <param name="avoidCommentary">Whether to avoid commentary.</param>
+    /// <param name="knowledge">The knowledge.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig ContextualAI(
         string? model = null,
         double? temperature = null,

@@ -3,6 +3,9 @@ using Weaviate.Client.Models.Typed;
 
 namespace Weaviate.Client.Typed;
 
+/// <summary>
+/// The typed query client class
+/// </summary>
 public partial class TypedQueryClient<T>
 {
     /// <summary>
@@ -303,7 +306,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a near-vector search using a lambda builder for NearVectorInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearVectorInput with target vectors.</param>
+    /// <param name="vectors"></param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
@@ -345,7 +348,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a near-vector search with group-by using a lambda builder for NearVectorInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearVectorInput with target vectors.</param>
+    /// <param name="vectors"></param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>

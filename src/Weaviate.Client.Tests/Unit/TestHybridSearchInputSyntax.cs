@@ -11,11 +11,25 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TestHybridSearchInputSyntax : IAsyncLifetime
 {
+    /// <summary>
+    /// The collection name
+    /// </summary>
     private const string CollectionName = "TestCollection";
 
+    /// <summary>
+    /// The get request
+    /// </summary>
     private Func<Grpc.Protobuf.V1.SearchRequest?> _getRequest = null!;
+
+    /// <summary>
+    /// The collection
+    /// </summary>
     private CollectionClient _collection = null!;
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask InitializeAsync()
     {
         var (client, getRequest) = MockGrpcClient.CreateWithSearchCapture();
@@ -24,6 +38,10 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Disposes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
@@ -32,6 +50,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region Query-Only Tests
 
+    /// <summary>
+    /// Tests that hybrid query only produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_QueryOnly_ProducesValidRequest()
     {
@@ -52,6 +73,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
     }
 
+    /// <summary>
+    /// Tests that hybrid query only with alpha produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_QueryOnly_WithAlpha_ProducesValidRequest()
     {
@@ -70,6 +94,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(0.5f, request.HybridSearch.Alpha, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that hybrid query only with fusion type produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_QueryOnly_WithFusionType_ProducesValidRequest()
     {
@@ -91,6 +118,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region VectorSearchInput - Float Array Tests
 
+    /// <summary>
+    /// Tests that hybrid vector search input float array produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_FloatArray_ProducesValidRequest()
     {
@@ -111,6 +141,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("default", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid vector search input double array produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_DoubleArray_ProducesValidRequest()
     {
@@ -134,6 +167,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region VectorSearchInput - Named Tuple Tests
 
+    /// <summary>
+    /// Tests that hybrid vector search input named tuple produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_NamedTuple_ProducesValidRequest()
     {
@@ -151,6 +187,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid vector search input named tuple double produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_NamedTuple_Double_ProducesValidRequest()
     {
@@ -172,6 +211,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region VectorSearchInput - Multi-Vector (ColBERT) Tests
 
+    /// <summary>
+    /// Tests that hybrid vector search input multi vector float 2 d produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_MultiVector_Float2D_ProducesValidRequest()
     {
@@ -196,6 +238,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("colbert", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid vector search input multi vector double 2 d produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_MultiVector_Double2D_ProducesValidRequest()
     {
@@ -224,6 +269,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region VectorSearchInput - NamedVector Tests
 
+    /// <summary>
+    /// Tests that hybrid vector search input named vector produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_NamedVector_ProducesValidRequest()
     {
@@ -244,6 +292,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid vector search input vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_Vectors_ProducesValidRequest()
     {
@@ -268,6 +319,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region VectorSearchInput Builder - Combination Methods
 
+    /// <summary>
+    /// Tests that hybrid vector search input builder sum produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_Builder_Sum_ProducesValidRequest()
     {
@@ -293,6 +347,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("vector2", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid vector search input builder average produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_Builder_Average_ProducesValidRequest()
     {
@@ -316,6 +373,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid vector search input builder minimum produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_Builder_Minimum_ProducesValidRequest()
     {
@@ -339,6 +399,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid vector search input builder manual weights produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_Builder_ManualWeights_ProducesValidRequest()
     {
@@ -363,6 +426,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
     }
 
+    /// <summary>
+    /// Tests that hybrid vector search input builder relative score produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_Builder_RelativeScore_ProducesValidRequest()
     {
@@ -389,6 +455,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         );
     }
 
+    /// <summary>
+    /// Tests that hybrid vector search input builder same name sum produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_Builder_SameNameSum_ProducesValidRequest()
     {
@@ -418,6 +487,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region NearTextInput Tests
 
+    /// <summary>
+    /// Tests that hybrid near text input string produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearTextInput_String_ProducesValidRequest()
     {
@@ -435,6 +507,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("semantic search", request.HybridSearch.NearText.Query);
     }
 
+    /// <summary>
+    /// Tests that hybrid near text input explicit produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearTextInput_Explicit_ProducesValidRequest()
     {
@@ -456,6 +531,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(0.5, request.HybridSearch.NearText.Distance, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that hybrid near text input with certainty produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearTextInput_WithCertainty_ProducesValidRequest()
     {
@@ -476,6 +554,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(0.8, request.HybridSearch.NearText.Certainty, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that hybrid near text input with target vectors sum produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearTextInput_WithTargetVectors_Sum_ProducesValidRequest()
     {
@@ -500,6 +581,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid near text input with target vectors average produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearTextInput_WithTargetVectors_Average_ProducesValidRequest()
     {
@@ -522,6 +606,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid near text input with target vectors minimum produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearTextInput_WithTargetVectors_Minimum_ProducesValidRequest()
     {
@@ -544,6 +631,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid near text input with target vectors manual weights produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearTextInput_WithTargetVectors_ManualWeights_ProducesValidRequest()
     {
@@ -567,6 +657,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
     }
 
+    /// <summary>
+    /// Tests that hybrid near text input with target vectors relative score produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearTextInput_WithTargetVectors_RelativeScore_ProducesValidRequest()
     {
@@ -592,6 +685,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         );
     }
 
+    /// <summary>
+    /// Tests that hybrid near text input with lambda builder produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearTextInput_WithLambdaBuilder_ProducesValidRequest()
     {
@@ -614,6 +710,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid near text input simple string from docs produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearTextInput_SimpleString_FromDocs_ProducesValidRequest()
     {
@@ -638,6 +737,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region NearVectorInput Tests
 
+    /// <summary>
+    /// Tests that hybrid near vector input basic produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_Basic_ProducesValidRequest()
     {
@@ -657,6 +759,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.NearVector);
     }
 
+    /// <summary>
+    /// Tests that hybrid near vector input with distance produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_WithDistance_ProducesValidRequest()
     {
@@ -677,6 +782,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(0.5, request.HybridSearch.NearVector.Distance, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that hybrid near vector input with certainty produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_WithCertainty_ProducesValidRequest()
     {
@@ -697,6 +805,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(0.9, request.HybridSearch.NearVector.Certainty, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that hybrid near vector input named produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_Named_ProducesValidRequest()
     {
@@ -719,6 +830,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid near vector input multi target sum produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_MultiTarget_Sum_ProducesValidRequest()
     {
@@ -744,6 +858,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid near vector input multi target manual weights produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_MultiTarget_ManualWeights_ProducesValidRequest()
     {
@@ -769,6 +886,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
     }
 
+    /// <summary>
+    /// Tests that hybrid near vector input with certainty from docs produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_WithCertainty_FromDocs_ProducesValidRequest()
     {
@@ -789,6 +909,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(0.8f, request.HybridSearch.NearVector.Certainty, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that hybrid near vector input multi target from docs produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_MultiTarget_FromDocs_ProducesValidRequest()
     {
@@ -819,6 +942,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region Query + Vector Combinations
 
+    /// <summary>
+    /// Tests that hybrid query and vector search input produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_QueryAndVectorSearchInput_ProducesValidRequest()
     {
@@ -836,6 +962,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.Targets);
     }
 
+    /// <summary>
+    /// Tests that hybrid query and near text produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_QueryAndNearText_ProducesValidRequest()
     {
@@ -857,6 +986,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("semantic meaning", request.HybridSearch.NearText.Query);
     }
 
+    /// <summary>
+    /// Tests that hybrid query and near vector produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_QueryAndNearVector_ProducesValidRequest()
     {
@@ -877,6 +1009,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.NearVector);
     }
 
+    /// <summary>
+    /// Tests that hybrid query and multi target vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_QueryAndMultiTargetVectors_ProducesValidRequest()
     {
@@ -907,6 +1042,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region VectorSearchInput.Combine Tests
 
+    /// <summary>
+    /// Tests that hybrid vector search input combine with tuples produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_Combine_WithTuples_ProducesValidRequest()
     {
@@ -931,6 +1069,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid vector search input combine with vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_Combine_WithVectors_ProducesValidRequest()
     {
@@ -956,6 +1097,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid vector search input combine with weights produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_VectorSearchInput_Combine_WithWeights_ProducesValidRequest()
     {
@@ -986,6 +1130,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region Lambda Builder Syntax Tests
 
+    /// <summary>
+    /// Tests that hybrid lambda builder sum produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_LambdaBuilder_Sum_ProducesValidRequest()
     {
@@ -1010,6 +1157,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("vector2", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid lambda builder manual weights produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_LambdaBuilder_ManualWeights_ProducesValidRequest()
     {
@@ -1034,6 +1184,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("description", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid lambda builder average produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_LambdaBuilder_Average_ProducesValidRequest()
     {
@@ -1059,6 +1212,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region Validation Tests
 
+    /// <summary>
+    /// Tests that hybrid null query and null vectors throws argument exception
+    /// </summary>
     [Fact]
     public async Task Hybrid_NullQueryAndNullVectors_ThrowsArgumentException()
     {
@@ -1072,6 +1228,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         );
     }
 
+    /// <summary>
+    /// Tests that hybrid vector input multiple types throws argument exception
+    /// </summary>
     [Fact]
     public void HybridVectorInput_MultipleTypes_ThrowsArgumentException()
     {
@@ -1101,6 +1260,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region Implicit Conversion Coverage Tests
 
+    /// <summary>
+    /// Tests that hybrid implicit conversion vector produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_ImplicitConversion_Vector_ProducesValidRequest()
     {
@@ -1119,6 +1281,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
     }
 
+    /// <summary>
+    /// Tests that hybrid implicit conversion target vectors array produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_ImplicitConversion_TargetVectorsArray_ProducesValidRequest()
     {
@@ -1141,6 +1306,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("vector2", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid implicit conversion string to near text produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_ImplicitConversion_String_ToNearText_ProducesValidRequest()
     {
@@ -1158,6 +1326,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("semantic search query", request.HybridSearch.NearText.Query);
     }
 
+    /// <summary>
+    /// Tests that hybrid implicit conversion named vector array produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_ImplicitConversion_NamedVectorArray_ProducesValidRequest()
     {
@@ -1183,6 +1354,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid implicit conversion near text input produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_ImplicitConversion_NearTextInput_ProducesValidRequest()
     {
@@ -1203,6 +1377,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(0.3, request.HybridSearch.NearText.Distance, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that hybrid implicit conversion near vector input produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_ImplicitConversion_NearVectorInput_ProducesValidRequest()
     {
@@ -1223,6 +1400,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(0.4, request.HybridSearch.NearVector.Distance, precision: 5);
     }
 
+    /// <summary>
+    /// Tests that hybrid implicit conversion vector search input produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_ImplicitConversion_VectorSearchInput_ProducesValidRequest()
     {
@@ -1247,6 +1427,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region VectorSearchInput Dictionary Implicit Conversion Tests
 
+    /// <summary>
+    /// Tests that hybrid dictionary string float array produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_DictionaryStringFloatArray_ProducesValidRequest()
     {
@@ -1268,6 +1451,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid dictionary string double array produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_DictionaryStringDoubleArray_ProducesValidRequest()
     {
@@ -1293,6 +1479,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid dictionary string vector array produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_DictionaryStringVectorArray_ProducesValidRequest()
     {
@@ -1318,6 +1507,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid dictionary string float 2 d produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_DictionaryStringFloat2D_ProducesValidRequest()
     {
@@ -1351,6 +1543,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("colbert2", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid dictionary string double 2 d produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_DictionaryStringDouble2D_ProducesValidRequest()
     {
@@ -1378,6 +1573,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("colbert1", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid dictionary string enumerable float array produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_DictionaryStringEnumerableFloatArray_ProducesValidRequest()
     {
@@ -1403,6 +1601,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid dictionary string enumerable double array produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_DictionaryStringEnumerableDoubleArray_ProducesValidRequest()
     {
@@ -1426,6 +1627,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid dictionary string enumerable float 2 d produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_DictionaryStringEnumerableFloat2D_ProducesValidRequest()
     {
@@ -1461,6 +1665,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("colbert", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid dictionary string enumerable double 2 d produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_DictionaryStringEnumerableDouble2D_ProducesValidRequest()
     {
@@ -1495,6 +1702,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region FactoryFn Implicit Conversion Tests
 
+    /// <summary>
+    /// Tests that hybrid factory fn sum produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_FactoryFn_Sum_ProducesValidRequest()
     {
@@ -1519,6 +1729,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid factory fn average produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_FactoryFn_Average_ProducesValidRequest()
     {
@@ -1541,6 +1754,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid factory fn minimum produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_FactoryFn_Minimum_ProducesValidRequest()
     {
@@ -1563,6 +1779,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid factory fn manual weights produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_FactoryFn_ManualWeights_ProducesValidRequest()
     {
@@ -1586,6 +1805,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
     }
 
+    /// <summary>
+    /// Tests that hybrid factory fn relative score produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_FactoryFn_RelativeScore_ProducesValidRequest()
     {
@@ -1615,6 +1837,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region TargetVectors Combination Methods Tests (All via implicit conversions)
 
+    /// <summary>
+    /// Tests that hybrid target vectors sum via lambda produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_TargetVectors_Sum_ViaLambda_ProducesValidRequest()
     {
@@ -1633,6 +1858,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid target vectors average via lambda produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_TargetVectors_Average_ViaLambda_ProducesValidRequest()
     {
@@ -1651,6 +1879,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid target vectors minimum via lambda produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_TargetVectors_Minimum_ViaLambda_ProducesValidRequest()
     {
@@ -1669,6 +1900,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid target vectors manual weights via lambda produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_TargetVectors_ManualWeights_ViaLambda_ProducesValidRequest()
     {
@@ -1691,6 +1925,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
     }
 
+    /// <summary>
+    /// Tests that hybrid target vectors relative score via lambda produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_TargetVectors_RelativeScore_ViaLambda_ProducesValidRequest()
     {
@@ -1719,6 +1956,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region Collection Initializer Syntax Tests
 
+    /// <summary>
+    /// Tests that hybrid collection initializer single vector produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_CollectionInitializer_SingleVector_ProducesValidRequest()
     {
@@ -1739,6 +1979,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("named", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid collection initializer multiple vectors produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_CollectionInitializer_MultipleVectors_ProducesValidRequest()
     {
@@ -1766,6 +2009,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("third", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid collection initializer multiple vectors same name produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_CollectionInitializer_MultipleVectorsSameName_ProducesValidRequest()
     {
@@ -1790,6 +2036,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("same", request.HybridSearch.Targets.TargetVectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid collection initializer with vectors object produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_CollectionInitializer_WithVectorsObject_ProducesValidRequest()
     {
@@ -1815,6 +2064,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region NearVectorInput with All Combination Methods
 
+    /// <summary>
+    /// Tests that hybrid near vector input multi target average produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_MultiTarget_Average_ProducesValidRequest()
     {
@@ -1839,6 +2091,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid near vector input multi target minimum produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_MultiTarget_Minimum_ProducesValidRequest()
     {
@@ -1863,6 +2118,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid near vector input multi target relative score produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_MultiTarget_RelativeScore_ProducesValidRequest()
     {
@@ -1895,6 +2153,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region NearVectorInput Implicit Conversions
 
+    /// <summary>
+    /// Tests that hybrid near vector input from vector search input implicit produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearVectorInput_FromVectorSearchInput_Implicit_ProducesValidRequest()
     {
@@ -1919,6 +2180,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
     #endregion
 
     #region Extras
+    /// <summary>
+    /// Tests that hybrid hybrid near text input builder near text no method produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_HybridNearTextInputBuilder_NearText_NoMethod_ProducesValidRequest()
     {
@@ -1936,6 +2200,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.Unspecified, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that extras
+    /// </summary>
     [Fact]
     public async Task Extras()
     {
@@ -1969,6 +2236,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
 
     #region HybridVectorInput.FactoryFn Lambda Builder Tests
 
+    /// <summary>
+    /// Tests that hybrid hybrid vector input builder near vector manual weights produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_HybridVectorInputBuilder_NearVector_ManualWeights_ProducesValidRequest()
     {
@@ -1993,6 +2263,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
     }
 
+    /// <summary>
+    /// Tests that hybrid hybrid vector input builder near vector sum produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_HybridVectorInputBuilder_NearVector_Sum_ProducesValidRequest()
     {
@@ -2015,6 +2288,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid hybrid vector input builder near vector with manual weights produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_HybridVectorInputBuilder_NearVector_WithManualWeights_ProducesValidRequest()
     {
@@ -2039,6 +2315,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid hybrid vector input builder near text manual weights produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_HybridVectorInputBuilder_NearText_ManualWeights_ProducesValidRequest()
     {
@@ -2060,6 +2339,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
     }
 
+    /// <summary>
+    /// Tests that hybrid hybrid vector input builder near text average produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_HybridVectorInputBuilder_NearText_Average_ProducesValidRequest()
     {
@@ -2079,6 +2361,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid hybrid vector input builder near text with certainty and move produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_HybridVectorInputBuilder_NearText_WithCertaintyAndMove_ProducesValidRequest()
     {
@@ -2105,6 +2390,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid hybrid vector input builder vectors direct syntax produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_HybridVectorInputBuilder_Vectors_DirectSyntax_ProducesValidRequest()
     {
@@ -2125,6 +2413,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.Unspecified, request.HybridSearch.Targets.Combination);
     }
 
+    /// <summary>
+    /// Tests that hybrid near text builder from docs produces valid request
+    /// </summary>
     [Fact]
     public async Task Hybrid_NearTextBuilder_FromDocs_ProducesValidRequest()
     {

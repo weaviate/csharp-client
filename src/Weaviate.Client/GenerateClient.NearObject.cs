@@ -2,6 +2,9 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The generate client class
+/// </summary>
 public partial class GenerateClient
 {
     /// <summary>
@@ -18,7 +21,7 @@ public partial class GenerateClient
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
-    /// <param name="targetVector">Target vector name</param>
+    /// <param name="targetVectors"></param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -37,7 +40,7 @@ public partial class GenerateClient
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
-        TargetVectors.FactoryFn? targets = null,
+        TargetVectors.FactoryFn? targetVectors = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -58,7 +61,7 @@ public partial class GenerateClient
             rerank: rerank,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
-            targetVector: targets?.Invoke(new TargetVectors.Builder()),
+            targetVector: targetVectors?.Invoke(new TargetVectors.Builder()),
             tenant: _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,
@@ -86,7 +89,7 @@ public partial class GenerateClient
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
-    /// <param name="targetVector">Target vector name</param>
+    /// <param name="targetVectors"></param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>
@@ -106,7 +109,7 @@ public partial class GenerateClient
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
-        TargetVectors.FactoryFn? targets = null,
+        TargetVectors.FactoryFn? targetVectors = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -127,7 +130,7 @@ public partial class GenerateClient
             rerank: rerank,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
-            targetVector: targets?.Invoke(new TargetVectors.Builder()),
+            targetVector: targetVectors?.Invoke(new TargetVectors.Builder()),
             tenant: _collectionClient.Tenant,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnMetadata: returnMetadata,

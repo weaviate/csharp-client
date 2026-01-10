@@ -4,8 +4,18 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Rest;
 
+/// <summary>
+/// The weaviate rest client class
+/// </summary>
 internal partial class WeaviateRestClient
 {
+    /// <summary>
+    /// Backups the create using the specified backend
+    /// </summary>
+    /// <param name="backend">The backend</param>
+    /// <param name="request">The request</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto backup create response</returns>
     internal async Task<Dto.BackupCreateResponse> BackupCreate(
         BackupStorageProvider backend,
         Dto.BackupCreateRequest request,
@@ -34,6 +44,12 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.BackupCreateResponse>(cancellationToken);
     }
 
+    /// <summary>
+    /// Backups the list using the specified backend
+    /// </summary>
+    /// <param name="backend">The backend</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing a list of dto anonymous 3</returns>
     internal async Task<List<Dto.Anonymous3>> BackupList(
         BackupStorageProvider backend,
         CancellationToken cancellationToken = default
@@ -59,6 +75,15 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<List<Dto.Anonymous3>>(cancellationToken);
     }
 
+    /// <summary>
+    /// Backups the status using the specified backend
+    /// </summary>
+    /// <param name="backend">The backend</param>
+    /// <param name="id">The id</param>
+    /// <param name="bucket">The bucket</param>
+    /// <param name="path">The path</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto backup create status response</returns>
     internal async Task<Dto.BackupCreateStatusResponse> BackupStatus(
         BackupStorageProvider backend,
         string id,
@@ -87,6 +112,14 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.BackupCreateStatusResponse>(cancellationToken);
     }
 
+    /// <summary>
+    /// Backups the cancel using the specified backend
+    /// </summary>
+    /// <param name="backend">The backend</param>
+    /// <param name="id">The id</param>
+    /// <param name="bucket">The bucket</param>
+    /// <param name="path">The path</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     internal async Task BackupCancel(
         BackupStorageProvider backend,
         string id,
@@ -115,6 +148,14 @@ internal partial class WeaviateRestClient
         );
     }
 
+    /// <summary>
+    /// Backups the restore using the specified backend
+    /// </summary>
+    /// <param name="backend">The backend</param>
+    /// <param name="id">The id</param>
+    /// <param name="request">The request</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto backup restore response</returns>
     internal async Task<Dto.BackupRestoreResponse> BackupRestore(
         BackupStorageProvider backend,
         string id,
@@ -144,6 +185,15 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.BackupRestoreResponse>(cancellationToken);
     }
 
+    /// <summary>
+    /// Backups the restore status using the specified backend
+    /// </summary>
+    /// <param name="backend">The backend</param>
+    /// <param name="id">The id</param>
+    /// <param name="bucket">The bucket</param>
+    /// <param name="path">The path</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto backup restore status response</returns>
     internal async Task<Dto.BackupRestoreStatusResponse> BackupRestoreStatus(
         BackupStorageProvider backend,
         string id,

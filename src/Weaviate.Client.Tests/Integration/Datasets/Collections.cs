@@ -3,8 +3,15 @@ using static Weaviate.Client.Models.VectorIndex;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The dataset collection create and export class
+/// </summary>
+/// <seealso cref="TheoryData{string}"/>
 public class DatasetCollectionCreateAndExport : TheoryData<string>
 {
+    /// <summary>
+    /// The word
+    /// </summary>
     private static Property _nameProperty = Property.Text(
         "Name",
         indexFilterable: true,
@@ -13,6 +20,9 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
         tokenization: PropertyTokenization.Word
     );
 
+    /// <summary>
+    /// The vector cache max objects
+    /// </summary>
     private static VectorIndex.HNSW _vectorIndexConfigHNSW_base = new VectorIndex.HNSW()
     {
         CleanupIntervalSeconds = 300,
@@ -29,11 +39,17 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
         VectorCacheMaxObjects = 1000000000000L,
     };
 
+    /// <summary>
+    /// The rescore limit
+    /// </summary>
     private static VectorIndex.HNSW _vectorIndexConfigHNSW_BQ = _vectorIndexConfigHNSW_base with
     {
         Quantizer = new Quantizers.BQ() { Cache = true, RescoreLimit = 64 },
     };
 
+    /// <summary>
+    /// The training limit
+    /// </summary>
     private static VectorIndex.HNSW _vectorIndexConfigHNSW_PQ = _vectorIndexConfigHNSW_base with
     {
         Quantizer = new Quantizers.PQ()
@@ -50,22 +66,34 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
         },
     };
 
+    /// <summary>
+    /// The rescore limit
+    /// </summary>
     private static VectorIndex.HNSW _vectorIndexConfigHNSW_SQ = _vectorIndexConfigHNSW_base with
     {
         Quantizer = new Quantizers.SQ() { TrainingLimit = 100000, RescoreLimit = 20 },
     };
 
+    /// <summary>
+    /// The vector cache max objects
+    /// </summary>
     private static VectorIndex.Flat _vectorIndexConfigFlat_base = new VectorIndex.Flat()
     {
         Distance = VectorIndexConfig.VectorDistance.Cosine,
         VectorCacheMaxObjects = 1000000000000L,
     };
 
+    /// <summary>
+    /// The rescore limit
+    /// </summary>
     private static VectorIndex.Flat _vectorIndexConfigFlat_BQ = _vectorIndexConfigFlat_base with
     {
         Quantizer = new Quantizers.BQ() { Cache = true, RescoreLimit = 64 },
     };
 
+    /// <summary>
+    /// The threshold
+    /// </summary>
     private static VectorIndex.Dynamic _vectorIndexConfigDynamic_base = new VectorIndex.Dynamic()
     {
         Flat = _vectorIndexConfigFlat_base,
@@ -74,6 +102,9 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
         Threshold = 1000,
     };
 
+    /// <summary>
+    /// Gets the value of the cases
+    /// </summary>
     public static Dictionary<string, CollectionCreateParams> Cases =>
         new()
         {
@@ -231,6 +262,9 @@ public class DatasetCollectionCreateAndExport : TheoryData<string>
             },
         };
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DatasetCollectionCreateAndExport"/> class
+    /// </summary>
     public DatasetCollectionCreateAndExport()
         : base(Cases.Keys) { }
 }

@@ -2,13 +2,35 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The ClusterClient provides access to the cluster's API.
+/// </summary>
 public class ClusterClient
 {
+    /// <summary>
+    /// The client
+    /// </summary>
     private readonly WeaviateClient _client;
+
+    /// <summary>
+    /// Gets the value of the  restclient
+    /// </summary>
     private Rest.WeaviateRestClient _restClient => _client.RestClient;
+
+    /// <summary>
+    /// The nodes
+    /// </summary>
     private NodesClient? _nodes;
+
+    /// <summary>
+    /// The replications
+    /// </summary>
     private ReplicationsClient? _replications;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClusterClient"/> class
+    /// </summary>
+    /// <param name="client">The client</param>
     internal ClusterClient(WeaviateClient client)
     {
         _client = client;

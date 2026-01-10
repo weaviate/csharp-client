@@ -3,8 +3,14 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The result tests class
+/// </summary>
 public class ResultTests
 {
+    /// <summary>
+    /// Tests that search reply builds generative group by result response
+    /// </summary>
     [Fact]
     public void SearchReply_Builds_GenerativeGroupByResult_Response()
     {

@@ -13,7 +13,6 @@ public static class ValidationExtensions
     /// </summary>
     /// <typeparam name="T">The C# type to validate.</typeparam>
     /// <param name="schema">The collection schema to validate against.</param>
-    /// <param name="collectionName">The collection name (for error messages).</param>
     /// <param name="typeValidator">Optional type validator instance. If null, uses TypeValidator.Default.</param>
     /// <exception cref="InvalidOperationException">Thrown if validation fails with errors.</exception>
     public static void ValidateTypeOrThrow<T>(
@@ -59,6 +58,7 @@ public static class ValidationExtensions
     /// Validates a C# type against a collection schema.
     /// </summary>
     /// <typeparam name="T">The C# type to validate.</typeparam>
+    /// <param name="client"></param>
     /// <param name="typeValidator">Optional type validator instance. If null, uses TypeValidator.Default.</param>
     /// <param name="schemaCache">Optional schema cache instance. If null, uses SchemaCache.Default.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -80,9 +80,10 @@ public static class ValidationExtensions
     /// Validates a C# type against a collection schema and throws if validation fails.
     /// </summary>
     /// <typeparam name="T">The C# type to validate.</typeparam>
-    /// <param name="schema">The collection schema to validate against.</param>
-    /// <param name="collectionName">The collection name (for error messages).</param>
+    /// <param name="client"></param>
     /// <param name="typeValidator">Optional type validator instance. If null, uses TypeValidator.Default.</param>
+    /// <param name="schemaCache"></param>
+    /// <param name="cancellationToken"></param>
     /// <exception cref="InvalidOperationException">Thrown if validation fails with errors.</exception>
     public static async Task<Typed.TypedCollectionClient<T>> ValidateTypeOrThrow<T>(
         this Typed.TypedCollectionClient<T> client,

@@ -1,18 +1,67 @@
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// Specifies the tokenization strategy for a property.
+/// </summary>
 public enum PropertyTokenization
 {
+    /// <summary>
+    /// Word tokenization.
+    /// </summary>
     Word = 0,
+
+    /// <summary>
+    /// Lowercase tokenization.
+    /// </summary>
     Lowercase = 1,
+
+    /// <summary>
+    /// Whitespace tokenization.
+    /// </summary>
     Whitespace = 2,
+
+    /// <summary>
+    /// Field tokenization.
+    /// </summary>
     Field = 3,
+
+    /// <summary>
+    /// Trigram tokenization.
+    /// </summary>
     Trigram = 4,
+
+    /// <summary>
+    /// Gse tokenization.
+    /// </summary>
     Gse = 5,
+
+    /// <summary>
+    /// Kagome Korean tokenization.
+    /// </summary>
     Kagome_kr = 6,
+
+    /// <summary>
+    /// Kagome Japanese tokenization.
+    /// </summary>
     Kagome_ja = 7,
+
+    /// <summary>
+    /// Gse Chinese tokenization.
+    /// </summary>
     Gse_ch = 8,
 }
 
+/// <summary>
+/// Delegate for creating a <see cref="Property"/> instance.
+/// </summary>
+/// <param name="name">The property name.</param>
+/// <param name="description">The property description.</param>
+/// <param name="indexFilterable">Whether the property is filterable.</param>
+/// <param name="indexRangeFilters">Whether the property supports range filters.</param>
+/// <param name="indexSearchable">Whether the property is searchable.</param>
+/// <param name="tokenization">The tokenization strategy.</param>
+/// <param name="subProperties">The sub-properties.</param>
+/// <returns>A new <see cref="Property"/> instance.</returns>
 public delegate Property PropertyFactory(
     string name,
     string? description = null,
@@ -23,8 +72,16 @@ public delegate Property PropertyFactory(
     Property[]? subProperties = null
 );
 
+/// <summary>
+/// The property helper class
+/// </summary>
 internal class PropertyHelper
 {
+    /// <summary>
+    /// Factories the data type
+    /// </summary>
+    /// <param name="dataType">The data type</param>
+    /// <returns>The property factory</returns>
     internal static PropertyFactory Factory(DataType dataType) =>
         (
             name,
@@ -50,6 +107,13 @@ internal class PropertyHelper
                         : null,
             };
 
+    /// <summary>
+    /// Datas the type for collection type using the specified element type
+    /// </summary>
+    /// <param name="elementType">The element type</param>
+    /// <exception cref="WeaviateClientException"></exception>
+    /// <exception cref="WeaviateClientException">Element type cannot be null</exception>
+    /// <returns>The data type</returns>
     internal static DataType DataTypeForCollectionType(Type? elementType)
     {
         if (elementType == null)
@@ -103,6 +167,12 @@ internal class PropertyHelper
         );
     }
 
+    /// <summary>
+    /// Datas the type for type using the specified t
+    /// </summary>
+    /// <param name="t">The </param>
+    /// <exception cref="WeaviateClientException"></exception>
+    /// <returns>The data type</returns>
     internal static DataType DataTypeForType(Type t)
     {
         // Handle nullable types - get the underlying type
@@ -181,6 +251,11 @@ internal class PropertyHelper
         );
     }
 
+    /// <summary>
+    /// Fors the type using the specified t
+    /// </summary>
+    /// <param name="t">The </param>
+    /// <returns>The property factory</returns>
     internal static PropertyFactory ForType(Type t)
     {
         var dataType = DataTypeForType(t);
@@ -188,6 +263,12 @@ internal class PropertyHelper
         return PropertyHelper.Factory(dataType);
     }
 
+    /// <summary>
+    /// Ises the array or collection using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <param name="elementType">The element type</param>
+    /// <returns>The bool</returns>
     private static bool IsArrayOrCollection(Type type, out Type? elementType)
     {
         elementType = null;
@@ -235,65 +316,94 @@ internal class PropertyHelper
     }
 }
 
+/// <summary>
+/// Specifies the data type of a property.
+/// </summary>
 public enum DataType
 {
+    /// <summary>Unknown data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "unknown")]
     Unknown,
 
+    /// <summary>Text data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "text")]
     Text,
 
+    /// <summary>Text array data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "text[]")]
     TextArray,
 
+    /// <summary>Integer data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "int")]
     Int,
 
+    /// <summary>Integer array data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "int[]")]
     IntArray,
 
+    /// <summary>Boolean data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "boolean")]
     Bool,
 
+    /// <summary>Boolean array data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "boolean[]")]
     BoolArray,
 
+    /// <summary>Number data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "number")]
     Number,
 
+    /// <summary>Number array data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "number[]")]
     NumberArray,
 
+    /// <summary>Date data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "date")]
     Date,
 
+    /// <summary>Date array data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "date[]")]
     DateArray,
 
+    /// <summary>UUID data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "uuid")]
     Uuid,
 
+    /// <summary>UUID array data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "uuid[]")]
     UuidArray,
 
+    /// <summary>Geo coordinate data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "geoCoordinates")]
     GeoCoordinate,
 
+    /// <summary>Blob data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "blob")]
     Blob,
 
+    /// <summary>Phone number data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "phoneNumber")]
     PhoneNumber,
 
+    /// <summary>Object data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "object")]
     Object,
 
+    /// <summary>Object array data type.</summary>
     [System.Runtime.Serialization.EnumMember(Value = "object[]")]
     ObjectArray,
 }
 
+/// <summary>
+/// The data type extensions class
+/// </summary>
 internal static class DataTypeExtensions
 {
+    /// <summary>
+    /// Returns the enum member value using the specified data type
+    /// </summary>
+    /// <param name="dataType">The data type</param>
+    /// <returns>The string</returns>
     internal static string ToEnumMemberValue(this DataType dataType)
     {
         var type = dataType.GetType();
@@ -310,6 +420,11 @@ internal static class DataTypeExtensions
         return dataType.ToString();
     }
 
+    /// <summary>
+    /// Returns the data type enum using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The data type</returns>
     internal static DataType? ToDataTypeEnum(this string value)
     {
         foreach (DataType dt in Enum.GetValues(typeof(DataType)))
@@ -321,67 +436,189 @@ internal static class DataTypeExtensions
     }
 }
 
+/// <summary>
+/// The reference base interface
+/// </summary>
 internal interface IReferenceBase
 {
+    /// <summary>
+    /// Gets the value of the name
+    /// </summary>
     string Name { get; }
+
+    /// <summary>
+    /// Gets the value of the target collections
+    /// </summary>
     IList<string> TargetCollections { get; }
+
+    /// <summary>
+    /// Gets the value of the description
+    /// </summary>
     string? Description { get; }
 }
 
+/// <summary>
+/// Represents a reference to another collection.
+/// </summary>
+/// <param name="Name">The name of the reference.</param>
+/// <param name="TargetCollection">The target collection name.</param>
+/// <param name="Description">The description of the reference.</param>
 public record Reference(string Name, string TargetCollection, string? Description = null)
     : IReferenceBase
 {
+    /// <summary>
+    /// Gets or sets the description of the reference.
+    /// </summary>
     public string? Description { get; set; } = Description;
+
+    /// <summary>
+    /// Gets the value of the target collections
+    /// </summary>
     IList<string> IReferenceBase.TargetCollections { get; } = [TargetCollection];
 }
 
+/// <summary>
+/// Provides a strongly-typed property factory for the specified field type.
+/// </summary>
 public static class Property<TField>
 {
+    /// <summary>
+    /// Gets a property factory for the field type.
+    /// </summary>
     public static PropertyFactory New => PropertyHelper.ForType(typeof(TField));
 }
 
+/// <summary>
+/// Represents a property in a collection schema.
+/// </summary>
 public record Property : IEquatable<Property>
 {
+    /// <summary>
+    /// The empty
+    /// </summary>
     private string _name = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the property name.
+    /// </summary>
     public required string Name
     {
         get => _name;
         set => _name = value.Decapitalize();
     }
+
+    /// <summary>
+    /// Gets the data type of the property.
+    /// </summary>
     public required DataType DataType { get; init; }
+
+    /// <summary>
+    /// Gets or sets the description of the property.
+    /// </summary>
     public string? Description { get; internal set; }
+
+    /// <summary>
+    /// Gets whether the property is filterable in queries.
+    /// </summary>
     public bool? IndexFilterable { get; init; }
 
+    /// <summary>
+    /// Gets whether inverted indexing is enabled for the property.
+    /// </summary>
     [Obsolete]
     public bool? IndexInverted { get; init; }
+
+    /// <summary>
+    /// Gets whether range filter indexing is enabled for the property.
+    /// </summary>
     public bool? IndexRangeFilters { get; init; }
+
+    /// <summary>
+    /// Gets whether the property is searchable.
+    /// </summary>
     public bool? IndexSearchable { get; init; }
+
+    /// <summary>
+    /// Gets the tokenization strategy for the property.
+    /// </summary>
     public PropertyTokenization? PropertyTokenization { get; init; }
+
+    /// <summary>
+    /// Gets the nested properties for object and object array types.
+    /// </summary>
     public Property[]? NestedProperties { get; init; }
+
+    /// <summary>
+    /// Gets whether to skip vectorization for this property.
+    /// </summary>
     public bool SkipVectorization { get; init; } = false;
+
+    /// <summary>
+    /// Gets whether to include the property name in vectorization.
+    /// </summary>
     public bool VectorizePropertyName { get; init; } = true;
 
+    /// <summary>Gets a factory for creating text properties.</summary>
     public static PropertyFactory Text => PropertyHelper.Factory(DataType.Text);
+
+    /// <summary>Gets a factory for creating text array properties.</summary>
     public static PropertyFactory TextArray => PropertyHelper.Factory(DataType.TextArray);
+
+    /// <summary>Gets a factory for creating integer properties.</summary>
     public static PropertyFactory Int => PropertyHelper.Factory(DataType.Int);
+
+    /// <summary>Gets a factory for creating integer array properties.</summary>
     public static PropertyFactory IntArray => PropertyHelper.Factory(DataType.IntArray);
+
+    /// <summary>Gets a factory for creating boolean properties.</summary>
     public static PropertyFactory Bool => PropertyHelper.Factory(DataType.Bool);
+
+    /// <summary>Gets a factory for creating boolean array properties.</summary>
     public static PropertyFactory BoolArray => PropertyHelper.Factory(DataType.BoolArray);
+
+    /// <summary>Gets a factory for creating number properties.</summary>
     public static PropertyFactory Number => PropertyHelper.Factory(DataType.Number);
+
+    /// <summary>Gets a factory for creating number array properties.</summary>
     public static PropertyFactory NumberArray => PropertyHelper.Factory(DataType.NumberArray);
+
+    /// <summary>Gets a factory for creating date properties.</summary>
     public static PropertyFactory Date => PropertyHelper.Factory(DataType.Date);
+
+    /// <summary>Gets a factory for creating date array properties.</summary>
     public static PropertyFactory DateArray => PropertyHelper.Factory(DataType.DateArray);
+
+    /// <summary>Gets a factory for creating UUID properties.</summary>
     public static PropertyFactory Uuid => PropertyHelper.Factory(DataType.Uuid);
+
+    /// <summary>Gets a factory for creating UUID array properties.</summary>
     public static PropertyFactory UuidArray => PropertyHelper.Factory(DataType.UuidArray);
+
+    /// <summary>Gets a factory for creating geo coordinate properties.</summary>
     public static PropertyFactory GeoCoordinate => PropertyHelper.Factory(DataType.GeoCoordinate);
+
+    /// <summary>Gets a factory for creating blob properties.</summary>
     public static PropertyFactory Blob => PropertyHelper.Factory(DataType.Blob);
+
+    /// <summary>Gets a factory for creating phone number properties.</summary>
     public static PropertyFactory PhoneNumber => PropertyHelper.Factory(DataType.PhoneNumber);
+
+    /// <summary>Gets a factory for creating object properties.</summary>
     public static PropertyFactory Object => PropertyHelper.Factory(DataType.Object);
+
+    /// <summary>Gets a factory for creating object array properties.</summary>
     public static PropertyFactory ObjectArray => PropertyHelper.Factory(DataType.ObjectArray);
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Property"/> class.
+    /// </summary>
     public Property() { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Property"/> class with specified name and data type.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="dataType">The data type of the property.</param>
     [System.Diagnostics.CodeAnalysis.SetsRequiredMembers]
     public Property(string name, DataType dataType)
     {
@@ -389,18 +626,36 @@ public record Property : IEquatable<Property>
         DataType = dataType;
     }
 
+    /// <summary>
+    /// Creates a reference to another collection.
+    /// </summary>
+    /// <param name="name">The name of the reference.</param>
+    /// <param name="targetCollection">The target collection name.</param>
+    /// <param name="description">Optional description of the reference.</param>
+    /// <returns>A new <see cref="Reference"/> instance.</returns>
     public static Reference Reference(
         string name,
         string targetCollection,
         string? description = null
     ) => new(name, targetCollection, description);
 
-    // Extract collection properties from type specified by TData, supporting nested properties up to maxDepth.
+    /// <summary>
+    /// Extracts collection properties from the specified type, supporting nested properties up to maxDepth.
+    /// </summary>
+    /// <typeparam name="TData">The type to extract properties from.</typeparam>
+    /// <param name="maxDepth">Maximum depth for nested properties (default is 1).</param>
+    /// <returns>An array of properties extracted from the type.</returns>
     public static Property[] FromClass<TData>(int maxDepth = 1)
     {
         return FromClass(typeof(TData), maxDepth);
     }
 
+    /// <summary>
+    /// Extracts collection properties from the specified type, supporting nested properties up to maxDepth.
+    /// </summary>
+    /// <param name="type">The type to extract properties from.</param>
+    /// <param name="maxDepth">Maximum depth for nested properties (default is 1).</param>
+    /// <returns>An array of properties extracted from the type.</returns>
     public static Property[] FromClass(Type type, int maxDepth = 1)
     {
         DataType dataType = PropertyHelper.DataTypeForType(type);
@@ -408,6 +663,15 @@ public record Property : IEquatable<Property>
             ?? Array.Empty<Property>();
     }
 
+    /// <summary>
+    /// Creates the type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <param name="dataType">The data type</param>
+    /// <param name="maxDepth">The max depth</param>
+    /// <param name="seenTypes">The seen types</param>
+    /// <exception cref="WeaviateClientException">Can't get element type</exception>
+    /// <returns>The props</returns>
     private static Property[]? FromClass(
         Type type,
         DataType dataType,
@@ -463,6 +727,10 @@ public record Property : IEquatable<Property>
         return props;
     }
 
+    /// <summary>
+    /// Returns a hash code for this property based on its configuration.
+    /// </summary>
+    /// <returns>A hash code for the current property.</returns>
     public override int GetHashCode()
     {
         var hash = new HashCode();
@@ -482,6 +750,11 @@ public record Property : IEquatable<Property>
         return hash.ToHashCode();
     }
 
+    /// <summary>
+    /// Determines whether the specified property is equal to the current property.
+    /// </summary>
+    /// <param name="other">The property to compare with the current property.</param>
+    /// <returns>True if the specified property is equal to the current property; otherwise, false.</returns>
     public virtual bool Equals(Property? other)
     {
         if (other is null)

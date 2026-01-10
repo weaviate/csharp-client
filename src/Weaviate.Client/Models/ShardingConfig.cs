@@ -1,21 +1,42 @@
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// The sharding config
+/// </summary>
 public record ShardingConfig : IEquatable<ShardingConfig>
 {
+    /// <summary>
+    /// The strategies enum
+    /// </summary>
     public enum Strategies
     {
+        /// <summary>
+        /// The none strategies
+        /// </summary>
         [System.Runtime.Serialization.EnumMember(Value = "")]
         None,
 
+        /// <summary>
+        /// The hash strategies
+        /// </summary>
         [System.Runtime.Serialization.EnumMember(Value = "hash")]
         Hash,
     }
 
+    /// <summary>
+    /// The functions enum
+    /// </summary>
     public enum Functions
     {
+        /// <summary>
+        /// The none functions
+        /// </summary>
         [System.Runtime.Serialization.EnumMember(Value = "")]
         None,
 
+        /// <summary>
+        /// The murmur functions
+        /// </summary>
         [System.Runtime.Serialization.EnumMember(Value = "murmur3")]
         Murmur3,
     }
@@ -25,8 +46,14 @@ public record ShardingConfig : IEquatable<ShardingConfig>
     /// </summary>
     private static readonly Lazy<ShardingConfig> _default = new(() => new());
 
+    /// <summary>
+    /// Gets the value of the default
+    /// </summary>
     public static ShardingConfig Default => _default.Value;
 
+    /// <summary>
+    /// Gets the value of the zero
+    /// </summary>
     public static ShardingConfig Zero =>
         new()
         {
@@ -40,12 +67,43 @@ public record ShardingConfig : IEquatable<ShardingConfig>
             VirtualPerPhysical = 0,
         };
 
+    /// <summary>
+    /// Gets or sets the value of the virtual per physical
+    /// </summary>
     public int VirtualPerPhysical { get; set; } = 128;
+
+    /// <summary>
+    /// Gets or sets the value of the desired count
+    /// </summary>
     public int DesiredCount { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the value of the actual count
+    /// </summary>
     public int ActualCount { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the value of the desired virtual count
+    /// </summary>
     public int DesiredVirtualCount { get; set; } = 128;
+
+    /// <summary>
+    /// Gets or sets the value of the actual virtual count
+    /// </summary>
     public int ActualVirtualCount { get; set; } = 128;
+
+    /// <summary>
+    /// Gets or sets the value of the key
+    /// </summary>
     public string Key { get; set; } = "_id";
+
+    /// <summary>
+    /// Gets or sets the value of the strategy
+    /// </summary>
     public Strategies Strategy { get; set; } = Strategies.Hash;
+
+    /// <summary>
+    /// Gets or sets the value of the function
+    /// </summary>
     public Functions Function { get; set; } = Functions.Murmur3;
 }

@@ -5,8 +5,14 @@ using VerifyCS = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<We
 
 namespace Weaviate.Client.Analyzers.Tests;
 
+/// <summary>
+/// The vectorizer factory analyzer tests class
+/// </summary>
 public class VectorizerFactoryAnalyzerTests
 {
+    /// <summary>
+    /// The vectorizer config base source
+    /// </summary>
     private const string VectorizerConfigBaseSource =
         @"
 namespace Weaviate.Client.Models
@@ -44,6 +50,9 @@ namespace Weaviate.Client.Models
     }
 }";
 
+    /// <summary>
+    /// Tests that missing property initialization reports diagnostic
+    /// </summary>
     [Fact]
     public async Task MissingPropertyInitialization_ReportsDiagnostic()
     {
@@ -92,6 +101,9 @@ namespace Weaviate.Client
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that all properties initialized no diagnostic
+    /// </summary>
     [Fact]
     public async Task AllPropertiesInitialized_NoDiagnostic()
     {
@@ -125,6 +137,9 @@ namespace Weaviate.Client
         await VerifyCS.VerifyAnalyzerAsync(testCode);
     }
 
+    /// <summary>
+    /// Tests that missing weighted field in weights calculation reports diagnostic
+    /// </summary>
     [Fact]
     public async Task MissingWeightedFieldInWeightsCalculation_ReportsDiagnostic()
     {
@@ -172,6 +187,9 @@ namespace Weaviate.Client
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that all weighted fields in weights calculation no diagnostic
+    /// </summary>
     [Fact]
     public async Task AllWeightedFieldsInWeightsCalculation_NoDiagnostic()
     {
@@ -207,6 +225,9 @@ namespace Weaviate.Client
         await VerifyCS.VerifyAnalyzerAsync(testCode);
     }
 
+    /// <summary>
+    /// Tests that named arguments in weights calculation no diagnostic
+    /// </summary>
     [Fact]
     public async Task NamedArgumentsInWeightsCalculation_NoDiagnostic()
     {
@@ -242,6 +263,9 @@ namespace Weaviate.Client
         await VerifyCS.VerifyAnalyzerAsync(testCode);
     }
 
+    /// <summary>
+    /// Tests that no weighted fields parameters no diagnostic
+    /// </summary>
     [Fact]
     public async Task NoWeightedFieldsParameters_NoDiagnostic()
     {
@@ -275,6 +299,9 @@ namespace Weaviate.Client
         await VerifyCS.VerifyAnalyzerAsync(testCode);
     }
 
+    /// <summary>
+    /// Tests that vectorizer factory multi class also analyzed
+    /// </summary>
     [Fact]
     public async Task VectorizerFactoryMultiClass_AlsoAnalyzed()
     {

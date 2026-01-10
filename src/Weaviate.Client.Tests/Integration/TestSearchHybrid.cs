@@ -2,6 +2,10 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The search tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
     "Performance",
     "CA1861:Avoid constant arrays as arguments",
@@ -9,6 +13,10 @@ namespace Weaviate.Client.Tests.Integration;
 )]
 public partial class SearchTests : IntegrationTests
 {
+    /// <summary>
+    /// Tests that test search hybrid
+    /// </summary>
+    /// <param name="fusionType">The fusion type</param>
     [Theory]
     [InlineData(HybridFusion.Ranked)]
     [InlineData(HybridFusion.RelativeScore)]
@@ -59,6 +67,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(2, objs.Count);
     }
 
+    /// <summary>
+    /// Tests that test search hybrid group by
+    /// </summary>
     [Fact]
     public async Task Test_SearchHybridGroupBy()
     {
@@ -96,6 +107,10 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal("some name", objs.First().BelongsToGroup);
     }
 
+    /// <summary>
+    /// Tests that test search hybrid only vector
+    /// </summary>
+    /// <param name="query">The query</param>
     [Theory]
     [InlineData((string?)null)]
     [InlineData("")]
@@ -137,6 +152,10 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(2, objs.Count());
     }
 
+    /// <summary>
+    /// Tests that test hybrid limit
+    /// </summary>
+    /// <param name="limit">The limit</param>
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -169,6 +188,11 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(limit, (uint)objs.Count);
     }
 
+    /// <summary>
+    /// Tests that test hybrid offset
+    /// </summary>
+    /// <param name="offset">The offset</param>
+    /// <param name="expected">The expected</param>
     [Theory]
     [InlineData(0, 2)]
     [InlineData(1, 1)]
@@ -202,6 +226,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(expected, objs.Count);
     }
 
+    /// <summary>
+    /// Tests that test hybrid alpha
+    /// </summary>
     [Fact]
     public async Task Test_Hybrid_Alpha()
     {
@@ -253,6 +280,9 @@ public partial class SearchTests : IntegrationTests
         Assert.True(hybridRes.Zip(textRes).All(pair => pair.First.UUID == pair.Second.UUID));
     }
 
+    /// <summary>
+    /// Tests that test hybrid near vector search
+    /// </summary>
     [Fact]
     public async Task Test_Hybrid_Near_Vector_Search()
     {
@@ -319,6 +349,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Single(hybridObjs2);
     }
 
+    /// <summary>
+    /// Tests that test hybrid near vector search named vectors
+    /// </summary>
     [Fact]
     public async Task Test_Hybrid_Near_Vector_Search_Named_Vectors()
     {
@@ -392,6 +425,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Single(hybridObjs2);
     }
 
+    /// <summary>
+    /// Tests that test hybrid near text search
+    /// </summary>
     [Fact]
     public async Task Test_Hybrid_Near_Text_Search()
     {
@@ -444,6 +480,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(uuidBananaPudding, hybridObjs2.First().UUID);
     }
 
+    /// <summary>
+    /// Tests that test hybrid near text search named vectors
+    /// </summary>
     [Fact]
     public async Task Test_Hybrid_Near_Text_Search_Named_Vectors()
     {
@@ -504,6 +543,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(uuidBananaPudding, hybridObjs2.First().UUID);
     }
 
+    /// <summary>
+    /// Tests that test vector per target
+    /// </summary>
     [Fact]
     public async Task Test_Vector_Per_Target()
     {
@@ -568,6 +610,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(uuid1, objs[0].UUID);
     }
 
+    /// <summary>
+    /// Gets the value of the same target vector multiple input combinations data
+    /// </summary>
     public static IEnumerable<
         TheoryDataRow<HybridVectorInput>
     > SameTargetVectorMultipleInputCombinationsData =>
@@ -624,6 +669,10 @@ public partial class SearchTests : IntegrationTests
             },
         ];
 
+    /// <summary>
+    /// Tests that test same target vector multiple input combinations
+    /// </summary>
+    /// <param name="nearVector">The near vector</param>
     [Theory]
     [MemberData(nameof(SameTargetVectorMultipleInputCombinationsData))]
     public async Task Test_Same_Target_Vector_Multiple_Input_Combinations(
@@ -672,6 +721,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(expected, uuids);
     }
 
+    /// <summary>
+    /// Tests that test vector distance
+    /// </summary>
     [Fact]
     public async Task Test_Vector_Distance()
     {
@@ -723,6 +775,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(uuid1, objs[0].UUID);
     }
 
+    /// <summary>
+    /// Tests that test hybrid bm 25 operators
+    /// </summary>
     [Fact]
     public async Task Test_Hybrid_BM25_Operators()
     {
@@ -770,6 +825,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal(expected, rest);
     }
 
+    /// <summary>
+    /// Tests that test aggregate max vector distance
+    /// </summary>
     [Fact]
     public async Task Test_Aggregate_Max_Vector_Distance()
     {

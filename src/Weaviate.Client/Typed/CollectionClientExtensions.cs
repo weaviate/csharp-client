@@ -63,11 +63,6 @@ public static class CollectionClientExtensions
     /// </summary>
     /// <typeparam name="T">The C# type representing objects in this collection.</typeparam>
     /// <param name="collectionClient">The untyped CollectionClient to wrap.</param>
-    /// <param name="validateType">
-    /// If true, validates that type T is compatible with the collection schema on construction.
-    /// Default is false for performance. Set to true during development to catch schema mismatches early.
-    /// </param>
-    /// <param name="cancellationToken">Cancellation token for the validation operation.</param>
     /// <returns>A TypedCollectionClient that provides strongly-typed operations.</returns>
     /// <exception cref="InvalidOperationException">
     /// Thrown if validateType is true and validation fails with errors.

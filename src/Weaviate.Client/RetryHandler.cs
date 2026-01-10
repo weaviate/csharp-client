@@ -7,15 +7,35 @@ namespace Weaviate.Client;
 /// </summary>
 internal class RetryHandler : DelegatingHandler
 {
+    /// <summary>
+    /// The policy
+    /// </summary>
     private readonly RetryPolicy _policy;
+
+    /// <summary>
+    /// The logger
+    /// </summary>
     private readonly ILogger? _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RetryHandler"/> class
+    /// </summary>
+    /// <param name="policy">The policy</param>
+    /// <param name="logger">The logger</param>
     public RetryHandler(RetryPolicy policy, ILogger? logger = null)
     {
         _policy = policy;
         _logger = logger;
     }
 
+    /// <summary>
+    /// Sends the request
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateTimeoutException"></exception>
+    /// <exception cref="WeaviateClientException">Request failed after all retry attempts</exception>
+    /// <returns>A task containing the http response message</returns>
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken
@@ -89,6 +109,12 @@ internal class RetryHandler : DelegatingHandler
         throw new WeaviateClientException("Request failed after all retry attempts");
     }
 
+    /// <summary>
+    /// Shoulds the retry using the specified ex
+    /// </summary>
+    /// <param name="ex">The ex</param>
+    /// <param name="attempt">The attempt</param>
+    /// <returns>The bool</returns>
     private bool ShouldRetry(Exception ex, int attempt)
     {
         if (attempt >= _policy.MaxRetries)

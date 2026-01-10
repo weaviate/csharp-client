@@ -6,13 +6,42 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
 {
+    /// <summary>
+    /// The status fetcher
+    /// </summary>
     private readonly Func<CancellationToken, Task<ReplicationOperation>> _statusFetcher;
+
+    /// <summary>
+    /// The operation cancel
+    /// </summary>
     private readonly Func<CancellationToken, Task> _operationCancel;
+
+    /// <summary>
+    /// The cts
+    /// </summary>
     private readonly CancellationTokenSource _cts = new();
+
+    /// <summary>
+    /// The background refresh task
+    /// </summary>
     private readonly Task _backgroundRefreshTask;
+
+    /// <summary>
+    /// The current
+    /// </summary>
     private ReplicationOperation _current;
+
+    /// <summary>
+    /// The disposed
+    /// </summary>
     private bool _disposed;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReplicationOperationTracker"/> class
+    /// </summary>
+    /// <param name="initial">The initial</param>
+    /// <param name="statusFetcher">The status fetcher</param>
+    /// <param name="operationCancel">The operation cancel</param>
     internal ReplicationOperationTracker(
         ReplicationOperation initial,
         Func<CancellationToken, Task<ReplicationOperation>> statusFetcher,
@@ -45,6 +74,9 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
     /// </summary>
     public bool IsCancelled => _current.IsCancelled;
 
+    /// <summary>
+    /// Starts the background refresh
+    /// </summary>
     private Task StartBackgroundRefresh()
     {
         return Task.Run(async () =>
@@ -68,6 +100,10 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
         });
     }
 
+    /// <summary>
+    /// Refreshes the status internal using the specified cancellation token
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token</param>
     private async Task RefreshStatusInternal(CancellationToken cancellationToken = default)
     {
         if (_current.IsCompleted)
@@ -205,6 +241,9 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
         _disposed = true;
     }
 
+    /// <summary>
+    /// Disposes this instance
+    /// </summary>
     public void Dispose()
     {
         Dispose(true);

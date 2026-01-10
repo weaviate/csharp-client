@@ -6,8 +6,15 @@ namespace Weaviate.Client;
 /// </summary>
 public class GroupsClient
 {
+    /// <summary>
+    /// The client
+    /// </summary>
     private readonly WeaviateClient _client;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GroupsClient"/> class
+    /// </summary>
+    /// <param name="client">The client</param>
     internal GroupsClient(WeaviateClient client)
     {
         _client = client;

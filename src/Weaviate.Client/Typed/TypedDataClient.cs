@@ -11,8 +11,15 @@ namespace Weaviate.Client.Typed;
 public class TypedDataClient<T>
     where T : class, new()
 {
+    /// <summary>
+    /// The data client
+    /// </summary>
     private readonly DataClient _dataClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TypedDataClient{T}"/> class
+    /// </summary>
+    /// <param name="dataClient">The data client</param>
     internal TypedDataClient(DataClient dataClient)
     {
         ArgumentNullException.ThrowIfNull(dataClient);

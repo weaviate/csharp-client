@@ -10,11 +10,31 @@ namespace Weaviate.Client.DependencyInjection;
 /// </summary>
 internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
 {
+    /// <summary>
+    /// The options monitor
+    /// </summary>
     private readonly IOptionsMonitor<WeaviateOptions> _optionsMonitor;
+
+    /// <summary>
+    /// The logger factory
+    /// </summary>
     private readonly ILoggerFactory _loggerFactory;
+
+    /// <summary>
+    /// The clients
+    /// </summary>
     private readonly ConcurrentDictionary<string, Lazy<Task<WeaviateClient>>> _clients = new();
+
+    /// <summary>
+    /// The disposed
+    /// </summary>
     private bool _disposed;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateClientFactory"/> class
+    /// </summary>
+    /// <param name="optionsMonitor">The options monitor</param>
+    /// <param name="loggerFactory">The logger factory</param>
     public WeaviateClientFactory(
         IOptionsMonitor<WeaviateOptions> optionsMonitor,
         ILoggerFactory loggerFactory
@@ -64,6 +84,11 @@ internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
         return await lazyClient.Value;
     }
 
+    /// <summary>
+    /// Creates the client using the specified name
+    /// </summary>
+    /// <param name="name">The name</param>
+    /// <returns>The client</returns>
     private async Task<WeaviateClient> CreateClientAsync(string name)
     {
         var options = _optionsMonitor.Get(name);
@@ -78,6 +103,9 @@ internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
         return client;
     }
 
+    /// <summary>
+    /// Disposes this instance
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)

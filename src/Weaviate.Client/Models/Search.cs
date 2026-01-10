@@ -2,6 +2,9 @@ using System.Collections;
 
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// Represents input for a near-vector search, including vector, certainty, and distance.
+/// </summary>
 public record NearVectorInput(
     VectorSearchInput Vector,
     float? Certainty = null,
@@ -27,9 +30,16 @@ public record NearVectorInput(
             Distance: Distance
         ) { }
 
+    /// <summary>
+    /// Implicitly converts VectorSearchInput to NearVectorInput
+    /// </summary>
+    /// <param name="vectors">The vector search input</param>
     public static implicit operator NearVectorInput(VectorSearchInput vectors) => new(vectors);
 };
 
+/// <summary>
+/// Represents input for a near-text search, including concepts, certainty, distance, and move parameters.
+/// </summary>
 public record NearTextInput(
     AutoArray<string> Query,
     TargetVectors? TargetVectors = null,
@@ -65,9 +75,18 @@ public record NearTextInput(
         ) { }
 };
 
+/// <summary>
+/// The bm 25 operator
+/// </summary>
 public abstract record BM25Operator(string Operator)
 {
+    /// <summary>
+    /// The and
+    /// </summary>
     public record And() : BM25Operator("And");
 
+    /// <summary>
+    /// The or
+    /// </summary>
     public record Or(int MinimumMatch) : BM25Operator("Or");
 }

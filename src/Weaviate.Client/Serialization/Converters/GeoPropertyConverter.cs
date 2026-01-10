@@ -8,11 +8,26 @@ namespace Weaviate.Client.Serialization.Converters;
 /// </summary>
 internal class GeoPropertyConverter : PropertyConverterBase
 {
+    /// <summary>
+    /// Gets the value of the data type
+    /// </summary>
     public override string DataType => "geoCoordinates";
+
+    /// <summary>
+    /// Gets the value of the supports array
+    /// </summary>
     public override bool SupportsArray => false;
 
+    /// <summary>
+    /// Gets the value of the supported types
+    /// </summary>
     public override IReadOnlyList<System.Type> SupportedTypes => [typeof(GeoCoordinate)];
 
+    /// <summary>
+    /// Returns the rest using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The object</returns>
     public override object? ToRest(object? value)
     {
         if (value is not GeoCoordinate geo)
@@ -21,6 +36,11 @@ internal class GeoPropertyConverter : PropertyConverterBase
         return geo.ToDto();
     }
 
+    /// <summary>
+    /// Returns the grpc using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The value</returns>
     public override Value ToGrpc(object? value)
     {
         if (value is not GeoCoordinate geo)
@@ -33,6 +53,12 @@ internal class GeoPropertyConverter : PropertyConverterBase
         return Value.ForStruct(geoStruct);
     }
 
+    /// <summary>
+    /// Creates the rest using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <param name="targetType">The target type</param>
+    /// <returns>The object</returns>
     public override object? FromRest(object? value, System.Type targetType)
     {
         if (value is null)
@@ -83,6 +109,12 @@ internal class GeoPropertyConverter : PropertyConverterBase
         return null;
     }
 
+    /// <summary>
+    /// Creates the grpc using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <param name="targetType">The target type</param>
+    /// <returns>The object</returns>
     public override object? FromGrpc(Value value, System.Type targetType)
     {
         if (value.KindCase == Value.KindOneofCase.NullValue)

@@ -2,18 +2,41 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The collection client class
+/// </summary>
 public partial class CollectionClient
 {
+    /// <summary>
+    /// Gets the generate client for performing generative operations on this collection.
+    /// </summary>
     public GenerateClient Generate => new(this);
 }
 
+/// <summary>
+/// Provides generative query operations for a Weaviate collection.
+/// </summary>
 public partial class GenerateClient
 {
+    /// <summary>
+    /// The collection client
+    /// </summary>
     private readonly CollectionClient _collectionClient;
+
+    /// <summary>
+    /// Gets the value of the  collectionname
+    /// </summary>
     private string _collectionName => _collectionClient.Name;
 
+    /// <summary>
+    /// Gets the value of the  client
+    /// </summary>
     private WeaviateClient _client => _collectionClient.Client;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GenerateClient"/> class
+    /// </summary>
+    /// <param name="collectionClient">The collection client</param>
     public GenerateClient(CollectionClient collectionClient)
     {
         _collectionClient = collectionClient;

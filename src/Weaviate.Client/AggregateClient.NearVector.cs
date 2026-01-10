@@ -2,6 +2,9 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The aggregate client class
+/// </summary>
 public partial class AggregateClient
 {
     /// <summary>
@@ -179,7 +182,7 @@ public partial class AggregateClient
     /// <summary>
     /// Aggregate near vector search using a lambda builder for NearVectorInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearVectorInput with target vectors.</param>
+    /// <param name="vectors">Lambda builder for creating NearVectorInput with target vectors.</param>
     /// <param name="limit">Maximum number of results.</param>
     /// <param name="filters">Filters to apply.</param>
     /// <param name="totalCount">Whether to include total count.</param>
@@ -206,7 +209,7 @@ public partial class AggregateClient
     /// <summary>
     /// Aggregate near vector search with group-by using a lambda builder for NearVectorInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearVectorInput with target vectors.</param>
+    /// <param name="vectors">Lambda builder for creating NearVectorInput with target vectors.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="limit">Maximum number of results.</param>
     /// <param name="filters">Filters to apply.</param>

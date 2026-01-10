@@ -9,6 +9,9 @@ public record MultiTenancyConfig(
     bool AutoTenantActivation = false
 )
 {
+    /// <summary>
+    /// The default
+    /// </summary>
     private static readonly Lazy<MultiTenancyConfig> _default = new(() => new());
 
     /// <summary>

@@ -3,6 +3,9 @@ using Weaviate.Client.Models.Typed;
 
 namespace Weaviate.Client.Typed;
 
+/// <summary>
+/// The typed generate client class
+/// </summary>
 public partial class TypedGenerateClient<T>
 {
     /// <summary>

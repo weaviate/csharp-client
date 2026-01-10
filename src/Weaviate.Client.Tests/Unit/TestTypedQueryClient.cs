@@ -9,14 +9,35 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TypedQueryClientTests
 {
+    /// <summary>
+    /// The test article class
+    /// </summary>
     private class TestArticle
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the content
+        /// </summary>
         public string Content { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the published date
+        /// </summary>
         public DateTime PublishedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the view count
+        /// </summary>
         public int ViewCount { get; set; }
     }
 
+    /// <summary>
+    /// Tests that constructor with valid query client initializes correctly
+    /// </summary>
     [Fact]
     public void Constructor_WithValidQueryClient_InitializesCorrectly()
     {
@@ -32,6 +53,9 @@ public class TypedQueryClientTests
         Assert.NotNull(typedQueryClient);
     }
 
+    /// <summary>
+    /// Tests that constructor with null query client throws argument null exception
+    /// </summary>
     [Fact]
     public void Constructor_WithNullQueryClient_ThrowsArgumentNullException()
     {
@@ -39,6 +63,9 @@ public class TypedQueryClientTests
         Assert.Throws<ArgumentNullException>(() => new TypedQueryClient<TestArticle>(null!));
     }
 
+    /// <summary>
+    /// Tests that fetch objects without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void FetchObjects_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -52,6 +79,9 @@ public class TypedQueryClientTests
         Assert.NotNull(typedQueryClient);
     }
 
+    /// <summary>
+    /// Tests that fetch objects with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void FetchObjects_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -68,6 +98,9 @@ public class TypedQueryClientTests
         Assert.NotNull(groupBy);
     }
 
+    /// <summary>
+    /// Tests that fetch object by id accepts correct parameters
+    /// </summary>
     [Fact]
     public void FetchObjectByID_AcceptsCorrectParameters()
     {
@@ -84,6 +117,9 @@ public class TypedQueryClientTests
         Assert.NotEqual(Guid.Empty, testId);
     }
 
+    /// <summary>
+    /// Tests that fetch objects by i ds accepts correct parameters
+    /// </summary>
     [Fact]
     public void FetchObjectsByIDs_AcceptsCorrectParameters()
     {
@@ -100,6 +136,9 @@ public class TypedQueryClientTests
         Assert.Equal(2, ids.Count);
     }
 
+    /// <summary>
+    /// Tests that near text without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearText_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -116,6 +155,9 @@ public class TypedQueryClientTests
         Assert.NotNull(searchText);
     }
 
+    /// <summary>
+    /// Tests that near text with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearText_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -134,6 +176,9 @@ public class TypedQueryClientTests
         Assert.NotNull(groupBy);
     }
 
+    /// <summary>
+    /// Tests that near vector without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearVector_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -150,6 +195,9 @@ public class TypedQueryClientTests
         Assert.NotNull(vectors);
     }
 
+    /// <summary>
+    /// Tests that near vector with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearVector_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -168,6 +216,9 @@ public class TypedQueryClientTests
         Assert.NotNull(groupBy);
     }
 
+    /// <summary>
+    /// Tests that bm 25 without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void BM25_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -186,6 +237,9 @@ public class TypedQueryClientTests
         Assert.NotEmpty(searchFields);
     }
 
+    /// <summary>
+    /// Tests that bm 25 with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void BM25_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -204,6 +258,9 @@ public class TypedQueryClientTests
         Assert.NotNull(groupBy);
     }
 
+    /// <summary>
+    /// Tests that hybrid with vectors accepts correct parameters
+    /// </summary>
     [Fact]
     public void Hybrid_WithVectors_AcceptsCorrectParameters()
     {
@@ -222,6 +279,9 @@ public class TypedQueryClientTests
         Assert.NotNull(vectors);
     }
 
+    /// <summary>
+    /// Tests that hybrid with hybrid vector input accepts correct parameters
+    /// </summary>
     [Fact]
     public void Hybrid_WithHybridVectorInput_AcceptsCorrectParameters()
     {
@@ -238,6 +298,9 @@ public class TypedQueryClientTests
         Assert.NotEmpty(query);
     }
 
+    /// <summary>
+    /// Tests that hybrid with group by and vectors accepts correct parameters
+    /// </summary>
     [Fact]
     public void Hybrid_WithGroupByAndVectors_AcceptsCorrectParameters()
     {
@@ -258,6 +321,9 @@ public class TypedQueryClientTests
         Assert.NotNull(vectors);
     }
 
+    /// <summary>
+    /// Tests that near object without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearObject_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -274,6 +340,9 @@ public class TypedQueryClientTests
         Assert.NotEqual(Guid.Empty, nearObjectId);
     }
 
+    /// <summary>
+    /// Tests that near object with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearObject_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -292,6 +361,9 @@ public class TypedQueryClientTests
         Assert.NotNull(groupBy);
     }
 
+    /// <summary>
+    /// Tests that near image without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearImage_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -308,6 +380,9 @@ public class TypedQueryClientTests
         Assert.NotEmpty(imageData);
     }
 
+    /// <summary>
+    /// Tests that near image with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearImage_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -326,6 +401,9 @@ public class TypedQueryClientTests
         Assert.NotNull(groupBy);
     }
 
+    /// <summary>
+    /// Tests that near media without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearMedia_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -344,6 +422,9 @@ public class TypedQueryClientTests
         Assert.Equal(NearMediaType.Image, mediaType);
     }
 
+    /// <summary>
+    /// Tests that near media with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearMedia_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -364,6 +445,9 @@ public class TypedQueryClientTests
         Assert.NotNull(groupBy);
     }
 
+    /// <summary>
+    /// Tests that typed query client wraps query client maintains type constraints
+    /// </summary>
     [Fact]
     public void TypedQueryClient_WrapsQueryClient_MaintainsTypeConstraints()
     {
@@ -380,6 +464,9 @@ public class TypedQueryClientTests
         Assert.NotNull(typedQueryClient);
     }
 
+    /// <summary>
+    /// Tests that near vector accepts all vector input formats
+    /// </summary>
     [Fact]
     public void NearVector_AcceptsAllVectorInputFormats()
     {
@@ -485,6 +572,10 @@ public class TypedQueryClientTests
         Assert.NotNull(queryClient);
     }
 
+    /// <summary>
+    /// Creates the weaviate client
+    /// </summary>
+    /// <returns>The weaviate client</returns>
     private static WeaviateClient CreateWeaviateClient()
     {
         return Mocks.MockWeaviateClient.CreateWithMockHandler().Client;

@@ -9,14 +9,35 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TypedGenerateClientTests
 {
+    /// <summary>
+    /// The test article class
+    /// </summary>
     private class TestArticle
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the content
+        /// </summary>
         public string Content { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the published date
+        /// </summary>
         public DateTime PublishedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the view count
+        /// </summary>
         public int ViewCount { get; set; }
     }
 
+    /// <summary>
+    /// Tests that constructor with valid generate client initializes correctly
+    /// </summary>
     [Fact]
     public void Constructor_WithValidGenerateClient_InitializesCorrectly()
     {
@@ -32,6 +53,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(typedGenerateClient);
     }
 
+    /// <summary>
+    /// Tests that constructor with null generate client throws argument null exception
+    /// </summary>
     [Fact]
     public void Constructor_WithNullGenerateClient_ThrowsArgumentNullException()
     {
@@ -39,6 +63,9 @@ public class TypedGenerateClientTests
         Assert.Throws<ArgumentNullException>(() => new TypedGenerateClient<TestArticle>(null!));
     }
 
+    /// <summary>
+    /// Tests that fetch objects without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void FetchObjects_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -55,6 +82,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(prompt);
     }
 
+    /// <summary>
+    /// Tests that fetch objects with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void FetchObjects_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -73,6 +103,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(prompt);
     }
 
+    /// <summary>
+    /// Tests that fetch object by id accepts correct parameters
+    /// </summary>
     [Fact]
     public void FetchObjectByID_AcceptsCorrectParameters()
     {
@@ -91,6 +124,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(prompt);
     }
 
+    /// <summary>
+    /// Tests that fetch objects by i ds accepts correct parameters
+    /// </summary>
     [Fact]
     public void FetchObjectsByIDs_AcceptsCorrectParameters()
     {
@@ -109,6 +145,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(groupedTask);
     }
 
+    /// <summary>
+    /// Tests that near text without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearText_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -127,6 +166,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(prompt);
     }
 
+    /// <summary>
+    /// Tests that near text with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearText_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -147,6 +189,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(groupedTask);
     }
 
+    /// <summary>
+    /// Tests that near vector without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearVector_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -165,6 +210,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(prompt);
     }
 
+    /// <summary>
+    /// Tests that near vector with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearVector_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -185,6 +233,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(groupedTask);
     }
 
+    /// <summary>
+    /// Tests that bm 25 without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void BM25_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -205,6 +256,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(prompt);
     }
 
+    /// <summary>
+    /// Tests that bm 25 with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void BM25_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -225,6 +279,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(groupedTask);
     }
 
+    /// <summary>
+    /// Tests that hybrid without vectors accepts correct parameters
+    /// </summary>
     [Fact]
     public void Hybrid_WithoutVectors_AcceptsCorrectParameters()
     {
@@ -243,6 +300,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(prompt);
     }
 
+    /// <summary>
+    /// Tests that hybrid with vectors accepts correct parameters
+    /// </summary>
     [Fact]
     public void Hybrid_WithVectors_AcceptsCorrectParameters()
     {
@@ -263,6 +323,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(prompt);
     }
 
+    /// <summary>
+    /// Tests that hybrid with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void Hybrid_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -283,6 +346,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(groupedTask);
     }
 
+    /// <summary>
+    /// Tests that near object without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearObject_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -301,6 +367,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(prompt);
     }
 
+    /// <summary>
+    /// Tests that near object with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearObject_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -321,6 +390,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(groupedTask);
     }
 
+    /// <summary>
+    /// Tests that near image without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearImage_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -339,6 +411,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(prompt);
     }
 
+    /// <summary>
+    /// Tests that near image with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearImage_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -359,6 +434,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(groupedTask);
     }
 
+    /// <summary>
+    /// Tests that near media without group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearMedia_WithoutGroupBy_AcceptsCorrectParameters()
     {
@@ -379,6 +457,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(prompt);
     }
 
+    /// <summary>
+    /// Tests that near media with group by accepts correct parameters
+    /// </summary>
     [Fact]
     public void NearMedia_WithGroupBy_AcceptsCorrectParameters()
     {
@@ -401,6 +482,9 @@ public class TypedGenerateClientTests
         Assert.NotNull(groupedTask);
     }
 
+    /// <summary>
+    /// Tests that typed generate client wraps generate client maintains type constraints
+    /// </summary>
     [Fact]
     public void TypedGenerateClient_WrapsGenerateClient_MaintainsTypeConstraints()
     {
@@ -417,6 +501,10 @@ public class TypedGenerateClientTests
         Assert.NotNull(typedGenerateClient);
     }
 
+    /// <summary>
+    /// Creates the weaviate client
+    /// </summary>
+    /// <returns>The weaviate client</returns>
     private static WeaviateClient CreateWeaviateClient()
     {
         return Mocks.MockWeaviateClient.CreateWithMockHandler().Client;

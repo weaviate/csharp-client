@@ -8,18 +8,36 @@ namespace Weaviate.Client.Serialization.Converters;
 /// </summary>
 internal class ObjectPropertyConverter : PropertyConverterBase
 {
+    /// <summary>
+    /// The registry factory
+    /// </summary>
     private readonly Func<PropertyConverterRegistry> _registryFactory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectPropertyConverter"/> class
+    /// </summary>
+    /// <param name="registryFactory">The registry factory</param>
     public ObjectPropertyConverter(Func<PropertyConverterRegistry> registryFactory)
     {
         _registryFactory = registryFactory;
     }
 
+    /// <summary>
+    /// Gets the value of the data type
+    /// </summary>
     public override string DataType => "object";
 
+    /// <summary>
+    /// Gets the value of the supported types
+    /// </summary>
     public override IReadOnlyList<System.Type> SupportedTypes =>
         [typeof(object), typeof(IDictionary<string, object>)];
 
+    /// <summary>
+    /// Returns the rest using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The object</returns>
     public override object? ToRest(object? value)
     {
         if (value is null)
@@ -29,6 +47,11 @@ internal class ObjectPropertyConverter : PropertyConverterBase
         return registry.SerializeToRest(value);
     }
 
+    /// <summary>
+    /// Returns the grpc using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The value</returns>
     public override Value ToGrpc(object? value)
     {
         if (value is null)
@@ -50,6 +73,12 @@ internal class ObjectPropertyConverter : PropertyConverterBase
         return Value.ForNull();
     }
 
+    /// <summary>
+    /// Creates the rest using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <param name="targetType">The target type</param>
+    /// <returns>The object</returns>
     public override object? FromRest(object? value, System.Type targetType)
     {
         if (value is null)
@@ -72,6 +101,12 @@ internal class ObjectPropertyConverter : PropertyConverterBase
         return null;
     }
 
+    /// <summary>
+    /// Creates the rest array using the specified values
+    /// </summary>
+    /// <param name="values">The values</param>
+    /// <param name="elementType">The element type</param>
+    /// <returns>The object</returns>
     public override object? FromRestArray(IEnumerable<object?> values, System.Type elementType)
     {
         var registry = _registryFactory();
@@ -100,6 +135,12 @@ internal class ObjectPropertyConverter : PropertyConverterBase
         return CreateTypedArray(items, elementType);
     }
 
+    /// <summary>
+    /// Creates the grpc using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <param name="targetType">The target type</param>
+    /// <returns>The object</returns>
     public override object? FromGrpc(Value value, System.Type targetType)
     {
         if (value.KindCase == Value.KindOneofCase.NullValue)
@@ -113,6 +154,12 @@ internal class ObjectPropertyConverter : PropertyConverterBase
         return registry.BuildConcreteTypeFromProperties(dict, targetType);
     }
 
+    /// <summary>
+    /// Converts the to proto value using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <param name="registry">The registry</param>
+    /// <returns>The value</returns>
     private static Value ConvertToProtoValue(object? value, PropertyConverterRegistry registry)
     {
         if (value is null)
@@ -122,6 +169,11 @@ internal class ObjectPropertyConverter : PropertyConverterBase
         return converter?.ToGrpc(value) ?? Value.ForNull();
     }
 
+    /// <summary>
+    /// Converts the struct to dict using the specified s
+    /// </summary>
+    /// <param name="s">The </param>
+    /// <returns>The dict</returns>
     private static IDictionary<string, object?> ConvertStructToDict(Struct s)
     {
         var dict = new Dictionary<string, object?>();
@@ -134,6 +186,11 @@ internal class ObjectPropertyConverter : PropertyConverterBase
         return dict;
     }
 
+    /// <summary>
+    /// Converts the proto value to object using the specified v
+    /// </summary>
+    /// <param name="v">The </param>
+    /// <returns>The object</returns>
     private static object? ConvertProtoValueToObject(Value v)
     {
         return v.KindCase switch

@@ -11,8 +11,16 @@ using V1 = Weaviate.Client.Grpc.Protobuf.V1;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The object helper class
+/// </summary>
 internal class ObjectHelper
 {
+    /// <summary>
+    /// Converts the json element using the specified e
+    /// </summary>
+    /// <param name="e">The </param>
+    /// <returns>The object</returns>
     public static object? ConvertJsonElement(JsonElement? e)
     {
         if (e is null)
@@ -53,9 +61,21 @@ internal class ObjectHelper
         };
     }
 
+    /// <summary>
+    /// Makes the beacon source using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="fromUuid">The from uuid</param>
+    /// <param name="fromProperty">The from property</param>
+    /// <returns>The string</returns>
     public static string MakeBeaconSource(string collection, Guid fromUuid, string fromProperty) =>
         $"weaviate://localhost/{collection}/{fromUuid}/{fromProperty}";
 
+    /// <summary>
+    /// Makes the beacons using the specified guids
+    /// </summary>
+    /// <param name="guids">The guids</param>
+    /// <returns>A dictionary of string and string array</returns>
     public static IDictionary<string, string>[] MakeBeacons(IEnumerable<Guid> guids)
     {
         return
@@ -67,6 +87,12 @@ internal class ObjectHelper
         ];
     }
 
+    /// <summary>
+    /// Unmarshalls the properties using the specified dict
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="dict">The dict</param>
+    /// <returns>The</returns>
     internal static T? UnmarshallProperties<T>(IDictionary<string, object?> dict)
         where T : new()
     {
@@ -136,6 +162,11 @@ internal class ObjectHelper
             PropertyConverterRegistry.Default.BuildConcreteTypeFromProperties(dict, typeof(T));
     }
 
+    /// <summary>
+    /// Builds the data transfer object using the specified data
+    /// </summary>
+    /// <param name="data">The data</param>
+    /// <returns>A dictionary of string and object</returns>
     internal static IDictionary<string, object> BuildDataTransferObject(object? data)
     {
         if (data is null)
@@ -152,6 +183,11 @@ internal class ObjectHelper
         return PropertyConverterRegistry.Default.SerializeToRest(data)!;
     }
 
+    /// <summary>
+    /// Serializes the dictionary to rest using the specified dict
+    /// </summary>
+    /// <param name="dict">The dict</param>
+    /// <returns>The result</returns>
     private static Dictionary<string, object> SerializeDictionaryToRest(
         IDictionary<string, object?> dict
     )
@@ -191,6 +227,11 @@ internal class ObjectHelper
         return result;
     }
 
+    /// <summary>
+    /// Serializes the enumerable to rest using the specified enumerable
+    /// </summary>
+    /// <param name="enumerable">The enumerable</param>
+    /// <returns>The list</returns>
     private static List<object?> SerializeEnumerableToRest(
         System.Collections.IEnumerable enumerable
     )
@@ -217,11 +258,25 @@ internal class ObjectHelper
         return list;
     }
 
+    /// <summary>
+    /// Builds the batch properties using the specified data
+    /// </summary>
+    /// <typeparam name="TProps">The props</typeparam>
+    /// <param name="data">The data</param>
+    /// <returns>The batch object types properties</returns>
     internal static V1.BatchObject.Types.Properties BuildBatchProperties<TProps>(TProps data)
     {
         return BuildBatchProperties(data, []);
     }
 
+    /// <summary>
+    /// Builds the batch properties using the specified data
+    /// </summary>
+    /// <typeparam name="TProps">The props</typeparam>
+    /// <param name="data">The data</param>
+    /// <param name="visitedObjects">The visited objects</param>
+    /// <exception cref="WeaviateClientException">Unsupported array type '{value.GetType().GetElementType()?.Name ?? value.GetType().Name}' for property '{propName}'. Check the documentation for supported array value types.</exception>
+    /// <returns>The props</returns>
     internal static V1.BatchObject.Types.Properties BuildBatchProperties<TProps>(
         TProps data,
         HashSet<int> visitedObjects
@@ -703,6 +758,11 @@ internal class ObjectHelper
     }
 
     // Helper method to convert C# objects to protobuf Values
+    /// <summary>
+    /// Converts the to proto value using the specified obj
+    /// </summary>
+    /// <param name="obj">The obj</param>
+    /// <returns>The value</returns>
     internal static Value ConvertToProtoValue(object? obj)
     {
         // Handle special cases that aren't covered by converters
@@ -714,6 +774,11 @@ internal class ObjectHelper
         };
     }
 
+    /// <summary>
+    /// Guids the from byte string using the specified x
+    /// </summary>
+    /// <param name="x">The </param>
+    /// <returns>The guid</returns>
     internal static Guid GuidFromByteString(Google.Protobuf.ByteString x)
     {
         byte[] bytes = x.ToByteArray();

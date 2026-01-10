@@ -2,8 +2,15 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The basic tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 public partial class BasicTests : IntegrationTests
 {
+    /// <summary>
+    /// Tests that object creation
+    /// </summary>
     [Fact]
     public async Task ObjectCreation()
     {

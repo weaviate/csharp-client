@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using Weaviate.Client.Models;
 using Xunit;
 
+/// <summary>
+/// The test named vector multi target class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
     "Performance",
     "CA1861:Avoid constant arrays as arguments",
@@ -14,6 +18,9 @@ using Xunit;
 )]
 public class TestNamedVectorMultiTarget : IntegrationTests
 {
+    /// <summary>
+    /// Tests that test named vector multi target vector per target
+    /// </summary>
     [Fact]
     public async Task Test_NamedVector_MultiTargetVectorPerTarget()
     {
@@ -60,6 +67,9 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         Assert.Equal(expected, ids);
     }
 
+    /// <summary>
+    /// Gets the value of the multi input combinations
+    /// </summary>
     public static TheoryData<VectorSearchInput> MultiInputCombinations =>
         new(
             [
@@ -80,6 +90,10 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             ]
         );
 
+    /// <summary>
+    /// Tests that test same target vector multiple input combinations
+    /// </summary>
+    /// <param name="nearVector">The near vector</param>
     [Theory]
     [MemberData(nameof(MultiInputCombinations))]
     public async Task Test_SameTargetVector_MultipleInputCombinations(VectorSearchInput nearVector)
@@ -123,6 +137,9 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         Assert.Equal(expected, ids);
     }
 
+    /// <summary>
+    /// Gets the value of the hybrid multi input combinations
+    /// </summary>
     public static IEnumerable<object[]> HybridMultiInputCombinations =>
         new List<object[]>
         {
@@ -247,6 +264,10 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             },
         };
 
+    /// <summary>
+    /// Tests that test same target vector multiple input combinations hybrid
+    /// </summary>
+    /// <param name="nearVector">The near vector</param>
     [Theory]
     [MemberData(nameof(HybridMultiInputCombinations))]
     public async Task Test_SameTargetVector_MultipleInputCombinations_Hybrid(
@@ -346,6 +367,11 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             },
         };
 
+    /// <summary>
+    /// Tests that test same target vector multiple input
+    /// </summary>
+    /// <param name="nearVectorInput">The near vector input</param>
+    /// <param name="expectedDistances">The expected distances</param>
     [Theory]
     [MemberData(nameof(MultiTargetVectorsWithDistances))]
     public async Task Test_SameTargetVector_MultipleInput(
@@ -408,6 +434,9 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         { "second", new[] { 1f, 0f, 0f } },
     };
 
+    /// <summary>
+    /// Gets the value of the multi target vectors
+    /// </summary>
     public static TheoryData<TargetVectors, string> MultiTargetVectors =>
         new()
         {
@@ -419,6 +448,11 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             { TargetVectors.RelativeScore(("first", 1.2), ("second", 0.7)), "RelativeScore" },
         };
 
+    /// <summary>
+    /// Tests that test named vector multi target
+    /// </summary>
+    /// <param name="targets">The targets</param>
+    /// <param name="combinationName">The combination name</param>
     [Theory]
     [MemberData(nameof(MultiTargetVectors))]
     public async Task Test_NamedVector_MultiTarget(TargetVectors targets, string combinationName)

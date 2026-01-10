@@ -8,12 +8,29 @@ namespace Weaviate.Client;
 internal static class TimeoutHelper
 {
     // Thread-safe storage for tracking timeout cancellations
+    /// <summary>
+    /// The timeout context
+    /// </summary>
     private static readonly AsyncLocal<TimeoutContext?> _timeoutContext = new();
 
+    /// <summary>
+    /// The timeout context class
+    /// </summary>
     private class TimeoutContext
     {
+        /// <summary>
+        /// Gets or inits the value of the timeout
+        /// </summary>
         public TimeSpan Timeout { get; init; }
+
+        /// <summary>
+        /// Gets or inits the value of the timeout token
+        /// </summary>
         public CancellationToken TimeoutToken { get; init; }
+
+        /// <summary>
+        /// Gets or inits the value of the operation
+        /// </summary>
         public string? Operation { get; init; }
     }
 

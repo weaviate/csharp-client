@@ -1,8 +1,15 @@
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The client tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("ClientTests")]
 public partial class ClientTests : IntegrationTests
 {
+    /// <summary>
+    /// Tests that connect to local
+    /// </summary>
     [Fact]
     public async Task ConnectToLocal()
     {
@@ -17,6 +24,9 @@ public partial class ClientTests : IntegrationTests
         Assert.Null(ex);
     }
 
+    /// <summary>
+    /// Tests that connect to cloud
+    /// </summary>
     [Fact]
     public async Task ConnectToCloud()
     {
@@ -33,6 +43,9 @@ public partial class ClientTests : IntegrationTests
         Assert.Null(ex);
     }
 
+    /// <summary>
+    /// Tests that test meta
+    /// </summary>
     [Fact]
     public async Task TestMeta()
     {
@@ -44,6 +57,9 @@ public partial class ClientTests : IntegrationTests
         Assert.Contains("http://", meta.Hostname);
     }
 
+    /// <summary>
+    /// Tests that test nodes minimal
+    /// </summary>
     [Fact]
     public async Task TestNodesMinimal()
     {
@@ -60,6 +76,9 @@ public partial class ClientTests : IntegrationTests
         Assert.NotNull(node.Version);
     }
 
+    /// <summary>
+    /// Tests that test nodes list verbose
+    /// </summary>
     [Fact]
     public async Task TestNodesListVerbose()
     {
@@ -76,6 +95,9 @@ public partial class ClientTests : IntegrationTests
         Assert.NotNull(nodeV.Shards);
     }
 
+    /// <summary>
+    /// Tests that test nodes list verbose with collection
+    /// </summary>
     [Fact]
     public async Task TestNodesListVerboseWithCollection()
     {

@@ -3,9 +3,15 @@ using Grpc.Core;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The exception helper tests class
+/// </summary>
 [Collection("Unit Tests")]
 public class ExceptionHelperTests
 {
+    /// <summary>
+    /// Tests that map http exception with timeout cancellation returns timeout exception
+    /// </summary>
     [Fact]
     public void MapHttpException_WithTimeoutCancellation_ReturnsTimeoutException()
     {
@@ -37,6 +43,9 @@ public class ExceptionHelperTests
         Assert.Contains("Test operation", timeoutEx.Message);
     }
 
+    /// <summary>
+    /// Tests that map http exception with user cancellation does not return timeout exception
+    /// </summary>
     [Fact]
     public void MapHttpException_WithUserCancellation_DoesNotReturnTimeoutException()
     {
@@ -52,6 +61,9 @@ public class ExceptionHelperTests
         Assert.Same(innerEx, ex);
     }
 
+    /// <summary>
+    /// Tests that map http exception unauthorized returns authentication exception
+    /// </summary>
     [Fact]
     public void MapHttpException_Unauthorized_ReturnsAuthenticationException()
     {
@@ -69,6 +81,9 @@ public class ExceptionHelperTests
         Assert.IsType<WeaviateAuthenticationException>(result);
     }
 
+    /// <summary>
+    /// Tests that map http exception forbidden returns authorization exception
+    /// </summary>
     [Fact]
     public void MapHttpException_Forbidden_ReturnsAuthorizationException()
     {
@@ -86,6 +101,9 @@ public class ExceptionHelperTests
         Assert.IsType<WeaviateAuthorizationException>(result);
     }
 
+    /// <summary>
+    /// Tests that map grpc exception with timeout in inner exception returns timeout exception
+    /// </summary>
     [Fact(Skip = "RpcException doesn't expose public constructor with inner exception parameter")]
     public void MapGrpcException_WithTimeoutInInnerException_ReturnsTimeoutException()
     {
@@ -113,6 +131,9 @@ public class ExceptionHelperTests
         Assert.Equal("gRPC operation", timeoutEx.Operation);
     }
 
+    /// <summary>
+    /// Tests that map grpc exception with cancelled status and timeout returns timeout exception
+    /// </summary>
     [Fact(
         Skip = "gRPC StatusCode.Cancelled without inner exception cannot reliably detect timeout vs user cancellation"
     )]
@@ -140,6 +161,9 @@ public class ExceptionHelperTests
         Assert.Equal("Slow operation", timeoutEx.Operation);
     }
 
+    /// <summary>
+    /// Tests that map grpc exception unauthenticated returns authentication exception
+    /// </summary>
     [Fact]
     public void MapGrpcException_Unauthenticated_ReturnsAuthenticationException()
     {
@@ -153,6 +177,9 @@ public class ExceptionHelperTests
         Assert.IsType<WeaviateAuthenticationException>(result);
     }
 
+    /// <summary>
+    /// Tests that map grpc exception permission denied returns authorization exception
+    /// </summary>
     [Fact]
     public void MapGrpcException_PermissionDenied_ReturnsAuthorizationException()
     {
@@ -166,6 +193,9 @@ public class ExceptionHelperTests
         Assert.IsType<WeaviateAuthorizationException>(result);
     }
 
+    /// <summary>
+    /// Tests that map grpc exception unimplemented returns feature not supported exception
+    /// </summary>
     [Fact]
     public void MapGrpcException_Unimplemented_ReturnsFeatureNotSupportedException()
     {
@@ -179,6 +209,9 @@ public class ExceptionHelperTests
         Assert.IsType<WeaviateFeatureNotSupportedException>(result);
     }
 
+    /// <summary>
+    /// Tests that map http exception with timeout but no operation uses default message
+    /// </summary>
     [Fact]
     public void MapHttpException_WithTimeoutButNoOperation_UsesDefaultMessage()
     {
@@ -207,6 +240,9 @@ public class ExceptionHelperTests
         Assert.Contains("0.0 seconds", timeoutEx.Message); // 10ms rounds to 0.0
     }
 
+    /// <summary>
+    /// Tests that map grpc exception user cancellation does not return timeout exception
+    /// </summary>
     [Fact]
     public void MapGrpcException_UserCancellation_DoesNotReturnTimeoutException()
     {
@@ -229,6 +265,9 @@ public class ExceptionHelperTests
         Assert.IsNotType<WeaviateTimeoutException>(result);
     }
 
+    /// <summary>
+    /// Tests that map grpc exception collection limit message returns collection limit exception
+    /// </summary>
     [Fact]
     public void MapGrpcException_CollectionLimitMessage_ReturnsCollectionLimitException()
     {
@@ -244,6 +283,9 @@ public class ExceptionHelperTests
         Assert.IsType<WeaviateCollectionLimitReachedException>(result);
     }
 
+    /// <summary>
+    /// Tests that map grpc exception module not available message returns module not available exception
+    /// </summary>
     [Fact]
     public void MapGrpcException_ModuleNotAvailableMessage_ReturnsModuleNotAvailableException()
     {
@@ -259,6 +301,9 @@ public class ExceptionHelperTests
         Assert.IsType<WeaviateModuleNotAvailableException>(result);
     }
 
+    /// <summary>
+    /// Tests that map grpc exception vectorization error returns external module problem exception
+    /// </summary>
     [Fact]
     public void MapGrpcException_VectorizationError_ReturnsExternalModuleProblemException()
     {
@@ -274,6 +319,9 @@ public class ExceptionHelperTests
         Assert.IsType<WeaviateExternalModuleProblemException>(result);
     }
 
+    /// <summary>
+    /// Tests that map http exception bad request returns bad request exception
+    /// </summary>
     [Fact]
     public void MapHttpException_BadRequest_ReturnsBadRequestException()
     {
@@ -295,6 +343,9 @@ public class ExceptionHelperTests
         Assert.IsType<WeaviateBadRequestException>(result);
     }
 
+    /// <summary>
+    /// Tests that map http exception unprocessable entity returns unprocessable entity exception
+    /// </summary>
     [Fact]
     public void MapHttpException_UnprocessableEntity_ReturnsUnprocessableEntityException()
     {
@@ -316,6 +367,9 @@ public class ExceptionHelperTests
         Assert.IsType<WeaviateUnprocessableEntityException>(result);
     }
 
+    /// <summary>
+    /// Tests that map http exception unprocessable entity with backup conflict message returns backup conflict exception
+    /// </summary>
     [Fact]
     public void MapHttpException_UnprocessableEntityWithBackupConflictMessage_ReturnsBackupConflictException()
     {
@@ -338,6 +392,9 @@ public class ExceptionHelperTests
         Assert.Contains("already in progress", backupConflictEx.Message);
     }
 
+    /// <summary>
+    /// Tests that map http exception unprocessable entity with restore conflict message returns backup conflict exception
+    /// </summary>
     [Fact]
     public void MapHttpException_UnprocessableEntityWithRestoreConflictMessage_ReturnsBackupConflictException()
     {
@@ -360,6 +417,9 @@ public class ExceptionHelperTests
         Assert.Contains("already in progress", backupConflictEx.Message);
     }
 
+    /// <summary>
+    /// Tests that map http exception internal server error with conflict message does not return backup conflict exception
+    /// </summary>
     [Fact]
     public void MapHttpException_InternalServerErrorWithConflictMessage_DoesNotReturnBackupConflictException()
     {

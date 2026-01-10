@@ -3,26 +3,60 @@ using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The weaviate exception class
+/// </summary>
+/// <seealso cref="Exception"/>
 public class WeaviateException : Exception
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
     public WeaviateException(string message)
         : base(message) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateException"/> class
+    /// </summary>
+    /// <param name="innerException">The inner exception</param>
     protected WeaviateException(Exception innerException)
         : base(innerException.Message, innerException) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     protected WeaviateException(string? message, Exception? innerException = null)
         : base(message, innerException) { }
 }
 
+/// <summary>
+/// The weaviate client exception class
+/// </summary>
+/// <seealso cref="WeaviateException"/>
 public class WeaviateClientException : WeaviateException
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateClientException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
     public WeaviateClientException(string message)
         : base(message) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateClientException"/> class
+    /// </summary>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateClientException(Exception innerException)
         : base(innerException) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateClientException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateClientException(string? message = null, Exception? innerException = null)
         : base(message, innerException) { }
 }
@@ -33,11 +67,27 @@ public class WeaviateClientException : WeaviateException
 /// </summary>
 public class WeaviateTimeoutException : WeaviateClientException
 {
+    /// <summary>
+    /// Gets the value of the timeout
+    /// </summary>
     public TimeSpan? Timeout { get; }
+
+    /// <summary>
+    /// Gets the value of the operation
+    /// </summary>
     public string? Operation { get; }
 
+    /// <summary>
+    /// The default message
+    /// </summary>
     public const string DefaultMessage = "The operation timed out.";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateTimeoutException"/> class
+    /// </summary>
+    /// <param name="timeout">The timeout</param>
+    /// <param name="operation">The operation</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateTimeoutException(
         TimeSpan? timeout = null,
         string? operation = null,
@@ -49,6 +99,12 @@ public class WeaviateTimeoutException : WeaviateClientException
         Operation = operation;
     }
 
+    /// <summary>
+    /// Builds the message using the specified timeout
+    /// </summary>
+    /// <param name="timeout">The timeout</param>
+    /// <param name="operation">The operation</param>
+    /// <returns>The string</returns>
     private static string BuildMessage(TimeSpan? timeout, string? operation)
     {
         var parts = new List<string>();
@@ -75,14 +131,31 @@ public class WeaviateTimeoutException : WeaviateClientException
     }
 }
 
+/// <summary>
+/// The weaviate server exception class
+/// </summary>
+/// <seealso cref="WeaviateException"/>
 public class WeaviateServerException : WeaviateException
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateServerException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
     public WeaviateServerException(string message)
         : base(message) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateServerException"/> class
+    /// </summary>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateServerException(Exception innerException)
         : base(innerException) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateServerException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateServerException(string? message = null, Exception? innerException = null)
         : base(message, innerException) { }
 }
@@ -93,9 +166,17 @@ public class WeaviateServerException : WeaviateException
 /// </summary>
 public class WeaviateFeatureNotSupportedException : WeaviateServerException
 {
+    /// <summary>
+    /// The default message
+    /// </summary>
     public const string DefaultMessage =
         "The requested feature is not supported by the connected Weaviate server version.";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateFeatureNotSupportedException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateFeatureNotSupportedException(
         string? message = null,
         Exception? innerException = null
@@ -109,9 +190,16 @@ public class WeaviateFeatureNotSupportedException : WeaviateServerException
 /// </summary>
 public class WeaviateBackupConflictException : WeaviateServerException
 {
+    /// <summary>
+    /// The default message
+    /// </summary>
     public const string DefaultMessage =
         "A backup or restore operation is already in progress. Only one backup or restore operation can be performed at a time.";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateBackupConflictException"/> class
+    /// </summary>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateBackupConflictException(Exception innerException)
         : base(DefaultMessage, innerException) { }
 }
@@ -121,16 +209,36 @@ public class WeaviateBackupConflictException : WeaviateServerException
 /// </summary>
 public class WeaviateConflictException : WeaviateServerException
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateConflictException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateConflictException(string message, Exception? innerException = null)
         : base(message, innerException) { }
 }
 
+/// <summary>
+/// The weaviate not found exception class
+/// </summary>
+/// <seealso cref="WeaviateServerException"/>
 public class WeaviateNotFoundException : WeaviateServerException
 {
+    /// <summary>
+    /// The default message
+    /// </summary>
     private const string DefaultMessage = "The requested resource was not found in Weaviate.";
 
+    /// <summary>
+    /// Gets the value of the resource type
+    /// </summary>
     public ResourceType? ResourceType { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateNotFoundException"/> class
+    /// </summary>
+    /// <param name="resourceType">The resource type</param>
+    /// <param name="data">The data</param>
     internal WeaviateNotFoundException(
         ResourceType resourceType = Client.ResourceType.Unknown,
         IDictionary<string, object>? data = null
@@ -147,6 +255,11 @@ public class WeaviateNotFoundException : WeaviateServerException
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateNotFoundException"/> class
+    /// </summary>
+    /// <param name="restException">The rest exception</param>
+    /// <param name="resourceType">The resource type</param>
     internal WeaviateNotFoundException(
         WeaviateRestServerException restException,
         ResourceType resourceType = Client.ResourceType.Unknown
@@ -156,6 +269,11 @@ public class WeaviateNotFoundException : WeaviateServerException
         ResourceType = resourceType;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateNotFoundException"/> class
+    /// </summary>
+    /// <param name="grpcException">The grpc exception</param>
+    /// <param name="resourceType">The resource type</param>
     internal WeaviateNotFoundException(
         WeaviateGrpcServerException grpcException,
         ResourceType resourceType = Client.ResourceType.Unknown
@@ -165,6 +283,11 @@ public class WeaviateNotFoundException : WeaviateServerException
         ResourceType = resourceType;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateNotFoundException"/> class
+    /// </summary>
+    /// <param name="restException">The rest exception</param>
+    /// <param name="resourceType">The resource type</param>
     internal WeaviateNotFoundException(
         Rest.WeaviateUnexpectedStatusCodeException restException,
         ResourceType resourceType = Client.ResourceType.Unknown
@@ -174,6 +297,10 @@ public class WeaviateNotFoundException : WeaviateServerException
         ResourceType = resourceType;
     }
 
+    /// <summary>
+    /// Returns the string
+    /// </summary>
+    /// <returns>The string</returns>
     public override string ToString()
     {
         return $"{base.ToString()} ResourceType: {ResourceType}.";
@@ -186,9 +313,17 @@ public class WeaviateNotFoundException : WeaviateServerException
 /// </summary>
 public class WeaviateAuthenticationException : WeaviateServerException
 {
+    /// <summary>
+    /// The default message
+    /// </summary>
     public const string DefaultMessage =
         "Authentication failed. Please check your API key or authentication credentials.";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateAuthenticationException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateAuthenticationException(string? message = null, Exception? innerException = null)
         : base(message ?? DefaultMessage, innerException) { }
 }
@@ -199,9 +334,17 @@ public class WeaviateAuthenticationException : WeaviateServerException
 /// </summary>
 public class WeaviateAuthorizationException : WeaviateServerException
 {
+    /// <summary>
+    /// The default message
+    /// </summary>
     public const string DefaultMessage =
         "Authorization failed. You do not have permission to perform this operation.";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateAuthorizationException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateAuthorizationException(string? message = null, Exception? innerException = null)
         : base(message ?? DefaultMessage, innerException) { }
 }
@@ -212,9 +355,17 @@ public class WeaviateAuthorizationException : WeaviateServerException
 /// </summary>
 public class WeaviateBadRequestException : WeaviateServerException
 {
+    /// <summary>
+    /// The default message
+    /// </summary>
     public const string DefaultMessage =
         "The request is invalid. Please check the request parameters and schema.";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateBadRequestException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateBadRequestException(string? message = null, Exception? innerException = null)
         : base(message ?? DefaultMessage, innerException) { }
 }
@@ -225,9 +376,17 @@ public class WeaviateBadRequestException : WeaviateServerException
 /// </summary>
 public class WeaviateUnprocessableEntityException : WeaviateServerException
 {
+    /// <summary>
+    /// The default message
+    /// </summary>
     public const string DefaultMessage =
         "The server is unable to process the request. Please check the request content.";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateUnprocessableEntityException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateUnprocessableEntityException(
         string? message = null,
         Exception? innerException = null
@@ -241,9 +400,17 @@ public class WeaviateUnprocessableEntityException : WeaviateServerException
 /// </summary>
 public class WeaviateCollectionLimitReachedException : WeaviateUnprocessableEntityException
 {
+    /// <summary>
+    /// The default message
+    /// </summary>
     public new const string DefaultMessage =
         "Collection limit reached. Cannot create more collections than allowed by the server configuration.";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateCollectionLimitReachedException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateCollectionLimitReachedException(
         string? message = null,
         Exception? innerException = null
@@ -257,9 +424,17 @@ public class WeaviateCollectionLimitReachedException : WeaviateUnprocessableEnti
 /// </summary>
 public class WeaviateModuleNotAvailableException : WeaviateUnprocessableEntityException
 {
+    /// <summary>
+    /// The default message
+    /// </summary>
     public new const string DefaultMessage =
         "Required module is not available or enabled on the Weaviate server. Please check the server's module configuration.";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateModuleNotAvailableException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateModuleNotAvailableException(
         string? message = null,
         Exception? innerException = null
@@ -273,9 +448,17 @@ public class WeaviateModuleNotAvailableException : WeaviateUnprocessableEntityEx
 /// </summary>
 public class WeaviateExternalModuleProblemException : WeaviateServerException
 {
+    /// <summary>
+    /// The default message
+    /// </summary>
     public const string DefaultMessage =
         "An external module encountered a problem. This may be related to vectorizers, generative modules, or other external service integrations.";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateExternalModuleProblemException"/> class
+    /// </summary>
+    /// <param name="message">The message</param>
+    /// <param name="innerException">The inner exception</param>
     public WeaviateExternalModuleProblemException(
         string? message = null,
         Exception? innerException = null

@@ -1,12 +1,27 @@
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// The module config list class
+/// </summary>
+/// <seealso cref="Dictionary{TKey, TValue}"/>
+/// <seealso cref="IEquatable{T}"/>
 public class ModuleConfigList : Dictionary<string, object>, IEquatable<ModuleConfigList>
 {
+    /// <summary>
+    /// Equalses the obj
+    /// </summary>
+    /// <param name="obj">The obj</param>
+    /// <returns>The bool</returns>
     public override bool Equals(object? obj)
     {
         return Equals(obj as ModuleConfigList);
     }
 
+    /// <summary>
+    /// Equalses the other
+    /// </summary>
+    /// <param name="other">The other</param>
+    /// <returns>The bool</returns>
     public bool Equals(ModuleConfigList? other)
     {
         if (other is null)
@@ -33,6 +48,10 @@ public class ModuleConfigList : Dictionary<string, object>, IEquatable<ModuleCon
         return true;
     }
 
+    /// <summary>
+    /// Gets the hash code
+    /// </summary>
+    /// <returns>The int</returns>
     public override int GetHashCode()
     {
         var hash = new HashCode();

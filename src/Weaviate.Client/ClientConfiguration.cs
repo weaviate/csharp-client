@@ -2,6 +2,25 @@ using Microsoft.Extensions.Logging;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// Configuration settings for connecting to a Weaviate instance.
+/// </summary>
+/// <param name="RestAddress">The hostname or IP address for REST API connections. Defaults to "localhost".</param>
+/// <param name="RestPath">The base path for REST API endpoints. Defaults to "v1/".</param>
+/// <param name="GrpcAddress">The hostname or IP address for gRPC connections. Defaults to "localhost".</param>
+/// <param name="GrpcPath">The base path for gRPC endpoints. Defaults to empty string.</param>
+/// <param name="RestPort">The port number for REST API connections. Defaults to 8080.</param>
+/// <param name="GrpcPort">The port number for gRPC connections. Defaults to 50051.</param>
+/// <param name="UseSsl">Whether to use SSL/TLS for secure connections. Defaults to false.</param>
+/// <param name="Headers">Optional custom HTTP headers to include with requests.</param>
+/// <param name="Credentials">Optional credentials for authentication.</param>
+/// <param name="DefaultTimeout">Default timeout for all operations if not otherwise specified.</param>
+/// <param name="InitTimeout">Timeout specifically for initialization operations.</param>
+/// <param name="InsertTimeout">Timeout specifically for data insertion operations.</param>
+/// <param name="QueryTimeout">Timeout specifically for query operations.</param>
+/// <param name="RetryPolicy">Optional retry policy for handling transient failures.</param>
+/// <param name="CustomHandlers">Optional custom HTTP message handlers for request/response processing.</param>
+/// <param name="HttpMessageHandler">Optional custom HTTP message handler for low-level HTTP operations.</param>
 public sealed record ClientConfiguration(
     string RestAddress = "localhost",
     string RestPath = "v1/",
@@ -21,6 +40,9 @@ public sealed record ClientConfiguration(
     HttpMessageHandler? HttpMessageHandler = null
 )
 {
+    /// <summary>
+    /// Gets the complete URI for REST API connections, constructed from the REST configuration properties.
+    /// </summary>
     public Uri RestUri =>
         new UriBuilder()
         {
@@ -30,6 +52,9 @@ public sealed record ClientConfiguration(
             Path = RestPath,
         }.Uri;
 
+    /// <summary>
+    /// Gets the complete URI for gRPC connections, constructed from the gRPC configuration properties.
+    /// </summary>
     public Uri GrpcUri =>
         new UriBuilder()
         {

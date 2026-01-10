@@ -2,9 +2,16 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The search tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("SearchTests")]
 public partial class SearchTests : IntegrationTests
 {
+    /// <summary>
+    /// Tests that test search near text
+    /// </summary>
     [Fact]
     public async Task Test_Search_NearText()
     {
@@ -51,6 +58,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Equal("apple cake", retrieved[0].As<TestDataValue>()?.Value);
     }
 
+    /// <summary>
+    /// Tests that test search near text group by
+    /// </summary>
     [Fact]
     public async Task Test_Search_NearText_GroupBy()
     {
@@ -116,6 +126,9 @@ public partial class SearchTests : IntegrationTests
         Assert.Contains("default", obj.Vectors.Keys);
     }
 
+    /// <summary>
+    /// Tests that test search near text multiple target vectors
+    /// </summary>
     [Fact]
     public async Task Test_Search_NearText_MultipleTargetVectors()
     {

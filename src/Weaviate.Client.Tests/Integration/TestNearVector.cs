@@ -2,8 +2,14 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The search tests class
+/// </summary>
 public partial class SearchTests
 {
+    /// <summary>
+    /// Tests that near vector search
+    /// </summary>
     [Fact]
     public async Task NearVectorSearch()
     {

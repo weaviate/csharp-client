@@ -2,8 +2,22 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Grpc;
 
+/// <summary>
+/// The weaviate grpc client class
+/// </summary>
 internal partial class WeaviateGrpcClient
 {
+    /// <summary>
+    /// Deletes the many using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="filter">The filter</param>
+    /// <param name="dryRun">The dry run</param>
+    /// <param name="verbose">The verbose</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="consistencyLevel">The consistency level</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the grpc protobuf batch delete reply</returns>
     internal async Task<Grpc.Protobuf.V1.BatchDeleteReply> DeleteMany(
         string collection,
         Filter filter,
@@ -43,6 +57,12 @@ internal partial class WeaviateGrpcClient
         }
     }
 
+    /// <summary>
+    /// Inserts the many using the specified objects
+    /// </summary>
+    /// <param name="objects">The objects</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the grpc protobuf batch objects reply</returns>
     internal async Task<Grpc.Protobuf.V1.BatchObjectsReply> InsertMany(
         IEnumerable<Grpc.Protobuf.V1.BatchObject> objects,
         CancellationToken cancellationToken = default

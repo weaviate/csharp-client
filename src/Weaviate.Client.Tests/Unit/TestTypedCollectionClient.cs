@@ -10,14 +10,35 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TypedCollectionClientTests
 {
+    /// <summary>
+    /// The test article class
+    /// </summary>
     private class TestArticle
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the content
+        /// </summary>
         public string Content { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the published date
+        /// </summary>
         public DateTime PublishedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the view count
+        /// </summary>
         public int ViewCount { get; set; }
     }
 
+    /// <summary>
+    /// Tests that constructor with collection client initializes properties correctly
+    /// </summary>
     [Fact]
     public void Constructor_WithCollectionClient_InitializesPropertiesCorrectly()
     {
@@ -37,6 +58,9 @@ public class TypedCollectionClientTests
         Assert.Equal("Articles", typedClient.Name);
     }
 
+    /// <summary>
+    /// Tests that constructor with null collection client throws argument null exception
+    /// </summary>
     [Fact]
     public void Constructor_WithNullCollectionClient_ThrowsArgumentNullException()
     {
@@ -44,6 +68,9 @@ public class TypedCollectionClientTests
         Assert.Throws<ArgumentNullException>(() => new TypedCollectionClient<TestArticle>(null!));
     }
 
+    /// <summary>
+    /// Tests that data returns typed data client
+    /// </summary>
     [Fact]
     public void Data_ReturnsTypedDataClient()
     {
@@ -60,6 +87,9 @@ public class TypedCollectionClientTests
         Assert.IsType<TypedDataClient<TestArticle>>(dataClient);
     }
 
+    /// <summary>
+    /// Tests that query returns typed query client
+    /// </summary>
     [Fact]
     public void Query_ReturnsTypedQueryClient()
     {
@@ -76,6 +106,9 @@ public class TypedCollectionClientTests
         Assert.IsType<TypedQueryClient<TestArticle>>(queryClient);
     }
 
+    /// <summary>
+    /// Tests that generate returns typed generate client
+    /// </summary>
     [Fact]
     public void Generate_ReturnsTypedGenerateClient()
     {
@@ -92,6 +125,9 @@ public class TypedCollectionClientTests
         Assert.IsType<TypedGenerateClient<TestArticle>>(generateClient);
     }
 
+    /// <summary>
+    /// Tests that aggregate returns untyped aggregate client
+    /// </summary>
     [Fact]
     public void Aggregate_ReturnsUntypedAggregateClient()
     {
@@ -108,6 +144,9 @@ public class TypedCollectionClientTests
         Assert.IsType<AggregateClient>(aggregateClient);
     }
 
+    /// <summary>
+    /// Tests that config returns collection config client
+    /// </summary>
     [Fact]
     public void Config_ReturnsCollectionConfigClient()
     {
@@ -124,6 +163,9 @@ public class TypedCollectionClientTests
         Assert.IsType<CollectionConfigClient>(configClient);
     }
 
+    /// <summary>
+    /// Tests that name returns collection name
+    /// </summary>
     [Fact]
     public void Name_ReturnsCollectionName()
     {
@@ -139,6 +181,9 @@ public class TypedCollectionClientTests
         Assert.Equal("Articles", name);
     }
 
+    /// <summary>
+    /// Tests that tenant returns null by default
+    /// </summary>
     [Fact]
     public void Tenant_ReturnsNullByDefault()
     {
@@ -154,6 +199,9 @@ public class TypedCollectionClientTests
         Assert.True(string.IsNullOrEmpty(tenant));
     }
 
+    /// <summary>
+    /// Tests that tenant returns tenant when set
+    /// </summary>
     [Fact]
     public void Tenant_ReturnsTenantWhenSet()
     {
@@ -169,6 +217,9 @@ public class TypedCollectionClientTests
         Assert.Equal("tenant1", tenant);
     }
 
+    /// <summary>
+    /// Tests that consistency level returns null by default
+    /// </summary>
     [Fact]
     public void ConsistencyLevel_ReturnsNullByDefault()
     {
@@ -184,6 +235,9 @@ public class TypedCollectionClientTests
         Assert.Null(consistencyLevel);
     }
 
+    /// <summary>
+    /// Tests that consistency level returns level when set
+    /// </summary>
     [Fact]
     public void ConsistencyLevel_ReturnsLevelWhenSet()
     {
@@ -201,6 +255,9 @@ public class TypedCollectionClientTests
         Assert.Equal(ConsistencyLevels.Quorum, consistencyLevel);
     }
 
+    /// <summary>
+    /// Tests that with tenant creates new typed collection client with tenant
+    /// </summary>
     [Fact]
     public void WithTenant_CreatesNewTypedCollectionClientWithTenant()
     {
@@ -218,6 +275,9 @@ public class TypedCollectionClientTests
         Assert.Equal("Articles", tenantClient.Name);
     }
 
+    /// <summary>
+    /// Tests that with consistency level creates new typed collection client with consistency level
+    /// </summary>
     [Fact]
     public void WithConsistencyLevel_CreatesNewTypedCollectionClientWithConsistencyLevel()
     {
@@ -235,6 +295,9 @@ public class TypedCollectionClientTests
         Assert.Equal("Articles", consistentClient.Name);
     }
 
+    /// <summary>
+    /// Tests that untyped returns underlying collection client
+    /// </summary>
     [Fact]
     public void Untyped_ReturnsUnderlyingCollectionClient()
     {
@@ -251,6 +314,9 @@ public class TypedCollectionClientTests
         Assert.Equal("Articles", untypedClient.Name);
     }
 
+    /// <summary>
+    /// Tests that typed collection client maintains type constraints
+    /// </summary>
     [Fact]
     public void TypedCollectionClient_MaintainsTypeConstraints()
     {
@@ -270,6 +336,9 @@ public class TypedCollectionClientTests
         Assert.IsType<TypedGenerateClient<TestArticle>>(typedClient.Generate);
     }
 
+    /// <summary>
+    /// Tests that with tenant chained calls maintains type and configuration
+    /// </summary>
     [Fact]
     public void WithTenant_ChainedCalls_MaintainsTypeAndConfiguration()
     {
@@ -290,6 +359,9 @@ public class TypedCollectionClientTests
         Assert.IsType<TypedDataClient<TestArticle>>(chainedClient.Data);
     }
 
+    /// <summary>
+    /// Tests that multiple instances have independent typed clients
+    /// </summary>
     [Fact]
     public void MultipleInstances_HaveIndependentTypedClients()
     {
@@ -306,6 +378,10 @@ public class TypedCollectionClientTests
         Assert.NotSame(typedClient1.Generate, typedClient2.Generate);
     }
 
+    /// <summary>
+    /// Creates the weaviate client
+    /// </summary>
+    /// <returns>The weaviate client</returns>
     private static WeaviateClient CreateWeaviateClient()
     {
         return Mocks.MockWeaviateClient.CreateWithMockHandler().Client;

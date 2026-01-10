@@ -1,11 +1,21 @@
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The test common class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("TestCommon")]
 public class TestCommon : IntegrationTests
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestCommon"/> class
+    /// </summary>
     public TestCommon()
         : base() { }
 
+    /// <summary>
+    /// Tests that test version is in range
+    /// </summary>
     [Fact]
     public void TestVersionIsInRange()
     {

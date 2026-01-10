@@ -3,11 +3,27 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// Manages the configuration of a specific collection in the Weaviate instance.
+/// Provides methods to get, update, and modify the collection's schema, properties, and vectors.
+/// </summary>
 public class CollectionConfigClient
 {
+    /// <summary>
+    /// The client
+    /// </summary>
     private readonly WeaviateClient _client;
+
+    /// <summary>
+    /// The collection name
+    /// </summary>
     private readonly string _collectionName;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CollectionConfigClient"/> class
+    /// </summary>
+    /// <param name="client">The client</param>
+    /// <param name="collectionName">The collection name</param>
     internal CollectionConfigClient(WeaviateClient client, string collectionName)
     {
         _client = client;
@@ -36,6 +52,10 @@ public class CollectionConfigClient
         );
     }
 
+    /// <summary>
+    /// Adds a reference property to the collection.
+    /// </summary>
+    /// <param name="referenceProperty">The reference property to add.</param>
     public async Task AddReference(Reference referenceProperty)
     {
         var dto = referenceProperty.ToDto();
@@ -43,12 +63,20 @@ public class CollectionConfigClient
         await _client.RestClient.CollectionAddProperty(_collectionName, dto);
     }
 
+    /// <summary>
+    /// Adds a property to the collection.
+    /// </summary>
+    /// <param name="p">The property to add.</param>
     public async Task AddProperty(Property p)
     {
         await _client.RestClient.CollectionAddProperty(_collectionName, p.ToDto());
     }
 
     // Add new named vectors
+    /// <summary>
+    /// Adds a new named vector to the collection.
+    /// </summary>
+    /// <param name="vector">The vector configuration to add.</param>
     public async Task AddVector(VectorConfig vector)
     {
         // 1. Fetch the collection config
@@ -69,6 +97,10 @@ public class CollectionConfigClient
 
     // Proxied property updates
 
+    /// <summary>
+    /// Updates the collection configuration.
+    /// </summary>
+    /// <param name="c">Action to update the collection.</param>
     public async Task<CollectionConfigExport> Update(Action<CollectionUpdate> c)
     {
         // 1. Fetch the collection config
@@ -87,6 +119,11 @@ public class CollectionConfigClient
         return result.ToModel();
     }
 
+    /// <summary>
+    /// Retrieves the collection configuration.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The collection configuration.</returns>
     public async Task<CollectionConfigExport> Get(CancellationToken cancellationToken = default)
     {
         var response =

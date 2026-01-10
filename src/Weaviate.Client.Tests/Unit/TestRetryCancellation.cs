@@ -2,12 +2,28 @@ using System.Net;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The test retry cancellation class
+/// </summary>
 public class TestRetryCancellation
 {
+    /// <summary>
+    /// The counting 503 handler class
+    /// </summary>
+    /// <seealso cref="DelegatingHandler"/>
     private sealed class Counting503Handler : DelegatingHandler
     {
+        /// <summary>
+        /// Gets or sets the value of the attempts
+        /// </summary>
         public int Attempts { get; private set; }
 
+        /// <summary>
+        /// Sends the request
+        /// </summary>
+        /// <param name="request">The request</param>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <returns>A task containing the http response message</returns>
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken
@@ -23,6 +39,9 @@ public class TestRetryCancellation
         }
     }
 
+    /// <summary>
+    /// Tests that cancellation during backoff aborts further retries
+    /// </summary>
     [Fact]
     public async Task CancellationDuringBackoff_AbortsFurtherRetries()
     {

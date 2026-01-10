@@ -2,15 +2,35 @@ namespace Weaviate.Client.Models;
 
 using V1 = Grpc.Protobuf.V1;
 
+/// <summary>
+/// The aggregate group by result
+/// </summary>
 public partial record AggregateGroupByResult
 {
+    /// <summary>
+    /// The group
+    /// </summary>
     public partial record Group
     {
+        /// <summary>
+        /// The by
+        /// </summary>
         public record By(string Property, object Value, Type Type);
 
+        /// <summary>
+        /// Gets or inits the value of the grouped by
+        /// </summary>
         public required By GroupedBy { get; init; }
+
+        /// <summary>
+        /// Gets or inits the value of the properties
+        /// </summary>
         public IReadOnlyDictionary<string, Aggregate.Property> Properties { get; init; } =
             new Dictionary<string, Aggregate.Property>();
+
+        /// <summary>
+        /// Gets or inits the value of the total count
+        /// </summary>
         public long TotalCount { get; init; } = 0;
 
         #region Typed Accessor Methods
@@ -292,8 +312,17 @@ public partial record AggregateGroupByResult
         #endregion
     }
 
+    /// <summary>
+    /// Gets or inits the value of the groups
+    /// </summary>
     public List<Group> Groups { get; init; } = new();
 
+    /// <summary>
+    /// Creates the grpc reply using the specified result
+    /// </summary>
+    /// <param name="result">The result</param>
+    /// <exception cref="NotImplementedException">Unknown group by type: {gb.ValueCase}</exception>
+    /// <returns>The aggregate group by result</returns>
     internal static AggregateGroupByResult FromGrpcReply(V1.AggregateReply result)
     {
         var groupByToGrpc = (V1.AggregateReply.Types.Group.Types.GroupedBy gb) =>
@@ -362,11 +391,20 @@ public partial record AggregateGroupByResult
     }
 }
 
+/// <summary>
+/// The aggregate result
+/// </summary>
 public partial record AggregateResult
 {
+    /// <summary>
+    /// Gets or inits the value of the properties
+    /// </summary>
     public IDictionary<string, Aggregate.Property> Properties { get; init; } =
         new Dictionary<string, Aggregate.Property>();
 
+    /// <summary>
+    /// Gets or inits the value of the total count
+    /// </summary>
     public long TotalCount { get; init; }
 
     #region Typed Accessor Methods
@@ -647,6 +685,11 @@ public partial record AggregateResult
 
     #endregion
 
+    /// <summary>
+    /// Creates the grpc reply using the specified reply
+    /// </summary>
+    /// <param name="reply">The reply</param>
+    /// <returns>The aggregate result</returns>
     internal static AggregateResult FromGrpcReply(V1.AggregateReply reply)
     {
         return new AggregateResult
@@ -660,6 +703,13 @@ public partial record AggregateResult
         };
     }
 
+    /// <summary>
+    /// Creates the grpc property using the specified x
+    /// </summary>
+    /// <param name="x">The </param>
+    /// <exception cref="NotImplementedException"></exception>
+    /// <exception cref="NotImplementedException">Unknown aggregation case: {x.AggregationCase}</exception>
+    /// <returns>The aggregate property</returns>
     internal static Aggregate.Property FromGrpcProperty(
         V1.AggregateReply.Types.Aggregations.Types.Aggregation x
     )
@@ -756,17 +806,40 @@ public partial record AggregateResult
     }
 }
 
+/// <summary>
+/// The metrics class
+/// </summary>
 public class Metrics
 {
+    /// <summary>
+    /// Gets the value of the property name
+    /// </summary>
     private string PropertyName { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Metrics"/> class
+    /// </summary>
+    /// <param name="name">The name</param>
     protected Metrics(string name)
     {
         PropertyName = name;
     }
 
+    /// <summary>
+    /// Fors the property using the specified property name
+    /// </summary>
+    /// <param name="propertyName">The property name</param>
+    /// <returns>The metrics</returns>
     public static Metrics ForProperty(string propertyName) => new(propertyName);
 
+    /// <summary>
+    /// Texts the count
+    /// </summary>
+    /// <param name="count">The count</param>
+    /// <param name="topOccurrencesCount">The top occurrences count</param>
+    /// <param name="topOccurrencesValue">The top occurrences value</param>
+    /// <param name="minOccurrences">The min occurrences</param>
+    /// <returns>The aggregate metric</returns>
     public Aggregate.Metric Text(
         bool count = false,
         bool topOccurrencesCount = false,
@@ -788,6 +861,17 @@ public class Metrics
         };
     }
 
+    /// <summary>
+    /// Integers the count
+    /// </summary>
+    /// <param name="count">The count</param>
+    /// <param name="maximum">The maximum</param>
+    /// <param name="mean">The mean</param>
+    /// <param name="median">The median</param>
+    /// <param name="minimum">The minimum</param>
+    /// <param name="mode">The mode</param>
+    /// <param name="sum">The sum</param>
+    /// <returns>The aggregate metric</returns>
     public Aggregate.Metric Integer(
         bool count = false,
         bool maximum = false,
@@ -816,6 +900,17 @@ public class Metrics
         };
     }
 
+    /// <summary>
+    /// Numbers the count
+    /// </summary>
+    /// <param name="count">The count</param>
+    /// <param name="maximum">The maximum</param>
+    /// <param name="mean">The mean</param>
+    /// <param name="median">The median</param>
+    /// <param name="minimum">The minimum</param>
+    /// <param name="mode">The mode</param>
+    /// <param name="sum">The sum</param>
+    /// <returns>The aggregate metric</returns>
     public Aggregate.Metric Number(
         bool count = false,
         bool maximum = false,
@@ -844,6 +939,15 @@ public class Metrics
         };
     }
 
+    /// <summary>
+    /// Booleans the count
+    /// </summary>
+    /// <param name="count">The count</param>
+    /// <param name="percentageFalse">The percentage false</param>
+    /// <param name="percentageTrue">The percentage true</param>
+    /// <param name="totalFalse">The total false</param>
+    /// <param name="totalTrue">The total true</param>
+    /// <returns>The aggregate metric</returns>
     public Aggregate.Metric Boolean(
         bool count = false,
         bool percentageFalse = false,
@@ -867,6 +971,15 @@ public class Metrics
         };
     }
 
+    /// <summary>
+    /// Dates the count
+    /// </summary>
+    /// <param name="count">The count</param>
+    /// <param name="maximum">The maximum</param>
+    /// <param name="median">The median</param>
+    /// <param name="minimum">The minimum</param>
+    /// <param name="mode">The mode</param>
+    /// <returns>The aggregate metric</returns>
     public Aggregate.Metric Date(
         bool count = false,
         bool maximum = false,
@@ -891,107 +1004,314 @@ public class Metrics
     }
 }
 
+/// <summary>
+/// The aggregate class
+/// </summary>
 public static partial class Aggregate
 {
+    /// <summary>
+    /// The metric
+    /// </summary>
     public abstract record Metric(string Name)
     {
+        /// <summary>
+        /// Gets or inits the value of the count
+        /// </summary>
         public bool Count { get; init; }
 
+        /// <summary>
+        /// The text
+        /// </summary>
         public record Text(string Name) : Metric(Name)
         {
+            /// <summary>
+            /// Gets or inits the value of the top occurrences count
+            /// </summary>
             public bool TopOccurrencesCount { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the top occurrences value
+            /// </summary>
             public bool TopOccurrencesValue { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the min occurrences
+            /// </summary>
             public uint? MinOccurrences { get; init; }
         }
 
+        /// <summary>
+        /// The integer
+        /// </summary>
         public record Integer(string Name) : Metric(Name)
         {
+            /// <summary>
+            /// Gets or inits the value of the maximum
+            /// </summary>
             public bool Maximum { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the mean
+            /// </summary>
             public bool Mean { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the median
+            /// </summary>
             public bool Median { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the minimum
+            /// </summary>
             public bool Minimum { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the mode
+            /// </summary>
             public bool Mode { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the sum
+            /// </summary>
             public bool Sum { get; init; }
         }
 
+        /// <summary>
+        /// The number
+        /// </summary>
         public record Number(string Name) : Metric(Name)
         {
+            /// <summary>
+            /// Gets or inits the value of the maximum
+            /// </summary>
             public bool Maximum { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the mean
+            /// </summary>
             public bool Mean { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the median
+            /// </summary>
             public bool Median { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the minimum
+            /// </summary>
             public bool Minimum { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the mode
+            /// </summary>
             public bool Mode { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the sum
+            /// </summary>
             public bool Sum { get; init; }
         }
 
+        /// <summary>
+        /// The boolean
+        /// </summary>
         public record Boolean(string Name) : Metric(Name)
         {
+            /// <summary>
+            /// Gets or inits the value of the percentage false
+            /// </summary>
             public bool PercentageFalse { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the percentage true
+            /// </summary>
             public bool PercentageTrue { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the total false
+            /// </summary>
             public bool TotalFalse { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the total true
+            /// </summary>
             public bool TotalTrue { get; init; }
         }
 
+        /// <summary>
+        /// The date
+        /// </summary>
         public record Date(string Name) : Metric(Name)
         {
+            /// <summary>
+            /// Gets or inits the value of the maximum
+            /// </summary>
             public bool Maximum { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the median
+            /// </summary>
             public bool Median { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the minimum
+            /// </summary>
             public bool Minimum { get; init; }
+
+            /// <summary>
+            /// Gets or inits the value of the mode
+            /// </summary>
             public bool Mode { get; init; }
         }
     }
 }
 
+/// <summary>
+/// The aggregate class
+/// </summary>
 public static partial class Aggregate
 {
+    /// <summary>
+    /// The group by
+    /// </summary>
     public record GroupBy(string Property, uint? Limit = null)
     {
+        /// <summary>
+        /// Implicitly converts a string to a GroupBy instance
+        /// </summary>
+        /// <param name="property">The property name</param>
         public static implicit operator GroupBy(string property) => new(property);
     };
 
+    /// <summary>
+    /// The property
+    /// </summary>
     public abstract record Property
     {
+        /// <summary>
+        /// Gets or inits the value of the count
+        /// </summary>
         public long? Count { get; internal init; }
     }
 
+    /// <summary>
+    /// The top occurrence
+    /// </summary>
     public record TopOccurrence<T> : Property
     {
+        /// <summary>
+        /// Gets or inits the value of the value
+        /// </summary>
         public T? Value { get; internal init; }
     }
 
+    /// <summary>
+    /// The text
+    /// </summary>
     public record Text : Property
     {
+        /// <summary>
+        /// Gets or inits the value of the top occurrences
+        /// </summary>
         public List<TopOccurrence<string>> TopOccurrences { get; internal init; } = new();
     };
 
+    /// <summary>
+    /// The numeric
+    /// </summary>
     public abstract record Numeric<T> : Property
         where T : struct
     {
+        /// <summary>
+        /// Gets or sets the value of the maximum
+        /// </summary>
         public T? Maximum { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value of the mean
+        /// </summary>
         public double? Mean { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value of the median
+        /// </summary>
         public double? Median { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value of the minimum
+        /// </summary>
         public T? Minimum { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value of the mode
+        /// </summary>
         public T? Mode { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value of the sum
+        /// </summary>
         public T? Sum { get; internal set; }
     }
 
+    /// <summary>
+    /// The integer
+    /// </summary>
     public record Integer : Numeric<long> { };
 
+    /// <summary>
+    /// The number
+    /// </summary>
     public record Number : Numeric<double> { };
 
+    /// <summary>
+    /// The boolean
+    /// </summary>
     public record Boolean : Property
     {
+        /// <summary>
+        /// Gets or sets the value of the percentage false
+        /// </summary>
         public double PercentageFalse { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value of the percentage true
+        /// </summary>
         public double PercentageTrue { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value of the total false
+        /// </summary>
         public long TotalFalse { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value of the total true
+        /// </summary>
         public long TotalTrue { get; internal set; }
     };
 
+    /// <summary>
+    /// The date
+    /// </summary>
     public record Date : Property
     {
+        /// <summary>
+        /// Gets or sets the value of the maximum
+        /// </summary>
         public DateTime? Maximum { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value of the median
+        /// </summary>
         public DateTime? Median { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value of the minimum
+        /// </summary>
         public DateTime? Minimum { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value of the mode
+        /// </summary>
         public DateTime? Mode { get; internal set; }
     };
 }

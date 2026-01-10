@@ -3,9 +3,17 @@ using Weaviate.Client.Tests.Common;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The test queries class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("TestQueries")]
 public class TestQueries : IntegrationTests
 {
+    /// <summary>
+    /// Tests that test sorting
+    /// </summary>
+    /// <param name="propertyName">The property name</param>
     [Theory()]
     [InlineData("testText")]
     [InlineData("testInt")]
@@ -69,6 +77,9 @@ public class TestQueries : IntegrationTests
         Assert.Equal(new List<string> { "Alice", "Bob", "Charlie" }, namesAsc);
     }
 
+    /// <summary>
+    /// Tests that test bm 25 generate and group by with everything
+    /// </summary>
     [Fact]
     public async Task Test_BM25_Generate_And_GroupBy_With_Everything()
     {
@@ -133,6 +144,9 @@ public class TestQueries : IntegrationTests
         Assert.Equal("apples are big", firstObject.BelongsToGroup);
     }
 
+    /// <summary>
+    /// Tests that test collection generative fetch objects
+    /// </summary>
     [Fact]
     public async Task Test_Collection_Generative_FetchObjects()
     {
@@ -183,6 +197,10 @@ public class TestQueries : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Generates the by ids test data
+    /// </summary>
+    /// <returns>An enumerable of object array</returns>
     public static IEnumerable<object?[]> GenerateByIdsTestData()
     {
         var uuid1 = _reusableUuids[0];
@@ -217,6 +235,12 @@ public class TestQueries : IntegrationTests
         };
     }
 
+    /// <summary>
+    /// Tests that test generate by ids
+    /// </summary>
+    /// <param name="ids">The ids</param>
+    /// <param name="expectedLen">The expected len</param>
+    /// <param name="expected">The expected</param>
     [Theory]
     [MemberData(nameof(GenerateByIdsTestData))]
     public async Task Test_Generate_By_Ids(Guid[] ids, int expectedLen, HashSet<Guid> expected)

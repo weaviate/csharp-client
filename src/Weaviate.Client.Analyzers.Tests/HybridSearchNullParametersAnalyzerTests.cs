@@ -6,8 +6,14 @@ using VerifyCS = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<We
 
 namespace Weaviate.Client.Analyzers.Tests;
 
+/// <summary>
+/// The hybrid search null parameters analyzer tests class
+/// </summary>
 public class HybridSearchNullParametersAnalyzerTests
 {
+    /// <summary>
+    /// The client stubs
+    /// </summary>
     private const string ClientStubs =
         @"
 using System;
@@ -209,6 +215,9 @@ namespace Weaviate.Client.Typed
 }
 ";
 
+    /// <summary>
+    /// Tests that explicit null arguments reports diagnostic
+    /// </summary>
     [Fact]
     public async Task ExplicitNullArguments_ReportsDiagnostic()
     {
@@ -231,6 +240,9 @@ class TestClass
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that no arguments reports diagnostic
+    /// </summary>
     [Fact]
     public async Task NoArguments_ReportsDiagnostic()
     {
@@ -253,6 +265,9 @@ class TestClass
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that query only provided no diagnostic
+    /// </summary>
     [Fact]
     public async Task QueryOnlyProvided_NoDiagnostic()
     {
@@ -271,6 +286,9 @@ class TestClass
         await VerifyCS.VerifyAnalyzerAsync(testCode);
     }
 
+    /// <summary>
+    /// Tests that vectors only provided no diagnostic
+    /// </summary>
     [Fact]
     public async Task VectorsOnlyProvided_NoDiagnostic()
     {
@@ -290,6 +308,9 @@ class TestClass
         await VerifyCS.VerifyAnalyzerAsync(testCode);
     }
 
+    /// <summary>
+    /// Tests that both query and vectors provided no diagnostic
+    /// </summary>
     [Fact]
     public async Task BothQueryAndVectorsProvided_NoDiagnostic()
     {
@@ -309,6 +330,9 @@ class TestClass
         await VerifyCS.VerifyAnalyzerAsync(testCode);
     }
 
+    /// <summary>
+    /// Tests that named arguments with both null reports diagnostic
+    /// </summary>
     [Fact]
     public async Task NamedArgumentsWithBothNull_ReportsDiagnostic()
     {
@@ -331,6 +355,9 @@ class TestClass
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that generate client both null reports diagnostic
+    /// </summary>
     [Fact]
     public async Task GenerateClient_BothNull_ReportsDiagnostic()
     {
@@ -353,6 +380,9 @@ class TestClass
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that aggregate client both null reports diagnostic
+    /// </summary>
     [Fact]
     public async Task AggregateClient_BothNull_ReportsDiagnostic()
     {
@@ -375,6 +405,9 @@ class TestClass
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that typed query client both null reports diagnostic
+    /// </summary>
     [Fact]
     public async Task TypedQueryClient_BothNull_ReportsDiagnostic()
     {
@@ -399,6 +432,9 @@ class TestClass
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that typed generate client both null reports diagnostic
+    /// </summary>
     [Fact]
     public async Task TypedGenerateClient_BothNull_ReportsDiagnostic()
     {
@@ -423,6 +459,9 @@ class TestClass
         await VerifyCS.VerifyAnalyzerAsync(testCode, expected);
     }
 
+    /// <summary>
+    /// Tests that non hybrid method no diagnostic
+    /// </summary>
     [Fact]
     public async Task NonHybridMethod_NoDiagnostic()
     {

@@ -8,6 +8,9 @@ using V1 = Grpc.Protobuf.V1;
 /// </summary>
 public sealed class VectorSearchInput : IEnumerable<NamedVector>
 {
+    /// <summary>
+    /// The vectors
+    /// </summary>
     private readonly List<NamedVector> _vectors;
 
     /// <summary>
@@ -18,6 +21,13 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
         _vectors = [];
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VectorSearchInput"/> class
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="targets">The targets</param>
+    /// <param name="combination">The combination</param>
+    /// <param name="weights">The weights</param>
     internal VectorSearchInput(
         IEnumerable<NamedVector> vectors,
         IReadOnlyList<string>? targets = null,
@@ -31,15 +41,37 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
         Weights = weights;
     }
 
+    /// <summary>
+    /// Gets the value of the vectors
+    /// </summary>
     public IReadOnlyDictionary<string, NamedVector[]> Vectors =>
         _vectors.GroupBy(v => v.Name).ToDictionary(g => g.Key, g => g.ToArray());
 
+    /// <summary>
+    /// Gets the value of the targets
+    /// </summary>
     public IReadOnlyList<string>? Targets { get; }
+
+    /// <summary>
+    /// Gets the value of the combination
+    /// </summary>
     internal V1.CombinationMethod Combination { get; }
+
+    /// <summary>
+    /// Gets the value of the weights
+    /// </summary>
     public IReadOnlyDictionary<string, IReadOnlyList<double>>? Weights { get; }
 
+    /// <summary>
+    /// Gets the enumerator
+    /// </summary>
+    /// <returns>An enumerator of named vector</returns>
     public IEnumerator<NamedVector> GetEnumerator() => _vectors.GetEnumerator();
 
+    /// <summary>
+    /// Gets the enumerator
+    /// </summary>
+    /// <returns>The system collections enumerator</returns>
     System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =>
         GetEnumerator();
 
@@ -57,6 +89,10 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
         _vectors.AddRange(vectors.Select(v => new NamedVector(v.Key, v.Value)));
     }
 
+    /// <summary>
+    /// Gets the vector with weights
+    /// </summary>
+    /// <returns>An enumerable of string name and double weight</returns>
     internal IEnumerable<(string name, double? weight)> GetVectorWithWeights()
     {
         var targets = Targets ?? Vectors.Keys.ToList();
@@ -208,6 +244,9 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
     /// </summary>
     public sealed class Builder
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Builder"/> class
+        /// </summary>
         internal Builder() { }
 
         /// <summary>
@@ -312,8 +351,16 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
     /// </summary>
     public delegate VectorSearchInput FactoryFn(Builder builder);
 
+    /// <summary>
+    /// The collection builder class
+    /// </summary>
     public static class CollectionBuilder
     {
+        /// <summary>
+        /// Creates the items
+        /// </summary>
+        /// <param name="items">The items</param>
+        /// <returns>The vector search input</returns>
         public static VectorSearchInput Create(ReadOnlySpan<NamedVector> items)
         {
             return new VectorSearchInput(items.ToArray());

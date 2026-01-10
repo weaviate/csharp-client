@@ -4,21 +4,39 @@ namespace Weaviate.Client.Models;
 
 // StopwordConfig fine-grained control over stopword list usage
 //
+/// <summary>
+/// The stopword config
+/// </summary>
 public record StopwordConfig
 {
+    /// <summary>
+    /// The presets enum
+    /// </summary>
     public enum Presets
     {
+        /// <summary>
+        /// The none presets
+        /// </summary>
         [System.Runtime.Serialization.EnumMember(Value = "none")]
         None,
 
+        /// <summary>
+        /// The en presets
+        /// </summary>
         [System.Runtime.Serialization.EnumMember(Value = "en")]
         EN,
     }
 
+    /// <summary>
+    /// The stopword config
+    /// </summary>
     private static readonly Lazy<StopwordConfig> defaultInstance = new Lazy<StopwordConfig>(() =>
         new StopwordConfig()
     );
 
+    /// <summary>
+    /// Gets the value of the default
+    /// </summary>
     public static StopwordConfig Default => defaultInstance.Value;
 
     /// <summary>
@@ -36,6 +54,10 @@ public record StopwordConfig
     /// </summary>
     public ImmutableList<string> Removals { get; set; } = [];
 
+    /// <summary>
+    /// Gets the hash code
+    /// </summary>
+    /// <returns>The int</returns>
     public override int GetHashCode()
     {
         var hash = new HashCode();
@@ -45,6 +67,11 @@ public record StopwordConfig
         return hash.ToHashCode();
     }
 
+    /// <summary>
+    /// Equalses the other
+    /// </summary>
+    /// <param name="other">The other</param>
+    /// <returns>The bool</returns>
     public virtual bool Equals(StopwordConfig? other)
     {
         if (other is null)

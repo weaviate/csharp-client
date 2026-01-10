@@ -10,10 +10,21 @@ namespace Example;
 /// </summary>
 public class TraditionalExample
 {
+    /// <summary>
+    /// The use batch insert
+    /// </summary>
     private static readonly bool _useBatchInsert = true;
 
+    /// <summary>
+    /// The cat data with vectors
+    /// </summary>
     private record CatDataWithVectors(float[] Vector, Cat Data);
 
+    /// <summary>
+    /// Gets the cats using the specified filename
+    /// </summary>
+    /// <param name="filename">The filename</param>
+    /// <returns>A task containing a list of cat data with vectors</returns>
     static async Task<List<CatDataWithVectors>> GetCatsAsync(string filename)
     {
         try
@@ -50,6 +61,9 @@ public class TraditionalExample
         }
     }
 
+    /// <summary>
+    /// Runs
+    /// </summary>
     public static async Task Run()
     {
         Console.WriteLine("=== Traditional Example ===\n");

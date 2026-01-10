@@ -5,6 +5,12 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public class BackupCreateOperation : BackupOperationBase
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BackupCreateOperation"/> class
+    /// </summary>
+    /// <param name="initial">The initial</param>
+    /// <param name="statusFetcher">The status fetcher</param>
+    /// <param name="operationCancel">The operation cancel</param>
     internal BackupCreateOperation(
         Backup initial,
         Func<CancellationToken, Task<Backup>> statusFetcher,

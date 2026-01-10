@@ -2,6 +2,9 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The generate client class
+/// </summary>
 public partial class GenerateClient
 {
     #region Objects
@@ -9,6 +12,7 @@ public partial class GenerateClient
     /// Fetch objects with generative AI capabilities and grouping.
     /// </summary>
     /// <param name="groupBy">Group by configuration</param>
+    /// <param name="after"></param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
@@ -60,12 +64,14 @@ public partial class GenerateClient
     /// <summary>
     /// Fetch objects with generative AI capabilities.
     /// </summary>
+    /// <param name="after"></param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="sort">Sort configuration</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
+    /// <param name="provider"></param>
     /// <param name="returnProperties">Properties to return</param>
     /// <param name="returnReferences">References to return</param>
     /// <param name="returnMetadata">Metadata to return</param>

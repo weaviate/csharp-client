@@ -2,6 +2,9 @@ using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
 
+/// <summary>
+/// The weaviate rest client class
+/// </summary>
 internal partial class WeaviateRestClient
 {
     /// <summary>

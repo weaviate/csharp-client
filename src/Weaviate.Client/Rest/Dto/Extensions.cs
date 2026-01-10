@@ -2,8 +2,18 @@
 namespace Weaviate.Client.Rest.Dto;
 
 // Role assignment mapping for user
+/// <summary>
+/// The role user assignment extensions class
+/// </summary>
 internal static class RoleUserAssignmentExtensions
 {
+    /// <summary>
+    /// Returns the model using the specified user type
+    /// </summary>
+    /// <param name="userType">The user type</param>
+    /// <param name="userId">The user id</param>
+    /// <exception cref="ArgumentOutOfRangeException">Unknown UserTypeOutput: {userType}</exception>
+    /// <returns>The models user role assignment</returns>
     public static Models.UserRoleAssignment ToModel(this UserTypeOutput userType, string userId)
     {
         return new Models.UserRoleAssignment(userId, userType switch
@@ -17,8 +27,18 @@ internal static class RoleUserAssignmentExtensions
 }
 
 // Role assignment mapping for group
+/// <summary>
+/// The role group assignment extensions class
+/// </summary>
 internal static class RoleGroupAssignmentExtensions
 {
+    /// <summary>
+    /// Returns the model using the specified group type
+    /// </summary>
+    /// <param name="groupType">The group type</param>
+    /// <param name="groupId">The group id</param>
+    /// <exception cref="ArgumentOutOfRangeException">Unknown GroupType: {groupType}</exception>
+    /// <returns>The models group role assignment</returns>
     public static Models.GroupRoleAssignment ToModel(this GroupType groupType, string groupId)
     {
         return new Models.GroupRoleAssignment(groupId, groupType switch
@@ -30,6 +50,9 @@ internal static class RoleGroupAssignmentExtensions
 }
 
 // RBAC Role mapping
+/// <summary>
+/// The role
+/// </summary>
 internal partial record Role
 {
     /// <summary>
@@ -44,8 +67,15 @@ internal partial record Role
     }
 }
 
+/// <summary>
+/// The nested property
+/// </summary>
 internal partial record NestedProperty
 {
+    /// <summary>
+    /// Returns the model
+    /// </summary>
+    /// <returns>The models property</returns>
     public Models.Property ToModel()
     {
         return new Models.Property
@@ -62,8 +92,15 @@ internal partial record NestedProperty
     }
 }
 
+/// <summary>
+/// The property
+/// </summary>
 internal partial record Property
 {
+    /// <summary>
+    /// Returns the model
+    /// </summary>
+    /// <returns>The models property</returns>
     public Models.Property ToModel()
     {
         // Extract skip and vectorizePropertyName from moduleConfig
@@ -116,6 +153,10 @@ internal partial record Property
         };
     }
 
+        /// <summary>
+        /// Returns the reference model
+        /// </summary>
+        /// <returns>The models reference</returns>
         public Models.Reference ToReferenceModel()
         {
             var targetCollection = DataType?.FirstOrDefault() ?? string.Empty;
@@ -124,16 +165,30 @@ internal partial record Property
 
 }
 
+/// <summary>
+/// The geo coordinates
+/// </summary>
 internal partial record GeoCoordinates
 {
+    /// <summary>
+    /// Returns the model
+    /// </summary>
+    /// <returns>The models geo coordinate</returns>
     public Models.GeoCoordinate ToModel()
     {
         return new Models.GeoCoordinate(Latitude!.Value, Longitude!.Value);
     }
 }
 
+/// <summary>
+/// The phone number
+/// </summary>
 internal partial record PhoneNumber
 {
+    /// <summary>
+    /// Returns the model
+    /// </summary>
+    /// <returns>The models phone number</returns>
     public Models.PhoneNumber ToModel()
     {
         return new Models.PhoneNumber(Input!)
@@ -149,6 +204,9 @@ internal partial record PhoneNumber
 }
 
 // Shard status mapping
+/// <summary>
+/// The shard status get response
+/// </summary>
 internal partial record ShardStatusGetResponse
 {
     /// <summary>

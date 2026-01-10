@@ -2,9 +2,17 @@ using Weaviate.Client.Tests.Unit.Mocks;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The test cancellation class
+/// </summary>
 public class TestCancellation
 {
     // Helper creates a client with a delaying mock handler that respects cancellation.
+    /// <summary>
+    /// Creates the client with delay using the specified delay
+    /// </summary>
+    /// <param name="delay">The delay</param>
+    /// <returns>The client</returns>
     private static WeaviateClient CreateClientWithDelay(TimeSpan delay)
     {
         var (client, _) = MockWeaviateClient.CreateWithMockHandler(mockLeaf =>
@@ -15,6 +23,9 @@ public class TestCancellation
         return client;
     }
 
+    /// <summary>
+    /// Tests that get meta pre cancelled token throws
+    /// </summary>
     [Fact]
     public async Task GetMeta_PreCancelledToken_Throws()
     {
@@ -25,6 +36,9 @@ public class TestCancellation
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => client.GetMeta(cts.Token));
     }
 
+    /// <summary>
+    /// Tests that wait until ready cancels before timeout
+    /// </summary>
     [Fact]
     public async Task WaitUntilReady_CancelsBeforeTimeout()
     {
@@ -38,6 +52,9 @@ public class TestCancellation
         );
     }
 
+    /// <summary>
+    /// Tests that live pre cancelled token throws or returns false
+    /// </summary>
     [Fact]
     public async Task Live_PreCancelledToken_ThrowsOrReturnsFalse()
     {
@@ -50,6 +67,9 @@ public class TestCancellation
         Assert.False(result);
     }
 
+    /// <summary>
+    /// Tests that get meta cancellation during delay throws
+    /// </summary>
     [Fact]
     public async Task GetMeta_CancellationDuringDelay_Throws()
     {

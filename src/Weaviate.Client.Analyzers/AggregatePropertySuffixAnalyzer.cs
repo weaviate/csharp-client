@@ -16,25 +16,65 @@ namespace Weaviate.Client.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
 {
+    /// <summary>
+    /// The missing suffix diagnostic id
+    /// </summary>
     public const string MissingSuffixDiagnosticId = "WEAVIATE005";
+
+    /// <summary>
+    /// The invalid suffix type diagnostic id
+    /// </summary>
     public const string InvalidSuffixTypeDiagnosticId = "WEAVIATE006";
+
+    /// <summary>
+    /// The wrong attribute type diagnostic id
+    /// </summary>
     public const string WrongAttributeTypeDiagnosticId = "WEAVIATE007";
+
+    /// <summary>
+    /// The category
+    /// </summary>
     private const string Category = "Usage";
 
+    /// <summary>
+    /// The missing suffix title
+    /// </summary>
     private static readonly LocalizableString MissingSuffixTitle =
         "Aggregate property missing suffix";
+
+    /// <summary>
+    /// The missing suffix message format
+    /// </summary>
     private static readonly LocalizableString MissingSuffixMessageFormat =
         "Property '{0}' in type '{1}' has a primitive type but no recognized aggregate suffix";
+
+    /// <summary>
+    /// The missing suffix description
+    /// </summary>
     private static readonly LocalizableString MissingSuffixDescription =
         "Properties in aggregate result types used with ToTyped<T>() must either use full Aggregate types or have a recognized suffix.";
 
+    /// <summary>
+    /// The invalid suffix type title
+    /// </summary>
     private static readonly LocalizableString InvalidSuffixTypeTitle =
         "Invalid type for aggregate suffix";
+
+    /// <summary>
+    /// The invalid suffix type message format
+    /// </summary>
     private static readonly LocalizableString InvalidSuffixTypeMessageFormat =
         "Property '{0}' in type '{1}' with suffix '{2}' should be of type '{3}', not '{4}'";
+
+    /// <summary>
+    /// The invalid suffix type description
+    /// </summary>
     private static readonly LocalizableString InvalidSuffixTypeDescription =
         "Properties with aggregate suffixes must use compatible types.";
 
+    /// <summary>
+    /// The missing suffix description
+    /// </summary>
     private static readonly DiagnosticDescriptor MissingSuffixRule = new DiagnosticDescriptor(
         MissingSuffixDiagnosticId,
         MissingSuffixTitle,
@@ -45,6 +85,9 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         description: MissingSuffixDescription
     );
 
+    /// <summary>
+    /// The invalid suffix type description
+    /// </summary>
     private static readonly DiagnosticDescriptor InvalidSuffixTypeRule = new DiagnosticDescriptor(
         InvalidSuffixTypeDiagnosticId,
         InvalidSuffixTypeTitle,
@@ -55,13 +98,27 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         description: InvalidSuffixTypeDescription
     );
 
+    /// <summary>
+    /// The wrong attribute type title
+    /// </summary>
     private static readonly LocalizableString WrongAttributeTypeTitle =
         "Wrong metrics attribute for aggregate type";
+
+    /// <summary>
+    /// The wrong attribute type message format
+    /// </summary>
     private static readonly LocalizableString WrongAttributeTypeMessageFormat =
         "Property '{0}' is Aggregate.{1} but has [{2}Metrics] attribute";
+
+    /// <summary>
+    /// The wrong attribute type description
+    /// </summary>
     private static readonly LocalizableString WrongAttributeTypeDescription =
         "Use the metrics attribute that matches the aggregate property type.";
 
+    /// <summary>
+    /// The wrong attribute type description
+    /// </summary>
     private static readonly DiagnosticDescriptor WrongAttributeTypeRule = new DiagnosticDescriptor(
         WrongAttributeTypeDiagnosticId,
         WrongAttributeTypeTitle,
@@ -245,9 +302,16 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
     /// </summary>
     private const string MetricsExtractorFullName = "Weaviate.Client.Models.Typed.MetricsExtractor";
 
+    /// <summary>
+    /// Gets the value of the supported diagnostics
+    /// </summary>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create(MissingSuffixRule, InvalidSuffixTypeRule, WrongAttributeTypeRule);
 
+    /// <summary>
+    /// Initializes the context
+    /// </summary>
+    /// <param name="context">The context</param>
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -260,6 +324,10 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         );
     }
 
+    /// <summary>
+    /// Analyzes the invocation expression using the specified context
+    /// </summary>
+    /// <param name="context">The context</param>
     private static void AnalyzeInvocationExpression(SyntaxNodeAnalysisContext context)
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
@@ -285,6 +353,13 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         AnalyzeTypeProperties(context, typeArgument, typeSymbol);
     }
 
+    /// <summary>
+    /// Ises the to typed call using the specified invocation
+    /// </summary>
+    /// <param name="invocation">The invocation</param>
+    /// <param name="semanticModel">The semantic model</param>
+    /// <param name="typeArgument">The type argument</param>
+    /// <returns>The bool</returns>
     private static bool IsToTypedCall(
         InvocationExpressionSyntax invocation,
         SemanticModel semanticModel,
@@ -322,6 +397,13 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
+    /// <summary>
+    /// Ises the from type call using the specified invocation
+    /// </summary>
+    /// <param name="invocation">The invocation</param>
+    /// <param name="semanticModel">The semantic model</param>
+    /// <param name="typeArgument">The type argument</param>
+    /// <returns>The bool</returns>
     private static bool IsFromTypeCall(
         InvocationExpressionSyntax invocation,
         SemanticModel semanticModel,
@@ -359,6 +441,12 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
+    /// <summary>
+    /// Analyzes the type properties using the specified context
+    /// </summary>
+    /// <param name="context">The context</param>
+    /// <param name="typeArgumentSyntax">The type argument syntax</param>
+    /// <param name="typeSymbol">The type symbol</param>
     private static void AnalyzeTypeProperties(
         SyntaxNodeAnalysisContext context,
         TypeSyntax typeArgumentSyntax,
@@ -414,6 +502,11 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         }
     }
 
+    /// <summary>
+    /// Ises the aggregate type using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The bool</returns>
     private static bool IsAggregateType(ITypeSymbol type)
     {
         var displayName = type.ToDisplayString();
@@ -426,6 +519,11 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
             || displayName == "Weaviate.Client.Models.Aggregate.Property";
     }
 
+    /// <summary>
+    /// Ises the primitive or value type using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The bool</returns>
     private static bool IsPrimitiveOrValueType(ITypeSymbol type)
     {
         // Handle nullable types
@@ -448,6 +546,11 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
             || type.SpecialType == SpecialType.System_Boolean;
     }
 
+    /// <summary>
+    /// Gets the suffix using the specified property name
+    /// </summary>
+    /// <param name="propertyName">The property name</param>
+    /// <returns>The string</returns>
     private static string? GetSuffix(string propertyName)
     {
         foreach (var suffix in SuffixExpectedTypes.Keys)
@@ -464,6 +567,15 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         return null;
     }
 
+    /// <summary>
+    /// Validates the suffix type using the specified context
+    /// </summary>
+    /// <param name="context">The context</param>
+    /// <param name="typeArgumentSyntax">The type argument syntax</param>
+    /// <param name="typeName">The type name</param>
+    /// <param name="propertyName">The property name</param>
+    /// <param name="suffix">The suffix</param>
+    /// <param name="propertyType">The property type</param>
     private static void ValidateSuffixType(
         SyntaxNodeAnalysisContext context,
         TypeSyntax typeArgumentSyntax,
@@ -506,6 +618,11 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         }
     }
 
+    /// <summary>
+    /// Ises the nullable date time using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The bool</returns>
     private static bool IsNullableDateTime(ITypeSymbol type)
     {
         if (type is INamedTypeSymbol namedType && namedType.IsGenericType)
@@ -520,6 +637,11 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
+    /// <summary>
+    /// Gets the simple type name using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The string</returns>
     private static string GetSimpleTypeName(ITypeSymbol type)
     {
         // Handle nullable types
@@ -547,6 +669,13 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         };
     }
 
+    /// <summary>
+    /// Validates the metrics attribute using the specified context
+    /// </summary>
+    /// <param name="context">The context</param>
+    /// <param name="property">The property</param>
+    /// <param name="aggregateType">The aggregate type</param>
+    /// <param name="typeArgumentSyntax">The type argument syntax</param>
     private static void ValidateMetricsAttribute(
         SyntaxNodeAnalysisContext context,
         IPropertySymbol property,
@@ -587,6 +716,11 @@ public class AggregatePropertySuffixAnalyzer : DiagnosticAnalyzer
         }
     }
 
+    /// <summary>
+    /// Gets the aggregate type name using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The string</returns>
     private static string? GetAggregateTypeName(ITypeSymbol type)
     {
         var displayName = type.ToDisplayString();

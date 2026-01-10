@@ -1,11 +1,28 @@
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// The geo coordinate
+/// </summary>
 public record GeoCoordinate(float Latitude, float Longitude);
 
+/// <summary>
+/// The phone number
+/// </summary>
 public partial record PhoneNumber(string Input = default!)
 {
+    /// <summary>
+    /// Creates the international using the specified number
+    /// </summary>
+    /// <param name="number">The number</param>
+    /// <returns>The phone number</returns>
     public static PhoneNumber FromInternational(string number) => new PhoneNumber(number);
 
+    /// <summary>
+    /// Creates the national using the specified country
+    /// </summary>
+    /// <param name="country">The country</param>
+    /// <param name="number">The number</param>
+    /// <returns>The phone number</returns>
     public static PhoneNumber FromNational(string country, string number) =>
         new PhoneNumber(number) { DefaultCountry = country };
 

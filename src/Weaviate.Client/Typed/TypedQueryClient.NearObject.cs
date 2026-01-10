@@ -3,6 +3,9 @@ using Weaviate.Client.Models.Typed;
 
 namespace Weaviate.Client.Typed;
 
+/// <summary>
+/// The typed query client class
+/// </summary>
 public partial class TypedQueryClient<T>
 {
     /// <summary>

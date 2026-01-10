@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!-- Multi-targeting: Supports .NET 8 for compatibility and .NET 9 for latest features -->
     <!-- To add .NET 10 support when available, add 'net10.0' to the list below -->
@@ -6,7 +6,8 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- <GenerateDocumentationFile>true</GenerateDocumentationFile> -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1701;1702;RS0016;RS0017;RS0026;RS0041</NoWarn>
     <DefineConstants>ENABLE_INTERNAL_TESTS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>

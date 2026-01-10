@@ -5,6 +5,9 @@ using Quantizers = Weaviate.Client.Models.VectorIndex.Quantizers;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The vector config list tests class
+/// </summary>
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
     "Performance",
     "CA1861:Avoid constant arrays as arguments",
@@ -12,6 +15,9 @@ namespace Weaviate.Client.Tests.Unit;
 )]
 public partial class VectorConfigListTests
 {
+    /// <summary>
+    /// Tests that throws when flat index already has quantizer
+    /// </summary>
     [Fact]
     public void Throws_When_FlatIndex_Already_Has_Quantizer()
     {
@@ -25,6 +31,9 @@ public partial class VectorConfigListTests
         );
     }
 
+    /// <summary>
+    /// Tests that throws when hnsw already has quantizer
+    /// </summary>
     [Fact]
     public void Throws_When_HNSW_Already_Has_Quantizer()
     {
@@ -38,6 +47,9 @@ public partial class VectorConfigListTests
         );
     }
 
+    /// <summary>
+    /// Tests that named vector initialization
+    /// </summary>
     [Fact]
     public void NamedVectorInitialization()
     {
@@ -47,6 +59,9 @@ public partial class VectorConfigListTests
         Assert.Equal([0.1f, 0.2f, 0.3f], v1["default"].Cast<float>());
     }
 
+    /// <summary>
+    /// Tests that test vector config list
+    /// </summary>
     [Fact]
     public void Test_VectorConfigList()
     {
@@ -109,6 +124,9 @@ public partial class VectorConfigListTests
         );
     }
 
+    /// <summary>
+    /// Tests that test named vector config self provided has no properties
+    /// </summary>
     [Fact]
     public void Test_NamedVectorConfig_SelfProvided_Has_No_Properties()
     {
@@ -124,6 +142,9 @@ public partial class VectorConfigListTests
         Assert.DoesNotContain("properties", json);
     }
 
+    /// <summary>
+    /// Tests that test named vector config none deserialization
+    /// </summary>
     [Fact]
     public void Test_NamedVectorConfig_None_Deserialization()
     {
@@ -136,6 +157,9 @@ public partial class VectorConfigListTests
         Assert.Null(config.SourceProperties);
     }
 
+    /// <summary>
+    /// Tests that test named vector config has properties
+    /// </summary>
     [Fact]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Performance",

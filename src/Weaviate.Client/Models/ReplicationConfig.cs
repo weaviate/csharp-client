@@ -1,9 +1,23 @@
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// The deletion strategy enum
+/// </summary>
 public enum DeletionStrategy
 {
+    /// <summary>
+    /// The no automated resolution deletion strategy
+    /// </summary>
     NoAutomatedResolution,
+
+    /// <summary>
+    /// The delete on conflict deletion strategy
+    /// </summary>
     DeleteOnConflict,
+
+    /// <summary>
+    /// The time based resolution deletion strategy
+    /// </summary>
     TimeBasedResolution,
 }
 
@@ -12,6 +26,9 @@ public enum DeletionStrategy
 /// </summary>
 public record ReplicationConfig : IEquatable<ReplicationConfig>
 {
+    /// <summary>
+    /// The default
+    /// </summary>
     private static readonly Lazy<ReplicationConfig> _default = new(() => new());
 
     /// <summary>

@@ -4,8 +4,17 @@ using V1 = Weaviate.Client.Grpc.Protobuf.V1;
 
 namespace Weaviate.Client.Grpc;
 
+/// <summary>
+/// The weaviate grpc client class
+/// </summary>
 internal partial class WeaviateGrpcClient
 {
+    /// <summary>
+    /// Sets the if not null using the specified setter
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="setter">The setter</param>
+    /// <param name="value">The value</param>
     private static void SetIfNotNull<T>(Action<T> setter, T? value)
         where T : struct
     {
@@ -13,6 +22,27 @@ internal partial class WeaviateGrpcClient
             setter(value.Value);
     }
 
+    /// <summary>
+    /// Bases the search request using the specified collection
+    /// </summary>
+    /// <param name="collection">The collection</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="sort">The sort</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="after">The after</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="consistencyLevel">The consistency level</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <returns>The request</returns>
     private static V1.SearchRequest BaseSearchRequest(
         string collection,
         Filter? filters = null,
@@ -143,6 +173,12 @@ internal partial class WeaviateGrpcClient
         return request;
     }
 
+    /// <summary>
+    /// Gets the generative provider using the specified provider
+    /// </summary>
+    /// <param name="provider">The provider</param>
+    /// <exception cref="NotSupportedException">Unknown generative provider type: {provider.GetType().Name}</exception>
+    /// <returns>The result</returns>
     private static V1.GenerativeProvider GetGenerativeProvider(Models.GenerativeProvider provider)
     {
         var result = new V1.GenerativeProvider { ReturnMetadata = provider.ReturnMetadata };
@@ -441,6 +477,12 @@ internal partial class WeaviateGrpcClient
         return result;
     }
 
+    /// <summary>
+    /// Maps the consistency level using the specified value
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <exception cref="NotSupportedException">Consistency level {value} is not supported.</exception>
+    /// <returns>The consistency level</returns>
     private static V1.ConsistencyLevel MapConsistencyLevel(ConsistencyLevels value)
     {
         return value switch
@@ -468,6 +510,12 @@ internal partial class WeaviateGrpcClient
         };
     }
 
+    /// <summary>
+    /// Builds the target vector using the specified target vector
+    /// </summary>
+    /// <param name="targetVector">The target vector</param>
+    /// <param name="vector">The vector</param>
+    /// <returns>A targets targets and list of v 1 vector for target vector for targets and i list v 1 vectors vectors</returns>
     internal static (
         V1.Targets? targets,
         IList<V1.VectorForTarget>? vectorForTargets,
@@ -621,6 +669,16 @@ internal partial class WeaviateGrpcClient
         return BuildTargetVector(targetVector, namedVectors);
     }
 
+    /// <summary>
+    /// Builds the near text using the specified query
+    /// </summary>
+    /// <param name="query">The query</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="moveTo">The move to</param>
+    /// <param name="moveAway">The move away</param>
+    /// <param name="targetVector">The target vector</param>
+    /// <returns>The near text</returns>
     private static V1.NearTextSearch BuildNearText(
         string[] query,
         double? distance,
@@ -673,6 +731,13 @@ internal partial class WeaviateGrpcClient
         return nearText;
     }
 
+    /// <summary>
+    /// Builds the near vector using the specified vectors
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <returns>The near vector</returns>
     private static V1.NearVector BuildNearVector(
         VectorSearchInput vectors,
         double? certainty,
@@ -709,6 +774,13 @@ internal partial class WeaviateGrpcClient
         return nearVector;
     }
 
+    /// <summary>
+    /// Builds the bm 25 using the specified request
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <param name="query">The query</param>
+    /// <param name="properties">The properties</param>
+    /// <param name="searchOperator">The search operator</param>
     private static void BuildBM25(
         V1.SearchRequest request,
         string query,
@@ -737,6 +809,17 @@ internal partial class WeaviateGrpcClient
         }
     }
 
+    /// <summary>
+    /// Builds the hybrid using the specified query
+    /// </summary>
+    /// <param name="query">The query</param>
+    /// <param name="alpha">The alpha</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="queryProperties">The query properties</param>
+    /// <param name="fusionType">The fusion type</param>
+    /// <param name="maxVectorDistance">The max vector distance</param>
+    /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <returns>The hybrid</returns>
     private static V1.Hybrid BuildHybrid(
         string? query = null,
         float? alpha = null,
@@ -855,6 +938,14 @@ internal partial class WeaviateGrpcClient
         return hybrid;
     }
 
+    /// <summary>
+    /// Builds the near object using the specified object id
+    /// </summary>
+    /// <param name="objectID">The object id</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="targetVector">The target vector</param>
+    /// <returns>The near object</returns>
     private static V1.NearObject BuildNearObject(
         Guid objectID,
         double? certainty,

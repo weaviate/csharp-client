@@ -8,14 +8,35 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class CollectionClientExtensionsTests
 {
+    /// <summary>
+    /// The test article class
+    /// </summary>
     private class TestArticle
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the content
+        /// </summary>
         public string Content { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the published date
+        /// </summary>
         public DateTime PublishedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the view count
+        /// </summary>
         public int ViewCount { get; set; }
     }
 
+    /// <summary>
+    /// Tests that as typed with valid collection client returns typed collection client
+    /// </summary>
     [Fact]
     public async Task AsTyped_WithValidCollectionClient_ReturnsTypedCollectionClient()
     {
@@ -34,6 +55,9 @@ public class CollectionClientExtensionsTests
         Assert.Equal("Articles", typedClient.Name);
     }
 
+    /// <summary>
+    /// Tests that as typed with null collection client throws argument null exception
+    /// </summary>
     [Fact]
     public async Task AsTyped_WithNullCollectionClient_ThrowsArgumentNullException()
     {
@@ -48,6 +72,9 @@ public class CollectionClientExtensionsTests
         );
     }
 
+    /// <summary>
+    /// Tests that as typed without validation does not validate type
+    /// </summary>
     [Fact]
     public async Task AsTyped_WithoutValidation_DoesNotValidateType()
     {
@@ -67,6 +94,9 @@ public class CollectionClientExtensionsTests
         Assert.Equal("Articles", typedClient.Name);
     }
 
+    /// <summary>
+    /// Tests that as typed preserves tenant configuration
+    /// </summary>
     [Fact]
     public async Task AsTyped_PreservesTenantConfiguration()
     {
@@ -84,6 +114,9 @@ public class CollectionClientExtensionsTests
         Assert.Equal("Articles", typedClient.Name);
     }
 
+    /// <summary>
+    /// Tests that as typed preserves consistency level configuration
+    /// </summary>
     [Fact]
     public async Task AsTyped_PreservesConsistencyLevelConfiguration()
     {
@@ -103,6 +136,9 @@ public class CollectionClientExtensionsTests
         Assert.Equal("Articles", typedClient.Name);
     }
 
+    /// <summary>
+    /// Tests that as typed with chained configuration preserves all settings
+    /// </summary>
     [Fact]
     public async Task AsTyped_WithChainedConfiguration_PreservesAllSettings()
     {
@@ -123,6 +159,9 @@ public class CollectionClientExtensionsTests
         Assert.Equal("Articles", typedClient.Name);
     }
 
+    /// <summary>
+    /// Tests that as typed returns client with typed data query generate
+    /// </summary>
     [Fact]
     public async Task AsTyped_ReturnsClientWithTypedDataQueryGenerate()
     {
@@ -144,6 +183,9 @@ public class CollectionClientExtensionsTests
         Assert.IsType<TypedGenerateClient<TestArticle>>(typedClient.Generate);
     }
 
+    /// <summary>
+    /// Tests that as typed called multiple times returns independent instances
+    /// </summary>
     [Fact]
     public async Task AsTyped_CalledMultipleTimes_ReturnsIndependentInstances()
     {
@@ -164,6 +206,9 @@ public class CollectionClientExtensionsTests
         Assert.NotSame(typedClient1.Data, typedClient2.Data);
     }
 
+    /// <summary>
+    /// Tests that as typed with different types returns correct typed clients
+    /// </summary>
     [Fact]
     public async Task AsTyped_WithDifferentTypes_ReturnsCorrectTypedClients()
     {
@@ -187,6 +232,9 @@ public class CollectionClientExtensionsTests
         Assert.IsType<TypedDataClient<TestProduct>>(typedProducts.Data);
     }
 
+    /// <summary>
+    /// Tests that as typed round trip untyped property returns original client
+    /// </summary>
     [Fact]
     public async Task AsTyped_RoundTrip_UntypedPropertyReturnsOriginalClient()
     {
@@ -206,13 +254,31 @@ public class CollectionClientExtensionsTests
         Assert.Equal(collectionClient.ConsistencyLevel, untypedClient.ConsistencyLevel);
     }
 
+    /// <summary>
+    /// The test product class
+    /// </summary>
     private class TestProduct
     {
+        /// <summary>
+        /// Gets or sets the value of the name
+        /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the price
+        /// </summary>
         public decimal Price { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the stock
+        /// </summary>
         public int Stock { get; set; }
     }
 
+    /// <summary>
+    /// Creates the weaviate client
+    /// </summary>
+    /// <returns>The weaviate client</returns>
     private static WeaviateClient CreateWeaviateClient()
     {
         return Mocks.MockWeaviateClient.CreateWithMockHandler().Client;

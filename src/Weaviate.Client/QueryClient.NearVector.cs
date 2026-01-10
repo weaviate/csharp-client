@@ -2,9 +2,29 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The query client class
+/// </summary>
 public partial class QueryClient
 {
     // Simple overload accepting VectorSearchInput (with implicit conversions support)
+    /// <summary>
+    /// Nears the vector using the specified vectors
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the weaviate result</returns>
     public async Task<WeaviateResult> NearVector(
         VectorSearchInput vectors,
         Filter? filters = null,
@@ -40,6 +60,24 @@ public partial class QueryClient
         );
 
     // Simple overload with GroupBy
+    /// <summary>
+    /// Nears the vector using the specified vectors
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the group by result</returns>
     public async Task<GroupByResult> NearVector(
         VectorSearchInput vectors,
         GroupByRequest groupBy,
@@ -77,6 +115,23 @@ public partial class QueryClient
         );
 
     // Lambda syntax overload
+    /// <summary>
+    /// Nears the vector using the specified vectors
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the weaviate result</returns>
     public async Task<WeaviateResult> NearVector(
         VectorSearchInput.FactoryFn vectors,
         Filter? filters = null,
@@ -109,6 +164,24 @@ public partial class QueryClient
         );
 
     // Lambda syntax overload with GroupBy
+    /// <summary>
+    /// Nears the vector using the specified vectors
+    /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the group by result</returns>
     public async Task<GroupByResult> NearVector(
         VectorSearchInput.FactoryFn vectors,
         GroupByRequest groupBy,
@@ -245,7 +318,7 @@ public partial class QueryClient
     ///     ("description", 0.8f, new[] { 3f, 4f })
     /// )
     /// </example>
-    /// <param name="inputBuilder">Lambda builder for creating NearVectorInput with target vectors.</param>
+    /// <param name="vectors"></param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
@@ -288,7 +361,7 @@ public partial class QueryClient
     /// <summary>
     /// Performs a near-vector search with group-by using a lambda builder for NearVectorInput.
     /// </summary>
-    /// <param name="inputBuilder">Lambda builder for creating NearVectorInput with target vectors.</param>
+    /// <param name="vectors"></param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>

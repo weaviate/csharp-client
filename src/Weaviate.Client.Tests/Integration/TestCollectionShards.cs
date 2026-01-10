@@ -2,10 +2,20 @@ namespace Weaviate.Client.Tests.Integration;
 
 using Weaviate.Client.Models;
 
+/// <summary>
+/// The test collection shards class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 public class TestCollectionShards : IntegrationTests
 {
+    /// <summary>
+    /// The test data class
+    /// </summary>
     private class TestData { }
 
+    /// <summary>
+    /// Tests that test should get collection shards
+    /// </summary>
     [Fact]
     public async Task Test_Should_Get_Collection_Shards()
     {
@@ -35,6 +45,9 @@ public class TestCollectionShards : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test should get specific shard
+    /// </summary>
     [Fact]
     public async Task Test_Should_Get_Specific_Shard()
     {
@@ -63,6 +76,9 @@ public class TestCollectionShards : IntegrationTests
         Assert.True(Enum.IsDefined(typeof(ShardStatus), shard.Status));
     }
 
+    /// <summary>
+    /// Tests that test should update single shard status to read only
+    /// </summary>
     [Fact]
     public async Task Test_Should_Update_Single_Shard_Status_To_ReadOnly()
     {
@@ -95,6 +111,9 @@ public class TestCollectionShards : IntegrationTests
         await collection.Config.UpdateShardStatus(ShardStatus.Ready, firstShardName);
     }
 
+    /// <summary>
+    /// Tests that test should update shard status back to ready
+    /// </summary>
     [Fact]
     public async Task Test_Should_Update_Shard_Status_Back_To_Ready()
     {
@@ -127,6 +146,9 @@ public class TestCollectionShards : IntegrationTests
         Assert.Equal(ShardStatus.Ready, updatedShards[0].Status);
     }
 
+    /// <summary>
+    /// Tests that test should update multiple shards with params
+    /// </summary>
     [Fact]
     public async Task Test_Should_Update_Multiple_Shards_With_Params()
     {
@@ -159,6 +181,9 @@ public class TestCollectionShards : IntegrationTests
         await collection.Config.UpdateShardStatus(ShardStatus.Ready, shardNames);
     }
 
+    /// <summary>
+    /// Tests that test should throw when no shard names provided
+    /// </summary>
     [Fact]
     public async Task Test_Should_Throw_When_No_Shard_Names_Provided()
     {
@@ -174,6 +199,9 @@ public class TestCollectionShards : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test should throw when shard name is empty
+    /// </summary>
     [Fact]
     public async Task Test_Should_Throw_When_Shard_Name_Is_Empty()
     {

@@ -9,6 +9,9 @@ namespace Weaviate.Client.Tests.Unit.Mocks;
 /// </summary>
 internal static class NoOpGrpcChannel
 {
+    /// <summary>
+    /// The no op address
+    /// </summary>
     private static readonly Uri NoOpAddress = new("http://localhost:50051");
 
     /// <summary>
@@ -40,13 +43,25 @@ internal static class NoOpGrpcChannel
     /// </summary>
     private class NoOpHttpHandler : HttpMessageHandler
     {
+        /// <summary>
+        /// The custom handler
+        /// </summary>
         private readonly Func<HttpRequestMessage, HttpResponseMessage?>? _customHandler;
+
+        /// <summary>
+        /// The custom async handler
+        /// </summary>
         private readonly Func<
             HttpRequestMessage,
             CancellationToken,
             Task<HttpResponseMessage?>
         >? _customAsyncHandler;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NoOpHttpHandler"/> class
+        /// </summary>
+        /// <param name="customHandler">The custom handler</param>
+        /// <param name="customAsyncHandler">The custom async handler</param>
         public NoOpHttpHandler(
             Func<HttpRequestMessage, HttpResponseMessage?>? customHandler = null,
             Func<
@@ -60,6 +75,13 @@ internal static class NoOpGrpcChannel
             _customAsyncHandler = customAsyncHandler;
         }
 
+        /// <summary>
+        /// Sends the request
+        /// </summary>
+        /// <param name="request">The request</param>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <exception cref="InvalidOperationException">No mock response configured for {request.Method} {request.RequestUri}</exception>
+        /// <returns>A task containing the http response message</returns>
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken
@@ -97,12 +119,21 @@ internal static class NoOpGrpcChannel
             );
         }
 
+        /// <summary>
+        /// Ises the health check request using the specified request
+        /// </summary>
+        /// <param name="request">The request</param>
+        /// <returns>The bool</returns>
         private static bool IsHealthCheckRequest(HttpRequestMessage request)
         {
             return request.RequestUri?.PathAndQuery.Contains("/grpc.health.v1.Health/Check")
                 == true;
         }
 
+        /// <summary>
+        /// Creates the serving health check response
+        /// </summary>
+        /// <returns>The http response message</returns>
         private static HttpResponseMessage CreateServingHealthCheckResponse()
         {
             var healthCheckResponse = new global::Grpc.Health.V1.HealthCheckResponse

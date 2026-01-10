@@ -5,12 +5,23 @@ using Weaviate.Client;
 using Weaviate.Client.Models;
 using Xunit;
 
+/// <summary>
+/// The test aliases class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("TestAliases")]
 public class TestAliases : IntegrationTests
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestAliases"/> class
+    /// </summary>
     public TestAliases()
         : base() { }
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public override async ValueTask InitializeAsync()
     {
         await base.InitializeAsync();
@@ -18,6 +29,9 @@ public class TestAliases : IntegrationTests
         RequireVersion("1.32.0");
     }
 
+    /// <summary>
+    /// Tests that test create and get alias
+    /// </summary>
     [Fact]
     public async Task Test_Create_And_Get_Alias()
     {
@@ -56,6 +70,9 @@ public class TestAliases : IntegrationTests
         await _weaviate.Alias.Delete(aliasName, TestContext.Current.CancellationToken);
     }
 
+    /// <summary>
+    /// Tests that test list aliases
+    /// </summary>
     [Fact]
     public async Task Test_List_Aliases()
     {
@@ -130,6 +147,9 @@ public class TestAliases : IntegrationTests
         await _weaviate.Alias.Delete(alias3Name, TestContext.Current.CancellationToken);
     }
 
+    /// <summary>
+    /// Tests that test update alias
+    /// </summary>
     [Fact]
     public async Task Test_Update_Alias()
     {
@@ -176,6 +196,9 @@ public class TestAliases : IntegrationTests
         await _weaviate.Alias.Delete(aliasName, TestContext.Current.CancellationToken);
     }
 
+    /// <summary>
+    /// Tests that test delete alias
+    /// </summary>
     [Fact]
     public async Task Test_Delete_Alias()
     {
@@ -207,6 +230,9 @@ public class TestAliases : IntegrationTests
         Assert.Null(await _weaviate.Alias.Get(aliasName, TestContext.Current.CancellationToken));
     }
 
+    /// <summary>
+    /// Tests that test get nonexistent alias returns null
+    /// </summary>
     [Fact]
     public async Task Test_Get_Nonexistent_Alias_Returns_Null()
     {
@@ -228,6 +254,9 @@ public class TestAliases : IntegrationTests
         Assert.Null(alias);
     }
 
+    /// <summary>
+    /// Tests that test create alias to nonexistent collection throws exception
+    /// </summary>
     [Fact]
     public async Task Test_Create_Alias_To_Nonexistent_Collection_Throws_Exception()
     {
@@ -250,6 +279,9 @@ public class TestAliases : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test create duplicate alias throws exception
+    /// </summary>
     [Fact]
     public async Task Test_Create_Duplicate_Alias_Throws_Exception()
     {
@@ -280,6 +312,9 @@ public class TestAliases : IntegrationTests
         await _weaviate.Alias.Delete(aliasName, TestContext.Current.CancellationToken);
     }
 
+    /// <summary>
+    /// Tests that test update nonexistent alias throws exception
+    /// </summary>
     [Fact]
     public async Task Test_Update_Nonexistent_Alias_Throws_Exception()
     {
@@ -305,6 +340,9 @@ public class TestAliases : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test update alias after original collection deleted
+    /// </summary>
     [Fact]
     public async Task Test_Update_Alias_After_Original_Collection_Deleted()
     {
@@ -344,6 +382,9 @@ public class TestAliases : IntegrationTests
         await _weaviate.Alias.Delete(aliasName, TestContext.Current.CancellationToken);
     }
 
+    /// <summary>
+    /// Tests that test multiple aliases point to same collection
+    /// </summary>
     [Fact]
     public async Task Test_Multiple_Aliases_Point_To_Same_Collection()
     {
@@ -419,6 +460,9 @@ public class TestAliases : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test alias to deleted collection persists but queries fail
+    /// </summary>
     [Fact]
     public async Task Test_Alias_To_Deleted_Collection_Persists_But_Queries_Fail()
     {

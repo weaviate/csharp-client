@@ -63,16 +63,9 @@ public enum ReplicationOperationState
 /// <summary>
 /// Error that occurred during a replication operation
 /// </summary>
-public record ReplicationOperationError(
-    /// <summary>
-    /// Unix timestamp in milliseconds when the error occurred
-    /// </summary>
-    long WhenErroredUnixMs,
-    /// <summary>
-    /// Human-readable error message
-    /// </summary>
-    string Message
-)
+/// <param name="WhenErroredUnixMs">Unix timestamp in milliseconds when the error occurred</param>
+/// <param name="Message">Human-readable error message</param>
+public record ReplicationOperationError(long WhenErroredUnixMs, string Message)
 {
     /// <summary>
     /// When the error occurred
@@ -83,18 +76,12 @@ public record ReplicationOperationError(
 /// <summary>
 /// Status of a replication operation at a point in time
 /// </summary>
+/// <param name="State">The operational state</param>
+/// <param name="WhenStartedUnixMs">Unix timestamp in milliseconds when this state was entered</param>
+/// <param name="Errors">Errors encountered in this state, if any</param>
 public record ReplicationOperationStatus(
-    /// <summary>
-    /// The operational state
-    /// </summary>
     ReplicationOperationState State,
-    /// <summary>
-    /// Unix timestamp in milliseconds when this state was entered
-    /// </summary>
     long? WhenStartedUnixMs,
-    /// <summary>
-    /// Errors encountered in this state, if any
-    /// </summary>
     IReadOnlyList<ReplicationOperationError>? Errors
 )
 {
@@ -110,54 +97,30 @@ public record ReplicationOperationStatus(
 /// <summary>
 /// Complete details of a replication operation
 /// </summary>
+/// <param name="Id">Unique identifier of the operation</param>
+/// <param name="Collection">Name of the collection being replicated</param>
+/// <param name="Shard">Name of the shard being replicated</param>
+/// <param name="SourceNode">Name of the source node</param>
+/// <param name="TargetNode">Name of the target node</param>
+/// <param name="Type">Type of replication (COPY or MOVE)</param>
+/// <param name="Status">Current status of the operation</param>
+/// <param name="WhenStartedUnixMs">Unix timestamp in milliseconds when the operation started</param>
+/// <param name="Uncancelable">Whether the operation is uncancelable</param>
+/// <param name="ScheduledForCancel">Whether the operation is scheduled for cancellation</param>
+/// <param name="ScheduledForDelete">Whether the operation is scheduled for deletion</param>
+/// <param name="StatusHistory">Historical sequence of statuses the operation has transitioned through</param>
 public record ReplicationOperation(
-    /// <summary>
-    /// Unique identifier of the operation
-    /// </summary>
     Guid Id,
-    /// <summary>
-    /// Name of the collection being replicated
-    /// </summary>
     string Collection,
-    /// <summary>
-    /// Name of the shard being replicated
-    /// </summary>
     string Shard,
-    /// <summary>
-    /// Name of the source node
-    /// </summary>
     string SourceNode,
-    /// <summary>
-    /// Name of the target node
-    /// </summary>
     string TargetNode,
-    /// <summary>
-    /// Type of replication (COPY or MOVE)
-    /// </summary>
     ReplicationType Type,
-    /// <summary>
-    /// Current status of the operation
-    /// </summary>
     ReplicationOperationStatus Status,
-    /// <summary>
-    /// Unix timestamp in milliseconds when the operation started
-    /// </summary>
     long? WhenStartedUnixMs,
-    /// <summary>
-    /// Whether the operation is uncancelable
-    /// </summary>
     bool? Uncancelable,
-    /// <summary>
-    /// Whether the operation is scheduled for cancellation
-    /// </summary>
     bool? ScheduledForCancel,
-    /// <summary>
-    /// Whether the operation is scheduled for deletion
-    /// </summary>
     bool? ScheduledForDelete,
-    /// <summary>
-    /// Historical sequence of statuses the operation has transitioned through
-    /// </summary>
     IReadOnlyList<ReplicationOperationStatus>? StatusHistory
 )
 {
@@ -189,26 +152,16 @@ public record ReplicationOperation(
 /// <summary>
 /// Request to initiate a replication operation
 /// </summary>
+/// <param name="Collection">Name of the collection to replicate</param>
+/// <param name="Shard">Name of the shard to replicate</param>
+/// <param name="SourceNode">Name of the source node hosting the replica</param>
+/// <param name="TargetNode">Name of the target node where the replica will be created</param>
+/// <param name="Type">Type of replication operation (defaults to COPY)</param>
 public record ReplicateRequest(
-    /// <summary>
-    /// Name of the collection to replicate
-    /// </summary>
     string Collection,
-    /// <summary>
-    /// Name of the shard to replicate
-    /// </summary>
     string Shard,
-    /// <summary>
-    /// Name of the source node hosting the replica
-    /// </summary>
     string SourceNode,
-    /// <summary>
-    /// Name of the target node where the replica will be created
-    /// </summary>
     string TargetNode,
-    /// <summary>
-    /// Type of replication operation (defaults to COPY)
-    /// </summary>
     ReplicationType Type = ReplicationType.Copy
 );
 

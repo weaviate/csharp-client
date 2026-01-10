@@ -12,13 +12,30 @@ using Xunit;
 [Trait("Category", "RBAC")]
 public class TestRbacUsers : IntegrationTests
 {
+    /// <summary>
+    /// Gets the value of the rest port
+    /// </summary>
     public override ushort RestPort => 8092;
+
+    /// <summary>
+    /// Gets the value of the grpc port
+    /// </summary>
     public override ushort GrpcPort => 50063;
 
+    /// <summary>
+    /// The admin api key
+    /// </summary>
     private const string ADMIN_API_KEY = "admin-key";
 
+    /// <summary>
+    /// Gets the value of the credentials
+    /// </summary>
     public override ICredentials? Credentials => Auth.ApiKey(ADMIN_API_KEY);
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public override async ValueTask InitializeAsync()
     {
         await base.InitializeAsync();
@@ -26,6 +43,9 @@ public class TestRbacUsers : IntegrationTests
         RequireVersion("1.30.0");
     }
 
+    /// <summary>
+    /// Tests that test own user
+    /// </summary>
     [Fact]
     public async Task Test_OwnUser()
     {
@@ -36,6 +56,9 @@ public class TestRbacUsers : IntegrationTests
         Assert.NotEmpty(user.Roles);
     }
 
+    /// <summary>
+    /// Tests that test list users
+    /// </summary>
     [Fact]
     public async Task Test_ListUsers()
     {
@@ -49,6 +72,9 @@ public class TestRbacUsers : IntegrationTests
         Assert.Contains(userList, u => u.UserId == "admin-user");
     }
 
+    /// <summary>
+    /// Tests that test create user and get
+    /// </summary>
     [Fact]
     public async Task Test_CreateUserAndGet()
     {
@@ -94,6 +120,9 @@ public class TestRbacUsers : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test delete user
+    /// </summary>
     [Fact]
     public async Task Test_DeleteUser()
     {
@@ -118,6 +147,9 @@ public class TestRbacUsers : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test rotate user key
+    /// </summary>
     [Fact]
     public async Task Test_RotateUserKey()
     {
@@ -173,6 +205,9 @@ public class TestRbacUsers : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test activate deactivate
+    /// </summary>
     [Fact]
     public async Task Test_ActivateDeactivate()
     {
@@ -238,6 +273,9 @@ public class TestRbacUsers : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test deactivate and revoke key
+    /// </summary>
     [Fact]
     public async Task Test_DeactivateAndRevokeKey()
     {

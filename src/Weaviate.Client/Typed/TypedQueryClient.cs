@@ -8,6 +8,9 @@ namespace Weaviate.Client.Typed;
 public partial class TypedQueryClient<T>
     where T : class, new()
 {
+    /// <summary>
+    /// The query client
+    /// </summary>
     private readonly QueryClient _queryClient;
 
     /// <summary>

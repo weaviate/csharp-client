@@ -5,30 +5,77 @@ namespace Weaviate.Client;
 
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
+/// <summary>
+/// The factory class
+/// </summary>
 internal static partial class Factory
 {
+    /// <summary>
+    /// Gets the value of the vectorizer
+    /// </summary>
     public static VectorizerFactory Vectorizer { get; } = new VectorizerFactory();
+
+    /// <summary>
+    /// Gets the value of the vectorizer multi
+    /// </summary>
     public static VectorizerFactoryMulti VectorizerMulti { get; } = new VectorizerFactoryMulti();
+
+    /// <summary>
+    /// Gets the value of the generative provider
+    /// </summary>
     public static GenerativeProviderFactory GenerativeProvider { get; } =
         new GenerativeProviderFactory();
+
+    /// <summary>
+    /// Gets the value of the generative
+    /// </summary>
     public static GenerativeConfigFactory Generative { get; } = new GenerativeConfigFactory();
+
+    /// <summary>
+    /// Gets the value of the reranker
+    /// </summary>
     public static RerankerConfigFactory Reranker { get; } = new RerankerConfigFactory();
 }
 
+/// <summary>
+/// Provides static access to generative provider configuration for Weaviate generative queries.
+/// </summary>
 public static partial class Generate
 {
+    /// <summary>
+    /// Gets the generative provider factory for configuring generative providers.
+    /// </summary>
     public static GenerativeProviderFactory Provider => Factory.GenerativeProvider;
 }
 
+/// <summary>
+/// Provides static access to generative and reranker configuration factories for Weaviate.
+/// </summary>
 public static partial class Configure
 {
+    /// <summary>
+    /// Gets the generative configuration factory.
+    /// </summary>
     public static GenerativeConfigFactory Generative => Factory.Generative;
+
+    /// <summary>
+    /// Gets the reranker configuration factory.
+    /// </summary>
     public static RerankerConfigFactory Reranker => Factory.Reranker;
 
     // Note: `vectorizer` is now required on public overloads to make the
     // caller explicitly choose the vectorizer instead of relying on an
     // implicit default.
 
+    /// <summary>
+    /// Vectors the vectorizer
+    /// </summary>
+    /// <param name="vectorizer">The vectorizer</param>
+    /// <param name="name">The name</param>
+    /// <param name="index">The index</param>
+    /// <param name="quantizer">The quantizer</param>
+    /// <param name="sourceProperties">The source properties</param>
+    /// <returns>The vector config</returns>
     internal static VectorConfig Vector(
         VectorizerConfig vectorizer,
         string? name = null,
@@ -50,6 +97,18 @@ public static partial class Configure
         );
     }
 
+    /// <summary>
+    /// Multis the vector using the specified vectorizer
+    /// </summary>
+    /// <param name="vectorizer">The vectorizer</param>
+    /// <param name="name">The name</param>
+    /// <param name="indexConfig">The index config</param>
+    /// <param name="quantizerConfig">The quantizer config</param>
+    /// <param name="encoding">The encoding</param>
+    /// <param name="sourceProperties">The source properties</param>
+    /// <exception cref="WeaviateClientException"></exception>
+    /// <exception cref="WeaviateClientException"></exception>
+    /// <returns>The vector config</returns>
     internal static VectorConfig MultiVector(
         VectorizerConfig vectorizer,
         string? name = null,
@@ -105,6 +164,15 @@ public static partial class Configure
         );
     }
 
+    /// <summary>
+    /// Vectors the name
+    /// </summary>
+    /// <param name="name">The name</param>
+    /// <param name="vectorizer">The vectorizer</param>
+    /// <param name="index">The index</param>
+    /// <param name="quantizer">The quantizer</param>
+    /// <param name="sourceProperties">The source properties</param>
+    /// <returns>The vector config</returns>
     public static VectorConfig Vector(
         string name,
         Func<VectorizerFactory, VectorizerConfig> vectorizer,
@@ -113,6 +181,14 @@ public static partial class Configure
         params string[] sourceProperties
     ) => Vector(vectorizer(Factory.Vectorizer), name, index, quantizer, sourceProperties);
 
+    /// <summary>
+    /// Vectors the vectorizer
+    /// </summary>
+    /// <param name="vectorizer">The vectorizer</param>
+    /// <param name="index">The index</param>
+    /// <param name="quantizer">The quantizer</param>
+    /// <param name="sourceProperties">The source properties</param>
+    /// <returns>The vector config</returns>
     public static VectorConfig Vector(
         Func<VectorizerFactory, VectorizerConfig> vectorizer,
         VectorIndexConfig? index = null,
@@ -120,6 +196,16 @@ public static partial class Configure
         params string[] sourceProperties
     ) => Vector(vectorizer(Factory.Vectorizer), null, index, quantizer, sourceProperties);
 
+    /// <summary>
+    /// Multis the vector using the specified name
+    /// </summary>
+    /// <param name="name">The name</param>
+    /// <param name="vectorizer">The vectorizer</param>
+    /// <param name="index">The index</param>
+    /// <param name="quantizer">The quantizer</param>
+    /// <param name="encoding">The encoding</param>
+    /// <param name="sourceProperties">The source properties</param>
+    /// <returns>The vector config</returns>
     public static VectorConfig MultiVector(
         string name,
         Func<VectorizerFactoryMulti, VectorizerConfig> vectorizer,
@@ -137,6 +223,15 @@ public static partial class Configure
             sourceProperties
         );
 
+    /// <summary>
+    /// Multis the vector using the specified vectorizer
+    /// </summary>
+    /// <param name="vectorizer">The vectorizer</param>
+    /// <param name="index">The index</param>
+    /// <param name="quantizer">The quantizer</param>
+    /// <param name="encoding">The encoding</param>
+    /// <param name="sourceProperties">The source properties</param>
+    /// <returns>The vector config</returns>
     public static VectorConfig MultiVector(
         Func<VectorizerFactoryMulti, VectorizerConfig> vectorizer,
         VectorIndex.HNSW? index = null,

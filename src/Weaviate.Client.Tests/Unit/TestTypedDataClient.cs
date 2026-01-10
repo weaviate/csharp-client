@@ -10,14 +10,35 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TypedDataClientTests
 {
+    /// <summary>
+    /// The test article class
+    /// </summary>
     private class TestArticle
     {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
         public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the content
+        /// </summary>
         public string Content { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the published date
+        /// </summary>
         public DateTime PublishedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the view count
+        /// </summary>
         public int ViewCount { get; set; }
     }
 
+    /// <summary>
+    /// Tests that constructor with valid data client initializes correctly
+    /// </summary>
     [Fact]
     public async Task Constructor_WithValidDataClient_InitializesCorrectly()
     {
@@ -34,6 +55,9 @@ public class TypedDataClientTests
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Tests that constructor with null data client throws argument null exception
+    /// </summary>
     [Fact]
     public void Constructor_WithNullDataClient_ThrowsArgumentNullException()
     {
@@ -41,6 +65,9 @@ public class TypedDataClientTests
         Assert.Throws<ArgumentNullException>(() => new TypedDataClient<TestArticle>(null!));
     }
 
+    /// <summary>
+    /// Tests that insert with valid data calls underlying data client
+    /// </summary>
     [Fact]
     public async Task Insert_WithValidData_CallsUnderlyingDataClient()
     {
@@ -65,6 +92,9 @@ public class TypedDataClientTests
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Tests that insert many with enumerable of t accepts correct type
+    /// </summary>
     [Fact]
     public async Task InsertMany_WithEnumerableOfT_AcceptsCorrectType()
     {
@@ -96,6 +126,9 @@ public class TypedDataClientTests
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Tests that insert many with tuples of data and id accepts correct type
+    /// </summary>
     [Fact]
     public async Task InsertMany_WithTuplesOfDataAndId_AcceptsCorrectType()
     {
@@ -117,6 +150,9 @@ public class TypedDataClientTests
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Tests that insert many with tuples of data and vectors accepts correct type
+    /// </summary>
     [Fact]
     public async Task InsertMany_WithTuplesOfDataAndVectors_AcceptsCorrectType()
     {
@@ -138,6 +174,9 @@ public class TypedDataClientTests
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Tests that insert many with tuples of data and references accepts correct type
+    /// </summary>
     [Fact]
     public async Task InsertMany_WithTuplesOfDataAndReferences_AcceptsCorrectType()
     {
@@ -162,6 +201,9 @@ public class TypedDataClientTests
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Tests that typed data client wraps data client maintains type constraints
+    /// </summary>
     [Fact]
     public async Task TypedDataClient_WrapsDataClient_MaintainsTypeConstraints()
     {
@@ -179,6 +221,10 @@ public class TypedDataClientTests
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Creates the weaviate client
+    /// </summary>
+    /// <returns>The weaviate client</returns>
     private static WeaviateClient CreateWeaviateClient()
     {
         return Mocks.MockWeaviateClient.CreateWithMockHandler().Client;

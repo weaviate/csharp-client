@@ -4,8 +4,19 @@ using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Models;
 
+/// <summary>
+/// The json converter empty collection as null class
+/// </summary>
+/// <seealso cref="JsonConverter{IEnumerable}"/>
 public class JsonConverterEmptyCollectionAsNull : JsonConverter<IEnumerable>
 {
+    /// <summary>
+    /// Reads the reader
+    /// </summary>
+    /// <param name="reader">The reader</param>
+    /// <param name="typeToConvert">The type to convert</param>
+    /// <param name="options">The options</param>
+    /// <returns>The enumerable</returns>
     public override IEnumerable? Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
@@ -21,6 +32,12 @@ public class JsonConverterEmptyCollectionAsNull : JsonConverter<IEnumerable>
         return (IEnumerable?)JsonSerializer.Deserialize(ref reader, typeToConvert, options);
     }
 
+    /// <summary>
+    /// Writes the writer
+    /// </summary>
+    /// <param name="writer">The writer</param>
+    /// <param name="value">The value</param>
+    /// <param name="options">The options</param>
     public override void Write(
         Utf8JsonWriter writer,
         IEnumerable value,
@@ -39,6 +56,11 @@ public class JsonConverterEmptyCollectionAsNull : JsonConverter<IEnumerable>
         }
     }
 
+    /// <summary>
+    /// Cans the convert using the specified type to convert
+    /// </summary>
+    /// <param name="typeToConvert">The type to convert</param>
+    /// <returns>The bool</returns>
     public override bool CanConvert(Type typeToConvert)
     {
         return typeof(IEnumerable).IsAssignableFrom(typeToConvert)
@@ -46,8 +68,20 @@ public class JsonConverterEmptyCollectionAsNull : JsonConverter<IEnumerable>
     }
 }
 
+/// <summary>
+/// The flexible string converter class
+/// </summary>
+/// <seealso cref="JsonConverter{T}"/>
 public class FlexibleStringConverter : JsonConverter<string?>
 {
+    /// <summary>
+    /// Reads the reader
+    /// </summary>
+    /// <param name="reader">The reader</param>
+    /// <param name="typeToConvert">The type to convert</param>
+    /// <param name="options">The options</param>
+    /// <exception cref="JsonException">Cannot convert token type {reader.TokenType} to string?</exception>
+    /// <returns>The string</returns>
     public override string? Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
@@ -72,6 +106,12 @@ public class FlexibleStringConverter : JsonConverter<string?>
         }
     }
 
+    /// <summary>
+    /// Writes the writer
+    /// </summary>
+    /// <param name="writer">The writer</param>
+    /// <param name="value">The value</param>
+    /// <param name="options">The options</param>
     public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
     {
         if (!string.IsNullOrEmpty(value))
@@ -81,9 +121,21 @@ public class FlexibleStringConverter : JsonConverter<string?>
     }
 }
 
+/// <summary>
+/// The flexible converter class
+/// </summary>
+/// <seealso cref="JsonConverter{T}"/>
 public class FlexibleConverter<T> : JsonConverter<T?>
     where T : struct
 {
+    /// <summary>
+    /// Reads the reader
+    /// </summary>
+    /// <param name="reader">The reader</param>
+    /// <param name="typeToConvert">The type to convert</param>
+    /// <param name="options">The options</param>
+    /// <exception cref="JsonException">Cannot convert token type {reader.TokenType} to {typeof(T).Name}?</exception>
+    /// <returns>The</returns>
     public override T? Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
@@ -122,6 +174,12 @@ public class FlexibleConverter<T> : JsonConverter<T?>
         }
     }
 
+    /// <summary>
+    /// Writes the writer
+    /// </summary>
+    /// <param name="writer">The writer</param>
+    /// <param name="value">The value</param>
+    /// <param name="options">The options</param>
     public override void Write(Utf8JsonWriter writer, T? value, JsonSerializerOptions options)
     {
         if (value.HasValue)
@@ -134,6 +192,13 @@ public class FlexibleConverter<T> : JsonConverter<T?>
         }
     }
 
+    /// <summary>
+    /// Converts the to type using the specified reader
+    /// </summary>
+    /// <param name="reader">The reader</param>
+    /// <param name="targetType">The target type</param>
+    /// <exception cref="JsonException">Cannot convert value to {targetType.Name} </exception>
+    /// <returns>The</returns>
     private T? ConvertToType(ref Utf8JsonReader reader, Type targetType)
     {
         try
@@ -180,6 +245,13 @@ public class FlexibleConverter<T> : JsonConverter<T?>
         }
     }
 
+    /// <summary>
+    /// Converts the element to type using the specified element
+    /// </summary>
+    /// <param name="element">The element</param>
+    /// <param name="targetType">The target type</param>
+    /// <exception cref="JsonException">Cannot convert array element to {targetType.Name} </exception>
+    /// <returns>The</returns>
     private T? ConvertElementToType(JsonElement element, Type targetType)
     {
         try
@@ -225,6 +297,11 @@ public class FlexibleConverter<T> : JsonConverter<T?>
         }
     }
 
+    /// <summary>
+    /// Writes the value using the specified writer
+    /// </summary>
+    /// <param name="writer">The writer</param>
+    /// <param name="value">The value</param>
     private void WriteValue(Utf8JsonWriter writer, T value)
     {
         var type = typeof(T);
@@ -253,6 +330,12 @@ public class FlexibleConverter<T> : JsonConverter<T?>
             JsonSerializer.Serialize(writer, value);
     }
 
+    /// <summary>
+    /// Gets the reader value using the specified reader
+    /// </summary>
+    /// <param name="reader">The reader</param>
+    /// <exception cref="JsonException">Unsupported token type: {reader.TokenType}</exception>
+    /// <returns>The object</returns>
     private object GetReaderValue(ref Utf8JsonReader reader)
     {
         return reader.TokenType switch

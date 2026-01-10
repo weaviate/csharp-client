@@ -12,6 +12,9 @@ namespace Weaviate.Client.Tests.Unit;
 /// </summary>
 public partial class RestClientTests
 {
+    /// <summary>
+    /// Tests that create collection sends correct request
+    /// </summary>
     [Fact]
     public async Task Create_Collection_SendsCorrectRequest()
     {
@@ -64,6 +67,9 @@ public partial class RestClientTests
         Assert.Equal("Article", result.Name);
     }
 
+    /// <summary>
+    /// Tests that create collection with typed data infers properties
+    /// </summary>
     [Fact]
     public async Task Create_Collection_WithTypedData_InfersProperties()
     {
@@ -99,6 +105,9 @@ public partial class RestClientTests
         Assert.Equal("Product", result.Name);
     }
 
+    /// <summary>
+    /// Tests that create collection with custom handler allows dynamic assertions
+    /// </summary>
     [Fact]
     public async Task Create_Collection_WithCustomHandler_AllowsDynamicAssertions()
     {
@@ -151,6 +160,9 @@ public partial class RestClientTests
         Assert.Contains("vectorizer", capturedRequestBody);
     }
 
+    /// <summary>
+    /// Tests that create collection with multiple properties serializes correctly
+    /// </summary>
     [Fact]
     public async Task Create_Collection_WithMultipleProperties_SerializesCorrectly()
     {
@@ -197,6 +209,9 @@ public partial class RestClientTests
         Assert.Contains("isActive", requestBody);
     }
 
+    /// <summary>
+    /// Tests that delete collection sends correct request
+    /// </summary>
     [Fact]
     public async Task Delete_Collection_SendsCorrectRequest()
     {
@@ -215,6 +230,9 @@ public partial class RestClientTests
             .ShouldHavePath("/v1/schema/Article");
     }
 
+    /// <summary>
+    /// Tests that exists collection sends get request
+    /// </summary>
     [Fact]
     public async Task Exists_Collection_SendsGetRequest()
     {
@@ -241,6 +259,9 @@ public partial class RestClientTests
         handler.LastRequest!.ShouldHaveMethod(HttpMethod.Get).ShouldHavePath("/v1/schema");
     }
 
+    /// <summary>
+    /// Tests that list collections parses multiple collections
+    /// </summary>
     [Fact]
     public async Task List_Collections_ParsesMultipleCollections()
     {
@@ -275,6 +296,9 @@ public partial class RestClientTests
         handler.LastRequest!.ShouldHaveMethod(HttpMethod.Get).ShouldHavePath("/v1/schema");
     }
 
+    /// <summary>
+    /// Tests that create collection with vector config serializes vector config
+    /// </summary>
     [Fact]
     public async Task Create_Collection_WithVectorConfig_SerializesVectorConfig()
     {
@@ -318,6 +342,9 @@ public partial class RestClientTests
         Assert.Contains("vectorConfig", requestBody);
     }
 
+    /// <summary>
+    /// Tests that multiple sequential requests work correctly
+    /// </summary>
     [Fact]
     public async Task Multiple_Sequential_Requests_WorkCorrectly()
     {
@@ -349,10 +376,24 @@ public partial class RestClientTests
     }
 
     // Helper class for typed data test
+    /// <summary>
+    /// The product data class
+    /// </summary>
     private class ProductData
     {
+        /// <summary>
+        /// Gets or sets the value of the name
+        /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value of the price
+        /// </summary>
         public double Price { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the in stock
+        /// </summary>
         public bool InStock { get; set; }
     }
 }

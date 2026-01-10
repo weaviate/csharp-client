@@ -5,8 +5,14 @@ using Weaviate.Client.Tests.Unit.Mocks;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The rest client tests class
+/// </summary>
 public partial class RestClientTests
 {
+    /// <summary>
+    /// Tests that nodes deserializes node status response correctly
+    /// </summary>
     [Fact]
     public async Task Nodes_Deserializes_NodeStatusResponse_Correctly()
     {

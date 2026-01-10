@@ -7,15 +7,30 @@ using Weaviate.Client;
 using Weaviate.Client.Models;
 using Xunit;
 
+/// <summary>
+/// The test replication class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Trait("Category", "Slow")]
 [Collection("TestReplication")]
 [CollectionDefinition("TestReplication", DisableParallelization = true)]
 public class TestReplication : IntegrationTests
 {
     // Use dedicated ports for replication test suite to avoid clashes with other running instances
+    /// <summary>
+    /// Gets the value of the rest port
+    /// </summary>
     public override ushort RestPort => 8087;
+
+    /// <summary>
+    /// Gets the value of the grpc port
+    /// </summary>
     public override ushort GrpcPort => 50058;
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public override async ValueTask InitializeAsync()
     {
         await base.InitializeAsync();
@@ -43,6 +58,12 @@ public class TestReplication : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Waits the for collection ready using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="timeoutMs">The timeout ms</param>
+    /// <exception cref="TimeoutException">Collection '{collectionName}' not ready after {timeoutMs}ms</exception>
     private async Task WaitForCollectionReady(string collectionName, int timeoutMs = 30000)
     {
         var sw = Stopwatch.StartNew();
@@ -64,6 +85,14 @@ public class TestReplication : IntegrationTests
         throw new TimeoutException($"Collection '{collectionName}' not ready after {timeoutMs}ms");
     }
 
+    /// <summary>
+    /// Retries the action
+    /// </summary>
+    /// <typeparam name="T">The </typeparam>
+    /// <param name="action">The action</param>
+    /// <param name="attempts">The attempts</param>
+    /// <param name="delayMs">The delay ms</param>
+    /// <returns>A task containing the</returns>
     private static async Task<T> RetryAsync<T>(
         Func<Task<T>> action,
         int attempts = 12,
@@ -85,6 +114,10 @@ public class TestReplication : IntegrationTests
         return await action();
     }
 
+    /// <summary>
+    /// Tests that test replicate and get
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Shard info not yet available</exception>
     [Fact]
     public async Task Test_Replicate_And_Get()
     {
@@ -165,6 +198,10 @@ public class TestReplication : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test replicate and cancel
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Shard info not yet available</exception>
     [Fact]
     public async Task Test_Replicate_And_Cancel()
     {
@@ -223,6 +260,10 @@ public class TestReplication : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test replicate and delete
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Shard info not yet available</exception>
     [Fact]
     public async Task Test_Replicate_And_Delete()
     {
@@ -299,6 +340,10 @@ public class TestReplication : IntegrationTests
         Assert.True(deleted, "Operation should be deleted after waiting");
     }
 
+    /// <summary>
+    /// Tests that test list and query operations
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Shard info not yet available</exception>
     [Fact]
     public async Task Test_List_And_Query_Operations()
     {
@@ -383,6 +428,10 @@ public class TestReplication : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test delete all operations
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Shard info not yet available</exception>
     [Fact]
     public async Task Test_DeleteAll_Operations()
     {
@@ -448,6 +497,10 @@ public class TestReplication : IntegrationTests
         Assert.True(allDeleted, "All operations should be deleted after waiting");
     }
 
+    /// <summary>
+    /// Tests that test wait for successful completion
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Shard info not yet available</exception>
     [Fact]
     public async Task Test_Wait_For_Successful_Completion()
     {
@@ -510,6 +563,10 @@ public class TestReplication : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test external cancellation detected by tracker
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Shard info not yet available</exception>
     [Fact]
     public async Task Test_External_Cancellation_Detected_By_Tracker()
     {
@@ -587,6 +644,10 @@ public class TestReplication : IntegrationTests
         );
     }
 
+    /// <summary>
+    /// Tests that test replication operation tracker properties
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Shard info not yet available</exception>
     [Fact]
     public async Task Test_Replication_Operation_Tracker_Properties()
     {

@@ -6,6 +6,9 @@ namespace Weaviate.Client;
 /// </summary>
 public abstract class BaseCollectionClient
 {
+    /// <summary>
+    /// The collection client instance.
+    /// </summary>
     protected readonly CollectionClient _collectionClient;
 
     /// <summary>

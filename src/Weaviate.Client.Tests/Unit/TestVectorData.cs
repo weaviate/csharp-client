@@ -2,8 +2,14 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The vector data tests class
+/// </summary>
 public class VectorDataTests
 {
+    /// <summary>
+    /// Tests that vector create returns single vector
+    /// </summary>
     [Fact]
     public void Vector_Create_Returns_Single_Vector()
     {
@@ -21,6 +27,9 @@ public class VectorDataTests
         Assert.Equal(typeof(int), vector.ValueType);
     }
 
+    /// <summary>
+    /// Tests that vector create returns multi vector
+    /// </summary>
     [Fact]
     public void Vector_Create_Returns_Multi_Vector()
     {
@@ -51,6 +60,9 @@ public class VectorDataTests
         Assert.Equal(6, values[2, 1]);
     }
 
+    /// <summary>
+    /// Tests that implicit conversion array to vectors
+    /// </summary>
     [Fact]
     public void Implicit_Conversion_Array_To_Vectors()
     {
@@ -62,6 +74,9 @@ public class VectorDataTests
         Assert.Equal(new[] { 1.1, 2.2 }, values);
     }
 
+    /// <summary>
+    /// Tests that implicit conversion vectors named vector to array
+    /// </summary>
     [Fact]
     public void Implicit_Conversion_Vectors_NamedVector_To_Array()
     {
@@ -72,6 +87,9 @@ public class VectorDataTests
         Assert.Equal(new[] { 1.1, 2.2 }, stored);
     }
 
+    /// <summary>
+    /// Tests that implicit conversion multi array to vectors
+    /// </summary>
     [Fact]
     public void Implicit_Conversion_MultiArray_To_Vectors()
     {
@@ -94,6 +112,9 @@ public class VectorDataTests
         Assert.Equal(4f, values[1, 1]);
     }
 
+    /// <summary>
+    /// Tests that vector container add single vector
+    /// </summary>
     [Fact]
     public void VectorContainer_Add_SingleVector()
     {
@@ -105,6 +126,9 @@ public class VectorDataTests
         Assert.Equal([10, 20, 30], values);
     }
 
+    /// <summary>
+    /// Tests that vector container add single vector collection expression
+    /// </summary>
     [Fact]
     public void VectorContainer_Add_SingleVector_CollectionExpression()
     {
@@ -116,6 +140,9 @@ public class VectorDataTests
         Assert.Equal(new[] { 10, 20, 30 }, values);
     }
 
+    /// <summary>
+    /// Tests that vector container add multi vector
+    /// </summary>
     [Fact]
     public void VectorContainer_Add_MultiVector()
     {
@@ -141,6 +168,9 @@ public class VectorDataTests
         Assert.Equal(4, values[1, 1]);
     }
 
+    /// <summary>
+    /// Tests that vector single enumerable behavior
+    /// </summary>
     [Fact]
     public void Vector_Single_EnumerableBehavior()
     {
@@ -149,6 +179,9 @@ public class VectorDataTests
         Assert.Equal(new[] { 5, 6, 7 }, list);
     }
 
+    /// <summary>
+    /// Tests that vector multi enumerable behavior
+    /// </summary>
     [Fact]
     public void Vector_Multi_EnumerableBehavior()
     {
@@ -163,6 +196,9 @@ public class VectorDataTests
         Assert.Equal(new[] { 10, 11 }, list.ElementAt(1));
     }
 
+    /// <summary>
+    /// Tests that vector container type check for single and multi vector
+    /// </summary>
     [Fact]
     public void VectorContainer_TypeCheck_For_Single_And_MultiVector()
     {
@@ -199,6 +235,9 @@ public class VectorDataTests
     // The equality tests have been removed as they tested internal implementation details.
     // The public API (Vector, NamedVector, Vectors) should be tested for equality instead.
 
+    /// <summary>
+    /// Tests that vectors equality with identical single vectors should be equal
+    /// </summary>
     [Fact]
     public void Vectors_Equality_WithIdenticalSingleVectors_ShouldBeEqual()
     {
@@ -211,6 +250,9 @@ public class VectorDataTests
         Assert.Equal(vectors1, vectors2);
     }
 
+    /// <summary>
+    /// Tests that vectors equality with identical multi vectors should be equal
+    /// </summary>
     [Fact]
     public void Vectors_Equality_WithIdenticalMultiVectors_ShouldBeEqual()
     {
@@ -243,6 +285,9 @@ public class VectorDataTests
         Assert.Equal(vectors1, vectors2);
     }
 
+    /// <summary>
+    /// Tests that vectors equality with different vector names should not be equal
+    /// </summary>
     [Fact]
     public void Vectors_Equality_WithDifferentVectorNames_ShouldNotBeEqual()
     {
@@ -255,6 +300,9 @@ public class VectorDataTests
         Assert.NotEqual(vectors1, vectors2);
     }
 
+    /// <summary>
+    /// Tests that vectors equality with different vector values should not be equal
+    /// </summary>
     [Fact]
     public void Vectors_Equality_WithDifferentVectorValues_ShouldNotBeEqual()
     {
@@ -267,6 +315,9 @@ public class VectorDataTests
         Assert.NotEqual(vectors1, vectors2);
     }
 
+    /// <summary>
+    /// Tests that vectors equality created in different ways should be equal
+    /// </summary>
     [Fact]
     public void Vectors_Equality_CreatedInDifferentWays_ShouldBeEqual()
     {
@@ -287,6 +338,9 @@ public class VectorDataTests
         Assert.Equal(vectors2, vectors3);
     }
 
+    /// <summary>
+    /// Tests that vectors equality with multiple named vectors should be equal
+    /// </summary>
     [Fact]
     public void Vectors_Equality_WithMultipleNamedVectors_ShouldBeEqual()
     {
@@ -309,6 +363,9 @@ public class VectorDataTests
         Assert.Equal(vectors1, vectors2);
     }
 
+    /// <summary>
+    /// Tests that vectors equality with mixed single and multi vectors should be equal
+    /// </summary>
     [Fact]
     public void Vectors_Equality_WithMixedSingleAndMultiVectors_ShouldBeEqual()
     {
@@ -343,6 +400,9 @@ public class VectorDataTests
         Assert.Equal(vectors1, vectors2);
     }
 
+    /// <summary>
+    /// Tests that vectors equality after reinsert should be equal
+    /// </summary>
     [Fact]
     public void Vectors_Equality_AfterReinsert_ShouldBeEqual()
     {

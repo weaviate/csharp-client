@@ -3,8 +3,17 @@ using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
 
+/// <summary>
+/// The weaviate rest client class
+/// </summary>
 internal partial class WeaviateRestClient
 {
+    /// <summary>
+    /// Collections the aliases get using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing an enumerable of dto alias</returns>
     internal async Task<IEnumerable<Dto.Alias>> CollectionAliasesGet(
         string? collectionName,
         CancellationToken cancellationToken = default
@@ -34,6 +43,12 @@ internal partial class WeaviateRestClient
         return aliasesResponse.Aliases ?? Array.Empty<Dto.Alias>();
     }
 
+    /// <summary>
+    /// Collections the aliases post using the specified data
+    /// </summary>
+    /// <param name="data">The data</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto alias</returns>
     internal async Task<Dto.Alias> CollectionAliasesPost(
         Dto.Alias data,
         CancellationToken cancellationToken = default
@@ -63,6 +78,12 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.Alias>(cancellationToken);
     }
 
+    /// <summary>
+    /// Aliases the get using the specified alias name
+    /// </summary>
+    /// <param name="aliasName">The alias name</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto alias</returns>
     internal async Task<Dto.Alias?> AliasGet(
         string aliasName,
         CancellationToken cancellationToken = default
@@ -95,6 +116,13 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.Alias>(cancellationToken);
     }
 
+    /// <summary>
+    /// Aliases the put using the specified alias
+    /// </summary>
+    /// <param name="alias">The alias</param>
+    /// <param name="targetCollection">The target collection</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto alias</returns>
     internal async Task<Dto.Alias> AliasPut(
         string alias,
         string targetCollection,
@@ -125,6 +153,12 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.Alias>(cancellationToken);
     }
 
+    /// <summary>
+    /// Aliases the delete using the specified alias name
+    /// </summary>
+    /// <param name="aliasName">The alias name</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the bool</returns>
     internal async Task<bool> AliasDelete(
         string aliasName,
         CancellationToken cancellationToken = default

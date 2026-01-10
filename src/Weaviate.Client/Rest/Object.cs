@@ -3,8 +3,17 @@ using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
 
+/// <summary>
+/// The weaviate rest client class
+/// </summary>
 internal partial class WeaviateRestClient
 {
+    /// <summary>
+    /// Objects the insert using the specified data
+    /// </summary>
+    /// <param name="data">The data</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto object</returns>
     internal async Task<Dto.Object> ObjectInsert(
         Dto.Object data,
         CancellationToken cancellationToken = default
@@ -34,6 +43,13 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.Object>(cancellationToken);
     }
 
+    /// <summary>
+    /// Objects the update using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="data">The data</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto object</returns>
     internal async Task<Dto.Object> ObjectUpdate(
         string collectionName,
         Dto.Object data,
@@ -73,6 +89,13 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.Object>(cancellationToken);
     }
 
+    /// <summary>
+    /// Objects the replace using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="data">The data</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto object</returns>
     internal async Task<Dto.Object> ObjectReplace(
         string collectionName,
         Dto.Object data,
@@ -105,6 +128,13 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.Object>(cancellationToken);
     }
 
+    /// <summary>
+    /// Deletes the object using the specified collection name
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="id">The id</param>
+    /// <param name="tenant">The tenant</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     internal async Task DeleteObject(
         string collectionName,
         Guid id,

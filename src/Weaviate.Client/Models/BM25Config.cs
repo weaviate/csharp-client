@@ -2,10 +2,19 @@ namespace Weaviate.Client.Models;
 
 // BM25Config tuning parameters for the BM25 algorithm
 //
+/// <summary>
+/// The bm 25 config
+/// </summary>
 public record BM25Config
 {
+    /// <summary>
+    /// The bm 25 config
+    /// </summary>
     private static readonly Lazy<BM25Config> _default = new Lazy<BM25Config>(() => new());
 
+    /// <summary>
+    /// Gets the value of the default
+    /// </summary>
     public static BM25Config Default => _default.Value;
 
     /// <summary>
@@ -18,6 +27,10 @@ public record BM25Config
     /// </summary>
     public double K1 { get; set; } = 1.2;
 
+    /// <summary>
+    /// Gets the hash code
+    /// </summary>
+    /// <returns>The int</returns>
     public override int GetHashCode()
     {
         var hash = new HashCode();
@@ -26,6 +39,11 @@ public record BM25Config
         return hash.ToHashCode();
     }
 
+    /// <summary>
+    /// Equalses the other
+    /// </summary>
+    /// <param name="other">The other</param>
+    /// <returns>The bool</returns>
     public virtual bool Equals(BM25Config? other)
     {
         if (other is null)

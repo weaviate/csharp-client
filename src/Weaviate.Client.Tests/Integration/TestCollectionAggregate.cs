@@ -2,9 +2,17 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Integration;
 
+/// <summary>
+/// The aggregates tests class
+/// </summary>
+/// <seealso cref="IntegrationTests"/>
 [Collection("TestCollections")]
 public partial class AggregatesTests : IntegrationTests
 {
+    /// <summary>
+    /// Tests that test collection length
+    /// </summary>
+    /// <param name="howMany">The how many</param>
     [Theory]
     [InlineData(1)]
     [InlineData(10000)]
@@ -29,6 +37,9 @@ public partial class AggregatesTests : IntegrationTests
         Assert.Equal(howMany, Convert.ToInt64(count));
     }
 
+    /// <summary>
+    /// Tests that test empty aggregation
+    /// </summary>
     [Fact]
     public async Task Test_Empty_Aggregation()
     {
@@ -40,6 +51,9 @@ public partial class AggregatesTests : IntegrationTests
         Assert.Equal(0, result.TotalCount);
     }
 
+    /// <summary>
+    /// Tests that test simple aggregation
+    /// </summary>
     [Fact]
     public async Task Test_Simple_Aggregation()
     {
@@ -60,6 +74,9 @@ public partial class AggregatesTests : IntegrationTests
         Assert.Equal(1, text.Count);
     }
 
+    /// <summary>
+    /// Tests that test aggregation top occurrence with limit
+    /// </summary>
     [Fact]
     public async Task Test_Aggregation_Top_Occurrence_With_Limit()
     {
@@ -89,6 +106,9 @@ public partial class AggregatesTests : IntegrationTests
         Assert.Equal(2, text.TopOccurrences[0].Count);
     }
 
+    /// <summary>
+    /// Tests that test aggregation group by with limit
+    /// </summary>
     [Fact]
     public async Task Test_Aggregation_GroupBy_With_Limit()
     {
@@ -122,6 +142,9 @@ public partial class AggregatesTests : IntegrationTests
         Assert.Equal(1, group2.Count);
     }
 
+    /// <summary>
+    /// Tests that test aggregation group by no results
+    /// </summary>
     [Fact]
     public async Task Test_Aggregation_GroupBy_No_Results()
     {
@@ -136,6 +159,10 @@ public partial class AggregatesTests : IntegrationTests
         Assert.Empty(result.Groups);
     }
 
+    /// <summary>
+    /// Filters the test data
+    /// </summary>
+    /// <returns>An enumerable of object array</returns>
     public static IEnumerable<object[]> FilterTestData()
     {
         var uuid1 = _reusableUuids[0];
@@ -161,6 +188,10 @@ public partial class AggregatesTests : IntegrationTests
         yield return new object[] { Filter.Property("uuids").ContainsAny(new[] { uuid2 }) };
     }
 
+    /// <summary>
+    /// Tests that test over all with filters
+    /// </summary>
+    /// <param name="filter">The filter</param>
     [Theory]
     [MemberData(nameof(FilterTestData))]
     public async Task Test_OverAll_With_Filters(Filter filter)
@@ -241,6 +272,10 @@ public partial class AggregatesTests : IntegrationTests
         Assert.Equal("two", text.TopOccurrences[0].Value);
     }
 
+    /// <summary>
+    /// Nears the vector aggregation test data
+    /// </summary>
+    /// <returns>An enumerable of object array</returns>
     public static IEnumerable<object[]> NearVectorAggregationTestData()
     {
         yield return new object[]
@@ -275,6 +310,11 @@ public partial class AggregatesTests : IntegrationTests
         };
     }
 
+    /// <summary>
+    /// Tests that test near vector aggregation
+    /// </summary>
+    /// <param name="option">The option</param>
+    /// <param name="expectedLen">The expected len</param>
     [Theory]
     [MemberData(nameof(NearVectorAggregationTestData))]
     public async Task Test_Near_Vector_Aggregation(
@@ -362,6 +402,9 @@ public partial class AggregatesTests : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// The force
+    /// </summary>
     private static Dictionary<
         string,
         (Dictionary<string, object> option, int expectedLen)
@@ -414,11 +457,19 @@ public partial class AggregatesTests : IntegrationTests
         ),
     };
 
+    /// <summary>
+    /// Nears the text aggregation options
+    /// </summary>
+    /// <returns>A theory data of string</returns>
     public static TheoryData<string> NearTextAggregationOptions()
     {
         return [.. _nearTextAggregationOptions.Keys];
     }
 
+    /// <summary>
+    /// Tests that test near text aggregation
+    /// </summary>
+    /// <param name="usecase">The usecase</param>
     [Theory]
     [MemberData(nameof(NearTextAggregationOptions))]
     public async Task Test_Near_Text_Aggregation(string usecase)
@@ -517,6 +568,9 @@ public partial class AggregatesTests : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test group by aggregation argument
+    /// </summary>
     [Fact]
     public async Task Test_GroupBy_Aggregation_Argument()
     {
@@ -587,6 +641,14 @@ public partial class AggregatesTests : IntegrationTests
         Assert.Equal(1, ((Aggregate.Integer)group2.Properties["int"]).Count);
     }
 
+    /// <summary>
+    /// Tests that test simple aggregation all types
+    /// </summary>
+    /// <param name="propertyType">The property type</param>
+    /// <param name="values">The values</param>
+    /// <exception cref="ArgumentException">Unknown property type</exception>
+    /// <exception cref="ArgumentException">Unknown property type</exception>
+    /// <exception cref="ArgumentException">Unknown property type</exception>
     [Theory]
     [InlineData("text", new object[] { "some text", "another text", "some text" })]
     [InlineData("int", new object[] { 42, 42, 100 })]
@@ -715,6 +777,14 @@ public partial class AggregatesTests : IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Tests that test simple aggregation array types
+    /// </summary>
+    /// <param name="propertyType">The property type</param>
+    /// <param name="value">The value</param>
+    /// <exception cref="ArgumentException">Unknown property type</exception>
+    /// <exception cref="ArgumentException">Unknown property type</exception>
+    /// <exception cref="ArgumentException">Unknown property type</exception>
     [Theory]
     [InlineData("texts", new[] { "a", "b", "c" })]
     [InlineData("ints", new[] { 1, 2, 3 })]

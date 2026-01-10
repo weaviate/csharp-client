@@ -8,8 +8,15 @@ namespace Weaviate.Client;
 /// </summary>
 public class NodesClient
 {
+    /// <summary>
+    /// The client
+    /// </summary>
     private readonly WeaviateRestClient _client;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NodesClient"/> class
+    /// </summary>
+    /// <param name="client">The client</param>
     internal NodesClient(WeaviateRestClient client)
     {
         _client = client;

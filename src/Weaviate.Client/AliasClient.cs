@@ -7,8 +7,16 @@ namespace Weaviate.Client;
 /// </summary>
 public class AliasClient
 {
+    /// <summary>
+    /// The client
+    /// </summary>
     private readonly WeaviateClient _client;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AliasClient"/> class
+    /// </summary>
+    /// <param name="client">The client</param>
+    /// <exception cref="ArgumentNullException"></exception>
     internal AliasClient(WeaviateClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -91,11 +99,21 @@ public class AliasClient
         return await _client.RestClient.AliasDelete(aliasName, cancellationToken);
     }
 
+    /// <summary>
+    /// Returns the model using the specified dto
+    /// </summary>
+    /// <param name="dto">The dto</param>
+    /// <returns>The alias</returns>
     private static Alias ToModel(Rest.Dto.Alias dto)
     {
         return new Alias(dto.Alias1 ?? string.Empty, dto.Class ?? string.Empty);
     }
 
+    /// <summary>
+    /// Returns the dto using the specified model
+    /// </summary>
+    /// <param name="model">The model</param>
+    /// <returns>The rest dto alias</returns>
     private static Rest.Dto.Alias ToDto(Alias model)
     {
         return new Rest.Dto.Alias { Alias1 = model.Name, Class = model.TargetCollection };

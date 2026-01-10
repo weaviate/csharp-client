@@ -3,9 +3,17 @@ using System.Net.Http.Json;
 
 namespace Weaviate.Client.Rest;
 
+/// <summary>
+/// The weaviate rest client class
+/// </summary>
 internal partial class WeaviateRestClient
 {
     // Roles
+    /// <summary>
+    /// Roleses the list using the specified cancellation token
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing an enumerable of dto role</returns>
     internal async Task<IEnumerable<Dto.Role>> RolesList(
         CancellationToken cancellationToken = default
     )
@@ -18,6 +26,12 @@ internal partial class WeaviateRestClient
         return list is null ? Array.Empty<Dto.Role>() : list;
     }
 
+    /// <summary>
+    /// Roles the get using the specified id
+    /// </summary>
+    /// <param name="id">The id</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing the dto role</returns>
     internal async Task<Dto.Role?> RoleGet(string id, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.GetAsync(WeaviateEndpoints.Role(id), cancellationToken);
@@ -27,6 +41,11 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.Role>(cancellationToken);
     }
 
+    /// <summary>
+    /// Roles the delete using the specified id
+    /// </summary>
+    /// <param name="id">The id</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     internal async Task RoleDelete(string id, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.DeleteAsync(WeaviateEndpoints.Role(id), cancellationToken);
@@ -38,6 +57,14 @@ internal partial class WeaviateRestClient
         );
     }
 
+    /// <summary>
+    /// Roles the create using the specified role
+    /// </summary>
+    /// <param name="role">The role</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateConflictException">Role '{role.Name}' already exists. </exception>
+    /// <exception cref="WeaviateRestClientException">Role '{role.Name}' was not found after creation. </exception>
+    /// <returns>A task containing the dto role</returns>
     internal async Task<Dto.Role> RoleCreate(
         Dto.Role role,
         CancellationToken cancellationToken = default
@@ -74,6 +101,15 @@ internal partial class WeaviateRestClient
         }
     }
 
+    /// <summary>
+    /// Roles the add permissions using the specified id
+    /// </summary>
+    /// <param name="id">The id</param>
+    /// <param name="permissions">The permissions</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateNotFoundException"></exception>
+    /// <exception cref="WeaviateRestClientException"></exception>
+    /// <returns>A task containing the dto role</returns>
     internal async Task<Dto.Role> RoleAddPermissions(
         string id,
         IEnumerable<Dto.Permission> permissions,
@@ -102,6 +138,15 @@ internal partial class WeaviateRestClient
         return updated ?? throw new WeaviateRestClientException();
     }
 
+    /// <summary>
+    /// Roles the remove permissions using the specified id
+    /// </summary>
+    /// <param name="id">The id</param>
+    /// <param name="permissions">The permissions</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateNotFoundException"></exception>
+    /// <exception cref="WeaviateRestClientException"></exception>
+    /// <returns>A task containing the dto role</returns>
     internal async Task<Dto.Role> RoleRemovePermissions(
         string id,
         IEnumerable<Dto.Permission> permissions,
@@ -130,6 +175,13 @@ internal partial class WeaviateRestClient
         return updated ?? throw new WeaviateRestClientException();
     }
 
+    /// <summary>
+    /// Roles the has permission using the specified id
+    /// </summary>
+    /// <param name="id">The id</param>
+    /// <param name="permission">The permission</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>The result</returns>
     internal async Task<bool> RoleHasPermission(
         string id,
         Dto.Permission permission,
@@ -149,6 +201,12 @@ internal partial class WeaviateRestClient
         return result;
     }
 
+    /// <summary>
+    /// Maps the user type using the specified user type
+    /// </summary>
+    /// <param name="userType">The user type</param>
+    /// <exception cref="ArgumentOutOfRangeException">Unknown UserTypeOutput: {userType}</exception>
+    /// <returns>The models rbac user type</returns>
     private static Models.RbacUserType MapUserType(Dto.UserTypeOutput userType)
     {
         // Custom mapping: db_user/db_env_user → Database, oidc → Oidc
@@ -165,6 +223,12 @@ internal partial class WeaviateRestClient
         };
     }
 
+    /// <summary>
+    /// Maps the group type using the specified group type
+    /// </summary>
+    /// <param name="groupType">The group type</param>
+    /// <exception cref="ArgumentOutOfRangeException">Unknown GroupType: {groupType}</exception>
+    /// <returns>The models rbac group type</returns>
     private static Models.RbacGroupType MapGroupType(Dto.GroupType groupType)
     {
         // Custom mapping: oidc → Oidc
@@ -180,16 +244,37 @@ internal partial class WeaviateRestClient
     }
 
     // Role assignments
+    /// <summary>
+    /// The role user assignment
+    /// </summary>
     internal record RoleUserAssignment(string userId, Dto.UserTypeOutput userType)
     {
+        /// <summary>
+        /// Returns the model
+        /// </summary>
+        /// <returns>The models user role assignment</returns>
         public Models.UserRoleAssignment ToModel() => new(userId, MapUserType(userType));
     }
 
+    /// <summary>
+    /// The role group assignment
+    /// </summary>
     internal record RoleGroupAssignment(string groupId, Dto.GroupType groupType)
     {
+        /// <summary>
+        /// Returns the model
+        /// </summary>
+        /// <returns>The models group role assignment</returns>
         public Models.GroupRoleAssignment ToModel() => new(groupId, MapGroupType(groupType));
     }
 
+    /// <summary>
+    /// Roles the user assignments using the specified id
+    /// </summary>
+    /// <param name="id">The id</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateNotFoundException"></exception>
+    /// <returns>A task containing an enumerable of role user assignment</returns>
     internal async Task<IEnumerable<RoleUserAssignment>> RoleUserAssignments(
         string id,
         CancellationToken cancellationToken = default
@@ -214,6 +299,13 @@ internal partial class WeaviateRestClient
         return list ?? Array.Empty<RoleUserAssignment>();
     }
 
+    /// <summary>
+    /// Roles the group assignments using the specified id
+    /// </summary>
+    /// <param name="id">The id</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateNotFoundException"></exception>
+    /// <returns>A task containing an enumerable of role group assignment</returns>
     internal async Task<IEnumerable<RoleGroupAssignment>> RoleGroupAssignments(
         string id,
         CancellationToken cancellationToken = default
@@ -239,6 +331,14 @@ internal partial class WeaviateRestClient
     }
 
     // User role operations
+    /// <summary>
+    /// Users the assign roles using the specified user id
+    /// </summary>
+    /// <param name="userId">The user id</param>
+    /// <param name="userType">The user type</param>
+    /// <param name="roles">The roles</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateNotFoundException"></exception>
     internal async Task UserAssignRoles(
         string userId,
         string userType,
@@ -264,6 +364,14 @@ internal partial class WeaviateRestClient
         }
     }
 
+    /// <summary>
+    /// Users the revoke roles using the specified user id
+    /// </summary>
+    /// <param name="userId">The user id</param>
+    /// <param name="userType">The user type</param>
+    /// <param name="roles">The roles</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateNotFoundException"></exception>
     internal async Task UserRevokeRoles(
         string userId,
         string userType,
@@ -289,6 +397,15 @@ internal partial class WeaviateRestClient
         }
     }
 
+    /// <summary>
+    /// Users the roles get using the specified user id
+    /// </summary>
+    /// <param name="userId">The user id</param>
+    /// <param name="userType">The user type</param>
+    /// <param name="includeFullRoles">The include full roles</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateNotFoundException"></exception>
+    /// <returns>A task containing an enumerable of dto role</returns>
     internal async Task<IEnumerable<Dto.Role>> UserRolesGet(
         string userId,
         string userType,
@@ -314,6 +431,14 @@ internal partial class WeaviateRestClient
     }
 
     // Group role operations
+    /// <summary>
+    /// Groups the assign roles using the specified group id
+    /// </summary>
+    /// <param name="groupId">The group id</param>
+    /// <param name="groupType">The group type</param>
+    /// <param name="roles">The roles</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateNotFoundException"></exception>
     internal async Task GroupAssignRoles(
         string groupId,
         string groupType,
@@ -339,6 +464,14 @@ internal partial class WeaviateRestClient
         }
     }
 
+    /// <summary>
+    /// Groups the revoke roles using the specified group id
+    /// </summary>
+    /// <param name="groupId">The group id</param>
+    /// <param name="groupType">The group type</param>
+    /// <param name="roles">The roles</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateNotFoundException"></exception>
     internal async Task GroupRevokeRoles(
         string groupId,
         string groupType,
@@ -364,6 +497,15 @@ internal partial class WeaviateRestClient
         }
     }
 
+    /// <summary>
+    /// Groups the roles get using the specified group id
+    /// </summary>
+    /// <param name="groupId">The group id</param>
+    /// <param name="groupType">The group type</param>
+    /// <param name="includeFullRoles">The include full roles</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <exception cref="WeaviateNotFoundException"></exception>
+    /// <returns>A task containing an enumerable of dto role</returns>
     internal async Task<IEnumerable<Dto.Role>> GroupRolesGet(
         string groupId,
         string groupType,
@@ -388,6 +530,12 @@ internal partial class WeaviateRestClient
         return list ?? [];
     }
 
+    /// <summary>
+    /// Groupses the list using the specified group type
+    /// </summary>
+    /// <param name="groupType">The group type</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A task containing an enumerable of string</returns>
     internal async Task<IEnumerable<string>> GroupsList(
         string groupType,
         CancellationToken cancellationToken = default

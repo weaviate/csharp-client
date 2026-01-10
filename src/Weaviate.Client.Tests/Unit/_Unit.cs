@@ -2,9 +2,15 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
 
+/// <summary>
+/// The misc tests class
+/// </summary>
 [Collection("Unit Tests")]
 public partial class MiscTests
 {
+    /// <summary>
+    /// Tests that metadata query and vector query implicit conversion
+    /// </summary>
     [Fact]
     public void MetadataQuery_And_VectorQuery_ImplicitConversion()
     {

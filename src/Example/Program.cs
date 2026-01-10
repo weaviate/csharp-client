@@ -1,7 +1,14 @@
 using Example;
 
+/// <summary>
+/// The program class
+/// </summary>
 class Program
 {
+    /// <summary>
+    /// Main the args
+    /// </summary>
+    /// <param name="args">The args</param>
     static async Task Main(string[] args)
     {
         if (args.Length > 0)
@@ -27,6 +34,10 @@ class Program
         await RunExampleByChoice(choice);
     }
 
+    /// <summary>
+    /// Runs the example by choice using the specified choice
+    /// </summary>
+    /// <param name="choice">The choice</param>
     static async Task RunExampleByChoice(string? choice)
     {
         switch (choice)
@@ -59,6 +70,10 @@ class Program
         }
     }
 
+    /// <summary>
+    /// Runs the example by name using the specified name
+    /// </summary>
+    /// <param name="name">The name</param>
     static async Task RunExampleByName(string name)
     {
         switch (name.ToLower())

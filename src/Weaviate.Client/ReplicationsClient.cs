@@ -2,10 +2,20 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The replications client class
+/// </summary>
 public class ReplicationsClient
 {
+    /// <summary>
+    /// The rest client
+    /// </summary>
     private readonly Rest.WeaviateRestClient _restClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReplicationsClient"/> class
+    /// </summary>
+    /// <param name="restClient">The rest client</param>
     internal ReplicationsClient(Rest.WeaviateRestClient restClient)
     {
         _restClient = restClient;
@@ -96,6 +106,11 @@ public class ReplicationsClient
         await _restClient.DeleteAllReplicationsAsync(cancellationToken);
     }
 
+    /// <summary>
+    /// Returns the model using the specified dto
+    /// </summary>
+    /// <param name="dto">The dto</param>
+    /// <returns>The replication operation</returns>
     internal static ReplicationOperation ToModel(
         Rest.Dto.ReplicationReplicateDetailsReplicaResponse dto
     )
@@ -116,6 +131,11 @@ public class ReplicationsClient
         );
     }
 
+    /// <summary>
+    /// Parses the replication type using the specified type
+    /// </summary>
+    /// <param name="type">The type</param>
+    /// <returns>The replication type</returns>
     private static ReplicationType ParseReplicationType(
         Rest.Dto.ReplicationReplicateDetailsReplicaResponseType type
     )
@@ -125,6 +145,11 @@ public class ReplicationsClient
             : ReplicationType.Copy;
     }
 
+    /// <summary>
+    /// Parses the status using the specified status
+    /// </summary>
+    /// <param name="status">The status</param>
+    /// <returns>The replication operation status</returns>
     private static ReplicationOperationStatus ParseStatus(
         Rest.Dto.ReplicationReplicateDetailsReplicaStatus? status
     )
@@ -141,6 +166,11 @@ public class ReplicationsClient
         );
     }
 
+    /// <summary>
+    /// Parses the state using the specified state
+    /// </summary>
+    /// <param name="state">The state</param>
+    /// <returns>The replication operation state</returns>
     private static ReplicationOperationState ParseState(
         Rest.Dto.ReplicationReplicateDetailsReplicaStatusState? state
     )
@@ -163,6 +193,11 @@ public class ReplicationsClient
         };
     }
 
+    /// <summary>
+    /// Parses the error using the specified error
+    /// </summary>
+    /// <param name="error">The error</param>
+    /// <returns>The replication operation error</returns>
     private static ReplicationOperationError ParseError(
         Rest.Dto.ReplicationReplicateDetailsReplicaStatusError error
     )

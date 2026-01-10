@@ -2,8 +2,18 @@ using System.Net.Http;
 
 namespace Weaviate.Client;
 
+/// <summary>
+/// The default token service factory class
+/// </summary>
+/// <seealso cref="ITokenServiceFactory"/>
 public class DefaultTokenServiceFactory : ITokenServiceFactory
 {
+    /// <summary>
+    /// Creates the configuration
+    /// </summary>
+    /// <param name="configuration">The configuration</param>
+    /// <exception cref="NotSupportedException">Unsupported credentials type</exception>
+    /// <returns>A task containing the token service</returns>
     public async Task<ITokenService?> CreateAsync(ClientConfiguration configuration)
     {
         if (configuration.Credentials is null)
@@ -65,6 +75,12 @@ public class DefaultTokenServiceFactory : ITokenServiceFactory
         return new OAuthTokenService(httpClient, oauthConfig);
     }
 
+    /// <summary>
+    /// Creates the sync using the specified configuration
+    /// </summary>
+    /// <param name="configuration">The configuration</param>
+    /// <exception cref="NotSupportedException">Unsupported credentials type</exception>
+    /// <returns>The token service</returns>
     public ITokenService? CreateSync(ClientConfiguration configuration)
     {
         if (configuration.Credentials is null)

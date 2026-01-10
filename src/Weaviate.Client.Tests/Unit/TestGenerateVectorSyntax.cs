@@ -9,11 +9,25 @@ namespace Weaviate.Client.Tests.Unit;
 [Collection("Unit Tests")]
 public class TestGenerateVectorSyntax : IAsyncLifetime
 {
+    /// <summary>
+    /// The collection name
+    /// </summary>
     private const string CollectionName = "TestCollection";
 
+    /// <summary>
+    /// The get request
+    /// </summary>
     private Func<Grpc.Protobuf.V1.SearchRequest?> _getRequest = null!;
+
+    /// <summary>
+    /// The collection
+    /// </summary>
     private CollectionClient _collection = null!;
 
+    /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask InitializeAsync()
     {
         var (client, getRequest) = MockGrpcClient.CreateWithSearchCapture();
@@ -22,6 +36,10 @@ public class TestGenerateVectorSyntax : IAsyncLifetime
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Disposes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
     public ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
@@ -30,6 +48,9 @@ public class TestGenerateVectorSyntax : IAsyncLifetime
 
     #region GenerateClient.NearVector Tests
 
+    /// <summary>
+    /// Tests that generate near vector with single prompt produces valid request
+    /// </summary>
     [Fact]
     public async Task Generate_NearVector_WithSinglePrompt_ProducesValidRequest()
     {
@@ -49,6 +70,9 @@ public class TestGenerateVectorSyntax : IAsyncLifetime
         Assert.Equal("Summarize this item", request.Generative.Single.Prompt);
     }
 
+    /// <summary>
+    /// Tests that generate near vector with grouped task produces valid request
+    /// </summary>
     [Fact]
     public async Task Generate_NearVector_WithGroupedTask_ProducesValidRequest()
     {
@@ -68,6 +92,9 @@ public class TestGenerateVectorSyntax : IAsyncLifetime
         Assert.Equal("Summarize all items", request.Generative.Grouped.Task);
     }
 
+    /// <summary>
+    /// Tests that generate near vector lambda builder with prompts produces valid request
+    /// </summary>
     [Fact]
     public async Task Generate_NearVector_LambdaBuilder_WithPrompts_ProducesValidRequest()
     {
@@ -102,6 +129,9 @@ public class TestGenerateVectorSyntax : IAsyncLifetime
 
     #region GenerateClient.NearText Tests
 
+    /// <summary>
+    /// Tests that generate near text with single prompt produces valid request
+    /// </summary>
     [Fact]
     public async Task Generate_NearText_WithSinglePrompt_ProducesValidRequest()
     {
@@ -122,6 +152,9 @@ public class TestGenerateVectorSyntax : IAsyncLifetime
         Assert.Equal("Describe this fruit", request.Generative.Single.Prompt);
     }
 
+    /// <summary>
+    /// Tests that generate near text with target vectors and prompts produces valid request
+    /// </summary>
     [Fact]
     public async Task Generate_NearText_WithTargetVectors_AndPrompts_ProducesValidRequest()
     {
@@ -149,6 +182,9 @@ public class TestGenerateVectorSyntax : IAsyncLifetime
 
     #region GenerateClient.Hybrid Tests
 
+    /// <summary>
+    /// Tests that generate hybrid text only with prompt produces valid request
+    /// </summary>
     [Fact]
     public async Task Generate_Hybrid_TextOnly_WithPrompt_ProducesValidRequest()
     {
@@ -168,6 +204,9 @@ public class TestGenerateVectorSyntax : IAsyncLifetime
         Assert.Equal("Summarize this result", request.Generative.Single.Prompt);
     }
 
+    /// <summary>
+    /// Tests that generate hybrid with vectors and prompts produces valid request
+    /// </summary>
     [Fact]
     public async Task Generate_Hybrid_WithVectors_AndPrompts_ProducesValidRequest()
     {
@@ -193,6 +232,9 @@ public class TestGenerateVectorSyntax : IAsyncLifetime
         Assert.Equal("Compare", request.Generative.Grouped.Task);
     }
 
+    /// <summary>
+    /// Tests that generate hybrid near text input with prompt produces valid request
+    /// </summary>
     [Fact]
     public async Task Generate_Hybrid_NearTextInput_WithPrompt_ProducesValidRequest()
     {
