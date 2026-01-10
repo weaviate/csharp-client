@@ -1,5 +1,4 @@
 using Weaviate.Client.Models;
-using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 

@@ -1,7 +1,5 @@
 using Weaviate.Client.Models;
 using Weaviate.Client.Typed;
-using Weaviate.Client.Validation;
-using Xunit;
 
 namespace Weaviate.Client.Tests.Integration;
 

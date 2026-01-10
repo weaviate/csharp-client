@@ -1,5 +1,3 @@
-using Weaviate.Client.Models;
-using Weaviate.Client.Models.Typed;
 using Weaviate.Client.Typed;
 
 namespace Weaviate.Client.Tests.Unit;

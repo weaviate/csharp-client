@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using Weaviate.Client.Cache;
 
 namespace Weaviate.Client.Models;
 

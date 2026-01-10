@@ -1,6 +1,5 @@
 namespace Weaviate.Client.Tests.Integration;
 
-using System.Linq;
 using Weaviate.Client;
 using Weaviate.Client.Models;
 using Xunit;

@@ -1,5 +1,4 @@
 using Weaviate.Client.Typed;
-using Weaviate.Client.Validation;
 
 namespace Weaviate.Client;
 

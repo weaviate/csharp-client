@@ -1,5 +1,4 @@
 using Weaviate.Client.Models;
-using Xunit;
 
 namespace Weaviate.Client.Tests.Integration
 {

@@ -1,5 +1,4 @@
 using Weaviate.Client.Models;
-using Weaviate.Client.Tests.Unit.Mocks;
 using Weaviate.Client.Typed;
 
 namespace Weaviate.Client.Tests.Unit;

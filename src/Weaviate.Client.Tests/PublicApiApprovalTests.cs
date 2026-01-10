@@ -1,8 +1,6 @@
-using System.Reflection;
 using ApprovalTests;
 using ApprovalTests.Reporters;
 using PublicApiGenerator;
-using Xunit;
 
 namespace Weaviate.Client.Tests
 {

@@ -1,4 +1,3 @@
-using System.Net;
 using System.Text.Json;
 using Weaviate.Client.Models;
 using Weaviate.Client.Tests.Unit.Mocks;

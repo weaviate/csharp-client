@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Reflection;
-using Weaviate.Client.Models;
 using Weaviate.Client.Serialization.Converters;
 
 namespace Weaviate.Client.Serialization;
