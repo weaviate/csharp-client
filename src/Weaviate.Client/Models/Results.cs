@@ -67,6 +67,9 @@ public record WeaviateResult<TObject> : IEnumerable<TObject>
 public record GroupByResult(IList<GroupByObject> Objects, IDictionary<string, WeaviateGroup> Groups)
     : GroupByResult<GroupByObject, WeaviateGroup>(Objects, Groups)
 {
+    /// <summary>
+    /// The weaviate group
+    /// </summary>
     private static readonly GroupByResult _empty = new(
         Array.Empty<GroupByObject>(),
         new Dictionary<string, WeaviateGroup>()
@@ -149,6 +152,9 @@ public record WeaviateObject
 /// </summary>
 public record WeaviateResult : WeaviateResult<WeaviateObject>
 {
+    /// <summary>
+    /// The empty
+    /// </summary>
     private static readonly WeaviateResult _empty = new();
 
     /// <summary>
@@ -168,6 +174,9 @@ public record GenerativeGroupByResult(
     GenerativeResult Generative
 ) : GroupByResult<GenerativeGroupByObject, GenerativeWeaviateGroup>(Objects, Groups)
 {
+    /// <summary>
+    /// The generative reply
+    /// </summary>
     private static readonly GenerativeGroupByResult _empty = new(
         Array.Empty<GenerativeGroupByObject>(),
         new Dictionary<string, GenerativeWeaviateGroup>(),
@@ -218,6 +227,9 @@ public record GenerativeWeaviateObject : WeaviateObject
 /// </summary>
 public record GenerativeWeaviateResult : WeaviateResult<GenerativeWeaviateObject>
 {
+    /// <summary>
+    /// The empty
+    /// </summary>
     private static readonly GenerativeWeaviateResult _empty = new()
     {
         Generative = GenerativeResult.Empty,
@@ -251,6 +263,9 @@ public record GenerativeReply(string Text);
 /// </summary>
 public record GenerativeResult(IList<GenerativeReply> Values) : IList<string>
 {
+    /// <summary>
+    /// The generative reply
+    /// </summary>
     private static readonly GenerativeResult _empty = new(Array.Empty<GenerativeReply>());
 
     /// <summary>
