@@ -13,18 +13,25 @@ public class ExceptionHelperTests
     /// Tests that map http exception with timeout cancellation returns timeout exception
     /// </summary>
     [Fact]
-    public void MapHttpException_WithTimeoutCancellation_ReturnsTimeoutException()
+    public async Task MapHttpException_WithTimeoutCancellation_ReturnsTimeoutException()
     {
         // Arrange
         var timeout = TimeSpan.FromMilliseconds(10);
-        var token = TimeoutHelper.GetCancellationToken(
+        using var cts = new CancellationTokenSource(timeout);
+
+        var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            cts.Token,
+            TestContext.Current.CancellationToken
+        );
+
+        _ = TimeoutHelper.GetCancellationToken(
             timeout,
-            providedToken: TestContext.Current.CancellationToken,
+            providedToken: linkedCts.Token,
             operation: "Test operation"
         );
 
         // Wait for timeout to expire
-        Thread.Sleep(50);
+        await Task.FromResult(cts.Token.WaitHandle.WaitOne());
 
         var innerEx = new TaskCanceledException();
 
@@ -102,66 +109,6 @@ public class ExceptionHelperTests
     }
 
     /// <summary>
-    /// Tests that map grpc exception with timeout in inner exception returns timeout exception
-    /// </summary>
-    [Fact(Skip = "RpcException doesn't expose public constructor with inner exception parameter")]
-    public void MapGrpcException_WithTimeoutInInnerException_ReturnsTimeoutException()
-    {
-        // Arrange
-        var timeout = TimeSpan.FromMilliseconds(10);
-        var token = TimeoutHelper.GetCancellationToken(
-            timeout,
-            providedToken: TestContext.Current.CancellationToken,
-            operation: "gRPC operation"
-        );
-
-        // Wait for timeout to expire
-        Thread.Sleep(50);
-
-        var innerEx = new TaskCanceledException();
-        // Create RpcException with inner exception using reflection
-        var rpcEx = new RpcException(new Status(StatusCode.Cancelled, "Cancelled"), "Cancelled");
-
-        // Act
-        var result = ExceptionHelper.MapGrpcException(rpcEx, "Test failed");
-
-        // Assert
-        var timeoutEx = Assert.IsType<WeaviateTimeoutException>(result);
-        Assert.Equal(timeout, timeoutEx.Timeout);
-        Assert.Equal("gRPC operation", timeoutEx.Operation);
-    }
-
-    /// <summary>
-    /// Tests that map grpc exception with cancelled status and timeout returns timeout exception
-    /// </summary>
-    [Fact(
-        Skip = "gRPC StatusCode.Cancelled without inner exception cannot reliably detect timeout vs user cancellation"
-    )]
-    public void MapGrpcException_WithCancelledStatusAndTimeout_ReturnsTimeoutException()
-    {
-        // Arrange
-        var timeout = TimeSpan.FromMilliseconds(10);
-        var token = TimeoutHelper.GetCancellationToken(
-            timeout,
-            providedToken: TestContext.Current.CancellationToken,
-            operation: "Slow operation"
-        );
-
-        // Wait for timeout to expire
-        Thread.Sleep(50);
-
-        var rpcEx = new RpcException(new Status(StatusCode.Cancelled, "Timeout"));
-
-        // Act
-        var result = ExceptionHelper.MapGrpcException(rpcEx, "Test failed");
-
-        // Assert
-        var timeoutEx = Assert.IsType<WeaviateTimeoutException>(result);
-        Assert.Equal(timeout, timeoutEx.Timeout);
-        Assert.Equal("Slow operation", timeoutEx.Operation);
-    }
-
-    /// <summary>
     /// Tests that map grpc exception unauthenticated returns authentication exception
     /// </summary>
     [Fact]
@@ -217,7 +164,7 @@ public class ExceptionHelperTests
     {
         // Arrange
         var timeout = TimeSpan.FromMilliseconds(10);
-        var token = TimeoutHelper.GetCancellationToken(
+        _ = TimeoutHelper.GetCancellationToken(
             timeout,
             providedToken: TestContext.Current.CancellationToken
         ); // No operation specified
