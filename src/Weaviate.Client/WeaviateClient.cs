@@ -95,13 +95,13 @@ public partial class WeaviateClient : IDisposable
     /// Waits until the instance becomes ready or the timeout/cancellation token triggers.
     /// </summary>
     /// <param name="timeout">Maximum time to wait.</param>
-    /// <param name="cancellationToken">Cancellation token to abort waiting early.</param>
     /// <param name="pollInterval">Optional polling interval (defaults to 250ms).</param>
+    /// <param name="cancellationToken">Cancellation token to abort waiting early.</param>
     /// <returns>true if ready was reached before timing out or cancellation; false otherwise.</returns>
     public async Task<bool> WaitUntilReady(
         TimeSpan timeout,
-        CancellationToken cancellationToken,
-        TimeSpan? pollInterval = null
+        TimeSpan? pollInterval = null,
+        CancellationToken cancellationToken = default
     )
     {
         var interval = pollInterval ?? TimeSpan.FromMilliseconds(250);

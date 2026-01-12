@@ -28,8 +28,8 @@ public partial class AggregateClient
         Filter? filters = null,
         TargetVectors.FactoryFn? targetVectors = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     )
     {
         var result = await _client.GrpcClient.AggregateNearObject(
@@ -73,8 +73,8 @@ public partial class AggregateClient
         Filter? filters = null,
         TargetVectors.FactoryFn? targetVectors = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     )
     {
         var result = await _client.GrpcClient.AggregateNearObject(

@@ -31,13 +31,13 @@ public partial class AggregateClient
         Move? moveAway = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     )
     {
         var result = await _client.GrpcClient.AggregateNearText(
             _collectionName,
-            query.ToArray(),
+            [.. query],
             certainty,
             distance,
             limit,
@@ -80,13 +80,13 @@ public partial class AggregateClient
         Move? moveAway = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     )
     {
         var result = await _client.GrpcClient.AggregateNearText(
             _collectionName,
-            query.ToArray(),
+            [.. query],
             certainty,
             distance,
             limit,
@@ -121,15 +121,15 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     )
     {
         var result = await _client.GrpcClient.AggregateNearText(
             _collectionName,
-            query.Query.ToArray(),
-            query.Certainty.HasValue ? (double?)query.Certainty.Value : null,
-            query.Distance.HasValue ? (double?)query.Distance.Value : null,
+            [.. query.Query],
+            query.Certainty.HasValue ? query.Certainty.Value : null,
+            query.Distance.HasValue ? query.Distance.Value : null,
             limit,
             query.MoveTo,
             query.MoveAway,
@@ -159,15 +159,15 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     )
     {
         var result = await _client.GrpcClient.AggregateNearText(
             _collectionName,
-            query.Query.ToArray(),
-            query.Certainty.HasValue ? (double?)query.Certainty.Value : null,
-            query.Distance.HasValue ? (double?)query.Distance.Value : null,
+            [.. query.Query],
+            query.Certainty.HasValue ? query.Certainty.Value : null,
+            query.Distance.HasValue ? query.Distance.Value : null,
             limit,
             query.MoveTo,
             query.MoveAway,
@@ -197,16 +197,16 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     ) =>
         await NearText(
             query(VectorInputBuilderFactories.CreateNearTextBuilder()),
             limit,
             filters,
             totalCount,
-            cancellationToken,
-            returnMetrics
+            returnMetrics,
+            cancellationToken
         );
 
     /// <summary>
@@ -226,8 +226,8 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     ) =>
         await NearText(
             query(VectorInputBuilderFactories.CreateNearTextBuilder()),
@@ -235,7 +235,7 @@ public partial class AggregateClient
             limit,
             filters,
             totalCount,
-            cancellationToken,
-            returnMetrics
+            returnMetrics,
+            cancellationToken
         );
 }
