@@ -1,6 +1,7 @@
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Microsoft.Extensions.Logging;
+using Weaviate.Client.Internal;
 
 namespace Weaviate.Client.Grpc;
 

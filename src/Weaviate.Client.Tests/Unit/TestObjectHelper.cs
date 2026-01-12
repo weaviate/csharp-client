@@ -1,4 +1,5 @@
 using System.Dynamic;
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 using Weaviate.Client.Tests.Common;
 
@@ -38,22 +39,22 @@ public partial class ObjectHelperTests
         var testData = new TestProperties
         {
             TestText = "dummyText",
-            TestTextArray = new[] { "dummyTextArray1", "dummyTextArray2" },
+            TestTextArray = ["dummyTextArray1", "dummyTextArray2"],
             TestInt = 123,
-            TestIntArray = new[] { 1, 2, 3 },
+            TestIntArray = [1, 2, 3],
             TestBlob = System.Text.Encoding.UTF8.GetBytes("Weaviate"),
             TestBool = true,
-            TestBoolArray = new[] { true, false },
+            TestBoolArray = [true, false],
             TestNumber = 456.789,
-            TestNumberArray = new[] { 4.5, 6.7 },
+            TestNumberArray = [4.5, 6.7],
             TestDate = DateTime.Now.AddDays(-1).ToUniversalTime(),
-            TestDateArray = new[]
-            {
+            TestDateArray =
+            [
                 DateTime.Now.AddDays(-2).ToUniversalTime(),
                 DateTime.Now.AddDays(-3).ToUniversalTime(),
-            },
+            ],
             TestUuid = Guid.NewGuid(),
-            TestUuidArray = new[] { Guid.NewGuid(), Guid.NewGuid() },
+            TestUuidArray = [Guid.NewGuid(), Guid.NewGuid()],
             TestGeo = new GeoCoordinate(12.345f, 67.890f),
             TestPhone = new PhoneNumber("+1 555-123-4567") { DefaultCountry = "US" },
             TestObject = new TestNestedProperties
@@ -66,8 +67,8 @@ public partial class ObjectHelperTests
                     TestInt = 101112,
                 },
             },
-            TestObjectArray = new[]
-            {
+            TestObjectArray =
+            [
                 new TestNestedProperties { TestText = "arrayObjectText1", TestInt = 111 },
                 new TestNestedProperties
                 {
@@ -79,7 +80,7 @@ public partial class ObjectHelperTests
                         TestInt = 333,
                     },
                 },
-            },
+            ],
         };
 
         var props = ObjectHelper.BuildDataTransferObject(testData);
@@ -211,16 +212,16 @@ public partial class ObjectHelperTests
         var p = new TestProperties
         {
             TestText = "dummyText",
-            TestTextArray = new[] { "dummyTextArray1", "dummyTextArray2" },
+            TestTextArray = ["dummyTextArray1", "dummyTextArray2"],
             TestInt = 345,
-            TestIntArray = new[] { 3, 4, 6 },
+            TestIntArray = [3, 4, 6],
             TestBool = true,
             TestNumber = 567.897,
-            TestNumberArray = new[] { 6.7, 8.9 },
+            TestNumberArray = [6.7, 8.9],
             TestDate = DateTime.Now.AddDays(+1),
-            TestDateArray = new[] { DateTime.Now.AddDays(+2), DateTime.Now.AddDays(+3) },
+            TestDateArray = [DateTime.Now.AddDays(+2), DateTime.Now.AddDays(+3)],
             TestUuid = Guid.NewGuid(),
-            TestUuidArray = new[] { Guid.NewGuid(), Guid.NewGuid() },
+            TestUuidArray = [Guid.NewGuid(), Guid.NewGuid()],
             TestGeo = new GeoCoordinate(34.567f, 98.765f),
             // Add nested object
             TestObject = new TestNestedProperties
@@ -234,8 +235,8 @@ public partial class ObjectHelperTests
                 },
             },
             // Add array of nested objects
-            TestObjectArray = new[]
-            {
+            TestObjectArray =
+            [
                 new TestNestedProperties { TestText = "arrayObjectText1", TestInt = 111 },
                 new TestNestedProperties
                 {
@@ -247,7 +248,7 @@ public partial class ObjectHelperTests
                         TestInt = 333,
                     },
                 },
-            },
+            ],
         };
 
         var bp = ObjectHelper.BuildBatchProperties(p);
@@ -718,18 +719,18 @@ public partial class ObjectHelperTests
         var data = new TestProperties
         {
             TestText = "dummyText",
-            TestTextArray = new[] { "dummyTextArray1", "dummyTextArray2" },
+            TestTextArray = ["dummyTextArray1", "dummyTextArray2"],
             TestInt = 123,
-            TestIntArray = new[] { 1, 2, 3 },
+            TestIntArray = [1, 2, 3],
             TestBlob = System.Text.Encoding.UTF8.GetBytes("Weaviate"),
             TestBool = true,
-            TestBoolArray = new[] { true, false },
+            TestBoolArray = [true, false],
             TestNumber = 456.789,
-            TestNumberArray = new[] { 4.5, 6.7 },
+            TestNumberArray = [4.5, 6.7],
             TestDate = DateTime.Now.AddDays(-1),
-            TestDateArray = new[] { DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-3) },
+            TestDateArray = [DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-3)],
             TestUuid = Guid.NewGuid(),
-            TestUuidArray = new[] { Guid.NewGuid(), Guid.NewGuid() },
+            TestUuidArray = [Guid.NewGuid(), Guid.NewGuid()],
             TestGeo = new GeoCoordinate(12.345f, 67.890f),
             TestPhone = new PhoneNumber("+1 555-123-4567") { DefaultCountry = "US" },
             TestObject = new TestNestedProperties
@@ -742,8 +743,8 @@ public partial class ObjectHelperTests
                     TestInt = 101112,
                 },
             },
-            TestObjectArray = new[]
-            {
+            TestObjectArray =
+            [
                 new TestNestedProperties { TestText = "arrayObjectText1", TestInt = 111 },
                 new TestNestedProperties
                 {
@@ -755,7 +756,7 @@ public partial class ObjectHelperTests
                         TestInt = 333,
                     },
                 },
-            },
+            ],
         };
 
         // Act

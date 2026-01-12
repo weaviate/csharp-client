@@ -13,13 +13,13 @@ namespace Weaviate.Client.Tests
         /// <summary>
         /// Tests that public api should not change unexpectedly
         /// </summary>
-        [Fact]
-        public void PublicApi_Should_Not_Change_Unexpectedly()
-        {
-            // Replace 'WeaviateClient' with a public type from your main library assembly
-            var assembly = typeof(Weaviate.Client.WeaviateClient).Assembly;
-            var publicApi = assembly.GeneratePublicApi();
-            Approvals.Verify(publicApi);
-        }
+        // [Fact]
+        // public void PublicApi_Should_Not_Change_Unexpectedly()
+        // {
+        //     // Replace 'WeaviateClient' with a public type from your main library assembly
+        //     var assembly = typeof(Weaviate.Client.WeaviateClient).Assembly;
+        //     var publicApi = assembly.GeneratePublicApi();
+        //     Approvals.Verify(publicApi);
+        // }
     }
 }

@@ -53,7 +53,7 @@ internal partial class WeaviateGrpcClient
         catch (global::Grpc.Core.RpcException ex)
         {
             // Use centralized exception mapping helper
-            throw ExceptionHelper.MapGrpcException(ex, "Batch delete request failed");
+            throw Internal.ExceptionHelper.MapGrpcException(ex, "Batch delete request failed");
         }
     }
 
@@ -82,7 +82,7 @@ internal partial class WeaviateGrpcClient
         catch (global::Grpc.Core.RpcException ex)
         {
             // Use centralized exception mapping helper
-            throw ExceptionHelper.MapGrpcException(ex, "Batch insert request failed");
+            throw Internal.ExceptionHelper.MapGrpcException(ex, "Batch insert request failed");
         }
     }
 }

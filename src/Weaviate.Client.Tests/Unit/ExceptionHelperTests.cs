@@ -1,12 +1,12 @@
 using System.Net;
 using Grpc.Core;
+using Weaviate.Client.Internal;
 
 namespace Weaviate.Client.Tests.Unit;
 
 /// <summary>
 /// The exception helper tests class
 /// </summary>
-[Collection("Unit Tests")]
 public class ExceptionHelperTests
 {
     /// <summary>

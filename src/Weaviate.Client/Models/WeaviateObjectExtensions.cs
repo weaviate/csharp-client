@@ -16,7 +16,7 @@ public static class WeaviateObjectExtensions
     public static T? As<T>(this WeaviateObject obj)
         where T : new()
     {
-        return ObjectHelper.UnmarshallProperties<T>(obj.Properties);
+        return Internal.ObjectHelper.UnmarshallProperties<T>(obj.Properties);
     }
 
     /// <summary>

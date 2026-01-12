@@ -106,11 +106,11 @@ public class DataClient
                 );
             }
         }
-        var propDict = ObjectHelper.BuildDataTransferObject(properties);
+        var propDict = Internal.ObjectHelper.BuildDataTransferObject(properties);
 
         foreach (var kvp in references ?? [])
         {
-            propDict[kvp.Name] = ObjectHelper.MakeBeacons(kvp.TargetID);
+            propDict[kvp.Name] = Internal.ObjectHelper.MakeBeacons(kvp.TargetID);
         }
 
         var dto = new Rest.Dto.Object()
@@ -146,11 +146,11 @@ public class DataClient
         CancellationToken cancellationToken = default
     )
     {
-        var propDict = ObjectHelper.BuildDataTransferObject(properties);
+        var propDict = Internal.ObjectHelper.BuildDataTransferObject(properties);
 
         foreach (var kvp in references ?? [])
         {
-            propDict[kvp.Name] = ObjectHelper.MakeBeacons(kvp.TargetID);
+            propDict[kvp.Name] = Internal.ObjectHelper.MakeBeacons(kvp.TargetID);
         }
 
         var dto = new Rest.Dto.Object()
@@ -185,11 +185,11 @@ public class DataClient
         CancellationToken cancellationToken = default
     )
     {
-        var propDict = ObjectHelper.BuildDataTransferObject(properties);
+        var propDict = Internal.ObjectHelper.BuildDataTransferObject(properties);
 
         foreach (var kvp in references ?? [])
         {
-            propDict[kvp.Name] = ObjectHelper.MakeBeacons(kvp.TargetID);
+            propDict[kvp.Name] = Internal.ObjectHelper.MakeBeacons(kvp.TargetID);
         }
 
         var dto = new Rest.Dto.Object()
@@ -287,7 +287,7 @@ public class DataClient
                     {
                         Collection = _collectionName,
                         Uuid = (r.UUID ?? Guid.NewGuid()).ToString(),
-                        Properties = ObjectHelper.BuildBatchProperties(r.Data),
+                        Properties = Internal.ObjectHelper.BuildBatchProperties(r.Data),
                         Tenant = _collectionClient.Tenant,
                     };
 
@@ -542,7 +542,7 @@ public class DataClient
             {
                 Error = string.IsNullOrEmpty(o.Error) ? null : o.Error,
                 Successful = o.Successful,
-                Uuid = ObjectHelper.GuidFromByteString(o.Uuid),
+                Uuid = Internal.ObjectHelper.GuidFromByteString(o.Uuid),
             }),
         };
 

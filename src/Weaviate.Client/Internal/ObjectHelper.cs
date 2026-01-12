@@ -7,7 +7,7 @@ using Google.Protobuf.WellKnownTypes;
 using Weaviate.Client.Serialization;
 using V1 = Weaviate.Client.Grpc.Protobuf.V1;
 
-namespace Weaviate.Client;
+namespace Weaviate.Client.Internal;
 
 /// <summary>
 /// The object helper class
@@ -387,7 +387,7 @@ internal class ObjectHelper
                     nonRefProps ??= new();
                     nonRefProps.Fields.Add(
                         propName,
-                        Google.Protobuf.WellKnownTypes.Value.ForList(listValue.Values.ToArray())
+                        Google.Protobuf.WellKnownTypes.Value.ForList([.. listValue.Values])
                     );
                     continue;
                 }
@@ -713,7 +713,7 @@ internal class ObjectHelper
                     // Pass the field descriptor for nested enum lookups
                     list.Values.Add(ConvertToProtoValue(item, field));
                 }
-                return Value.ForList(list.Values.ToArray());
+                return Value.ForList([.. list.Values]);
 
             // Handle primitive types
             case bool boolValue:
@@ -732,7 +732,7 @@ internal class ObjectHelper
                 return Value.ForString(byteStringValue.ToBase64());
 
             // Handle Enums (serialize as string name)
-            case System.Enum enumValue:
+            case System.Enum:
                 // Find the string name from the enum's descriptor
                 var enumDescriptor = field.EnumType.FindValueByNumber(Convert.ToInt32(value));
                 if (enumDescriptor != null)

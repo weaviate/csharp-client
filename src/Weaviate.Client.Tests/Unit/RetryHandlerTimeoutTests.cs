@@ -1,4 +1,5 @@
 using System.Net;
+using Weaviate.Client.Internal;
 
 namespace Weaviate.Client.Tests.Unit;
 
@@ -47,11 +48,7 @@ public class RetryHandlerTimeoutTests
         )
         {
             // Set up timeout context
-            var timeoutToken = TimeoutHelper.GetCancellationToken(
-                _timeout,
-                cancellationToken,
-                _operation
-            );
+            var _ = TimeoutHelper.GetCancellationToken(_timeout, cancellationToken, _operation);
 
             // Wait for the timeout to actually expire (timeout + buffer)
             // We use Thread.Sleep instead of Task.Delay to ensure it blocks and the timeout fires

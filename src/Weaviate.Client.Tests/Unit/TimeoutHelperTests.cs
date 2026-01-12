@@ -1,3 +1,5 @@
+using Weaviate.Client.Internal;
+
 namespace Weaviate.Client.Tests.Unit;
 
 /// <summary>
@@ -164,7 +166,7 @@ public class TimeoutHelperTests
         var operation = "Search operation";
 
         // Act
-        var token = TimeoutHelper.GetCancellationToken(
+        _ = TimeoutHelper.GetCancellationToken(
             timeout,
             providedToken: TestContext.Current.CancellationToken,
             operation: operation
@@ -185,7 +187,7 @@ public class TimeoutHelperTests
         var defaultTimeout = TimeSpan.FromSeconds(30);
 
         // Act
-        var token = TimeoutHelper.GetCancellationToken(
+        _ = TimeoutHelper.GetCancellationToken(
             configTimeout,
             defaultTimeout,
             providedToken: TestContext.Current.CancellationToken,
@@ -207,7 +209,7 @@ public class TimeoutHelperTests
         var defaultTimeout = TimeSpan.FromSeconds(30);
 
         // Act
-        var token = TimeoutHelper.GetCancellationToken(
+        _ = TimeoutHelper.GetCancellationToken(
             configTimeout,
             defaultTimeout,
             providedToken: TestContext.Current.CancellationToken,
@@ -242,7 +244,7 @@ public class TimeoutHelperTests
     {
         // Arrange
         var timeout = TimeSpan.FromMilliseconds(50);
-        var token = TimeoutHelper.GetCancellationToken(
+        _ = TimeoutHelper.GetCancellationToken(
             timeout,
             providedToken: TestContext.Current.CancellationToken
         );

@@ -166,7 +166,7 @@ internal partial class WeaviateGrpcClient
         catch (global::Grpc.Core.RpcException ex)
         {
             // Use centralized exception mapping helper
-            throw ExceptionHelper.MapGrpcException(ex, "Aggregate request failed");
+            throw Internal.ExceptionHelper.MapGrpcException(ex, "Aggregate request failed");
         }
     }
 

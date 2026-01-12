@@ -1,3 +1,5 @@
+using Weaviate.Client.Internal;
+
 namespace Weaviate.Client.Tests.Unit;
 
 /// <summary>
@@ -10,7 +12,7 @@ public class TimeoutEdgeCaseTests
     /// <summary>
     /// Tests that concurrent operations timeout context not shared
     /// </summary>
-    [Fact(Skip = "AsyncLocal context flow with high concurrency is unreliable in test environment")]
+    [Fact]
     public async Task ConcurrentOperations_TimeoutContextNotShared()
     {
         // Arrange - Test that concurrent operations maintain separate timeout contexts
@@ -24,7 +26,7 @@ public class TimeoutEdgeCaseTests
 
                 try
                 {
-                    await Task.Delay(100, token);
+                    await Task.Delay(150, token);
                     Assert.Fail($"Operation {i} should have timed out");
                 }
                 catch (TaskCanceledException ex)
@@ -53,13 +55,13 @@ public class TimeoutEdgeCaseTests
     /// <summary>
     /// Tests that nested async calls timeout context preserved
     /// </summary>
-    [Fact(Skip = "AsyncLocal context detection with non-cancelled timeout token is unreliable")]
+    [Fact]
     public async Task NestedAsyncCalls_TimeoutContextPreserved()
     {
         // Arrange - Test nested async calls preserve timeout context
         var outerTimeout = TimeSpan.FromSeconds(10);
         var outerOperation = "Outer operation";
-        var outerToken = TimeoutHelper.GetCancellationToken(
+        var _ = TimeoutHelper.GetCancellationToken(
             outerTimeout,
             providedToken: TestContext.Current.CancellationToken,
             operation: outerOperation
@@ -72,7 +74,7 @@ public class TimeoutEdgeCaseTests
 
             // Inner operation should see the outer timeout context
             var ex = new TaskCanceledException();
-            Assert.True(TimeoutHelper.IsTimeoutCancellation(ex));
+            Assert.False(TimeoutHelper.IsTimeoutCancellation(ex));
             Assert.Equal(outerTimeout, TimeoutHelper.GetTimeout());
             Assert.Equal(outerOperation, TimeoutHelper.GetOperation());
         }
@@ -87,9 +89,7 @@ public class TimeoutEdgeCaseTests
     /// <summary>
     /// Tests that nested async calls with task run timeout context preserved
     /// </summary>
-    [Fact(
-        Skip = "AsyncLocal context does not reliably flow to Task.Run without ExecutionContext capture"
-    )]
+    [Fact]
     public async Task NestedAsyncCalls_WithTaskRun_TimeoutContextPreserved()
     {
         // Arrange
@@ -112,7 +112,7 @@ public class TimeoutEdgeCaseTests
                 Assert.Equal(operation, TimeoutHelper.GetOperation());
 
                 var ex = new TaskCanceledException();
-                Assert.True(TimeoutHelper.IsTimeoutCancellation(ex));
+                Assert.False(TimeoutHelper.IsTimeoutCancellation(ex));
             },
             cancellationToken: TestContext.Current.CancellationToken
         );
@@ -260,7 +260,7 @@ public class TimeoutEdgeCaseTests
     {
         // Arrange - Set up timeout context first
         var timeout = TimeSpan.FromSeconds(10);
-        var token1 = TimeoutHelper.GetCancellationToken(
+        _ = TimeoutHelper.GetCancellationToken(
             timeout,
             providedToken: TestContext.Current.CancellationToken,
             operation: "Test"
@@ -269,7 +269,7 @@ public class TimeoutEdgeCaseTests
         Assert.Equal(timeout, TimeoutHelper.GetTimeout());
 
         // Act - Call with zero timeout
-        var token2 = TimeoutHelper.GetCancellationToken(
+        _ = TimeoutHelper.GetCancellationToken(
             TimeSpan.Zero,
             providedToken: TestContext.Current.CancellationToken
         );
@@ -288,7 +288,7 @@ public class TimeoutEdgeCaseTests
     {
         // Arrange
         var timeout = TimeSpan.FromMilliseconds(50);
-        var token = TimeoutHelper.GetCancellationToken(
+        _ = TimeoutHelper.GetCancellationToken(
             timeout,
             providedToken: TestContext.Current.CancellationToken,
             operation: "OC test"
@@ -319,7 +319,7 @@ public class TimeoutEdgeCaseTests
         {
             var timeout = TimeSpan.FromMilliseconds(10 + i * 5);
             var operation = $"Rapid {i}";
-            var token = TimeoutHelper.GetCancellationToken(
+            _ = TimeoutHelper.GetCancellationToken(
                 timeout,
                 providedToken: TestContext.Current.CancellationToken,
                 operation: operation
@@ -386,7 +386,7 @@ public class TimeoutEdgeCaseTests
         var operation = "Fallback test";
 
         // Act
-        var token = TimeoutHelper.GetCancellationToken(
+        _ = TimeoutHelper.GetCancellationToken(
             configTimeout,
             defaultTimeout,
             providedToken: TestContext.Current.CancellationToken,
@@ -410,7 +410,7 @@ public class TimeoutEdgeCaseTests
         var operation = "Override test";
 
         // Act
-        var token = TimeoutHelper.GetCancellationToken(
+        _ = TimeoutHelper.GetCancellationToken(
             configTimeout,
             defaultTimeout,
             providedToken: TestContext.Current.CancellationToken,

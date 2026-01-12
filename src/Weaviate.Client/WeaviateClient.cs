@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Weaviate.Client.Grpc;
+using Weaviate.Client.Internal;
 using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
@@ -199,9 +200,9 @@ public partial class WeaviateClient : IDisposable
     /// <returns>The bool</returns>
     static bool IsWeaviateDomain(string url)
     {
-        return url.ToLower().Contains("weaviate.io")
-            || url.ToLower().Contains("semi.technology")
-            || url.ToLower().Contains("weaviate.cloud");
+        return url.Contains("weaviate.io", StringComparison.CurrentCultureIgnoreCase)
+            || url.Contains("semi.technology", StringComparison.CurrentCultureIgnoreCase)
+            || url.Contains("weaviate.cloud", StringComparison.CurrentCultureIgnoreCase);
     }
 
     /// <summary>
@@ -523,6 +524,8 @@ public partial class WeaviateClient : IDisposable
 
         GrpcClient?.Dispose();
         RestClient?.Dispose();
+
+        GC.SuppressFinalize(this);
 
         _isDisposed = true;
     }
