@@ -375,25 +375,42 @@ public partial class RestClientTests
         Assert.All(handler.Requests, req => req.ShouldHaveMethod(HttpMethod.Post));
     }
 
-    // Helper class for typed data test
     /// <summary>
-    /// The product data class
+    /// Tests that the X-Weaviate-Client header is set with the correct UserAgent value
     /// </summary>
-    private class ProductData
+    [Fact]
+    public async Task Client_SetsUserAgentHeader()
     {
-        /// <summary>
-        /// Gets or sets the value of the name
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
+        // Arrange
+        var (client, handler) = MockWeaviateClient.CreateWithMockHandler();
 
-        /// <summary>
-        /// Gets or sets the value of the price
-        /// </summary>
-        public double Price { get; set; }
+        // Mock a simple response
+        var mockResponse = new Dto.Class { Class1 = "TestCollection", Vectorizer = "none" };
 
-        /// <summary>
-        /// Gets or sets the value of the in stock
-        /// </summary>
-        public bool InStock { get; set; }
+        handler.AddJsonResponse(mockResponse);
+
+        var config = new CollectionCreateParams { Name = "TestCollection" };
+
+        // Act
+        await client.Collections.Create(config, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.NotNull(handler.LastRequest);
+
+        // Verify the X-Weaviate-Client header is present
+        Assert.True(
+            handler.LastRequest!.Headers.Contains("X-Weaviate-Client"),
+            "X-Weaviate-Client header should be present"
+        );
+
+        // Verify the header value matches the UserAgent
+        var headerValues = handler.LastRequest.Headers.GetValues("X-Weaviate-Client");
+        var actualUserAgent = headerValues.FirstOrDefault();
+
+        Assert.NotNull(actualUserAgent);
+        Assert.Equal(WeaviateDefaults.UserAgent, actualUserAgent);
+
+        // Verify the format includes version
+        Assert.Matches(@"^weaviate-client-csharp/\d+\.\d+\.\d+", actualUserAgent);
     }
 }

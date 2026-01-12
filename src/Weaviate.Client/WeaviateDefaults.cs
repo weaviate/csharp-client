@@ -33,4 +33,11 @@ public static class WeaviateDefaults
     /// Default retry policy applied when a client does not specify one explicitly.
     /// </summary>
     public static RetryPolicy DefaultRetryPolicy { get; set; } = RetryPolicy.Default;
+
+    /// <summary>
+    /// Gets or sets the default User-Agent headers sent by the client.
+    /// This can be used to identify the client or provide additional metadata in requests.
+    /// </summary>
+    public static string UserAgent =>
+        $"weaviate-client-csharp/{typeof(WeaviateClient).Assembly.GetName().Version}";
 }

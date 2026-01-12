@@ -477,6 +477,8 @@ public partial class WeaviateClient : IDisposable
             );
         }
 
+        httpClient.DefaultRequestHeaders.Add("X-Weaviate-Client", WeaviateDefaults.UserAgent);
+
         if (config.Headers != null)
         {
             foreach (var header in config.Headers)
