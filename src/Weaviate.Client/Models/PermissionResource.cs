@@ -207,7 +207,7 @@ internal static class PermissionResourceExtensions
             .Select(p => p.Action)
             .ToHashSet();
 
-        return new Models.Permissions.Alias(resource.Collection, resource.Alias)
+        return new Permissions.Alias(resource.Collection, resource.Alias)
         {
             Create = actions.Contains(Rest.Dto.PermissionAction.Create_aliases),
             Read = actions.Contains(Rest.Dto.PermissionAction.Read_aliases),
@@ -229,7 +229,7 @@ internal static class PermissionResourceExtensions
     {
         var actions = permissions.Where(p => p.Data == resource).Select(p => p.Action).ToHashSet();
 
-        return new Models.Permissions.Data(resource.Collection, resource.Tenant)
+        return new Permissions.Data(resource.Collection, resource.Tenant)
         {
             Create = actions.Contains(Rest.Dto.PermissionAction.Create_data),
             Read = actions.Contains(Rest.Dto.PermissionAction.Read_data),
@@ -254,7 +254,7 @@ internal static class PermissionResourceExtensions
             .Select(p => p.Action)
             .ToHashSet();
 
-        return new Models.Permissions.Backups(resource.Collection)
+        return new Permissions.Backups(resource.Collection)
         {
             Manage = actions.Contains(Rest.Dto.PermissionAction.Manage_backups),
         };
@@ -273,10 +273,7 @@ internal static class PermissionResourceExtensions
     {
         var actions = permissions.Where(p => p.Nodes == resource).Select(p => p.Action).ToHashSet();
 
-        return new Models.Permissions.Nodes(
-            resource.Collection,
-            (Models.NodeVerbosity?)resource.Verbosity
-        )
+        return new Permissions.Nodes(resource.Collection, (NodeVerbosity?)resource.Verbosity)
         {
             Read = actions.Contains(Rest.Dto.PermissionAction.Read_nodes),
         };
@@ -295,7 +292,7 @@ internal static class PermissionResourceExtensions
     {
         var actions = permissions.Where(p => p.Roles == resource).Select(p => p.Action).ToHashSet();
 
-        return new Models.Permissions.Roles(resource.Role, (Models.RolesScope?)resource.Scope)
+        return new Permissions.Roles(resource.Role, (RolesScope?)resource.Scope)
         {
             Create = actions.Contains(Rest.Dto.PermissionAction.Create_roles),
             Read = actions.Contains(Rest.Dto.PermissionAction.Read_roles),
@@ -317,7 +314,7 @@ internal static class PermissionResourceExtensions
     {
         var actions = permissions.Where(p => p.Users == resource).Select(p => p.Action).ToHashSet();
 
-        return new Models.Permissions.Users(resource.Users1)
+        return new Permissions.Users(resource.Users1)
         {
             Create = actions.Contains(Rest.Dto.PermissionAction.Create_users),
             Read = actions.Contains(Rest.Dto.PermissionAction.Read_users),
@@ -343,7 +340,7 @@ internal static class PermissionResourceExtensions
             .Select(p => p.Action)
             .ToHashSet();
 
-        return new Models.Permissions.Tenants(resource.Collection, resource.Tenant)
+        return new Permissions.Tenants(resource.Collection, resource.Tenant)
         {
             Create = actions.Contains(Rest.Dto.PermissionAction.Create_tenants),
             Read = actions.Contains(Rest.Dto.PermissionAction.Read_tenants),
@@ -368,10 +365,7 @@ internal static class PermissionResourceExtensions
             .Select(p => p.Action)
             .ToHashSet();
 
-        return new Models.Permissions.Groups(
-            resource.Group,
-            (Models.RbacGroupType?)resource.GroupType
-        )
+        return new Permissions.Groups(resource.Group, (RbacGroupType?)resource.GroupType)
         {
             AssignAndRevoke = actions.Contains(Rest.Dto.PermissionAction.Assign_and_revoke_groups),
             Read = actions.Contains(Rest.Dto.PermissionAction.Read_groups),
@@ -394,7 +388,7 @@ internal static class PermissionResourceExtensions
             .Select(p => p.Action)
             .ToHashSet();
 
-        return new Models.Permissions.Replicate(resource.Collection, resource.Shard)
+        return new Permissions.Replicate(resource.Collection, resource.Shard)
         {
             Create = actions.Contains(Rest.Dto.PermissionAction.Create_replicate),
             Read = actions.Contains(Rest.Dto.PermissionAction.Read_replicate),
@@ -419,7 +413,7 @@ internal static class PermissionResourceExtensions
             .Select(p => p.Action)
             .ToHashSet();
 
-        return new Models.Permissions.Collections(resource.Collection)
+        return new Permissions.Collections(resource.Collection)
         {
             Create = actions.Contains(Rest.Dto.PermissionAction.Create_collections),
             Read = actions.Contains(Rest.Dto.PermissionAction.Read_collections),

@@ -13,61 +13,37 @@ public class PermissionsScopeTests
     [Fact]
     public void Alias_GroupBy_CorrectlyAggregatesPermissions()
     {
-        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        var permissions = new List<Rest.Dto.Permission>
         {
             new()
             {
                 Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_aliases,
-                Aliases = new Weaviate.Client.Rest.Dto.Aliases
-                {
-                    Collection = "colA",
-                    Alias = "alias1",
-                },
+                Aliases = new Rest.Dto.Aliases { Collection = "colA", Alias = "alias1" },
             },
             new()
             {
                 Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_aliases,
-                Aliases = new Weaviate.Client.Rest.Dto.Aliases
-                {
-                    Collection = "colA",
-                    Alias = "alias1",
-                },
+                Aliases = new Rest.Dto.Aliases { Collection = "colA", Alias = "alias1" },
             },
             new()
             {
                 Action = Weaviate.Client.Rest.Dto.PermissionAction.Delete_aliases,
-                Aliases = new Weaviate.Client.Rest.Dto.Aliases
-                {
-                    Collection = "colA",
-                    Alias = "alias1",
-                },
+                Aliases = new Rest.Dto.Aliases { Collection = "colA", Alias = "alias1" },
             },
             new()
             {
                 Action = Weaviate.Client.Rest.Dto.PermissionAction.Update_aliases,
-                Aliases = new Weaviate.Client.Rest.Dto.Aliases
-                {
-                    Collection = "colA",
-                    Alias = "alias2",
-                },
+                Aliases = new Rest.Dto.Aliases { Collection = "colA", Alias = "alias2" },
             },
             new()
             {
                 Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_aliases,
-                Aliases = new Weaviate.Client.Rest.Dto.Aliases
-                {
-                    Collection = "colA",
-                    Alias = "alias2",
-                },
+                Aliases = new Rest.Dto.Aliases { Collection = "colA", Alias = "alias2" },
             },
             new()
             {
                 Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_aliases,
-                Aliases = new Weaviate.Client.Rest.Dto.Aliases
-                {
-                    Collection = "colB",
-                    Alias = "alias3",
-                },
+                Aliases = new Rest.Dto.Aliases { Collection = "colB", Alias = "alias3" },
             },
         };
 
@@ -106,7 +82,7 @@ public class PermissionsScopeTests
     [Fact]
     public void Cluster_Aggregates_ReadPermission()
     {
-        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        var permissions = new List<Rest.Dto.Permission>
         {
             new() { Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_cluster },
         };
@@ -121,12 +97,12 @@ public class PermissionsScopeTests
     [Fact]
     public void Nodes_Aggregates_ReadPermission()
     {
-        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        var permissions = new List<Rest.Dto.Permission>
         {
             new()
             {
                 Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_nodes,
-                Nodes = new Weaviate.Client.Rest.Dto.Nodes
+                Nodes = new Rest.Dto.Nodes
                 {
                     Collection = "colA",
                     Verbosity = Weaviate.Client.Rest.Dto.NodesVerbosity.Verbose,
@@ -144,12 +120,12 @@ public class PermissionsScopeTests
     [Fact]
     public void Roles_Aggregates_AllActions()
     {
-        var resource = new Weaviate.Client.Rest.Dto.Roles
+        var resource = new Rest.Dto.Roles
         {
             Role = "roleA",
             Scope = Weaviate.Client.Rest.Dto.RolesScope.Match,
         };
-        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        var permissions = new List<Rest.Dto.Permission>
         {
             new()
             {
@@ -186,8 +162,8 @@ public class PermissionsScopeTests
     [Fact]
     public void Users_Aggregates_AllActions()
     {
-        var resource = new Weaviate.Client.Rest.Dto.Users { Users1 = "userA" };
-        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        var resource = new Rest.Dto.Users { Users1 = "userA" };
+        var permissions = new List<Rest.Dto.Permission>
         {
             new()
             {
@@ -230,12 +206,8 @@ public class PermissionsScopeTests
     [Fact]
     public void Tenants_Aggregates_AllActions()
     {
-        var resource = new Weaviate.Client.Rest.Dto.Tenants
-        {
-            Collection = "tenantA",
-            Tenant = "scopeA",
-        };
-        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        var resource = new Rest.Dto.Tenants { Collection = "tenantA", Tenant = "scopeA" };
+        var permissions = new List<Rest.Dto.Permission>
         {
             new()
             {
@@ -272,12 +244,12 @@ public class PermissionsScopeTests
     [Fact]
     public void Groups_Aggregates_AllActions()
     {
-        var resource = new Weaviate.Client.Rest.Dto.Groups
+        var resource = new Rest.Dto.Groups
         {
             Group = "groupA",
             GroupType = Weaviate.Client.Rest.Dto.GroupType.Oidc,
         };
-        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        var permissions = new List<Rest.Dto.Permission>
         {
             new()
             {
@@ -302,12 +274,8 @@ public class PermissionsScopeTests
     [Fact]
     public void Replicate_Aggregates_AllActions()
     {
-        var resource = new Weaviate.Client.Rest.Dto.Replicate
-        {
-            Collection = "shardA",
-            Shard = "replicateA",
-        };
-        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        var resource = new Rest.Dto.Replicate { Collection = "shardA", Shard = "replicateA" };
+        var permissions = new List<Rest.Dto.Permission>
         {
             new()
             {
@@ -347,8 +315,8 @@ public class PermissionsScopeTests
     [Fact]
     public void Collections_Aggregates_AllActions()
     {
-        var resource = new Weaviate.Client.Rest.Dto.Collections { Collection = "collectionA" };
-        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        var resource = new Rest.Dto.Collections { Collection = "collectionA" };
+        var permissions = new List<Rest.Dto.Permission>
         {
             new()
             {
@@ -388,8 +356,8 @@ public class PermissionsScopeTests
     [Fact]
     public void Backups_Aggregates_ManageBackupsOnly()
     {
-        var resource = new Weaviate.Client.Rest.Dto.Backups { Collection = "backup1" };
-        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        var resource = new Rest.Dto.Backups { Collection = "backup1" };
+        var permissions = new List<Rest.Dto.Permission>
         {
             new()
             {
@@ -409,8 +377,8 @@ public class PermissionsScopeTests
     public void AllPermissionActions_AreMentioned()
     {
         // This test ensures every valid permission action is covered in the suite
-        var allActions = Enum.GetValues(typeof(Weaviate.Client.Rest.Dto.PermissionAction))
-            .Cast<Weaviate.Client.Rest.Dto.PermissionAction>()
+        var allActions = Enum.GetValues(typeof(Rest.Dto.PermissionAction))
+            .Cast<Rest.Dto.PermissionAction>()
             .ToList();
         // Exclude deprecated or custom actions if present
         allActions.RemoveAll(a =>
@@ -470,8 +438,8 @@ public class PermissionsScopeTests
     [Fact]
     public void Data_Aggregates_AllActions()
     {
-        var resource = new Weaviate.Client.Rest.Dto.Data { Collection = "colA" };
-        var permissions = new List<Weaviate.Client.Rest.Dto.Permission>
+        var resource = new Rest.Dto.Data { Collection = "colA" };
+        var permissions = new List<Rest.Dto.Permission>
         {
             new()
             {

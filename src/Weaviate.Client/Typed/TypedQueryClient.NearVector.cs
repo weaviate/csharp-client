@@ -26,7 +26,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public async Task<Models.WeaviateResult<WeaviateObject<T>>> NearVector(
+    public async Task<WeaviateResult<WeaviateObject<T>>> NearVector(
         VectorSearchInput vectors,
         Filter? filters = null,
         float? certainty = null,
@@ -131,7 +131,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public Task<Models.WeaviateResult<WeaviateObject<T>>> NearVector(
+    public Task<WeaviateResult<WeaviateObject<T>>> NearVector(
         VectorSearchInput.FactoryFn vectors,
         Filter? filters = null,
         float? certainty = null,
@@ -228,7 +228,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public Task<Models.WeaviateResult<WeaviateObject<T>>> NearVector(
+    public Task<WeaviateResult<WeaviateObject<T>>> NearVector(
         NearVectorInput input,
         Filter? filters = null,
         uint? autoLimit = null,
@@ -319,7 +319,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public Task<Models.WeaviateResult<WeaviateObject<T>>> NearVector(
+    public Task<WeaviateResult<WeaviateObject<T>>> NearVector(
         NearVectorInput.FactoryFn vectors,
         Filter? filters = null,
         uint? autoLimit = null,

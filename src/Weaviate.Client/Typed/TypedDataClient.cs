@@ -34,7 +34,7 @@ public class TypedDataClient<T>
     public async Task<Guid> Insert(
         T properties,
         Guid? uuid = null,
-        Models.Vectors? vectors = null,
+        Vectors? vectors = null,
         AutoArray<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
@@ -54,7 +54,7 @@ public class TypedDataClient<T>
     public async Task Update(
         Guid uuid,
         T properties,
-        Models.Vectors? vectors = null,
+        Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
@@ -68,7 +68,7 @@ public class TypedDataClient<T>
     public async Task Replace(
         Guid uuid,
         T properties,
-        Models.Vectors? vectors = null,
+        Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )

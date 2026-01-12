@@ -21,17 +21,16 @@ internal partial class SearchReply
     /// </summary>
     public string Collection { get; set; } = string.Empty;
 
-    public static implicit operator Client.Models.GroupByResult(SearchReply reply) =>
+    public static implicit operator Models.GroupByResult(SearchReply reply) =>
         Client.Grpc.WeaviateGrpcClient.BuildGroupByResult(reply);
 
-    public static implicit operator global::Weaviate.Client.Models.WeaviateResult(
-        SearchReply reply
-    ) => Client.Grpc.WeaviateGrpcClient.BuildResult(reply);
+    public static implicit operator Models.WeaviateResult(SearchReply reply) =>
+        Client.Grpc.WeaviateGrpcClient.BuildResult(reply);
 
-    public static implicit operator Client.Models.GenerativeGroupByResult(SearchReply reply) =>
+    public static implicit operator Models.GenerativeGroupByResult(SearchReply reply) =>
         Client.Grpc.WeaviateGrpcClient.BuildGenerativeGroupByResult(reply);
 
-    public static implicit operator Client.Models.GenerativeWeaviateResult(SearchReply reply) =>
+    public static implicit operator Models.GenerativeWeaviateResult(SearchReply reply) =>
         Client.Grpc.WeaviateGrpcClient.BuildGenerativeResult(reply);
 }
 
@@ -45,13 +44,13 @@ internal partial class Targets
     /// </summary>
     /// <param name="targetVectors">The target vectors</param>
     /// <returns>The grpc targets</returns>
-    private static Targets ToGrpcTargets(Client.Models.TargetVectors targetVectors)
+    private static Targets ToGrpcTargets(Models.TargetVectors targetVectors)
     {
         List<string> targets;
         List<WeightsForTarget> weightsForTargets = new();
 
         // Handle SimpleTargetVectors vs WeightedTargetVectors
-        if (targetVectors is Client.Models.WeightedTargetVectors weighted)
+        if (targetVectors is Models.WeightedTargetVectors weighted)
         {
             // For weighted targets, build weights list
             targets = new();
@@ -82,7 +81,7 @@ internal partial class Targets
         return grpcTargets;
     }
 
-    public static implicit operator Targets(Client.Models.TargetVectors targetVectors)
+    public static implicit operator Targets(Models.TargetVectors targetVectors)
     {
         return ToGrpcTargets(targetVectors);
     }

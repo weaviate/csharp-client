@@ -13,7 +13,7 @@ internal partial class WeaviateRestClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>The meta</returns>
-    internal async Task<Dto.Meta?> GetMeta(CancellationToken cancellationToken = default)
+    internal async Task<Meta?> GetMeta(CancellationToken cancellationToken = default)
     {
         var path = WeaviateEndpoints.Meta();
 

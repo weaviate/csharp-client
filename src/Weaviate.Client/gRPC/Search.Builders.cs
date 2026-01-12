@@ -64,7 +64,7 @@ internal partial class WeaviateGrpcClient
         IList<QueryReference>? returnReferences = null
     )
     {
-        var metadataRequest = new Protobuf.V1.MetadataRequest()
+        var metadataRequest = new V1.MetadataRequest()
         {
             Uuid = true,
             LastUpdateTimeUnix = returnMetadata?.LastUpdateTime ?? false,
@@ -90,7 +90,7 @@ internal partial class WeaviateGrpcClient
 #pragma warning restore CS0612 // Type or member is obsolete
             Uses127Api = true,
             GroupBy = groupBy is not null
-                ? new Protobuf.V1.GroupBy()
+                ? new V1.GroupBy()
                 {
                     Path = { groupBy.PropertyName.Decapitalize() },
                     NumberOfGroups = Convert.ToInt32(groupBy.NumberOfGroups),
@@ -180,7 +180,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="provider">The provider</param>
     /// <exception cref="NotSupportedException">Unknown generative provider type: {provider.GetType().Name}</exception>
     /// <returns>The result</returns>
-    private static V1.GenerativeProvider GetGenerativeProvider(Models.GenerativeProvider provider)
+    private static V1.GenerativeProvider GetGenerativeProvider(GenerativeProvider provider)
     {
         var result = new V1.GenerativeProvider { ReturnMetadata = provider.ReturnMetadata };
 

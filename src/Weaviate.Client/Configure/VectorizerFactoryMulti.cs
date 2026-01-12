@@ -21,7 +21,7 @@ public class VectorizerFactoryMulti
     /// Selfs the provided
     /// </summary>
     /// <returns>The vectorizer config</returns>
-    public VectorizerConfig SelfProvided() => new Models.Vectorizer.SelfProvided();
+    public VectorizerConfig SelfProvided() => new SelfProvided();
 
     /// <summary>
     /// Texts the 2 multi vec jina ai using the specified model
@@ -37,7 +37,7 @@ public class VectorizerFactoryMulti
         int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2MultiVecJinaAI
+        new Text2MultiVecJinaAI
         {
             Model = model,
             BaseURL = baseURL,
@@ -61,7 +61,7 @@ public class VectorizerFactoryMulti
         string? model = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2MultiVecJinaAI
+        new Multi2MultiVecJinaAI
         {
             BaseURL = baseURL,
             Model = model,
@@ -86,7 +86,7 @@ public class VectorizerFactoryMulti
         string? model = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2MultiVecJinaAI
+        new Multi2MultiVecJinaAI
         {
             BaseURL = baseURL,
             Model = model,

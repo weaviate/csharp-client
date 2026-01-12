@@ -207,7 +207,7 @@ internal class ObjectHelper
             {
                 result[key] = SerializeDictionaryToRest(nestedDict);
             }
-            else if (value is System.Collections.IEnumerable enumerable && value is not string)
+            else if (value is IEnumerable enumerable && value is not string)
             {
                 // Handle arrays/lists that may contain nested dictionaries
                 result[key] = SerializeEnumerableToRest(enumerable);
@@ -230,9 +230,7 @@ internal class ObjectHelper
     /// </summary>
     /// <param name="enumerable">The enumerable</param>
     /// <returns>The list</returns>
-    private static List<object?> SerializeEnumerableToRest(
-        System.Collections.IEnumerable enumerable
-    )
+    private static List<object?> SerializeEnumerableToRest(IEnumerable enumerable)
     {
         var list = new List<object?>();
         foreach (var item in enumerable)
@@ -299,7 +297,7 @@ internal class ObjectHelper
             visitedObjects.Add(objectHash);
         }
 
-        Google.Protobuf.WellKnownTypes.Struct? nonRefProps = null;
+        Struct? nonRefProps = null;
 
         var type = typeof(TProps);
 
@@ -332,7 +330,7 @@ internal class ObjectHelper
             if (
                 (propType.IsArray && propType != typeof(byte[]))
                 || (
-                    typeof(System.Collections.IEnumerable).IsAssignableFrom(propType)
+                    typeof(IEnumerable).IsAssignableFrom(propType)
                     && !(propType == typeof(string) || propType == typeof(byte[]))
                 )
             )
@@ -345,15 +343,15 @@ internal class ObjectHelper
                 if (
                     elementType != null
                     && !elementType.IsNativeType()
-                    && value is System.Collections.IEnumerable objEnumerable
+                    && value is IEnumerable objEnumerable
                 )
                 {
-                    var listValue = new Google.Protobuf.WellKnownTypes.ListValue();
+                    var listValue = new ListValue();
                     foreach (var item in objEnumerable)
                     {
                         if (item != null)
                         {
-                            var structValue = new Google.Protobuf.WellKnownTypes.Struct();
+                            var structValue = new Struct();
                             foreach (var nestedProp in item.GetType().GetProperties())
                             {
                                 if (!nestedProp.CanRead)
@@ -416,7 +414,7 @@ internal class ObjectHelper
                         break;
                     case double[] v:
                         props.NumberArrayProperties.Add(
-                            new Grpc.Protobuf.V1.NumberArrayProperties()
+                            new V1.NumberArrayProperties()
                             {
                                 PropName = propName,
                                 ValuesBytes = v.ToByteString(),
@@ -425,7 +423,7 @@ internal class ObjectHelper
                         break;
                     case float[] v:
                         props.NumberArrayProperties.Add(
-                            new Grpc.Protobuf.V1.NumberArrayProperties()
+                            new V1.NumberArrayProperties()
                             {
                                 PropName = propName,
                                 ValuesBytes = v.Select(Convert.ToDouble).ToByteString(),
@@ -434,16 +432,12 @@ internal class ObjectHelper
                         break;
                     case string[] v:
                         props.TextArrayProperties.Add(
-                            new Grpc.Protobuf.V1.TextArrayProperties()
-                            {
-                                PropName = propName,
-                                Values = { v },
-                            }
+                            new V1.TextArrayProperties() { PropName = propName, Values = { v } }
                         );
                         break;
                     case Guid[] v:
                         props.TextArrayProperties.Add(
-                            new Grpc.Protobuf.V1.TextArrayProperties()
+                            new V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values = { v.Select(g => g.ToString()) },
@@ -452,7 +446,7 @@ internal class ObjectHelper
                         break;
                     case DateTime[] v:
                         props.TextArrayProperties.Add(
-                            new Grpc.Protobuf.V1.TextArrayProperties()
+                            new V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values = { v.Select(d => d.ToUniversalTime().ToString("o")) },
@@ -461,15 +455,14 @@ internal class ObjectHelper
                         break;
                     case DateTimeOffset[] v:
                         props.TextArrayProperties.Add(
-                            new Grpc.Protobuf.V1.TextArrayProperties()
+                            new V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values = { v.Select(dto => dto.ToUniversalTime().ToString("o")) },
                             }
                         );
                         break;
-                    case System.Collections.IEnumerable enumerable
-                        when enumerable is IEnumerable<bool> bools:
+                    case IEnumerable enumerable when enumerable is IEnumerable<bool> bools:
                         props.BooleanArrayProperties.Add(
                             new V1.BooleanArrayProperties()
                             {
@@ -478,8 +471,7 @@ internal class ObjectHelper
                             }
                         );
                         continue;
-                    case System.Collections.IEnumerable enumerable
-                        when enumerable is IEnumerable<int> ints:
+                    case IEnumerable enumerable when enumerable is IEnumerable<int> ints:
                         props.IntArrayProperties.Add(
                             new V1.IntArrayProperties()
                             {
@@ -488,26 +480,23 @@ internal class ObjectHelper
                             }
                         );
                         continue;
-                    case System.Collections.IEnumerable enumerable
-                        when enumerable is IEnumerable<long> longs:
+                    case IEnumerable enumerable when enumerable is IEnumerable<long> longs:
                         props.IntArrayProperties.Add(
                             new V1.IntArrayProperties() { PropName = propName, Values = { longs } }
                         );
                         continue;
-                    case System.Collections.IEnumerable enumerable
-                        when enumerable is IEnumerable<double> doubles:
+                    case IEnumerable enumerable when enumerable is IEnumerable<double> doubles:
                         props.NumberArrayProperties.Add(
-                            new Grpc.Protobuf.V1.NumberArrayProperties()
+                            new V1.NumberArrayProperties()
                             {
                                 PropName = propName,
                                 ValuesBytes = doubles.ToByteString(),
                             }
                         );
                         continue;
-                    case System.Collections.IEnumerable enumerable
-                        when enumerable is IEnumerable<float> floats:
+                    case IEnumerable enumerable when enumerable is IEnumerable<float> floats:
                         props.NumberArrayProperties.Add(
-                            new Grpc.Protobuf.V1.NumberArrayProperties()
+                            new V1.NumberArrayProperties()
                             {
                                 PropName = propName,
                                 ValuesBytes = floats
@@ -516,30 +505,27 @@ internal class ObjectHelper
                             }
                         );
                         continue;
-                    case System.Collections.IEnumerable enumerable
-                        when enumerable is IEnumerable<string> strings:
+                    case IEnumerable enumerable when enumerable is IEnumerable<string> strings:
                         props.TextArrayProperties.Add(
-                            new Grpc.Protobuf.V1.TextArrayProperties()
+                            new V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values = { strings },
                             }
                         );
                         continue;
-                    case System.Collections.IEnumerable enumerable
-                        when enumerable is IEnumerable<Guid> guids:
+                    case IEnumerable enumerable when enumerable is IEnumerable<Guid> guids:
                         props.TextArrayProperties.Add(
-                            new Grpc.Protobuf.V1.TextArrayProperties()
+                            new V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values = { guids.Select(g => g.ToString()) },
                             }
                         );
                         continue;
-                    case System.Collections.IEnumerable enumerable
-                        when enumerable is IEnumerable<DateTime> dateTimes:
+                    case IEnumerable enumerable when enumerable is IEnumerable<DateTime> dateTimes:
                         props.TextArrayProperties.Add(
-                            new Grpc.Protobuf.V1.TextArrayProperties()
+                            new V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values =
@@ -549,10 +535,10 @@ internal class ObjectHelper
                             }
                         );
                         continue;
-                    case System.Collections.IEnumerable enumerable
+                    case IEnumerable enumerable
                         when enumerable is IEnumerable<DateTimeOffset> dateTimeOffsets:
                         props.TextArrayProperties.Add(
-                            new Grpc.Protobuf.V1.TextArrayProperties()
+                            new V1.TextArrayProperties()
                             {
                                 PropName = propName,
                                 Values =
@@ -767,7 +753,7 @@ internal class ObjectHelper
         return obj switch
         {
             null => Value.ForNull(),
-            Google.Protobuf.WellKnownTypes.Struct s => Value.ForStruct(s),
+            Struct s => Value.ForStruct(s),
             _ => PropertyConverterRegistry.Default.ToGrpcValue(obj),
         };
     }
@@ -777,7 +763,7 @@ internal class ObjectHelper
     /// </summary>
     /// <param name="x">The </param>
     /// <returns>The guid</returns>
-    internal static Guid GuidFromByteString(Google.Protobuf.ByteString x)
+    internal static Guid GuidFromByteString(ByteString x)
     {
         byte[] bytes = x.ToByteArray();
         if (BitConverter.IsLittleEndian)

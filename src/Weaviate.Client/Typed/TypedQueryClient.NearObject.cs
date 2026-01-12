@@ -27,7 +27,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public async Task<Models.WeaviateResult<WeaviateObject<T>>> NearObject(
+    public async Task<WeaviateResult<WeaviateObject<T>>> NearObject(
         Guid nearObject,
         double? certainty = null,
         double? distance = null,

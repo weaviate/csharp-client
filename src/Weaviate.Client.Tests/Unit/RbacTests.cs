@@ -69,14 +69,14 @@ public class RbacTests
         handler.AddJsonResponse(
             new[]
             {
-                new Weaviate.Client.Rest.Dto.Role
+                new Rest.Dto.Role
                 {
                     Name = "reader",
                     Permissions = new[]
                     {
-                        new Weaviate.Client.Rest.Dto.Permission
+                        new Rest.Dto.Permission
                         {
-                            Roles = new Weaviate.Client.Rest.Dto.Roles
+                            Roles = new Rest.Dto.Roles
                             {
                                 Role = "reader",
                                 Scope = Weaviate.Client.Rest.Dto.RolesScope.Match,
@@ -85,14 +85,14 @@ public class RbacTests
                         },
                     },
                 },
-                new Weaviate.Client.Rest.Dto.Role
+                new Rest.Dto.Role
                 {
                     Name = "writer",
                     Permissions = new[]
                     {
-                        new Weaviate.Client.Rest.Dto.Permission
+                        new Rest.Dto.Permission
                         {
-                            Roles = new Weaviate.Client.Rest.Dto.Roles
+                            Roles = new Rest.Dto.Roles
                             {
                                 Role = "writer",
                                 Scope = Weaviate.Client.Rest.Dto.RolesScope.Match,

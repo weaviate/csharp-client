@@ -28,7 +28,7 @@ public partial class GenerateClient
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>Generative group-by result</returns>
     public async Task<GenerativeGroupByResult> FetchObjects(
-        Models.GroupByRequest groupBy,
+        GroupByRequest groupBy,
         Guid? after = null,
         uint? limit = null,
         Filter? filters = null,

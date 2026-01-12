@@ -65,7 +65,7 @@ public class TypedCollectionClient<T>
     /// <summary>
     /// The Weaviate server version.
     /// </summary>
-    public System.Version? WeaviateVersion => _collectionClient.WeaviateVersion;
+    public Version? WeaviateVersion => _collectionClient.WeaviateVersion;
 
     /// <summary>
     /// Strongly-typed data operations (CRUD).

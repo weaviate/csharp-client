@@ -31,7 +31,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public async Task<Models.WeaviateResult<WeaviateObject<T>>> NearMedia(
+    public async Task<WeaviateResult<WeaviateObject<T>>> NearMedia(
         NearMediaInput.FactoryFn media,
         Filter? filters = null,
         uint? autoLimit = null,

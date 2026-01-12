@@ -630,7 +630,7 @@ public sealed class HybridNearTextBuilder : IHybridNearTextBuilder
     {
         var nearTextInput = new NearTextInput(
             builder._query,
-            (Weaviate.Client.Models.TargetVectors?)null,
+            (TargetVectors?)null,
             null,
             null,
             builder._moveTo,

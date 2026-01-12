@@ -337,7 +337,7 @@ public record GenerativeGroupByResult<T>(
 /// Supports both object-level and result-set level generative data.
 /// </summary>
 /// <typeparam name="T">The C# type of objects in the result.</typeparam>
-public record GenerativeWeaviateResult<T> : Models.WeaviateResult<GenerativeWeaviateObject<T>>
+public record GenerativeWeaviateResult<T> : WeaviateResult<GenerativeWeaviateObject<T>>
     where T : class, new()
 {
     /// <summary>

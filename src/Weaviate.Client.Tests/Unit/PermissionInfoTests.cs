@@ -110,20 +110,20 @@ public class PermissionInfoTests
     public void PermissionInfo_ToModel_MapsAllResourceScopes()
     {
         // Backups
-        var backupsDto = new Weaviate.Client.Rest.Dto.Permission
+        var backupsDto = new Rest.Dto.Permission
         {
             Action = Weaviate.Client.Rest.Dto.PermissionAction.Manage_backups,
-            Backups = new Weaviate.Client.Rest.Dto.Backups { Collection = "backup-collection" },
+            Backups = new Rest.Dto.Backups { Collection = "backup-collection" },
         };
         var backupsModel = Permissions.Parse([backupsDto]).Single();
         Assert.True(backupsModel is Permissions.Backups);
         Assert.Equal("backup-collection", ((Permissions.Backups)backupsModel).Resource.Collection);
 
         // Data
-        var dataDto = new Weaviate.Client.Rest.Dto.Permission
+        var dataDto = new Rest.Dto.Permission
         {
             Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_data,
-            Data = new Weaviate.Client.Rest.Dto.Data
+            Data = new Rest.Dto.Data
             {
                 Collection = "data-collection",
                 Tenant = "tenant1",
@@ -137,10 +137,10 @@ public class PermissionInfoTests
         Assert.Equal("tenant1", dataRes.Tenant);
 
         // Nodes
-        var nodesDto = new Weaviate.Client.Rest.Dto.Permission
+        var nodesDto = new Rest.Dto.Permission
         {
             Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_nodes,
-            Nodes = new Weaviate.Client.Rest.Dto.Nodes
+            Nodes = new Rest.Dto.Nodes
             {
                 Collection = "nodes-collection",
                 Verbosity = Weaviate.Client.Rest.Dto.NodesVerbosity.Verbose,
@@ -153,20 +153,20 @@ public class PermissionInfoTests
         Assert.Equal(NodeVerbosity.Verbose, nodesRes.Verbosity);
 
         // Users
-        var usersDto = new Weaviate.Client.Rest.Dto.Permission
+        var usersDto = new Rest.Dto.Permission
         {
             Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_users,
-            Users = new Weaviate.Client.Rest.Dto.Users { Users1 = "userA" },
+            Users = new Rest.Dto.Users { Users1 = "userA" },
         };
         var usersModel = Permissions.Parse([usersDto]).Single();
         Assert.True(usersModel is Permissions.Users);
         Assert.Equal("userA", ((Permissions.Users)usersModel).Resource.Users);
 
         // Groups
-        var groupsDto = new Weaviate.Client.Rest.Dto.Permission
+        var groupsDto = new Rest.Dto.Permission
         {
             Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_groups,
-            Groups = new Weaviate.Client.Rest.Dto.Groups
+            Groups = new Rest.Dto.Groups
             {
                 Group = "groupA",
                 GroupType = Weaviate.Client.Rest.Dto.GroupType.Oidc,
@@ -179,14 +179,10 @@ public class PermissionInfoTests
         Assert.Equal(RbacGroupType.Oidc, groupsRes.GroupType);
 
         // Tenants
-        var tenantsDto = new Weaviate.Client.Rest.Dto.Permission
+        var tenantsDto = new Rest.Dto.Permission
         {
             Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_tenants,
-            Tenants = new Weaviate.Client.Rest.Dto.Tenants
-            {
-                Collection = "tenant-collection",
-                Tenant = "tenant2",
-            },
+            Tenants = new Rest.Dto.Tenants { Collection = "tenant-collection", Tenant = "tenant2" },
         };
         var tenantsModel = Permissions.Parse([tenantsDto]).Single();
         Assert.True(tenantsModel is Permissions.Tenants);
@@ -195,10 +191,10 @@ public class PermissionInfoTests
         Assert.Equal("tenant2", tenantsRes.Tenant);
 
         // Roles
-        var rolesDto = new Weaviate.Client.Rest.Dto.Permission
+        var rolesDto = new Rest.Dto.Permission
         {
             Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_roles,
-            Roles = new Weaviate.Client.Rest.Dto.Roles
+            Roles = new Rest.Dto.Roles
             {
                 Role = "roleA",
                 Scope = Weaviate.Client.Rest.Dto.RolesScope.Match,
@@ -211,20 +207,20 @@ public class PermissionInfoTests
         Assert.Equal(RolesScope.Match, rolesRes.Scope);
 
         // Collections
-        var collectionsDto = new Weaviate.Client.Rest.Dto.Permission
+        var collectionsDto = new Rest.Dto.Permission
         {
             Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_collections,
-            Collections = new Weaviate.Client.Rest.Dto.Collections { Collection = "collA" },
+            Collections = new Rest.Dto.Collections { Collection = "collA" },
         };
         var collectionsModel = Permissions.Parse([collectionsDto]).Single();
         Assert.True(collectionsModel is Permissions.Collections);
         Assert.Equal("collA", ((Permissions.Collections)collectionsModel).Resource.Collection);
 
         // Replicate
-        var replicateDto = new Weaviate.Client.Rest.Dto.Permission
+        var replicateDto = new Rest.Dto.Permission
         {
             Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_replicate,
-            Replicate = new Weaviate.Client.Rest.Dto.Replicate
+            Replicate = new Rest.Dto.Replicate
             {
                 Collection = "replicate-collection",
                 Shard = "shardA",
@@ -237,14 +233,10 @@ public class PermissionInfoTests
         Assert.Equal("shardA", replicateRes.Shard);
 
         // Aliases
-        var aliasesDto = new Weaviate.Client.Rest.Dto.Permission
+        var aliasesDto = new Rest.Dto.Permission
         {
             Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_aliases,
-            Aliases = new Weaviate.Client.Rest.Dto.Aliases
-            {
-                Collection = "alias-collection",
-                Alias = "aliasA",
-            },
+            Aliases = new Rest.Dto.Aliases { Collection = "alias-collection", Alias = "aliasA" },
         };
         var aliasesModel = Permissions.Parse([aliasesDto]).Single();
         Assert.True(aliasesModel is Permissions.Alias);

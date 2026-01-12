@@ -237,7 +237,7 @@ internal class PropertyConverterRegistry
     /// </summary>
     internal object? BuildConcreteTypeFromProperties(
         IDictionary<string, object?> dict,
-        System.Type targetType
+        Type targetType
     )
     {
         if (dict is null)

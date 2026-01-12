@@ -54,7 +54,7 @@ public class DataClient
     /// </summary>
     /// <param name="vectors">The vectors</param>
     /// <returns>The result</returns>
-    public IDictionary<string, object>? VectorsToDto(Models.Vectors? vectors)
+    public IDictionary<string, object>? VectorsToDto(Vectors? vectors)
     {
         if (vectors == null || vectors.Count == 0)
             return null;
@@ -83,7 +83,7 @@ public class DataClient
     public async Task<Guid> Insert(
         object properties,
         Guid? uuid = null,
-        Models.Vectors? vectors = null,
+        Vectors? vectors = null,
         AutoArray<ObjectReference>? references = null,
         bool validate = false,
         CancellationToken cancellationToken = default
@@ -141,7 +141,7 @@ public class DataClient
     public async Task Update(
         Guid uuid,
         object properties,
-        Models.Vectors? vectors = null,
+        Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
@@ -180,7 +180,7 @@ public class DataClient
     public async Task Replace(
         Guid uuid,
         object properties,
-        Models.Vectors? vectors = null,
+        Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )

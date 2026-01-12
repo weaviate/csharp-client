@@ -121,7 +121,7 @@ public partial class GenerateClient
     /// </summary>
     public Task<GenerativeGroupByResult> Hybrid(
         string query,
-        Models.GroupByRequest groupBy,
+        GroupByRequest groupBy,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -171,7 +171,7 @@ public partial class GenerateClient
     public async Task<GenerativeGroupByResult> Hybrid(
         string? query,
         HybridVectorInput? vectors,
-        Models.GroupByRequest groupBy,
+        GroupByRequest groupBy,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,

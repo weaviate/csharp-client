@@ -35,7 +35,7 @@ public static class MockWeaviateClient
             var metaResponse = MockResponses.MetaInfo();
             return new HttpResponseMessage(metaResponse.StatusCode)
             {
-                Content = new System.Net.Http.StringContent(
+                Content = new StringContent(
                     metaResponse.Content ?? string.Empty,
                     Encoding.UTF8,
                     metaResponse.ContentType ?? "application/json"
@@ -86,7 +86,7 @@ public static class MockWeaviateClient
 
         var topHandler = handlerChainFactory != null ? handlerChainFactory(leaf) : leaf;
         var channel = NoOpGrpcChannel.Create();
-        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(channel);
+        var grpcClient = new Grpc.WeaviateGrpcClient(channel);
         var client = new WeaviateClient(httpMessageHandler: topHandler, grpcClient: grpcClient);
         return (client, leaf);
     }
@@ -118,7 +118,7 @@ public static class MockWeaviateClient
     /// </summary>
     internal static (
         WeaviateClient Client,
-        Func<Weaviate.Client.Grpc.Protobuf.V1.SearchRequest?> GetCapturedRequest
+        Func<SearchRequest?> GetCapturedRequest
     ) CreateWithSearchCapture()
     {
         return MockGrpcClient.CreateWithSearchCapture();
@@ -130,7 +130,7 @@ public static class MockWeaviateClient
     /// </summary>
     internal static (
         WeaviateClient Client,
-        Func<Weaviate.Client.Grpc.Protobuf.V1.AggregateRequest?> GetCapturedRequest
+        Func<AggregateRequest?> GetCapturedRequest
     ) CreateWithAggregateCapture()
     {
         return MockGrpcClient.CreateWithAggregateCapture();
@@ -181,7 +181,7 @@ internal static class MockGrpcClient
             }
         );
 
-        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(channel);
+        var grpcClient = new Grpc.WeaviateGrpcClient(channel);
         var client = new WeaviateClient(grpcClient: grpcClient);
 
         return (client, () => capturedRequest);
@@ -204,10 +204,10 @@ internal static class MockGrpcClient
     /// </summary>
     public static (
         WeaviateClient Client,
-        Func<Grpc.Protobuf.V1.AggregateRequest?> GetCapturedRequest
+        Func<AggregateRequest?> GetCapturedRequest
     ) CreateWithAggregateCapture()
     {
-        return CreateWithRequestCapture<Grpc.Protobuf.V1.AggregateRequest>(
+        return CreateWithRequestCapture<AggregateRequest>(
             "/weaviate.v1.Weaviate/Aggregate",
             () => new AggregateReply { Collection = "TestCollection" }
         );

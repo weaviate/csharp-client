@@ -52,7 +52,7 @@ public partial class WeaviateClient : IDisposable
             Hostname = meta?.Hostname ?? string.Empty,
             Version =
                 Models.MetaInfo.ParseWeaviateVersion(meta?.Version ?? string.Empty)
-                ?? new System.Version(0, 0),
+                ?? new Version(0, 0),
             Modules = meta?.Modules?.ToDictionary() ?? [],
         };
     }
@@ -71,7 +71,7 @@ public partial class WeaviateClient : IDisposable
     /// <summary>
     /// Gets the Weaviate server version from cached metadata.
     /// </summary>
-    public System.Version? WeaviateVersion => Meta?.Version;
+    public Version? WeaviateVersion => Meta?.Version;
 
     /// <summary>
     /// Returns true if the Weaviate process is live.
@@ -326,7 +326,7 @@ public partial class WeaviateClient : IDisposable
             Hostname = metaDto?.Hostname ?? string.Empty,
             Version =
                 Models.MetaInfo.ParseWeaviateVersion(metaDto?.Version ?? string.Empty)
-                ?? new System.Version(0, 0),
+                ?? new Version(0, 0),
             Modules = metaDto?.Modules?.ToDictionary() ?? [],
         };
 

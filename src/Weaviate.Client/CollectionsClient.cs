@@ -191,7 +191,7 @@ public record CollectionsClient
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A <see cref="CollectionClient"/> instance for the new collection.</returns>
     public async Task<CollectionClient> Create(
-        Models.CollectionCreateParams collection,
+        CollectionCreateParams collection,
         CancellationToken cancellationToken = default
     )
     {
@@ -291,7 +291,7 @@ public record CollectionsClient
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A <see cref="Typed.TypedCollectionClient{T}"/> instance for the new collection.</returns>
     public async Task<Typed.TypedCollectionClient<T>> Create<T>(
-        Models.CollectionCreateParams collection,
+        CollectionCreateParams collection,
         bool validateType = false,
         CancellationToken cancellationToken = default
     )
@@ -377,7 +377,7 @@ public record CollectionsClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>An asynchronous enumerable of all collections.</returns>
-    public async IAsyncEnumerable<Models.CollectionConfig> List(
+    public async IAsyncEnumerable<CollectionConfig> List(
         [System.Runtime.CompilerServices.EnumeratorCancellation]
             CancellationToken cancellationToken = default
     )

@@ -7,8 +7,8 @@ public record DatabaseUser(
     string UserId,
     bool Active,
     DatabaseUserType DbUserType,
-    System.DateTimeOffset? CreatedAt,
-    System.DateTimeOffset? LastUsedAt,
+    DateTimeOffset? CreatedAt,
+    DateTimeOffset? LastUsedAt,
     string? ApiKeyFirstLetters,
     IEnumerable<string> Roles
 );

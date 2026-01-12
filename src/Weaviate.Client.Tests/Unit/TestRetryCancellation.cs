@@ -55,7 +55,7 @@ public class TestRetryCancellation
         };
         var config = new ClientConfiguration(RestPort: 1234, RetryPolicy: retryPolicy);
         // Create a no-op gRPC client to avoid meta fetch during construction (Meta is accessed when real gRPC client is created).
-        var noOpGrpc = new Weaviate.Client.Grpc.WeaviateGrpcClient(
+        var noOpGrpc = new Grpc.WeaviateGrpcClient(
             Weaviate.Client.Tests.Unit.Mocks.NoOpGrpcChannel.Create()
         );
         using var retryClient = new WeaviateClient(

@@ -20,7 +20,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="metrics">The metrics</param>
     /// <exception cref="NotSupportedException">Metric type {m.GetType()} is not supported.</exception>
     /// <returns>The </returns>
-    private static Grpc.Protobuf.V1.AggregateRequest BaseAggregateRequest(
+    private static AggregateRequest BaseAggregateRequest(
         string collection,
         Filter? filter = null,
         Aggregate.GroupBy? groupBy = null,
@@ -30,7 +30,7 @@ internal partial class WeaviateGrpcClient
         IEnumerable<Aggregate.Metric>? metrics = null
     )
     {
-        var r = new Grpc.Protobuf.V1.AggregateRequest
+        var r = new AggregateRequest
         {
             Collection = collection,
             Filters = filter?.InternalFilter,
@@ -40,7 +40,7 @@ internal partial class WeaviateGrpcClient
 
         if (groupBy != null)
         {
-            r.GroupBy = new Grpc.Protobuf.V1.AggregateRequest.Types.GroupBy
+            r.GroupBy = new AggregateRequest.Types.GroupBy
             {
                 Collection = "",
                 Property = groupBy.Property.Decapitalize(),
@@ -62,18 +62,14 @@ internal partial class WeaviateGrpcClient
             r.Aggregations.AddRange(
                 metrics!.Select(m =>
                 {
-                    var a = new Grpc.Protobuf.V1.AggregateRequest.Types.Aggregation
-                    {
-                        Property = m.Name,
-                    };
+                    var a = new AggregateRequest.Types.Aggregation { Property = m.Name };
                     switch (m)
                     {
                         case Aggregate.Metric.Text text:
-                            a.Text =
-                                new Grpc.Protobuf.V1.AggregateRequest.Types.Aggregation.Types.Text
-                                {
-                                    Count = text.Count,
-                                };
+                            a.Text = new AggregateRequest.Types.Aggregation.Types.Text
+                            {
+                                Count = text.Count,
+                            };
                             if (text.MinOccurrences.HasValue)
                             {
                                 a.Text.TopOccurencesLimit = text.MinOccurrences.Value;
@@ -82,52 +78,48 @@ internal partial class WeaviateGrpcClient
                                 text.TopOccurrencesCount || text.TopOccurrencesValue;
                             break;
                         case Aggregate.Metric.Integer integer:
-                            a.Int =
-                                new Grpc.Protobuf.V1.AggregateRequest.Types.Aggregation.Types.Integer
-                                {
-                                    Count = integer.Count,
-                                    Maximum = integer.Maximum,
-                                    Mean = integer.Mean,
-                                    Median = integer.Median,
-                                    Minimum = integer.Minimum,
-                                    Mode = integer.Mode,
-                                    Sum = integer.Sum,
-                                };
+                            a.Int = new AggregateRequest.Types.Aggregation.Types.Integer
+                            {
+                                Count = integer.Count,
+                                Maximum = integer.Maximum,
+                                Mean = integer.Mean,
+                                Median = integer.Median,
+                                Minimum = integer.Minimum,
+                                Mode = integer.Mode,
+                                Sum = integer.Sum,
+                            };
                             break;
                         case Aggregate.Metric.Number number:
-                            a.Number =
-                                new Grpc.Protobuf.V1.AggregateRequest.Types.Aggregation.Types.Number
-                                {
-                                    Count = number.Count,
-                                    Maximum = number.Maximum,
-                                    Mean = number.Mean,
-                                    Median = number.Median,
-                                    Minimum = number.Minimum,
-                                    Mode = number.Mode,
-                                    Sum = number.Sum,
-                                };
+                            a.Number = new AggregateRequest.Types.Aggregation.Types.Number
+                            {
+                                Count = number.Count,
+                                Maximum = number.Maximum,
+                                Mean = number.Mean,
+                                Median = number.Median,
+                                Minimum = number.Minimum,
+                                Mode = number.Mode,
+                                Sum = number.Sum,
+                            };
                             break;
                         case Aggregate.Metric.Boolean boolean:
-                            a.Boolean =
-                                new Grpc.Protobuf.V1.AggregateRequest.Types.Aggregation.Types.Boolean
-                                {
-                                    Count = boolean.Count,
-                                    PercentageFalse = boolean.PercentageFalse,
-                                    PercentageTrue = boolean.PercentageTrue,
-                                    TotalFalse = boolean.TotalFalse,
-                                    TotalTrue = boolean.TotalTrue,
-                                };
+                            a.Boolean = new AggregateRequest.Types.Aggregation.Types.Boolean
+                            {
+                                Count = boolean.Count,
+                                PercentageFalse = boolean.PercentageFalse,
+                                PercentageTrue = boolean.PercentageTrue,
+                                TotalFalse = boolean.TotalFalse,
+                                TotalTrue = boolean.TotalTrue,
+                            };
                             break;
                         case Aggregate.Metric.Date date:
-                            a.Date =
-                                new Grpc.Protobuf.V1.AggregateRequest.Types.Aggregation.Types.Date
-                                {
-                                    Count = date.Count,
-                                    Maximum = date.Maximum,
-                                    Median = date.Median,
-                                    Minimum = date.Minimum,
-                                    Mode = date.Mode,
-                                };
+                            a.Date = new AggregateRequest.Types.Aggregation.Types.Date
+                            {
+                                Count = date.Count,
+                                Maximum = date.Maximum,
+                                Median = date.Median,
+                                Minimum = date.Minimum,
+                                Mode = date.Mode,
+                            };
                             break;
                         default:
                             throw new NotSupportedException(
@@ -150,7 +142,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the aggregate reply</returns>
     private async Task<AggregateReply> Aggregate(
-        Grpc.Protobuf.V1.AggregateRequest request,
+        AggregateRequest request,
         CancellationToken cancellationToken = default
     )
     {

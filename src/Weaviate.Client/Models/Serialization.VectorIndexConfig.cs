@@ -95,7 +95,7 @@ internal class HnswDto
     /// Gets or sets the value of the distance
     /// </summary>
     [JsonPropertyName("distance")]
-    public VectorIndexConfig.VectorDistance? Distance { get; set; }
+    public VectorDistance? Distance { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the dynamic ef min
@@ -131,7 +131,7 @@ internal class HnswDto
     /// Gets or sets the value of the filter strategy
     /// </summary>
     [JsonPropertyName("filterStrategy")]
-    public VectorIndexConfig.VectorIndexFilterStrategy? FilterStrategy { get; set; }
+    public VectorIndexFilterStrategy? FilterStrategy { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the flat search cutoff
@@ -205,7 +205,7 @@ internal class FlatDto
     /// Gets or sets the value of the distance
     /// </summary>
     [JsonPropertyName("distance")]
-    public VectorIndexConfig.VectorDistance? Distance { get; set; }
+    public VectorDistance? Distance { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the vector cache max objects
@@ -248,7 +248,7 @@ internal class DynamicDto
     /// Gets or sets the value of the distance
     /// </summary>
     [JsonPropertyName("distance")]
-    public VectorIndexConfig.VectorDistance? Distance { get; set; }
+    public VectorDistance? Distance { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the threshold

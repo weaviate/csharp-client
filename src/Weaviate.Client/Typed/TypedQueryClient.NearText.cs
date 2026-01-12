@@ -28,7 +28,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public async Task<Models.WeaviateResult<WeaviateObject<T>>> NearText(
+    public async Task<WeaviateResult<WeaviateObject<T>>> NearText(
         AutoArray<string> text,
         float? certainty = null,
         float? distance = null,
@@ -141,7 +141,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public async Task<Models.WeaviateResult<WeaviateObject<T>>> NearText(
+    public async Task<WeaviateResult<WeaviateObject<T>>> NearText(
         NearTextInput input,
         Filter? filters = null,
         uint? limit = null,
@@ -234,7 +234,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public Task<Models.WeaviateResult<WeaviateObject<T>>> NearText(
+    public Task<WeaviateResult<WeaviateObject<T>>> NearText(
         NearTextInput.FactoryFn query,
         Filter? filters = null,
         uint? limit = null,

@@ -289,7 +289,7 @@ public class WeaviateNotFoundException : WeaviateServerException
     /// <param name="restException">The rest exception</param>
     /// <param name="resourceType">The resource type</param>
     internal WeaviateNotFoundException(
-        Rest.WeaviateUnexpectedStatusCodeException restException,
+        WeaviateUnexpectedStatusCodeException restException,
         ResourceType resourceType = Client.ResourceType.Unknown
     )
         : base(DefaultMessage, restException)
