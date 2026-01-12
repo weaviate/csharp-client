@@ -164,13 +164,13 @@ public class ExceptionHelperTests
     {
         // Arrange
         var timeout = TimeSpan.FromMilliseconds(10);
-        _ = TimeoutHelper.GetCancellationToken(
+        var token = TimeoutHelper.GetCancellationToken(
             timeout,
             providedToken: TestContext.Current.CancellationToken
         ); // No operation specified
 
         // Wait for timeout to expire
-        Thread.Sleep(50);
+        token.WaitHandle.WaitOne();
 
         var innerEx = new TaskCanceledException();
 
