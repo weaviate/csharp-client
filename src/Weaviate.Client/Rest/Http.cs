@@ -106,7 +106,12 @@ internal static class HttpResponseMessageExtensions
         catch (WeaviateUnexpectedStatusCodeException ex)
         {
             // Use centralized exception mapping helper
-            throw ExceptionHelper.MapHttpException(ex.StatusCode, ex.Message, ex, resourceType);
+            throw Internal.ExceptionHelper.MapHttpException(
+                ex.StatusCode,
+                ex.Message,
+                ex,
+                resourceType
+            );
         }
     }
 

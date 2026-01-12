@@ -20,7 +20,7 @@ public class TestNearVectorSyntax : IAsyncLifetime
     /// <summary>
     /// The get request
     /// </summary>
-    private Func<Grpc.Protobuf.V1.SearchRequest?> _getRequest = null!;
+    private Func<V1.SearchRequest?> _getRequest = null!;
 
     /// <summary>
     /// The collection

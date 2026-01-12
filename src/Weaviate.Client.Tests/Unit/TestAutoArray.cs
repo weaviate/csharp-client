@@ -1,4 +1,4 @@
-using Weaviate.Client.Models;
+using Weaviate.Client.Internal;
 
 namespace Weaviate.Client.Tests.Unit;
 

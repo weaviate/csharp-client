@@ -16,9 +16,9 @@ internal partial class WeaviateRestClient
     /// <param name="tenants">The tenants</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing an enumerable of rest dto tenant</returns>
-    internal async Task<IEnumerable<Rest.Dto.Tenant>> TenantsAdd(
+    internal async Task<IEnumerable<Dto.Tenant>> TenantsAdd(
         string collectionName,
-        Rest.Dto.Tenant[] tenants,
+        Dto.Tenant[] tenants,
         CancellationToken cancellationToken = default
     )
     {
@@ -43,8 +43,8 @@ internal partial class WeaviateRestClient
             "tenants add",
             ResourceType.Tenant
         );
-        var result = await response.DecodeAsync<IEnumerable<Rest.Dto.Tenant>>(cancellationToken);
-        return result ?? Enumerable.Empty<Rest.Dto.Tenant>();
+        var result = await response.DecodeAsync<IEnumerable<Dto.Tenant>>(cancellationToken);
+        return result ?? Enumerable.Empty<Dto.Tenant>();
     }
 
     /// <summary>
@@ -55,9 +55,9 @@ internal partial class WeaviateRestClient
     /// <param name="cancellationToken">The cancellation token</param>
     /// <exception cref="ArgumentNullException">Tenant names cannot be null.</exception>
     /// <returns>A task containing an enumerable of rest dto tenant</returns>
-    internal async Task<IEnumerable<Rest.Dto.Tenant>> TenantUpdate(
+    internal async Task<IEnumerable<Dto.Tenant>> TenantUpdate(
         string collectionName,
-        Rest.Dto.Tenant[] tenants,
+        Dto.Tenant[] tenants,
         CancellationToken cancellationToken = default
     )
     {
@@ -87,9 +87,9 @@ internal partial class WeaviateRestClient
             ResourceType.Tenant
         );
 
-        var result = await response.DecodeAsync<Rest.Dto.Tenant[]>(cancellationToken);
+        var result = await response.DecodeAsync<Dto.Tenant[]>(cancellationToken);
 
-        return result ?? Enumerable.Empty<Rest.Dto.Tenant>();
+        return result ?? Enumerable.Empty<Dto.Tenant>();
     }
 
     /// <summary>

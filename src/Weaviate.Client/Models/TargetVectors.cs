@@ -1,6 +1,7 @@
 namespace Weaviate.Client.Models;
 
 using System.Runtime.CompilerServices;
+using Weaviate.Client.Internal;
 using V1 = Grpc.Protobuf.V1;
 
 /// <summary>

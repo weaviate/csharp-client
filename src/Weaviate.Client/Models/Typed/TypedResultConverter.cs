@@ -55,10 +55,10 @@ public static class TypedResultConverter
     /// <summary>
     /// Converts an untyped WeaviateResult to a typed WeaviateResult&lt;WeaviateObject&lt;T&gt;&gt;.
     /// </summary>
-    public static Models.WeaviateResult<WeaviateObject<T>> ToTyped<T>(this WeaviateResult result)
+    public static WeaviateResult<WeaviateObject<T>> ToTyped<T>(this WeaviateResult result)
         where T : class, new()
     {
-        return new Models.WeaviateResult<WeaviateObject<T>>
+        return new WeaviateResult<WeaviateObject<T>>
         {
             Objects = result.Objects.Select(o => o.ToTyped<T>()).ToList(),
         };

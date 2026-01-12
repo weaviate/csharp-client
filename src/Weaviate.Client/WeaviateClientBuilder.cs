@@ -1,8 +1,6 @@
 namespace Weaviate.Client;
 
 using System.Net.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 
 /// <summary>
 /// The weaviate client builder class

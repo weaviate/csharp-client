@@ -1,5 +1,4 @@
 using Weaviate.Client.Models;
-using Weaviate.Client.Rest.Dto;
 
 namespace Weaviate.Client;
 
@@ -62,7 +61,7 @@ public class BackupClient
     /// ));
     /// </example>
     public async Task<BackupCreateOperation> Create(
-        Models.BackupCreateRequest request,
+        BackupCreateRequest request,
         CancellationToken cancellationToken = default
     )
     {
@@ -86,7 +85,7 @@ public class BackupClient
     /// This method blocks until the backup operation finishes.
     /// </summary>
     public async Task<Backup> CreateSync(
-        Models.BackupCreateRequest request,
+        BackupCreateRequest request,
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default
     )
@@ -100,9 +99,7 @@ public class BackupClient
     /// </summary>
     /// <param name="request">The request</param>
     /// <returns>The rest dto backup create request</returns>
-    private Rest.Dto.BackupCreateRequest BuildBackupCreateRequest(
-        Models.BackupCreateRequest request
-    )
+    private Rest.Dto.BackupCreateRequest BuildBackupCreateRequest(BackupCreateRequest request)
     {
         var backend = request.Backend;
         var bucket = backend is ObjectStorageBackend osb ? osb.Bucket : null;
@@ -229,7 +226,7 @@ public class BackupClient
     /// ));
     /// </example>
     public async Task<BackupRestoreOperation> Restore(
-        Models.BackupRestoreRequest request,
+        BackupRestoreRequest request,
         CancellationToken cancellationToken = default
     )
     {
@@ -254,7 +251,7 @@ public class BackupClient
     /// This method blocks until the restore operation finishes.
     /// </summary>
     public async Task<Backup> RestoreSync(
-        Models.BackupRestoreRequest request,
+        BackupRestoreRequest request,
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default
     )
@@ -268,9 +265,7 @@ public class BackupClient
     /// </summary>
     /// <param name="request">The request</param>
     /// <returns>The rest dto backup restore request</returns>
-    private Rest.Dto.BackupRestoreRequest BuildBackupRestoreRequest(
-        Models.BackupRestoreRequest request
-    )
+    private Rest.Dto.BackupRestoreRequest BuildBackupRestoreRequest(BackupRestoreRequest request)
     {
         var backend = request.Backend;
         var bucket = backend is ObjectStorageBackend osb ? osb.Bucket : null;

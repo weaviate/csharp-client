@@ -4,6 +4,7 @@ namespace Weaviate.Client;
 /// Base class for all clients that operate within the context of a collection.
 /// Provides common access to the collection client, Weaviate client, collection name, and tenant information.
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class BaseCollectionClient
 {
     /// <summary>

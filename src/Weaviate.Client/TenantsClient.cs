@@ -1,3 +1,4 @@
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
@@ -113,9 +114,9 @@ public class TenantsClient
         {
             Name = r.Name!,
             Status = r.ActivityStatus.HasValue
-                ? (Models.TenantActivityStatus)
+                ? (TenantActivityStatus)
                     Enum.Parse(
-                        typeof(Models.TenantActivityStatus),
+                        typeof(TenantActivityStatus),
                         r.ActivityStatus.Value.ToString(),
                         true
                     )

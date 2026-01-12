@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace Weaviate.Client;
+namespace Weaviate.Client.Internal;
 
 /// <summary>
 /// Helper class to centralize exception mapping logic for both REST and gRPC APIs.

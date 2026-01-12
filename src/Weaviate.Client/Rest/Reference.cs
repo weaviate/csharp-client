@@ -29,7 +29,7 @@ internal partial class WeaviateRestClient
     {
         var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
 
-        var beacons = ObjectHelper.MakeBeacons([to]);
+        var beacons = Internal.ObjectHelper.MakeBeacons([to]);
         var reference = beacons.First();
 
         var response = await _httpClient.PostAsJsonAsync(
@@ -72,7 +72,7 @@ internal partial class WeaviateRestClient
     {
         var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
 
-        var beacons = ObjectHelper.MakeBeacons(to);
+        var beacons = Internal.ObjectHelper.MakeBeacons(to);
         var reference = beacons;
 
         var response = await _httpClient.PutAsJsonAsync(
@@ -115,7 +115,7 @@ internal partial class WeaviateRestClient
     {
         var path = WeaviateEndpoints.Reference(collectionName, from, fromProperty, tenant);
 
-        var beacons = ObjectHelper.MakeBeacons([to]);
+        var beacons = Internal.ObjectHelper.MakeBeacons([to]);
         var reference = beacons.First();
 
         var request = new HttpRequestMessage(HttpMethod.Delete, path);
@@ -158,13 +158,17 @@ internal partial class WeaviateRestClient
     )
     {
         var batchRefs = references.SelectMany(r =>
-            ObjectHelper
-                .MakeBeacons(r.To)
+            Internal
+                .ObjectHelper.MakeBeacons(r.To)
                 .SelectMany(b => b.Values)
                 .Select(beacon => new BatchReference
                 {
                     From = new Uri(
-                        ObjectHelper.MakeBeaconSource(collectionName, r.From, r.FromProperty)
+                        Internal.ObjectHelper.MakeBeaconSource(
+                            collectionName,
+                            r.From,
+                            r.FromProperty
+                        )
                     ),
                     To = new Uri(beacon),
                     Tenant = tenant ?? default!,

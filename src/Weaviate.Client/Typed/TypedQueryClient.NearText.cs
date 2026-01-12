@@ -1,3 +1,4 @@
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Typed;
 
@@ -11,7 +12,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a near-text search using text embeddings.
     /// </summary>
-    /// <param name="text">The text to search for (single or multiple strings).</param>
+    /// <param name="query">The text to search for (single or multiple strings).</param>
     /// <param name="certainty">Minimum certainty threshold (0-1).</param>
     /// <param name="distance">Maximum distance threshold.</param>
     /// <param name="moveTo">Move the query vector towards these concepts.</param>
@@ -28,7 +29,7 @@ public partial class TypedQueryClient<T>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
     public async Task<Models.WeaviateResult<WeaviateObject<T>>> NearText(
-        AutoArray<string> text,
+        AutoArray<string> query,
         float? certainty = null,
         float? distance = null,
         Move? moveTo = null,
@@ -46,7 +47,7 @@ public partial class TypedQueryClient<T>
     )
     {
         var result = await _queryClient.NearText(
-            text: text,
+            query: query,
             certainty: certainty,
             distance: distance,
             moveTo: moveTo,
@@ -68,7 +69,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a near-text search with group-by aggregation.
     /// </summary>
-    /// <param name="text">The text to search for (single or multiple strings).</param>
+    /// <param name="query">The text to search for (single or multiple strings).</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="certainty">Minimum certainty threshold (0-1).</param>
     /// <param name="distance">Maximum distance threshold.</param>
@@ -86,7 +87,7 @@ public partial class TypedQueryClient<T>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed grouped result.</returns>
     public async Task<GroupByResult<T>> NearText(
-        AutoArray<string> text,
+        AutoArray<string> query,
         GroupByRequest groupBy,
         float? certainty = null,
         float? distance = null,
@@ -105,7 +106,7 @@ public partial class TypedQueryClient<T>
     )
     {
         var result = await _queryClient.NearText(
-            text: text,
+            query: query,
             groupBy: groupBy,
             certainty: certainty,
             distance: distance,
@@ -140,7 +141,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public async Task<Models.WeaviateResult<WeaviateObject<T>>> NearText(
+    public async Task<WeaviateResult<WeaviateObject<T>>> NearText(
         NearTextInput input,
         Filter? filters = null,
         uint? limit = null,
@@ -233,7 +234,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public Task<Models.WeaviateResult<WeaviateObject<T>>> NearText(
+    public Task<WeaviateResult<WeaviateObject<T>>> NearText(
         NearTextInput.FactoryFn query,
         Filter? filters = null,
         uint? limit = null,

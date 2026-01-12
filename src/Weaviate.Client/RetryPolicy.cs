@@ -147,6 +147,6 @@ public record RetryPolicy
         // Check for common network-related inner exceptions
         return ex.InnerException is System.Net.Sockets.SocketException
             || ex.InnerException is System.Net.WebException
-            || ex.InnerException is System.IO.IOException;
+            || ex.InnerException is IOException;
     }
 }

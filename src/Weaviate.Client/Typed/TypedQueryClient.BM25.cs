@@ -1,3 +1,4 @@
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Typed;
 
@@ -87,7 +88,7 @@ public partial class TypedQueryClient<T>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
-    public async Task<Models.WeaviateResult<WeaviateObject<T>>> BM25(
+    public async Task<WeaviateResult<WeaviateObject<T>>> BM25(
         string query,
         string[]? searchFields = null,
         Filter? filters = null,

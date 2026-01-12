@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace Weaviate.Client;
+namespace Weaviate.Client.Internal;
 
 /// <summary>
 /// HTTP delegating handler that implements retry logic for REST requests.
@@ -41,8 +41,6 @@ internal class RetryHandler : DelegatingHandler
         CancellationToken cancellationToken
     )
     {
-        Exception? lastException = null;
-
         for (int attempt = 0; attempt <= _policy.MaxRetries; attempt++)
         {
             try
@@ -74,8 +72,6 @@ internal class RetryHandler : DelegatingHandler
             }
             catch (Exception ex)
             {
-                lastException = ex;
-
                 // Check if we should retry
                 if (ShouldRetry(ex, attempt))
                 {

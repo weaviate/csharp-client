@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using dotenv.net;
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 
 [assembly: CaptureConsole]
@@ -331,7 +332,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
     /// <param name="maximumVersion">The maximum version</param>
     /// <returns>The bool</returns>
     protected static bool VersionIsInRange(
-        System.Version version,
+        Version version,
         string minimumVersion,
         string? maximumVersion = null
     )

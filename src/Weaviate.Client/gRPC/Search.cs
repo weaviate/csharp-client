@@ -1,3 +1,4 @@
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 using Rerank = Weaviate.Client.Models.Rerank;
 using V1 = Weaviate.Client.Grpc.Protobuf.V1;
@@ -32,7 +33,7 @@ internal partial class WeaviateGrpcClient
         catch (global::Grpc.Core.RpcException ex)
         {
             // Use centralized exception mapping helper
-            throw ExceptionHelper.MapGrpcException(ex, "Search request failed");
+            throw Internal.ExceptionHelper.MapGrpcException(ex, "Search request failed");
         }
     }
 

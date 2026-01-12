@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Reflection;
-using Weaviate.Client.Models;
 using Weaviate.Client.Serialization.Converters;
 
 namespace Weaviate.Client.Serialization;
@@ -238,7 +237,7 @@ internal class PropertyConverterRegistry
     /// </summary>
     internal object? BuildConcreteTypeFromProperties(
         IDictionary<string, object?> dict,
-        System.Type targetType
+        Type targetType
     )
     {
         if (dict is null)

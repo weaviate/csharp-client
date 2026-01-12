@@ -18,7 +18,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="consistencyLevel">The consistency level</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the grpc protobuf batch delete reply</returns>
-    internal async Task<Grpc.Protobuf.V1.BatchDeleteReply> DeleteMany(
+    internal async Task<Protobuf.V1.BatchDeleteReply> DeleteMany(
         string collection,
         Filter filter,
         bool dryRun,
@@ -28,7 +28,7 @@ internal partial class WeaviateGrpcClient
         CancellationToken cancellationToken = default
     )
     {
-        var request = new Grpc.Protobuf.V1.BatchDeleteRequest
+        var request = new Protobuf.V1.BatchDeleteRequest
         {
             Collection = collection,
             DryRun = dryRun,
@@ -53,7 +53,7 @@ internal partial class WeaviateGrpcClient
         catch (global::Grpc.Core.RpcException ex)
         {
             // Use centralized exception mapping helper
-            throw ExceptionHelper.MapGrpcException(ex, "Batch delete request failed");
+            throw Internal.ExceptionHelper.MapGrpcException(ex, "Batch delete request failed");
         }
     }
 
@@ -63,12 +63,12 @@ internal partial class WeaviateGrpcClient
     /// <param name="objects">The objects</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the grpc protobuf batch objects reply</returns>
-    internal async Task<Grpc.Protobuf.V1.BatchObjectsReply> InsertMany(
-        IEnumerable<Grpc.Protobuf.V1.BatchObject> objects,
+    internal async Task<Protobuf.V1.BatchObjectsReply> InsertMany(
+        IEnumerable<Protobuf.V1.BatchObject> objects,
         CancellationToken cancellationToken = default
     )
     {
-        var request = new Grpc.Protobuf.V1.BatchObjectsRequest { Objects = { objects } };
+        var request = new Protobuf.V1.BatchObjectsRequest { Objects = { objects } };
 
         try
         {
@@ -82,7 +82,7 @@ internal partial class WeaviateGrpcClient
         catch (global::Grpc.Core.RpcException ex)
         {
             // Use centralized exception mapping helper
-            throw ExceptionHelper.MapGrpcException(ex, "Batch insert request failed");
+            throw Internal.ExceptionHelper.MapGrpcException(ex, "Batch insert request failed");
         }
     }
 }

@@ -15,11 +15,10 @@ public class TestCancellation
     /// <returns>The client</returns>
     private static WeaviateClient CreateClientWithDelay(TimeSpan delay)
     {
-        var (client, _) = MockWeaviateClient.CreateWithMockHandler(mockLeaf =>
-        {
-            // Chain: DelayingHandler -> MockLeaf
-            return new DelayingHandler(delay, inner: mockLeaf);
-        });
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(mockLeaf => new DelayingHandler(
+            delay,
+            inner: mockLeaf
+        ));
         return client;
     }
 
@@ -31,7 +30,7 @@ public class TestCancellation
     {
         using var client = CreateClientWithDelay(TimeSpan.FromMilliseconds(50));
         var cts = new CancellationTokenSource();
-        cts.Cancel();
+        await cts.CancelAsync();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => client.GetMeta(cts.Token));
     }
@@ -48,7 +47,7 @@ public class TestCancellation
         cts.CancelAfter(50); // cancel before the simulated 200ms delay finishes
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
-            client.WaitUntilReady(TimeSpan.FromSeconds(2), cts.Token)
+            client.WaitUntilReady(TimeSpan.FromSeconds(2), null, cts.Token)
         );
     }
 
@@ -60,7 +59,7 @@ public class TestCancellation
     {
         using var client = CreateClientWithDelay(TimeSpan.FromMilliseconds(100));
         using var cts = new CancellationTokenSource();
-        cts.Cancel();
+        await cts.CancelAsync();
 
         // Live wraps exceptions and returns false on failure; ensure cancellation doesn't masquerade as success.
         var result = await client.IsLive(cts.Token);

@@ -15,7 +15,7 @@ internal partial class WeaviateRestClient
     /// <param name="verbosity">The verbosity</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing a list of dto node status</returns>
-    internal async Task<IList<Dto.NodeStatus>> Nodes(
+    internal async Task<IList<NodeStatus>> Nodes(
         string? collection,
         string verbosity,
         CancellationToken cancellationToken = default
@@ -37,6 +37,6 @@ internal partial class WeaviateRestClient
 
         var nodes = await response.DecodeAsync<NodesStatusResponse>(cancellationToken);
 
-        return nodes?.Nodes ?? Array.Empty<Dto.NodeStatus>();
+        return nodes?.Nodes ?? Array.Empty<NodeStatus>();
     }
 }

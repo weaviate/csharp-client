@@ -1,3 +1,4 @@
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
@@ -8,7 +9,7 @@ namespace Weaviate.Client;
 public partial class QueryClient
 {
     /// <summary>Performs a near-text search using the specified parameters.</summary>
-    /// <param name="text">The search text.</param>
+    /// <param name="query">The search text.</param>
     /// <param name="certainty">Certainty threshold for the search.</param>
     /// <param name="distance">Distance threshold for the search.</param>
     /// <param name="moveTo">Move-to configuration.</param>
@@ -25,7 +26,7 @@ public partial class QueryClient
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Search results.</returns>
     public async Task<WeaviateResult> NearText(
-        AutoArray<string> text,
+        AutoArray<string> query,
         float? certainty = null,
         float? distance = null,
         Move? moveTo = null,
@@ -43,7 +44,7 @@ public partial class QueryClient
     ) =>
         await _grpc.SearchNearText(
             _collectionClient.Name,
-            text.ToArray(),
+            [.. query],
             distance: distance,
             certainty: certainty,
             limit: limit,
@@ -64,7 +65,7 @@ public partial class QueryClient
         );
 
     /// <summary>Performs a near-text search with group-by using the specified parameters.</summary>
-    /// <param name="text">The search text.</param>
+    /// <param name="query">The search text.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="certainty">Certainty threshold for the search.</param>
     /// <param name="distance">Distance threshold for the search.</param>
@@ -82,7 +83,7 @@ public partial class QueryClient
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Grouped search results.</returns>
     public async Task<GroupByResult> NearText(
-        AutoArray<string> text,
+        AutoArray<string> query,
         GroupByRequest groupBy,
         float? certainty = null,
         float? distance = null,
@@ -101,7 +102,7 @@ public partial class QueryClient
     ) =>
         await _grpc.SearchNearText(
             _collectionClient.Name,
-            text.ToArray(),
+            [.. query],
             groupBy: groupBy,
             distance: distance,
             certainty: certainty,
@@ -163,7 +164,7 @@ public partial class QueryClient
         var input = query(VectorInputBuilderFactories.CreateNearTextBuilder());
         return await _grpc.SearchNearText(
             _collectionClient.Name,
-            input.Query.ToArray(),
+            [.. input.Query],
             distance: input.Distance,
             certainty: input.Certainty,
             limit: limit,
@@ -219,7 +220,7 @@ public partial class QueryClient
         var input = query(VectorInputBuilderFactories.CreateNearTextBuilder());
         return await _grpc.SearchNearText(
             _collectionClient.Name,
-            input.Query.ToArray(),
+            [.. input.Query],
             groupBy: groupBy,
             distance: input.Distance,
             certainty: input.Certainty,
@@ -285,7 +286,7 @@ public static class QueryClientNearTextExtensions
 
         // Otherwise use the base method
         return await client.NearText(
-            text: input.Query,
+            query: input.Query,
             certainty: input.Certainty,
             distance: input.Distance,
             moveTo: input.MoveTo,
@@ -343,7 +344,7 @@ public static class QueryClientNearTextExtensions
 
         // Otherwise use the base method
         return await client.NearText(
-            text: input.Query,
+            query: input.Query,
             groupBy: groupBy,
             certainty: input.Certainty,
             distance: input.Distance,

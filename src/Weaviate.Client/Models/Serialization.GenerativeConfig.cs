@@ -96,7 +96,7 @@ internal static class GenerativeConfigSerialization
                 {
                     Type = type,
                     Config =
-                        ObjectHelper.ConvertJsonElement(
+                        Internal.ObjectHelper.ConvertJsonElement(
                             (
                                 JsonSerializer.Deserialize<JsonElement>(
                                     text,

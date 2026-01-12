@@ -1,3 +1,4 @@
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Typed;
 
@@ -68,7 +69,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the fetched objects.</returns>
-    public async Task<Models.WeaviateResult<WeaviateObject<T>>> FetchObjects(
+    public async Task<WeaviateResult<WeaviateObject<T>>> FetchObjects(
         Guid? after = null,
         uint? limit = null,
         uint? offset = null,
@@ -142,7 +143,7 @@ public partial class TypedQueryClient<T>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the fetched objects.</returns>
-    public async Task<Models.WeaviateResult<WeaviateObject<T>>> FetchObjectsByIDs(
+    public async Task<WeaviateResult<WeaviateObject<T>>> FetchObjectsByIDs(
         HashSet<Guid> uuids,
         uint? limit = null,
         Rerank? rerank = null,

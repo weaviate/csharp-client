@@ -50,6 +50,7 @@ namespace Weaviate.Client.Tests.Integration
             // Act
             await client.WaitUntilReady(
                 TimeSpan.FromSeconds(10),
+                null,
                 TestContext.Current.CancellationToken
             );
 

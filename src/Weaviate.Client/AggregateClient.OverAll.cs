@@ -18,8 +18,8 @@ public partial class AggregateClient
     public async Task<AggregateResult> OverAll(
         bool totalCount = true,
         Filter? filters = null,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     )
     {
         var result = await _client.GrpcClient.AggregateOverAll(
@@ -48,8 +48,8 @@ public partial class AggregateClient
         Aggregate.GroupBy groupBy,
         bool totalCount = true,
         Filter? filters = null,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     )
     {
         var result = await _client.GrpcClient.AggregateOverAll(

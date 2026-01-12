@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Frozen;
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 using Weaviate.Client.Rest.Dto;
 using Weaviate.Client.Validation;
@@ -53,7 +54,7 @@ public class DataClient
     /// </summary>
     /// <param name="vectors">The vectors</param>
     /// <returns>The result</returns>
-    public IDictionary<string, object>? VectorsToDto(Models.Vectors? vectors)
+    public IDictionary<string, object>? VectorsToDto(Vectors? vectors)
     {
         if (vectors == null || vectors.Count == 0)
             return null;
@@ -82,7 +83,7 @@ public class DataClient
     public async Task<Guid> Insert(
         object properties,
         Guid? uuid = null,
-        Models.Vectors? vectors = null,
+        Vectors? vectors = null,
         AutoArray<ObjectReference>? references = null,
         bool validate = false,
         CancellationToken cancellationToken = default
@@ -105,11 +106,11 @@ public class DataClient
                 );
             }
         }
-        var propDict = ObjectHelper.BuildDataTransferObject(properties);
+        var propDict = Internal.ObjectHelper.BuildDataTransferObject(properties);
 
         foreach (var kvp in references ?? [])
         {
-            propDict[kvp.Name] = ObjectHelper.MakeBeacons(kvp.TargetID);
+            propDict[kvp.Name] = Internal.ObjectHelper.MakeBeacons(kvp.TargetID);
         }
 
         var dto = new Rest.Dto.Object()
@@ -140,16 +141,16 @@ public class DataClient
     public async Task Update(
         Guid uuid,
         object properties,
-        Models.Vectors? vectors = null,
+        Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
     {
-        var propDict = ObjectHelper.BuildDataTransferObject(properties);
+        var propDict = Internal.ObjectHelper.BuildDataTransferObject(properties);
 
         foreach (var kvp in references ?? [])
         {
-            propDict[kvp.Name] = ObjectHelper.MakeBeacons(kvp.TargetID);
+            propDict[kvp.Name] = Internal.ObjectHelper.MakeBeacons(kvp.TargetID);
         }
 
         var dto = new Rest.Dto.Object()
@@ -179,16 +180,16 @@ public class DataClient
     public async Task Replace(
         Guid uuid,
         object properties,
-        Models.Vectors? vectors = null,
+        Vectors? vectors = null,
         IEnumerable<ObjectReference>? references = null,
         CancellationToken cancellationToken = default
     )
     {
-        var propDict = ObjectHelper.BuildDataTransferObject(properties);
+        var propDict = Internal.ObjectHelper.BuildDataTransferObject(properties);
 
         foreach (var kvp in references ?? [])
         {
-            propDict[kvp.Name] = ObjectHelper.MakeBeacons(kvp.TargetID);
+            propDict[kvp.Name] = Internal.ObjectHelper.MakeBeacons(kvp.TargetID);
         }
 
         var dto = new Rest.Dto.Object()
@@ -286,7 +287,7 @@ public class DataClient
                     {
                         Collection = _collectionName,
                         Uuid = (r.UUID ?? Guid.NewGuid()).ToString(),
-                        Properties = ObjectHelper.BuildBatchProperties(r.Data),
+                        Properties = Internal.ObjectHelper.BuildBatchProperties(r.Data),
                         Tenant = _collectionClient.Tenant,
                     };
 
@@ -541,7 +542,7 @@ public class DataClient
             {
                 Error = string.IsNullOrEmpty(o.Error) ? null : o.Error,
                 Successful = o.Successful,
-                Uuid = ObjectHelper.GuidFromByteString(o.Uuid),
+                Uuid = Internal.ObjectHelper.GuidFromByteString(o.Uuid),
             }),
         };
 

@@ -1,6 +1,3 @@
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Testing;
-using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 using VerifyCS = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<Weaviate.Client.Analyzers.AutoArrayUsageAnalyzer>;
 
@@ -16,7 +13,7 @@ public class AutoArrayUsageAnalyzerTests
     /// </summary>
     private const string AutoArraySource =
         @"
-namespace Weaviate.Client.Models
+namespace Weaviate.Client.Internal
 {
     using System.Collections;
     using System.Collections.Generic;
@@ -73,7 +70,7 @@ namespace Weaviate.Client.Models
 
 namespace TestNamespace
 {
-    using Weaviate.Client.Models;
+    using Weaviate.Client.Internal;
 
     class TestClass
     {
@@ -101,7 +98,7 @@ namespace TestNamespace
 
 namespace TestNamespace
 {
-    using Weaviate.Client.Models;
+    using Weaviate.Client.Internal;
 
     class TestClass
     {
@@ -129,7 +126,7 @@ namespace TestNamespace
 
 namespace TestNamespace
 {
-    using Weaviate.Client.Models;
+    using Weaviate.Client.Internal;
 
     class TestClass
     {
@@ -154,7 +151,7 @@ namespace TestNamespace
 
 namespace TestNamespace
 {
-    using Weaviate.Client.Models;
+    using Weaviate.Client.Internal;
 
     class TestClass
     {
@@ -180,7 +177,7 @@ namespace TestNamespace
 
 namespace TestNamespace
 {
-    using Weaviate.Client.Models;
+    using Weaviate.Client.Internal;
 
     class TestClass
     {

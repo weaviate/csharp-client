@@ -1,3 +1,4 @@
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
@@ -24,7 +25,7 @@ public partial class QueryClient
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the group by result</returns>
     public async Task<GroupByResult> FetchObjects(
-        Models.GroupByRequest groupBy,
+        GroupByRequest groupBy,
         Guid? after = null,
         uint? limit = null,
         Filter? filters = null,

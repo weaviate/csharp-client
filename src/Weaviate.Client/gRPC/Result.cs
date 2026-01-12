@@ -15,7 +15,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="fields">The fields</param>
     /// <param name="reference">The reference</param>
     /// <returns>The req</returns>
-    private static Grpc.Protobuf.V1.PropertiesRequest? MakePropsRequest(
+    private static Protobuf.V1.PropertiesRequest? MakePropsRequest(
         string[]? fields,
         IList<QueryReference>? reference
     )
@@ -23,7 +23,7 @@ internal partial class WeaviateGrpcClient
         if (fields is null && reference is null)
             return null;
 
-        var req = new Grpc.Protobuf.V1.PropertiesRequest();
+        var req = new Protobuf.V1.PropertiesRequest();
 
         if (fields is not null)
         {
@@ -50,16 +50,14 @@ internal partial class WeaviateGrpcClient
     /// </summary>
     /// <param name="reference">The reference</param>
     /// <returns>The grpc protobuf ref properties request</returns>
-    private static Grpc.Protobuf.V1.RefPropertiesRequest? MakeRefPropsRequest(
-        QueryReference? reference
-    )
+    private static Protobuf.V1.RefPropertiesRequest? MakeRefPropsRequest(QueryReference? reference)
     {
         if (reference is null)
             return null;
 
-        return new Grpc.Protobuf.V1.RefPropertiesRequest()
+        return new Protobuf.V1.RefPropertiesRequest()
         {
-            Metadata = new Grpc.Protobuf.V1.MetadataRequest()
+            Metadata = new Protobuf.V1.MetadataRequest()
             {
                 Uuid = true,
                 LastUpdateTimeUnix = reference.Metadata?.LastUpdateTime ?? false,
@@ -80,7 +78,7 @@ internal partial class WeaviateGrpcClient
     /// </summary>
     /// <param name="metadata">The metadata</param>
     /// <returns>The metadata</returns>
-    internal static Metadata BuildMetadataFromResult(Grpc.Protobuf.V1.MetadataResult metadata)
+    internal static Metadata BuildMetadataFromResult(Protobuf.V1.MetadataResult metadata)
     {
         return new Metadata
         {
@@ -104,7 +102,7 @@ internal partial class WeaviateGrpcClient
     /// </summary>
     /// <param name="metadataResult">The metadata result</param>
     /// <returns>The vectors</returns>
-    internal static Vectors BuildVectorsFromResult(Grpc.Protobuf.V1.MetadataResult metadataResult)
+    internal static Vectors BuildVectorsFromResult(Protobuf.V1.MetadataResult metadataResult)
     {
         if (metadataResult.VectorBytes != null && metadataResult.VectorBytes.Length > 0)
         {
@@ -126,7 +124,7 @@ internal partial class WeaviateGrpcClient
     internal static GroupByObject BuildGroupByObjectFromResult(
         string collection,
         string groupName,
-        Grpc.Protobuf.V1.SearchResult obj
+        Protobuf.V1.SearchResult obj
     )
     {
         var metadata = obj.Metadata;
@@ -143,7 +141,7 @@ internal partial class WeaviateGrpcClient
     /// </summary>
     /// <param name="result">The result</param>
     /// <returns>The eo base</returns>
-    private static ExpandoObject MakeNonRefs(Grpc.Protobuf.V1.Properties result)
+    private static ExpandoObject MakeNonRefs(Protobuf.V1.Properties result)
     {
         var eoBase = new ExpandoObject();
 
@@ -156,7 +154,7 @@ internal partial class WeaviateGrpcClient
 
         foreach (var r in result.Fields)
         {
-            Grpc.Protobuf.V1.Value.KindOneofCase kind = r.Value.KindCase;
+            Protobuf.V1.Value.KindOneofCase kind = r.Value.KindCase;
             switch (kind)
             {
                 case Grpc.Protobuf.V1.Value.KindOneofCase.None:
@@ -187,7 +185,7 @@ internal partial class WeaviateGrpcClient
                     eo[r.Key] = r.Value.IntValue;
                     break;
                 case Grpc.Protobuf.V1.Value.KindOneofCase.GeoValue:
-                    eo[r.Key] = new Models.GeoCoordinate(
+                    eo[r.Key] = new GeoCoordinate(
                         r.Value.GeoValue.Latitude,
                         r.Value.GeoValue.Longitude
                     );
@@ -196,7 +194,7 @@ internal partial class WeaviateGrpcClient
                     eo[r.Key] = r.Value.BlobValue;
                     break;
                 case Grpc.Protobuf.V1.Value.KindOneofCase.PhoneValue:
-                    eo[r.Key] = new Models.PhoneNumber
+                    eo[r.Key] = new PhoneNumber
                     {
                         Input = r.Value.PhoneValue.Input,
                         CountryCode = r.Value.PhoneValue.CountryCode,
@@ -221,7 +219,7 @@ internal partial class WeaviateGrpcClient
     /// </summary>
     /// <param name="list">The list</param>
     /// <returns>The list</returns>
-    private static IList MakeListValue(Grpc.Protobuf.V1.ListValue list)
+    private static IList MakeListValue(Protobuf.V1.ListValue list)
     {
         switch (list.KindCase)
         {
@@ -258,8 +256,8 @@ internal partial class WeaviateGrpcClient
     /// <returns>The weaviate object</returns>
     internal static WeaviateObject BuildObjectFromResult(
         string collection,
-        Grpc.Protobuf.V1.MetadataResult metadata,
-        Grpc.Protobuf.V1.PropertiesResult properties
+        Protobuf.V1.MetadataResult metadata,
+        Protobuf.V1.PropertiesResult properties
     )
     {
         return new WeaviateObject
@@ -280,12 +278,12 @@ internal partial class WeaviateGrpcClient
     /// </summary>
     /// <param name="generative">The generative</param>
     /// <returns>A list of models generative reply</returns>
-    internal static IList<Models.GenerativeReply> BuildGenerativeReplyFromResult(
-        IEnumerable<Grpc.Protobuf.V1.GenerativeReply>? generative
+    internal static IList<GenerativeReply> BuildGenerativeReplyFromResult(
+        IEnumerable<Protobuf.V1.GenerativeReply>? generative
     )
     {
         return generative
-                ?.Select(g => new Models.GenerativeReply(
+                ?.Select(g => new GenerativeReply(
                     Text: g.Result
                 //Debug: g.Debug is null ? null : new GenerativeDebug(g.Debug.FullPrompt),
                 //Metadata: g.Metadata
@@ -303,9 +301,9 @@ internal partial class WeaviateGrpcClient
     /// <returns>The generative weaviate object</returns>
     internal static GenerativeWeaviateObject BuildGenerativeObjectFromResult(
         string collection,
-        Grpc.Protobuf.V1.MetadataResult metadata,
-        Grpc.Protobuf.V1.PropertiesResult properties,
-        Grpc.Protobuf.V1.GenerativeResult generative
+        Protobuf.V1.MetadataResult metadata,
+        Protobuf.V1.PropertiesResult properties,
+        Protobuf.V1.GenerativeResult generative
     )
     {
         var obj = BuildObjectFromResult(collection, metadata, properties);
@@ -327,9 +325,7 @@ internal partial class WeaviateGrpcClient
     /// </summary>
     /// <param name="generative">The generative</param>
     /// <returns>The generative result</returns>
-    private static GenerativeResult BuildGenerativeResult(
-        Grpc.Protobuf.V1.GenerativeResult? generative
-    )
+    private static GenerativeResult BuildGenerativeResult(Protobuf.V1.GenerativeResult? generative)
     {
         return new GenerativeResult(BuildGenerativeReplyFromResult(generative?.Values));
     }
@@ -340,7 +336,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="refProps">The ref props</param>
     /// <returns>The result</returns>
     internal static IDictionary<string, IList<WeaviateObject>> MakeRefs(
-        Google.Protobuf.Collections.RepeatedField<Grpc.Protobuf.V1.RefPropertiesResult> refProps
+        Google.Protobuf.Collections.RepeatedField<Protobuf.V1.RefPropertiesResult> refProps
     )
     {
         var result = new Dictionary<string, IList<WeaviateObject>>();
@@ -381,7 +377,7 @@ internal partial class WeaviateGrpcClient
     /// </summary>
     /// <param name="reply">The reply</param>
     /// <returns>The models group by result</returns>
-    internal static Models.GroupByResult BuildGroupByResult(Protobuf.V1.SearchReply? reply)
+    internal static GroupByResult BuildGroupByResult(Protobuf.V1.SearchReply? reply)
     {
         if (reply?.GroupByResults == null || reply.GroupByResults.Count == 0)
             return Models.GroupByResult.Empty;
@@ -403,7 +399,7 @@ internal partial class WeaviateGrpcClient
 
         var objects = groups.Values.SelectMany(g => g.Objects).ToArray();
 
-        return new Models.GroupByResult(objects, groups);
+        return new GroupByResult(objects, groups);
     }
 
     /// <summary>
@@ -443,7 +439,7 @@ internal partial class WeaviateGrpcClient
     internal static GenerativeGroupByObject BuildGenerativeGroupByObjectFromResult(
         string collection,
         string groupName,
-        Grpc.Protobuf.V1.SearchResult obj
+        Protobuf.V1.SearchResult obj
     )
     {
         var result = BuildGenerativeObjectFromResult(
@@ -471,7 +467,7 @@ internal partial class WeaviateGrpcClient
     /// </summary>
     /// <param name="reply">The reply</param>
     /// <returns>The result</returns>
-    internal static Models.GenerativeGroupByResult BuildGenerativeGroupByResult(
+    internal static GenerativeGroupByResult BuildGenerativeGroupByResult(
         Protobuf.V1.SearchReply? reply
     )
     {
@@ -532,7 +528,7 @@ internal partial class WeaviateGrpcClient
         }
 #pragma warning restore CS0612 // Type or member is obsolete
 
-        var result = new Models.GenerativeGroupByResult(objects, groups, gs);
+        var result = new GenerativeGroupByResult(objects, groups, gs);
 
         return result;
     }

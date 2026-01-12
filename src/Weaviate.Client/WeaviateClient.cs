@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Weaviate.Client.Grpc;
+using Weaviate.Client.Internal;
 using Weaviate.Client.Rest;
 
 namespace Weaviate.Client;
@@ -51,7 +52,7 @@ public partial class WeaviateClient : IDisposable
             Hostname = meta?.Hostname ?? string.Empty,
             Version =
                 Models.MetaInfo.ParseWeaviateVersion(meta?.Version ?? string.Empty)
-                ?? new System.Version(0, 0),
+                ?? new Version(0, 0),
             Modules = meta?.Modules?.ToDictionary() ?? [],
         };
     }
@@ -70,7 +71,7 @@ public partial class WeaviateClient : IDisposable
     /// <summary>
     /// Gets the Weaviate server version from cached metadata.
     /// </summary>
-    public System.Version? WeaviateVersion => Meta?.Version;
+    public Version? WeaviateVersion => Meta?.Version;
 
     /// <summary>
     /// Returns true if the Weaviate process is live.
@@ -94,13 +95,13 @@ public partial class WeaviateClient : IDisposable
     /// Waits until the instance becomes ready or the timeout/cancellation token triggers.
     /// </summary>
     /// <param name="timeout">Maximum time to wait.</param>
-    /// <param name="cancellationToken">Cancellation token to abort waiting early.</param>
     /// <param name="pollInterval">Optional polling interval (defaults to 250ms).</param>
+    /// <param name="cancellationToken">Cancellation token to abort waiting early.</param>
     /// <returns>true if ready was reached before timing out or cancellation; false otherwise.</returns>
     public async Task<bool> WaitUntilReady(
         TimeSpan timeout,
-        CancellationToken cancellationToken,
-        TimeSpan? pollInterval = null
+        TimeSpan? pollInterval = null,
+        CancellationToken cancellationToken = default
     )
     {
         var interval = pollInterval ?? TimeSpan.FromMilliseconds(250);
@@ -199,9 +200,9 @@ public partial class WeaviateClient : IDisposable
     /// <returns>The bool</returns>
     static bool IsWeaviateDomain(string url)
     {
-        return url.ToLower().Contains("weaviate.io")
-            || url.ToLower().Contains("semi.technology")
-            || url.ToLower().Contains("weaviate.cloud");
+        return url.Contains("weaviate.io", StringComparison.CurrentCultureIgnoreCase)
+            || url.Contains("semi.technology", StringComparison.CurrentCultureIgnoreCase)
+            || url.Contains("weaviate.cloud", StringComparison.CurrentCultureIgnoreCase);
     }
 
     /// <summary>
@@ -325,7 +326,7 @@ public partial class WeaviateClient : IDisposable
             Hostname = metaDto?.Hostname ?? string.Empty,
             Version =
                 Models.MetaInfo.ParseWeaviateVersion(metaDto?.Version ?? string.Empty)
-                ?? new System.Version(0, 0),
+                ?? new Version(0, 0),
             Modules = metaDto?.Modules?.ToDictionary() ?? [],
         };
 
@@ -523,6 +524,8 @@ public partial class WeaviateClient : IDisposable
 
         GrpcClient?.Dispose();
         RestClient?.Dispose();
+
+        GC.SuppressFinalize(this);
 
         _isDisposed = true;
     }

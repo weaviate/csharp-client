@@ -1,8 +1,7 @@
 using System.Runtime.CompilerServices;
-using Weaviate.Client.Cache;
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Typed;
-using Weaviate.Client.Validation;
 
 namespace Weaviate.Client.Typed;
 
@@ -66,7 +65,7 @@ public class TypedCollectionClient<T>
     /// <summary>
     /// The Weaviate server version.
     /// </summary>
-    public System.Version? WeaviateVersion => _collectionClient.WeaviateVersion;
+    public Version? WeaviateVersion => _collectionClient.WeaviateVersion;
 
     /// <summary>
     /// Strongly-typed data operations (CRUD).

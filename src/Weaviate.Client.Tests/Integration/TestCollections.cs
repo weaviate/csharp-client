@@ -71,7 +71,7 @@ public partial class CollectionsTests : IntegrationTests
             .ToHashSetAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        Assert.Superset<string>(collectionNames, list);
+        Assert.Superset(collectionNames, list);
     }
 
     /// <summary>

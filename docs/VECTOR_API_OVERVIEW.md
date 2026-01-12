@@ -147,13 +147,13 @@ Text-based semantic search with server-side vectorization.
 ```csharp
 // Simple text search
 Task<WeaviateResult> NearText(
-    AutoArray<string> text,
+    AutoArray<string> query,
     ...
 )
 
 // With GroupBy
 Task<GroupByResult> NearText(
-    AutoArray<string> text,
+    AutoArray<string> query,
     GroupByRequest groupBy,
     ...
 )

@@ -88,7 +88,7 @@ public record WeaviateObject<T>
         {
             if (!_objectLoaded)
             {
-                _object = ObjectHelper.UnmarshallProperties<T>(Properties) ?? new T();
+                _object = Internal.ObjectHelper.UnmarshallProperties<T>(Properties) ?? new T();
                 _objectLoaded = true;
             }
             return _object!;
@@ -99,7 +99,7 @@ public record WeaviateObject<T>
             _objectLoaded = true;
 
             // Sync back to Properties dictionary
-            var props = ObjectHelper.BuildDataTransferObject(value);
+            var props = Internal.ObjectHelper.BuildDataTransferObject(value);
             _untyped.Properties = props.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value);
         }
     }
@@ -337,7 +337,7 @@ public record GenerativeGroupByResult<T>(
 /// Supports both object-level and result-set level generative data.
 /// </summary>
 /// <typeparam name="T">The C# type of objects in the result.</typeparam>
-public record GenerativeWeaviateResult<T> : Models.WeaviateResult<GenerativeWeaviateObject<T>>
+public record GenerativeWeaviateResult<T> : WeaviateResult<GenerativeWeaviateObject<T>>
     where T : class, new()
 {
     /// <summary>

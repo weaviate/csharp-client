@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
@@ -16,7 +17,7 @@ public partial class CollectionClient
     /// <summary>
     /// Gets the Weaviate server version.
     /// </summary>
-    public System.Version? WeaviateVersion => _client.WeaviateVersion;
+    public Version? WeaviateVersion => _client.WeaviateVersion;
 
     /// <summary>
     /// The client

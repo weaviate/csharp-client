@@ -13,7 +13,7 @@ public struct MetaInfo
     /// <summary>
     /// Gets or sets the value of the version
     /// </summary>
-    public System.Version Version { get; set; }
+    public Version Version { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the modules

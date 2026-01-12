@@ -1,5 +1,4 @@
 using Weaviate.Client.Models;
-using Weaviate.Client.Tests.Unit.Mocks;
 using Weaviate.Client.Typed;
 
 namespace Weaviate.Client.Tests.Unit;
@@ -162,7 +161,7 @@ public class TypedDataClientTests
         var typedDataClient = new TypedDataClient<TestArticle>(collectionClient.Data);
 
         Vectors vectors = ("default", [0.1f, 0.2f, 0.3f]);
-        var requests = new List<(TestArticle data, Models.Vectors vectors)>
+        var requests = new List<(TestArticle data, Vectors vectors)>
         {
             (new TestArticle { Title = "Article 1" }, vectors),
         };

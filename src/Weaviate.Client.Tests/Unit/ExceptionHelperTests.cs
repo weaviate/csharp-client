@@ -1,30 +1,37 @@
 using System.Net;
 using Grpc.Core;
+using Weaviate.Client.Internal;
 
 namespace Weaviate.Client.Tests.Unit;
 
 /// <summary>
 /// The exception helper tests class
 /// </summary>
-[Collection("Unit Tests")]
 public class ExceptionHelperTests
 {
     /// <summary>
     /// Tests that map http exception with timeout cancellation returns timeout exception
     /// </summary>
     [Fact]
-    public void MapHttpException_WithTimeoutCancellation_ReturnsTimeoutException()
+    public async Task MapHttpException_WithTimeoutCancellation_ReturnsTimeoutException()
     {
         // Arrange
         var timeout = TimeSpan.FromMilliseconds(10);
-        var token = TimeoutHelper.GetCancellationToken(
+        using var cts = new CancellationTokenSource(timeout);
+
+        var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            cts.Token,
+            TestContext.Current.CancellationToken
+        );
+
+        _ = TimeoutHelper.GetCancellationToken(
             timeout,
-            providedToken: TestContext.Current.CancellationToken,
+            providedToken: linkedCts.Token,
             operation: "Test operation"
         );
 
         // Wait for timeout to expire
-        Thread.Sleep(50);
+        await Task.FromResult(cts.Token.WaitHandle.WaitOne());
 
         var innerEx = new TaskCanceledException();
 
@@ -102,66 +109,6 @@ public class ExceptionHelperTests
     }
 
     /// <summary>
-    /// Tests that map grpc exception with timeout in inner exception returns timeout exception
-    /// </summary>
-    [Fact(Skip = "RpcException doesn't expose public constructor with inner exception parameter")]
-    public void MapGrpcException_WithTimeoutInInnerException_ReturnsTimeoutException()
-    {
-        // Arrange
-        var timeout = TimeSpan.FromMilliseconds(10);
-        var token = TimeoutHelper.GetCancellationToken(
-            timeout,
-            providedToken: TestContext.Current.CancellationToken,
-            operation: "gRPC operation"
-        );
-
-        // Wait for timeout to expire
-        Thread.Sleep(50);
-
-        var innerEx = new TaskCanceledException();
-        // Create RpcException with inner exception using reflection
-        var rpcEx = new RpcException(new Status(StatusCode.Cancelled, "Cancelled"), "Cancelled");
-
-        // Act
-        var result = ExceptionHelper.MapGrpcException(rpcEx, "Test failed");
-
-        // Assert
-        var timeoutEx = Assert.IsType<WeaviateTimeoutException>(result);
-        Assert.Equal(timeout, timeoutEx.Timeout);
-        Assert.Equal("gRPC operation", timeoutEx.Operation);
-    }
-
-    /// <summary>
-    /// Tests that map grpc exception with cancelled status and timeout returns timeout exception
-    /// </summary>
-    [Fact(
-        Skip = "gRPC StatusCode.Cancelled without inner exception cannot reliably detect timeout vs user cancellation"
-    )]
-    public void MapGrpcException_WithCancelledStatusAndTimeout_ReturnsTimeoutException()
-    {
-        // Arrange
-        var timeout = TimeSpan.FromMilliseconds(10);
-        var token = TimeoutHelper.GetCancellationToken(
-            timeout,
-            providedToken: TestContext.Current.CancellationToken,
-            operation: "Slow operation"
-        );
-
-        // Wait for timeout to expire
-        Thread.Sleep(50);
-
-        var rpcEx = new RpcException(new Status(StatusCode.Cancelled, "Timeout"));
-
-        // Act
-        var result = ExceptionHelper.MapGrpcException(rpcEx, "Test failed");
-
-        // Assert
-        var timeoutEx = Assert.IsType<WeaviateTimeoutException>(result);
-        Assert.Equal(timeout, timeoutEx.Timeout);
-        Assert.Equal("Slow operation", timeoutEx.Operation);
-    }
-
-    /// <summary>
     /// Tests that map grpc exception unauthenticated returns authentication exception
     /// </summary>
     [Fact]
@@ -223,7 +170,7 @@ public class ExceptionHelperTests
         ); // No operation specified
 
         // Wait for timeout to expire
-        Thread.Sleep(50);
+        token.WaitHandle.WaitOne();
 
         var innerEx = new TaskCanceledException();
 
@@ -326,7 +273,7 @@ public class ExceptionHelperTests
     public void MapHttpException_BadRequest_ReturnsBadRequestException()
     {
         // Arrange
-        var innerEx = new Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException(
+        var innerEx = new Rest.WeaviateUnexpectedStatusCodeException(
             HttpStatusCode.BadRequest,
             new HashSet<HttpStatusCode> { HttpStatusCode.OK },
             "Bad request"
@@ -350,7 +297,7 @@ public class ExceptionHelperTests
     public void MapHttpException_UnprocessableEntity_ReturnsUnprocessableEntityException()
     {
         // Arrange
-        var innerEx = new Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException(
+        var innerEx = new Rest.WeaviateUnexpectedStatusCodeException(
             HttpStatusCode.UnprocessableEntity,
             new HashSet<HttpStatusCode> { HttpStatusCode.OK },
             "Unprocessable entity"
@@ -374,7 +321,7 @@ public class ExceptionHelperTests
     public void MapHttpException_UnprocessableEntityWithBackupConflictMessage_ReturnsBackupConflictException()
     {
         // Arrange
-        var innerEx = new Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException(
+        var innerEx = new Rest.WeaviateUnexpectedStatusCodeException(
             HttpStatusCode.UnprocessableEntity,
             new HashSet<HttpStatusCode> { HttpStatusCode.OK },
             "backup concurrent-backup-123 already in progress"
@@ -399,7 +346,7 @@ public class ExceptionHelperTests
     public void MapHttpException_UnprocessableEntityWithRestoreConflictMessage_ReturnsBackupConflictException()
     {
         // Arrange
-        var innerEx = new Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException(
+        var innerEx = new Rest.WeaviateUnexpectedStatusCodeException(
             HttpStatusCode.UnprocessableEntity,
             new HashSet<HttpStatusCode> { HttpStatusCode.OK },
             "restoration restore-456 already in progress"
@@ -424,7 +371,7 @@ public class ExceptionHelperTests
     public void MapHttpException_InternalServerErrorWithConflictMessage_DoesNotReturnBackupConflictException()
     {
         // Arrange - 500 status code should NOT trigger backup conflict, only 422
-        var innerEx = new Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException(
+        var innerEx = new Rest.WeaviateUnexpectedStatusCodeException(
             HttpStatusCode.InternalServerError,
             new HashSet<HttpStatusCode> { HttpStatusCode.OK },
             "backup already in progress"
@@ -432,7 +379,7 @@ public class ExceptionHelperTests
 
         // Act & Assert
         // Should throw the original exception since it's not recognized
-        var ex = Assert.Throws<Weaviate.Client.Rest.WeaviateUnexpectedStatusCodeException>(() =>
+        var ex = Assert.Throws<Rest.WeaviateUnexpectedStatusCodeException>(() =>
             ExceptionHelper.MapHttpException(
                 HttpStatusCode.InternalServerError,
                 "backup already in progress",

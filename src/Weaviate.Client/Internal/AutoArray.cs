@@ -1,10 +1,11 @@
 using System.Collections;
 
-namespace Weaviate.Client.Models;
+namespace Weaviate.Client.Internal;
 
 /// <summary>
 /// The auto array builder class
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class AutoArrayBuilder
 {
     /// <summary>
@@ -32,6 +33,7 @@ public static class AutoArrayBuilder
     typeof(AutoArrayBuilder),
     nameof(AutoArrayBuilder.Create)
 )]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AutoArray<T> : IEnumerable<T>
 {
     /// <summary>

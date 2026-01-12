@@ -1,3 +1,5 @@
+using Weaviate.Client.Internal;
+
 namespace Weaviate.Client.Models;
 
 /// <summary>

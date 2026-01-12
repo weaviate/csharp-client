@@ -17,8 +17,8 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     )
     {
         var result = await _client.GrpcClient.AggregateNearVector(
@@ -48,8 +48,8 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     )
     {
         var result = await _client.GrpcClient.AggregateNearVector(
@@ -78,8 +78,8 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     ) =>
         await NearVector(
             vectors(new VectorSearchInput.Builder()),
@@ -88,8 +88,8 @@ public partial class AggregateClient
             limit,
             filters,
             totalCount,
-            cancellationToken,
-            returnMetrics
+            returnMetrics,
+            cancellationToken
         );
 
     /// <summary>
@@ -103,8 +103,8 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     ) =>
         await NearVector(
             vectors(new VectorSearchInput.Builder()),
@@ -114,8 +114,8 @@ public partial class AggregateClient
             limit,
             filters,
             totalCount,
-            cancellationToken,
-            returnMetrics
+            returnMetrics,
+            cancellationToken
         );
 
     /// <summary>
@@ -133,8 +133,8 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     ) =>
         await NearVector(
             vectors: input.Vector,
@@ -143,8 +143,8 @@ public partial class AggregateClient
             limit: limit,
             filters: filters,
             totalCount: totalCount,
-            cancellationToken: cancellationToken,
-            returnMetrics: returnMetrics
+            returnMetrics: returnMetrics,
+            cancellationToken: cancellationToken
         );
 
     /// <summary>
@@ -164,8 +164,8 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     ) =>
         await NearVector(
             vectors: input.Vector,
@@ -175,8 +175,8 @@ public partial class AggregateClient
             limit: limit,
             filters: filters,
             totalCount: totalCount,
-            cancellationToken: cancellationToken,
-            returnMetrics: returnMetrics
+            returnMetrics: returnMetrics,
+            cancellationToken: cancellationToken
         );
 
     /// <summary>
@@ -194,16 +194,16 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     ) =>
         await NearVector(
             vectors(VectorInputBuilderFactories.CreateNearVectorBuilder()),
             limit,
             filters,
             totalCount,
-            cancellationToken,
-            returnMetrics
+            returnMetrics,
+            cancellationToken
         );
 
     /// <summary>
@@ -223,8 +223,8 @@ public partial class AggregateClient
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
-        CancellationToken cancellationToken = default,
-        IEnumerable<Aggregate.Metric>? returnMetrics = null
+        IEnumerable<Aggregate.Metric>? returnMetrics = null,
+        CancellationToken cancellationToken = default
     ) =>
         await NearVector(
             vectors(VectorInputBuilderFactories.CreateNearVectorBuilder()),
@@ -232,7 +232,7 @@ public partial class AggregateClient
             limit,
             filters,
             totalCount,
-            cancellationToken,
-            returnMetrics
+            returnMetrics,
+            cancellationToken
         );
 }

@@ -1,4 +1,4 @@
-namespace Weaviate.Client;
+namespace Weaviate.Client.Internal;
 
 /// <summary>
 /// Helper utility for managing timeouts through CancellationToken.
@@ -42,6 +42,11 @@ internal static class TimeoutHelper
     /// <param name="providedToken">An optional cancellation token to link with the timeout token.</param>
     /// <param name="operation">Optional description of the operation for better error messages.</param>
     /// <returns>A CancellationToken that will be cancelled after the timeout expires.</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "CA1068:CancellationToken parameters must come last",
+        Justification = "The cancellation token is not for cancelling the operation"
+    )]
     internal static CancellationToken GetCancellationToken(
         TimeSpan? timeout,
         CancellationToken providedToken = default,
@@ -78,6 +83,11 @@ internal static class TimeoutHelper
     /// <param name="providedToken">An optional cancellation token to link with the timeout token.</param>
     /// <param name="operation">Optional description of the operation for better error messages.</param>
     /// <returns>A CancellationToken that will be cancelled after the effective timeout expires.</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "CA1068:CancellationToken parameters must come last",
+        Justification = "The cancellation token is not for cancelling the operation"
+    )]
     internal static CancellationToken GetCancellationToken(
         TimeSpan? configTimeout,
         TimeSpan? defaultTimeout,

@@ -272,7 +272,7 @@ public partial class SearchTests : IntegrationTests
         ).Objects;
         var textRes = (
             await collection.Query.NearText(
-                text: "fruit",
+                query: "fruit",
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;

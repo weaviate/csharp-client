@@ -140,10 +140,10 @@ public class AutoArrayUsageAnalyzer : DiagnosticAnalyzer
             var constructedFrom = namedTypeSymbol.ConstructedFrom;
             return constructedFrom.Name == "AutoArray"
                 && constructedFrom.ContainingNamespace.ToDisplayString()
-                    == "Weaviate.Client.Models";
+                    == "Weaviate.Client.Internal";
         }
 
         return namedTypeSymbol.Name == "AutoArray"
-            && namedTypeSymbol.ContainingNamespace.ToDisplayString() == "Weaviate.Client.Models";
+            && namedTypeSymbol.ContainingNamespace.ToDisplayString() == "Weaviate.Client.Internal";
     }
 }

@@ -8,7 +8,7 @@ public static class Providers
     /// <summary>
     /// Configuration for Anthropic generative AI provider.
     /// </summary>
-    public record Anthropic() : Weaviate.Client.Models.GenerativeProvider("anthropic")
+    public record Anthropic() : GenerativeProvider("anthropic")
     {
         /// <summary>
         /// Gets or sets the base URL for the Anthropic API endpoint.
@@ -59,7 +59,7 @@ public static class Providers
     /// <summary>
     /// Configuration for Anyscale generative AI provider.
     /// </summary>
-    public record Anyscale() : Weaviate.Client.Models.GenerativeProvider("anyscale")
+    public record Anyscale() : GenerativeProvider("anyscale")
     {
         /// <summary>
         /// Gets or sets the base URL for the Anyscale API endpoint.
@@ -80,7 +80,7 @@ public static class Providers
     /// <summary>
     /// Configuration for AWS Bedrock generative AI provider.
     /// </summary>
-    public record AWSBedrock() : Weaviate.Client.Models.GenerativeProvider("aws")
+    public record AWSBedrock() : GenerativeProvider("aws")
     {
         /// <summary>
         /// Gets or sets the model identifier to use.
@@ -123,7 +123,7 @@ public static class Providers
     /// <summary>
     /// Configuration for AWS SageMaker generative AI provider.
     /// </summary>
-    public record AWSSagemaker() : Weaviate.Client.Models.GenerativeProvider("aws")
+    public record AWSSagemaker() : GenerativeProvider("aws")
     {
         /// <summary>
         /// Gets or sets the temperature for controlling randomness in generation.
@@ -171,7 +171,7 @@ public static class Providers
     /// <summary>
     /// Configuration for Cohere generative AI provider.
     /// </summary>
-    public record Cohere() : Weaviate.Client.Models.GenerativeProvider("cohere")
+    public record Cohere() : GenerativeProvider("cohere")
     {
         /// <summary>
         /// Gets or sets the base URL for the Cohere API endpoint.
@@ -232,12 +232,12 @@ public static class Providers
     /// <summary>
     /// Configuration for Dummy generative AI provider for testing purposes.
     /// </summary>
-    public record Dummy() : Weaviate.Client.Models.GenerativeProvider("dummy") { }
+    public record Dummy() : GenerativeProvider("dummy") { }
 
     /// <summary>
     /// Configuration for Mistral generative AI provider.
     /// </summary>
-    public record Mistral() : Weaviate.Client.Models.GenerativeProvider("mistral")
+    public record Mistral() : GenerativeProvider("mistral")
     {
         /// <summary>
         /// Gets or sets the base URL for the Mistral API endpoint.
@@ -268,7 +268,7 @@ public static class Providers
     /// <summary>
     /// Configuration for Ollama generative AI provider.
     /// </summary>
-    public record Ollama() : Weaviate.Client.Models.GenerativeProvider("ollama")
+    public record Ollama() : GenerativeProvider("ollama")
     {
         /// <summary>
         /// Gets or sets the API endpoint URL for the Ollama service.
@@ -299,7 +299,7 @@ public static class Providers
     /// <summary>
     /// Configuration for Azure OpenAI generative AI provider.
     /// </summary>
-    public record AzureOpenAI() : Weaviate.Client.Models.GenerativeProvider("azure-openai")
+    public record AzureOpenAI() : GenerativeProvider("azure-openai")
     {
         /// <summary>
         /// Specifies the reasoning effort level for reasoning models.
@@ -447,7 +447,7 @@ public static class Providers
     /// <summary>
     /// Configuration for OpenAI generative AI provider.
     /// </summary>
-    public record OpenAI() : Weaviate.Client.Models.GenerativeProvider("openai")
+    public record OpenAI() : GenerativeProvider("openai")
     {
         /// <summary>
         /// Specifies the reasoning effort level for reasoning models.
@@ -595,7 +595,7 @@ public static class Providers
     /// <summary>
     /// Configuration for Google Vertex AI generative AI provider.
     /// </summary>
-    public record GoogleVertex() : Weaviate.Client.Models.GenerativeProvider("google-vertex")
+    public record GoogleVertex() : GenerativeProvider("google-vertex")
     {
         /// <summary>
         /// Gets or sets the frequency penalty to reduce repetition.
@@ -671,7 +671,7 @@ public static class Providers
     /// <summary>
     /// Configuration for Google Gemini generative AI provider.
     /// </summary>
-    public record GoogleGemini() : Weaviate.Client.Models.GenerativeProvider("google-gemini")
+    public record GoogleGemini() : GenerativeProvider("google-gemini")
     {
         /// <summary>
         /// Gets or sets the frequency penalty to reduce repetition.
@@ -747,7 +747,7 @@ public static class Providers
     /// <summary>
     /// Configuration for Databricks generative AI provider.
     /// </summary>
-    public record Databricks() : Weaviate.Client.Models.GenerativeProvider("databricks")
+    public record Databricks() : GenerativeProvider("databricks")
     {
         /// <summary>
         /// Gets or sets the endpoint URL for the Databricks service.
@@ -808,7 +808,7 @@ public static class Providers
     /// <summary>
     /// Configuration for FriendliAI generative AI provider.
     /// </summary>
-    public record FriendliAI() : Weaviate.Client.Models.GenerativeProvider("friendliai")
+    public record FriendliAI() : GenerativeProvider("friendliai")
     {
         /// <summary>
         /// Gets or sets the base URL for the FriendliAI API endpoint.
@@ -844,7 +844,7 @@ public static class Providers
     /// <summary>
     /// Configuration for Nvidia generative AI provider.
     /// </summary>
-    public record Nvidia() : Weaviate.Client.Models.GenerativeProvider("nvidia")
+    public record Nvidia() : GenerativeProvider("nvidia")
     {
         /// <summary>
         /// Gets or sets the base URL for the Nvidia API endpoint.
@@ -875,7 +875,7 @@ public static class Providers
     /// <summary>
     /// Configuration for xAI generative AI provider.
     /// </summary>
-    public record XAI() : Weaviate.Client.Models.GenerativeProvider("xai")
+    public record XAI() : GenerativeProvider("xai")
     {
         /// <summary>
         /// Gets or sets the base URL for the xAI API endpoint.
@@ -916,7 +916,7 @@ public static class Providers
     /// <summary>
     /// Configuration for Contextual AI generative AI provider.
     /// </summary>
-    public record ContextualAI() : Weaviate.Client.Models.GenerativeProvider("contextualai")
+    public record ContextualAI() : GenerativeProvider("contextualai")
     {
         /// <summary>
         /// Gets or sets the model identifier to use.

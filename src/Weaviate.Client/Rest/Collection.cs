@@ -14,7 +14,7 @@ internal partial class WeaviateRestClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the dto schema</returns>
-    internal async Task<Dto.Schema?> CollectionList(CancellationToken cancellationToken = default)
+    internal async Task<Schema?> CollectionList(CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.GetAsync(
             WeaviateEndpoints.Collection(),
@@ -35,7 +35,7 @@ internal partial class WeaviateRestClient
             ResourceType.Collection
         );
 
-        return await response.DecodeAsync<Dto.Schema>(cancellationToken);
+        return await response.DecodeAsync<Schema>(cancellationToken);
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ internal partial class WeaviateRestClient
     /// <param name="name">The name</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the dto class</returns>
-    internal async Task<Dto.Class?> CollectionGet(
+    internal async Task<Class?> CollectionGet(
         string name,
         CancellationToken cancellationToken = default
     )
@@ -73,7 +73,7 @@ internal partial class WeaviateRestClient
             return default;
         }
 
-        return await response.DecodeAsync<Dto.Class>(cancellationToken);
+        return await response.DecodeAsync<Class>(cancellationToken);
     }
 
     /// <summary>
@@ -109,8 +109,8 @@ internal partial class WeaviateRestClient
     /// <param name="collection">The collection</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the dto class</returns>
-    internal async Task<Dto.Class> CollectionCreate(
-        Dto.Class collection,
+    internal async Task<Class> CollectionCreate(
+        Class collection,
         CancellationToken cancellationToken = default
     )
     {
@@ -135,7 +135,7 @@ internal partial class WeaviateRestClient
             ResourceType.Collection
         );
 
-        return await response.DecodeAsync<Dto.Class>(cancellationToken);
+        return await response.DecodeAsync<Class>(cancellationToken);
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ internal partial class WeaviateRestClient
     /// <param name="json">The json</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the dto class</returns>
-    internal async Task<Dto.Class> CollectionCreateRaw(
+    internal async Task<Class> CollectionCreateRaw(
         string json,
         CancellationToken cancellationToken = default
     )
@@ -171,7 +171,7 @@ internal partial class WeaviateRestClient
             ResourceType.Collection
         );
 
-        return await response.DecodeAsync<Dto.Class>(cancellationToken);
+        return await response.DecodeAsync<Class>(cancellationToken);
     }
 
     /// <summary>
@@ -181,9 +181,9 @@ internal partial class WeaviateRestClient
     /// <param name="collection">The collection</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the dto class</returns>
-    internal async Task<Dto.Class> CollectionUpdate(
+    internal async Task<Class> CollectionUpdate(
         string collectionName,
-        Dto.Class collection,
+        Class collection,
         CancellationToken cancellationToken = default
     )
     {
@@ -208,7 +208,7 @@ internal partial class WeaviateRestClient
             ResourceType.Collection
         );
 
-        return await response.DecodeAsync<Dto.Class>(cancellationToken);
+        return await response.DecodeAsync<Class>(cancellationToken);
     }
 
     /// <summary>
@@ -288,7 +288,7 @@ internal partial class WeaviateRestClient
     /// <param name="collectionName">The collection name</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing a list of dto shard status get response</returns>
-    internal async Task<IList<Dto.ShardStatusGetResponse>> CollectionGetShards(
+    internal async Task<IList<ShardStatusGetResponse>> CollectionGetShards(
         string collectionName,
         CancellationToken cancellationToken = default
     )
@@ -311,8 +311,8 @@ internal partial class WeaviateRestClient
             ResourceType.Collection
         );
 
-        return await response.DecodeAsync<IList<Dto.ShardStatusGetResponse>>(cancellationToken)
-            ?? new List<Dto.ShardStatusGetResponse>();
+        return await response.DecodeAsync<IList<ShardStatusGetResponse>>(cancellationToken)
+            ?? new List<ShardStatusGetResponse>();
     }
 
     /// <summary>
@@ -322,7 +322,7 @@ internal partial class WeaviateRestClient
     /// <param name="shardName">The shard name</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the dto shard status get response</returns>
-    internal async Task<Dto.ShardStatusGetResponse?> CollectionGetShard(
+    internal async Task<ShardStatusGetResponse?> CollectionGetShard(
         string collectionName,
         string shardName,
         CancellationToken cancellationToken = default
@@ -343,10 +343,10 @@ internal partial class WeaviateRestClient
     /// <param name="cancellationToken">The cancellation token</param>
     /// <exception cref="InvalidOperationException">Failed to retrieve shard '{shardName}' after update</exception>
     /// <returns>A task containing the dto shard status get response</returns>
-    internal async Task<Dto.ShardStatusGetResponse> CollectionUpdateShard(
+    internal async Task<ShardStatusGetResponse> CollectionUpdateShard(
         string collectionName,
         string shardName,
-        Dto.ShardStatus status,
+        ShardStatus status,
         CancellationToken cancellationToken = default
     )
     {

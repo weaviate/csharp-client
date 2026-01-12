@@ -81,8 +81,8 @@ public static class WeaviateExtensions
         IList<Rest.Dto.Property> propertiesDto
     )
     {
-        var props = new List<Weaviate.Client.Models.Property>();
-        var refs = new List<Weaviate.Client.Models.Reference>();
+        var props = new List<Property>();
+        var refs = new List<Reference>();
 
         foreach (
             var prop in propertiesDto.Where(p =>
@@ -150,7 +150,7 @@ public static class WeaviateExtensions
             ModuleConfig = moduleConfig.Any() ? moduleConfig : null,
         };
 
-        if (collection.ReplicationConfig is Weaviate.Client.Models.ReplicationConfig rc)
+        if (collection.ReplicationConfig is ReplicationConfig rc)
         {
             data.ReplicationConfig = new Rest.Dto.ReplicationConfig()
             {
@@ -160,7 +160,7 @@ public static class WeaviateExtensions
             };
         }
 
-        if (collection.MultiTenancyConfig is Weaviate.Client.Models.MultiTenancyConfig mtc)
+        if (collection.MultiTenancyConfig is MultiTenancyConfig mtc)
         {
             data.MultiTenancyConfig = new Rest.Dto.MultiTenancyConfig()
             {
@@ -233,7 +233,7 @@ public static class WeaviateExtensions
 
             var vic = VectorIndexSerialization.Factory(v.VectorIndexType, v.VectorIndexConfig);
 
-            Weaviate.Client.Models.VectorizerConfig? vc = null;
+            VectorizerConfig? vc = null;
 
             if (vectorizer is IDictionary<string, object> vecAsDict)
             {
@@ -245,10 +245,10 @@ public static class WeaviateExtensions
                 }
             }
 
-            return new Weaviate.Client.Models.VectorConfig(name, vc, vic);
+            return new VectorConfig(name, vc, vic);
         };
 
-        var vectorConfig = new Weaviate.Client.Models.VectorConfigList(
+        var vectorConfig = new VectorConfigList(
             [.. collection.VectorConfig?.Select(e => makeVectorConfig(e.Key, e.Value)) ?? []]
         );
 
@@ -341,7 +341,7 @@ public static class WeaviateExtensions
             GenerativeConfig = generative,
             MultiTenancyConfig =
                 (collection?.MultiTenancyConfig is Rest.Dto.MultiTenancyConfig mtc)
-                    ? new Weaviate.Client.Models.MultiTenancyConfig
+                    ? new MultiTenancyConfig
                     {
                         Enabled =
                             mtc.Enabled
@@ -363,7 +363,7 @@ public static class WeaviateExtensions
                     : null,
             ReplicationConfig =
                 (collection?.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
-                    ? new Weaviate.Client.Models.ReplicationConfig
+                    ? new ReplicationConfig
                     {
                         AsyncEnabled =
                             rc.AsyncEnabled
@@ -372,8 +372,7 @@ public static class WeaviateExtensions
                         Factor =
                             rc.Factor ?? Weaviate.Client.Models.ReplicationConfig.Default.Factor,
 
-                        DeletionStrategy = (Weaviate.Client.Models.DeletionStrategy?)
-                            rc.DeletionStrategy,
+                        DeletionStrategy = (DeletionStrategy?)rc.DeletionStrategy,
                     }
                     : null,
             ShardingConfig = shardingConfig,
@@ -637,7 +636,7 @@ public static class WeaviateExtensions
         }
 
         // Use Match pattern to access internal vector data and convert to ByteString
-        return vector.Match<Google.Protobuf.ByteString>(data =>
+        return vector.Match(data =>
             data switch
             {
                 VectorSingle<float> v => ToByteString<float>(v.Values),
@@ -677,7 +676,7 @@ public static class WeaviateExtensions
         // Use Match pattern to access internal vector data
         // Pattern matching on the generic type once is much more efficient than
         // switching on every individual element
-        vector.Match<int>(data =>
+        vector.Match(data =>
         {
             switch (data)
             {
@@ -801,7 +800,7 @@ public static class WeaviateExtensions
     /// <summary>
     /// Converts an enum value to its wire-format string using EnumMemberAttribute.
     /// </summary>
-    internal static string ToEnumMemberString<T>(this Nullable<T> value)
+    internal static string ToEnumMemberString<T>(this T? value)
         where T : struct, Enum
     {
         if (!value.HasValue)

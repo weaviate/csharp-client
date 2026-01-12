@@ -1,3 +1,4 @@
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Typed;
 
@@ -11,7 +12,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a hybrid search using keyword search only.
     /// </summary>
-    public Task<Models.WeaviateResult<WeaviateObject<T>>> Hybrid(
+    public Task<WeaviateResult<WeaviateObject<T>>> Hybrid(
         string query,
         float? alpha = null,
         string[]? queryProperties = null,
@@ -52,7 +53,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a hybrid search combining keyword and vector search.
     /// </summary>
-    public async Task<Models.WeaviateResult<WeaviateObject<T>>> Hybrid(
+    public async Task<WeaviateResult<WeaviateObject<T>>> Hybrid(
         string? query,
         HybridVectorInput? vectors,
         float? alpha = null,
@@ -213,7 +214,7 @@ public static class TypedQueryClientHybridExtensions
     ///     )
     /// );
     /// </example>
-    public static async Task<Models.WeaviateResult<WeaviateObject<T>>> Hybrid<T>(
+    public static async Task<WeaviateResult<WeaviateObject<T>>> Hybrid<T>(
         this TypedQueryClient<T> client,
         string query,
         HybridVectorInput.FactoryFn vectors,

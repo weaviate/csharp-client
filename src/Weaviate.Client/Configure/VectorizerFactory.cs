@@ -21,7 +21,7 @@ public class VectorizerFactory
     /// Creates a configuration for a self-provided vectorizer.
     /// </summary>
     /// <returns>SelfProvided vectorizer configuration.</returns>
-    public VectorizerConfig SelfProvided() => new Models.Vectorizer.SelfProvided();
+    public VectorizerConfig SelfProvided() => new SelfProvided();
 
     /// <summary>
     /// Creates a configuration for the Img2VecNeural vectorizer.
@@ -29,7 +29,7 @@ public class VectorizerFactory
     /// <param name="imageFields">Array of image field names.</param>
     /// <returns>Img2VecNeural vectorizer configuration.</returns>
     public VectorizerConfig Img2VecNeural(string[] imageFields) =>
-        new Models.Vectorizer.Img2VecNeural { ImageFields = imageFields };
+        new Img2VecNeural { ImageFields = imageFields };
 
     /// <summary>
     /// Creates a configuration for the Text2VecWeaviate vectorizer.
@@ -45,7 +45,7 @@ public class VectorizerFactory
         string? model = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecWeaviate
+        new Text2VecWeaviate
         {
             BaseURL = baseURL,
             Dimensions = dimensions,
@@ -71,7 +71,7 @@ public class VectorizerFactory
         int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecAWS
+        new Multi2VecAWS
         {
             Region = region,
             Model = model,
@@ -100,7 +100,7 @@ public class VectorizerFactory
         int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecAWS
+        new Multi2VecAWS
         {
             Region = region,
             Model = model,
@@ -124,7 +124,7 @@ public class VectorizerFactory
         string? inferenceUrl = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecClip
+        new Multi2VecClip
         {
             ImageFields = imageFields,
             InferenceUrl = inferenceUrl,
@@ -147,7 +147,7 @@ public class VectorizerFactory
         string? inferenceUrl = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecClip
+        new Multi2VecClip
         {
             ImageFields = imageFields,
             InferenceUrl = inferenceUrl,
@@ -175,7 +175,7 @@ public class VectorizerFactory
         string? truncate = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecCohere
+        new Multi2VecCohere
         {
             BaseURL = baseURL,
             ImageFields = imageFields,
@@ -207,7 +207,7 @@ public class VectorizerFactory
         string? truncate = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecCohere
+        new Multi2VecCohere
         {
             BaseURL = baseURL,
             ImageFields = imageFields,
@@ -240,7 +240,7 @@ public class VectorizerFactory
         WeightedFields videoFields,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecBind
+        new Multi2VecBind
         {
             AudioFields = audioFields,
             DepthFields = depthFields,
@@ -283,7 +283,7 @@ public class VectorizerFactory
         string[]? videoFields = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecBind
+        new Multi2VecBind
         {
             AudioFields = audioFields,
             DepthFields = depthFields,
@@ -319,7 +319,7 @@ public class VectorizerFactory
         int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecGoogle
+        new Multi2VecGoogle
         {
             ProjectId = projectId,
             Location = location,
@@ -357,7 +357,7 @@ public class VectorizerFactory
         int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecGoogle
+        new Multi2VecGoogle
         {
             ProjectId = projectId,
             Location = location,
@@ -392,7 +392,7 @@ public class VectorizerFactory
         bool? truncate = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecVoyageAI
+        new Multi2VecVoyageAI
         {
             BaseURL = baseURL,
             Dimensions = dimensions,
@@ -431,7 +431,7 @@ public class VectorizerFactory
         bool? truncate = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecVoyageAI
+        new Multi2VecVoyageAI
         {
             BaseURL = baseURL,
             Dimensions = dimensions,
@@ -450,11 +450,7 @@ public class VectorizerFactory
     /// <param name="method">The method</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Ref2VecCentroid(string[] referenceProperties, string method = "mean") =>
-        new Models.Vectorizer.Ref2VecCentroid
-        {
-            ReferenceProperties = referenceProperties,
-            Method = method,
-        };
+        new Ref2VecCentroid { ReferenceProperties = referenceProperties, Method = method };
 
     /// <summary>
     /// Texts the 2 vec aws bedrock using the specified region
@@ -468,7 +464,7 @@ public class VectorizerFactory
         string model,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecAWS
+        new Text2VecAWS
         {
             Region = region,
             Service = "bedrock",
@@ -495,7 +491,7 @@ public class VectorizerFactory
         string? targetVariant = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecAWS
+        new Text2VecAWS
         {
             Region = region,
             Service = "sagemaker",
@@ -524,7 +520,7 @@ public class VectorizerFactory
         string? model = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecAzureOpenAI
+        new Text2VecAzureOpenAI
         {
             DeploymentId = deploymentId,
             ResourceName = resourceName,
@@ -550,7 +546,7 @@ public class VectorizerFactory
         string? truncate = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecCohere
+        new Text2VecCohere
         {
             BaseURL = baseURL,
             Model = model,
@@ -571,7 +567,7 @@ public class VectorizerFactory
         string? instruction = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecDatabricks
+        new Text2VecDatabricks
         {
             Endpoint = endpoint,
             Instruction = instruction,
@@ -600,7 +596,7 @@ public class VectorizerFactory
         bool? waitForModel = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecHuggingFace
+        new Text2VecHuggingFace
         {
             EndpointURL = endpointURL,
             Model = model,
@@ -626,7 +622,7 @@ public class VectorizerFactory
         bool? truncate = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecNvidia
+        new Text2VecNvidia
         {
             BaseURL = baseURL,
             Model = model,
@@ -648,7 +644,7 @@ public class VectorizerFactory
         string[]? properties = null,
         bool? truncate = null
     ) =>
-        new Models.Vectorizer.Multi2VecNvidia
+        new Multi2VecNvidia
         {
             BaseURL = baseURL,
             Model = model,
@@ -668,7 +664,7 @@ public class VectorizerFactory
         string? model = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecMistral
+        new Text2VecMistral
         {
             BaseURL = baseURL,
             Model = model,
@@ -685,7 +681,7 @@ public class VectorizerFactory
         string? inferenceURL = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecModel2Vec
+        new Text2VecModel2Vec
         {
             InferenceURL = inferenceURL,
             VectorizeCollectionName = vectorizeCollectionName,
@@ -703,7 +699,7 @@ public class VectorizerFactory
         string? model = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecMorph
+        new Text2VecMorph
         {
             BaseURL = baseURL,
             Model = model,
@@ -722,7 +718,7 @@ public class VectorizerFactory
         string? model = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecOllama
+        new Text2VecOllama
         {
             ApiEndpoint = apiEndpoint,
             Model = model,
@@ -747,7 +743,7 @@ public class VectorizerFactory
         string? type = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecOpenAI
+        new Text2VecOpenAI
         {
             BaseURL = baseURL,
             Dimensions = dimensions,
@@ -777,7 +773,7 @@ public class VectorizerFactory
         string? taskType = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecGoogle
+        new Text2VecGoogle
         {
             ApiEndpoint = apiEndpoint,
             Model = model,
@@ -804,7 +800,7 @@ public class VectorizerFactory
         string? taskType = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecGoogle
+        new Text2VecGoogle
         {
             ApiEndpoint = "generativelanguage.googleapis.com",
             Model = model,
@@ -833,7 +829,7 @@ public class VectorizerFactory
         int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecTransformers
+        new Text2VecTransformers
         {
             InferenceUrl = inferenceUrl,
             PassageInferenceUrl = passageInferenceUrl,
@@ -859,7 +855,7 @@ public class VectorizerFactory
         int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecVoyageAI
+        new Text2VecVoyageAI
         {
             BaseURL = baseURL,
             Model = model,
@@ -882,7 +878,7 @@ public class VectorizerFactory
         int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Text2VecJinaAI
+        new Text2VecJinaAI
         {
             Model = model,
             BaseURL = baseURL,
@@ -908,7 +904,7 @@ public class VectorizerFactory
         int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecJinaAI
+        new Multi2VecJinaAI
         {
             Model = model,
             BaseURL = baseURL,
@@ -936,7 +932,7 @@ public class VectorizerFactory
         int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
-        new Models.Vectorizer.Multi2VecJinaAI
+        new Multi2VecJinaAI
         {
             Model = model,
             BaseURL = baseURL,

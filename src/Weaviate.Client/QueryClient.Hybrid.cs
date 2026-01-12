@@ -1,3 +1,4 @@
+using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
@@ -107,7 +108,7 @@ public partial class QueryClient
     /// </summary>
     public Task<GroupByResult> Hybrid(
         string query,
-        Models.GroupByRequest groupBy,
+        GroupByRequest groupBy,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -151,7 +152,7 @@ public partial class QueryClient
     public async Task<GroupByResult> Hybrid(
         string? query,
         HybridVectorInput? vectors,
-        Models.GroupByRequest groupBy,
+        GroupByRequest groupBy,
         float? alpha = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,

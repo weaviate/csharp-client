@@ -165,9 +165,9 @@ public partial class AggregatesTests : IntegrationTests
     /// <returns>An enumerable of object array</returns>
     public static IEnumerable<object[]> FilterTestData()
     {
-        var uuid1 = _reusableUuids[0];
+        _ = _reusableUuids[0];
         var uuid2 = _reusableUuids[1];
-        var date1 = new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        _ = new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var date2 = new DateTime(2021, 1, 2, 0, 0, 0, DateTimeKind.Utc);
 
         yield return new object[] { Filter.Property("text").IsEqual("two") };
@@ -180,12 +180,12 @@ public partial class AggregatesTests : IntegrationTests
             Filter.Property("text").IsEqual("two") | Filter.Property("int").IsEqual(2),
         };
         yield return new object[] { Filter.Property("uuid").IsEqual(uuid2) };
-        yield return new object[] { Filter.Property("texts").ContainsAny(new[] { "two" }) };
-        yield return new object[] { Filter.Property("ints").ContainsAny(new[] { 2 }) };
-        yield return new object[] { Filter.Property("floats").ContainsAny(new[] { 2.0 }) };
-        yield return new object[] { Filter.Property("bools").ContainsAny(new[] { false }) };
-        yield return new object[] { Filter.Property("dates").ContainsAny(new[] { date2 }) };
-        yield return new object[] { Filter.Property("uuids").ContainsAny(new[] { uuid2 }) };
+        yield return new object[] { Filter.Property("texts").ContainsAny(["two"]) };
+        yield return new object[] { Filter.Property("ints").ContainsAny([2]) };
+        yield return new object[] { Filter.Property("floats").ContainsAny([2.0]) };
+        yield return new object[] { Filter.Property("bools").ContainsAny([false]) };
+        yield return new object[] { Filter.Property("dates").ContainsAny([date2]) };
+        yield return new object[] { Filter.Property("uuids").ContainsAny([uuid2]) };
     }
 
     /// <summary>
@@ -674,13 +674,17 @@ public partial class AggregatesTests : IntegrationTests
 
         object[] insertObj = propertyType switch
         {
-            "text" => values.Select(value => new { text = Convert.ToString(value) }).ToArray(),
-            "int" => values.Select(value => new { @int = Convert.ToInt32(value) }).ToArray(),
-            "float" => values.Select(value => new { @float = Convert.ToSingle(value) }).ToArray(),
-            "bool" => values.Select(value => new { @bool = Convert.ToBoolean(value) }).ToArray(),
-            "date" => values
-                .Select(value => new { date = DateTime.Parse((string)value).ToUniversalTime() })
-                .ToArray(),
+            "text" => [.. values.Select(value => new { text = Convert.ToString(value) })],
+            "int" => [.. values.Select(value => new { @int = Convert.ToInt32(value) })],
+            "float" => [.. values.Select(value => new { @float = Convert.ToSingle(value) })],
+            "bool" => [.. values.Select(value => new { @bool = Convert.ToBoolean(value) })],
+            "date" =>
+            [
+                .. values.Select(value => new
+                {
+                    date = DateTime.Parse((string)value).ToUniversalTime(),
+                }),
+            ],
             _ => throw new ArgumentException("Unknown property type"),
         };
 

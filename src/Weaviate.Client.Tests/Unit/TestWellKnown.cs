@@ -81,9 +81,9 @@ public class TestWellKnown
     [Fact]
     public async Task Live_ReturnsTrue_On200()
     {
-        var handler = new FakeHandler(req => new HttpResponseMessage(HttpStatusCode.OK));
+        var handler = new FakeHandler(_ => new HttpResponseMessage(HttpStatusCode.OK));
         var noOpChannel = NoOpGrpcChannel.Create();
-        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+        var grpcClient = new Grpc.WeaviateGrpcClient(noOpChannel);
         var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         Assert.True(await client.IsLive(TestContext.Current.CancellationToken));
         Assert.Equal(
@@ -99,15 +99,13 @@ public class TestWellKnown
     public async Task IsReady_ReturnsTrue_On200()
     {
         var handler = new FakeHandler(req =>
-        {
-            if (req.RequestUri!.AbsolutePath.EndsWith("ready"))
-            {
-                return new HttpResponseMessage(HttpStatusCode.OK);
-            }
-            return new HttpResponseMessage(HttpStatusCode.OK);
-        });
+            req.RequestUri!.AbsolutePath.EndsWith("ready")
+                ? new HttpResponseMessage(HttpStatusCode.OK)
+                : new HttpResponseMessage(HttpStatusCode.InternalServerError)
+        );
+
         var noOpChannel = NoOpGrpcChannel.Create();
-        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+        var grpcClient = new Grpc.WeaviateGrpcClient(noOpChannel);
         var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         Assert.True(await client.IsReady(TestContext.Current.CancellationToken));
     }
@@ -133,12 +131,12 @@ public class TestWellKnown
             return new HttpResponseMessage(HttpStatusCode.OK);
         });
         var noOpChannel = NoOpGrpcChannel.Create();
-        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+        var grpcClient = new Grpc.WeaviateGrpcClient(noOpChannel);
         var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         var result = await client.WaitUntilReady(
             TimeSpan.FromSeconds(2),
-            TestContext.Current.CancellationToken,
-            TimeSpan.FromMilliseconds(10)
+            TimeSpan.FromMilliseconds(10),
+            TestContext.Current.CancellationToken
         );
         Assert.True(result);
         Assert.True(calls >= 3);
@@ -154,12 +152,12 @@ public class TestWellKnown
             HttpStatusCode.ServiceUnavailable
         ));
         var noOpChannel = NoOpGrpcChannel.Create();
-        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+        var grpcClient = new Grpc.WeaviateGrpcClient(noOpChannel);
         var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         var result = await client.WaitUntilReady(
             TimeSpan.FromMilliseconds(100),
-            TestContext.Current.CancellationToken,
-            TimeSpan.FromMilliseconds(10)
+            TimeSpan.FromMilliseconds(10),
+            TestContext.Current.CancellationToken
         );
         Assert.False(result);
     }
@@ -178,12 +176,12 @@ public class TestWellKnown
             return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
         });
         var noOpChannel = NoOpGrpcChannel.Create();
-        var grpcClient = new Weaviate.Client.Grpc.WeaviateGrpcClient(noOpChannel);
+        var grpcClient = new Grpc.WeaviateGrpcClient(noOpChannel);
         var client = new WeaviateClient(new ClientConfiguration(), handler, grpcClient: grpcClient);
         var task = client.WaitUntilReady(
             TimeSpan.FromSeconds(5),
-            cts.Token,
-            TimeSpan.FromMilliseconds(10)
+            TimeSpan.FromMilliseconds(10),
+            cts.Token
         );
         cts.CancelAfter(50);
         await Assert.ThrowsAsync<TaskCanceledException>(async () => await task);
