@@ -26,7 +26,7 @@ public class TimeoutEdgeCaseTests
 
                 try
                 {
-                    await Task.Delay(150, token);
+                    await Task.FromResult(token.WaitHandle.WaitOne());
                     Assert.Fail($"Operation {i} should have timed out");
                 }
                 catch (TaskCanceledException ex)
