@@ -14,14 +14,14 @@ Welcome to the official C# client for Weaviate, the open-source vector database.
 You can install the Weaviate C# client via the NuGet Package Manager or the `dotnet` CLI.
 
 ```bash
-dotnet add package Weaviate.Client --version 0.0.1-beta.4
+dotnet add package Weaviate.Client --version 1.0.0
 ```
 
 Alternatively, you can add the `PackageReference` to your `.csproj` file:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Weaviate.Client" Version="0.0.1-beta.4" />
+  <PackageReference Include="Weaviate.Client" Version="1.0.0" />
 </ItemGroup>
 ```
 
@@ -32,6 +32,48 @@ Alternatively, you can add the `PackageReference` to your `.csproj` file:
 The best way to get started is by following our quickstart guide. It will walk you through setting up the client, connecting to Weaviate, creating a collection, and performing your first vector search.
 
 - **[➡️ Quickstart Guide](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/quickstart)**
+
+
+### Quickstart example
+
+```csharp
+string weaviateUrl = Environment.GetEnvironmentVariable("WEAVIATE_URL");
+string weaviateApiKey = Environment.GetEnvironmentVariable("WEAVIATE_API_KEY");
+
+// 1. Connect to Weaviate Cloud
+var client = await Connect.Cloud(weaviateUrl, weaviateApiKey);
+
+// 2. Prepare data
+var dataObjects = new List<object>
+{
+    new { title = "The Matrix", description = "A computer hacker learns about the true nature of reality and his role in the war against its controllers.", genre = "Science Fiction", },
+    new { title = "Spirited Away", description = "A young girl becomes trapped in a mysterious world of spirits and must find a way to save her parents and return home.", genre = "Animation", },
+    new { title = "The Lord of the Rings: The Fellowship of the Ring", description = "A meek Hobbit and his companions set out on a perilous journey to destroy a powerful ring and save Middle-earth.", genre = "Fantasy", },
+};
+
+var CollectionName = "Movie";
+
+// 3. Create the collection
+var movies = await client.Collections.Create(
+    new CollectionCreateParams
+    {
+        Name = CollectionName,
+        VectorConfig = Configure.Vector("default", v => v.Text2VecWeaviate()),
+    }
+);
+
+// 4. Import the data
+var result = await movies.Data.InsertMany(dataObjects);
+
+// 5. Run the query
+var response = await movies.Query.NearText("sci-fi", limit: 2);
+
+// 6. Inspect the results
+foreach (var obj in response.Objects)
+{
+    Console.WriteLine(JsonSerializer.Serialize(obj.Properties));
+}
+```
 
 ---
 
@@ -57,11 +99,16 @@ For more detailed information on specific features, please refer to the official
 
 ## 💬 Feedback
 
-We would love to hear your feedback! For specific feature requests, bug reports, or issues with the client, please open an issue on this repository or reach out to us directly at **devex@weaviate.io**.
+We would love to hear your feedback! For specific feature requests, bug reports, or issues with the client, please [open an issue](https://github.com/weaviate/csharp-client/issues) on this repository or reach out to us directly at **devex@weaviate.io**.
 
 ---
 
 ## 🤝 Community
+
+Connect with the Weaviate community and the team through our online channels.
+
+- **[Weaviate Forum](https://forum.weaviate.io/)**: For questions and discussions.
+- **[Weaviate Slack](https://weaviate.io/slack)**: For live chats with the community and team.
 
 ## 🧪 Integration Testing
 
@@ -103,8 +150,3 @@ Stop the environment when finished:
 ```
 
 If the server version is below 1.31.0 the integration tests will be skipped automatically.
-
-Connect with the Weaviate community and the team through our online channels.
-
-- **[Weaviate Forum](https://forum.weaviate.io/)**: For questions and discussions.
-- **[Weaviate Slack](https://weaviate.io/slack)**: For live chats with the community and team.
