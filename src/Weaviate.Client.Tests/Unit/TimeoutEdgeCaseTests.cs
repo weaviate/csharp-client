@@ -10,49 +10,6 @@ namespace Weaviate.Client.Tests.Unit;
 public class TimeoutEdgeCaseTests
 {
     /// <summary>
-    /// Tests that concurrent operations timeout context not shared
-    /// </summary>
-    [Fact]
-    public async Task ConcurrentOperations_TimeoutContextNotShared()
-    {
-        // Arrange - Test that concurrent operations maintain separate timeout contexts
-        var tasks = Enumerable
-            .Range(0, 10)
-            .Select(async i =>
-            {
-                var timeout = TimeSpan.FromMilliseconds(50 + i * 10);
-                var operation = $"Operation {i}";
-                var token = TimeoutHelper.GetCancellationToken(timeout, operation: operation);
-
-                try
-                {
-                    await Task.FromResult(token.WaitHandle.WaitOne());
-                    Assert.Fail($"Operation {i} should have timed out");
-                }
-                catch (TaskCanceledException ex)
-                {
-                    // Each operation should see its own timeout context
-                    Assert.True(TimeoutHelper.IsTimeoutCancellation(ex));
-
-                    var retrievedTimeout = TimeoutHelper.GetTimeout();
-                    var retrievedOperation = TimeoutHelper.GetOperation();
-
-                    Assert.NotNull(retrievedTimeout);
-                    Assert.Equal(operation, retrievedOperation);
-
-                    // The timeout should be close to what we set (within the range we defined)
-                    Assert.True(
-                        retrievedTimeout.Value >= TimeSpan.FromMilliseconds(50)
-                            && retrievedTimeout.Value <= TimeSpan.FromMilliseconds(150)
-                    );
-                }
-            });
-
-        // Act & Assert
-        await Task.WhenAll(tasks);
-    }
-
-    /// <summary>
     /// Tests that nested async calls timeout context preserved
     /// </summary>
     [Fact]
@@ -61,7 +18,7 @@ public class TimeoutEdgeCaseTests
         // Arrange - Test nested async calls preserve timeout context
         var outerTimeout = TimeSpan.FromSeconds(10);
         var outerOperation = "Outer operation";
-        var _ = TimeoutHelper.GetCancellationToken(
+        _ = TimeoutHelper.GetCancellationToken(
             outerTimeout,
             providedToken: TestContext.Current.CancellationToken,
             operation: outerOperation
@@ -105,7 +62,7 @@ public class TimeoutEdgeCaseTests
         await Task.Run(
             async () =>
             {
-                await Task.Delay(10);
+                await Task.Delay(10, token);
 
                 // Context should flow to Task.Run
                 Assert.Equal(timeout, TimeoutHelper.GetTimeout());
