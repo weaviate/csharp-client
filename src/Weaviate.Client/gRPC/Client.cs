@@ -77,6 +77,8 @@ internal partial class WeaviateGrpcClient : IDisposable
                 _defaultHeaders = new Metadata();
             }
 
+            _defaultHeaders.Add("X-Weaviate-Client", WeaviateDefaults.UserAgent);
+
             foreach (var header in headers)
             {
                 _defaultHeaders.Add(header.Key, header.Value);
