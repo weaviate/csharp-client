@@ -56,20 +56,29 @@ public class CollectionConfigClient
     /// Adds a reference property to the collection.
     /// </summary>
     /// <param name="referenceProperty">The reference property to add.</param>
-    public async Task AddReference(Reference referenceProperty)
+    /// <param name="cancellationToken">Cancellation token.</param>
+    public async Task AddReference(
+        Reference referenceProperty,
+        CancellationToken cancellationToken = default
+    )
     {
         var dto = referenceProperty.ToDto();
 
-        await _client.RestClient.CollectionAddProperty(_collectionName, dto);
+        await _client.RestClient.CollectionAddProperty(_collectionName, dto, cancellationToken);
     }
 
     /// <summary>
     /// Adds a property to the collection.
     /// </summary>
     /// <param name="p">The property to add.</param>
-    public async Task AddProperty(Property p)
+    /// <param name="cancellationToken">Cancellation token.</param>
+    public async Task AddProperty(Property p, CancellationToken cancellationToken = default)
     {
-        await _client.RestClient.CollectionAddProperty(_collectionName, p.ToDto());
+        await _client.RestClient.CollectionAddProperty(
+            _collectionName,
+            p.ToDto(),
+            cancellationToken
+        );
     }
 
     // Add new named vectors
@@ -77,11 +86,12 @@ public class CollectionConfigClient
     /// Adds a new named vector to the collection.
     /// </summary>
     /// <param name="vector">The vector configuration to add.</param>
-    public async Task AddVector(VectorConfig vector)
+    /// <param name="cancellationToken">Cancellation token.</param>
+    public async Task AddVector(VectorConfig vector, CancellationToken cancellationToken = default)
     {
         // 1. Fetch the collection config
         var collection =
-            await _client.Collections.Export(_collectionName)
+            await _client.Collections.Export(_collectionName, cancellationToken)
             ?? throw new InvalidOperationException(
                 $"Collection '{_collectionName}' does not exist."
             );
@@ -92,7 +102,7 @@ public class CollectionConfigClient
         var dto = collection.ToDto();
 
         // 3. PUT to /schema
-        await _client.RestClient.CollectionUpdate(_collectionName, dto);
+        await _client.RestClient.CollectionUpdate(_collectionName, dto, cancellationToken);
     }
 
     // Proxied property updates
@@ -101,11 +111,15 @@ public class CollectionConfigClient
     /// Updates the collection configuration.
     /// </summary>
     /// <param name="c">Action to update the collection.</param>
-    public async Task<CollectionConfigExport> Update(Action<CollectionUpdate> c)
+    /// <param name="cancellationToken">Cancellation token.</param>
+    public async Task<CollectionConfigExport> Update(
+        Action<CollectionUpdate> c,
+        CancellationToken cancellationToken = default
+    )
     {
         // 1. Fetch the collection config
         var collection =
-            await _client.Collections.Export(_collectionName)
+            await _client.Collections.Export(_collectionName, cancellationToken)
             ?? throw new InvalidOperationException(
                 $"Collection '{_collectionName}' does not exist."
             );
@@ -114,7 +128,11 @@ public class CollectionConfigClient
         c(new CollectionUpdate(collection));
 
         // 3. PUT to /schema
-        var result = await _client.RestClient.CollectionUpdate(_collectionName, collection.ToDto());
+        var result = await _client.RestClient.CollectionUpdate(
+            _collectionName,
+            collection.ToDto(),
+            cancellationToken
+        );
 
         return result.ToModel();
     }
@@ -177,15 +195,17 @@ public class CollectionConfigClient
     /// </summary>
     /// <param name="status">The new status to set for the shards.</param>
     /// <param name="shardNames">The names of the shards to update.</param>
+    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
     /// <returns>A list of updated shard information.</returns>
     public async Task<IList<ShardInfo>> UpdateShardStatus(
         ShardStatus status,
-        params string[] shardNames
+        Internal.AutoArray<string>? shardNames = null,
+        CancellationToken cancellationToken = default
     )
     {
         ArgumentNullException.ThrowIfNull(shardNames);
 
-        if (shardNames.Length == 0)
+        if (!shardNames.Any())
         {
             throw new ArgumentException(
                 "At least one shard name must be provided.",
@@ -196,7 +216,12 @@ public class CollectionConfigClient
         var shardStatus = new Rest.Dto.ShardStatus { Status = status.ToApiString() };
 
         var tasks = shardNames.Select(shardName =>
-            _client.RestClient.CollectionUpdateShard(_collectionName, shardName, shardStatus)
+            _client.RestClient.CollectionUpdateShard(
+                _collectionName,
+                shardName,
+                shardStatus,
+                cancellationToken
+            )
         );
 
         var results = await Task.WhenAll(tasks);
