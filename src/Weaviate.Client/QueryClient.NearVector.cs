@@ -220,7 +220,7 @@ public partial class QueryClient
     /// <summary>
     /// Performs a near-vector search using a NearVectorInput record.
     /// </summary>
-    /// <param name="input">Near-vector input containing vector, certainty, and distance.</param>
+    /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
@@ -233,7 +233,7 @@ public partial class QueryClient
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Search results.</returns>
     public async Task<WeaviateResult> NearVector(
-        NearVectorInput input,
+        NearVectorInput query,
         Filter? filters = null,
         uint? autoLimit = null,
         uint? limit = null,
@@ -246,10 +246,10 @@ public partial class QueryClient
         CancellationToken cancellationToken = default
     ) =>
         await NearVector(
-            vectors: input.Vector,
+            vectors: query.Vector,
             filters: filters,
-            certainty: input.Certainty,
-            distance: input.Distance,
+            certainty: query.Certainty,
+            distance: query.Distance,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
@@ -265,7 +265,7 @@ public partial class QueryClient
     /// <summary>
     /// Performs a near-vector search with group-by using a NearVectorInput record.
     /// </summary>
-    /// <param name="input">Near-vector input containing vector, certainty, and distance.</param>
+    /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
@@ -279,7 +279,7 @@ public partial class QueryClient
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Grouped search results.</returns>
     public async Task<GroupByResult> NearVector(
-        NearVectorInput input,
+        NearVectorInput query,
         GroupByRequest groupBy,
         Filter? filters = null,
         uint? autoLimit = null,
@@ -293,11 +293,11 @@ public partial class QueryClient
         CancellationToken cancellationToken = default
     ) =>
         await NearVector(
-            vectors: input.Vector,
+            vectors: query.Vector,
             groupBy: groupBy,
             filters: filters,
-            certainty: input.Certainty,
-            distance: input.Distance,
+            certainty: query.Certainty,
+            distance: query.Distance,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,

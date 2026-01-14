@@ -173,7 +173,7 @@ Task<GroupByResult> NearText(
 
 // Extension: NearTextInput record
 Task<WeaviateResult> NearText(
-    NearTextInput input,
+    NearTextInput query,
     ...
 )
 ```

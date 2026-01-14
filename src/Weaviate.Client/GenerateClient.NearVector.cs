@@ -179,7 +179,7 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities using a NearVectorInput record.
     /// </summary>
-    /// <param name="input">Near-vector input containing vector, certainty, and distance.</param>
+    /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
@@ -195,7 +195,7 @@ public partial class GenerateClient
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Generative search results.</returns>
     public async Task<GenerativeWeaviateResult> NearVector(
-        NearVectorInput input,
+        NearVectorInput query,
         Filter? filters = null,
         uint? autoLimit = null,
         uint? limit = null,
@@ -211,10 +211,10 @@ public partial class GenerateClient
         CancellationToken cancellationToken = default
     ) =>
         await NearVector(
-            vectors: input.Vector,
+            vectors: query.Vector,
             filters: filters,
-            certainty: input.Certainty,
-            distance: input.Distance,
+            certainty: query.Certainty,
+            distance: query.Distance,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
@@ -232,7 +232,7 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities and grouping using a NearVectorInput record.
     /// </summary>
-    /// <param name="input">Near-vector input containing vector, certainty, and distance.</param>
+    /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
@@ -249,7 +249,7 @@ public partial class GenerateClient
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Generative grouped search results.</returns>
     public async Task<GenerativeGroupByResult> NearVector(
-        NearVectorInput input,
+        NearVectorInput query,
         GroupByRequest groupBy,
         Filter? filters = null,
         uint? autoLimit = null,
@@ -266,11 +266,11 @@ public partial class GenerateClient
         CancellationToken cancellationToken = default
     ) =>
         await NearVector(
-            vectors: input.Vector,
+            vectors: query.Vector,
             groupBy: groupBy,
             filters: filters,
-            certainty: input.Certainty,
-            distance: input.Distance,
+            certainty: query.Certainty,
+            distance: query.Distance,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
