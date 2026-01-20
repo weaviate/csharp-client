@@ -5,7 +5,7 @@ namespace Weaviate.Client.Models;
 /// <summary>
 /// The vectorizer class
 /// </summary>
-internal static class Vectorizer
+public static class Vectorizer
 {
     /// <summary>
     /// Unified weights configuration for multi-media vectorizers.
