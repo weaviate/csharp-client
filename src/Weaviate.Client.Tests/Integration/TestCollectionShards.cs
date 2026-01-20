@@ -209,7 +209,7 @@ public class TestCollectionShards : IntegrationTests
         );
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await collection.Config.UpdateShardStatus(
                 ShardStatus.Ready,
                 cancellationToken: TestContext.Current.CancellationToken
