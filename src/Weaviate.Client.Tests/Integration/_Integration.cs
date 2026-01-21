@@ -230,6 +230,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
     /// <param name="rerankerConfig">The reranker config</param>
     /// <param name="generativeConfig">The generative config</param>
     /// <param name="collectionNamePartSeparator">The collection name part separator</param>
+    /// <param name="objectTTLConfig">The object TTL configuration</param>
     /// <returns>A task containing the collection client</returns>
     public async Task<CollectionClient> CollectionFactory<TData>(
         string? name = null,
@@ -243,7 +244,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         ShardingConfig? shardingConfig = null,
         IRerankerConfig? rerankerConfig = null,
         IGenerativeConfig? generativeConfig = null,
-        string collectionNamePartSeparator = "_"
+        string collectionNamePartSeparator = "_",
+        ObjectTTLConfig? objectTTLConfig = null
     )
     {
         name = MakeUniqueCollectionName<TData>(name, collectionNamePartSeparator);
@@ -272,6 +274,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
             ShardingConfig = shardingConfig,
             RerankerConfig = rerankerConfig,
             GenerativeConfig = generativeConfig,
+            ObjectTTLConfig = objectTTLConfig,
         };
 
         return await CollectionFactory<TData>(c);
@@ -292,6 +295,7 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
     /// <param name="rerankerConfig">The reranker config</param>
     /// <param name="generativeConfig">The generative config</param>
     /// <param name="collectionNamePartSeparator">The collection name part separator</param>
+    /// <param name="objectTTLConfig">The object TTL configuration</param>
     /// <returns>A task containing the collection client</returns>
     protected async Task<CollectionClient> CollectionFactory(
         string? name = null,
@@ -305,7 +309,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         ShardingConfig? shardingConfig = null,
         IRerankerConfig? rerankerConfig = null,
         IGenerativeConfig? generativeConfig = null,
-        string collectionNamePartSeparator = "_"
+        string collectionNamePartSeparator = "_",
+        ObjectTTLConfig? objectTTLConfig = null
     )
     {
         return await CollectionFactory<object>(
@@ -320,7 +325,8 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
             shardingConfig,
             rerankerConfig,
             generativeConfig,
-            collectionNamePartSeparator
+            collectionNamePartSeparator,
+            objectTTLConfig
         );
     }
 

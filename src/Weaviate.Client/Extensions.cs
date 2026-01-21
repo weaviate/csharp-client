@@ -140,6 +140,15 @@ public static class WeaviateExtensions
         {
             Class1 = collection.Name,
             Description = collection.Description,
+            ObjectTtlConfig = collection.ObjectTTLConfig is not null
+                ? new Rest.Dto.ObjectTtlConfig
+                {
+                    Enabled = collection.ObjectTTLConfig.Enabled,
+                    DefaultTtl = collection.ObjectTTLConfig.DefaultTTL,
+                    DeleteOn = collection.ObjectTTLConfig.DeleteOn,
+                    FilterExpiredObjects = collection.ObjectTTLConfig.FilterExpiredObjects,
+                }
+                : null,
             Properties = MergeProperties(
                 collection.Properties,
                 collection.References,
@@ -361,6 +370,13 @@ public static class WeaviateExtensions
                             ?? Weaviate.Client.Models.MultiTenancyConfig.Default.AutoTenantCreation,
                     }
                     : null,
+            ObjectTTLConfig = new ObjectTTLConfig
+            {
+                Enabled = collection?.ObjectTtlConfig?.Enabled ?? false,
+                DefaultTTL = collection?.ObjectTtlConfig?.DefaultTtl,
+                DeleteOn = collection?.ObjectTtlConfig?.DeleteOn,
+                FilterExpiredObjects = collection?.ObjectTtlConfig?.FilterExpiredObjects,
+            },
             ReplicationConfig =
                 (collection?.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
                     ? new ReplicationConfig
