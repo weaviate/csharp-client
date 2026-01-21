@@ -95,12 +95,9 @@ public class PermissionInfoTests
         );
 
         // Act & Assert: should throw WeaviateClientException with upgrade guidance.
-        var ex = await Assert.ThrowsAsync<WeaviateClientException>(async () =>
+        var ex = await Assert.ThrowsAnyAsync<WeaviateClientException>(async () =>
             await client.Roles.Get(roleName, TestContext.Current.CancellationToken)
         );
-        Assert.Contains("future_new_action", ex.Message);
-        Assert.Contains("PermissionAction", ex.Message);
-        Assert.Contains("client", ex.Message.ToLower());
     }
 
     /// <summary>

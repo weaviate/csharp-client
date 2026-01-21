@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Weaviate.Client.Rest;
 
@@ -128,10 +129,17 @@ internal static class HttpResponseMessageExtensions
         CancellationToken cancellationToken = default
     )
     {
-        return await response.Content.ReadFromJsonAsync<TDto>(
-                WeaviateRestClient.RestJsonSerializerOptions,
-                cancellationToken: cancellationToken
-            ) ?? throw new WeaviateRestClientException();
+        try
+        {
+            return await response.Content.ReadFromJsonAsync<TDto>(
+                    WeaviateRestClient.RestJsonSerializerOptions,
+                    cancellationToken: cancellationToken
+                ) ?? throw new WeaviateRestClientException("Deserialization resulted in null.");
+        }
+        catch (JsonException ex)
+        {
+            throw new WeaviateRestClientException(ex.Message, ex);
+        }
     }
 }
 

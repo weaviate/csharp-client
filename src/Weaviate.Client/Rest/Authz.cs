@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 
 namespace Weaviate.Client.Rest;
 
@@ -247,13 +248,18 @@ internal partial class WeaviateRestClient
     /// <summary>
     /// The role user assignment
     /// </summary>
-    internal record RoleUserAssignment(string userId, Dto.UserTypeOutput userType)
+    internal record RoleUserAssignment
     {
+        public required string UserId { get; init; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public Dto.UserTypeOutput UserType { get; init; }
+
         /// <summary>
         /// Returns the model
         /// </summary>
         /// <returns>The models user role assignment</returns>
-        public Models.UserRoleAssignment ToModel() => new(userId, MapUserType(userType));
+        public Models.UserRoleAssignment ToModel() => new(UserId, MapUserType(UserType));
     }
 
     /// <summary>

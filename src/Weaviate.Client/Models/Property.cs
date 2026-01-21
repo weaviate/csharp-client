@@ -322,75 +322,75 @@ internal class PropertyHelper
 public enum DataType
 {
     /// <summary>Unknown data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "unknown")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("unknown")]
     Unknown,
 
     /// <summary>Text data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "text")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("text")]
     Text,
 
     /// <summary>Text array data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "text[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("text[]")]
     TextArray,
 
     /// <summary>Integer data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "int")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("int")]
     Int,
 
     /// <summary>Integer array data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "int[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("int[]")]
     IntArray,
 
     /// <summary>Boolean data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "boolean")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("boolean")]
     Bool,
 
     /// <summary>Boolean array data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "boolean[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("boolean[]")]
     BoolArray,
 
     /// <summary>Number data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "number")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("number")]
     Number,
 
     /// <summary>Number array data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "number[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("number[]")]
     NumberArray,
 
     /// <summary>Date data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "date")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("date")]
     Date,
 
     /// <summary>Date array data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "date[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("date[]")]
     DateArray,
 
     /// <summary>UUID data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "uuid")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("uuid")]
     Uuid,
 
     /// <summary>UUID array data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "uuid[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("uuid[]")]
     UuidArray,
 
     /// <summary>Geo coordinate data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "geoCoordinates")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("geoCoordinates")]
     GeoCoordinate,
 
     /// <summary>Blob data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "blob")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("blob")]
     Blob,
 
     /// <summary>Phone number data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "phoneNumber")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("phoneNumber")]
     PhoneNumber,
 
     /// <summary>Object data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "object")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("object")]
     Object,
 
     /// <summary>Object array data type.</summary>
-    [System.Runtime.Serialization.EnumMember(Value = "object[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("object[]")]
     ObjectArray,
 }
 

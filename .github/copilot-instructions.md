@@ -20,8 +20,9 @@
 - Use `ToModel()`/`ToDto()` in `Rest/Dto/Extensions.cs` for mapping
 
 ## Enum & Wire Format
-- Use `ToEnumMemberString()`/`FromEnumMemberString<T>()` for conveting enums to and from strings
+- Use `ToEnumMemberString()`/`FromEnumMemberString<T>()` for converting enums to and from strings
 - Always prefer enums for permission actions and resource types
+- Stick to .NET defaults for JSON serialization, using JsonStringEnumMemberName on enum values for specifying the string conversion, and System.Text.Json.Serialization.JsonStringEnumConverter on properties and fields to speciy the actual conversion on the properties.
 
 ## Testing
 - Unit: xUnit, mock HTTP handler for REST

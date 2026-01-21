@@ -1,4 +1,6 @@
 using System.Text.Json;
+using System.Text.Json.JsonDiffPatch;
+using System.Text.Json.Nodes;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
@@ -389,6 +391,12 @@ public class CollectionTests
                 }},
                 ""usingBlockMaxWAND"": true
             }},
+            ""objectTtlConfig"": {{
+                ""defaultTtl"": 0,
+                ""deleteOn"": ""_creationTimeUnix"",
+                ""enabled"": false,
+                ""filterExpiredObjects"": false
+            }},
             ""multiTenancyConfig"": {{
                 ""autoTenantActivation"": false,
                 ""autoTenantCreation"": false,
@@ -511,14 +519,12 @@ public class CollectionTests
         );
 
         // Parse as JsonElement for semantic comparison (ignoring property order)
-        using var expectedDoc = JsonDocument.Parse(expectedJson);
-        using var actualDoc = JsonDocument.Parse(actualJson);
+        var expectedDoc = JsonNode.Parse(expectedJson);
+        var actualDoc = JsonNode.Parse(actualJson);
 
-        // Use JsonElement.DeepEquals for semantic comparison
-        Assert.True(
-            JsonElement.DeepEquals(expectedDoc.RootElement, actualDoc.RootElement),
-            $"JSON structures differ:\nExpected:\n{expectedJson}\n\nActual:\n{actualJson}"
-        );
+        var diff = expectedDoc.Diff(actualDoc);
+
+        Assert.True(diff == null, diff?.ToJsonString());
     }
 
     /// <summary>

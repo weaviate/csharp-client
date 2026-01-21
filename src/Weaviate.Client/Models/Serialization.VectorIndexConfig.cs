@@ -95,6 +95,7 @@ internal class HnswDto
     /// Gets or sets the value of the distance
     /// </summary>
     [JsonPropertyName("distance")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public VectorDistance? Distance { get; set; }
 
     /// <summary>
@@ -131,6 +132,7 @@ internal class HnswDto
     /// Gets or sets the value of the filter strategy
     /// </summary>
     [JsonPropertyName("filterStrategy")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public VectorIndexFilterStrategy? FilterStrategy { get; set; }
 
     /// <summary>
@@ -205,6 +207,7 @@ internal class FlatDto
     /// Gets or sets the value of the distance
     /// </summary>
     [JsonPropertyName("distance")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public VectorDistance? Distance { get; set; }
 
     /// <summary>
@@ -248,6 +251,7 @@ internal class DynamicDto
     /// Gets or sets the value of the distance
     /// </summary>
     [JsonPropertyName("distance")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public VectorDistance? Distance { get; set; }
 
     /// <summary>
@@ -544,10 +548,9 @@ internal static class VectorIndexSerialization
         {
             var result = type switch
             {
-                VectorIndex.HNSW.TypeValue => (VectorIndexConfig?)
-                    VectorIndexSerialization.DeserializeHnsw(vic),
-                VectorIndex.Flat.TypeValue => VectorIndexSerialization.DeserializeFlat(vic),
-                VectorIndex.Dynamic.TypeValue => VectorIndexSerialization.DeserializeDynamic(vic),
+                VectorIndex.HNSW.TypeValue => (VectorIndexConfig?)DeserializeHnsw(vic),
+                VectorIndex.Flat.TypeValue => DeserializeFlat(vic),
+                VectorIndex.Dynamic.TypeValue => DeserializeDynamic(vic),
                 _ => null,
             };
 

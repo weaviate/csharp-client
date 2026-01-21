@@ -10,67 +10,67 @@ public enum TenantActivityStatus
     /// <summary>
     /// The unspecified tenant activity status
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "unspecified")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("unspecified")]
     Unspecified,
 
     /// <summary>
     /// The active tenant activity status
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "active")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("active")]
     Active,
 
     /// <summary>
     /// The inactive tenant activity status
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "inactive")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("inactive")]
     Inactive,
 
     /// <summary>
     /// The offloaded tenant activity status
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "offloaded")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("offloaded")]
     Offloaded,
 
     /// <summary>
     /// The offloading tenant activity status
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "offloading")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("offloading")]
     Offloading,
 
     /// <summary>
     /// The onloading tenant activity status
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "onloading")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("onloading")]
     Onloading,
 
     /// <summary>
     /// The hot tenant activity status
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "hot")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("hot")]
     Hot,
 
     /// <summary>
     /// The cold tenant activity status
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "cold")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("cold")]
     Cold,
 
     /// <summary>
     /// The frozen tenant activity status
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "frozen")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("frozen")]
     Frozen,
 
     /// <summary>
     /// The freezing tenant activity status
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "freezing")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("freezing")]
     Freezing,
 
     /// <summary>
     /// The unfreezing tenant activity status
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "unfreezing")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("unfreezing")]
     Unfreezing,
 }
 

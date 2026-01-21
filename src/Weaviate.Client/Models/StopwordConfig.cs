@@ -17,22 +17,20 @@ public record StopwordConfig
         /// <summary>
         /// The none presets
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "none")]
+        [System.Text.Json.Serialization.JsonStringEnumMemberName("none")]
         None,
 
         /// <summary>
         /// The en presets
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "en")]
+        [System.Text.Json.Serialization.JsonStringEnumMemberName("en")]
         EN,
     }
 
     /// <summary>
     /// The stopword config
     /// </summary>
-    private static readonly Lazy<StopwordConfig> defaultInstance = new Lazy<StopwordConfig>(() =>
-        new StopwordConfig()
-    );
+    private static readonly Lazy<StopwordConfig> defaultInstance = new(() => new StopwordConfig());
 
     /// <summary>
     /// Gets the value of the default
@@ -47,6 +45,9 @@ public record StopwordConfig
     /// <summary>
     /// Pre-existing list of common words by language (default: 'en'). Options: ['en', 'none'].
     /// </summary>
+    [System.Text.Json.Serialization.JsonConverter(
+        typeof(System.Text.Json.Serialization.JsonStringEnumConverter)
+    )]
     public Presets Preset { get; set; } = Presets.EN;
 
     /// <summary>

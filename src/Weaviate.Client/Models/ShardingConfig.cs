@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Weaviate.Client.Models;
 
 /// <summary>
@@ -11,15 +13,14 @@ public record ShardingConfig : IEquatable<ShardingConfig>
     public enum Strategies
     {
         /// <summary>
-        /// The none strategies
+        /// Unknown strategy
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "")]
         None,
 
         /// <summary>
         /// The hash strategies
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "hash")]
+        [JsonStringEnumMemberName("hash")]
         Hash,
     }
 
@@ -31,13 +32,12 @@ public record ShardingConfig : IEquatable<ShardingConfig>
         /// <summary>
         /// The none functions
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "")]
         None,
 
         /// <summary>
         /// The murmur functions
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "murmur3")]
+        [JsonStringEnumMemberName("murmur3")]
         Murmur3,
     }
 
@@ -100,10 +100,12 @@ public record ShardingConfig : IEquatable<ShardingConfig>
     /// <summary>
     /// Gets or sets the value of the strategy
     /// </summary>
+    [JsonConverter(typeof(EmptyStringEnumConverter<Strategies>))]
     public Strategies Strategy { get; set; } = Strategies.Hash;
 
     /// <summary>
     /// Gets or sets the value of the function
     /// </summary>
+    [JsonConverter(typeof(EmptyStringEnumConverter<Functions>))]
     public Functions Function { get; set; } = Functions.Murmur3;
 }

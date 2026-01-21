@@ -810,7 +810,9 @@ public static class WeaviateExtensions
         var type = typeof(T);
         var member = type.GetMember(value.ToString()).FirstOrDefault();
         var attr = member?.GetCustomAttribute<EnumMemberAttribute>();
-        return attr?.Value ?? value.ToString();
+        var attrstj =
+            member?.GetCustomAttribute<System.Text.Json.Serialization.JsonStringEnumMemberNameAttribute>();
+        return attr?.Value ?? attrstj?.Name ?? value.ToString();
     }
 
     /// <summary>
@@ -836,7 +838,14 @@ public static class WeaviateExtensions
         foreach (var field in type.GetFields())
         {
             var attr = field.GetCustomAttribute<EnumMemberAttribute>();
-            if ((attr?.Value ?? field.Name).Equals(value, StringComparison.OrdinalIgnoreCase))
+            var attrstj =
+                field.GetCustomAttribute<System.Text.Json.Serialization.JsonStringEnumMemberNameAttribute>();
+            if (
+                (attr?.Value ?? attrstj?.Name ?? field.Name).Equals(
+                    value,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
                 return (T)field.GetValue(null)!;
         }
         throw new ArgumentException($"Value '{value}' is not valid for enum {type.Name}");
@@ -853,7 +862,9 @@ public static class WeaviateExtensions
             .Any(field =>
             {
                 var attr = field.GetCustomAttribute<EnumMemberAttribute>();
-                return (attr?.Value ?? field.Name).Equals(
+                var attrstj =
+                    field.GetCustomAttribute<System.Text.Json.Serialization.JsonStringEnumMemberNameAttribute>();
+                return (attr?.Value ?? attrstj?.Name ?? field.Name).Equals(
                     value,
                     StringComparison.OrdinalIgnoreCase
                 );

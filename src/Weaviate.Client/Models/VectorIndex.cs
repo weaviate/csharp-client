@@ -88,25 +88,25 @@ public abstract record VectorIndexConfig()
         /// <summary>
         /// Cosine distance metric.
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "cosine")]
+        [JsonStringEnumMemberName("cosine")]
         Cosine,
 
         /// <summary>
         /// Dot product distance metric.
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "dot")]
+        [JsonStringEnumMemberName("dot")]
         Dot,
 
         /// <summary>
         /// L2 squared (Euclidean squared) distance metric.
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "l2squared")]
+        [JsonStringEnumMemberName("l2squared")]
         L2Squared,
 
         /// <summary>
         /// Hamming distance metric for binary vectors.
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "hamming")]
+        [JsonStringEnumMemberName("hamming")]
         Hamming,
     }
 
@@ -118,13 +118,13 @@ public abstract record VectorIndexConfig()
         /// <summary>
         /// Sweeping filter strategy.
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "sweeping")]
+        [JsonStringEnumMemberName("sweeping")]
         Sweeping,
 
         /// <summary>
         /// Acorn filter strategy.
         /// </summary>
-        [System.Runtime.Serialization.EnumMember(Value = "acorn")]
+        [JsonStringEnumMemberName("acorn")]
         Acorn,
     }
 
@@ -169,13 +169,13 @@ public static class VectorIndex
             /// <summary>
             /// Log-normal distribution.
             /// </summary>
-            [System.Runtime.Serialization.EnumMember(Value = "log-normal")]
+            [JsonStringEnumMemberName("log-normal")]
             LogNormal,
 
             /// <summary>
             /// Normal (Gaussian) distribution.
             /// </summary>
-            [System.Runtime.Serialization.EnumMember(Value = "normal")]
+            [JsonStringEnumMemberName("normal")]
             Normal,
         }
 
@@ -187,13 +187,13 @@ public static class VectorIndex
             /// <summary>
             /// K-means clustering encoder.
             /// </summary>
-            [System.Runtime.Serialization.EnumMember(Value = "kmeans")]
+            [JsonStringEnumMemberName("kmeans")]
             Kmeans,
 
             /// <summary>
             /// Tile-based encoder.
             /// </summary>
-            [System.Runtime.Serialization.EnumMember(Value = "tile")]
+            [JsonStringEnumMemberName("tile")]
             Tile,
         }
 
@@ -305,11 +305,13 @@ public static class VectorIndex
                 /// <summary>
                 /// Gets or sets the encoder type.
                 /// </summary>
+                [JsonConverter(typeof(JsonStringEnumConverter))]
                 public EncoderType Type { get; set; }
 
                 /// <summary>
                 /// Gets or sets the distribution type for training.
                 /// </summary>
+                [JsonConverter(typeof(JsonStringEnumConverter))]
                 public DistributionType Distribution { get; set; }
             }
 
@@ -381,6 +383,7 @@ public static class VectorIndex
         /// <summary>
         /// Gets or sets the distance metric for vector similarity.
         /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public VectorDistance? Distance { get; set; }
 
         /// <summary>
@@ -411,6 +414,7 @@ public static class VectorIndex
         /// <summary>
         /// Gets or sets the filter strategy for pre-filtering.
         /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public VectorIndexFilterStrategy? FilterStrategy { get; set; }
 
         /// <summary>
@@ -467,6 +471,7 @@ public static class VectorIndex
         /// <summary>
         /// Gets or sets the distance metric for vector similarity.
         /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public VectorDistance? Distance { get; set; }
 
         /// <summary>
@@ -498,6 +503,7 @@ public static class VectorIndex
         /// <summary>
         /// Gets or sets the distance metric for vector similarity.
         /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public VectorDistance? Distance { get; set; }
 
         /// <summary>
