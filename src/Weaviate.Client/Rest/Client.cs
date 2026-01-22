@@ -26,12 +26,8 @@ internal partial class WeaviateRestClient : IDisposable
     {
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        WriteIndented = true, // For readability
-        Converters =
-        {
-            new EnumMemberJsonConverterFactory(),
-            new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase),
-        },
+        // WriteIndented = true, // For readability
+        // Converters = { new JsonStringEnumConverter() },
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 

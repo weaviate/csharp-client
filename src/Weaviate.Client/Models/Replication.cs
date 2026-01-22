@@ -8,13 +8,13 @@ public enum ReplicationType
     /// <summary>
     /// Copy the shard to the target node, keeping the source replica
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "COPY")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("COPY")]
     Copy,
 
     /// <summary>
     /// Move the shard to the target node, removing the source replica after successful transfer
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "MOVE")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("MOVE")]
     Move,
 }
 
@@ -26,37 +26,37 @@ public enum ReplicationOperationState
     /// <summary>
     /// Operation has been registered but not yet started
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "REGISTERED")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("REGISTERED")]
     Registered,
 
     /// <summary>
     /// Operation is copying data to the target node
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "HYDRATING")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("HYDRATING")]
     Hydrating,
 
     /// <summary>
     /// Operation is finalizing the replication
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "FINALIZING")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("FINALIZING")]
     Finalizing,
 
     /// <summary>
     /// Operation is removing data from the source node (MOVE operations only)
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "DEHYDRATING")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("DEHYDRATING")]
     Dehydrating,
 
     /// <summary>
     /// Operation has completed successfully
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "READY")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("READY")]
     Ready,
 
     /// <summary>
     /// Operation was cancelled
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "CANCELLED")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("CANCELLED")]
     Cancelled,
 }
 

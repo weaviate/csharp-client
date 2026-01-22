@@ -92,31 +92,31 @@ public enum BackupStorageProvider
     /// <summary>
     /// No backend specified
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "none")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("none")]
     None,
 
     /// <summary>
     /// Local filesystem storage
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "filesystem")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("filesystem")]
     Filesystem,
 
     /// <summary>
     /// Amazon S3 storage
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "s3")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("s3")]
     S3,
 
     /// <summary>
     /// Google Cloud Storage
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "gcs")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("gcs")]
     GCS,
 
     /// <summary>
     /// Azure Blob Storage
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "azure")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("azure")]
     Azure,
 }
 
@@ -322,13 +322,13 @@ public enum UserRestoreOption
     /// <summary>
     /// The no restore user restore option
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "noRestore")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("noRestore")]
     NoRestore,
 
     /// <summary>
     /// The all user restore option
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "all")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("all")]
     All,
 }
 
@@ -340,12 +340,12 @@ public enum RolesRestoreOption
     /// <summary>
     /// The no restore roles restore option
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "noRestore")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("noRestore")]
     NoRestore,
 
     /// <summary>
     /// The all roles restore option
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "all")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("all")]
     All,
 }

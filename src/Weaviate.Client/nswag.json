@@ -1,6 +1,6 @@
 {
-  "runtime": "Net80",
-  "defaultVariables": null,  
+  "runtime": "Net90",
+  "defaultVariables": null,
   "documentGenerator": {
     "fromDocument": {
       "json": "./Rest/Schema/openapi.json"

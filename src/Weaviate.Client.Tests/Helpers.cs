@@ -221,7 +221,7 @@ public static class JsonComparer
     /// <summary>
     /// Recursively sorts JsonNode properties
     /// </summary>
-    private static JsonNode? SortJsonNode(JsonNode? node)
+    public static JsonNode? SortJsonNode(JsonNode? node)
     {
         if (node == null)
             return null;

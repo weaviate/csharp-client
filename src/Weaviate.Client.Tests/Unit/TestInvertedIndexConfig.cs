@@ -1,3 +1,5 @@
+using System.Text.Json.JsonDiffPatch;
+using System.Text.Json.Nodes;
 using Weaviate.Client.Models;
 using Weaviate.Client.Rest;
 
@@ -334,16 +336,21 @@ public class InvertedIndexConfigTests
             },
         };
 
-        var expectedJson =
-            @"{""bm25"":{""b"":0.7,""k1"":1.3},""cleanupIntervalSeconds"":30,""indexNullState"":true,""indexPropertyLength"":true,""indexTimestamps"":true,""stopwords"":{""additions"":[""plus""],""preset"":""none"",""removals"":[""minus""]}}";
+        var expectedJson = JsonNode.Parse(
+            @"{""bm25"":{""b"":0.7,""k1"":1.3},""cleanupIntervalSeconds"":30,""indexNullState"":true,""indexPropertyLength"":true,""indexTimestamps"":true,""stopwords"":{""additions"":[""plus""],""preset"":""none"",""removals"":[""minus""]}}"
+        );
 
         // Act
-        var json = System.Text.Json.JsonSerializer.Serialize(
-            config,
-            WeaviateRestClient.RestJsonSerializerOptions
+        var json = JsonNode.Parse(
+            System.Text.Json.JsonSerializer.Serialize(
+                config,
+                WeaviateRestClient.RestJsonSerializerOptions
+            )
         );
 
         // Assert
-        Assert.True(JsonComparer.AreJsonEqual(expectedJson, json));
+        var diff = expectedJson.Diff(json);
+
+        Assert.True(diff == null, diff?.ToJsonString());
     }
 }
