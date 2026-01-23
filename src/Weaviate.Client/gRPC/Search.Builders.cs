@@ -226,10 +226,14 @@ internal partial class WeaviateGrpcClient
                         a.ImageProperties != null
                             ? new V1.TextArray { Values = { a.ImageProperties } }
                             : null,
+                    StopSequences =
+                        a.StopSequences != null
+                            ? new V1.TextArray { Values = { a.StopSequences } }
+                            : null,
                 };
                 SetIfNotNull(v => result.Aws.Temperature = (float)v, a.Temperature);
                 SetIfNotNull(v => result.Aws.MaxTokens = v, a.MaxTokens);
-                // TODO - add top_k, top_p & stop_sequences here when added to server-side proto
+                // TODO - add top_k & top_p here when added to server-side proto
                 // Check the latest available version of `grpc/proto/v1/generative.proto` (see GenerativeAWS) in the server repo
                 break;
             case Models.Generative.Providers.AWSSagemaker a:
@@ -245,10 +249,14 @@ internal partial class WeaviateGrpcClient
                         a.ImageProperties != null
                             ? new V1.TextArray { Values = { a.ImageProperties } }
                             : null,
+                    StopSequences =
+                        a.StopSequences != null
+                            ? new V1.TextArray { Values = { a.StopSequences } }
+                            : null,
                 };
                 SetIfNotNull(v => result.Aws.Temperature = (float)v, a.Temperature);
                 SetIfNotNull(v => result.Aws.MaxTokens = v, a.MaxTokens);
-                // TODO - add top_k, top_p & stop_sequences here when added to server-side proto
+                // TODO - add top_k & top_p here when added to server-side proto
                 // Check the latest available version of `grpc/proto/v1/generative.proto` (see GenerativeAWS) in the server repo
                 break;
             case Models.Generative.Providers.Cohere a:

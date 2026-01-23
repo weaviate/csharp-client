@@ -116,7 +116,13 @@ public static class Providers
         /// Gets or sets the maximum number of tokens to generate.
         /// </summary>
         public long? MaxTokens { get; set; }
-        // TODO - add top_k, top_p & stop_sequences here when added to server-side proto
+
+        /// <summary>
+        /// Gets or sets the sequences where generation should stop.
+        /// </summary>
+        public List<string>? StopSequences { get; set; }
+
+        // TODO - add top_k & top_p here when added to server-side proto
         // Check the latest available version of `grpc/proto/v1/generative.proto` (see GenerativeAWS) in the server repo
     }
 
@@ -164,7 +170,13 @@ public static class Providers
         /// Gets or sets the maximum number of tokens to generate.
         /// </summary>
         public long? MaxTokens { get; set; }
-        // TODO - add top_k, top_p & stop_sequences here when added to server-side proto
+
+        /// <summary>
+        /// Gets or sets the sequences where generation should stop.
+        /// </summary>
+        public List<string>? StopSequences { get; set; }
+
+        // TODO - add top_k & top_p here when added to server-side proto
         // Check the latest available version of `grpc/proto/v1/generative.proto` (see GenerativeAWS) in the server repo
     }
 
