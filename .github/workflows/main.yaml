@@ -97,6 +97,26 @@ jobs:
           dotnet tool restore
           dotnet csharpier check ${{ steps.changed-files.outputs.all_changed_files }}
 
+      - name: Run analyzer unit tests
+        run: |
+          if [[ "${{ needs.setup.outputs.dry-run }}" == "true" ]]; then
+            echo "🏃 DRY-RUN MODE: Skipping actual test execution"
+            echo "Would run: dotnet test --no-restore --filter \"FullyQualifiedName~Weaviate.Client.Analyzers.Tests\" --logger \"trx;LogFileName=test-analyzer-results.trx\" --collect:\"XPlat Code Coverage\" --results-directory ./test-results"
+
+            # Create dummy test results and coverage files
+            mkdir -p ./test-results
+            mkdir -p ./test-results/coverage
+            echo '<?xml version="1.0" encoding="utf-8"?><coverage line-rate="0.85" branch-rate="0.75"><packages><package name="Weaviate.Client" line-rate="0.85" branch-rate="0.75"><classes></classes></package></packages></coverage>' > ./test-results/coverage/coverage.cobertura.xml
+            echo '<?xml version="1.0" encoding="utf-8"?><TestRun><ResultSummary outcome="Completed"><Counters total="42" executed="42" passed="42" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" /></ResultSummary></TestRun>' > ./test-results/test-unit-results.trx
+          else
+            dotnet test --no-restore \
+              --filter "FullyQualifiedName~Weaviate.Client.Analyzers.Tests" \
+              --logger "trx;LogFileName=test-analyzer-results.trx" \
+              --collect:"XPlat Code Coverage" \
+              --results-directory ./test-results \
+              --settings coverlet.runsettings
+          fi
+
       - name: Run unit tests with coverage (or dry-run)
         run: |
           if [[ "${{ needs.setup.outputs.dry-run }}" == "true" ]]; then
