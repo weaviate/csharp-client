@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.JsonDiffPatch;
 using System.Text.Json.Nodes;
 using Weaviate.Client.Models;
 
@@ -522,9 +521,12 @@ public class CollectionTests
         var expectedDoc = JsonNode.Parse(expectedJson);
         var actualDoc = JsonNode.Parse(actualJson);
 
-        var diff = expectedDoc.Diff(actualDoc);
+        var eq = JsonNode.DeepEquals(expectedDoc, actualDoc);
 
-        Assert.True(diff == null, diff?.ToJsonString());
+        Assert.True(
+            eq,
+            $"JSON structures differ:\nExpected:\n{JsonComparer.SortJsonNode(expectedDoc)}\n\nActual:\n{JsonComparer.SortJsonNode(actualDoc)}"
+        );
     }
 
     /// <summary>

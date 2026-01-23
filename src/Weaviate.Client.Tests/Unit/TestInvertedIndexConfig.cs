@@ -1,4 +1,3 @@
-using System.Text.Json.JsonDiffPatch;
 using System.Text.Json.Nodes;
 using Weaviate.Client.Models;
 using Weaviate.Client.Rest;
@@ -349,8 +348,12 @@ public class InvertedIndexConfigTests
         );
 
         // Assert
-        var diff = expectedJson.Diff(json);
+        // Parse as JsonElement for semantic comparison (ignoring property order)
+        var eq = JsonNode.DeepEquals(expectedJson, json);
 
-        Assert.True(diff == null, diff?.ToJsonString());
+        Assert.True(
+            eq,
+            $"JSON structures differ:\nExpected:\n{JsonComparer.SortJsonNode(expectedJson)}\n\nActual:\n{JsonComparer.SortJsonNode(json)}"
+        );
     }
 }
