@@ -154,6 +154,37 @@ override sealed Weaviate.Client.Models.VectorIndex.Quantizers.RQ.Equals(Weaviate
 override sealed Weaviate.Client.Models.VectorIndex.Quantizers.SQ.Equals(Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? other) -> bool
 override sealed Weaviate.Client.Models.VectorIndexConfig.MuveraEncoding.Equals(Weaviate.Client.Models.VectorIndexConfig.EncodingConfig? other) -> bool
 override sealed Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat.Equals(Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Img2VecNeural.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecAWS.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecBind.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecClip.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecCohere.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecPalm.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecGoogle? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.SelfProvided.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecAWS.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecCohere.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecMistral.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecMorph.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecNvidia.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecOllama.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecPalm.Equals(Weaviate.Client.Models.Vectorizer.Text2VecGoogle? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecTransformers.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override sealed Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
 override sealed Weaviate.Client.Models.WeaviateGroup.Equals(Weaviate.Client.Models.WeaviateGroup<Weaviate.Client.Models.GroupByObject!>? other) -> bool
 override sealed Weaviate.Client.Models.WeaviateResult.Equals(Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.WeaviateObject!>? other) -> bool
 override sealed Weaviate.Client.Models.WeightedTargetVectors.Equals(Weaviate.Client.Models.TargetVectors? other) -> bool
@@ -387,6 +418,8 @@ override Weaviate.Client.Models.DataReference.ToString() -> string!
 override Weaviate.Client.Models.DataResource.Equals(object? obj) -> bool
 override Weaviate.Client.Models.DataResource.GetHashCode() -> int
 override Weaviate.Client.Models.DataResource.ToString() -> string!
+override Weaviate.Client.Models.EmptyStringEnumConverter<T>.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> T
+override Weaviate.Client.Models.EmptyStringEnumConverter<T>.Write(System.Text.Json.Utf8JsonWriter! writer, T value, System.Text.Json.JsonSerializerOptions! options) -> void
 override Weaviate.Client.Models.FilesystemBackend.<Clone>$() -> Weaviate.Client.Models.FilesystemBackend!
 override Weaviate.Client.Models.FilesystemBackend.EqualityContract.get -> System.Type!
 override Weaviate.Client.Models.FilesystemBackend.Equals(object? obj) -> bool
@@ -698,6 +731,12 @@ override Weaviate.Client.Models.ObjectStorageBackend.Path.get -> string?
 override Weaviate.Client.Models.ObjectStorageBackend.PrintMembers(System.Text.StringBuilder! builder) -> bool
 override Weaviate.Client.Models.ObjectStorageBackend.Provider.get -> Weaviate.Client.Models.BackupStorageProvider
 override Weaviate.Client.Models.ObjectStorageBackend.ToString() -> string!
+override Weaviate.Client.Models.ObjectTTLConfig.Equals(object? obj) -> bool
+override Weaviate.Client.Models.ObjectTTLConfig.GetHashCode() -> int
+override Weaviate.Client.Models.ObjectTTLConfig.ToString() -> string!
+override Weaviate.Client.Models.ObjectTTLConfigUpdate.Equals(object? obj) -> bool
+override Weaviate.Client.Models.ObjectTTLConfigUpdate.GetHashCode() -> int
+override Weaviate.Client.Models.ObjectTTLConfigUpdate.ToString() -> string!
 override Weaviate.Client.Models.OrNestedFilter.<Clone>$() -> Weaviate.Client.Models.OrNestedFilter!
 override Weaviate.Client.Models.OrNestedFilter.EqualityContract.get -> System.Type!
 override Weaviate.Client.Models.OrNestedFilter.Equals(object? obj) -> bool
@@ -987,6 +1026,192 @@ override Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat.GetHashCod
 override Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat.PrintMembers(System.Text.StringBuilder! builder) -> bool
 override Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat.ToString() -> string!
 override Weaviate.Client.Models.VectorIndexConfig.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Img2VecNeural.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Img2VecNeural!
+override Weaviate.Client.Models.Vectorizer.Img2VecNeural.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Img2VecNeural.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Img2VecNeural.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Img2VecNeural.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Img2VecNeural.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI!
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Multi2VecAWS.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2VecAWS!
+override Weaviate.Client.Models.Vectorizer.Multi2VecAWS.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2VecAWS.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecAWS.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2VecAWS.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecAWS.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Multi2VecBind.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2VecBind!
+override Weaviate.Client.Models.Vectorizer.Multi2VecBind.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2VecBind.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecBind.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2VecBind.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecBind.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Multi2VecClip.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2VecClip!
+override Weaviate.Client.Models.Vectorizer.Multi2VecClip.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2VecClip.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecClip.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2VecClip.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecClip.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Multi2VecCohere.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2VecCohere!
+override Weaviate.Client.Models.Vectorizer.Multi2VecCohere.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2VecCohere.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecCohere.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2VecCohere.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecCohere.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2VecGoogle!
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI!
+override Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2VecNvidia!
+override Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Multi2VecPalm.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2VecPalm!
+override Weaviate.Client.Models.Vectorizer.Multi2VecPalm.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2VecPalm.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecPalm.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2VecPalm.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecPalm.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI!
+override Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Ref2VecCentroid!
+override Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.SelfProvided.<Clone>$() -> Weaviate.Client.Models.Vectorizer.SelfProvided!
+override Weaviate.Client.Models.Vectorizer.SelfProvided.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.SelfProvided.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.SelfProvided.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.SelfProvided.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.SelfProvided.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI!
+override Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecAWS.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecAWS!
+override Weaviate.Client.Models.Vectorizer.Text2VecAWS.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecAWS.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecAWS.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecAWS.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecAWS.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI!
+override Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecCohere.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecCohere!
+override Weaviate.Client.Models.Vectorizer.Text2VecCohere.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecCohere.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecCohere.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecCohere.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecCohere.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecDatabricks!
+override Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecGoogle.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecGoogle!
+override Weaviate.Client.Models.Vectorizer.Text2VecGoogle.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecGoogle.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecGoogle.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecGoogle.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace!
+override Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecJinaAI!
+override Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecMistral.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecMistral!
+override Weaviate.Client.Models.Vectorizer.Text2VecMistral.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecMistral.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecMistral.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecMistral.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecMistral.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec!
+override Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecMorph.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecMorph!
+override Weaviate.Client.Models.Vectorizer.Text2VecMorph.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecMorph.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecMorph.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecMorph.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecMorph.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecNvidia.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecNvidia!
+override Weaviate.Client.Models.Vectorizer.Text2VecNvidia.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecNvidia.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecNvidia.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecNvidia.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecNvidia.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecOllama.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecOllama!
+override Weaviate.Client.Models.Vectorizer.Text2VecOllama.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecOllama.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecOllama.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecOllama.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecOllama.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecOpenAI!
+override Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecPalm.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecPalm!
+override Weaviate.Client.Models.Vectorizer.Text2VecPalm.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecPalm.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecPalm.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecPalm.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecPalm.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecTransformers.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecTransformers!
+override Weaviate.Client.Models.Vectorizer.Text2VecTransformers.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecTransformers.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecTransformers.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecTransformers.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecTransformers.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI!
+override Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.ToString() -> string!
+override Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Text2VecWeaviate!
+override Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.ToString() -> string!
 override Weaviate.Client.Models.VectorizerConfig.Equals(object? obj) -> bool
 override Weaviate.Client.Models.VectorizerConfig.GetHashCode() -> int
 override Weaviate.Client.Models.VectorizerConfig.ToString() -> string!
@@ -1056,11 +1281,11 @@ static Weaviate.Client.CollectionClientExtensions.AsTyped<T>(this Weaviate.Clien
 static Weaviate.Client.CollectionsClient.operator !=(Weaviate.Client.CollectionsClient? left, Weaviate.Client.CollectionsClient? right) -> bool
 static Weaviate.Client.CollectionsClient.operator ==(Weaviate.Client.CollectionsClient? left, Weaviate.Client.CollectionsClient? right) -> bool
 static Weaviate.Client.Configure.Generative.get -> Weaviate.Client.GenerativeConfigFactory!
-static Weaviate.Client.Configure.MultiVector(string! name, System.Func<Weaviate.Client.VectorizerFactoryMulti!, Weaviate.Client.Models.VectorizerConfig!>! vectorizer, Weaviate.Client.Models.VectorIndex.HNSW? index = null, Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? quantizer = null, Weaviate.Client.Models.VectorIndexConfig.EncodingConfig? encoding = null, params string![]! sourceProperties) -> Weaviate.Client.Models.VectorConfig!
-static Weaviate.Client.Configure.MultiVector(System.Func<Weaviate.Client.VectorizerFactoryMulti!, Weaviate.Client.Models.VectorizerConfig!>! vectorizer, Weaviate.Client.Models.VectorIndex.HNSW? index = null, Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? quantizer = null, Weaviate.Client.Models.VectorIndexConfig.EncodingConfig? encoding = null, params string![]! sourceProperties) -> Weaviate.Client.Models.VectorConfig!
+static Weaviate.Client.Configure.MultiVector<TVectorizer>(string! name, System.Func<Weaviate.Client.VectorizerFactoryMulti!, TVectorizer!>! vectorizer, Weaviate.Client.Models.VectorIndex.HNSW? index = null, Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? quantizer = null, Weaviate.Client.Models.VectorIndexConfig.EncodingConfig? encoding = null, params string![]! sourceProperties) -> Weaviate.Client.Models.VectorConfig!
+static Weaviate.Client.Configure.MultiVector<TVectorizer>(System.Func<Weaviate.Client.VectorizerFactoryMulti!, TVectorizer!>! vectorizer, Weaviate.Client.Models.VectorIndex.HNSW? index = null, Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? quantizer = null, Weaviate.Client.Models.VectorIndexConfig.EncodingConfig? encoding = null, params string![]! sourceProperties) -> Weaviate.Client.Models.VectorConfig!
 static Weaviate.Client.Configure.Reranker.get -> Weaviate.Client.RerankerConfigFactory!
-static Weaviate.Client.Configure.Vector(string! name, System.Func<Weaviate.Client.VectorizerFactory!, Weaviate.Client.Models.VectorizerConfig!>! vectorizer, Weaviate.Client.Models.VectorIndexConfig? index = null, Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? quantizer = null, params string![]! sourceProperties) -> Weaviate.Client.Models.VectorConfig!
-static Weaviate.Client.Configure.Vector(System.Func<Weaviate.Client.VectorizerFactory!, Weaviate.Client.Models.VectorizerConfig!>! vectorizer, Weaviate.Client.Models.VectorIndexConfig? index = null, Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? quantizer = null, params string![]! sourceProperties) -> Weaviate.Client.Models.VectorConfig!
+static Weaviate.Client.Configure.Vector<TVectorizer>(string! name, System.Func<Weaviate.Client.VectorizerFactory!, TVectorizer!>! vectorizer, Weaviate.Client.Models.VectorIndexConfig? index = null, Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? quantizer = null, params string![]! sourceProperties) -> Weaviate.Client.Models.VectorConfig!
+static Weaviate.Client.Configure.Vector<TVectorizer>(System.Func<Weaviate.Client.VectorizerFactory!, TVectorizer!>! vectorizer, Weaviate.Client.Models.VectorIndexConfig? index = null, Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? quantizer = null, params string![]! sourceProperties) -> Weaviate.Client.Models.VectorConfig!
 static Weaviate.Client.Connect.Cloud(string! restEndpoint, string? apiKey = null, System.Collections.Generic.Dictionary<string!, string!>? headers = null, System.Net.Http.HttpMessageHandler? httpMessageHandler = null, System.TimeSpan? defaultTimeout = null, System.TimeSpan? initTimeout = null, System.TimeSpan? insertTimeout = null, System.TimeSpan? queryTimeout = null) -> System.Threading.Tasks.Task<Weaviate.Client.WeaviateClient!>!
 static Weaviate.Client.Connect.FromEnvironment(string! prefix = "WEAVIATE_", System.TimeSpan? defaultTimeout = null, System.TimeSpan? initTimeout = null, System.TimeSpan? insertTimeout = null, System.TimeSpan? queryTimeout = null) -> System.Threading.Tasks.Task<Weaviate.Client.WeaviateClient!>!
 static Weaviate.Client.Connect.Local(Weaviate.Client.Auth.ApiKeyCredentials! credentials, string! hostname = "localhost", ushort restPort = 8080, ushort grpcPort = 50051, bool useSsl = false, System.Collections.Generic.Dictionary<string!, string!>? headers = null, System.Net.Http.HttpMessageHandler? httpMessageHandler = null, System.TimeSpan? defaultTimeout = null, System.TimeSpan? initTimeout = null, System.TimeSpan? insertTimeout = null, System.TimeSpan? queryTimeout = null) -> System.Threading.Tasks.Task<Weaviate.Client.WeaviateClient!>!
@@ -1079,6 +1304,11 @@ static Weaviate.Client.DependencyInjection.WeaviateServiceCollectionExtensions.A
 static Weaviate.Client.Generate.Provider.get -> Weaviate.Client.GenerativeProviderFactory!
 static Weaviate.Client.GenerateClientHybridExtensions.Hybrid(this Weaviate.Client.GenerateClient! client, string! query, Weaviate.Client.Models.HybridVectorInput.FactoryFn! vectors, float? alpha = null, string![]? queryProperties = null, Weaviate.Client.Models.HybridFusion? fusionType = null, float? maxVectorDistance = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
 static Weaviate.Client.GenerateClientHybridExtensions.Hybrid(this Weaviate.Client.GenerateClient! client, string! query, Weaviate.Client.Models.HybridVectorInput.FactoryFn! vectors, Weaviate.Client.Models.GroupByRequest! groupBy, float? alpha = null, string![]? queryProperties = null, Weaviate.Client.Models.HybridFusion? fusionType = null, float? maxVectorDistance = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
+static Weaviate.Client.Internal.AutoArray<T>.explicit operator T[]!(Weaviate.Client.Internal.AutoArray<T>! list) -> T[]!
+static Weaviate.Client.Internal.AutoArray<T>.implicit operator Weaviate.Client.Internal.AutoArray<T>!(System.Collections.Generic.List<T>! items) -> Weaviate.Client.Internal.AutoArray<T>!
+static Weaviate.Client.Internal.AutoArray<T>.implicit operator Weaviate.Client.Internal.AutoArray<T>!(T item) -> Weaviate.Client.Internal.AutoArray<T>!
+static Weaviate.Client.Internal.AutoArray<T>.implicit operator Weaviate.Client.Internal.AutoArray<T>?(T[]? items) -> Weaviate.Client.Internal.AutoArray<T>?
+static Weaviate.Client.Internal.AutoArrayBuilder.Create<T>(System.ReadOnlySpan<T> items) -> Weaviate.Client.Internal.AutoArray<T>!
 static Weaviate.Client.Models.Aggregate.Boolean.operator !=(Weaviate.Client.Models.Aggregate.Boolean? left, Weaviate.Client.Models.Aggregate.Boolean? right) -> bool
 static Weaviate.Client.Models.Aggregate.Boolean.operator ==(Weaviate.Client.Models.Aggregate.Boolean? left, Weaviate.Client.Models.Aggregate.Boolean? right) -> bool
 static Weaviate.Client.Models.Aggregate.Date.operator !=(Weaviate.Client.Models.Aggregate.Date? left, Weaviate.Client.Models.Aggregate.Date? right) -> bool
@@ -1124,11 +1354,6 @@ static Weaviate.Client.Models.AliasesResource.operator !=(Weaviate.Client.Models
 static Weaviate.Client.Models.AliasesResource.operator ==(Weaviate.Client.Models.AliasesResource? left, Weaviate.Client.Models.AliasesResource? right) -> bool
 static Weaviate.Client.Models.AndNestedFilter.operator !=(Weaviate.Client.Models.AndNestedFilter? left, Weaviate.Client.Models.AndNestedFilter? right) -> bool
 static Weaviate.Client.Models.AndNestedFilter.operator ==(Weaviate.Client.Models.AndNestedFilter? left, Weaviate.Client.Models.AndNestedFilter? right) -> bool
-static Weaviate.Client.Internal.AutoArray<T>.explicit operator T[]!(Weaviate.Client.Internal.AutoArray<T>! list) -> T[]!
-static Weaviate.Client.Internal.AutoArray<T>.implicit operator Weaviate.Client.Internal.AutoArray<T>!(System.Collections.Generic.List<T>! items) -> Weaviate.Client.Internal.AutoArray<T>!
-static Weaviate.Client.Internal.AutoArray<T>.implicit operator Weaviate.Client.Internal.AutoArray<T>!(T item) -> Weaviate.Client.Internal.AutoArray<T>!
-static Weaviate.Client.Internal.AutoArray<T>.implicit operator Weaviate.Client.Internal.AutoArray<T>?(T[]? items) -> Weaviate.Client.Internal.AutoArray<T>?
-static Weaviate.Client.Internal.AutoArrayBuilder.Create<T>(System.ReadOnlySpan<T> items) -> Weaviate.Client.Internal.AutoArray<T>!
 static Weaviate.Client.Models.Backup.operator !=(Weaviate.Client.Models.Backup? left, Weaviate.Client.Models.Backup? right) -> bool
 static Weaviate.Client.Models.Backup.operator ==(Weaviate.Client.Models.Backup? left, Weaviate.Client.Models.Backup? right) -> bool
 static Weaviate.Client.Models.BackupBackend.Azure(string? bucket = null, string? path = null) -> Weaviate.Client.Models.BackupBackend!
@@ -1381,6 +1606,16 @@ static Weaviate.Client.Models.ObjectReference.operator !=(Weaviate.Client.Models
 static Weaviate.Client.Models.ObjectReference.operator ==(Weaviate.Client.Models.ObjectReference? left, Weaviate.Client.Models.ObjectReference? right) -> bool
 static Weaviate.Client.Models.ObjectStorageBackend.operator !=(Weaviate.Client.Models.ObjectStorageBackend? left, Weaviate.Client.Models.ObjectStorageBackend? right) -> bool
 static Weaviate.Client.Models.ObjectStorageBackend.operator ==(Weaviate.Client.Models.ObjectStorageBackend? left, Weaviate.Client.Models.ObjectStorageBackend? right) -> bool
+static Weaviate.Client.Models.ObjectTTLConfig.ByCreationTime(int ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+static Weaviate.Client.Models.ObjectTTLConfig.ByCreationTime(System.TimeSpan ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+static Weaviate.Client.Models.ObjectTTLConfig.ByDateProperty(string! propertyName, int ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+static Weaviate.Client.Models.ObjectTTLConfig.ByDateProperty(string! propertyName, System.TimeSpan ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+static Weaviate.Client.Models.ObjectTTLConfig.ByUpdateTime(int ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+static Weaviate.Client.Models.ObjectTTLConfig.ByUpdateTime(System.TimeSpan ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+static Weaviate.Client.Models.ObjectTTLConfig.operator !=(Weaviate.Client.Models.ObjectTTLConfig? left, Weaviate.Client.Models.ObjectTTLConfig? right) -> bool
+static Weaviate.Client.Models.ObjectTTLConfig.operator ==(Weaviate.Client.Models.ObjectTTLConfig? left, Weaviate.Client.Models.ObjectTTLConfig? right) -> bool
+static Weaviate.Client.Models.ObjectTTLConfigUpdate.operator !=(Weaviate.Client.Models.ObjectTTLConfigUpdate? left, Weaviate.Client.Models.ObjectTTLConfigUpdate? right) -> bool
+static Weaviate.Client.Models.ObjectTTLConfigUpdate.operator ==(Weaviate.Client.Models.ObjectTTLConfigUpdate? left, Weaviate.Client.Models.ObjectTTLConfigUpdate? right) -> bool
 static Weaviate.Client.Models.OrNestedFilter.operator !=(Weaviate.Client.Models.OrNestedFilter? left, Weaviate.Client.Models.OrNestedFilter? right) -> bool
 static Weaviate.Client.Models.OrNestedFilter.operator ==(Weaviate.Client.Models.OrNestedFilter? left, Weaviate.Client.Models.OrNestedFilter? right) -> bool
 static Weaviate.Client.Models.PermissionScope.Empty() -> System.Collections.Generic.IEnumerable<Weaviate.Client.Models.PermissionScope!>!
@@ -1605,6 +1840,68 @@ static Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase.operator !=(
 static Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase.operator ==(Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? left, Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? right) -> bool
 static Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat.operator !=(Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat? left, Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat? right) -> bool
 static Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat.operator ==(Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat? left, Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Img2VecNeural.operator !=(Weaviate.Client.Models.Vectorizer.Img2VecNeural? left, Weaviate.Client.Models.Vectorizer.Img2VecNeural? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Img2VecNeural.operator ==(Weaviate.Client.Models.Vectorizer.Img2VecNeural? left, Weaviate.Client.Models.Vectorizer.Img2VecNeural? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.operator !=(Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI? left, Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.operator ==(Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI? left, Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecAWS.operator !=(Weaviate.Client.Models.Vectorizer.Multi2VecAWS? left, Weaviate.Client.Models.Vectorizer.Multi2VecAWS? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecAWS.operator ==(Weaviate.Client.Models.Vectorizer.Multi2VecAWS? left, Weaviate.Client.Models.Vectorizer.Multi2VecAWS? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecBind.operator !=(Weaviate.Client.Models.Vectorizer.Multi2VecBind? left, Weaviate.Client.Models.Vectorizer.Multi2VecBind? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecBind.operator ==(Weaviate.Client.Models.Vectorizer.Multi2VecBind? left, Weaviate.Client.Models.Vectorizer.Multi2VecBind? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecClip.operator !=(Weaviate.Client.Models.Vectorizer.Multi2VecClip? left, Weaviate.Client.Models.Vectorizer.Multi2VecClip? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecClip.operator ==(Weaviate.Client.Models.Vectorizer.Multi2VecClip? left, Weaviate.Client.Models.Vectorizer.Multi2VecClip? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecCohere.operator !=(Weaviate.Client.Models.Vectorizer.Multi2VecCohere? left, Weaviate.Client.Models.Vectorizer.Multi2VecCohere? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecCohere.operator ==(Weaviate.Client.Models.Vectorizer.Multi2VecCohere? left, Weaviate.Client.Models.Vectorizer.Multi2VecCohere? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.operator !=(Weaviate.Client.Models.Vectorizer.Multi2VecGoogle? left, Weaviate.Client.Models.Vectorizer.Multi2VecGoogle? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.operator ==(Weaviate.Client.Models.Vectorizer.Multi2VecGoogle? left, Weaviate.Client.Models.Vectorizer.Multi2VecGoogle? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.operator !=(Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI? left, Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.operator ==(Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI? left, Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.operator !=(Weaviate.Client.Models.Vectorizer.Multi2VecNvidia? left, Weaviate.Client.Models.Vectorizer.Multi2VecNvidia? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.operator ==(Weaviate.Client.Models.Vectorizer.Multi2VecNvidia? left, Weaviate.Client.Models.Vectorizer.Multi2VecNvidia? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecPalm.operator !=(Weaviate.Client.Models.Vectorizer.Multi2VecPalm? left, Weaviate.Client.Models.Vectorizer.Multi2VecPalm? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecPalm.operator ==(Weaviate.Client.Models.Vectorizer.Multi2VecPalm? left, Weaviate.Client.Models.Vectorizer.Multi2VecPalm? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.operator !=(Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI? left, Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.operator ==(Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI? left, Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.operator !=(Weaviate.Client.Models.Vectorizer.Ref2VecCentroid? left, Weaviate.Client.Models.Vectorizer.Ref2VecCentroid? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.operator ==(Weaviate.Client.Models.Vectorizer.Ref2VecCentroid? left, Weaviate.Client.Models.Vectorizer.Ref2VecCentroid? right) -> bool
+static Weaviate.Client.Models.Vectorizer.SelfProvided.operator !=(Weaviate.Client.Models.Vectorizer.SelfProvided? left, Weaviate.Client.Models.Vectorizer.SelfProvided? right) -> bool
+static Weaviate.Client.Models.Vectorizer.SelfProvided.operator ==(Weaviate.Client.Models.Vectorizer.SelfProvided? left, Weaviate.Client.Models.Vectorizer.SelfProvided? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.operator !=(Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI? left, Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.operator ==(Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI? left, Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecAWS.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecAWS? left, Weaviate.Client.Models.Vectorizer.Text2VecAWS? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecAWS.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecAWS? left, Weaviate.Client.Models.Vectorizer.Text2VecAWS? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI? left, Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI? left, Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecCohere.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecCohere? left, Weaviate.Client.Models.Vectorizer.Text2VecCohere? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecCohere.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecCohere? left, Weaviate.Client.Models.Vectorizer.Text2VecCohere? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecDatabricks? left, Weaviate.Client.Models.Vectorizer.Text2VecDatabricks? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecDatabricks? left, Weaviate.Client.Models.Vectorizer.Text2VecDatabricks? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecGoogle.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecGoogle? left, Weaviate.Client.Models.Vectorizer.Text2VecGoogle? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecGoogle.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecGoogle? left, Weaviate.Client.Models.Vectorizer.Text2VecGoogle? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace? left, Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace? left, Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecJinaAI? left, Weaviate.Client.Models.Vectorizer.Text2VecJinaAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecJinaAI? left, Weaviate.Client.Models.Vectorizer.Text2VecJinaAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecMistral.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecMistral? left, Weaviate.Client.Models.Vectorizer.Text2VecMistral? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecMistral.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecMistral? left, Weaviate.Client.Models.Vectorizer.Text2VecMistral? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec? left, Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec? left, Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecMorph.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecMorph? left, Weaviate.Client.Models.Vectorizer.Text2VecMorph? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecMorph.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecMorph? left, Weaviate.Client.Models.Vectorizer.Text2VecMorph? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecNvidia.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecNvidia? left, Weaviate.Client.Models.Vectorizer.Text2VecNvidia? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecNvidia.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecNvidia? left, Weaviate.Client.Models.Vectorizer.Text2VecNvidia? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecOllama.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecOllama? left, Weaviate.Client.Models.Vectorizer.Text2VecOllama? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecOllama.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecOllama? left, Weaviate.Client.Models.Vectorizer.Text2VecOllama? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecOpenAI? left, Weaviate.Client.Models.Vectorizer.Text2VecOpenAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecOpenAI? left, Weaviate.Client.Models.Vectorizer.Text2VecOpenAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecPalm.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecPalm? left, Weaviate.Client.Models.Vectorizer.Text2VecPalm? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecPalm.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecPalm? left, Weaviate.Client.Models.Vectorizer.Text2VecPalm? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecTransformers.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecTransformers? left, Weaviate.Client.Models.Vectorizer.Text2VecTransformers? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecTransformers.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecTransformers? left, Weaviate.Client.Models.Vectorizer.Text2VecTransformers? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI? left, Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI? left, Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.operator !=(Weaviate.Client.Models.Vectorizer.Text2VecWeaviate? left, Weaviate.Client.Models.Vectorizer.Text2VecWeaviate? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.operator ==(Weaviate.Client.Models.Vectorizer.Text2VecWeaviate? left, Weaviate.Client.Models.Vectorizer.Text2VecWeaviate? right) -> bool
 static Weaviate.Client.Models.VectorizerConfig.operator !=(Weaviate.Client.Models.VectorizerConfig? left, Weaviate.Client.Models.VectorizerConfig? right) -> bool
 static Weaviate.Client.Models.VectorizerConfig.operator ==(Weaviate.Client.Models.VectorizerConfig? left, Weaviate.Client.Models.VectorizerConfig? right) -> bool
 static Weaviate.Client.Models.VectorQuery.implicit operator Weaviate.Client.Models.VectorQuery!(bool includeVectors) -> Weaviate.Client.Models.VectorQuery!
@@ -1700,8 +1997,8 @@ static Weaviate.Client.OAuthConfig.operator !=(Weaviate.Client.OAuthConfig? left
 static Weaviate.Client.OAuthConfig.operator ==(Weaviate.Client.OAuthConfig? left, Weaviate.Client.OAuthConfig? right) -> bool
 static Weaviate.Client.QueryClientHybridExtensions.Hybrid(this Weaviate.Client.QueryClient! client, string? query = null, Weaviate.Client.Models.HybridVectorInput.FactoryFn? vectors = null, float? alpha = null, string![]? queryProperties = null, Weaviate.Client.Models.HybridFusion? fusionType = null, float? maxVectorDistance = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult!>!
 static Weaviate.Client.QueryClientHybridExtensions.Hybrid(this Weaviate.Client.QueryClient! client, string? query, Weaviate.Client.Models.HybridVectorInput.FactoryFn? vectors, Weaviate.Client.Models.GroupByRequest! groupBy, float? alpha = null, string![]? queryProperties = null, Weaviate.Client.Models.HybridFusion? fusionType = null, float? maxVectorDistance = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GroupByResult!>!
-static Weaviate.Client.QueryClientNearTextExtensions.NearText(this Weaviate.Client.QueryClient! client, Weaviate.Client.Models.NearTextInput! input, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult!>!
-static Weaviate.Client.QueryClientNearTextExtensions.NearText(this Weaviate.Client.QueryClient! client, Weaviate.Client.Models.NearTextInput! input, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GroupByResult!>!
+static Weaviate.Client.QueryClientNearTextExtensions.NearText(this Weaviate.Client.QueryClient! client, Weaviate.Client.Models.NearTextInput! query, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult!>!
+static Weaviate.Client.QueryClientNearTextExtensions.NearText(this Weaviate.Client.QueryClient! client, Weaviate.Client.Models.NearTextInput! query, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GroupByResult!>!
 static Weaviate.Client.RetryPolicy.Default.get -> Weaviate.Client.RetryPolicy!
 static Weaviate.Client.RetryPolicy.None.get -> Weaviate.Client.RetryPolicy!
 static Weaviate.Client.RetryPolicy.operator !=(Weaviate.Client.RetryPolicy? left, Weaviate.Client.RetryPolicy? right) -> bool
@@ -1740,6 +2037,7 @@ static Weaviate.Client.WeaviateDefaults.InsertTimeout.get -> System.TimeSpan
 static Weaviate.Client.WeaviateDefaults.InsertTimeout.set -> void
 static Weaviate.Client.WeaviateDefaults.QueryTimeout.get -> System.TimeSpan
 static Weaviate.Client.WeaviateDefaults.QueryTimeout.set -> void
+static Weaviate.Client.WeaviateDefaults.UserAgent.get -> string!
 virtual Weaviate.Client.CollectionsClient.<Clone>$() -> Weaviate.Client.CollectionsClient!
 virtual Weaviate.Client.CollectionsClient.EqualityContract.get -> System.Type!
 virtual Weaviate.Client.CollectionsClient.Equals(Weaviate.Client.CollectionsClient? other) -> bool
@@ -2068,6 +2366,14 @@ virtual Weaviate.Client.Models.ObjectReference.EqualityContract.get -> System.Ty
 virtual Weaviate.Client.Models.ObjectReference.Equals(Weaviate.Client.Models.ObjectReference? other) -> bool
 virtual Weaviate.Client.Models.ObjectReference.PrintMembers(System.Text.StringBuilder! builder) -> bool
 virtual Weaviate.Client.Models.ObjectStorageBackend.Equals(Weaviate.Client.Models.ObjectStorageBackend? other) -> bool
+virtual Weaviate.Client.Models.ObjectTTLConfig.<Clone>$() -> Weaviate.Client.Models.ObjectTTLConfig!
+virtual Weaviate.Client.Models.ObjectTTLConfig.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.ObjectTTLConfig.Equals(Weaviate.Client.Models.ObjectTTLConfig? other) -> bool
+virtual Weaviate.Client.Models.ObjectTTLConfig.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual Weaviate.Client.Models.ObjectTTLConfigUpdate.<Clone>$() -> Weaviate.Client.Models.ObjectTTLConfigUpdate!
+virtual Weaviate.Client.Models.ObjectTTLConfigUpdate.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.ObjectTTLConfigUpdate.Equals(Weaviate.Client.Models.ObjectTTLConfigUpdate? other) -> bool
+virtual Weaviate.Client.Models.ObjectTTLConfigUpdate.PrintMembers(System.Text.StringBuilder! builder) -> bool
 virtual Weaviate.Client.Models.OrNestedFilter.Equals(Weaviate.Client.Models.OrNestedFilter? other) -> bool
 virtual Weaviate.Client.Models.PhoneNumber.<Clone>$() -> Weaviate.Client.Models.PhoneNumber!
 virtual Weaviate.Client.Models.PhoneNumber.EqualityContract.get -> System.Type!
@@ -2257,6 +2563,37 @@ virtual Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase.EqualityCon
 virtual Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase.Equals(Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? other) -> bool
 virtual Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase.PrintMembers(System.Text.StringBuilder! builder) -> bool
 virtual Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat.Equals(Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Img2VecNeural.Equals(Weaviate.Client.Models.Vectorizer.Img2VecNeural? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.Equals(Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2VecAWS.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecAWS? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2VecBind.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecBind? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2VecClip.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecClip? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2VecCohere.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecCohere? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecGoogle? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecNvidia? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2VecPalm.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecPalm? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.Equals(Weaviate.Client.Models.Vectorizer.Ref2VecCentroid? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.SelfProvided.Equals(Weaviate.Client.Models.Vectorizer.SelfProvided? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.Equals(Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecAWS.Equals(Weaviate.Client.Models.Vectorizer.Text2VecAWS? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.Equals(Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecCohere.Equals(Weaviate.Client.Models.Vectorizer.Text2VecCohere? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.Equals(Weaviate.Client.Models.Vectorizer.Text2VecDatabricks? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Equals(Weaviate.Client.Models.Vectorizer.Text2VecGoogle? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.Equals(Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.Equals(Weaviate.Client.Models.Vectorizer.Text2VecJinaAI? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecMistral.Equals(Weaviate.Client.Models.Vectorizer.Text2VecMistral? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.Equals(Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecMorph.Equals(Weaviate.Client.Models.Vectorizer.Text2VecMorph? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecNvidia.Equals(Weaviate.Client.Models.Vectorizer.Text2VecNvidia? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecOllama.Equals(Weaviate.Client.Models.Vectorizer.Text2VecOllama? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.Equals(Weaviate.Client.Models.Vectorizer.Text2VecOpenAI? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecPalm.Equals(Weaviate.Client.Models.Vectorizer.Text2VecPalm? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecTransformers.Equals(Weaviate.Client.Models.Vectorizer.Text2VecTransformers? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.Equals(Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.Equals(Weaviate.Client.Models.Vectorizer.Text2VecWeaviate? other) -> bool
 virtual Weaviate.Client.Models.VectorizerConfig.EqualityContract.get -> System.Type!
 virtual Weaviate.Client.Models.VectorizerConfig.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
 virtual Weaviate.Client.Models.VectorizerConfig.PrintMembers(System.Text.StringBuilder! builder) -> bool
@@ -2300,24 +2637,24 @@ Weaviate.Client.AggregateClient.Hybrid(string? query, Weaviate.Client.Models.Hyb
 Weaviate.Client.AggregateClient.Hybrid(string? query, Weaviate.Client.Models.HybridVectorInput? vectors, Weaviate.Client.Models.Aggregate.GroupBy! groupBy, float alpha = 0.7, string![]? queryProperties = null, uint? objectLimit = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, Weaviate.Client.Models.Filter? filters = null, float? maxVectorDistance = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
 Weaviate.Client.AggregateClient.NearMedia(Weaviate.Client.NearMediaInput.FactoryFn! media, Weaviate.Client.Models.Aggregate.GroupBy? groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
 Weaviate.Client.AggregateClient.NearMedia(Weaviate.Client.NearMediaInput.FactoryFn! media, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
-Weaviate.Client.AggregateClient.NearObject(System.Guid nearObject, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targets = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
-Weaviate.Client.AggregateClient.NearObject(System.Guid nearObject, Weaviate.Client.Models.Aggregate.GroupBy? groupBy, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targets = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
-Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
-Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, Weaviate.Client.Models.Aggregate.GroupBy? groupBy, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
-Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Models.NearTextInput! query, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
-Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Models.NearTextInput! query, Weaviate.Client.Models.Aggregate.GroupBy? groupBy, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
-Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Models.NearTextInput.FactoryFn! query, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
-Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Models.NearTextInput.FactoryFn! query, Weaviate.Client.Models.Aggregate.GroupBy? groupBy, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
-Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.NearVectorInput! input, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
-Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.NearVectorInput! input, Weaviate.Client.Models.Aggregate.GroupBy! groupBy, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
-Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.NearVectorInput.FactoryFn! vectors, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
-Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.NearVectorInput.FactoryFn! vectors, Weaviate.Client.Models.Aggregate.GroupBy! groupBy, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
-Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.VectorSearchInput! vectors, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
-Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.VectorSearchInput! vectors, Weaviate.Client.Models.Aggregate.GroupBy! groupBy, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
-Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.VectorSearchInput.FactoryFn! vectors, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
-Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.VectorSearchInput.FactoryFn! vectors, Weaviate.Client.Models.Aggregate.GroupBy! groupBy, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
-Weaviate.Client.AggregateClient.OverAll(bool totalCount = true, Weaviate.Client.Models.Filter? filters = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
-Weaviate.Client.AggregateClient.OverAll(Weaviate.Client.Models.Aggregate.GroupBy! groupBy, bool totalCount = true, Weaviate.Client.Models.Filter? filters = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
+Weaviate.Client.AggregateClient.NearObject(System.Guid nearObject, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targetVectors = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
+Weaviate.Client.AggregateClient.NearObject(System.Guid nearObject, Weaviate.Client.Models.Aggregate.GroupBy? groupBy, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targetVectors = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
+Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
+Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, Weaviate.Client.Models.Aggregate.GroupBy? groupBy, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
+Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Models.NearTextInput! query, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
+Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Models.NearTextInput! query, Weaviate.Client.Models.Aggregate.GroupBy? groupBy, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
+Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Models.NearTextInput.FactoryFn! query, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
+Weaviate.Client.AggregateClient.NearText(Weaviate.Client.Models.NearTextInput.FactoryFn! query, Weaviate.Client.Models.Aggregate.GroupBy? groupBy, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
+Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.NearVectorInput! query, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
+Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.NearVectorInput! query, Weaviate.Client.Models.Aggregate.GroupBy! groupBy, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
+Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.NearVectorInput.FactoryFn! vectors, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
+Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.NearVectorInput.FactoryFn! vectors, Weaviate.Client.Models.Aggregate.GroupBy! groupBy, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
+Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.VectorSearchInput! vectors, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
+Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.VectorSearchInput! vectors, Weaviate.Client.Models.Aggregate.GroupBy! groupBy, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
+Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.VectorSearchInput.FactoryFn! vectors, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
+Weaviate.Client.AggregateClient.NearVector(Weaviate.Client.Models.VectorSearchInput.FactoryFn! vectors, Weaviate.Client.Models.Aggregate.GroupBy! groupBy, double? certainty = null, double? distance = null, uint? limit = null, Weaviate.Client.Models.Filter? filters = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
+Weaviate.Client.AggregateClient.OverAll(bool totalCount = true, Weaviate.Client.Models.Filter? filters = null, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
+Weaviate.Client.AggregateClient.OverAll(Weaviate.Client.Models.Aggregate.GroupBy! groupBy, bool totalCount = true, Weaviate.Client.Models.Filter? filters = null, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
 Weaviate.Client.AggregateClientHybridExtensions
 Weaviate.Client.AliasClient
 Weaviate.Client.AliasClient.Create(string! alias, string! targetCollection, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Alias!>!
@@ -2453,15 +2790,15 @@ Weaviate.Client.CollectionClient.WithConsistencyLevel(Weaviate.Client.Consistenc
 Weaviate.Client.CollectionClient.WithTenant(string! tenant) -> Weaviate.Client.CollectionClient!
 Weaviate.Client.CollectionClientExtensions
 Weaviate.Client.CollectionConfigClient
-Weaviate.Client.CollectionConfigClient.AddProperty(Weaviate.Client.Models.Property! p) -> System.Threading.Tasks.Task!
-Weaviate.Client.CollectionConfigClient.AddReference(Weaviate.Client.Models.Reference! referenceProperty) -> System.Threading.Tasks.Task!
-Weaviate.Client.CollectionConfigClient.AddVector(Weaviate.Client.Models.VectorConfig! vector) -> System.Threading.Tasks.Task!
+Weaviate.Client.CollectionConfigClient.AddProperty(Weaviate.Client.Models.Property! p, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.CollectionConfigClient.AddReference(Weaviate.Client.Models.Reference! referenceProperty, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.CollectionConfigClient.AddVector(Weaviate.Client.Models.VectorConfig! vector, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 Weaviate.Client.CollectionConfigClient.Get(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.CollectionConfigExport!>!
 Weaviate.Client.CollectionConfigClient.GetCachedConfig(Weaviate.Client.Cache.SchemaCache? schemaCache = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.CollectionConfig?>!
 Weaviate.Client.CollectionConfigClient.GetShard(string! shardName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.ShardInfo?>!
 Weaviate.Client.CollectionConfigClient.GetShards(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Weaviate.Client.Models.ShardInfo!>!>!
-Weaviate.Client.CollectionConfigClient.Update(System.Action<Weaviate.Client.Models.CollectionUpdate!>! c) -> System.Threading.Tasks.Task<Weaviate.Client.Models.CollectionConfigExport!>!
-Weaviate.Client.CollectionConfigClient.UpdateShardStatus(Weaviate.Client.Models.ShardStatus status, params string![]! shardNames) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Weaviate.Client.Models.ShardInfo!>!>!
+Weaviate.Client.CollectionConfigClient.Update(System.Action<Weaviate.Client.Models.CollectionUpdate!>! c, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.CollectionConfigExport!>!
+Weaviate.Client.CollectionConfigClient.UpdateShardStatus(Weaviate.Client.Models.ShardStatus status, Weaviate.Client.Internal.AutoArray<string!>? shardNames = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Weaviate.Client.Models.ShardInfo!>!>!
 Weaviate.Client.CollectionsClient
 Weaviate.Client.CollectionsClient.CollectionsClient(Weaviate.Client.CollectionsClient! original) -> void
 Weaviate.Client.CollectionsClient.Create(Weaviate.Client.Models.CollectionCreateParams! collection, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.CollectionClient!>!
@@ -2556,16 +2893,16 @@ Weaviate.Client.GenerateClient.Hybrid(string? query, Weaviate.Client.Models.Hybr
 Weaviate.Client.GenerateClient.Hybrid(string? query, Weaviate.Client.Models.HybridVectorInput? vectors, Weaviate.Client.Models.GroupByRequest! groupBy, float? alpha = null, string![]? queryProperties = null, Weaviate.Client.Models.HybridFusion? fusionType = null, float? maxVectorDistance = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
 Weaviate.Client.GenerateClient.NearMedia(Weaviate.Client.NearMediaInput.FactoryFn! media, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
 Weaviate.Client.GenerateClient.NearMedia(Weaviate.Client.NearMediaInput.FactoryFn! media, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
-Weaviate.Client.GenerateClient.NearObject(System.Guid nearObject, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targets = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
-Weaviate.Client.GenerateClient.NearObject(System.Guid nearObject, Weaviate.Client.Models.GroupByRequest! groupBy, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targets = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
+Weaviate.Client.GenerateClient.NearObject(System.Guid nearObject, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targetVectors = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
+Weaviate.Client.GenerateClient.NearObject(System.Guid nearObject, Weaviate.Client.Models.GroupByRequest! groupBy, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targetVectors = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
 Weaviate.Client.GenerateClient.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
 Weaviate.Client.GenerateClient.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, Weaviate.Client.Models.GroupByRequest! groupBy, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
-Weaviate.Client.GenerateClient.NearText(Weaviate.Client.Models.NearTextInput! input, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
-Weaviate.Client.GenerateClient.NearText(Weaviate.Client.Models.NearTextInput! input, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
+Weaviate.Client.GenerateClient.NearText(Weaviate.Client.Models.NearTextInput! query, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
+Weaviate.Client.GenerateClient.NearText(Weaviate.Client.Models.NearTextInput! query, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
 Weaviate.Client.GenerateClient.NearText(Weaviate.Client.Models.NearTextInput.FactoryFn! query, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
 Weaviate.Client.GenerateClient.NearText(Weaviate.Client.Models.NearTextInput.FactoryFn! query, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
-Weaviate.Client.GenerateClient.NearVector(Weaviate.Client.Models.NearVectorInput! input, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
-Weaviate.Client.GenerateClient.NearVector(Weaviate.Client.Models.NearVectorInput! input, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
+Weaviate.Client.GenerateClient.NearVector(Weaviate.Client.Models.NearVectorInput! query, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
+Weaviate.Client.GenerateClient.NearVector(Weaviate.Client.Models.NearVectorInput! query, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
 Weaviate.Client.GenerateClient.NearVector(Weaviate.Client.Models.NearVectorInput.FactoryFn! vectors, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
 Weaviate.Client.GenerateClient.NearVector(Weaviate.Client.Models.NearVectorInput.FactoryFn! vectors, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeGroupByResult!>!
 Weaviate.Client.GenerateClient.NearVector(Weaviate.Client.Models.VectorSearchInput! vectors, Weaviate.Client.Models.Filter? filters = null, float? certainty = null, float? distance = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GenerativeWeaviateResult!>!
@@ -2631,6 +2968,11 @@ Weaviate.Client.INearMediaBuilderStart.Image(byte[]! media, float? certainty = n
 Weaviate.Client.INearMediaBuilderStart.IMU(byte[]! media, float? certainty = null, float? distance = null) -> Weaviate.Client.NearMediaBuilder!
 Weaviate.Client.INearMediaBuilderStart.Thermal(byte[]! media, float? certainty = null, float? distance = null) -> Weaviate.Client.NearMediaBuilder!
 Weaviate.Client.INearMediaBuilderStart.Video(byte[]! media, float? certainty = null, float? distance = null) -> Weaviate.Client.NearMediaBuilder!
+Weaviate.Client.Internal.AutoArray<T>
+Weaviate.Client.Internal.AutoArray<T>.Add(params T[]! items) -> void
+Weaviate.Client.Internal.AutoArray<T>.Add(T item) -> void
+Weaviate.Client.Internal.AutoArray<T>.GetEnumerator() -> System.Collections.Generic.IEnumerator<T>!
+Weaviate.Client.Internal.AutoArrayBuilder
 Weaviate.Client.Internal.KeySortedList<TKey, TValue>
 Weaviate.Client.Internal.KeySortedList<TKey, TValue>.Add(System.Collections.Generic.KeyValuePair<TKey, TValue> item) -> void
 Weaviate.Client.Internal.KeySortedList<TKey, TValue>.Add(TKey key, TValue value) -> void
@@ -2883,11 +3225,6 @@ Weaviate.Client.Models.AndNestedFilter.AndNestedFilter(Weaviate.Client.Models.An
 Weaviate.Client.Models.AndNestedFilter.Deconstruct(out Weaviate.Client.Models.Filter![]! filters) -> void
 Weaviate.Client.Models.AndNestedFilter.filters.get -> Weaviate.Client.Models.Filter![]!
 Weaviate.Client.Models.AndNestedFilter.filters.init -> void
-Weaviate.Client.Internal.AutoArray<T>
-Weaviate.Client.Internal.AutoArray<T>.Add(params T[]! items) -> void
-Weaviate.Client.Internal.AutoArray<T>.Add(T item) -> void
-Weaviate.Client.Internal.AutoArray<T>.GetEnumerator() -> System.Collections.Generic.IEnumerator<T>!
-Weaviate.Client.Internal.AutoArrayBuilder
 Weaviate.Client.Models.Backup
 Weaviate.Client.Models.Backup.Backend.get -> Weaviate.Client.Models.BackupBackend!
 Weaviate.Client.Models.Backup.Backend.init -> void
@@ -3131,6 +3468,8 @@ Weaviate.Client.Models.CollectionConfigCommon.MultiTenancyConfig.get -> Weaviate
 Weaviate.Client.Models.CollectionConfigCommon.MultiTenancyConfig.set -> void
 Weaviate.Client.Models.CollectionConfigCommon.Name.get -> string!
 Weaviate.Client.Models.CollectionConfigCommon.Name.set -> void
+Weaviate.Client.Models.CollectionConfigCommon.ObjectTTLConfig.get -> Weaviate.Client.Models.ObjectTTLConfig?
+Weaviate.Client.Models.CollectionConfigCommon.ObjectTTLConfig.set -> void
 Weaviate.Client.Models.CollectionConfigCommon.Properties.get -> Weaviate.Client.Models.Property![]!
 Weaviate.Client.Models.CollectionConfigCommon.Properties.set -> void
 Weaviate.Client.Models.CollectionConfigCommon.References.get -> Weaviate.Client.Models.Reference![]!
@@ -3167,6 +3506,7 @@ Weaviate.Client.Models.CollectionUpdate.GenerativeConfig.set -> void
 Weaviate.Client.Models.CollectionUpdate.InvertedIndexConfig.get -> Weaviate.Client.Models.InvertedIndexConfigUpdate!
 Weaviate.Client.Models.CollectionUpdate.MultiTenancyConfig.get -> Weaviate.Client.Models.MultiTenancyConfigUpdate!
 Weaviate.Client.Models.CollectionUpdate.Name.get -> string!
+Weaviate.Client.Models.CollectionUpdate.ObjectTTLConfig.get -> Weaviate.Client.Models.ObjectTTLConfigUpdate!
 Weaviate.Client.Models.CollectionUpdate.Properties.get -> System.Collections.ObjectModel.ReadOnlyDictionary<string!, Weaviate.Client.Models.PropertyUpdate!>!
 Weaviate.Client.Models.CollectionUpdate.References.get -> System.Collections.ObjectModel.ReadOnlyCollection<Weaviate.Client.Models.ReferenceUpdate!>!
 Weaviate.Client.Models.CollectionUpdate.ReplicationConfig -> Weaviate.Client.Models.ReplicationConfigUpdate!
@@ -3267,6 +3607,8 @@ Weaviate.Client.Models.DeletionStrategy
 Weaviate.Client.Models.DeletionStrategy.DeleteOnConflict = 1 -> Weaviate.Client.Models.DeletionStrategy
 Weaviate.Client.Models.DeletionStrategy.NoAutomatedResolution = 0 -> Weaviate.Client.Models.DeletionStrategy
 Weaviate.Client.Models.DeletionStrategy.TimeBasedResolution = 2 -> Weaviate.Client.Models.DeletionStrategy
+Weaviate.Client.Models.EmptyStringEnumConverter<T>
+Weaviate.Client.Models.EmptyStringEnumConverter<T>.EmptyStringEnumConverter() -> void
 Weaviate.Client.Models.FilesystemBackend
 Weaviate.Client.Models.FilesystemBackend.FilesystemBackend(string? path = null) -> void
 Weaviate.Client.Models.FilesystemBackend.FilesystemBackend(Weaviate.Client.Models.FilesystemBackend! original) -> void
@@ -3336,6 +3678,8 @@ Weaviate.Client.Models.Generative.Providers.AWSBedrock.Model.get -> string?
 Weaviate.Client.Models.Generative.Providers.AWSBedrock.Model.set -> void
 Weaviate.Client.Models.Generative.Providers.AWSBedrock.Region.get -> string?
 Weaviate.Client.Models.Generative.Providers.AWSBedrock.Region.set -> void
+Weaviate.Client.Models.Generative.Providers.AWSBedrock.StopSequences.get -> System.Collections.Generic.List<string!>?
+Weaviate.Client.Models.Generative.Providers.AWSBedrock.StopSequences.set -> void
 Weaviate.Client.Models.Generative.Providers.AWSBedrock.Temperature.get -> double?
 Weaviate.Client.Models.Generative.Providers.AWSBedrock.Temperature.set -> void
 Weaviate.Client.Models.Generative.Providers.AWSSagemaker
@@ -3351,6 +3695,8 @@ Weaviate.Client.Models.Generative.Providers.AWSSagemaker.MaxTokens.get -> long?
 Weaviate.Client.Models.Generative.Providers.AWSSagemaker.MaxTokens.set -> void
 Weaviate.Client.Models.Generative.Providers.AWSSagemaker.Region.get -> string?
 Weaviate.Client.Models.Generative.Providers.AWSSagemaker.Region.set -> void
+Weaviate.Client.Models.Generative.Providers.AWSSagemaker.StopSequences.get -> System.Collections.Generic.List<string!>?
+Weaviate.Client.Models.Generative.Providers.AWSSagemaker.StopSequences.set -> void
 Weaviate.Client.Models.Generative.Providers.AWSSagemaker.TargetModel.get -> string?
 Weaviate.Client.Models.Generative.Providers.AWSSagemaker.TargetModel.set -> void
 Weaviate.Client.Models.Generative.Providers.AWSSagemaker.TargetVariant.get -> string?
@@ -4181,7 +4527,7 @@ Weaviate.Client.Models.Move
 Weaviate.Client.Models.Move.Concepts.get -> string![]?
 Weaviate.Client.Models.Move.Force.get -> float
 Weaviate.Client.Models.Move.Move(Weaviate.Client.Internal.AutoArray<string!>! concepts, float force) -> void
-Weaviate.Client.Models.Move.Move(Weaviate.Client.Internal.AutoArray<System.Guid>! uuids, float force) -> void
+Weaviate.Client.Models.Move.Move(Weaviate.Client.Internal.AutoArray<System.Guid>! objects, float force) -> void
 Weaviate.Client.Models.Move.Move(Weaviate.Client.Models.Move! original) -> void
 Weaviate.Client.Models.Move.Objects.get -> System.Guid[]?
 Weaviate.Client.Models.MultiTenancyConfig
@@ -4283,6 +4629,30 @@ Weaviate.Client.Models.ObjectStorageBackend
 Weaviate.Client.Models.ObjectStorageBackend.Bucket.get -> string?
 Weaviate.Client.Models.ObjectStorageBackend.ObjectStorageBackend(Weaviate.Client.Models.BackupStorageProvider provider, string? bucket = null, string? path = null) -> void
 Weaviate.Client.Models.ObjectStorageBackend.ObjectStorageBackend(Weaviate.Client.Models.ObjectStorageBackend! original) -> void
+Weaviate.Client.Models.ObjectTTLConfig
+Weaviate.Client.Models.ObjectTTLConfig.DefaultTTL.get -> int?
+Weaviate.Client.Models.ObjectTTLConfig.DefaultTTL.set -> void
+Weaviate.Client.Models.ObjectTTLConfig.DeleteOn.get -> string?
+Weaviate.Client.Models.ObjectTTLConfig.DeleteOn.set -> void
+Weaviate.Client.Models.ObjectTTLConfig.Enabled.get -> bool
+Weaviate.Client.Models.ObjectTTLConfig.Enabled.set -> void
+Weaviate.Client.Models.ObjectTTLConfig.FilterExpiredObjects.get -> bool?
+Weaviate.Client.Models.ObjectTTLConfig.FilterExpiredObjects.set -> void
+Weaviate.Client.Models.ObjectTTLConfig.ObjectTTLConfig() -> void
+Weaviate.Client.Models.ObjectTTLConfig.ObjectTTLConfig(Weaviate.Client.Models.ObjectTTLConfig! original) -> void
+Weaviate.Client.Models.ObjectTTLConfigUpdate
+Weaviate.Client.Models.ObjectTTLConfigUpdate.ByCreationTime(int? ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+Weaviate.Client.Models.ObjectTTLConfigUpdate.ByCreationTime(System.TimeSpan? ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+Weaviate.Client.Models.ObjectTTLConfigUpdate.ByDateProperty(string? propertyName, int? ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+Weaviate.Client.Models.ObjectTTLConfigUpdate.ByDateProperty(string? propertyName, System.TimeSpan? ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+Weaviate.Client.Models.ObjectTTLConfigUpdate.ByUpdateTime(int? ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+Weaviate.Client.Models.ObjectTTLConfigUpdate.ByUpdateTime(System.TimeSpan? ttl, bool? filterExpiredObjects = null) -> Weaviate.Client.Models.ObjectTTLConfig!
+Weaviate.Client.Models.ObjectTTLConfigUpdate.Deconstruct(out Weaviate.Client.Models.ObjectTTLConfig! WrappedConfig) -> void
+Weaviate.Client.Models.ObjectTTLConfigUpdate.Disable() -> void
+Weaviate.Client.Models.ObjectTTLConfigUpdate.ObjectTTLConfigUpdate(Weaviate.Client.Models.ObjectTTLConfig! WrappedConfig) -> void
+Weaviate.Client.Models.ObjectTTLConfigUpdate.ObjectTTLConfigUpdate(Weaviate.Client.Models.ObjectTTLConfigUpdate! original) -> void
+Weaviate.Client.Models.ObjectTTLConfigUpdate.WrappedConfig.get -> Weaviate.Client.Models.ObjectTTLConfig!
+Weaviate.Client.Models.ObjectTTLConfigUpdate.WrappedConfig.init -> void
 Weaviate.Client.Models.OrNestedFilter
 Weaviate.Client.Models.OrNestedFilter.Deconstruct(out Weaviate.Client.Models.Filter![]! filters) -> void
 Weaviate.Client.Models.OrNestedFilter.filters.get -> Weaviate.Client.Models.Filter![]!
@@ -5234,6 +5604,347 @@ Weaviate.Client.Models.VectorIndexingStatus
 Weaviate.Client.Models.VectorIndexingStatus.Indexing = 1 -> Weaviate.Client.Models.VectorIndexingStatus
 Weaviate.Client.Models.VectorIndexingStatus.ReadOnly = 0 -> Weaviate.Client.Models.VectorIndexingStatus
 Weaviate.Client.Models.VectorIndexingStatus.Ready = 2 -> Weaviate.Client.Models.VectorIndexingStatus
+Weaviate.Client.Models.Vectorizer
+Weaviate.Client.Models.Vectorizer.Img2VecNeural
+Weaviate.Client.Models.Vectorizer.Img2VecNeural.ImageFields.get -> string![]!
+Weaviate.Client.Models.Vectorizer.Img2VecNeural.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Img2VecNeural.Img2VecNeural(Weaviate.Client.Models.Vectorizer.Img2VecNeural! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.ImageFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.Multi2MultiVecJinaAI(Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.TextFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.TextFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecJinaAI.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.ImageFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.Multi2VecAWS(Weaviate.Client.Models.Vectorizer.Multi2VecAWS! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.Region.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.Region.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.TextFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.TextFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Multi2VecAWS.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecBind
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.AudioFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.AudioFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.DepthFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.DepthFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.ImageFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.IMUFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.IMUFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.Multi2VecBind(Weaviate.Client.Models.Vectorizer.Multi2VecBind! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.TextFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.TextFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.ThermalFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.ThermalFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.VideoFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecBind.VideoFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecClip
+Weaviate.Client.Models.Vectorizer.Multi2VecClip.ImageFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecClip.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecClip.InferenceUrl.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecClip.InferenceUrl.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecClip.Multi2VecClip(Weaviate.Client.Models.Vectorizer.Multi2VecClip! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecClip.TextFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecClip.TextFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecClip.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Multi2VecClip.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.ImageFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.Multi2VecCohere(Weaviate.Client.Models.Vectorizer.Multi2VecCohere! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.TextFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.TextFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.Truncate.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.Truncate.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Multi2VecCohere.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ImageFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.Location.get -> string!
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.Location.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ModelId.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ModelId.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.Multi2VecGoogle(Weaviate.Client.Models.Vectorizer.Multi2VecGoogle! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ProjectId.get -> string!
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ProjectId.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.TextFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.TextFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VideoFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VideoFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VideoIntervalSeconds.get -> int?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VideoIntervalSeconds.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.ImageFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.Multi2VecJinaAI(Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.TextFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.TextFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecNvidia
+Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.Multi2VecNvidia(Weaviate.Client.Models.Vectorizer.Multi2VecNvidia! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.Truncate.get -> bool?
+Weaviate.Client.Models.Vectorizer.Multi2VecNvidia.Truncate.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecPalm
+Weaviate.Client.Models.Vectorizer.Multi2VecPalm.Multi2VecPalm(Weaviate.Client.Models.Vectorizer.Multi2VecPalm! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.ImageFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.Multi2VecVoyageAI(Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.TextFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.TextFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.Truncate.get -> bool?
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.Truncate.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.VideoFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecVoyageAI.VideoFields.set -> void
+Weaviate.Client.Models.Vectorizer.Ref2VecCentroid
+Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.Method.get -> string!
+Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.Method.set -> void
+Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.Ref2VecCentroid(Weaviate.Client.Models.Vectorizer.Ref2VecCentroid! original) -> void
+Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.ReferenceProperties.get -> string![]!
+Weaviate.Client.Models.Vectorizer.Ref2VecCentroid.ReferenceProperties.set -> void
+Weaviate.Client.Models.Vectorizer.SelfProvided
+Weaviate.Client.Models.Vectorizer.SelfProvided.SelfProvided(Weaviate.Client.Models.Vectorizer.SelfProvided! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI
+Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.Text2MultiVecJinaAI(Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2MultiVecJinaAI.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAWS
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.Endpoint.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.Endpoint.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.Region.get -> string!
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.Region.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.Service.get -> string!
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.Service.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.TargetModel.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.TargetModel.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.TargetVariant.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.TargetVariant.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.Text2VecAWS(Weaviate.Client.Models.Vectorizer.Text2VecAWS! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecAWS.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.DeploymentId.get -> string!
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.DeploymentId.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.ResourceName.get -> string!
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.ResourceName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.Text2VecAzureOpenAI(Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecAzureOpenAI.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecCohere
+Weaviate.Client.Models.Vectorizer.Text2VecCohere.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecCohere.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecCohere.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Text2VecCohere.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecCohere.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecCohere.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecCohere.Text2VecCohere(Weaviate.Client.Models.Vectorizer.Text2VecCohere! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecCohere.Truncate.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecCohere.Truncate.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecCohere.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecCohere.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecDatabricks
+Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.Endpoint.get -> string!
+Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.Endpoint.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.Instruction.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.Instruction.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.Text2VecDatabricks(Weaviate.Client.Models.Vectorizer.Text2VecDatabricks! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecDatabricks.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.ApiEndpoint.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.ApiEndpoint.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.ProjectId.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.ProjectId.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.TaskType.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.TaskType.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Text2VecGoogle(Weaviate.Client.Models.Vectorizer.Text2VecGoogle! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.TitleProperty.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.TitleProperty.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.EndpointURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.EndpointURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.PassageModel.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.PassageModel.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.QueryModel.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.QueryModel.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.Text2VecHuggingFace(Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.UseCache.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.UseCache.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.UseGPU.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.UseGPU.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.WaitForModel.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecHuggingFace.WaitForModel.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecJinaAI
+Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.Text2VecJinaAI(Weaviate.Client.Models.Vectorizer.Text2VecJinaAI! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecJinaAI.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecMistral
+Weaviate.Client.Models.Vectorizer.Text2VecMistral.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecMistral.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecMistral.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecMistral.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecMistral.Text2VecMistral(Weaviate.Client.Models.Vectorizer.Text2VecMistral! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecMistral.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecMistral.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec
+Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.InferenceURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.InferenceURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.Text2VecModel2Vec(Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecModel2Vec.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecMorph
+Weaviate.Client.Models.Vectorizer.Text2VecMorph.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecMorph.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecMorph.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecMorph.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecMorph.Text2VecMorph(Weaviate.Client.Models.Vectorizer.Text2VecMorph! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecMorph.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecMorph.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecNvidia
+Weaviate.Client.Models.Vectorizer.Text2VecNvidia.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecNvidia.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecNvidia.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecNvidia.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecNvidia.Text2VecNvidia(Weaviate.Client.Models.Vectorizer.Text2VecNvidia! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecNvidia.Truncate.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecNvidia.Truncate.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecNvidia.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecNvidia.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecOllama
+Weaviate.Client.Models.Vectorizer.Text2VecOllama.ApiEndpoint.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecOllama.ApiEndpoint.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecOllama.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecOllama.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecOllama.Text2VecOllama(Weaviate.Client.Models.Vectorizer.Text2VecOllama! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecOllama.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecOllama.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.ModelVersion.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.ModelVersion.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.Text2VecOpenAI(Weaviate.Client.Models.Vectorizer.Text2VecOpenAI! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.Type.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.Type.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecOpenAI.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecPalm
+Weaviate.Client.Models.Vectorizer.Text2VecPalm.Text2VecPalm(Weaviate.Client.Models.Vectorizer.Text2VecPalm! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.InferenceUrl.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.InferenceUrl.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.PassageInferenceUrl.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.PassageInferenceUrl.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.PoolingStrategy.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.PoolingStrategy.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.QueryInferenceUrl.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.QueryInferenceUrl.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.Text2VecTransformers(Weaviate.Client.Models.Vectorizer.Text2VecTransformers! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecTransformers.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.Text2VecVoyageAI(Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.Truncate.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.Truncate.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecVoyageAI.VectorizeCollectionName.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecWeaviate
+Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.Dimensions.get -> int?
+Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.Text2VecWeaviate(Weaviate.Client.Models.Vectorizer.Text2VecWeaviate! original) -> void
+Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Text2VecWeaviate.VectorizeCollectionName.set -> void
 Weaviate.Client.Models.VectorizerConfig
 Weaviate.Client.Models.VectorizerConfig.Identifier.get -> string!
 Weaviate.Client.Models.VectorizerConfig.SourceProperties.get -> System.Collections.Generic.ICollection<string!>?
@@ -5398,12 +6109,12 @@ Weaviate.Client.QueryClient.NearMedia(Weaviate.Client.NearMediaInput.FactoryFn! 
 Weaviate.Client.QueryClient.NearMedia(Weaviate.Client.NearMediaInput.FactoryFn! query, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GroupByResult!>!
 Weaviate.Client.QueryClient.NearObject(System.Guid nearObject, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targets = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult!>!
 Weaviate.Client.QueryClient.NearObject(System.Guid nearObject, Weaviate.Client.Models.GroupByRequest! groupBy, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targets = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GroupByResult!>!
-Weaviate.Client.QueryClient.NearText(Weaviate.Client.Internal.AutoArray<string!>! text, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult!>!
-Weaviate.Client.QueryClient.NearText(Weaviate.Client.Internal.AutoArray<string!>! text, Weaviate.Client.Models.GroupByRequest! groupBy, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GroupByResult!>!
+Weaviate.Client.QueryClient.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult!>!
+Weaviate.Client.QueryClient.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, Weaviate.Client.Models.GroupByRequest! groupBy, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GroupByResult!>!
 Weaviate.Client.QueryClient.NearText(Weaviate.Client.Models.NearTextInput.FactoryFn! query, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult!>!
 Weaviate.Client.QueryClient.NearText(Weaviate.Client.Models.NearTextInput.FactoryFn! query, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GroupByResult!>!
-Weaviate.Client.QueryClient.NearVector(Weaviate.Client.Models.NearVectorInput! input, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult!>!
-Weaviate.Client.QueryClient.NearVector(Weaviate.Client.Models.NearVectorInput! input, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GroupByResult!>!
+Weaviate.Client.QueryClient.NearVector(Weaviate.Client.Models.NearVectorInput! query, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult!>!
+Weaviate.Client.QueryClient.NearVector(Weaviate.Client.Models.NearVectorInput! query, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GroupByResult!>!
 Weaviate.Client.QueryClient.NearVector(Weaviate.Client.Models.NearVectorInput.FactoryFn! vectors, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult!>!
 Weaviate.Client.QueryClient.NearVector(Weaviate.Client.Models.NearVectorInput.FactoryFn! vectors, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.GroupByResult!>!
 Weaviate.Client.QueryClient.NearVector(Weaviate.Client.Models.VectorSearchInput! vectors, Weaviate.Client.Models.Filter? filters = null, float? certainty = null, float? distance = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult!>!
@@ -5564,8 +6275,8 @@ Weaviate.Client.Typed.TypedGenerateClient<T>.Hybrid(string? query, Weaviate.Clie
 Weaviate.Client.Typed.TypedGenerateClient<T>.Hybrid(string? query, Weaviate.Client.Models.HybridVectorInput? vectors, Weaviate.Client.Models.GroupByRequest! groupBy, float? alpha = null, string![]? queryProperties = null, Weaviate.Client.Models.HybridFusion? fusionType = null, float? maxVectorDistance = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GenerativeGroupByResult<T!>!>!
 Weaviate.Client.Typed.TypedGenerateClient<T>.NearMedia(Weaviate.Client.NearMediaInput.FactoryFn! media, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GenerativeWeaviateResult<T!>!>!
 Weaviate.Client.Typed.TypedGenerateClient<T>.NearMedia(Weaviate.Client.NearMediaInput.FactoryFn! media, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GenerativeGroupByResult<T!>!>!
-Weaviate.Client.Typed.TypedGenerateClient<T>.NearObject(System.Guid nearObject, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targets = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GenerativeWeaviateResult<T!>!>!
-Weaviate.Client.Typed.TypedGenerateClient<T>.NearObject(System.Guid nearObject, Weaviate.Client.Models.GroupByRequest! groupBy, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targets = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GenerativeGroupByResult<T!>!>!
+Weaviate.Client.Typed.TypedGenerateClient<T>.NearObject(System.Guid nearObject, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targetVectors = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GenerativeWeaviateResult<T!>!>!
+Weaviate.Client.Typed.TypedGenerateClient<T>.NearObject(System.Guid nearObject, Weaviate.Client.Models.GroupByRequest! groupBy, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targetVectors = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GenerativeGroupByResult<T!>!>!
 Weaviate.Client.Typed.TypedGenerateClient<T>.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GenerativeWeaviateResult<T!>!>!
 Weaviate.Client.Typed.TypedGenerateClient<T>.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, Weaviate.Client.Models.GroupByRequest! groupBy, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GenerativeGroupByResult<T!>!>!
 Weaviate.Client.Typed.TypedGenerateClient<T>.NearText(Weaviate.Client.Models.NearTextInput! query, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.SinglePrompt? singlePrompt = null, Weaviate.Client.Models.GroupedTask? groupedTask = null, Weaviate.Client.Models.GenerativeProvider? provider = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GenerativeWeaviateResult<T!>!>!
@@ -5597,14 +6308,14 @@ Weaviate.Client.Typed.TypedQueryClient<T>.NearMedia(Weaviate.Client.NearMediaInp
 Weaviate.Client.Typed.TypedQueryClient<T>.NearMedia(Weaviate.Client.NearMediaInput.FactoryFn! media, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GroupByResult<T!>!>!
 Weaviate.Client.Typed.TypedQueryClient<T>.NearObject(System.Guid nearObject, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targets = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.Typed.WeaviateObject<T!>!>!>!
 Weaviate.Client.Typed.TypedQueryClient<T>.NearObject(System.Guid nearObject, Weaviate.Client.Models.GroupByRequest! groupBy, double? certainty = null, double? distance = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Models.TargetVectors.FactoryFn? targets = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GroupByResult<T!>!>!
-Weaviate.Client.Typed.TypedQueryClient<T>.NearText(Weaviate.Client.Internal.AutoArray<string!>! text, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.Typed.WeaviateObject<T!>!>!>!
-Weaviate.Client.Typed.TypedQueryClient<T>.NearText(Weaviate.Client.Internal.AutoArray<string!>! text, Weaviate.Client.Models.GroupByRequest! groupBy, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GroupByResult<T!>!>!
-Weaviate.Client.Typed.TypedQueryClient<T>.NearText(Weaviate.Client.Models.NearTextInput! input, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.Typed.WeaviateObject<T!>!>!>!
-Weaviate.Client.Typed.TypedQueryClient<T>.NearText(Weaviate.Client.Models.NearTextInput! input, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GroupByResult<T!>!>!
+Weaviate.Client.Typed.TypedQueryClient<T>.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.Typed.WeaviateObject<T!>!>!>!
+Weaviate.Client.Typed.TypedQueryClient<T>.NearText(Weaviate.Client.Internal.AutoArray<string!>! query, Weaviate.Client.Models.GroupByRequest! groupBy, float? certainty = null, float? distance = null, Weaviate.Client.Models.Move? moveTo = null, Weaviate.Client.Models.Move? moveAway = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Filter? filters = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GroupByResult<T!>!>!
+Weaviate.Client.Typed.TypedQueryClient<T>.NearText(Weaviate.Client.Models.NearTextInput! query, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.Typed.WeaviateObject<T!>!>!>!
+Weaviate.Client.Typed.TypedQueryClient<T>.NearText(Weaviate.Client.Models.NearTextInput! query, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GroupByResult<T!>!>!
 Weaviate.Client.Typed.TypedQueryClient<T>.NearText(Weaviate.Client.Models.NearTextInput.FactoryFn! query, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.Typed.WeaviateObject<T!>!>!>!
 Weaviate.Client.Typed.TypedQueryClient<T>.NearText(Weaviate.Client.Models.NearTextInput.FactoryFn! query, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, uint? offset = null, uint? autoLimit = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GroupByResult<T!>!>!
-Weaviate.Client.Typed.TypedQueryClient<T>.NearVector(Weaviate.Client.Models.NearVectorInput! input, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.Typed.WeaviateObject<T!>!>!>!
-Weaviate.Client.Typed.TypedQueryClient<T>.NearVector(Weaviate.Client.Models.NearVectorInput! input, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GroupByResult<T!>!>!
+Weaviate.Client.Typed.TypedQueryClient<T>.NearVector(Weaviate.Client.Models.NearVectorInput! query, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.Typed.WeaviateObject<T!>!>!>!
+Weaviate.Client.Typed.TypedQueryClient<T>.NearVector(Weaviate.Client.Models.NearVectorInput! query, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GroupByResult<T!>!>!
 Weaviate.Client.Typed.TypedQueryClient<T>.NearVector(Weaviate.Client.Models.NearVectorInput.FactoryFn! vectors, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.Typed.WeaviateObject<T!>!>!>!
 Weaviate.Client.Typed.TypedQueryClient<T>.NearVector(Weaviate.Client.Models.NearVectorInput.FactoryFn! vectors, Weaviate.Client.Models.GroupByRequest! groupBy, Weaviate.Client.Models.Filter? filters = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Typed.GroupByResult<T!>!>!
 Weaviate.Client.Typed.TypedQueryClient<T>.NearVector(Weaviate.Client.Models.VectorSearchInput! vectors, Weaviate.Client.Models.Filter? filters = null, float? certainty = null, float? distance = null, uint? autoLimit = null, uint? limit = null, uint? offset = null, Weaviate.Client.Models.Rerank? rerank = null, Weaviate.Client.Internal.AutoArray<string!>? returnProperties = null, System.Collections.Generic.IList<Weaviate.Client.Models.QueryReference!>? returnReferences = null, Weaviate.Client.Models.MetadataQuery? returnMetadata = null, Weaviate.Client.Models.VectorQuery? includeVectors = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.WeaviateResult<Weaviate.Client.Models.Typed.WeaviateObject<T!>!>!>!
@@ -5749,7 +6460,7 @@ Weaviate.Client.WeaviateClient.IsReady(System.Threading.CancellationToken cancel
 Weaviate.Client.WeaviateClient.Meta.get -> Weaviate.Client.Models.MetaInfo?
 Weaviate.Client.WeaviateClient.Roles.get -> Weaviate.Client.RolesClient!
 Weaviate.Client.WeaviateClient.Users.get -> Weaviate.Client.UsersClient!
-Weaviate.Client.WeaviateClient.WaitUntilReady(System.TimeSpan timeout, System.Threading.CancellationToken cancellationToken, System.TimeSpan? pollInterval = null) -> System.Threading.Tasks.Task<bool>!
+Weaviate.Client.WeaviateClient.WaitUntilReady(System.TimeSpan timeout, System.TimeSpan? pollInterval = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
 Weaviate.Client.WeaviateClient.WeaviateClient(Microsoft.Extensions.Options.IOptions<Weaviate.Client.DependencyInjection.WeaviateOptions!>! options) -> void
 Weaviate.Client.WeaviateClient.WeaviateClient(Microsoft.Extensions.Options.IOptions<Weaviate.Client.DependencyInjection.WeaviateOptions!>! options, Microsoft.Extensions.Logging.ILogger<Weaviate.Client.WeaviateClient!>? logger) -> void
 Weaviate.Client.WeaviateClient.WeaviateVersion.get -> System.Version?
