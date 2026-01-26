@@ -62,6 +62,8 @@ public class TestBackups : IntegrationTests
                         is BackupStatus.Started
                             or BackupStatus.Transferring
                             or BackupStatus.Transferred
+                            or BackupStatus.Cancelling
+                            or BackupStatus.Finalizing
                     )
                     {
                         try
@@ -84,6 +86,8 @@ public class TestBackups : IntegrationTests
                         is BackupStatus.Started
                             or BackupStatus.Transferring
                             or BackupStatus.Transferred
+                            or BackupStatus.Cancelling
+                            or BackupStatus.Finalizing
                 )
                 .ToList();
 
