@@ -4657,6 +4657,12 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
         CANCELED = 5,
 
+        [System.Runtime.Serialization.EnumMember(Value = @"CANCELLING")]
+        CANCELLING = 6,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"FINALIZING")]
+        FINALIZING = 7,
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -4755,6 +4761,12 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
         CANCELED = 5,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"CANCELLING")]
+        CANCELLING = 6,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"FINALIZING")]
+        FINALIZING = 7,
 
     }
 

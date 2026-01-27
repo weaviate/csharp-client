@@ -41,6 +41,16 @@ public enum BackupStatus
     /// The canceled backup status
     /// </summary>
     Canceled,
+
+    /// <summary>
+    /// The cancelling backup status - cancellation has been claimed by a coordinator
+    /// </summary>
+    Cancelling,
+
+    /// <summary>
+    /// The finalizing backup status - file staging is complete and schema changes are being applied
+    /// </summary>
+    Finalizing,
 }
 
 /// <summary>
@@ -263,6 +273,8 @@ public static class BackupStatusExtensions
             "SUCCESS" => BackupStatus.Success,
             "FAILED" => BackupStatus.Failed,
             "CANCELED" => BackupStatus.Canceled,
+            "CANCELLING" => BackupStatus.Cancelling,
+            "FINALIZING" => BackupStatus.Finalizing,
             _ => BackupStatus.Unknown,
         };
     }
