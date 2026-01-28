@@ -130,11 +130,13 @@ public partial class CollectionClient
     /// <param name="returnMetadata">Metadata to include in the response.</param>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
+    /// <param name="filter">Filter to apply to the objects.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>An async enumerable of WeaviateObject instances.</returns>
     public async IAsyncEnumerable<WeaviateObject> Iterator(
         Guid? after = null,
+        Filter? filter = null,
         uint cacheSize = ITERATOR_CACHE_SIZE,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
@@ -150,10 +152,11 @@ public partial class CollectionClient
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            WeaviateResult page = await _client.GrpcClient.FetchObjects(
+            var reply = await _client.GrpcClient.FetchObjects(
                 Name,
                 limit: cacheSize,
                 after: cursor,
+                filters: filter,
                 returnMetadata: returnMetadata,
                 includeVectors: includeVectors,
                 returnProperties: returnProperties,
@@ -162,7 +165,14 @@ public partial class CollectionClient
                 tenant: Tenant
             );
 
-            if (!page.Objects.Any())
+            WeaviateResult page = reply;
+
+            Guid? nextUuid =
+                reply.IteratorNextUuid.Length > 0
+                    ? ObjectHelper.GuidFromByteString(reply.IteratorNextUuid)
+                    : null;
+
+            if (filter is null && !page.Objects.Any())
             {
                 yield break;
             }
@@ -171,6 +181,18 @@ public partial class CollectionClient
             {
                 cursor = c.UUID;
                 yield return c;
+            }
+
+            if (filter is not null && nextUuid is not null)
+            {
+                if (nextUuid != Guid.Empty)
+                {
+                    cursor = nextUuid;
+                }
+                else
+                {
+                    yield break;
+                }
             }
         }
     }

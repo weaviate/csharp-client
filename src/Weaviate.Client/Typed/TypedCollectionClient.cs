@@ -142,6 +142,7 @@ public class TypedCollectionClient<T>
     /// Uses cursor-based pagination for efficient iteration over large collections.
     /// </summary>
     /// <param name="after">Start iteration after this object ID.</param>
+    /// <param name="filter">Filter to apply to the objects.</param>
     /// <param name="cacheSize">Number of objects to fetch per page.</param>
     /// <param name="returnMetadata">Metadata to include in results.</param>
     /// <param name="includeVectors">Whether to include vectors.</param>
@@ -151,6 +152,7 @@ public class TypedCollectionClient<T>
     /// <returns>An async enumerable of strongly-typed objects.</returns>
     public async IAsyncEnumerable<WeaviateObject<T>> Iterator(
         Guid? after = null,
+        Filter? filter = null,
         uint cacheSize = CollectionClient.ITERATOR_CACHE_SIZE,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
@@ -162,6 +164,7 @@ public class TypedCollectionClient<T>
         await foreach (
             var obj in _collectionClient.Iterator(
                 after,
+                filter,
                 cacheSize,
                 returnMetadata,
                 includeVectors,

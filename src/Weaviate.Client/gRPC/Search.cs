@@ -97,6 +97,11 @@ internal partial class WeaviateGrpcClient
             includeVectors: includeVectors
         );
 
+        if (filters is not null && !req.HasAfter)
+        {
+            req.After = "";
+        }
+
         return await Search(req, cancellationToken);
     }
 
