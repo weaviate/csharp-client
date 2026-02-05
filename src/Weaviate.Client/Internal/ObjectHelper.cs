@@ -299,6 +299,43 @@ internal class ObjectHelper
 
         Struct? nonRefProps = null;
 
+        // Handle IDictionary<string, object?> (e.g. ExpandoObject) which has no C# properties
+        if (data is IDictionary<string, object?> dict)
+        {
+            foreach (var kvp in dict)
+            {
+                if (kvp.Value is null)
+                    continue;
+
+                var propName = kvp.Key.Decapitalize();
+                var value = kvp.Value;
+                var propType = value.GetType();
+
+                if (propType.IsNativeType())
+                {
+                    nonRefProps ??= new();
+                    nonRefProps.Fields.Add(propName, ConvertToProtoValue(value));
+                }
+                else if (!propType.IsValueType && value is IDictionary<string, object?> nestedDict)
+                {
+                    nonRefProps ??= new();
+                    var nestedStruct = BuildBatchProperties(
+                        nestedDict,
+                        visitedObjects
+                    ).NonRefProperties;
+                    if (nestedStruct != null)
+                    {
+                        nonRefProps.Fields.Add(
+                            propName,
+                            Google.Protobuf.WellKnownTypes.Value.ForStruct(nestedStruct)
+                        );
+                    }
+                }
+            }
+            props.NonRefProperties = nonRefProps;
+            return props;
+        }
+
         var type = typeof(TProps);
 
         if (type == typeof(object))
