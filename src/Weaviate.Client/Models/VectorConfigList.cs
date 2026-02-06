@@ -35,7 +35,7 @@ public record VectorConfigList
     /// <returns>An enumerator of vector config</returns>
     public IEnumerator<VectorConfig> GetEnumerator()
     {
-        return ((IEnumerable<VectorConfig>)_internalList).GetEnumerator();
+        return _internalList.Values.GetEnumerator();
     }
 
     /// <summary>

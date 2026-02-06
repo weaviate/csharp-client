@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Weaviate.Client.Models;
 
 /// <summary>
