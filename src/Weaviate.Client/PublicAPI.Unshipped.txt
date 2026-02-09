@@ -3321,6 +3321,7 @@ Weaviate.Client.Models.BackupsResource.Deconstruct(out string? Collection) -> vo
 Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Canceled = 6 -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Failed = 5 -> Weaviate.Client.Models.BackupStatus
+Weaviate.Client.Models.BackupStatus.Finalizing = 8 -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Started = 1 -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Success = 4 -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Transferred = 3 -> Weaviate.Client.Models.BackupStatus
