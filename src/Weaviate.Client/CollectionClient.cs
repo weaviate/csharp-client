@@ -147,6 +147,7 @@ public partial class CollectionClient
     {
         await _client.EnsureInitializedAsync();
         Guid? cursor = after;
+        IDictionary<string, string>? shardCursors = null;
 
         while (true)
         {
@@ -157,6 +158,7 @@ public partial class CollectionClient
                 limit: cacheSize,
                 after: cursor,
                 filters: filter,
+                shardCursors: shardCursors,
                 returnMetadata: returnMetadata,
                 includeVectors: includeVectors,
                 returnProperties: returnProperties,
@@ -167,32 +169,32 @@ public partial class CollectionClient
 
             WeaviateResult page = reply;
 
-            Guid? nextUuid =
-                reply.IteratorNextUuid.Length > 0
-                    ? ObjectHelper.GuidFromByteString(reply.IteratorNextUuid)
-                    : null;
-
-            if (filter is null && !page.Objects.Any())
+            if (filter is null)
             {
-                yield break;
-            }
-
-            foreach (var c in page.Objects)
-            {
-                cursor = c.UUID;
-                yield return c;
-            }
-
-            if (filter is not null && nextUuid is not null)
-            {
-                if (nextUuid != Guid.Empty)
-                {
-                    cursor = nextUuid;
-                }
-                else
+                if (!page.Objects.Any())
                 {
                     yield break;
                 }
+
+                foreach (var c in page.Objects)
+                {
+                    cursor = c.UUID;
+                    yield return c;
+                }
+            }
+            else
+            {
+                foreach (var c in page.Objects)
+                {
+                    yield return c;
+                }
+
+                if (reply.ShardCursors.Count == 0)
+                {
+                    yield break;
+                }
+
+                shardCursors = reply.ShardCursors;
             }
         }
     }
