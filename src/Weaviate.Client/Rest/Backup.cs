@@ -186,6 +186,33 @@ internal partial class WeaviateRestClient
     }
 
     /// <summary>
+    /// Cancels a running restore operation by issuing DELETE to /backups/{backend}/{id}/restore.
+    /// </summary>
+    /// <param name="backend">The backend</param>
+    /// <param name="id">The id</param>
+    /// <param name="bucket">The bucket</param>
+    /// <param name="path">The path</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    internal async Task BackupRestoreCancel(
+        BackupStorageProvider backend,
+        string id,
+        string? bucket = null,
+        string? path = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var response = await _httpClient.DeleteAsync(
+            WeaviateEndpoints.BackupRestoreStatus(backend.ToEnumMemberString()!, id, bucket, path),
+            cancellationToken
+        );
+        await response.ManageStatusCode(
+            [HttpStatusCode.OK, HttpStatusCode.NoContent],
+            "backup restore cancel",
+            ResourceType.Backup
+        );
+    }
+
+    /// <summary>
     /// Backups the restore status using the specified backend
     /// </summary>
     /// <param name="backend">The backend</param>
