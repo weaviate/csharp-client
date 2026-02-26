@@ -208,6 +208,27 @@ public class BackupClient
     }
 
     /// <summary>
+    /// Cancel a running restore operation.
+    /// </summary>
+    public Task CancelRestore(
+        BackupBackend backend,
+        string id,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var bucket = backend is ObjectStorageBackend osb ? osb.Bucket : null;
+        var path = backend.Path;
+
+        return _client.RestClient.BackupRestoreCancel(
+            backend.Provider,
+            id,
+            bucket,
+            path,
+            cancellationToken
+        );
+    }
+
+    /// <summary>
     /// Start restoring a backup asynchronously.
     /// Returns a BackupRestoreOperation that can be used to track status or wait for completion.
     /// </summary>
@@ -242,7 +263,7 @@ public class BackupClient
         return new BackupRestoreOperation(
             model,
             async (ct) => await GetRestoreStatus(request.Backend, model.Id, ct),
-            async (ct) => await Cancel(request.Backend, model.Id, ct)
+            async (ct) => await CancelRestore(request.Backend, model.Id, ct)
         );
     }
 

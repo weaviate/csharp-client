@@ -2707,6 +2707,7 @@ Weaviate.Client.AuthenticatedHttpHandler
 Weaviate.Client.AuthenticatedHttpHandler.AuthenticatedHttpHandler(Weaviate.Client.ITokenService! tokenService, int? refreshIntervalMinutes = 5) -> void
 Weaviate.Client.BackupClient
 Weaviate.Client.BackupClient.Cancel(Weaviate.Client.Models.BackupBackend! backend, string! id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.BackupClient.CancelRestore(Weaviate.Client.Models.BackupBackend! backend, string! id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 Weaviate.Client.BackupClient.Create(Weaviate.Client.Models.BackupCreateRequest! request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.BackupCreateOperation!>!
 Weaviate.Client.BackupClient.CreateSync(Weaviate.Client.Models.BackupCreateRequest! request, System.TimeSpan? timeout = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Backup!>!
 Weaviate.Client.BackupClient.GetRestoreStatus(Weaviate.Client.Models.BackupBackend! backend, string! id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Backup!>!
@@ -3320,6 +3321,7 @@ Weaviate.Client.Models.BackupsResource.Collection.init -> void
 Weaviate.Client.Models.BackupsResource.Deconstruct(out string? Collection) -> void
 Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Canceled = 6 -> Weaviate.Client.Models.BackupStatus
+Weaviate.Client.Models.BackupStatus.Cancelling = 7 -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Failed = 5 -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Finalizing = 8 -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Started = 1 -> Weaviate.Client.Models.BackupStatus
