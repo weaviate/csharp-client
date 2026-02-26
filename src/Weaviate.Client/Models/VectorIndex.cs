@@ -527,4 +527,48 @@ public static class VectorIndex
         [JsonIgnore]
         public override string Type => TypeValue;
     }
+
+    /// <summary>
+    /// Configuration for HFresh (inverted-list ANN) vector index.
+    /// Requires Weaviate 1.36 or later.
+    /// </summary>
+    public sealed record HFresh : VectorIndexConfig
+    {
+        /// <summary>The type discriminator string used by the Weaviate REST API.</summary>
+        public const string TypeValue = "hfresh";
+
+        /// <summary>Gets or sets the distance metric for vector similarity.</summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public VectorDistance? Distance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum posting list size in KB.
+        /// When null, Weaviate computes a value based on the dataset size.
+        /// </summary>
+        public int? MaxPostingSizeKb { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of posting lists across which vectors are distributed.
+        /// Server default: 4.
+        /// </summary>
+        public int? Replicas { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of posting lists probed at query time.
+        /// Higher values improve recall at the cost of throughput. Server default: 64.
+        /// </summary>
+        public int? SearchProbe { get; set; }
+
+        /// <summary>
+        /// Gets or sets the quantizer configuration. Only RQ is supported for HFresh.
+        /// </summary>
+        public QuantizerConfigBase? Quantizer { get; set; }
+
+        /// <summary>Gets or sets the multi-vector configuration.</summary>
+        public MultiVectorConfig? MultiVector { get; set; }
+
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public override string Type => TypeValue;
+    }
 }

@@ -273,6 +273,50 @@ internal class DynamicDto
     public FlatDto? Flat { get; set; }
 }
 
+/// <summary>
+/// The hfresh dto class
+/// </summary>
+internal class HFreshDto
+{
+    /// <summary>
+    /// Gets or sets the value of the distance
+    /// </summary>
+    [JsonPropertyName("distance")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public VectorDistance? Distance { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum posting list size in KB.
+    /// Note: JSON key uses uppercase "KB" per Weaviate API convention.
+    /// </summary>
+    [JsonPropertyName("maxPostingSizeKB")]
+    public int? MaxPostingSizeKb { get; set; }
+
+    /// <summary>
+    /// Gets or sets the value of the replicas
+    /// </summary>
+    [JsonPropertyName("replicas")]
+    public int? Replicas { get; set; }
+
+    /// <summary>
+    /// Gets or sets the value of the search probe
+    /// </summary>
+    [JsonPropertyName("searchProbe")]
+    public int? SearchProbe { get; set; }
+
+    /// <summary>
+    /// Gets or sets the RQ quantizer. Only RQ is supported for HFresh.
+    /// </summary>
+    [JsonPropertyName("rq")]
+    public VectorIndex.Quantizers.RQ? RQ { get; set; }
+
+    /// <summary>
+    /// Gets or sets the value of the multi vector
+    /// </summary>
+    [JsonPropertyName("multivector")]
+    public MultiVectorDto? MultiVector { get; set; }
+}
+
 // Extension methods for mapping
 /// <summary>
 /// The vector index mapping extensions class
@@ -526,6 +570,79 @@ internal static class VectorIndexMappingExtensions
             Flat = dynamic.Flat?.ToDto(),
         };
     }
+
+    // HFresh mapping
+    /// <summary>
+    /// Returns the hfresh using the specified dto
+    /// </summary>
+    /// <param name="dto">The dto</param>
+    /// <returns>The vector index hfresh</returns>
+    public static VectorIndex.HFresh ToHFresh(this HFreshDto dto)
+    {
+        var muvera = dto.MultiVector?.Muvera?.ToModel();
+        var multivector =
+            dto.MultiVector != null && dto.MultiVector.Enabled == true
+                ? new MultiVectorConfig
+                {
+                    Aggregation = dto.MultiVector.Aggregation,
+                    Encoding = muvera,
+                }
+                : null;
+
+        return new VectorIndex.HFresh
+        {
+            Distance = dto.Distance,
+            MaxPostingSizeKb = dto.MaxPostingSizeKb,
+            Replicas = dto.Replicas,
+            SearchProbe = dto.SearchProbe,
+            Quantizer = dto.RQ?.Enabled == true ? dto.RQ : null,
+            MultiVector = multivector,
+        };
+    }
+
+    /// <summary>
+    /// Returns the dto using the specified hfresh
+    /// </summary>
+    /// <param name="hfresh">The hfresh</param>
+    /// <returns>The hfresh dto</returns>
+    public static HFreshDto ToDto(this VectorIndex.HFresh hfresh)
+    {
+        return new HFreshDto
+        {
+            Distance = hfresh.Distance,
+            MaxPostingSizeKb = hfresh.MaxPostingSizeKb,
+            Replicas = hfresh.Replicas,
+            SearchProbe = hfresh.SearchProbe,
+            RQ = hfresh.Quantizer switch
+            {
+                VectorIndex.Quantizers.RQ rq => rq,
+                null => null,
+                _ => throw new WeaviateClientException(
+                    $"HFresh only supports RQ quantization, but got '{hfresh.Quantizer.Type}'."
+                ),
+            },
+            MultiVector =
+                hfresh.MultiVector != null
+                    ? new MultiVectorDto
+                    {
+                        Enabled = true,
+                        Muvera = (hfresh.MultiVector.Encoding as MuveraEncoding)?.ToDto(),
+                        Aggregation = hfresh.MultiVector.Aggregation,
+                    }
+                    : new MultiVectorDto
+                    {
+                        Enabled = false,
+                        Aggregation = "maxSim",
+                        Muvera = new MuveraDto
+                        {
+                            Enabled = false,
+                            KSim = 4,
+                            DProjections = 16,
+                            Repetitions = 10,
+                        },
+                    },
+        };
+    }
 }
 
 /// <summary>
@@ -551,6 +668,7 @@ internal static class VectorIndexSerialization
                 VectorIndex.HNSW.TypeValue => (VectorIndexConfig?)DeserializeHnsw(vic),
                 VectorIndex.Flat.TypeValue => DeserializeFlat(vic),
                 VectorIndex.Dynamic.TypeValue => DeserializeDynamic(vic),
+                VectorIndex.HFresh.TypeValue => DeserializeHFresh(vic),
                 _ => null,
             };
 
@@ -571,6 +689,7 @@ internal static class VectorIndexSerialization
             VectorIndex.HNSW hnsw => (object?)hnsw.ToDto(),
             VectorIndex.Flat flat => (object?)flat.ToDto(),
             VectorIndex.Dynamic dynamic => (object?)dynamic.ToDto(),
+            VectorIndex.HFresh hfresh => (object?)hfresh.ToDto(),
             _ => null,
         };
 
@@ -647,5 +766,30 @@ internal static class VectorIndexSerialization
             Rest.WeaviateRestClient.RestJsonSerializerOptions
         );
         return dto?.ToDynamic() ?? new VectorIndex.Dynamic() { Flat = null, Hnsw = null };
+    }
+
+    /// <summary>
+    /// Serializes the hfresh using the specified hfresh
+    /// </summary>
+    /// <param name="hfresh">The hfresh</param>
+    /// <returns>The string</returns>
+    public static string SerializeHFresh(VectorIndex.HFresh hfresh)
+    {
+        var dto = hfresh.ToDto();
+        return JsonSerializer.Serialize(dto, Rest.WeaviateRestClient.RestJsonSerializerOptions);
+    }
+
+    /// <summary>
+    /// Deserializes the hfresh using the specified json
+    /// </summary>
+    /// <param name="json">The json</param>
+    /// <returns>The vector index hfresh</returns>
+    public static VectorIndex.HFresh DeserializeHFresh(IDictionary<string, object?> json)
+    {
+        var dto = JsonSerializer.Deserialize<HFreshDto>(
+            JsonSerializer.Serialize(json, Rest.WeaviateRestClient.RestJsonSerializerOptions),
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+        return dto?.ToHFresh() ?? new VectorIndex.HFresh();
     }
 }

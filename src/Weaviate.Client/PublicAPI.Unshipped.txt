@@ -58,6 +58,7 @@ const Weaviate.Client.Models.Reranker.VoyageAI.Models.RerankLite1 = "rerank-lite
 const Weaviate.Client.Models.Reranker.VoyageAI.TypeValue = "reranker-voyageai" -> string!
 const Weaviate.Client.Models.VectorIndex.Dynamic.TypeValue = "dynamic" -> string!
 const Weaviate.Client.Models.VectorIndex.Flat.TypeValue = "flat" -> string!
+const Weaviate.Client.Models.VectorIndex.HFresh.TypeValue = "hfresh" -> string!
 const Weaviate.Client.Models.VectorIndex.HNSW.TypeValue = "hnsw" -> string!
 const Weaviate.Client.Models.VectorIndex.Quantizers.BQ.TypeValue = "bq" -> string!
 const Weaviate.Client.Models.VectorIndex.Quantizers.None.TypeValue = "none" -> string!
@@ -146,6 +147,7 @@ override sealed Weaviate.Client.Models.TypedGuid.Equals(Weaviate.Client.Models.T
 override sealed Weaviate.Client.Models.TypedValue<T>.Equals(Weaviate.Client.Models.TypedBase<T>? other) -> bool
 override sealed Weaviate.Client.Models.VectorIndex.Dynamic.Equals(Weaviate.Client.Models.VectorIndexConfig? other) -> bool
 override sealed Weaviate.Client.Models.VectorIndex.Flat.Equals(Weaviate.Client.Models.VectorIndexConfig? other) -> bool
+override sealed Weaviate.Client.Models.VectorIndex.HFresh.Equals(Weaviate.Client.Models.VectorIndexConfig? other) -> bool
 override sealed Weaviate.Client.Models.VectorIndex.HNSW.Equals(Weaviate.Client.Models.VectorIndexConfig? other) -> bool
 override sealed Weaviate.Client.Models.VectorIndex.Quantizers.BQ.Equals(Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigFlat? other) -> bool
 override sealed Weaviate.Client.Models.VectorIndex.Quantizers.None.Equals(Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase? other) -> bool
@@ -960,6 +962,11 @@ override Weaviate.Client.Models.VectorIndex.Flat.Equals(object? obj) -> bool
 override Weaviate.Client.Models.VectorIndex.Flat.GetHashCode() -> int
 override Weaviate.Client.Models.VectorIndex.Flat.ToString() -> string!
 override Weaviate.Client.Models.VectorIndex.Flat.Type.get -> string!
+override Weaviate.Client.Models.VectorIndex.HFresh.<Clone>$() -> Weaviate.Client.Models.VectorIndex.HFresh!
+override Weaviate.Client.Models.VectorIndex.HFresh.Equals(object? obj) -> bool
+override Weaviate.Client.Models.VectorIndex.HFresh.GetHashCode() -> int
+override Weaviate.Client.Models.VectorIndex.HFresh.ToString() -> string!
+override Weaviate.Client.Models.VectorIndex.HFresh.Type.get -> string!
 override Weaviate.Client.Models.VectorIndex.HNSW.<Clone>$() -> Weaviate.Client.Models.VectorIndex.HNSW!
 override Weaviate.Client.Models.VectorIndex.HNSW.Equals(object? obj) -> bool
 override Weaviate.Client.Models.VectorIndex.HNSW.GetHashCode() -> int
@@ -1814,6 +1821,8 @@ static Weaviate.Client.Models.VectorIndex.Dynamic.operator !=(Weaviate.Client.Mo
 static Weaviate.Client.Models.VectorIndex.Dynamic.operator ==(Weaviate.Client.Models.VectorIndex.Dynamic? left, Weaviate.Client.Models.VectorIndex.Dynamic? right) -> bool
 static Weaviate.Client.Models.VectorIndex.Flat.operator !=(Weaviate.Client.Models.VectorIndex.Flat? left, Weaviate.Client.Models.VectorIndex.Flat? right) -> bool
 static Weaviate.Client.Models.VectorIndex.Flat.operator ==(Weaviate.Client.Models.VectorIndex.Flat? left, Weaviate.Client.Models.VectorIndex.Flat? right) -> bool
+static Weaviate.Client.Models.VectorIndex.HFresh.operator !=(Weaviate.Client.Models.VectorIndex.HFresh? left, Weaviate.Client.Models.VectorIndex.HFresh? right) -> bool
+static Weaviate.Client.Models.VectorIndex.HFresh.operator ==(Weaviate.Client.Models.VectorIndex.HFresh? left, Weaviate.Client.Models.VectorIndex.HFresh? right) -> bool
 static Weaviate.Client.Models.VectorIndex.HNSW.operator !=(Weaviate.Client.Models.VectorIndex.HNSW? left, Weaviate.Client.Models.VectorIndex.HNSW? right) -> bool
 static Weaviate.Client.Models.VectorIndex.HNSW.operator ==(Weaviate.Client.Models.VectorIndex.HNSW? left, Weaviate.Client.Models.VectorIndex.HNSW? right) -> bool
 static Weaviate.Client.Models.VectorIndex.Quantizers.BQ.operator !=(Weaviate.Client.Models.VectorIndex.Quantizers.BQ? left, Weaviate.Client.Models.VectorIndex.Quantizers.BQ? right) -> bool
@@ -5450,6 +5459,21 @@ Weaviate.Client.Models.VectorIndex.Flat.Quantizer.get -> Weaviate.Client.Models.
 Weaviate.Client.Models.VectorIndex.Flat.Quantizer.set -> void
 Weaviate.Client.Models.VectorIndex.Flat.VectorCacheMaxObjects.get -> long?
 Weaviate.Client.Models.VectorIndex.Flat.VectorCacheMaxObjects.set -> void
+Weaviate.Client.Models.VectorIndex.HFresh
+Weaviate.Client.Models.VectorIndex.HFresh.Distance.get -> Weaviate.Client.Models.VectorIndexConfig.VectorDistance?
+Weaviate.Client.Models.VectorIndex.HFresh.Distance.set -> void
+Weaviate.Client.Models.VectorIndex.HFresh.Equals(Weaviate.Client.Models.VectorIndex.HFresh? other) -> bool
+Weaviate.Client.Models.VectorIndex.HFresh.HFresh() -> void
+Weaviate.Client.Models.VectorIndex.HFresh.MaxPostingSizeKb.get -> int?
+Weaviate.Client.Models.VectorIndex.HFresh.MaxPostingSizeKb.set -> void
+Weaviate.Client.Models.VectorIndex.HFresh.MultiVector.get -> Weaviate.Client.Models.VectorIndexConfig.MultiVectorConfig?
+Weaviate.Client.Models.VectorIndex.HFresh.MultiVector.set -> void
+Weaviate.Client.Models.VectorIndex.HFresh.Quantizer.get -> Weaviate.Client.Models.VectorIndexConfig.QuantizerConfigBase?
+Weaviate.Client.Models.VectorIndex.HFresh.Quantizer.set -> void
+Weaviate.Client.Models.VectorIndex.HFresh.Replicas.get -> int?
+Weaviate.Client.Models.VectorIndex.HFresh.Replicas.set -> void
+Weaviate.Client.Models.VectorIndex.HFresh.SearchProbe.get -> int?
+Weaviate.Client.Models.VectorIndex.HFresh.SearchProbe.set -> void
 Weaviate.Client.Models.VectorIndex.HNSW
 Weaviate.Client.Models.VectorIndex.HNSW.CleanupIntervalSeconds.get -> int?
 Weaviate.Client.Models.VectorIndex.HNSW.CleanupIntervalSeconds.set -> void
