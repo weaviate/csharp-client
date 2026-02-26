@@ -610,6 +610,16 @@ public class ReplicationConfigUpdate(ReplicationConfig WrappedReplicationConfig)
         get => WrappedReplicationConfig.Factor;
         set => WrappedReplicationConfig.Factor = value;
     }
+
+    /// <summary>
+    /// Gets or sets fine-grained parameters for asynchronous replication.
+    /// Requires Weaviate 1.36 or later.
+    /// </summary>
+    public ReplicationAsyncConfig? AsyncConfig
+    {
+        get => WrappedReplicationConfig.AsyncConfig;
+        set => WrappedReplicationConfig.AsyncConfig = value;
+    }
 }
 
 /// <summary>

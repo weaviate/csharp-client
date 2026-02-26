@@ -166,6 +166,25 @@ public static class WeaviateExtensions
                 AsyncEnabled = rc.AsyncEnabled,
                 DeletionStrategy = (Rest.Dto.ReplicationConfigDeletionStrategy?)rc.DeletionStrategy,
                 Factor = rc.Factor,
+                AsyncConfig = rc.AsyncConfig is ReplicationAsyncConfig ac
+                    ? new Rest.Dto.ReplicationAsyncConfig
+                    {
+                        MaxWorkers = ac.MaxWorkers,
+                        HashtreeHeight = ac.HashtreeHeight,
+                        Frequency = ac.Frequency,
+                        FrequencyWhilePropagating = ac.FrequencyWhilePropagating,
+                        AliveNodesCheckingFrequency = ac.AliveNodesCheckingFrequency,
+                        LoggingFrequency = ac.LoggingFrequency,
+                        DiffBatchSize = ac.DiffBatchSize,
+                        DiffPerNodeTimeout = ac.DiffPerNodeTimeout,
+                        PrePropagationTimeout = ac.PrePropagationTimeout,
+                        PropagationTimeout = ac.PropagationTimeout,
+                        PropagationLimit = ac.PropagationLimit,
+                        PropagationDelay = ac.PropagationDelay,
+                        PropagationConcurrency = ac.PropagationConcurrency,
+                        PropagationBatchSize = ac.PropagationBatchSize,
+                    }
+                    : null,
             };
         }
 
@@ -389,6 +408,26 @@ public static class WeaviateExtensions
                             rc.Factor ?? Weaviate.Client.Models.ReplicationConfig.Default.Factor,
 
                         DeletionStrategy = (DeletionStrategy?)rc.DeletionStrategy,
+
+                        AsyncConfig = rc.AsyncConfig is Rest.Dto.ReplicationAsyncConfig ac
+                            ? new ReplicationAsyncConfig
+                            {
+                                MaxWorkers = ac.MaxWorkers,
+                                HashtreeHeight = ac.HashtreeHeight,
+                                Frequency = ac.Frequency,
+                                FrequencyWhilePropagating = ac.FrequencyWhilePropagating,
+                                AliveNodesCheckingFrequency = ac.AliveNodesCheckingFrequency,
+                                LoggingFrequency = ac.LoggingFrequency,
+                                DiffBatchSize = ac.DiffBatchSize,
+                                DiffPerNodeTimeout = ac.DiffPerNodeTimeout,
+                                PrePropagationTimeout = ac.PrePropagationTimeout,
+                                PropagationTimeout = ac.PropagationTimeout,
+                                PropagationLimit = ac.PropagationLimit,
+                                PropagationDelay = ac.PropagationDelay,
+                                PropagationConcurrency = ac.PropagationConcurrency,
+                                PropagationBatchSize = ac.PropagationBatchSize,
+                            }
+                            : null,
                     }
                     : null,
             ShardingConfig = shardingConfig,
