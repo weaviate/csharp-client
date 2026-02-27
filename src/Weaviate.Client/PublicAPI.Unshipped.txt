@@ -6595,6 +6595,25 @@ Weaviate.Client.WeaviateUnprocessableEntityException.WeaviateUnprocessableEntity
 ~Weaviate.Client.Models.Typed.WeaviateGroup<T, TObject>.WeaviateGroup(Weaviate.Client.Models.Typed.WeaviateGroup<T, TObject>! original) -> void
 ~Weaviate.Client.Models.Typed.WeaviateGroup<T>.WeaviateGroup(Weaviate.Client.Models.Typed.WeaviateGroup<T>! original) -> void
 ~Weaviate.Client.Models.Typed.WeaviateObject<T>.WeaviateObject(Weaviate.Client.Models.Typed.WeaviateObject<T>! original) -> void
+override sealed Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate!
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.ToString() -> string!
+static Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.operator !=(Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate? left, Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.operator ==(Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate? left, Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate? right) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.Equals(Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate? other) -> bool
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.ImageFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.Multi2MultiVecWeaviate(Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate! original) -> void
+Weaviate.Client.VectorizerFactoryMulti.Multi2MultiVecWeaviate(string![]? imageFields = null, string? baseURL = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!
 Weaviate.Client.RequiresWeaviateVersionAttribute
 Weaviate.Client.RequiresWeaviateVersionAttribute.MinimumVersion.get -> System.Version!
 Weaviate.Client.RequiresWeaviateVersionAttribute.RequiresWeaviateVersionAttribute(int major, int minor, int patch = 0) -> void
