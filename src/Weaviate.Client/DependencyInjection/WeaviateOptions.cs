@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace Weaviate.Client.DependencyInjection;
 
 /// <summary>
@@ -76,7 +78,19 @@ public class WeaviateOptions
     public RetryPolicy? RetryPolicy { get; set; }
 
     /// <summary>
+    /// When true, HTTP requests/responses and gRPC calls are logged.
+    /// Requires the host to provide an ILoggerFactory via DI. Defaults to false.
+    /// </summary>
+    public bool LogRequests { get; set; } = false;
+
+    /// <summary>
+    /// The log level used for request/response log entries. Defaults to Debug.
+    /// </summary>
+    public LogLevel RequestLoggingLevel { get; set; } = LogLevel.Debug;
+
+    /// <summary>
     /// Converts these options to a ClientConfiguration.
+    /// The ILoggerFactory is not set here — it is injected by the DI constructor.
     /// </summary>
     internal ClientConfiguration ToClientConfiguration()
     {
@@ -94,7 +108,9 @@ public class WeaviateOptions
             InitTimeout: InitTimeout,
             InsertTimeout: InsertTimeout,
             QueryTimeout: QueryTimeout,
-            RetryPolicy: RetryPolicy
+            RetryPolicy: RetryPolicy,
+            LogRequests: LogRequests,
+            RequestLoggingLevel: RequestLoggingLevel
         );
     }
 }

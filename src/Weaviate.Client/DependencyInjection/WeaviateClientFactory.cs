@@ -95,7 +95,8 @@ internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
         var logger = _loggerFactory.CreateLogger<WeaviateClient>();
 
         var clientOptions = Options.Create(options);
-        var client = new WeaviateClient(clientOptions, logger);
+        // Pass the full ILoggerFactory so internal components (gRPC, OAuth) can create typed loggers
+        var client = new WeaviateClient(clientOptions, logger, _loggerFactory);
 
         // Initialize the client
         await client.InitializeAsync();

@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace Weaviate.Client;
 
 using System.Net.Http;
@@ -86,6 +88,21 @@ public partial class WeaviateClientBuilder
     /// The custom handlers
     /// </summary>
     private readonly List<DelegatingHandler> _customHandlers = new();
+
+    /// <summary>
+    /// The logger factory
+    /// </summary>
+    private ILoggerFactory? _loggerFactory = null;
+
+    /// <summary>
+    /// Whether request logging is enabled
+    /// </summary>
+    private bool _logRequests = false;
+
+    /// <summary>
+    /// The log level for request/response entries
+    /// </summary>
+    private LogLevel _requestLoggingLevel = LogLevel.Debug;
 
     /// <summary>
     /// Customs the rest endpoint
@@ -414,6 +431,31 @@ public partial class WeaviateClientBuilder
     }
 
     /// <summary>
+    /// Configures the logger factory used by all internal components.
+    /// When set, typed loggers are created from this factory instead of the default silent NullLoggerFactory.
+    /// </summary>
+    /// <param name="loggerFactory">The logger factory to use.</param>
+    public WeaviateClientBuilder WithLoggerFactory(ILoggerFactory loggerFactory)
+    {
+        _loggerFactory = loggerFactory;
+        return this;
+    }
+
+    /// <summary>
+    /// Enables request/response logging for both HTTP and gRPC transports.
+    /// Logs method, URI/method name, status code, and elapsed time.
+    /// Authorization header values are redacted from HTTP logs.
+    /// Requires a logger factory to be configured via <see cref="WithLoggerFactory"/>.
+    /// </summary>
+    /// <param name="level">The log level for request/response entries. Defaults to Debug.</param>
+    public WeaviateClientBuilder UseRequestLogging(LogLevel level = LogLevel.Debug)
+    {
+        _logRequests = true;
+        _requestLoggingLevel = level;
+        return this;
+    }
+
+    /// <summary>
     /// Builds a WeaviateClient asynchronously with all services properly initialized.
     /// This is the recommended way to create clients.
     /// </summary>
@@ -435,7 +477,10 @@ public partial class WeaviateClientBuilder
             _queryTimeout,
             _retryPolicy,
             _customHandlers.Count > 0 ? _customHandlers.ToArray() : null,
-            _httpMessageHandler
+            _httpMessageHandler,
+            _loggerFactory,
+            _logRequests,
+            _requestLoggingLevel
         );
 
         return await config.BuildAsync();

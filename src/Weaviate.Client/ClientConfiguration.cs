@@ -21,6 +21,9 @@ namespace Weaviate.Client;
 /// <param name="RetryPolicy">Optional retry policy for handling transient failures.</param>
 /// <param name="CustomHandlers">Optional custom HTTP message handlers for request/response processing.</param>
 /// <param name="HttpMessageHandler">Optional custom HTTP message handler for low-level HTTP operations.</param>
+/// <param name="LoggerFactory">Optional logger factory used to create loggers for all internal components. When null, NullLoggerFactory.Instance is used (silent, no console output).</param>
+/// <param name="LogRequests">When true, HTTP requests/responses and gRPC calls are logged. Requires LoggerFactory to be set. Defaults to false.</param>
+/// <param name="RequestLoggingLevel">The log level used for request/response log entries. Defaults to Debug.</param>
 public sealed record ClientConfiguration(
     string RestAddress = "localhost",
     string RestPath = "v1/",
@@ -37,7 +40,10 @@ public sealed record ClientConfiguration(
     TimeSpan? QueryTimeout = null,
     RetryPolicy? RetryPolicy = null,
     DelegatingHandler[]? CustomHandlers = null,
-    HttpMessageHandler? HttpMessageHandler = null
+    HttpMessageHandler? HttpMessageHandler = null,
+    ILoggerFactory? LoggerFactory = null,
+    bool LogRequests = false,
+    LogLevel RequestLoggingLevel = LogLevel.Debug
 )
 {
     /// <summary>
@@ -70,9 +76,9 @@ public sealed record ClientConfiguration(
     /// </summary>
     internal async Task<WeaviateClient> BuildAsync()
     {
-        var logger = LoggerFactory
-            .Create(builder => builder.AddConsole())
-            .CreateLogger<WeaviateClient>();
+        var factory =
+            LoggerFactory ?? Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance;
+        var logger = factory.CreateLogger<WeaviateClient>();
 
         // Create client - it will initialize itself via PerformInitializationAsync
         var client = new WeaviateClient(this, logger);

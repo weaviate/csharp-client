@@ -47,7 +47,7 @@ public class DefaultTokenServiceFactory : ITokenServiceFactory
 
         if (configuration.Credentials is Auth.BearerTokenCredentials bearerToken)
         {
-            return new OAuthTokenService(httpClient, oauthConfig)
+            return new OAuthTokenService(httpClient, oauthConfig, configuration.LoggerFactory)
             {
                 CurrentToken = new(
                     bearerToken.AccessToken,
@@ -70,7 +70,7 @@ public class DefaultTokenServiceFactory : ITokenServiceFactory
             };
         }
 
-        return new OAuthTokenService(httpClient, oauthConfig);
+        return new OAuthTokenService(httpClient, oauthConfig, configuration.LoggerFactory);
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ public class DefaultTokenServiceFactory : ITokenServiceFactory
                 };
             }
 
-            return new OAuthTokenService(httpClient, oauthConfig);
+            return new OAuthTokenService(httpClient, oauthConfig, configuration.LoggerFactory);
         }
         catch
         {
