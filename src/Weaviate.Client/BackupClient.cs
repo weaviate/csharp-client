@@ -402,7 +402,10 @@ public class BackupClient
             dto.StartedAt,
             dto.CompletedAt,
             dto.Error
-        );
+        )
+        {
+            Size = dto.Size,
+        };
 
     /// <summary>
     /// Returns the model using the specified dto

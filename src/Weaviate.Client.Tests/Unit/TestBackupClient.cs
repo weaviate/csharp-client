@@ -58,6 +58,69 @@ public class TestBackupClient
     }
 
     /// <summary>
+    /// GetStatus should populate Size from the response.
+    /// </summary>
+    [Fact]
+    public async Task GetStatus_SizeIsPopulatedFromResponse()
+    {
+        var json = """
+            {
+                "id": "my-backup",
+                "status": "SUCCESS",
+                "path": "/backups",
+                "backend": "filesystem",
+                "size": 1.5
+            }
+            """;
+
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: _ => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"),
+            }
+        );
+
+        var backup = await client.Backup.GetStatus(
+            new FilesystemBackend("/backups"),
+            "my-backup",
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.Equal(1.5, backup.Size);
+    }
+
+    /// <summary>
+    /// GetStatus should return null Size when the response omits the size field.
+    /// </summary>
+    [Fact]
+    public async Task GetStatus_SizeIsNull_WhenNotInResponse()
+    {
+        var json = """
+            {
+                "id": "my-backup",
+                "status": "STARTED",
+                "backend": "filesystem",
+                "path": "/backups"
+            }
+            """;
+
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: _ => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"),
+            }
+        );
+
+        var backup = await client.Backup.GetStatus(
+            new FilesystemBackend("/backups"),
+            "my-backup",
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.Null(backup.Size);
+    }
+
+    /// <summary>
     /// When a BackupRestoreOperation is cancelled, it must use the restore-specific DELETE endpoint,
     /// not the backup-create cancel endpoint (/v1/backups/{backend}/{id}).
     /// </summary>
