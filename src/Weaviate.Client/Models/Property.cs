@@ -1,6 +1,54 @@
 namespace Weaviate.Client.Models;
 
 /// <summary>
+/// Specifies which inverted index to drop from a collection property.
+/// Used with DELETE /schema/{className}/properties/{propertyName}/index/{indexName}.
+/// </summary>
+public enum PropertyIndexType
+{
+    /// <summary>
+    /// The filterable Roaring Bitmap index (used in <c>where</c> filters).
+    /// </summary>
+    Filterable,
+
+    /// <summary>
+    /// The searchable BM25 / full-text index.
+    /// </summary>
+    Searchable,
+
+    /// <summary>
+    /// The range-based Roaring Bitmap index (used for numeric/date range queries).
+    /// </summary>
+    RangeFilters,
+}
+
+/// <summary>
+/// Extension methods for <see cref="PropertyIndexType"/>.
+/// </summary>
+internal static class PropertyIndexTypeExtensions
+{
+    /// <summary>
+    /// Converts a <see cref="PropertyIndexType"/> to its generated <see cref="Rest.Dto.IndexName"/> counterpart,
+    /// which carries the correct <c>[JsonStringEnumMemberName]</c> API string values.
+    /// </summary>
+    internal static Rest.Dto.IndexName ToDto(this PropertyIndexType indexType) =>
+        indexType switch
+        {
+            PropertyIndexType.Filterable => Rest.Dto.IndexName.Filterable,
+            PropertyIndexType.Searchable => Rest.Dto.IndexName.Searchable,
+            PropertyIndexType.RangeFilters => Rest.Dto.IndexName.RangeFilters,
+            _ => throw new ArgumentOutOfRangeException(nameof(indexType), indexType, null),
+        };
+
+    /// <summary>
+    /// Converts a <see cref="PropertyIndexType"/> to its API path segment string,
+    /// delegating to the generated <see cref="Rest.Dto.IndexName"/> enum for the canonical value.
+    /// </summary>
+    internal static string ToApiString(this PropertyIndexType indexType) =>
+        indexType.ToDto().ToEnumMemberString();
+}
+
+/// <summary>
 /// Specifies the tokenization strategy for a property.
 /// </summary>
 public enum PropertyTokenization

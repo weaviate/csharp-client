@@ -237,7 +237,8 @@ public partial class WeaviateClient : IDisposable
         HttpMessageHandler? httpMessageHandler = null,
         ITokenService? tokenService = null,
         ILogger<WeaviateClient>? logger = null,
-        WeaviateGrpcClient? grpcClient = null
+        WeaviateGrpcClient? grpcClient = null,
+        Models.MetaInfo? meta = null
     )
     {
         var config = configuration ?? DefaultOptions;
@@ -258,6 +259,7 @@ public partial class WeaviateClient : IDisposable
         Configuration = config;
         RestClient = restClient;
         GrpcClient = grpcClientInstance;
+        _metaCache = meta;
 
         Cluster = new ClusterClient(this);
         Collections = new CollectionsClient(this);
@@ -353,8 +355,8 @@ public partial class WeaviateClient : IDisposable
             Modules = metaDto?.Modules?.ToDictionary() ?? [],
         };
 
-        // Log warning if connecting to a server older than 1.31.0
-        var minSupportedVersion = new Version(1, 31, 0);
+        // Log warning if connecting to a server older than 1.32.0
+        var minSupportedVersion = new Version(1, 32, 0);
         if (_metaCache.HasValue && _metaCache.Value.Version < minSupportedVersion)
         {
             _logger.LogWarning(
@@ -409,6 +411,30 @@ public partial class WeaviateClient : IDisposable
         {
             await _initializationTask.Value; // Will throw if initialization failed
         }
+    }
+
+    /// <summary>
+    /// Ensures the connected Weaviate server meets the minimum version declared by the
+    /// <see cref="RequiresWeaviateVersionAttribute"/> on the calling method.
+    /// Does nothing if the method has no attribute or if the server version is unknown.
+    /// </summary>
+    /// <typeparam name="TCallerType">
+    /// The type that declares the calling method. Specify the concrete class explicitly,
+    /// e.g. <c>await _client.EnsureVersion&lt;CollectionConfigClient&gt;();</c>
+    /// </typeparam>
+    /// <param name="operationName">
+    /// Automatically populated by <see cref="System.Runtime.CompilerServices.CallerMemberNameAttribute"/>.
+    /// Do not pass this argument explicitly.
+    /// </param>
+    /// <exception cref="WeaviateVersionMismatchException">
+    /// Thrown when the connected server version is below the required version.
+    /// </exception>
+    internal async Task EnsureVersion<TCallerType>(
+        [System.Runtime.CompilerServices.CallerMemberName] string operationName = ""
+    )
+    {
+        await EnsureInitializedAsync();
+        Internal.VersionGuard.Check<TCallerType>(WeaviateVersion, operationName);
     }
 
     /// <summary>

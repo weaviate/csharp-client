@@ -77,16 +77,23 @@ public partial class BatchTests : IntegrationTests
             properties: [Property.Int("number")]
         );
         int numObjects = 10;
+        // Insert 3 extra "To" objects used exclusively by the second batch so that
+        // the two batches never share a reference target. This avoids false failures
+        // from server-side deduplication of identical (from, property, to) triples
+        // introduced in Weaviate 1.36.
+        int numRefObjects = numObjects + 3;
 
         // Insert objects into the referenced collection and get their UUIDs
         var refInsertResult = await refCollection.Data.InsertMany(
             Enumerable
-                .Range(0, numObjects)
+                .Range(0, numRefObjects)
                 .Select(i => BatchInsertRequest.Create(new { Number = i })),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
         Guid[] uuidsTo = [.. refInsertResult.Select(r => r.UUID!.Value)];
+        // Batch 2 exclusively uses the 3 extra "To" objects (indices 10, 11, 12)
+        Guid[] batch2Targets = [.. uuidsTo.Skip(numObjects).Take(3)];
 
         // Setup main collection ("From") with a reference property
         var collection = await CollectionFactory(
@@ -104,7 +111,7 @@ public partial class BatchTests : IntegrationTests
 
         Guid[] uuidsFrom = [.. fromInsertResult.Select(r => r.UUID!.Value)];
 
-        // First batch: each "From" object references the "To" object with the same index
+        // First batch: each "From" object references the "To" object with the same index (0-9)
         var batchReturn1 = await collection.Data.ReferenceAddMany(
             [
                 .. Enumerable
@@ -115,12 +122,12 @@ public partial class BatchTests : IntegrationTests
         );
         Assert.False(batchReturn1.HasErrors);
 
-        // Second batch: each "From" object references the first 3 "To" objects
+        // Second batch: each "From" object references the 3 extra "To" objects (10, 11, 12)
         var batchReturn2 = await collection.Data.ReferenceAddMany(
             [
                 .. Enumerable
                     .Range(0, numObjects)
-                    .Select(i => new DataReference(uuidsFrom[i], "ref", [.. uuidsTo.Take(3)])),
+                    .Select(i => new DataReference(uuidsFrom[i], "ref", [.. batch2Targets])),
             ],
             TestContext.Current.CancellationToken
         );
@@ -138,21 +145,18 @@ public partial class BatchTests : IntegrationTests
             var num = (long)obj.Properties["num"]!;
             var refObjects = obj.References["ref"];
 
-            // The first reference should match the corresponding "To" object's "number"
-            Assert.Equal(num, (long)refObjects[0].Properties["number"]!);
-            Assert.Contains(refObjects[0].UUID!.Value, uuidsTo);
-
             // There should be 4 references: 1 from the first batch, 3 from the second
             Assert.Equal(4, refObjects.Count);
 
-            // The next 3 references should have "number" properties 0, 1, 2 (order sorted)
-            var refs = refObjects
-                .Skip(1)
-                .Take(3)
+            // Verify the exact set of referenced "number" values regardless of order:
+            // batch 1 contributes the "same-index" To object (number = num),
+            // batch 2 contributes the 3 extra To objects (numbers 10, 11, 12).
+            var refNumbers = refObjects
                 .Select(r => (long)r.Properties["number"]!)
                 .OrderBy(x => x)
                 .ToList();
-            Assert.Equal([0, 1, 2], refs);
+            var expectedNumbers = new[] { num, 10L, 11L, 12L }.OrderBy(x => x).ToList();
+            Assert.Equal(expectedNumbers, refNumbers);
         }
     }
 }

@@ -2793,6 +2793,7 @@ Weaviate.Client.CollectionConfigClient
 Weaviate.Client.CollectionConfigClient.AddProperty(Weaviate.Client.Models.Property! p, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 Weaviate.Client.CollectionConfigClient.AddReference(Weaviate.Client.Models.Reference! referenceProperty, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 Weaviate.Client.CollectionConfigClient.AddVector(Weaviate.Client.Models.VectorConfig! vector, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.CollectionConfigClient.DeletePropertyIndex(string! propertyName, Weaviate.Client.Models.PropertyIndexType indexType, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 Weaviate.Client.CollectionConfigClient.Get(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.CollectionConfigExport!>!
 Weaviate.Client.CollectionConfigClient.GetCachedConfig(Weaviate.Client.Cache.SchemaCache? schemaCache = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.CollectionConfig?>!
 Weaviate.Client.CollectionConfigClient.GetShard(string! shardName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.ShardInfo?>!
@@ -3320,6 +3321,7 @@ Weaviate.Client.Models.BackupsResource.Collection.init -> void
 Weaviate.Client.Models.BackupsResource.Deconstruct(out string? Collection) -> void
 Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Canceled = 6 -> Weaviate.Client.Models.BackupStatus
+Weaviate.Client.Models.BackupStatus.Cancelling = 7 -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Failed = 5 -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Finalizing = 8 -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.BackupStatus.Started = 1 -> Weaviate.Client.Models.BackupStatus
@@ -4820,6 +4822,10 @@ Weaviate.Client.Models.PropertyFilter.IsNull(bool value = true) -> Weaviate.Clie
 Weaviate.Client.Models.PropertyFilter.IsWithinGeoRange(Weaviate.Client.Models.GeoCoordinate! coord, float radius) -> Weaviate.Client.Models.Filter!
 Weaviate.Client.Models.PropertyFilter.IsWithinGeoRange(Weaviate.Client.Models.GeoCoordinateConstraint! value) -> Weaviate.Client.Models.Filter!
 Weaviate.Client.Models.PropertyFilter.PropertyFilter(Weaviate.Client.Models.PropertyFilter! original) -> void
+Weaviate.Client.Models.PropertyIndexType
+Weaviate.Client.Models.PropertyIndexType.Filterable = 0 -> Weaviate.Client.Models.PropertyIndexType
+Weaviate.Client.Models.PropertyIndexType.RangeFilters = 2 -> Weaviate.Client.Models.PropertyIndexType
+Weaviate.Client.Models.PropertyIndexType.Searchable = 1 -> Weaviate.Client.Models.PropertyIndexType
 Weaviate.Client.Models.PropertyTokenization
 Weaviate.Client.Models.PropertyTokenization.Field = 3 -> Weaviate.Client.Models.PropertyTokenization
 Weaviate.Client.Models.PropertyTokenization.Gse = 5 -> Weaviate.Client.Models.PropertyTokenization
@@ -6587,3 +6593,11 @@ Weaviate.Client.WeaviateUnprocessableEntityException.WeaviateUnprocessableEntity
 ~Weaviate.Client.Models.Typed.WeaviateGroup<T, TObject>.WeaviateGroup(Weaviate.Client.Models.Typed.WeaviateGroup<T, TObject>! original) -> void
 ~Weaviate.Client.Models.Typed.WeaviateGroup<T>.WeaviateGroup(Weaviate.Client.Models.Typed.WeaviateGroup<T>! original) -> void
 ~Weaviate.Client.Models.Typed.WeaviateObject<T>.WeaviateObject(Weaviate.Client.Models.Typed.WeaviateObject<T>! original) -> void
+Weaviate.Client.RequiresWeaviateVersionAttribute
+Weaviate.Client.RequiresWeaviateVersionAttribute.MinimumVersion.get -> System.Version!
+Weaviate.Client.RequiresWeaviateVersionAttribute.RequiresWeaviateVersionAttribute(int major, int minor, int patch = 0) -> void
+Weaviate.Client.WeaviateVersionMismatchException
+Weaviate.Client.WeaviateVersionMismatchException.ActualVersion.get -> System.Version!
+Weaviate.Client.WeaviateVersionMismatchException.Operation.get -> string?
+Weaviate.Client.WeaviateVersionMismatchException.RequiredVersion.get -> System.Version!
+Weaviate.Client.WeaviateVersionMismatchException.WeaviateVersionMismatchException(string? operation, System.Version! requiredVersion, System.Version! actualVersion) -> void

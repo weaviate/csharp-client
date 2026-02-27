@@ -1,6 +1,6 @@
 services:
   weaviate-node-1:
-    image: semitechnologies/weaviate:${WEAVIATE_VERSION}
+    image: cr.weaviate.io/semitechnologies/weaviate:${WEAVIATE_VERSION}
     restart: on-failure:0
     ports:
       - "8087:8080"
@@ -32,7 +32,7 @@ services:
       - '8080'
       - --scheme
       - http
-    image: semitechnologies/weaviate:${WEAVIATE_VERSION}
+    image: cr.weaviate.io/semitechnologies/weaviate:${WEAVIATE_VERSION}
     ports:
       - 8088:8080
       - "50059:50051"
@@ -66,7 +66,7 @@ services:
       - '8080'
       - --scheme
       - http
-    image: semitechnologies/weaviate:${WEAVIATE_VERSION}
+    image: cr.weaviate.io/semitechnologies/weaviate:${WEAVIATE_VERSION}
     ports:
       - 8089:8080
       - "50060:50051"

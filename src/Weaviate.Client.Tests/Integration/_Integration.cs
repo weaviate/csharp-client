@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using dotenv.net;
 using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
@@ -398,6 +399,24 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
                     )
                 );
             }
+        }
+    }
+
+    /// <summary>
+    /// Skips the test if the connected server version does not meet the minimum version
+    /// declared by <see cref="RequiresWeaviateVersionAttribute"/> on the specified method.
+    /// </summary>
+    /// <typeparam name="TClient">The client class that declares the method.</typeparam>
+    /// <param name="methodName">The method name (use <c>nameof()</c>).</param>
+    protected void RequireVersion<TClient>(string methodName)
+    {
+        var attr = typeof(TClient)
+            .GetMethod(methodName)
+            ?.GetCustomAttribute<RequiresWeaviateVersionAttribute>();
+
+        if (attr is not null)
+        {
+            RequireVersion(attr.MinimumVersion.ToString());
         }
     }
 }

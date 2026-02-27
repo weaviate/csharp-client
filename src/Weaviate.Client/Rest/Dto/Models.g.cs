@@ -681,6 +681,14 @@ namespace Weaviate.Client.Rest.Dto
         public bool? AsyncEnabled { get; set; } = default!;
 
         /// <summary>
+        /// Configuration parameters for asynchronous replication.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("asyncConfig")]
+
+        public ReplicationAsyncConfig? AsyncConfig { get; set; } = default!;
+
+        /// <summary>
         /// Conflict resolution strategy for deleted objects.
         /// </summary>
 
@@ -1775,6 +1783,14 @@ namespace Weaviate.Client.Rest.Dto
 
         public System.Collections.Generic.IList<NestedProperty>? NestedProperties { get; set; } = default!;
 
+        /// <summary>
+        /// If set to false, allows multiple references to the same target object within this property. Setting it to true will enforce uniqueness of references within this property. By default, this is set to true.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("disableDuplicatedReferences")]
+
+        public bool? DisableDuplicatedReferences { get; set; } = true;
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -2512,6 +2528,126 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("targetNode")]
 
         public string? TargetNode { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Configuration for asynchronous replication.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record ReplicationAsyncConfig
+    {
+        /// <summary>
+        /// Maximum number of async replication workers.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("maxWorkers")]
+
+        public long? MaxWorkers { get; set; } = default!;
+
+        /// <summary>
+        /// Height of the hashtree used for diffing.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("hashtreeHeight")]
+
+        public long? HashtreeHeight { get; set; } = default!;
+
+        /// <summary>
+        /// Base frequency in milliseconds at which async replication runs diff calculations.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("frequency")]
+
+        public long? Frequency { get; set; } = default!;
+
+        /// <summary>
+        /// Frequency in milliseconds at which async replication runs while propagation is active.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("frequencyWhilePropagating")]
+
+        public long? FrequencyWhilePropagating { get; set; } = default!;
+
+        /// <summary>
+        /// Interval in milliseconds at which liveness of target nodes is checked.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("aliveNodesCheckingFrequency")]
+
+        public long? AliveNodesCheckingFrequency { get; set; } = default!;
+
+        /// <summary>
+        /// Interval in seconds at which async replication logs its status.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("loggingFrequency")]
+
+        public long? LoggingFrequency { get; set; } = default!;
+
+        /// <summary>
+        /// Maximum number of object keys included in a single diff batch.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("diffBatchSize")]
+
+        public long? DiffBatchSize { get; set; } = default!;
+
+        /// <summary>
+        /// Timeout in seconds for computing a diff against a single node.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("diffPerNodeTimeout")]
+
+        public long? DiffPerNodeTimeout { get; set; } = default!;
+
+        /// <summary>
+        /// Overall timeout in seconds for the pre-propagation phase.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("prePropagationTimeout")]
+
+        public long? PrePropagationTimeout { get; set; } = default!;
+
+        /// <summary>
+        /// Timeout in seconds for propagating batch of changes to a node.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("propagationTimeout")]
+
+        public long? PropagationTimeout { get; set; } = default!;
+
+        /// <summary>
+        /// Maximum number of objects to propagate in a single async replication run.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("propagationLimit")]
+
+        public long? PropagationLimit { get; set; } = default!;
+
+        /// <summary>
+        /// Delay in milliseconds before newly added or updated objects are propagated.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("propagationDelay")]
+
+        public long? PropagationDelay { get; set; } = default!;
+
+        /// <summary>
+        /// Maximum number of concurrent propagation workers.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("propagationConcurrency")]
+
+        public long? PropagationConcurrency { get; set; } = default!;
+
+        /// <summary>
+        /// Number of objects to include in a single propagation batch.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("propagationBatchSize")]
+
+        public long? PropagationBatchSize { get; set; } = default!;
 
     }
 
@@ -3857,6 +3993,24 @@ namespace Weaviate.Client.Rest.Dto
 
     }
 
+    /// <summary>
+    /// The name of the inverted index to delete from the property.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum IndexName
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"filterable")]
+        Filterable = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"searchable")]
+        Searchable = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeFilters")]
+        RangeFilters = 2,
+
+    }
+
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal partial record Body10
     {
@@ -4624,14 +4778,20 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"TRANSFERRED")]
         TRANSFERRED = 2,
 
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FINALIZING")]
+        FINALIZING = 3,
+
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SUCCESS")]
-        SUCCESS = 3,
+        SUCCESS = 4,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FAILED")]
-        FAILED = 4,
+        FAILED = 5,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELLING")]
+        CANCELLING = 6,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
-        CANCELED = 5,
+        CANCELED = 7,
 
     }
 
@@ -4648,20 +4808,20 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"TRANSFERRED")]
         TRANSFERRED = 2,
 
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FINALIZING")]
+        FINALIZING = 3,
+
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SUCCESS")]
-        SUCCESS = 3,
+        SUCCESS = 4,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FAILED")]
-        FAILED = 4,
+        FAILED = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
-        CANCELED = 5,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"CANCELLING")]
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELLING")]
         CANCELLING = 6,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"FINALIZING")]
-        FINALIZING = 7,
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
+        CANCELED = 7,
 
     }
 
@@ -4729,14 +4889,20 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"TRANSFERRED")]
         TRANSFERRED = 2,
 
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FINALIZING")]
+        FINALIZING = 3,
+
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SUCCESS")]
-        SUCCESS = 3,
+        SUCCESS = 4,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FAILED")]
-        FAILED = 4,
+        FAILED = 5,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELLING")]
+        CANCELLING = 6,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
-        CANCELED = 5,
+        CANCELED = 7,
 
     }
 
@@ -4753,20 +4919,20 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"TRANSFERRED")]
         TRANSFERRED = 2,
 
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FINALIZING")]
+        FINALIZING = 3,
+
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SUCCESS")]
-        SUCCESS = 3,
+        SUCCESS = 4,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FAILED")]
-        FAILED = 4,
+        FAILED = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
-        CANCELED = 5,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"CANCELLING")]
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELLING")]
         CANCELLING = 6,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"FINALIZING")]
-        FINALIZING = 7,
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
+        CANCELED = 7,
 
     }
 
@@ -5116,14 +5282,20 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"TRANSFERRED")]
         TRANSFERRED = 2,
 
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FINALIZING")]
+        FINALIZING = 3,
+
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SUCCESS")]
-        SUCCESS = 3,
+        SUCCESS = 4,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FAILED")]
-        FAILED = 4,
+        FAILED = 5,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELLING")]
+        CANCELLING = 6,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
-        CANCELED = 5,
+        CANCELED = 7,
 
     }
 

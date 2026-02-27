@@ -81,6 +81,33 @@ public class CollectionConfigClient
         );
     }
 
+    /// <summary>
+    /// Drops a specific inverted index from a property in this collection.
+    /// Requires Weaviate server version 1.36.0 or later.
+    /// </summary>
+    /// <param name="propertyName">The name of the property whose index should be dropped.</param>
+    /// <param name="indexType">The type of index to drop.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="WeaviateVersionMismatchException">
+    /// Thrown when the connected server version is below 1.36.0.
+    /// </exception>
+    [RequiresWeaviateVersion(1, 36, 0)]
+    public async Task DeletePropertyIndex(
+        string propertyName,
+        PropertyIndexType indexType,
+        CancellationToken cancellationToken = default
+    )
+    {
+        await _client.EnsureVersion<CollectionConfigClient>();
+
+        await _client.RestClient.CollectionDeletePropertyIndex(
+            _collectionName,
+            propertyName,
+            indexType.ToDto(),
+            cancellationToken
+        );
+    }
+
     // Add new named vectors
     /// <summary>
     /// Adds a new named vector to the collection.
