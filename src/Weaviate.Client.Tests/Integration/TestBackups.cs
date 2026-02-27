@@ -486,6 +486,9 @@ public class TestBackups : IntegrationTests
         Assert.Equal(BackupStatus.Success, create.Status);
 
         // Attempt to restore while collection still exists should fail
+        // In v1.36.0, the behavior changed: the restore endpoint returns HTTP 200 OK,
+        // but the async operation completes with status FAILED and an error message:
+        // "could not restore classes: [...: error when trying to restore class: class name ... already exists]"
         var restoreResp = await _weaviate.Backup.RestoreSync(
             new BackupRestoreRequest(
                 backupId,
@@ -494,7 +497,11 @@ public class TestBackups : IntegrationTests
             ),
             cancellationToken: TestContext.Current.CancellationToken
         );
+
+        // Verify the operation failed with the expected error
+        Assert.Equal(BackupStatus.Failed, restoreResp.Status);
         Assert.NotNull(restoreResp.Error);
+        Assert.Contains("already exists", restoreResp.Error);
     }
 
     /// <summary>
