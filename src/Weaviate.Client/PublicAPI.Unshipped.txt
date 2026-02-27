@@ -3243,6 +3243,8 @@ Weaviate.Client.Models.Backup.Id.get -> string!
 Weaviate.Client.Models.Backup.Id.init -> void
 Weaviate.Client.Models.Backup.StartedAt.get -> System.DateTimeOffset?
 Weaviate.Client.Models.Backup.StartedAt.init -> void
+Weaviate.Client.Models.Backup.Size.get -> double?
+Weaviate.Client.Models.Backup.Size.init -> void
 Weaviate.Client.Models.Backup.Status.get -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.Backup.StatusRaw.get -> string!
 Weaviate.Client.Models.Backup.StatusRaw.init -> void
