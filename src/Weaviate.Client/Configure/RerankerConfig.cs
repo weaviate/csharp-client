@@ -26,9 +26,11 @@ public class RerankerConfigFactory
     /// <summary>
     /// Creates a reranker configuration for Cohere.
     /// </summary>
+    /// <param name="baseURL">The base URL for the Cohere API.</param>
     /// <param name="model">The model to use.</param>
     /// <returns>A new <see cref="IRerankerConfig"/> instance configured for Cohere.</returns>
-    public IRerankerConfig Cohere(string? model = null) => new Reranker.Cohere { Model = model };
+    public IRerankerConfig Cohere(string? baseURL = null, string? model = null) =>
+        new Reranker.Cohere { BaseURL = baseURL, Model = model };
 
     /// <summary>
     /// Creates a reranker configuration for ContextualAI.

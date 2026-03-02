@@ -5007,6 +5007,8 @@ Weaviate.Client.Models.Rerank.Rerank() -> void
 Weaviate.Client.Models.Rerank.Rerank(Weaviate.Client.Models.Rerank! original) -> void
 Weaviate.Client.Models.Reranker
 Weaviate.Client.Models.Reranker.Cohere
+Weaviate.Client.Models.Reranker.Cohere.BaseURL.get -> string?
+Weaviate.Client.Models.Reranker.Cohere.BaseURL.set -> void
 Weaviate.Client.Models.Reranker.Cohere.Cohere(Weaviate.Client.Models.Reranker.Cohere! original) -> void
 Weaviate.Client.Models.Reranker.Cohere.Model.get -> string?
 Weaviate.Client.Models.Reranker.Cohere.Model.set -> void
@@ -6133,7 +6135,7 @@ Weaviate.Client.ReplicationsClient.Get(System.Guid id, bool includeHistory = fal
 Weaviate.Client.ReplicationsClient.List(string? collection = null, string? shard = null, string? targetNode = null, bool includeHistory = false, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<Weaviate.Client.Models.ReplicationOperation!>!>!
 Weaviate.Client.ReplicationsClient.ListAll(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<Weaviate.Client.Models.ReplicationOperation!>!>!
 Weaviate.Client.RerankerConfigFactory
-Weaviate.Client.RerankerConfigFactory.Cohere(string? model = null) -> Weaviate.Client.Models.IRerankerConfig!
+Weaviate.Client.RerankerConfigFactory.Cohere(string? baseURL = null, string? model = null) -> Weaviate.Client.Models.IRerankerConfig!
 Weaviate.Client.RerankerConfigFactory.ContextualAI(string? model = null, string? instruction = null, int? topN = null) -> Weaviate.Client.Models.IRerankerConfig!
 Weaviate.Client.RerankerConfigFactory.Custom(string! type, object? config = null) -> Weaviate.Client.Models.IRerankerConfig!
 Weaviate.Client.RerankerConfigFactory.JinaAI(string? model = null) -> Weaviate.Client.Models.IRerankerConfig!
