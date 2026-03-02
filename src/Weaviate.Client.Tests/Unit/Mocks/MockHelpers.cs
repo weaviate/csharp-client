@@ -16,13 +16,16 @@ public static class MockWeaviateClient
     /// Order of precedence for handler selection: handlerWithToken -> asyncHandler -> syncHandler -> meta auto handler.
     /// If autoMeta=true and a custom handler is provided, meta responses are injected when the custom handler returns null for /v1/meta.
     /// </summary>
+    /// <param name="serverVersion">Optional server version to pre-populate in the client's meta cache.
+    /// Use this to test version-gated features without needing a real Weaviate server.</param>
     public static (WeaviateClient Client, MockHttpMessageHandler Handler) CreateWithMockHandler(
         Func<MockHttpMessageHandler, HttpMessageHandler>? handlerChainFactory = null,
         bool autoMeta = true,
         Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>? handlerWithToken =
             null,
         Func<HttpRequestMessage, Task<HttpResponseMessage>>? asyncHandler = null,
-        Func<HttpRequestMessage, HttpResponseMessage>? syncHandler = null
+        Func<HttpRequestMessage, HttpResponseMessage>? syncHandler = null,
+        string? serverVersion = null
     )
     {
         var leaf = new MockHttpMessageHandler();
@@ -87,7 +90,19 @@ public static class MockWeaviateClient
         var topHandler = handlerChainFactory != null ? handlerChainFactory(leaf) : leaf;
         var channel = NoOpGrpcChannel.Create();
         var grpcClient = new Grpc.WeaviateGrpcClient(channel);
-        var client = new WeaviateClient(httpMessageHandler: topHandler, grpcClient: grpcClient);
+        Models.MetaInfo? meta = serverVersion is not null
+            ? new Models.MetaInfo
+            {
+                Hostname = "localhost",
+                Version = Models.MetaInfo.ParseWeaviateVersion(serverVersion) ?? new Version(0, 0),
+                Modules = new Dictionary<string, object>(),
+            }
+            : null;
+        var client = new WeaviateClient(
+            httpMessageHandler: topHandler,
+            grpcClient: grpcClient,
+            meta: meta
+        );
         return (client, leaf);
     }
 

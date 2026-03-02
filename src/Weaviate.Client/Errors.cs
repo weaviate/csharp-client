@@ -132,6 +132,81 @@ public class WeaviateTimeoutException : WeaviateClientException
 }
 
 /// <summary>
+/// Marks a method as requiring a minimum Weaviate server version.
+/// Used by <see cref="WeaviateClient.EnsureVersion"/> at runtime and by integration test helpers
+/// to automatically determine which server version a test requires.
+/// </summary>
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+public sealed class RequiresWeaviateVersionAttribute : Attribute
+{
+    /// <summary>
+    /// Gets the minimum required server version.
+    /// </summary>
+    public Version MinimumVersion { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RequiresWeaviateVersionAttribute"/> class.
+    /// </summary>
+    /// <param name="major">Major version component.</param>
+    /// <param name="minor">Minor version component.</param>
+    /// <param name="patch">Patch version component.</param>
+    public RequiresWeaviateVersionAttribute(int major, int minor, int patch = 0)
+    {
+        MinimumVersion = new Version(major, minor, patch);
+    }
+}
+
+/// <summary>
+/// Exception thrown when an operation requires a minimum Weaviate server version that is not met.
+/// This indicates the connected Weaviate server is too old to support the requested feature.
+/// </summary>
+public class WeaviateVersionMismatchException : WeaviateClientException
+{
+    /// <summary>
+    /// Gets the minimum server version required by the operation.
+    /// </summary>
+    public Version RequiredVersion { get; }
+
+    /// <summary>
+    /// Gets the actual server version that was connected.
+    /// </summary>
+    public Version ActualVersion { get; }
+
+    /// <summary>
+    /// Gets the name of the operation that requires the higher version.
+    /// </summary>
+    public string? Operation { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeaviateVersionMismatchException"/> class.
+    /// </summary>
+    /// <param name="operation">The name of the operation that requires a higher version.</param>
+    /// <param name="requiredVersion">The minimum server version required.</param>
+    /// <param name="actualVersion">The actual server version connected.</param>
+    public WeaviateVersionMismatchException(
+        string? operation,
+        Version requiredVersion,
+        Version actualVersion
+    )
+        : base(BuildMessage(operation, requiredVersion, actualVersion))
+    {
+        Operation = operation;
+        RequiredVersion = requiredVersion;
+        ActualVersion = actualVersion;
+    }
+
+    private static string BuildMessage(
+        string? operation,
+        Version requiredVersion,
+        Version actualVersion
+    )
+    {
+        var prefix = string.IsNullOrEmpty(operation) ? "This operation" : operation;
+        return $"{prefix} requires Weaviate server version {requiredVersion} or later, but connected server is version {actualVersion}.";
+    }
+}
+
+/// <summary>
 /// The weaviate server exception class
 /// </summary>
 /// <seealso cref="WeaviateException"/>

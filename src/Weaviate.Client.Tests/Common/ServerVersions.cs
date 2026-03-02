@@ -9,5 +9,5 @@ internal static class ServerVersions
     /// Minimum Weaviate server version officially supported by this C# client for integration scenarios.
     /// Tests will skip if the running server reports a lower version.
     /// </summary>
-    public const string MinSupported = "1.31.0";
+    public const string MinSupported = "1.32.0";
 }

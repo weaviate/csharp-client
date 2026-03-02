@@ -248,6 +248,35 @@ internal partial class WeaviateRestClient
     }
 
     /// <summary>
+    /// Drops a specific inverted index from a collection property.
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="propertyName">The property name</param>
+    /// <param name="indexName">The index to drop</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    internal async Task CollectionDeletePropertyIndex(
+        string collectionName,
+        string propertyName,
+        Dto.IndexName indexName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var path = WeaviateEndpoints.CollectionPropertyIndex(
+            collectionName,
+            propertyName,
+            indexName.ToEnumMemberString()
+        );
+
+        var response = await _httpClient.DeleteAsync(path, cancellationToken);
+
+        await response.ManageStatusCode(
+            [HttpStatusCode.OK],
+            "collection property index delete",
+            ResourceType.Collection
+        );
+    }
+
+    /// <summary>
     /// Collections the exists using the specified collection name
     /// </summary>
     /// <param name="collectionName">The collection name</param>
