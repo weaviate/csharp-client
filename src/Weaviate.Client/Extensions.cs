@@ -651,18 +651,22 @@ public static class WeaviateExtensions
             return vector.ToMultiDimensionalByteString();
         }
 
-        // Use Match pattern to access internal vector data and convert to ByteString
+        // Use Match pattern to access internal vector data and convert to ByteString.
+        // The Weaviate gRPC protocol only supports fp32 (SingleFp32 / MultiFp32), so all
+        // numeric types must be converted to float before byte serialization. Sending raw
+        // double bytes (8 bytes each) while declaring type=SingleFp32 (4 bytes each) would
+        // cause the server to interpret 1536 doubles as 3072 floats with garbled NaN values.
         return vector.Match(data =>
             data switch
             {
                 VectorSingle<float> v => ToByteString<float>(v.Values),
-                VectorSingle<double> v => ToByteString<double>(v.Values),
-                VectorSingle<int> v => ToByteString<int>(v.Values),
-                VectorSingle<long> v => ToByteString<long>(v.Values),
-                VectorSingle<short> v => ToByteString<short>(v.Values),
-                VectorSingle<byte> v => ToByteString<byte>(v.Values),
-                VectorSingle<bool> v => ToByteString<bool>(v.Values),
-                VectorSingle<decimal> v => ToByteString<decimal>(v.Values),
+                VectorSingle<double> v => ToByteString<float>(v.Values.Select(x => (float)x)),
+                VectorSingle<int> v => ToByteString<float>(v.Values.Select(x => (float)x)),
+                VectorSingle<long> v => ToByteString<float>(v.Values.Select(x => (float)x)),
+                VectorSingle<short> v => ToByteString<float>(v.Values.Select(x => (float)x)),
+                VectorSingle<byte> v => ToByteString<float>(v.Values.Select(x => (float)x)),
+                VectorSingle<bool> v => ToByteString<float>(v.Values.Select(x => x ? 1f : 0f)),
+                VectorSingle<decimal> v => ToByteString<float>(v.Values.Select(x => (float)x)),
                 _ => throw new NotSupportedException(
                     $"The type '{vector.ValueType.FullName}' is not supported by ToByteString."
                 ),
@@ -704,37 +708,37 @@ public static class WeaviateExtensions
                 case VectorMulti<double> v:
                     foreach (var row in v)
                     foreach (var item in row)
-                        writer.Write(item);
+                        writer.Write((float)item);
                     break;
                 case VectorMulti<int> v:
                     foreach (var row in v)
                     foreach (var item in row)
-                        writer.Write(item);
+                        writer.Write((float)item);
                     break;
                 case VectorMulti<long> v:
                     foreach (var row in v)
                     foreach (var item in row)
-                        writer.Write(item);
+                        writer.Write((float)item);
                     break;
                 case VectorMulti<short> v:
                     foreach (var row in v)
                     foreach (var item in row)
-                        writer.Write(item);
+                        writer.Write((float)item);
                     break;
                 case VectorMulti<byte> v:
                     foreach (var row in v)
                     foreach (var item in row)
-                        writer.Write(item);
+                        writer.Write((float)item);
                     break;
                 case VectorMulti<bool> v:
                     foreach (var row in v)
                     foreach (var item in row)
-                        writer.Write(item);
+                        writer.Write(item ? 1f : 0f);
                     break;
                 case VectorMulti<decimal> v:
                     foreach (var row in v)
                     foreach (var item in row)
-                        writer.Write((double)item); // BinaryWriter does not support decimal
+                        writer.Write((float)item);
                     break;
                 default:
                     throw new NotSupportedException(

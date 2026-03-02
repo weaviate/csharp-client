@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
@@ -425,6 +426,76 @@ public class VectorDataTests
 
         // Act & Assert
         Assert.Equal(vectors1, vectors2);
+    }
+
+    #endregion
+
+    #region ToByteString Serialization Tests
+
+    [Fact]
+    public void ToByteString_WithDoubleVector_ProducesFloat32Bytes()
+    {
+        // Arrange
+        Vector v = new double[] { 1.0, 2.0, 3.0 };
+
+        // Act
+        var bytes = v.ToByteString();
+
+        // Assert: 3 elements × 4 bytes (float32) = 12, not 3 × 8 (double) = 24
+        Assert.Equal(3 * sizeof(float), bytes.Length);
+    }
+
+    [Fact]
+    public void ToByteString_WithDoubleVector_ConvertsValuesToFloat32()
+    {
+        // Arrange
+        Vector v = new double[] { 1.5, 2.5, 3.5 };
+
+        // Act
+        var bytes = v.ToByteString();
+        var floats = MemoryMarshal.Cast<byte, float>(bytes.Span).ToArray();
+
+        // Assert: values round-trip correctly within float precision
+        Assert.Equal(new float[] { 1.5f, 2.5f, 3.5f }, floats);
+    }
+
+    [Fact]
+    public void ToByteString_WithLongVector_ProducesFloat32Bytes()
+    {
+        // Arrange
+        Vector v = new long[] { 1L, 2L, 3L };
+
+        // Act
+        var bytes = v.ToByteString();
+
+        // Assert: 3 elements × 4 bytes (float32) = 12
+        Assert.Equal(3 * sizeof(float), bytes.Length);
+    }
+
+    [Fact]
+    public void ToByteString_WithIntVector_ProducesFloat32Bytes()
+    {
+        // Arrange
+        Vector v = new int[] { 1, 2, 3, 4 };
+
+        // Act
+        var bytes = v.ToByteString();
+
+        // Assert: 4 elements × 4 bytes (float32) = 16
+        Assert.Equal(4 * sizeof(float), bytes.Length);
+    }
+
+    [Fact]
+    public void ToByteString_WithFloatVector_ProducesFloat32Bytes()
+    {
+        // Arrange - float[] is the canonical case, should still work
+        Vector v = new float[] { 1.0f, 2.0f, 3.0f };
+
+        // Act
+        var bytes = v.ToByteString();
+
+        // Assert: 3 elements × 4 bytes (float32) = 12
+        Assert.Equal(3 * sizeof(float), bytes.Length);
     }
 
     #endregion
