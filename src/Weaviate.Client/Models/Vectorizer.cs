@@ -500,6 +500,36 @@ public static class Vectorizer
     }
 
     /// <summary>
+    /// The configuration for multi-media multi-vector vectorization using the Weaviate module.
+    /// Accepts only image fields. See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2multivec-weaviate", VectorType.MultiVector)]
+    public record Multi2MultiVecWeaviate : VectorizerConfig
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Multi2MultiVecWeaviate"/> class
+        /// </summary>
+        [JsonConstructor]
+        internal Multi2MultiVecWeaviate() { }
+
+        /// <summary>
+        /// Gets or sets the value of the base url
+        /// </summary>
+        [JsonPropertyName("baseUrl")]
+        public string? BaseURL { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the model
+        /// </summary>
+        public string? Model { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the image fields for vectorization
+        /// </summary>
+        public string[]? ImageFields { get; set; } = null;
+    }
+
+    /// <summary>
     /// The configuration for multi-media vectorization using the VoyageAI module.
     /// See the documentation for detailed usage.
     /// </summary>
