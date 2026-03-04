@@ -199,4 +199,69 @@ public partial class VectorIndexConfigTests
         Assert.Equal(8, rq.Bits);
         Assert.Equal(20, rq.RescoreLimit);
     }
+
+    /// <summary>
+    /// Tests that vector index config hfresh preserves multi vector config through serialization
+    /// </summary>
+    [Fact]
+    public void VectorIndexConfig_HFresh_With_MultiVector_Roundtrip()
+    {
+        var original = new VectorIndex.HFresh
+        {
+            Distance = VectorIndexConfig.VectorDistance.Cosine,
+            MultiVector = new VectorIndexConfig.MultiVectorConfig { Aggregation = "maxSim" },
+        };
+
+        var json = VectorIndexSerialization.SerializeHFresh(original);
+        var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(
+            json,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+        var roundtripped = (VectorIndex.HFresh?)VectorIndexSerialization.Factory("hfresh", dict);
+
+        Assert.NotNull(roundtripped);
+        Assert.NotNull(roundtripped?.MultiVector);
+        Assert.Equal("maxSim", roundtripped?.MultiVector?.Aggregation);
+    }
+
+    /// <summary>
+    /// Tests that vector index config hfresh throws when serializing with BQ quantizer
+    /// </summary>
+    [Fact]
+    public void VectorIndexConfig_HFresh_With_BQ_Quantizer_Throws()
+    {
+        var hfresh = new VectorIndex.HFresh { Quantizer = new VectorIndex.Quantizers.BQ() };
+
+        var ex = Assert.Throws<WeaviateClientException>(() =>
+            VectorIndexSerialization.SerializeHFresh(hfresh)
+        );
+        Assert.Contains("HFresh only supports RQ", ex.Message);
+    }
+
+    /// <summary>
+    /// Tests that vector index config hfresh deserializes from json with named vector fields
+    /// </summary>
+    [Fact]
+    public void VectorIndexConfig_HFresh_From_Json_With_NamedVector()
+    {
+        var json =
+            @"{ ""distance"": ""dot"", ""maxPostingSizeKB"": 128, ""replicas"": 2, ""searchProbe"": 32, ""rq"": { ""enabled"": true, ""bits"": 8, ""rescoreLimit"": 50, ""trainingLimit"": 100000 } }";
+
+        var config = JsonSerializer.Deserialize<Dictionary<string, object>>(
+            json,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        var hfresh = (VectorIndex.HFresh?)VectorIndexSerialization.Factory("hfresh", config);
+
+        Assert.NotNull(hfresh);
+        Assert.Equal(VectorIndexConfig.VectorDistance.Dot, hfresh?.Distance);
+        Assert.Equal(128, hfresh?.MaxPostingSizeKb);
+        Assert.Equal(2, hfresh?.Replicas);
+        Assert.Equal(32, hfresh?.SearchProbe);
+        Assert.NotNull(hfresh?.Quantizer);
+        var rq = Assert.IsType<VectorIndex.Quantizers.RQ>(hfresh?.Quantizer);
+        Assert.Equal(8, rq.Bits);
+        Assert.Equal(50, rq.RescoreLimit);
+    }
 }
