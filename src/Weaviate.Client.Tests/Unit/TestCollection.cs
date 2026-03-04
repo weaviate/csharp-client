@@ -680,4 +680,73 @@ public class CollectionTests
 
         Assert.Null(dto.ReplicationConfig?.AsyncConfig);
     }
+
+    /// <summary>
+    /// Tests that DTO with all AsyncConfig fields set round-trips back to the model correctly.
+    /// </summary>
+    [Fact]
+    public void ReplicationConfig_WithAsyncConfig_RoundTripsAllFieldsFromDto()
+    {
+        var dtoAsyncConfig = new Rest.Dto.ReplicationAsyncConfig
+        {
+            MaxWorkers = 1,
+            HashtreeHeight = 2,
+            Frequency = 3,
+            FrequencyWhilePropagating = 4,
+            AliveNodesCheckingFrequency = 5,
+            LoggingFrequency = 6,
+            DiffBatchSize = 7,
+            DiffPerNodeTimeout = 8,
+            PrePropagationTimeout = 9,
+            PropagationTimeout = 10,
+            PropagationLimit = 11,
+            PropagationDelay = 12,
+            PropagationConcurrency = 13,
+            PropagationBatchSize = 14,
+        };
+
+        var dto = new Rest.Dto.Class
+        {
+            Class1 = "TestCollection",
+            ReplicationConfig = new Rest.Dto.ReplicationConfig { AsyncConfig = dtoAsyncConfig },
+        };
+
+        var model = dto.ToModel();
+
+        Assert.NotNull(model.ReplicationConfig?.AsyncConfig);
+        var ac = model.ReplicationConfig!.AsyncConfig!;
+        Assert.Equal(1, ac.MaxWorkers);
+        Assert.Equal(2, ac.HashtreeHeight);
+        Assert.Equal(3, ac.Frequency);
+        Assert.Equal(4, ac.FrequencyWhilePropagating);
+        Assert.Equal(5, ac.AliveNodesCheckingFrequency);
+        Assert.Equal(6, ac.LoggingFrequency);
+        Assert.Equal(7, ac.DiffBatchSize);
+        Assert.Equal(8, ac.DiffPerNodeTimeout);
+        Assert.Equal(9, ac.PrePropagationTimeout);
+        Assert.Equal(10, ac.PropagationTimeout);
+        Assert.Equal(11, ac.PropagationLimit);
+        Assert.Equal(12, ac.PropagationDelay);
+        Assert.Equal(13, ac.PropagationConcurrency);
+        Assert.Equal(14, ac.PropagationBatchSize);
+    }
+
+    /// <summary>
+    /// Tests that ReplicationConfigUpdate forwards AsyncConfig get/set to the wrapped ReplicationConfig.
+    /// </summary>
+    [Fact]
+    public void ReplicationConfigUpdate_AsyncConfig_ForwardsToWrappedConfig()
+    {
+        var replicationConfig = new ReplicationConfig { AsyncConfig = null };
+        var update = new ReplicationConfigUpdate(replicationConfig);
+
+        Assert.Null(update.AsyncConfig);
+
+        update.AsyncConfig = new ReplicationAsyncConfig { MaxWorkers = 42 };
+
+        Assert.NotNull(update.AsyncConfig);
+        Assert.Equal(42, update.AsyncConfig!.MaxWorkers);
+        Assert.NotNull(replicationConfig.AsyncConfig);
+        Assert.Equal(42, replicationConfig.AsyncConfig!.MaxWorkers);
+    }
 }
