@@ -180,4 +180,40 @@ public class TestBackupClient
         Assert.NotNull(deleteRequest);
         Assert.Contains("/restore", deleteRequest!.RequestUri!.PathAndQuery);
     }
+
+    /// <summary>
+    /// GetStatus should correctly deserialize the new CANCELLING and FINALIZING status values.
+    /// </summary>
+    [Theory]
+    [InlineData("CANCELLING", BackupStatus.Cancelling)]
+    [InlineData("FINALIZING", BackupStatus.Finalizing)]
+    public async Task GetStatus_DeserializesCancellingAndFinalizingStatuses(
+        string statusString,
+        BackupStatus expected
+    )
+    {
+        var json = $$"""
+            {
+                "id": "my-backup",
+                "status": "{{statusString}}",
+                "path": "/backups",
+                "backend": "filesystem"
+            }
+            """;
+
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: _ => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"),
+            }
+        );
+
+        var backup = await client.Backup.GetStatus(
+            new FilesystemBackend("/backups"),
+            "my-backup",
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.Equal(expected, backup.Status);
+    }
 }
