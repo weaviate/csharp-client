@@ -4,9 +4,6 @@
 
 Welcome to the official C# client for Weaviate, the open-source vector database. This library provides a convenient and idiomatic way for .NET developers to interact with a Weaviate instance.
 
-> [!WARNING]  
-> This client is a **beta release and under active development**. We welcome your [feedback](#-feedback) and contributions!
-
 ---
 
 ## 🚀 Installation
@@ -31,7 +28,7 @@ Alternatively, you can add the `PackageReference` to your `.csproj` file:
 
 The best way to get started is by following our quickstart guide. It will walk you through setting up the client, connecting to Weaviate, creating a collection, and performing your first vector search.
 
-- **[➡️ Quickstart Guide](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/quickstart)**
+- **[➡️ Quickstart Guide](https://docs.weaviate.io/weaviate/quickstart)**
 
 
 ### Quickstart example
@@ -81,11 +78,11 @@ foreach (var obj in response.Objects)
 
 For more detailed information on specific features, please refer to the official documentation and the how-to guides.
 
-- **[Client library overview](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/client-libraries/csharp)**
-- **[How-to: Configure the client](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/configuration)**
-- **[How-to: Manage collections](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/manage-collections)**
-- **[How-to: Manage data objects](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/manage-objects)**
-- **[How-to: Query & search data](https://client-libraries-beta--docs-weaviate-io.netlify.app/weaviate/search)**
+- **[Client library overview](https://docs.weaviate.io/weaviate/client-libraries/csharp)**
+- **[How-to: Configure the client](https://docs.weaviate.io/weaviate/configuration)**
+- **[How-to: Manage collections](https://docs.weaviate.io/weaviate/manage-collections)**
+- **[How-to: Manage data objects](https://docs.weaviate.io/weaviate/manage-objects)**
+- **[How-to: Query & search data](https://docs.weaviate.io/weaviate/search)**
 
 ### Additional Guides
 
@@ -97,16 +94,11 @@ For more detailed information on specific features, please refer to the official
 
 ---
 
-## 💬 Feedback
-
-We would love to hear your feedback! For specific feature requests, bug reports, or issues with the client, please [open an issue](https://github.com/weaviate/csharp-client/issues) on this repository or reach out to us directly at **devex@weaviate.io**.
-
----
-
 ## 🤝 Community
 
-Connect with the Weaviate community and the team through our online channels.
+Connect with the Weaviate community and the team through our online channels. We would love to hear your feedback!
 
+- **[GitHub Issues](https://github.com/weaviate/csharp-client/issues)**: For specific feature requests, bug reports, or issues with the client.
 - **[Weaviate Forum](https://forum.weaviate.io/)**: For questions and discussions.
 - **[Weaviate Slack](https://weaviate.io/slack)**: For live chats with the community and team.
 

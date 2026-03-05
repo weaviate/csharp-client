@@ -403,6 +403,56 @@ public static class Vectorizer
     }
 
     /// <summary>
+    /// The configuration for multi-media vectorization using the Google Gemini module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2vec-google-gemini")]
+    public record Multi2VecGoogleGemini : VectorizerConfig
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Multi2VecGoogleGemini"/> class
+        /// </summary>
+        [JsonConstructor]
+        internal Multi2VecGoogleGemini() { }
+
+        /// <summary>
+        /// Gets or sets the value of the api endpoint
+        /// </summary>
+        public string? ApiEndpoint { get; set; } = "generativelanguage.googleapis.com";
+
+        /// <summary>
+        /// Gets or sets the value of the image fields
+        /// </summary>
+        public string[]? ImageFields { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the text fields
+        /// </summary>
+        public string[]? TextFields { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the video fields
+        /// </summary>
+        public string[]? VideoFields { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the video interval seconds
+        /// </summary>
+        public int? VideoIntervalSeconds { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the model
+        /// </summary>
+        [JsonPropertyName("modelId")]
+        public string? Model { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the weights
+        /// </summary>
+        internal VectorizerWeights? Weights { get; set; } = null;
+    }
+
+    /// <summary>
     /// The configuration for multi-media vectorization using the Jina module.
     /// See the documentation for detailed usage.
     /// </summary>
