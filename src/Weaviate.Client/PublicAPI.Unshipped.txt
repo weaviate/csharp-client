@@ -6641,6 +6641,50 @@ Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.Model.get -> string?
 Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.Model.set -> void
 Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate.Multi2MultiVecWeaviate(Weaviate.Client.Models.Vectorizer.Multi2MultiVecWeaviate! original) -> void
 Weaviate.Client.VectorizerFactoryMulti.Multi2MultiVecWeaviate(string![]? imageFields = null, string? baseURL = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.Models.ReplicationAsyncConfig
+Weaviate.Client.Models.ReplicationAsyncConfig.AliveNodesCheckingFrequency.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.AliveNodesCheckingFrequency.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.DiffBatchSize.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.DiffBatchSize.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.DiffPerNodeTimeout.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.DiffPerNodeTimeout.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.Frequency.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.Frequency.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.FrequencyWhilePropagating.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.FrequencyWhilePropagating.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.HashtreeHeight.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.HashtreeHeight.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.LoggingFrequency.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.LoggingFrequency.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.MaxWorkers.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.MaxWorkers.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.PrePropagationTimeout.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.PrePropagationTimeout.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.PropagationBatchSize.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.PropagationBatchSize.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.PropagationConcurrency.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.PropagationConcurrency.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.PropagationDelay.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.PropagationDelay.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.PropagationLimit.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.PropagationLimit.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.PropagationTimeout.get -> long?
+Weaviate.Client.Models.ReplicationAsyncConfig.PropagationTimeout.set -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.ReplicationAsyncConfig() -> void
+Weaviate.Client.Models.ReplicationAsyncConfig.ReplicationAsyncConfig(Weaviate.Client.Models.ReplicationAsyncConfig! original) -> void
+Weaviate.Client.Models.ReplicationConfig.AsyncConfig.get -> Weaviate.Client.Models.ReplicationAsyncConfig?
+Weaviate.Client.Models.ReplicationConfig.AsyncConfig.set -> void
+Weaviate.Client.Models.ReplicationConfigUpdate.AsyncConfig.get -> Weaviate.Client.Models.ReplicationAsyncConfig?
+Weaviate.Client.Models.ReplicationConfigUpdate.AsyncConfig.set -> void
+override Weaviate.Client.Models.ReplicationAsyncConfig.Equals(object? obj) -> bool
+override Weaviate.Client.Models.ReplicationAsyncConfig.GetHashCode() -> int
+override Weaviate.Client.Models.ReplicationAsyncConfig.ToString() -> string!
+static Weaviate.Client.Models.ReplicationAsyncConfig.operator !=(Weaviate.Client.Models.ReplicationAsyncConfig? left, Weaviate.Client.Models.ReplicationAsyncConfig? right) -> bool
+static Weaviate.Client.Models.ReplicationAsyncConfig.operator ==(Weaviate.Client.Models.ReplicationAsyncConfig? left, Weaviate.Client.Models.ReplicationAsyncConfig? right) -> bool
+virtual Weaviate.Client.Models.ReplicationAsyncConfig.<Clone>$() -> Weaviate.Client.Models.ReplicationAsyncConfig!
+virtual Weaviate.Client.Models.ReplicationAsyncConfig.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.ReplicationAsyncConfig.Equals(Weaviate.Client.Models.ReplicationAsyncConfig? other) -> bool
+virtual Weaviate.Client.Models.ReplicationAsyncConfig.PrintMembers(System.Text.StringBuilder! builder) -> bool
 Weaviate.Client.RequiresWeaviateVersionAttribute
 Weaviate.Client.RequiresWeaviateVersionAttribute.MinimumVersion.get -> System.Version!
 Weaviate.Client.RequiresWeaviateVersionAttribute.RequiresWeaviateVersionAttribute(int major, int minor, int patch = 0) -> void

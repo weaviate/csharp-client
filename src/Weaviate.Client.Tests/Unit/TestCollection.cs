@@ -582,4 +582,171 @@ public class CollectionTests
         Assert.Equal(export.References, result.References);
         Assert.Equal(export.VectorConfig, result.VectorConfig);
     }
+
+    /// <summary>
+    /// Tests that ReplicationConfig with AsyncConfig maps all fields to the DTO.
+    /// </summary>
+    [Fact]
+    public void ReplicationConfig_WithAsyncConfig_MapsToDto()
+    {
+        var asyncConfig = new ReplicationAsyncConfig
+        {
+            MaxWorkers = 4,
+            HashtreeHeight = 16,
+            Frequency = 1000,
+            FrequencyWhilePropagating = 500,
+            AliveNodesCheckingFrequency = 30000,
+            LoggingFrequency = 60,
+            DiffBatchSize = 100,
+            DiffPerNodeTimeout = 30,
+            PrePropagationTimeout = 120,
+            PropagationTimeout = 60,
+            PropagationLimit = 10000,
+            PropagationDelay = 5000,
+            PropagationConcurrency = 2,
+            PropagationBatchSize = 50,
+        };
+
+        var collection = new CollectionConfig
+        {
+            Name = "TestCollection",
+            ReplicationConfig = new ReplicationConfig { AsyncConfig = asyncConfig },
+        };
+
+        var dto = collection.ToDto();
+
+        Assert.NotNull(dto.ReplicationConfig?.AsyncConfig);
+        var ac = dto.ReplicationConfig!.AsyncConfig!;
+        Assert.Equal(4, ac.MaxWorkers);
+        Assert.Equal(16, ac.HashtreeHeight);
+        Assert.Equal(1000, ac.Frequency);
+        Assert.Equal(500, ac.FrequencyWhilePropagating);
+        Assert.Equal(30000, ac.AliveNodesCheckingFrequency);
+        Assert.Equal(60, ac.LoggingFrequency);
+        Assert.Equal(100, ac.DiffBatchSize);
+        Assert.Equal(30, ac.DiffPerNodeTimeout);
+        Assert.Equal(120, ac.PrePropagationTimeout);
+        Assert.Equal(60, ac.PropagationTimeout);
+        Assert.Equal(10000, ac.PropagationLimit);
+        Assert.Equal(5000, ac.PropagationDelay);
+        Assert.Equal(2, ac.PropagationConcurrency);
+        Assert.Equal(50, ac.PropagationBatchSize);
+    }
+
+    /// <summary>
+    /// Tests that DTO with AsyncConfig round-trips back to the model correctly.
+    /// </summary>
+    [Fact]
+    public void ReplicationConfig_WithAsyncConfig_RoundTripsFromDto()
+    {
+        var dtoAsyncConfig = new Rest.Dto.ReplicationAsyncConfig
+        {
+            MaxWorkers = 8,
+            HashtreeHeight = 12,
+            PropagationLimit = 5000,
+        };
+
+        var dto = new Rest.Dto.Class
+        {
+            Class1 = "TestCollection",
+            ReplicationConfig = new Rest.Dto.ReplicationConfig { AsyncConfig = dtoAsyncConfig },
+        };
+
+        var model = dto.ToModel();
+
+        Assert.NotNull(model.ReplicationConfig?.AsyncConfig);
+        var ac = model.ReplicationConfig!.AsyncConfig!;
+        Assert.Equal(8, ac.MaxWorkers);
+        Assert.Equal(12, ac.HashtreeHeight);
+        Assert.Equal(5000, ac.PropagationLimit);
+        // Unset fields are null
+        Assert.Null(ac.Frequency);
+        Assert.Null(ac.PropagationBatchSize);
+    }
+
+    /// <summary>
+    /// Tests that ReplicationConfig without AsyncConfig does not produce an asyncConfig in the DTO.
+    /// </summary>
+    [Fact]
+    public void ReplicationConfig_WithoutAsyncConfig_ProducesNullAsyncConfigInDto()
+    {
+        var collection = new CollectionConfig
+        {
+            Name = "TestCollection",
+            ReplicationConfig = new ReplicationConfig { Factor = 2 },
+        };
+
+        var dto = collection.ToDto();
+
+        Assert.Null(dto.ReplicationConfig?.AsyncConfig);
+    }
+
+    /// <summary>
+    /// Tests that DTO with all AsyncConfig fields set round-trips back to the model correctly.
+    /// </summary>
+    [Fact]
+    public void ReplicationConfig_WithAsyncConfig_RoundTripsAllFieldsFromDto()
+    {
+        var dtoAsyncConfig = new Rest.Dto.ReplicationAsyncConfig
+        {
+            MaxWorkers = 1,
+            HashtreeHeight = 2,
+            Frequency = 3,
+            FrequencyWhilePropagating = 4,
+            AliveNodesCheckingFrequency = 5,
+            LoggingFrequency = 6,
+            DiffBatchSize = 7,
+            DiffPerNodeTimeout = 8,
+            PrePropagationTimeout = 9,
+            PropagationTimeout = 10,
+            PropagationLimit = 11,
+            PropagationDelay = 12,
+            PropagationConcurrency = 13,
+            PropagationBatchSize = 14,
+        };
+
+        var dto = new Rest.Dto.Class
+        {
+            Class1 = "TestCollection",
+            ReplicationConfig = new Rest.Dto.ReplicationConfig { AsyncConfig = dtoAsyncConfig },
+        };
+
+        var model = dto.ToModel();
+
+        Assert.NotNull(model.ReplicationConfig?.AsyncConfig);
+        var ac = model.ReplicationConfig!.AsyncConfig!;
+        Assert.Equal(1, ac.MaxWorkers);
+        Assert.Equal(2, ac.HashtreeHeight);
+        Assert.Equal(3, ac.Frequency);
+        Assert.Equal(4, ac.FrequencyWhilePropagating);
+        Assert.Equal(5, ac.AliveNodesCheckingFrequency);
+        Assert.Equal(6, ac.LoggingFrequency);
+        Assert.Equal(7, ac.DiffBatchSize);
+        Assert.Equal(8, ac.DiffPerNodeTimeout);
+        Assert.Equal(9, ac.PrePropagationTimeout);
+        Assert.Equal(10, ac.PropagationTimeout);
+        Assert.Equal(11, ac.PropagationLimit);
+        Assert.Equal(12, ac.PropagationDelay);
+        Assert.Equal(13, ac.PropagationConcurrency);
+        Assert.Equal(14, ac.PropagationBatchSize);
+    }
+
+    /// <summary>
+    /// Tests that ReplicationConfigUpdate forwards AsyncConfig get/set to the wrapped ReplicationConfig.
+    /// </summary>
+    [Fact]
+    public void ReplicationConfigUpdate_AsyncConfig_ForwardsToWrappedConfig()
+    {
+        var replicationConfig = new ReplicationConfig { AsyncConfig = null };
+        var update = new ReplicationConfigUpdate(replicationConfig);
+
+        Assert.Null(update.AsyncConfig);
+
+        update.AsyncConfig = new ReplicationAsyncConfig { MaxWorkers = 42 };
+
+        Assert.NotNull(update.AsyncConfig);
+        Assert.Equal(42, update.AsyncConfig!.MaxWorkers);
+        Assert.NotNull(replicationConfig.AsyncConfig);
+        Assert.Equal(42, replicationConfig.AsyncConfig!.MaxWorkers);
+    }
 }
