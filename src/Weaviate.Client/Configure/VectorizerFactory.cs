@@ -379,7 +379,6 @@ public class VectorizerFactory
     /// <param name="apiEndpoint">The API endpoint</param>
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
-    /// <param name="dimensions">The dimensions</param>
     /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogleGemini(
@@ -389,7 +388,6 @@ public class VectorizerFactory
         string? apiEndpoint = null,
         int? videoIntervalSeconds = null,
         string? model = null,
-        int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
         new Multi2VecGoogleGemini
@@ -400,7 +398,6 @@ public class VectorizerFactory
             VideoFields = videoFields,
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
-            Dimensions = dimensions,
             VectorizeCollectionName = vectorizeCollectionName,
             Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields, videoFields),
         };
@@ -414,7 +411,6 @@ public class VectorizerFactory
     /// <param name="apiEndpoint">The API endpoint</param>
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
-    /// <param name="dimensions">The dimensions</param>
     /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogleGemini(
@@ -424,7 +420,6 @@ public class VectorizerFactory
         string? apiEndpoint = null,
         int? videoIntervalSeconds = null,
         string? model = null,
-        int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
         new Multi2VecGoogleGemini
@@ -435,7 +430,6 @@ public class VectorizerFactory
             VideoFields = videoFields,
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
-            Dimensions = dimensions,
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
