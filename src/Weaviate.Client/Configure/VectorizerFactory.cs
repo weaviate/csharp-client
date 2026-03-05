@@ -371,6 +371,75 @@ public class VectorizerFactory
         };
 
     /// <summary>
+    /// Multi2Vec Google Gemini configuration (using Google AI Studio/Gemini API)
+    /// </summary>
+    /// <param name="imageFields">The image fields</param>
+    /// <param name="textFields">The text fields</param>
+    /// <param name="videoFields">The video fields</param>
+    /// <param name="apiEndpoint">The API endpoint</param>
+    /// <param name="videoIntervalSeconds">The video interval seconds</param>
+    /// <param name="model">The model</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
+    public VectorizerConfig Multi2VecGoogleGemini(
+        WeightedFields imageFields,
+        WeightedFields textFields,
+        WeightedFields videoFields,
+        string? apiEndpoint = null,
+        int? videoIntervalSeconds = null,
+        string? model = null,
+        int? dimensions = null,
+        bool? vectorizeCollectionName = null
+    ) =>
+        new Multi2VecGoogleGemini
+        {
+            ApiEndpoint = apiEndpoint ?? "generativelanguage.googleapis.com",
+            ImageFields = imageFields,
+            TextFields = textFields,
+            VideoFields = videoFields,
+            VideoIntervalSeconds = videoIntervalSeconds,
+            ModelId = model,
+            Dimensions = dimensions,
+            VectorizeCollectionName = vectorizeCollectionName,
+            Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields, videoFields),
+        };
+
+    /// <summary>
+    /// Multi2Vec Google Gemini configuration (using Google AI Studio/Gemini API)
+    /// </summary>
+    /// <param name="imageFields">The image fields</param>
+    /// <param name="textFields">The text fields</param>
+    /// <param name="videoFields">The video fields</param>
+    /// <param name="apiEndpoint">The API endpoint</param>
+    /// <param name="videoIntervalSeconds">The video interval seconds</param>
+    /// <param name="model">The model</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <returns>The vectorizer config</returns>
+    public VectorizerConfig Multi2VecGoogleGemini(
+        string[]? imageFields = null,
+        string[]? textFields = null,
+        string[]? videoFields = null,
+        string? apiEndpoint = null,
+        int? videoIntervalSeconds = null,
+        string? model = null,
+        int? dimensions = null,
+        bool? vectorizeCollectionName = null
+    ) =>
+        new Multi2VecGoogleGemini
+        {
+            ApiEndpoint = apiEndpoint ?? "generativelanguage.googleapis.com",
+            ImageFields = imageFields,
+            TextFields = textFields,
+            VideoFields = videoFields,
+            VideoIntervalSeconds = videoIntervalSeconds,
+            ModelId = model,
+            Dimensions = dimensions,
+            VectorizeCollectionName = vectorizeCollectionName,
+        };
+
+    /// <summary>
     /// Multis the 2 vec voyage ai using the specified image fields
     /// </summary>
     /// <param name="imageFields">The image fields</param>
