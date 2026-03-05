@@ -441,15 +441,10 @@ internal static class Vectorizer
         public int? VideoIntervalSeconds { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the model id
+        /// Gets or sets the value of the model
         /// </summary>
-        public string? ModelId { get; set; } = null;
-
-        /// <summary>
-        /// Gets or sets the value of the vectorize collection name
-        /// </summary>
-        [JsonPropertyName("vectorizeClassName")]
-        public bool? VectorizeCollectionName { get; set; } = null;
+        [JsonPropertyName("modelId")]
+        public string? Model { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the value of the weights
