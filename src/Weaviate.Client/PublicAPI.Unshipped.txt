@@ -2707,6 +2707,7 @@ Weaviate.Client.AuthenticatedHttpHandler
 Weaviate.Client.AuthenticatedHttpHandler.AuthenticatedHttpHandler(Weaviate.Client.ITokenService! tokenService, int? refreshIntervalMinutes = 5) -> void
 Weaviate.Client.BackupClient
 Weaviate.Client.BackupClient.Cancel(Weaviate.Client.Models.BackupBackend! backend, string! id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.BackupClient.CancelRestore(Weaviate.Client.Models.BackupBackend! backend, string! id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 Weaviate.Client.BackupClient.Create(Weaviate.Client.Models.BackupCreateRequest! request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.BackupCreateOperation!>!
 Weaviate.Client.BackupClient.CreateSync(Weaviate.Client.Models.BackupCreateRequest! request, System.TimeSpan? timeout = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Backup!>!
 Weaviate.Client.BackupClient.GetRestoreStatus(Weaviate.Client.Models.BackupBackend! backend, string! id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Backup!>!
@@ -3242,6 +3243,8 @@ Weaviate.Client.Models.Backup.Id.get -> string!
 Weaviate.Client.Models.Backup.Id.init -> void
 Weaviate.Client.Models.Backup.StartedAt.get -> System.DateTimeOffset?
 Weaviate.Client.Models.Backup.StartedAt.init -> void
+Weaviate.Client.Models.Backup.Size.get -> double?
+Weaviate.Client.Models.Backup.Size.init -> void
 Weaviate.Client.Models.Backup.Status.get -> Weaviate.Client.Models.BackupStatus
 Weaviate.Client.Models.Backup.StatusRaw.get -> string!
 Weaviate.Client.Models.Backup.StatusRaw.init -> void

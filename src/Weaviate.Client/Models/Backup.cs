@@ -297,6 +297,11 @@ public record Backup(
     /// Gets the value of the status
     /// </summary>
     public BackupStatus Status => StatusRaw.ToBackupStatus();
+
+    /// <summary>
+    /// Gets the size of the backup in GiB. Available after completion.
+    /// </summary>
+    public double? Size { get; init; }
 }
 
 /// <summary>
