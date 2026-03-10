@@ -173,13 +173,15 @@ public static partial class Configure
     /// <param name="quantizer">The quantizer</param>
     /// <param name="sourceProperties">The source properties</param>
     /// <returns>The vector config</returns>
-    public static VectorConfig Vector(
+    public static VectorConfig Vector<TVectorizer>(
         string name,
-        Func<VectorizerFactory, VectorizerConfig> vectorizer,
+        Func<VectorizerFactory, TVectorizer> vectorizer,
         VectorIndexConfig? index = null,
         VectorIndexConfig.QuantizerConfigBase? quantizer = null,
         params string[] sourceProperties
-    ) => Vector(vectorizer(Factory.Vectorizer), name, index, quantizer, sourceProperties);
+    )
+        where TVectorizer : VectorizerConfig =>
+        Vector(vectorizer(Factory.Vectorizer), name, index, quantizer, sourceProperties);
 
     /// <summary>
     /// Vectors the vectorizer
@@ -189,12 +191,14 @@ public static partial class Configure
     /// <param name="quantizer">The quantizer</param>
     /// <param name="sourceProperties">The source properties</param>
     /// <returns>The vector config</returns>
-    public static VectorConfig Vector(
-        Func<VectorizerFactory, VectorizerConfig> vectorizer,
+    public static VectorConfig Vector<TVectorizer>(
+        Func<VectorizerFactory, TVectorizer> vectorizer,
         VectorIndexConfig? index = null,
         VectorIndexConfig.QuantizerConfigBase? quantizer = null,
         params string[] sourceProperties
-    ) => Vector(vectorizer(Factory.Vectorizer), null, index, quantizer, sourceProperties);
+    )
+        where TVectorizer : VectorizerConfig =>
+        Vector(vectorizer(Factory.Vectorizer), null, index, quantizer, sourceProperties);
 
     /// <summary>
     /// Multis the vector using the specified name
@@ -206,14 +210,15 @@ public static partial class Configure
     /// <param name="encoding">The encoding</param>
     /// <param name="sourceProperties">The source properties</param>
     /// <returns>The vector config</returns>
-    public static VectorConfig MultiVector(
+    public static VectorConfig MultiVector<TVectorizer>(
         string name,
-        Func<VectorizerFactoryMulti, VectorizerConfig> vectorizer,
+        Func<VectorizerFactoryMulti, TVectorizer> vectorizer,
         VectorIndex.HNSW? index = null,
         VectorIndexConfig.QuantizerConfigBase? quantizer = null,
         VectorIndexConfig.EncodingConfig? encoding = null,
         params string[] sourceProperties
-    ) =>
+    )
+        where TVectorizer : VectorizerConfig =>
         MultiVector(
             vectorizer(Factory.VectorizerMulti),
             name,
@@ -232,13 +237,14 @@ public static partial class Configure
     /// <param name="encoding">The encoding</param>
     /// <param name="sourceProperties">The source properties</param>
     /// <returns>The vector config</returns>
-    public static VectorConfig MultiVector(
-        Func<VectorizerFactoryMulti, VectorizerConfig> vectorizer,
+    public static VectorConfig MultiVector<TVectorizer>(
+        Func<VectorizerFactoryMulti, TVectorizer> vectorizer,
         VectorIndex.HNSW? index = null,
         VectorIndexConfig.QuantizerConfigBase? quantizer = null,
         VectorIndexConfig.EncodingConfig? encoding = null,
         params string[] sourceProperties
-    ) =>
+    )
+        where TVectorizer : VectorizerConfig =>
         MultiVector(
             vectorizer(Factory.VectorizerMulti),
             null,

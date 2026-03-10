@@ -98,7 +98,8 @@ public class TestCollectionShards : IntegrationTests
         // Act: Update shard status to READONLY
         var updatedShards = await collection.Config.UpdateShardStatus(
             ShardStatus.ReadOnly,
-            firstShardName
+            firstShardName,
+            TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -108,7 +109,11 @@ public class TestCollectionShards : IntegrationTests
         Assert.Equal(ShardStatus.ReadOnly, updatedShards[0].Status);
 
         // Cleanup: Set it back to READY
-        await collection.Config.UpdateShardStatus(ShardStatus.Ready, firstShardName);
+        await collection.Config.UpdateShardStatus(
+            ShardStatus.Ready,
+            firstShardName,
+            TestContext.Current.CancellationToken
+        );
     }
 
     /// <summary>
@@ -131,12 +136,17 @@ public class TestCollectionShards : IntegrationTests
         var firstShardName = allShards[0].Name;
 
         // Set to READONLY first
-        await collection.Config.UpdateShardStatus(ShardStatus.ReadOnly, firstShardName);
+        await collection.Config.UpdateShardStatus(
+            ShardStatus.ReadOnly,
+            firstShardName,
+            TestContext.Current.CancellationToken
+        );
 
         // Act: Update back to READY
         var updatedShards = await collection.Config.UpdateShardStatus(
             ShardStatus.Ready,
-            firstShardName
+            firstShardName,
+            TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -169,7 +179,8 @@ public class TestCollectionShards : IntegrationTests
         // Act: Update all shards to READONLY
         var updatedShards = await collection.Config.UpdateShardStatus(
             ShardStatus.ReadOnly,
-            shardNames
+            shardNames,
+            TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -178,7 +189,11 @@ public class TestCollectionShards : IntegrationTests
         Assert.All(updatedShards, shard => Assert.Equal(ShardStatus.ReadOnly, shard.Status));
 
         // Cleanup: Set them all back to READY
-        await collection.Config.UpdateShardStatus(ShardStatus.Ready, shardNames);
+        await collection.Config.UpdateShardStatus(
+            ShardStatus.Ready,
+            shardNames,
+            TestContext.Current.CancellationToken
+        );
     }
 
     /// <summary>
@@ -194,8 +209,11 @@ public class TestCollectionShards : IntegrationTests
         );
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
-            await collection.Config.UpdateShardStatus(ShardStatus.Ready)
+        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await collection.Config.UpdateShardStatus(
+                ShardStatus.Ready,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
         );
     }
 

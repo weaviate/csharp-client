@@ -41,6 +41,16 @@ public enum BackupStatus
     /// The canceled backup status
     /// </summary>
     Canceled,
+
+    /// <summary>
+    /// The cancelling backup status - cancellation has been claimed by a coordinator
+    /// </summary>
+    Cancelling,
+
+    /// <summary>
+    /// The finalizing backup status - file staging is complete and schema changes are being applied
+    /// </summary>
+    Finalizing,
 }
 
 /// <summary>
@@ -92,31 +102,31 @@ public enum BackupStorageProvider
     /// <summary>
     /// No backend specified
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "none")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("none")]
     None,
 
     /// <summary>
     /// Local filesystem storage
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "filesystem")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("filesystem")]
     Filesystem,
 
     /// <summary>
     /// Amazon S3 storage
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "s3")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("s3")]
     S3,
 
     /// <summary>
     /// Google Cloud Storage
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "gcs")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("gcs")]
     GCS,
 
     /// <summary>
     /// Azure Blob Storage
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "azure")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("azure")]
     Azure,
 }
 
@@ -263,6 +273,8 @@ public static class BackupStatusExtensions
             "SUCCESS" => BackupStatus.Success,
             "FAILED" => BackupStatus.Failed,
             "CANCELED" => BackupStatus.Canceled,
+            "CANCELLING" => BackupStatus.Cancelling,
+            "FINALIZING" => BackupStatus.Finalizing,
             _ => BackupStatus.Unknown,
         };
     }
@@ -285,6 +297,11 @@ public record Backup(
     /// Gets the value of the status
     /// </summary>
     public BackupStatus Status => StatusRaw.ToBackupStatus();
+
+    /// <summary>
+    /// Gets the size of the backup in GiB. Available after completion.
+    /// </summary>
+    public double? Size { get; init; }
 }
 
 /// <summary>
@@ -322,13 +339,13 @@ public enum UserRestoreOption
     /// <summary>
     /// The no restore user restore option
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "noRestore")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("noRestore")]
     NoRestore,
 
     /// <summary>
     /// The all user restore option
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "all")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("all")]
     All,
 }
 
@@ -340,12 +357,12 @@ public enum RolesRestoreOption
     /// <summary>
     /// The no restore roles restore option
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "noRestore")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("noRestore")]
     NoRestore,
 
     /// <summary>
     /// The all roles restore option
     /// </summary>
-    [System.Runtime.Serialization.EnumMember(Value = "all")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("all")]
     All,
 }

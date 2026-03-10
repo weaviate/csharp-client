@@ -129,7 +129,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a near-text search using a NearTextInput record.
     /// </summary>
-    /// <param name="input">Near-text input containing query text, target vectors, certainty, distance, and move parameters.</param>
+    /// <param name="query">Near-text input containing query text, target vectors, certainty, distance, and move parameters.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -142,7 +142,7 @@ public partial class TypedQueryClient<T>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
     public async Task<WeaviateResult<WeaviateObject<T>>> NearText(
-        NearTextInput input,
+        NearTextInput query,
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
@@ -156,7 +156,7 @@ public partial class TypedQueryClient<T>
     )
     {
         var result = await _queryClient.NearText(
-            _ => input,
+            _ => query,
             filters: filters,
             limit: limit,
             offset: offset,
@@ -174,7 +174,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a near-text search with group-by using a NearTextInput record.
     /// </summary>
-    /// <param name="input">Near-text input containing query text, target vectors, certainty, distance, and move parameters.</param>
+    /// <param name="query">Near-text input containing query text, target vectors, certainty, distance, and move parameters.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
@@ -188,7 +188,7 @@ public partial class TypedQueryClient<T>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed grouped result.</returns>
     public async Task<GroupByResult<T>> NearText(
-        NearTextInput input,
+        NearTextInput query,
         GroupByRequest groupBy,
         Filter? filters = null,
         uint? limit = null,
@@ -203,7 +203,7 @@ public partial class TypedQueryClient<T>
     )
     {
         var result = await _queryClient.NearText(
-            _ => input,
+            _ => query,
             groupBy,
             filters: filters,
             limit: limit,

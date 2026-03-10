@@ -197,4 +197,38 @@ public partial class VectorConfigListTests
         // Assert
         Assert.Contains("\"properties\":[\"name\"]", json);
     }
+
+    /// <summary>
+    /// Tests that Multi2MultiVecWeaviate serializes imageFields correctly
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Multi2MultiVecWeaviate_Serializes_ImageFields()
+    {
+        // Arrange
+        var vc = Configure.MultiVector(
+            "default",
+            v => v.Multi2MultiVecWeaviate(imageFields: new[] { "image" }, model: "my-model")
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"imageFields\"", json);
+        Assert.Contains("\"image\"", json);
+        Assert.Contains("\"my-model\"", json);
+    }
 }

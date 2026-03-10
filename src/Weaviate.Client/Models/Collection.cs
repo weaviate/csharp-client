@@ -1,6 +1,119 @@
 namespace Weaviate.Client.Models;
 
 /// <summary>
+/// Configuration for object Time-To-Live (TTL) in a collection. Controls automatic expiration and deletion of objects based on time or property values.
+/// </summary>
+public record ObjectTTLConfig
+{
+    /// <summary>
+    /// Indicates whether TTL is enabled for the collection objects.
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// The default TTL value (in seconds) to apply to objects if not specified otherwise.
+    /// </summary>
+    public int? DefaultTTL { get; set; }
+
+    /// <summary>
+    /// The property name used to determine the deletion time. Can be a system property (e.g., _creationTimeUnix) or a custom date property.
+    /// </summary>
+    public string? DeleteOn { get; set; }
+
+    /// <summary>
+    /// If enabled, exclude expired but not deleted objects from search results.
+    /// </summary>
+    public bool? FilterExpiredObjects { get; set; }
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using the object's last update time as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="ttl">The TTL duration as a TimeSpan.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public static ObjectTTLConfig ByUpdateTime(TimeSpan ttl, bool? filterExpiredObjects = null) =>
+        ByUpdateTime((int)ttl.TotalSeconds, filterExpiredObjects);
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using the object's last update time as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="ttl">The TTL duration in seconds.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public static ObjectTTLConfig ByUpdateTime(int ttl, bool? filterExpiredObjects = null)
+    {
+        return new ObjectTTLConfig
+        {
+            Enabled = true,
+            DefaultTTL = ttl,
+            DeleteOn = "_lastUpdateTimeUnix",
+            FilterExpiredObjects = filterExpiredObjects,
+        };
+    }
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using the object's creation time as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="ttl">The TTL duration as a TimeSpan.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public static ObjectTTLConfig ByCreationTime(TimeSpan ttl, bool? filterExpiredObjects = null) =>
+        ByCreationTime((int)ttl.TotalSeconds, filterExpiredObjects);
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using the object's creation time as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="ttl">The TTL duration in seconds.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public static ObjectTTLConfig ByCreationTime(int ttl, bool? filterExpiredObjects = null)
+    {
+        return new ObjectTTLConfig
+        {
+            Enabled = true,
+            DefaultTTL = ttl,
+            DeleteOn = "_creationTimeUnix",
+            FilterExpiredObjects = filterExpiredObjects,
+        };
+    }
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using a custom date property as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="propertyName">The name of the date property to use for TTL calculation.</param>
+    /// <param name="ttl">The TTL duration as a TimeSpan.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public static ObjectTTLConfig ByDateProperty(
+        string propertyName,
+        TimeSpan ttl,
+        bool? filterExpiredObjects = null
+    ) => ByDateProperty(propertyName, (int)ttl.TotalSeconds, filterExpiredObjects);
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using a custom date property as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="propertyName">The name of the date property to use for TTL calculation.</param>
+    /// <param name="ttl">The TTL duration in seconds.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public static ObjectTTLConfig ByDateProperty(
+        string propertyName,
+        int ttl,
+        bool? filterExpiredObjects = null
+    )
+    {
+        return new ObjectTTLConfig
+        {
+            Enabled = true,
+            DefaultTTL = ttl,
+            DeleteOn = propertyName,
+            FilterExpiredObjects = filterExpiredObjects,
+        };
+    }
+}
+
+/// <summary>
 /// The collection config common
 /// </summary>
 public abstract record CollectionConfigCommon
@@ -67,6 +180,12 @@ public abstract record CollectionConfigCommon
     public VectorConfigList VectorConfig { get; set; } = default!;
 
     /// <summary>
+    /// Gets or sets the value of the object Time-To-Live configuration.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("objectTtlConfig")]
+    public ObjectTTLConfig? ObjectTTLConfig { get; set; } = default;
+
+    /// <summary>
     /// Gets the hash code
     /// </summary>
     /// <returns>The int</returns>
@@ -82,6 +201,7 @@ public abstract record CollectionConfigCommon
         hash.Add(ReplicationConfig);
         hash.Add(ShardingConfig);
         hash.Add(VectorConfig);
+        hash.Add(ObjectTTLConfig);
         return hash.ToHashCode();
     }
 
@@ -145,6 +265,14 @@ public abstract record CollectionConfigCommon
         if (!EqualityComparer<VectorConfigList>.Default.Equals(VectorConfig, other.VectorConfig))
             return false;
 
+        if (
+            !EqualityComparer<ObjectTTLConfig?>.Default.Equals(
+                ObjectTTLConfig,
+                other.ObjectTTLConfig
+            )
+        )
+            return false;
+
         return true;
     }
 }
@@ -186,6 +314,7 @@ public partial record CollectionConfigExport : CollectionConfig
             VectorConfig = this.VectorConfig,
             GenerativeConfig = this.GenerativeConfig,
             RerankerConfig = this.RerankerConfig,
+            ObjectTTLConfig = this.ObjectTTLConfig,
         };
     }
 }
@@ -221,6 +350,7 @@ public partial record CollectionConfig : CollectionConfigCommon
             VectorConfig = config.VectorConfig,
             GenerativeConfig = config.GenerativeConfig,
             RerankerConfig = config.RerankerConfig,
+            ObjectTTLConfig = config.ObjectTTLConfig,
         };
     }
 

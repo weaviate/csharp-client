@@ -33,7 +33,7 @@ public static class AutoArrayBuilder
     typeof(AutoArrayBuilder),
     nameof(AutoArrayBuilder.Create)
 )]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
 public class AutoArray<T> : IEnumerable<T>
 {
     /// <summary>

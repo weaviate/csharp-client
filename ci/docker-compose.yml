@@ -30,6 +30,7 @@ services:
       AUTOSCHEMA_ENABLED: 'false'
       DISABLE_TELEMETRY: 'true'
       DISABLE_LAZY_LOAD_SHARDS: 'true'
+      OBJECTS_TTL_DELETE_SCHEDULE: "@every 1m"
       GRPC_MAX_MESSAGE_SIZE: 100000000  # 100mb
       #ASYNC_INDEXING: 'true'
       TRANSFORMERS_INFERENCE_API: http://transformers:8080

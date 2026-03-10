@@ -121,7 +121,7 @@ public partial class AggregateClient
     /// <summary>
     /// Aggregate near vector search using a NearVectorInput record.
     /// </summary>
-    /// <param name="input">Near-vector input containing vector, certainty, and distance.</param>
+    /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="limit">Maximum number of results.</param>
     /// <param name="filters">Filters to apply.</param>
     /// <param name="totalCount">Whether to include total count.</param>
@@ -129,7 +129,7 @@ public partial class AggregateClient
     /// <param name="returnMetrics">Metrics to return.</param>
     /// <returns>Aggregate result.</returns>
     public async Task<AggregateResult> NearVector(
-        NearVectorInput input,
+        NearVectorInput query,
         uint? limit = null,
         Filter? filters = null,
         bool totalCount = true,
@@ -137,9 +137,9 @@ public partial class AggregateClient
         CancellationToken cancellationToken = default
     ) =>
         await NearVector(
-            vectors: input.Vector,
-            certainty: input.Certainty.HasValue ? (double?)input.Certainty.Value : null,
-            distance: input.Distance.HasValue ? (double?)input.Distance.Value : null,
+            vectors: query.Vector,
+            certainty: query.Certainty.HasValue ? (double?)query.Certainty.Value : null,
+            distance: query.Distance.HasValue ? (double?)query.Distance.Value : null,
             limit: limit,
             filters: filters,
             totalCount: totalCount,
@@ -150,7 +150,7 @@ public partial class AggregateClient
     /// <summary>
     /// Aggregate near vector search with group-by using a NearVectorInput record.
     /// </summary>
-    /// <param name="input">Near-vector input containing vector, certainty, and distance.</param>
+    /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="limit">Maximum number of results.</param>
     /// <param name="filters">Filters to apply.</param>
@@ -159,7 +159,7 @@ public partial class AggregateClient
     /// <param name="returnMetrics">Metrics to return.</param>
     /// <returns>Aggregate group-by result.</returns>
     public async Task<AggregateGroupByResult> NearVector(
-        NearVectorInput input,
+        NearVectorInput query,
         Aggregate.GroupBy groupBy,
         uint? limit = null,
         Filter? filters = null,
@@ -168,10 +168,10 @@ public partial class AggregateClient
         CancellationToken cancellationToken = default
     ) =>
         await NearVector(
-            vectors: input.Vector,
+            vectors: query.Vector,
             groupBy: groupBy,
-            certainty: input.Certainty.HasValue ? (double?)input.Certainty.Value : null,
-            distance: input.Distance.HasValue ? (double?)input.Distance.Value : null,
+            certainty: query.Certainty.HasValue ? (double?)query.Certainty.Value : null,
+            distance: query.Distance.HasValue ? (double?)query.Distance.Value : null,
             limit: limit,
             filters: filters,
             totalCount: totalCount,

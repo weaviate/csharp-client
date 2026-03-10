@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using Duende.IdentityModel.Client;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Weaviate.Client;
 
@@ -168,20 +169,16 @@ internal class OAuthTokenService : ITokenService
     /// </summary>
     /// <param name="httpClient">The http client</param>
     /// <param name="config">The config</param>
-    /// <param name="logger">The logger</param>
+    /// <param name="loggerFactory">Optional logger factory. When null, logging is silently suppressed.</param>
     public OAuthTokenService(
         HttpClient httpClient,
         OAuthConfig config,
-        ILogger<OAuthTokenService>? logger = null
+        ILoggerFactory? loggerFactory = null
     )
     {
         _httpClient = httpClient;
         _config = config;
-        _logger =
-            logger
-            ?? LoggerFactory
-                .Create(builder => builder.AddConsole())
-                .CreateLogger<OAuthTokenService>();
+        _logger = (loggerFactory ?? NullLoggerFactory.Instance).CreateLogger<OAuthTokenService>();
     }
 
     /// <summary>

@@ -4,6 +4,7 @@ using Grpc.Core.Interceptors;
 using Grpc.Health.V1;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Weaviate.Client.Grpc;
 
@@ -52,14 +53,14 @@ internal partial class WeaviateGrpcClient : IDisposable
         TimeSpan? timeout = null,
         RetryPolicy? retryPolicy = null,
         Dictionary<string, string>? headers = null,
-        ILogger<WeaviateGrpcClient>? logger = null
+        ILogger<WeaviateGrpcClient>? logger = null,
+        ILoggerFactory? loggerFactory = null,
+        bool logRequests = false,
+        LogLevel requestLoggingLevel = LogLevel.Debug
     )
     {
-        _logger =
-            logger
-            ?? LoggerFactory
-                .Create(builder => builder.AddConsole())
-                .CreateLogger<WeaviateGrpcClient>();
+        var factory = loggerFactory ?? NullLoggerFactory.Instance;
+        _logger = logger ?? factory.CreateLogger<WeaviateGrpcClient>();
 
         _timeout = timeout;
         _retryPolicy = retryPolicy;
@@ -85,15 +86,19 @@ internal partial class WeaviateGrpcClient : IDisposable
             }
         }
 
+        CallInvoker invoker = _channel.CreateCallInvoker();
+
         if (_retryPolicy is not null && _retryPolicy.MaxRetries > 0)
         {
-            var invoker = _channel.Intercept(new RetryInterceptor(_retryPolicy, _logger));
-            _grpcClient = new Protobuf.V1.Weaviate.WeaviateClient(invoker);
+            invoker = invoker.Intercept(new RetryInterceptor(_retryPolicy, _logger));
         }
-        else
+
+        if (logRequests)
         {
-            _grpcClient = new Protobuf.V1.Weaviate.WeaviateClient(_channel);
+            invoker = invoker.Intercept(new LoggingInterceptor(factory, requestLoggingLevel));
         }
+
+        _grpcClient = new Protobuf.V1.Weaviate.WeaviateClient(invoker);
     }
 
     /// <summary>
@@ -134,21 +139,30 @@ internal partial class WeaviateGrpcClient : IDisposable
         ulong? maxMessageSize = null,
         RetryPolicy? retryPolicy = null,
         Dictionary<string, string>? headers = null,
-        ILogger<WeaviateGrpcClient>? logger = null
+        ILoggerFactory? loggerFactory = null,
+        bool logRequests = false,
+        LogLevel requestLoggingLevel = LogLevel.Debug
     )
     {
-        var loggerInstance =
-            logger
-            ?? LoggerFactory
-                .Create(builder => builder.AddConsole())
-                .CreateLogger<WeaviateGrpcClient>();
+        var factory = loggerFactory ?? NullLoggerFactory.Instance;
+        var loggerInstance = factory.CreateLogger<WeaviateGrpcClient>();
 
-        var channel = CreateChannel(grpcUri, tokenService, maxMessageSize, loggerInstance);
+        var channel = CreateChannel(grpcUri, tokenService, maxMessageSize, loggerInstance, factory);
 
         // Perform health check
         PerformHealthCheck(channel);
 
-        return new WeaviateGrpcClient(channel, wcdHost, timeout, retryPolicy, headers, logger);
+        return new WeaviateGrpcClient(
+            channel,
+            wcdHost,
+            timeout,
+            retryPolicy,
+            headers,
+            loggerInstance,
+            factory,
+            logRequests,
+            requestLoggingLevel
+        );
     }
 
     /// <summary>
@@ -158,15 +172,23 @@ internal partial class WeaviateGrpcClient : IDisposable
     /// <param name="tokenService">The token service</param>
     /// <param name="maxMessageSize">The max message size</param>
     /// <param name="logger">The logger</param>
+    /// <param name="loggerFactory">Optional factory to attach to GrpcChannelOptions for built-in channel logging.</param>
     /// <returns>The grpc channel</returns>
     private static GrpcChannel CreateChannel(
         Uri grpcUri,
         ITokenService? tokenService,
         ulong? maxMessageSize,
-        ILogger<WeaviateGrpcClient> logger
+        ILogger<WeaviateGrpcClient> logger,
+        ILoggerFactory? loggerFactory = null
     )
     {
         var options = new GrpcChannelOptions();
+
+        // Attach logger factory so the gRPC channel emits its own built-in diagnostics
+        if (loggerFactory is not null)
+        {
+            options.LoggerFactory = loggerFactory;
+        }
 
         if (maxMessageSize != null)
         {

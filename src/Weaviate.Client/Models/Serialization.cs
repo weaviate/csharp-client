@@ -348,3 +348,65 @@ public class FlexibleConverter<T> : JsonConverter<T?>
         };
     }
 }
+
+/// <summary>
+/// Handles empty string/null as a specific enum value, delegates other cases to JsonStringEnumConverter.
+/// </summary>
+public class EmptyStringEnumConverter<T> : JsonConverter<T>
+    where T : struct, Enum
+{
+    private readonly T _defaultValue;
+    private readonly JsonStringEnumConverter _fallbackConverter;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EmptyStringEnumConverter{T}"/> class.
+    /// </summary>
+    public EmptyStringEnumConverter()
+    {
+        _defaultValue = default;
+        _fallbackConverter = new JsonStringEnumConverter();
+    }
+
+    /// <summary>
+    /// Reads and converts the JSON to the specified enum type. Returns the default value if the JSON is null or an empty string.
+    /// </summary>
+    /// <param name="reader">The reader.</param>
+    /// <param name="typeToConvert">The type to convert.</param>
+    /// <param name="options">The serialization options to use.</param>
+    /// <returns>The converted enum value or the default value if input is null or empty string.</returns>
+    public override T Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
+    {
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            var str = reader.GetString();
+            if (string.IsNullOrEmpty(str))
+            {
+                return _defaultValue;
+            }
+        }
+        else if (reader.TokenType == JsonTokenType.Null)
+        {
+            return _defaultValue;
+        }
+
+        // Fallback to default converter for non-empty values
+        var converter = (JsonConverter<T>)_fallbackConverter.CreateConverter(typeof(T), options);
+        return converter.Read(ref reader, typeToConvert, options);
+    }
+
+    /// <summary>
+    /// Writes the enum value to JSON using the fallback converter.
+    /// </summary>
+    /// <param name="writer">The writer to which to write the value.</param>
+    /// <param name="value">The enum value to write.</param>
+    /// <param name="options">The serialization options to use.</param>
+    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+    {
+        var converter = (JsonConverter<T>)_fallbackConverter.CreateConverter(typeof(T), options);
+        converter.Write(writer, value, options);
+    }
+}

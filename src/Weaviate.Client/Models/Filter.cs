@@ -441,7 +441,10 @@ public partial record Filter
                         Longitude = v.Longitude,
                     },
                 int v => f => f.ValueInt = v,
+                long v => f => f.ValueInt = (int)v,
+                float v => f => f.ValueNumber = v,
                 double v => f => f.ValueNumber = v,
+                decimal v => f => f.ValueNumber = (double)v,
                 string v => f => f.ValueText = v,
                 Guid v => f => f.ValueText = v.ToString(),
                 DateTime v => f => f.ValueText = v.ToUniversalTime().ToString("o"),
@@ -455,8 +458,12 @@ public partial record Filter
                 IEnumerable<int> v => f =>
                     f.ValueIntArray = new IntArray { Values = { v.Select(Convert.ToInt64) } },
                 IEnumerable<long> v => f => f.ValueIntArray = new IntArray { Values = { v } },
+                IEnumerable<float> v => f =>
+                    f.ValueNumberArray = new NumberArray { Values = { v.Select(x => (double)x) } },
                 IEnumerable<double> v => f =>
                     f.ValueNumberArray = new NumberArray { Values = { v } },
+                IEnumerable<decimal> v => f =>
+                    f.ValueNumberArray = new NumberArray { Values = { v.Select(x => (double)x) } },
                 IEnumerable<string> v => f => f.ValueTextArray = new TextArray { Values = { v } },
                 IEnumerable<Guid> v => f =>
                     f.ValueTextArray = new TextArray { Values = { v.Select(g => g.ToString()) } },

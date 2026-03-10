@@ -95,5 +95,24 @@ public class VectorizerFactoryMulti
             VectorizeCollectionName = vectorizeCollectionName,
             Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
         };
+
+    /// <summary>
+    /// Creates a multi2multivec-weaviate vectorizer configuration
+    /// </summary>
+    /// <param name="imageFields">The image fields to vectorize</param>
+    /// <param name="baseURL">The base url</param>
+    /// <param name="model">The model</param>
+    /// <returns>The vectorizer config</returns>
+    public VectorizerConfig Multi2MultiVecWeaviate(
+        string[]? imageFields = null,
+        string? baseURL = null,
+        string? model = null
+    ) =>
+        new Multi2MultiVecWeaviate
+        {
+            BaseURL = baseURL,
+            Model = model,
+            ImageFields = imageFields,
+        };
 #pragma warning restore CA1822 // Mark members as static
 }

@@ -69,6 +69,19 @@ internal static partial class WeaviateEndpoints
         $"schema/{className}/properties";
 
     /// <summary>
+    /// Path for dropping a specific inverted index from a collection property.
+    /// </summary>
+    /// <param name="className">The class name</param>
+    /// <param name="propertyName">The property name</param>
+    /// <param name="indexName">The index name (filterable, searchable, rangeFilters)</param>
+    /// <returns>The string</returns>
+    internal static string CollectionPropertyIndex(
+        string className,
+        string propertyName,
+        string indexName
+    ) => $"schema/{className}/properties/{propertyName}/index/{indexName}";
+
+    /// <summary>
     /// Collections the shard using the specified class name
     /// </summary>
     /// <param name="className">The class name</param>

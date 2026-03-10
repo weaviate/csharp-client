@@ -485,7 +485,5 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-.serena
-
-src/Weaviate.Client.Tests/PublicApiApprovalTests.PublicApi_Should_Not_Change_Unexpectedly.approved.txt
-src/Weaviate.Client.Tests/PublicApiApprovalTests.PublicApi_Should_Not_Change_Unexpectedly.received.txt
+.serena/
+memory/

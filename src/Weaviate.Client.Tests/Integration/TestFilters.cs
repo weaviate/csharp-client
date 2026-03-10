@@ -155,7 +155,10 @@ public partial class FilterTests : IntegrationTests
             references: new Reference("ref", cTarget.Name)
         );
 
-        await cFrom.Config.AddReference(new Reference("ref2", cFrom.Name));
+        await cFrom.Config.AddReference(
+            new Reference("ref2", cFrom.Name),
+            TestContext.Current.CancellationToken
+        );
 
         var uuidsFrom = new List<Guid>
         {
@@ -249,7 +252,10 @@ public partial class FilterTests : IntegrationTests
         // Arrange
         var collection = await CollectionFactory();
 
-        await collection.Config.AddReference(new Reference("ref", collection.Name));
+        await collection.Config.AddReference(
+            new Reference("ref", collection.Name),
+            TestContext.Current.CancellationToken
+        );
 
         var uuids = new List<Guid>
         {
@@ -299,7 +305,10 @@ public partial class FilterTests : IntegrationTests
         var one = await CollectionFactory("one");
         var two = await CollectionFactory("two", references: new Reference("ref2", one.Name));
 
-        await one.Config.AddReference(new Reference("ref1", one.Name));
+        await one.Config.AddReference(
+            new Reference("ref1", one.Name),
+            TestContext.Current.CancellationToken
+        );
 
         var uuid11 = await one.Data.Insert(
             new { },

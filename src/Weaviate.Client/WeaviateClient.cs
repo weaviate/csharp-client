@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Weaviate.Client.Grpc;
 using Weaviate.Client.Internal;
@@ -144,9 +145,8 @@ public partial class WeaviateClient : IDisposable
     /// <summary>
     /// The weaviate client
     /// </summary>
-    private readonly ILogger<WeaviateClient> _logger = LoggerFactory
-        .Create(builder => builder.AddConsole())
-        .CreateLogger<WeaviateClient>();
+    private readonly ILogger<WeaviateClient> _logger =
+        NullLoggerFactory.Instance.CreateLogger<WeaviateClient>();
 
     /// <summary>
     /// Gets or sets the value of the rest client
@@ -213,7 +213,9 @@ public partial class WeaviateClient : IDisposable
         Configuration = configuration;
         _logger =
             logger
-            ?? LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<WeaviateClient>();
+            ?? (
+                configuration.LoggerFactory ?? NullLoggerFactory.Instance
+            ).CreateLogger<WeaviateClient>();
 
         // Initialize Lazy task that will run initialization on first access
         _initializationTask = new Lazy<Task>(() => PerformInitializationAsync(configuration));
@@ -235,13 +237,14 @@ public partial class WeaviateClient : IDisposable
         HttpMessageHandler? httpMessageHandler = null,
         ITokenService? tokenService = null,
         ILogger<WeaviateClient>? logger = null,
-        WeaviateGrpcClient? grpcClient = null
+        WeaviateGrpcClient? grpcClient = null,
+        Models.MetaInfo? meta = null
     )
     {
         var config = configuration ?? DefaultOptions;
         var loggerInstance =
             logger
-            ?? LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<WeaviateClient>();
+            ?? (config.LoggerFactory ?? NullLoggerFactory.Instance).CreateLogger<WeaviateClient>();
 
         var restClient = CreateRestClientForPublic(
             config,
@@ -256,6 +259,7 @@ public partial class WeaviateClient : IDisposable
         Configuration = config;
         RestClient = restClient;
         GrpcClient = grpcClientInstance;
+        _metaCache = meta;
 
         Cluster = new ClusterClient(this);
         Collections = new CollectionsClient(this);
@@ -270,7 +274,7 @@ public partial class WeaviateClient : IDisposable
     /// Uses async initialization pattern - call InitializeAsync() or ensure IHostedService runs.
     /// </summary>
     public WeaviateClient(IOptions<DependencyInjection.WeaviateOptions> options)
-        : this(options, null) { }
+        : this(options, null, null) { }
 
     /// <summary>
     /// Constructor for dependency injection scenarios with logger.
@@ -280,13 +284,34 @@ public partial class WeaviateClient : IDisposable
         IOptions<DependencyInjection.WeaviateOptions> options,
         ILogger<WeaviateClient>? logger
     )
+        : this(options, logger, null) { }
+
+    /// <summary>
+    /// Constructor for dependency injection scenarios with full logger support.
+    /// Accepts both a typed logger (for WeaviateClient itself) and a factory (for internal components).
+    /// Uses async initialization pattern - call InitializeAsync() or ensure IHostedService runs.
+    /// </summary>
+    public WeaviateClient(
+        IOptions<DependencyInjection.WeaviateOptions> options,
+        ILogger<WeaviateClient>? logger,
+        ILoggerFactory? loggerFactory
+    )
     {
         var weaviateOptions = options.Value;
-        _configForAsyncInit = weaviateOptions.ToClientConfiguration();
+        var config = weaviateOptions.ToClientConfiguration();
+        // Merge the DI-provided loggerFactory into the config so internal components use it
+        _configForAsyncInit = loggerFactory is not null
+            ? config with
+            {
+                LoggerFactory = loggerFactory,
+            }
+            : config;
         Configuration = _configForAsyncInit;
         _logger =
             logger
-            ?? LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<WeaviateClient>();
+            ?? (
+                _configForAsyncInit.LoggerFactory ?? NullLoggerFactory.Instance
+            ).CreateLogger<WeaviateClient>();
 
         // Initialize Lazy task that will run initialization on first access
         _initializationTask = new Lazy<Task>(() => PerformInitializationAsync(_configForAsyncInit));
@@ -330,8 +355,8 @@ public partial class WeaviateClient : IDisposable
             Modules = metaDto?.Modules?.ToDictionary() ?? [],
         };
 
-        // Log warning if connecting to a server older than 1.31.0
-        var minSupportedVersion = new Version(1, 31, 0);
+        // Log warning if connecting to a server older than 1.32.0
+        var minSupportedVersion = new Version(1, 32, 0);
         if (_metaCache.HasValue && _metaCache.Value.Version < minSupportedVersion)
         {
             _logger.LogWarning(
@@ -389,6 +414,30 @@ public partial class WeaviateClient : IDisposable
     }
 
     /// <summary>
+    /// Ensures the connected Weaviate server meets the minimum version declared by the
+    /// <see cref="RequiresWeaviateVersionAttribute"/> on the calling method.
+    /// Does nothing if the method has no attribute or if the server version is unknown.
+    /// </summary>
+    /// <typeparam name="TCallerType">
+    /// The type that declares the calling method. Specify the concrete class explicitly,
+    /// e.g. <c>await _client.EnsureVersion&lt;CollectionConfigClient&gt;();</c>
+    /// </typeparam>
+    /// <param name="operationName">
+    /// Automatically populated by <see cref="System.Runtime.CompilerServices.CallerMemberNameAttribute"/>.
+    /// Do not pass this argument explicitly.
+    /// </param>
+    /// <exception cref="WeaviateVersionMismatchException">
+    /// Thrown when the connected server version is below the required version.
+    /// </exception>
+    internal async Task EnsureVersion<TCallerType>(
+        [System.Runtime.CompilerServices.CallerMemberName] string operationName = ""
+    )
+    {
+        await EnsureInitializedAsync();
+        Internal.VersionGuard.Check<TCallerType>(WeaviateVersion, operationName);
+    }
+
+    /// <summary>
     /// Helper to create REST client for the public constructor.
     /// </summary>
     private static WeaviateRestClient CreateRestClientForPublic(
@@ -400,7 +449,7 @@ public partial class WeaviateClient : IDisposable
     {
         var loggerInstance =
             logger
-            ?? LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<WeaviateClient>();
+            ?? (config.LoggerFactory ?? NullLoggerFactory.Instance).CreateLogger<WeaviateClient>();
 
         return CreateRestClient(config, httpMessageHandler, tokenService, loggerInstance);
     }
@@ -451,11 +500,23 @@ public partial class WeaviateClient : IDisposable
             };
         }
 
-        // Retry handler (outer-most)
+        // Retry handler (outer-most before logging)
         var retryPolicy = config.RetryPolicy ?? WeaviateDefaults.DefaultRetryPolicy;
         if (retryPolicy is not null && retryPolicy.MaxRetries > 0)
         {
             effectiveHandler = new RetryHandler(retryPolicy, logger)
+            {
+                InnerHandler = effectiveHandler,
+            };
+        }
+
+        // Logging handler (outermost of all — one log entry per logical operation)
+        if (config.LogRequests && config.LoggerFactory is not null)
+        {
+            effectiveHandler = new HttpLoggingHandler(
+                config.LoggerFactory,
+                config.RequestLoggingLevel
+            )
             {
                 InnerHandler = effectiveHandler,
             };
@@ -512,7 +573,9 @@ public partial class WeaviateClient : IDisposable
             maxMessageSize,
             retryPolicy,
             config.Headers,
-            null // Logger is not needed here, gRPC client creates its own
+            config.LoggerFactory,
+            config.LogRequests,
+            config.RequestLoggingLevel
         );
     }
 

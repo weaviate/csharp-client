@@ -308,11 +308,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(1000000000000L, config?.VectorCacheMaxObjects);
 
         // Obsolete properties should be null/empty for new VectorConfig usage
-#pragma warning disable CS0618 // Type or member is obsolete
         Assert.Null(export.VectorIndexConfig);
         Assert.Null(export.VectorIndexType);
         Assert.Equal("", export.Vectorizer);
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     /// <summary>
@@ -625,11 +623,9 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(1000000000000L, config?.VectorCacheMaxObjects);
 
         // Obsolete properties should be null/empty for new VectorConfig usage
-#pragma warning disable CS0618 // Type or member is obsolete
         Assert.Null(export.VectorIndexConfig);
         Assert.Null(export.VectorIndexType);
         Assert.Equal("", export.Vectorizer);
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     /// <summary>
@@ -648,7 +644,8 @@ public partial class CollectionsTests : IntegrationTests
         RequireVersion("1.31.0");
 
         await collection.Config.AddVector(
-            Configure.Vector("nondefault", t => t.Text2VecTransformers())
+            Configure.Vector("nondefault", t => t.Text2VecTransformers()),
+            TestContext.Current.CancellationToken
         );
 
         var c = await collection.Config.Get(TestContext.Current.CancellationToken);
@@ -719,7 +716,10 @@ public partial class CollectionsTests : IntegrationTests
             vectorConfig: vectorizerConfig
         );
 
-        await collection.Config.AddProperty(Property.Text("description"));
+        await collection.Config.AddProperty(
+            Property.Text("description"),
+            TestContext.Current.CancellationToken
+        );
 
         var config = await collection.Config.Get(TestContext.Current.CancellationToken);
 
@@ -781,49 +781,52 @@ public partial class CollectionsTests : IntegrationTests
         }
 
         // Act - Update configuration
-        await collection.Config.Update(c =>
-        {
-            c.Description = "Test";
-            c.InvertedIndexConfig.Bm25.B = 0.8f;
-            c.InvertedIndexConfig.Bm25.K1 = 1.25f;
-            c.InvertedIndexConfig.CleanupIntervalSeconds = 10;
-            c.InvertedIndexConfig.Stopwords.Preset = StopwordConfig.Presets.EN;
-            c.InvertedIndexConfig.Stopwords.Additions = ["a"];
-            c.InvertedIndexConfig.Stopwords.Removals = ["the"];
-
-            c.ReplicationConfig.Factor = 2;
-            c.ReplicationConfig.AsyncEnabled = true;
-            c.ReplicationConfig.DeletionStrategy = DeletionStrategy.DeleteOnConflict;
-
-            var vc = c.VectorConfig["default"];
-            vc.VectorIndexConfig.UpdateHNSW(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.DynamicEfFactor = 8;
-                vic.DynamicEfMax = 500;
-                vic.DynamicEfMin = 100;
-                vic.Ef = -1;
-                vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Acorn;
-                vic.FlatSearchCutoff = 40000;
-                vic.Quantizer = new VectorIndex.Quantizers.PQ
+                c.Description = "Test";
+                c.InvertedIndexConfig.Bm25.B = 0.8f;
+                c.InvertedIndexConfig.Bm25.K1 = 1.25f;
+                c.InvertedIndexConfig.CleanupIntervalSeconds = 10;
+                c.InvertedIndexConfig.Stopwords.Preset = StopwordConfig.Presets.EN;
+                c.InvertedIndexConfig.Stopwords.Additions = ["a"];
+                c.InvertedIndexConfig.Stopwords.Removals = ["the"];
+
+                c.ReplicationConfig.Factor = 2;
+                c.ReplicationConfig.AsyncEnabled = true;
+                c.ReplicationConfig.DeletionStrategy = DeletionStrategy.DeleteOnConflict;
+
+                var vc = c.VectorConfig["default"];
+                vc.VectorIndexConfig.UpdateHNSW(vic =>
                 {
-                    Centroids = 128,
-                    Encoder = new VectorIndex.Quantizers.PQ.EncoderConfig
+                    vic.DynamicEfFactor = 8;
+                    vic.DynamicEfMax = 500;
+                    vic.DynamicEfMin = 100;
+                    vic.Ef = -1;
+                    vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Acorn;
+                    vic.FlatSearchCutoff = 40000;
+                    vic.Quantizer = new VectorIndex.Quantizers.PQ
                     {
-                        Type = VectorIndex.Quantizers.EncoderType.Tile,
-                        Distribution = VectorIndex.Quantizers.DistributionType.Normal,
-                    },
-                    Segments = 4,
-                    TrainingLimit = 100001,
-                };
-                vic.VectorCacheMaxObjects = 2000000;
-            });
+                        Centroids = 128,
+                        Encoder = new VectorIndex.Quantizers.PQ.EncoderConfig
+                        {
+                            Type = VectorIndex.Quantizers.EncoderType.Tile,
+                            Distribution = VectorIndex.Quantizers.DistributionType.Normal,
+                        },
+                        Segments = 4,
+                        TrainingLimit = 100001,
+                    };
+                    vic.VectorCacheMaxObjects = 2000000;
+                });
 
-            c.MultiTenancyConfig.AutoTenantCreation = true;
-            c.MultiTenancyConfig.AutoTenantActivation = true;
+                c.MultiTenancyConfig.AutoTenantCreation = true;
+                c.MultiTenancyConfig.AutoTenantActivation = true;
 
-            c.GenerativeConfig = Configure.Generative.Custom("generative-dummy");
-            c.RerankerConfig = Configure.Reranker.Custom("reranker-dummy");
-        });
+                c.GenerativeConfig = Configure.Generative.Custom("generative-dummy");
+                c.RerankerConfig = Configure.Reranker.Custom("reranker-dummy");
+            },
+            TestContext.Current.CancellationToken
+        );
 
         // Assert - After first update
         config = (await collection.Config.Get(TestContext.Current.CancellationToken))!;
@@ -963,17 +966,20 @@ public partial class CollectionsTests : IntegrationTests
         }
 
         // Act - Second update (disable quantizer and reset filter strategy)
-        await collection.Config.Update(c =>
-        {
-            var vc = c.VectorConfig["default"];
-            vc.VectorIndexConfig.UpdateHNSW(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Sweeping;
-                vic.Quantizer = null; // Disable quantizer
-            });
+                var vc = c.VectorConfig["default"];
+                vc.VectorIndexConfig.UpdateHNSW(vic =>
+                {
+                    vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Sweeping;
+                    vic.Quantizer = null; // Disable quantizer
+                });
 
-            c.ReplicationConfig.DeletionStrategy = DeletionStrategy.NoAutomatedResolution;
-        });
+                c.ReplicationConfig.DeletionStrategy = DeletionStrategy.NoAutomatedResolution;
+            },
+            TestContext.Current.CancellationToken
+        );
 
         // Assert - After second update
         config = (await collection.Config.Get(TestContext.Current.CancellationToken))!;
@@ -1063,11 +1069,14 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Null(config.GenerativeConfig);
         Assert.Null(config.RerankerConfig);
 
-        await collection.Config.Update(c =>
-        {
-            c.GenerativeConfig = Configure.Generative.Custom("generative-custom", new { });
-            c.RerankerConfig = Configure.Reranker.Custom("reranker-custom", new { });
-        });
+        await collection.Config.Update(
+            c =>
+            {
+                c.GenerativeConfig = Configure.Generative.Custom("generative-custom", new { });
+                c.RerankerConfig = Configure.Reranker.Custom("reranker-custom", new { });
+            },
+            TestContext.Current.CancellationToken
+        );
 
         config = (await collection.Config.Get(TestContext.Current.CancellationToken))!;
         Assert.NotNull(config.GenerativeConfig);
@@ -1128,28 +1137,34 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(8, rqQuantizer.Bits);
         Assert.Equal(123, rqQuantizer.RescoreLimit);
 
-        await collection.Config.Update(c =>
-        {
-            var vc = c.VectorConfig["hnswSq"];
-            vc.VectorIndexConfig.UpdateHNSW(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Sweeping;
-                vic.Quantizer = new VectorIndex.Quantizers.SQ
+                var vc = c.VectorConfig["hnswSq"];
+                vc.VectorIndexConfig.UpdateHNSW(vic =>
                 {
-                    TrainingLimit = 456,
-                    RescoreLimit = 789,
-                };
-            });
-        });
+                    vic.FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Sweeping;
+                    vic.Quantizer = new VectorIndex.Quantizers.SQ
+                    {
+                        TrainingLimit = 456,
+                        RescoreLimit = 789,
+                    };
+                });
+            },
+            TestContext.Current.CancellationToken
+        );
 
-        await collection.Config.Update(c =>
-        {
-            var vc = c.VectorConfig["hnswRq"];
-            vc.VectorIndexConfig.UpdateHNSW(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
-            });
-        });
+                var vc = c.VectorConfig["hnswRq"];
+                vc.VectorIndexConfig.UpdateHNSW(vic =>
+                {
+                    vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
+                });
+            },
+            TestContext.Current.CancellationToken
+        );
 
         config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
@@ -1213,14 +1228,17 @@ public partial class CollectionsTests : IntegrationTests
             Assert.True(rqQuantizer.Cache);
         }
 
-        await collection.Config.Update(c =>
-        {
-            var vc = c.VectorConfig["flatRq"];
-            vc.VectorIndexConfig.UpdateFlat(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
-            });
-        });
+                var vc = c.VectorConfig["flatRq"];
+                vc.VectorIndexConfig.UpdateFlat(vic =>
+                {
+                    vic.Quantizer = new VectorIndex.Quantizers.RQ { RescoreLimit = 456 };
+                });
+            },
+            TestContext.Current.CancellationToken
+        );
 
         config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);
@@ -1266,18 +1284,21 @@ public partial class CollectionsTests : IntegrationTests
         Assert.Equal(VectorIndex.Quantizers.None.TypeValue, noneQuantizer.Type);
 
         // Update to add a different quantizer
-        await collection.Config.Update(c =>
-        {
-            var vc = c.VectorConfig["hnswNone"];
-            vc.VectorIndexConfig.UpdateHNSW(vic =>
+        await collection.Config.Update(
+            c =>
             {
-                vic.Quantizer = new VectorIndex.Quantizers.SQ
+                var vc = c.VectorConfig["hnswNone"];
+                vc.VectorIndexConfig.UpdateHNSW(vic =>
                 {
-                    TrainingLimit = 50000,
-                    RescoreLimit = 100,
-                };
-            });
-        });
+                    vic.Quantizer = new VectorIndex.Quantizers.SQ
+                    {
+                        TrainingLimit = 50000,
+                        RescoreLimit = 100,
+                    };
+                });
+            },
+            TestContext.Current.CancellationToken
+        );
 
         config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.NotNull(config);

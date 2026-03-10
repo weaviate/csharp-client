@@ -4,6 +4,102 @@ using System.Collections.ObjectModel;
 namespace Weaviate.Client.Models;
 
 /// <summary>
+/// Provides methods to update the ObjectTTLConfig for controlling object expiration based on time-to-live (TTL) policies.
+/// </summary>
+public record ObjectTTLConfigUpdate(ObjectTTLConfig WrappedConfig)
+{
+    /// <summary>
+    /// Disables the TTL configuration, setting Enabled to false.
+    /// </summary>
+    public void Disable() => WrappedConfig.Enabled = false;
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using the object's last update time as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="ttl">The TTL duration as a TimeSpan.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public ObjectTTLConfig ByUpdateTime(TimeSpan? ttl, bool? filterExpiredObjects = null) =>
+        ByUpdateTime((int?)ttl?.TotalSeconds, filterExpiredObjects);
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using the object's last update time as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="ttl">The TTL duration in seconds.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public ObjectTTLConfig ByUpdateTime(int? ttl, bool? filterExpiredObjects = null)
+    {
+        WrappedConfig.Enabled = true;
+        WrappedConfig.DefaultTTL = ttl ?? WrappedConfig.DefaultTTL;
+        WrappedConfig.DeleteOn = "_lastUpdateTimeUnix";
+        WrappedConfig.FilterExpiredObjects =
+            filterExpiredObjects ?? WrappedConfig.FilterExpiredObjects;
+        return WrappedConfig;
+    }
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using the object's creation time as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="ttl">The TTL duration as a TimeSpan.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public ObjectTTLConfig ByCreationTime(TimeSpan? ttl, bool? filterExpiredObjects = null) =>
+        ByCreationTime((int?)ttl?.TotalSeconds, filterExpiredObjects);
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using the object's creation time as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="ttl">The TTL duration in seconds.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public ObjectTTLConfig ByCreationTime(int? ttl, bool? filterExpiredObjects = null)
+    {
+        WrappedConfig.Enabled = true;
+        WrappedConfig.DefaultTTL = ttl ?? WrappedConfig.DefaultTTL;
+        WrappedConfig.DeleteOn = "_creationTimeUnix";
+        WrappedConfig.FilterExpiredObjects =
+            filterExpiredObjects ?? WrappedConfig.FilterExpiredObjects;
+
+        return WrappedConfig;
+    }
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using a custom date property as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="propertyName">The name of the date property to use for TTL calculation.</param>
+    /// <param name="ttl">The TTL duration as a TimeSpan.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public ObjectTTLConfig ByDateProperty(
+        string? propertyName,
+        TimeSpan? ttl,
+        bool? filterExpiredObjects = null
+    ) => ByDateProperty(propertyName, (int?)ttl?.TotalSeconds, filterExpiredObjects);
+
+    /// <summary>
+    /// Creates an ObjectTTLConfig using a custom date property as the reference for TTL expiration.
+    /// </summary>
+    /// <param name="propertyName">The name of the date property to use for TTL calculation.</param>
+    /// <param name="ttl">The TTL duration in seconds.</param>
+    /// <param name="filterExpiredObjects">Whether to filter expired objects from queries.</param>
+    /// <returns>A configured ObjectTTLConfig.</returns>
+    public ObjectTTLConfig ByDateProperty(
+        string? propertyName,
+        int? ttl,
+        bool? filterExpiredObjects = null
+    )
+    {
+        WrappedConfig.Enabled = true;
+        WrappedConfig.DefaultTTL = ttl ?? WrappedConfig.DefaultTTL;
+        WrappedConfig.DeleteOn = propertyName ?? WrappedConfig.DeleteOn;
+        WrappedConfig.FilterExpiredObjects =
+            filterExpiredObjects ?? WrappedConfig.FilterExpiredObjects;
+        return WrappedConfig;
+    }
+}
+
+/// <summary>
 /// The inverted index config update
 /// </summary>
 public record InvertedIndexConfigUpdate(InvertedIndexConfig WrappedConfig)
@@ -220,6 +316,14 @@ public partial record CollectionUpdate(CollectionConfig WrappedCollection)
             .VectorConfig.Select(vc => new VectorConfigUpdate(WrappedCollection, vc.Value))
             .ToDictionary(vc => vc.Name, vc => vc)
             .AsReadOnly();
+
+    /// <summary>
+    /// Gets the value of the object TTL config
+    /// </summary>
+    public ObjectTTLConfigUpdate ObjectTTLConfig
+    {
+        get => new(WrappedCollection.ObjectTTLConfig ??= new Models.ObjectTTLConfig());
+    }
 
     /// <summary>
     /// Returns the string
@@ -505,6 +609,16 @@ public class ReplicationConfigUpdate(ReplicationConfig WrappedReplicationConfig)
     {
         get => WrappedReplicationConfig.Factor;
         set => WrappedReplicationConfig.Factor = value;
+    }
+
+    /// <summary>
+    /// Gets or sets fine-grained parameters for asynchronous replication.
+    /// Requires Weaviate 1.36 or later.
+    /// </summary>
+    public ReplicationAsyncConfig? AsyncConfig
+    {
+        get => WrappedReplicationConfig.AsyncConfig;
+        set => WrappedReplicationConfig.AsyncConfig = value;
     }
 }
 

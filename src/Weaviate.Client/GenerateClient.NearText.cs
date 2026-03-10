@@ -152,7 +152,7 @@ public partial class GenerateClient
     /// <summary>
     /// Search near text with generative AI capabilities using a NearTextInput record.
     /// </summary>
-    /// <param name="input">Near-text input containing query text, target vectors, certainty, distance, and move parameters.</param>
+    /// <param name="query">Near-text input containing query text, target vectors, certainty, distance, and move parameters.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -168,7 +168,7 @@ public partial class GenerateClient
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Generative search results.</returns>
     public async Task<GenerativeWeaviateResult> NearText(
-        NearTextInput input,
+        NearTextInput query,
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
@@ -186,15 +186,15 @@ public partial class GenerateClient
     {
         var result = await _client.GrpcClient.SearchNearText(
             _collectionClient.Name,
-            input.Query.ToArray(),
-            distance: input.Distance,
-            certainty: input.Certainty,
+            query.Query.ToArray(),
+            distance: query.Distance,
+            certainty: query.Certainty,
             limit: limit,
-            moveTo: input.MoveTo,
-            moveAway: input.MoveAway,
+            moveTo: query.MoveTo,
+            moveAway: query.MoveAway,
             offset: offset,
             autoLimit: autoLimit,
-            targetVector: input.TargetVectors,
+            targetVector: query.TargetVectors,
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
@@ -213,7 +213,7 @@ public partial class GenerateClient
     /// <summary>
     /// Search near text with generative AI capabilities and grouping using a NearTextInput record.
     /// </summary>
-    /// <param name="input">Near-text input containing query text, target vectors, certainty, distance, and move parameters.</param>
+    /// <param name="query">Near-text input containing query text, target vectors, certainty, distance, and move parameters.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
@@ -230,7 +230,7 @@ public partial class GenerateClient
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Generative grouped search results.</returns>
     public async Task<GenerativeGroupByResult> NearText(
-        NearTextInput input,
+        NearTextInput query,
         GroupByRequest groupBy,
         Filter? filters = null,
         uint? limit = null,
@@ -249,12 +249,12 @@ public partial class GenerateClient
     {
         var result = await _client.GrpcClient.SearchNearText(
             _collectionClient.Name,
-            input.Query.ToArray(),
+            query.Query.ToArray(),
             groupBy: groupBy,
-            distance: input.Distance,
-            certainty: input.Certainty,
-            moveTo: input.MoveTo,
-            moveAway: input.MoveAway,
+            distance: query.Distance,
+            certainty: query.Certainty,
+            moveTo: query.MoveTo,
+            moveAway: query.MoveAway,
             limit: limit,
             offset: offset,
             autoLimit: autoLimit,
@@ -263,7 +263,7 @@ public partial class GenerateClient
             rerank: rerank,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
-            targetVector: input.TargetVectors,
+            targetVector: query.TargetVectors,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,

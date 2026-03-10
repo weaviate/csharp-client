@@ -58,55 +58,55 @@ The `DataType` enum defines all supported Weaviate data types with `[EnumMember]
 ```csharp
 public enum DataType
 {
-    [System.Runtime.Serialization.EnumMember(Value = "unknown")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("unknown")]
     Unknown,
 
     // Text types
-    [System.Runtime.Serialization.EnumMember(Value = "text")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("text")]
     Text,
-    [System.Runtime.Serialization.EnumMember(Value = "text[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("text[]")]
     TextArray,
 
     // Numeric types
-    [System.Runtime.Serialization.EnumMember(Value = "int")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("int")]
     Int,
-    [System.Runtime.Serialization.EnumMember(Value = "int[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("int[]")]
     IntArray,
-    [System.Runtime.Serialization.EnumMember(Value = "number")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("number")]
     Number,
-    [System.Runtime.Serialization.EnumMember(Value = "number[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("number[]")]
     NumberArray,
 
     // Boolean types
-    [System.Runtime.Serialization.EnumMember(Value = "boolean")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("boolean")]
     Bool,
-    [System.Runtime.Serialization.EnumMember(Value = "boolean[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("boolean[]")]
     BoolArray,
 
     // Date types
-    [System.Runtime.Serialization.EnumMember(Value = "date")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("date")]
     Date,
-    [System.Runtime.Serialization.EnumMember(Value = "date[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("date[]")]
     DateArray,
 
     // UUID types
-    [System.Runtime.Serialization.EnumMember(Value = "uuid")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("uuid")]
     Uuid,
-    [System.Runtime.Serialization.EnumMember(Value = "uuid[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("uuid[]")]
     UuidArray,
 
     // Special types
-    [System.Runtime.Serialization.EnumMember(Value = "geoCoordinates")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("geoCoordinates")]
     GeoCoordinate,
-    [System.Runtime.Serialization.EnumMember(Value = "blob")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("blob")]
     Blob,
-    [System.Runtime.Serialization.EnumMember(Value = "phoneNumber")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("phoneNumber")]
     PhoneNumber,
 
     // Object types
-    [System.Runtime.Serialization.EnumMember(Value = "object")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("object")]
     Object,
-    [System.Runtime.Serialization.EnumMember(Value = "object[]")]
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("object[]")]
     ObjectArray
 }
 ```

@@ -216,7 +216,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a near-vector search using a NearVectorInput record.
     /// </summary>
-    /// <param name="input">Near-vector input containing vector, certainty, and distance.</param>
+    /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
@@ -229,7 +229,7 @@ public partial class TypedQueryClient<T>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed result containing the search results.</returns>
     public Task<WeaviateResult<WeaviateObject<T>>> NearVector(
-        NearVectorInput input,
+        NearVectorInput query,
         Filter? filters = null,
         uint? autoLimit = null,
         uint? limit = null,
@@ -242,10 +242,10 @@ public partial class TypedQueryClient<T>
         CancellationToken cancellationToken = default
     ) =>
         NearVector(
-            vectors: input.Vector,
+            vectors: query.Vector,
             filters: filters,
-            certainty: input.Certainty,
-            distance: input.Distance,
+            certainty: query.Certainty,
+            distance: query.Distance,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
@@ -260,7 +260,7 @@ public partial class TypedQueryClient<T>
     /// <summary>
     /// Performs a near-vector search with group-by using a NearVectorInput record.
     /// </summary>
-    /// <param name="input">Near-vector input containing vector, certainty, and distance.</param>
+    /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
@@ -274,7 +274,7 @@ public partial class TypedQueryClient<T>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A strongly-typed grouped result.</returns>
     public Task<GroupByResult<T>> NearVector(
-        NearVectorInput input,
+        NearVectorInput query,
         GroupByRequest groupBy,
         Filter? filters = null,
         uint? autoLimit = null,
@@ -288,11 +288,11 @@ public partial class TypedQueryClient<T>
         CancellationToken cancellationToken = default
     ) =>
         NearVector(
-            vectors: input.Vector,
+            vectors: query.Vector,
             groupBy: groupBy,
             filters: filters,
-            certainty: input.Certainty,
-            distance: input.Distance,
+            certainty: query.Certainty,
+            distance: query.Distance,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,

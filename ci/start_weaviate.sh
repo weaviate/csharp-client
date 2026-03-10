@@ -24,7 +24,17 @@ compose_down
 rm -rf weaviate-data || true
 
 echo "Run Docker compose (Weaviate $WEAVIATE_VERSION)"
-compose_up
+if ! compose_up; then
+  echo "======================================"
+  echo "ERROR: Failed to start Weaviate with Docker Compose"
+  echo "Version: $WEAVIATE_VERSION"
+  echo "======================================"
+  exit 1
+fi
+
+echo "Checking Docker container status after compose up:"
+docker ps -a --filter "name=weaviate"
+echo ""
 
 echo "Wait until all containers are up"
 

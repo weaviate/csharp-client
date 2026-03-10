@@ -253,7 +253,7 @@ public static class QueryClientNearTextExtensions
     /// </summary>
     public static async Task<WeaviateResult> NearText(
         this QueryClient client,
-        NearTextInput input,
+        NearTextInput query,
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
@@ -267,10 +267,10 @@ public static class QueryClientNearTextExtensions
     )
     {
         // If input has target vectors, use the lambda builder overload
-        if (input.TargetVectors != null)
+        if (query.TargetVectors != null)
         {
             return await client.NearText(
-                _ => input,
+                _ => query,
                 filters: filters,
                 limit: limit,
                 offset: offset,
@@ -286,11 +286,11 @@ public static class QueryClientNearTextExtensions
 
         // Otherwise use the base method
         return await client.NearText(
-            query: input.Query,
-            certainty: input.Certainty,
-            distance: input.Distance,
-            moveTo: input.MoveTo,
-            moveAway: input.MoveAway,
+            query: query.Query,
+            certainty: query.Certainty,
+            distance: query.Distance,
+            moveTo: query.MoveTo,
+            moveAway: query.MoveAway,
             limit: limit,
             offset: offset,
             autoLimit: autoLimit,
@@ -309,7 +309,7 @@ public static class QueryClientNearTextExtensions
     /// </summary>
     public static async Task<GroupByResult> NearText(
         this QueryClient client,
-        NearTextInput input,
+        NearTextInput query,
         GroupByRequest groupBy,
         Filter? filters = null,
         uint? limit = null,
@@ -324,10 +324,10 @@ public static class QueryClientNearTextExtensions
     )
     {
         // If input has target vectors, use the lambda builder overload
-        if (input.TargetVectors != null)
+        if (query.TargetVectors != null)
         {
             return await client.NearText(
-                _ => input,
+                _ => query,
                 groupBy,
                 filters: filters,
                 limit: limit,
@@ -344,12 +344,12 @@ public static class QueryClientNearTextExtensions
 
         // Otherwise use the base method
         return await client.NearText(
-            query: input.Query,
+            query: query.Query,
             groupBy: groupBy,
-            certainty: input.Certainty,
-            distance: input.Distance,
-            moveTo: input.MoveTo,
-            moveAway: input.MoveAway,
+            certainty: query.Certainty,
+            distance: query.Distance,
+            moveTo: query.MoveTo,
+            moveAway: query.MoveAway,
             limit: limit,
             offset: offset,
             autoLimit: autoLimit,

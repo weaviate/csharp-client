@@ -63,6 +63,11 @@ public static class Reranker
         public string Type => TypeValue;
 
         /// <summary>
+        /// Gets or sets the value of the base url
+        /// </summary>
+        public string? BaseURL { get; set; }
+
+        /// <summary>
         /// Gets or sets the value of the model
         /// </summary>
         public string? Model { get; set; }

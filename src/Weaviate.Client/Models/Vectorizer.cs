@@ -5,7 +5,7 @@ namespace Weaviate.Client.Models;
 /// <summary>
 /// The vectorizer class
 /// </summary>
-internal static class Vectorizer
+public static class Vectorizer
 {
     /// <summary>
     /// Unified weights configuration for multi-media vectorizers.
@@ -403,6 +403,56 @@ internal static class Vectorizer
     }
 
     /// <summary>
+    /// The configuration for multi-media vectorization using the Google Gemini module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2vec-google-gemini")]
+    public record Multi2VecGoogleGemini : VectorizerConfig
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Multi2VecGoogleGemini"/> class
+        /// </summary>
+        [JsonConstructor]
+        internal Multi2VecGoogleGemini() { }
+
+        /// <summary>
+        /// Gets or sets the value of the api endpoint
+        /// </summary>
+        public string? ApiEndpoint { get; set; } = "generativelanguage.googleapis.com";
+
+        /// <summary>
+        /// Gets or sets the value of the image fields
+        /// </summary>
+        public string[]? ImageFields { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the text fields
+        /// </summary>
+        public string[]? TextFields { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the video fields
+        /// </summary>
+        public string[]? VideoFields { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the video interval seconds
+        /// </summary>
+        public int? VideoIntervalSeconds { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the model
+        /// </summary>
+        [JsonPropertyName("modelId")]
+        public string? Model { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the weights
+        /// </summary>
+        internal VectorizerWeights? Weights { get; set; } = null;
+    }
+
+    /// <summary>
     /// The configuration for multi-media vectorization using the Jina module.
     /// See the documentation for detailed usage.
     /// </summary>
@@ -497,6 +547,36 @@ internal static class Vectorizer
         /// </summary>
         [JsonPropertyName("vectorizeClassName")]
         public bool? VectorizeCollectionName { get; set; } = null;
+    }
+
+    /// <summary>
+    /// The configuration for multi-media multi-vector vectorization using the Weaviate module.
+    /// Accepts only image fields. See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2multivec-weaviate", VectorType.MultiVector)]
+    public record Multi2MultiVecWeaviate : VectorizerConfig
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Multi2MultiVecWeaviate"/> class
+        /// </summary>
+        [JsonConstructor]
+        internal Multi2MultiVecWeaviate() { }
+
+        /// <summary>
+        /// Gets or sets the value of the base url
+        /// </summary>
+        [JsonPropertyName("baseUrl")]
+        public string? BaseURL { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the model
+        /// </summary>
+        public string? Model { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the image fields for vectorization
+        /// </summary>
+        public string[]? ImageFields { get; set; } = null;
     }
 
     /// <summary>
