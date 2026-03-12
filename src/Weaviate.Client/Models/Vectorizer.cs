@@ -364,6 +364,11 @@ public static class Vectorizer
         public string[]? VideoFields { get; set; } = null;
 
         /// <summary>
+        /// Gets or sets the value of the audio fields
+        /// </summary>
+        public string[]? AudioFields { get; set; } = null;
+
+        /// <summary>
         /// Gets or sets the value of the video interval seconds
         /// </summary>
         public int? VideoIntervalSeconds { get; set; } = null;
@@ -434,6 +439,11 @@ public static class Vectorizer
         /// Gets or sets the value of the video fields
         /// </summary>
         public string[]? VideoFields { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the audio fields
+        /// </summary>
+        public string[]? AudioFields { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the value of the video interval seconds

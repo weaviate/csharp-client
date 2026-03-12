@@ -231,4 +231,186 @@ public partial class VectorConfigListTests
         Assert.Contains("\"image\"", json);
         Assert.Contains("\"my-model\"", json);
     }
+
+    /// <summary>
+    /// Tests that Multi2VecGoogle serializes audioFields correctly with string arrays
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Multi2VecGoogle_Serializes_AudioFields_StringArray()
+    {
+        // Arrange
+        var vc = Configure.Vector(
+            "default",
+            v =>
+                v.Multi2VecGoogle(
+                    projectId: "my-project",
+                    location: "us-central1",
+                    imageFields: new[] { "image" },
+                    textFields: new[] { "text" },
+                    videoFields: new[] { "video" },
+                    audioFields: new[] { "audio" }
+                )
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"audioFields\"", json);
+        Assert.Contains("\"audio\"", json);
+        Assert.Contains("\"imageFields\"", json);
+        Assert.Contains("\"textFields\"", json);
+        Assert.Contains("\"videoFields\"", json);
+    }
+
+    /// <summary>
+    /// Tests that Multi2VecGoogle serializes audioFields correctly with WeightedFields
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Multi2VecGoogle_Serializes_AudioFields_WeightedFields()
+    {
+        // Arrange
+        var imageFields = new WeightedFields { ("image", 0.7) };
+        var textFields = new WeightedFields { ("text", 0.8) };
+        var videoFields = new WeightedFields { ("video", 0.6) };
+        var audioFields = new WeightedFields { ("audio", 0.9) };
+
+        var vc = Configure.Vector(
+            "default",
+            v =>
+                v.Multi2VecGoogle(
+                    projectId: "my-project",
+                    location: "us-central1",
+                    imageFields: imageFields,
+                    textFields: textFields,
+                    videoFields: videoFields,
+                    audioFields: audioFields
+                )
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"audioFields\"", json);
+        Assert.Contains("\"audio\"", json);
+        Assert.Contains("\"imageFields\"", json);
+        Assert.Contains("\"textFields\"", json);
+        Assert.Contains("\"videoFields\"", json);
+    }
+
+    /// <summary>
+    /// Tests that Multi2VecGoogleGemini serializes audioFields correctly with string arrays
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Multi2VecGoogleGemini_Serializes_AudioFields_StringArray()
+    {
+        // Arrange
+        var vc = Configure.Vector(
+            "default",
+            v =>
+                v.Multi2VecGoogleGemini(
+                    imageFields: new[] { "image" },
+                    textFields: new[] { "text" },
+                    videoFields: new[] { "video" },
+                    audioFields: new[] { "audio" }
+                )
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"audioFields\"", json);
+        Assert.Contains("\"audio\"", json);
+        Assert.Contains("\"imageFields\"", json);
+        Assert.Contains("\"textFields\"", json);
+        Assert.Contains("\"videoFields\"", json);
+    }
+
+    /// <summary>
+    /// Tests that Multi2VecGoogleGemini serializes audioFields correctly with WeightedFields
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Multi2VecGoogleGemini_Serializes_AudioFields_WeightedFields()
+    {
+        // Arrange
+        var imageFields = new WeightedFields { ("image", 0.7) };
+        var textFields = new WeightedFields { ("text", 0.8) };
+        var videoFields = new WeightedFields { ("video", 0.6) };
+        var audioFields = new WeightedFields { ("audio", 0.9) };
+
+        var vc = Configure.Vector(
+            "default",
+            v =>
+                v.Multi2VecGoogleGemini(
+                    imageFields: imageFields,
+                    textFields: textFields,
+                    videoFields: videoFields,
+                    audioFields: audioFields
+                )
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"audioFields\"", json);
+        Assert.Contains("\"audio\"", json);
+        Assert.Contains("\"imageFields\"", json);
+        Assert.Contains("\"textFields\"", json);
+        Assert.Contains("\"videoFields\"", json);
+    }
 }

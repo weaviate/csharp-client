@@ -518,6 +518,236 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
+    /// Request to create a new export operation
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record ExportCreateRequest
+    {
+        /// <summary>
+        /// Unique identifier for this export. Must be URL-safe.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public string Id { get; set; } = default!;
+
+        /// <summary>
+        /// Output file format for the export.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("file_format")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public ExportCreateRequestFile_format File_format { get; set; } = default!;
+
+        /// <summary>
+        /// List of collection names to include in the export. Cannot be used with 'exclude'.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("include")]
+
+        public System.Collections.Generic.IList<string>? Include { get; set; } = default!;
+
+        /// <summary>
+        /// List of collection names to exclude from the export. Cannot be used with 'include'.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("exclude")]
+
+        public System.Collections.Generic.IList<string>? Exclude { get; set; } = default!;
+
+        /// <summary>
+        /// Backend-specific configuration
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("config")]
+
+        public Config? Config { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Response from creating an export operation
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record ExportCreateResponse
+    {
+        /// <summary>
+        /// Unique identifier for this export
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("id")]
+
+        public string? Id { get; set; } = default!;
+
+        /// <summary>
+        /// The backend storage system used
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("backend")]
+
+        public string? Backend { get; set; } = default!;
+
+        /// <summary>
+        /// Full path where the export is being written
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("path")]
+
+        public string? Path { get; set; } = default!;
+
+        /// <summary>
+        /// Current status of the export
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public ExportCreateResponseStatus? Status { get; set; } = default!;
+
+        /// <summary>
+        /// When the export started
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("startedAt")]
+
+        public System.DateTimeOffset? StartedAt { get; set; } = default!;
+
+        /// <summary>
+        /// List of collections being exported
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("classes")]
+
+        public System.Collections.Generic.IList<string>? Classes { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Current status of an export operation
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record ExportStatusResponse
+    {
+        /// <summary>
+        /// Unique identifier for this export
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("id")]
+
+        public string? Id { get; set; } = default!;
+
+        /// <summary>
+        /// The backend storage system used
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("backend")]
+
+        public string? Backend { get; set; } = default!;
+
+        /// <summary>
+        /// Full path where the export is stored
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("path")]
+
+        public string? Path { get; set; } = default!;
+
+        /// <summary>
+        /// Current status of the export
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public ExportStatusResponseStatus? Status { get; set; } = default!;
+
+        /// <summary>
+        /// When the export started
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("startedAt")]
+
+        public System.DateTimeOffset? StartedAt { get; set; } = default!;
+
+        /// <summary>
+        /// Duration of the export in milliseconds
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("tookInMs")]
+
+        public long? TookInMs { get; set; } = default!;
+
+        /// <summary>
+        /// List of collections in this export
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("classes")]
+
+        public System.Collections.Generic.IList<string>? Classes { get; set; } = default!;
+
+        /// <summary>
+        /// Per-shard progress: className -&gt; shardName -&gt; status
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("shardStatus")]
+
+        public System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, ShardProgress>>? ShardStatus { get; set; } = default!;
+
+        /// <summary>
+        /// Error message if export failed
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("error")]
+
+        public string? Error { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Progress information for exporting a single shard
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record ShardProgress
+    {
+        /// <summary>
+        /// Status of this shard's export
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public ShardProgressStatus? Status { get; set; } = default!;
+
+        /// <summary>
+        /// Number of objects exported from this shard
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("objectsExported")]
+
+        public long? ObjectsExported { get; set; } = default!;
+
+        /// <summary>
+        /// Error message if this shard's export failed
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("error")]
+
+        public string? Error { get; set; } = default!;
+
+        /// <summary>
+        /// Reason why this shard was skipped (e.g. tenant status)
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("skipReason")]
+
+        public string? SkipReason { get; set; } = default!;
+
+    }
+
+    /// <summary>
     /// An error response caused by a GraphQL query.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -2190,6 +2420,14 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("exclude")]
 
         public System.Collections.Generic.IList<string>? Exclude { get; set; } = default!;
+
+        /// <summary>
+        /// The ID of an existing backup to use as the base for a file-based incremental backup. If set, only files that have changed since the base backup will be included in the new backup.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("incremental_base_backup_id")]
+
+        public string? Incremental_base_backup_id { get; set; } = default!;
 
     }
 
@@ -4524,6 +4762,93 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("message")]
 
         public string? Message { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum ExportCreateRequestFile_format
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"parquet")]
+        Parquet = 0,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record Config
+    {
+        /// <summary>
+        /// Bucket, container, or volume name for cloud storage backends
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("bucket")]
+
+        public string? Bucket { get; set; } = default!;
+
+        /// <summary>
+        /// Path prefix within the bucket or filesystem
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("path")]
+
+        public string? Path { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum ExportCreateResponseStatus
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"STARTED")]
+        STARTED = 0,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum ExportStatusResponseStatus
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"STARTED")]
+        STARTED = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"TRANSFERRING")]
+        TRANSFERRING = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SUCCESS")]
+        SUCCESS = 2,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FAILED")]
+        FAILED = 3,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
+        CANCELED = 4,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SKIPPED")]
+        SKIPPED = 5,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum ShardProgressStatus
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"STARTED")]
+        STARTED = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"TRANSFERRING")]
+        TRANSFERRING = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SUCCESS")]
+        SUCCESS = 2,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FAILED")]
+        FAILED = 3,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
+        CANCELED = 4,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SKIPPED")]
+        SKIPPED = 5,
 
     }
 
