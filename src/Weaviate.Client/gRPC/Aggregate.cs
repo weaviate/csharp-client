@@ -302,7 +302,7 @@ internal partial class WeaviateGrpcClient
     /// </summary>
     /// <param name="collection">The collection</param>
     /// <param name="query">The query</param>
-    /// <param name="alpha">The alpha</param>
+    /// <param name="alpha_param">The alpha param</param>
     /// <param name="vectors">The vectors</param>
     /// <param name="queryProperties">The query properties</param>
     /// <param name="bm25Operator">The bm 25 operator</param>
@@ -318,7 +318,7 @@ internal partial class WeaviateGrpcClient
     internal async Task<AggregateReply> AggregateHybrid(
         string collection,
         string? query,
-        float alpha,
+        float? alpha_param,
         HybridVectorInput? vectors,
         string[]? queryProperties,
         BM25Operator? bm25Operator,
@@ -344,7 +344,7 @@ internal partial class WeaviateGrpcClient
 
         request.Hybrid = BuildHybrid(
             query,
-            alpha,
+            alpha_param,
             vectors,
             queryProperties,
             null,

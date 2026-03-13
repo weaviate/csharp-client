@@ -45,7 +45,7 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 query: "name",
                 vectors: null,
-                alpha: 0,
+                alpha_param: 0,
                 fusionType: fusionType,
                 includeVectors: true,
                 cancellationToken: TestContext.Current.CancellationToken
@@ -58,7 +58,7 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 query: "name",
                 vectors: new Vectors(objs.First().Vectors["default"]),
-                alpha: 1,
+                alpha_param: 1,
                 fusionType: fusionType,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -97,7 +97,7 @@ public partial class SearchTests : IntegrationTests
                 query: "name",
                 vectors: null,
                 groupBy: new GroupByRequest("name") { ObjectsPerGroup = 1, NumberOfGroups = 2 },
-                alpha: 0,
+                alpha_param: 0,
                 includeVectors: true,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -143,7 +143,7 @@ public partial class SearchTests : IntegrationTests
         );
 
         var objs = await collection.Query.Hybrid(
-            alpha: 1,
+            alpha_param: 1,
             query: query,
             vectors: obj.Vectors["default"],
             cancellationToken: TestContext.Current.CancellationToken
@@ -179,7 +179,7 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 query: "test",
                 vectors: null,
-                alpha: 0,
+                alpha_param: 0,
                 limit: limit,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -217,7 +217,7 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 query: "test",
                 vectors: null,
-                alpha: 0,
+                alpha_param: 0,
                 offset: offset,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -249,7 +249,7 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 query: "fruit",
                 vectors: null,
-                alpha: 0,
+                alpha_param: 0,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
@@ -266,7 +266,7 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 query: "fruit",
                 vectors: null,
-                alpha: 1,
+                alpha_param: 1,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
@@ -752,7 +752,7 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 "name",
                 vectors: new float[] { 1f, 0f, 0f },
-                alpha: 0.7f,
+                alpha_param: 0.7f,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).ToList();
@@ -766,7 +766,7 @@ public partial class SearchTests : IntegrationTests
                     "name",
                     vectors: new float[] { 1f, 0f, 0f },
                     maxVectorDistance: 0.1f,
-                    alpha: 0.7f,
+                    alpha_param: 0.7f,
                     cancellationToken: TestContext.Current.CancellationToken
                 )
             ),
@@ -811,7 +811,7 @@ public partial class SearchTests : IntegrationTests
             await collection.Query.Hybrid(
                 "banana two",
                 vectors: null,
-                alpha: 0.0f,
+                alpha_param: 0.0f,
                 bm25Operator: new BM25Operator.Or(MinimumMatch: 1),
                 cancellationToken: TestContext.Current.CancellationToken
             )

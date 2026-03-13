@@ -435,10 +435,10 @@ Task<WeaviateResult> Hybrid(
 // Text-only search
 await collection.Query.Hybrid("search query");
 
-// With alpha parameter (0 = keyword only, 1 = vector only)
+// With alpha_param parameter (0 = keyword only, 1 = vector only)
 await collection.Query.Hybrid(
     "search query",
-    alpha: 0.5f
+    alpha_param: 0.5f
 );
 
 // With fusion type
@@ -858,4 +858,4 @@ TargetVectors targets = new[] { "title", "description" };
 5. **Set appropriate thresholds**:
    - `certainty`: 0.7-0.9 for high-quality results
    - `distance`: 0.1-0.3 for similar items (lower is closer)
-   - `alpha`: 0.5 for balanced hybrid, 0.75 for more vector influence
+   - `alpha_param`: 0.5 for balanced hybrid, 0.75 for more vector influence

@@ -290,7 +290,7 @@ var result = await client
     .Generate
     .Hybrid(
         query: "wireless headphones",
-        alpha: 0.5f,
+        alpha_param: 0.5f,
         limit: 10,
         prompt: "Compare the features and create a buying guide",
         provider: google

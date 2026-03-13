@@ -822,7 +822,7 @@ internal partial class WeaviateGrpcClient
     /// Builds the hybrid using the specified query
     /// </summary>
     /// <param name="query">The query</param>
-    /// <param name="alpha">The alpha</param>
+    /// <param name="alpha_param">The alpha param</param>
     /// <param name="vectors">The vectors</param>
     /// <param name="queryProperties">The query properties</param>
     /// <param name="fusionType">The fusion type</param>
@@ -831,7 +831,7 @@ internal partial class WeaviateGrpcClient
     /// <returns>The hybrid</returns>
     private static V1.Hybrid BuildHybrid(
         string? query = null,
-        float? alpha = null,
+        float? alpha_param = null,
         HybridVectorInput? vectors = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -845,15 +845,11 @@ internal partial class WeaviateGrpcClient
         {
             hybrid.Query = query;
         }
-        else
+
+        if (alpha_param.HasValue)
         {
-            // If no query is provided, move the alpha all the way to vector search
-            alpha = 1.0f;
+            hybrid.Alpha = alpha_param.Value;
         }
-
-        alpha ??= 0.7f; // Default alpha if not provided
-
-        hybrid.Alpha = alpha.Value;
 
         // Pattern match on HybridVectorInput to build the appropriate search type
         if (vectors != null)

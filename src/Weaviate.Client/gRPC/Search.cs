@@ -328,7 +328,7 @@ internal partial class WeaviateGrpcClient
     /// </summary>
     /// <param name="collection">The collection</param>
     /// <param name="query">The query</param>
-    /// <param name="alpha">The alpha</param>
+    /// <param name="alpha_param">The alpha param</param>
     /// <param name="vectors">The vectors</param>
     /// <param name="queryProperties">The query properties</param>
     /// <param name="fusionType">The fusion type</param>
@@ -354,7 +354,7 @@ internal partial class WeaviateGrpcClient
     internal async Task<V1.SearchReply> SearchHybrid(
         string collection,
         string? query = null,
-        float? alpha = null,
+        float? alpha_param = null,
         HybridVectorInput? vectors = null,
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
@@ -405,7 +405,7 @@ internal partial class WeaviateGrpcClient
 
         request.HybridSearch = BuildHybrid(
             query,
-            alpha,
+            alpha_param,
             vectors,
             queryProperties,
             fusionType,

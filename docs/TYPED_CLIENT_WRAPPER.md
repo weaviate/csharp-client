@@ -136,7 +136,7 @@ var keywordResults = await articlesClient.Query.BM25(
 // Hybrid search
 var hybridResults = await articlesClient.Query.Hybrid(
     "deep learning",
-    alpha: 0.5f  // 0 = pure keyword, 1 = pure vector
+    alpha_param: 0.5f  // 0 = pure keyword, 1 = pure vector
 );
 
 // All results are strongly typed

@@ -59,7 +59,7 @@ namespace Weaviate.Client
         public async Task<WeaviateResult> Hybrid(
             string? query = null,
             HybridVectorInput? vectors = null,
-            float? alpha = null,
+            float? alpha_param = null,
             string[]? queryProperties = null,
             HybridFusion? fusionType = null,
             float? maxVectorDistance = null,
@@ -87,7 +87,7 @@ namespace Weaviate.Client
             GroupByRequest groupBy,
             string? query = null,
             HybridVectorInput? vectors = null,
-            float? alpha = null,
+            float? alpha_param = null,
             string[]? queryProperties = null,
             HybridFusion? fusionType = null,
             float? maxVectorDistance = null,
@@ -117,7 +117,7 @@ namespace Weaviate.Client
         public async Task<GenerativeWeaviateResult> Hybrid(
             string? query = null,
             HybridVectorInput? vectors = null,
-            float? alpha = null,
+            float? alpha_param = null,
             string[]? queryProperties = null,
             HybridFusion? fusionType = null,
             float? maxVectorDistance = null,
@@ -150,7 +150,7 @@ namespace Weaviate.Client
         public async Task<AggregateResult> Hybrid(
             string? query = null,
             HybridVectorInput? vectors = null,
-            float alpha = 0.7f,
+            float? alpha_param = null,
             string[]? queryProperties = null,
             uint? objectLimit = null,
             BM25Operator? bm25Operator = null,

@@ -70,7 +70,7 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal("search text", request.HybridSearch.Query);
         Assert.Null(request.HybridSearch.NearText);
         Assert.Null(request.HybridSearch.NearVector);
-        Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        Assert.Equal(0f, request.HybridSearch.Alpha, precision: 5); // No alpha_param provided, so proto field defaults to 0
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         await _collection.Query.Hybrid(
             query: "search text",
             vectors: (HybridVectorInput?)null,
-            alpha: 0.5f,
+            alpha_param: 0.5f,
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -1026,7 +1026,7 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         await _collection.Query.Hybrid(
             query: "search query",
             vectors: HybridVectorInput.FromVectorSearch(vectorInput),
-            alpha: 0.7f,
+            alpha_param: 0.7f,
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -2214,7 +2214,7 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var queryNearVector3 = await _collection.Query.Hybrid(
             query: "fluffy playful",
             vectors: null,
-            alpha: 0.7f,
+            alpha_param: 0.7f,
             limit: 5,
             returnProperties: ["name", "breed", "color", "counter"],
             returnMetadata: MetadataOptions.Score | MetadataOptions.Distance,
