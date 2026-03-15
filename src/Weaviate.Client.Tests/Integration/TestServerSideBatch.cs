@@ -11,6 +11,17 @@ namespace Weaviate.Client.Tests.Integration;
 public class ServerSideBatchTests : IntegrationTests
 {
     /// <summary>
+    /// Initializes this instance
+    /// </summary>
+    /// <returns>The value task</returns>
+    public override async ValueTask InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        RequireVersion("1.36.0");
+    }
+
+    /// <summary>
     /// Tests basic server-side batch insert
     /// </summary>
     [Fact(Timeout = 10000)]
