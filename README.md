@@ -86,6 +86,7 @@ For more detailed information on specific features, please refer to the official
 
 ### Additional Guides
 
+- **[Batch API Usage](docs/BATCH_API_USAGE.md)**: Server-side streaming batch operations
 - **[Error Handling](docs/ERRORS.md)**: Exception types and error handling patterns
 - **[RBAC API Usage](docs/RBAC_API_USAGE.md)**: Managing users, roles, permissions, and groups
 - **[Backup API Usage](docs/BACKUP_API_USAGE.md)**: Creating and restoring backups

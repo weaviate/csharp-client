@@ -85,4 +85,40 @@ internal partial class WeaviateGrpcClient
             throw Internal.ExceptionHelper.MapGrpcException(ex, "Batch insert request failed");
         }
     }
+
+    /// <summary>
+    /// Starts a bidirectional streaming call for server-side batching.
+    /// </summary>
+    /// <param name="consistencyLevel">The consistency level</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>A batch stream wrapper that abstracts away protobuf types</returns>
+    internal async Task<BatchStreamWrapper> StartBatchStream(
+        ConsistencyLevels? consistencyLevel = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        try
+        {
+            var stream = _grpcClient.BatchStream(CreateCallOptions(cancellationToken));
+
+            // Send the Start message with optional consistency level
+            var startRequest = new Protobuf.V1.BatchStreamRequest
+            {
+                Start = new Protobuf.V1.BatchStreamRequest.Types.Start(),
+            };
+
+            if (consistencyLevel.HasValue)
+            {
+                startRequest.Start.ConsistencyLevel = MapConsistencyLevel(consistencyLevel.Value);
+            }
+
+            await stream.RequestStream.WriteAsync(startRequest, cancellationToken);
+
+            return new BatchStreamWrapper(stream);
+        }
+        catch (global::Grpc.Core.RpcException ex)
+        {
+            throw Internal.ExceptionHelper.MapGrpcException(ex, "Batch stream start failed");
+        }
+    }
 }
