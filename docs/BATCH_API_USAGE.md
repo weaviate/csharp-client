@@ -1,5 +1,9 @@
 # Batch API Usage Guide
 
+
+> **Version Requirement:**
+> Server-side batch streaming requires Weaviate v1.36.0 or newer (or v1.35 with the experimental flag enabled). Earlier versions are not supported and will fail.
+
 This guide covers the Weaviate C# client's server-side batching functionality. It provides examples and best practices for efficiently inserting large numbers of objects.
 
 ## Table of Contents

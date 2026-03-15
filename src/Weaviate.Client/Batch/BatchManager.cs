@@ -9,6 +9,11 @@ namespace Weaviate.Client.Batch
     public class BatchManager
     {
         /// <summary>
+        /// Minimum Weaviate version for server-side batch support.
+        /// </summary>
+        private static readonly Version MinBatchVersion = new(1, 36, 0);
+
+        /// <summary>
         /// Gets the value of the  client
         /// </summary>
         private WeaviateClient _client => _collectionClient.Client;
@@ -35,6 +40,7 @@ namespace Weaviate.Client.Batch
             CancellationToken ct = default
         )
         {
+            await _client.EnsureVersion<BatchManager>();
             var grpcClient = _client.GrpcClient;
             var collectionName = _collectionClient.Name;
             var tenant = _collectionClient.Tenant;
@@ -52,12 +58,14 @@ namespace Weaviate.Client.Batch
         /// <param name="options">Optional batch configuration</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>A batch insert response with results for each object</returns>
+        [RequiresWeaviateVersion(1, 36, 0)]
         public async Task<BatchInsertResponse> InsertMany(
             IEnumerable<BatchInsertRequest> requests,
             BatchOptions? options = null,
             CancellationToken ct = default
         )
         {
+            await _client.EnsureVersion<BatchManager>();
             var results = new List<BatchInsertResponseEntry>();
             await using var batch = await StartBatch(options, ct);
             var handles = new List<(int Index, TaskHandle Handle)>();
@@ -92,12 +100,14 @@ namespace Weaviate.Client.Batch
         /// <param name="options">Optional batch configuration</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>A batch insert response with results for each object</returns>
+        [RequiresWeaviateVersion(1, 36, 0)]
         public async Task<BatchInsertResponse> InsertMany<T>(
             IEnumerable<T> items,
             BatchOptions? options = null,
             CancellationToken ct = default
         )
         {
+            await _client.EnsureVersion<BatchManager>();
             var requests = items.Select(i =>
                 i is BatchInsertRequest bir ? bir : new BatchInsertRequest(i!)
             );
@@ -111,12 +121,14 @@ namespace Weaviate.Client.Batch
         /// <param name="options">Optional batch configuration</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>A batch insert response with results for each object</returns>
+        [RequiresWeaviateVersion(1, 36, 0)]
         public async Task<BatchInsertResponse> InsertMany(
             IAsyncEnumerable<BatchInsertRequest> requests,
             BatchOptions? options = null,
             CancellationToken ct = default
         )
         {
+            await _client.EnsureVersion<BatchManager>();
             var results = new List<BatchInsertResponseEntry>();
             await using var batch = await StartBatch(options, ct);
             var handles = new List<(int Index, TaskHandle Handle)>();
@@ -155,12 +167,14 @@ namespace Weaviate.Client.Batch
         /// <param name="options">Optional batch configuration</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>A batch insert response with results for each object</returns>
+        [RequiresWeaviateVersion(1, 36, 0)]
         public async Task<BatchInsertResponse> InsertMany<T>(
             IAsyncEnumerable<T> items,
             BatchOptions? options = null,
             CancellationToken ct = default
         )
         {
+            await _client.EnsureVersion<BatchManager>();
             async IAsyncEnumerable<BatchInsertRequest> ConvertToRequests()
             {
                 await foreach (var item in items.WithCancellation(ct))
@@ -183,6 +197,7 @@ namespace Weaviate.Client.Batch
         /// <param name="options">Optional batch configuration</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>A task that completes when all items have been processed</returns>
+        [RequiresWeaviateVersion(1, 36, 0)]
         public async Task InsertMany(
             ChannelReader<BatchInsertRequest> channelReader,
             ChannelWriter<BatchInsertResponseEntry> resultWriter,
@@ -190,6 +205,7 @@ namespace Weaviate.Client.Batch
             CancellationToken ct = default
         )
         {
+            await _client.EnsureVersion<BatchManager>();
             await using var batch = await StartBatch(options, ct);
             var pendingResults = new List<Task<(int Index, TaskHandle Handle)>>();
             var index = 0;
@@ -235,12 +251,14 @@ namespace Weaviate.Client.Batch
         /// <param name="options">Optional batch configuration</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>A batch insert response with results for each object</returns>
+        [RequiresWeaviateVersion(1, 36, 0)]
         public async Task<BatchInsertResponse> InsertMany(
             ChannelReader<BatchInsertRequest> channelReader,
             BatchOptions? options = null,
             CancellationToken ct = default
         )
         {
+            await _client.EnsureVersion<BatchManager>();
             var resultChannel = Channel.CreateUnbounded<BatchInsertResponseEntry>();
             var results = new List<BatchInsertResponseEntry>();
 
@@ -279,6 +297,7 @@ namespace Weaviate.Client.Batch
         /// <param name="options">Optional batch configuration</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>A task that completes when all items have been processed</returns>
+        [RequiresWeaviateVersion(1, 36, 0)]
         public async Task InsertMany<T>(
             ChannelReader<T> channelReader,
             ChannelWriter<BatchInsertResponseEntry> resultWriter,
@@ -286,6 +305,7 @@ namespace Weaviate.Client.Batch
             CancellationToken ct = default
         )
         {
+            await _client.EnsureVersion<BatchManager>();
             var requestChannel = Channel.CreateUnbounded<BatchInsertRequest>();
 
             // Background task to convert T to BatchInsertRequest
@@ -326,12 +346,14 @@ namespace Weaviate.Client.Batch
         /// <param name="options">Optional batch configuration</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>A batch insert response with results for each object</returns>
+        [RequiresWeaviateVersion(1, 36, 0)]
         public async Task<BatchInsertResponse> InsertMany<T>(
             ChannelReader<T> channelReader,
             BatchOptions? options = null,
             CancellationToken ct = default
         )
         {
+            await _client.EnsureVersion<BatchManager>();
             var requestChannel = Channel.CreateUnbounded<BatchInsertRequest>();
 
             // Background task to convert T to BatchInsertRequest

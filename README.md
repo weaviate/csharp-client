@@ -84,9 +84,11 @@ For more detailed information on specific features, please refer to the official
 - **[How-to: Manage data objects](https://docs.weaviate.io/weaviate/manage-objects)**
 - **[How-to: Query & search data](https://docs.weaviate.io/weaviate/search)**
 
+
 ### Additional Guides
 
 - **[Batch API Usage](docs/BATCH_API_USAGE.md)**: Server-side streaming batch operations
+    **Note:** Server-side batch requires Weaviate v1.36.0 or newer (or v1.35 with the experimental flag enabled). Earlier versions will not work.
 - **[Error Handling](docs/ERRORS.md)**: Exception types and error handling patterns
 - **[RBAC API Usage](docs/RBAC_API_USAGE.md)**: Managing users, roles, permissions, and groups
 - **[Backup API Usage](docs/BACKUP_API_USAGE.md)**: Creating and restoring backups
