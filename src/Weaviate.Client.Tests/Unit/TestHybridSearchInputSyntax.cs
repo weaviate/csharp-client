@@ -1704,7 +1704,7 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
     /// Tests that hybrid vector input multiple types throws argument exception
     /// </summary>
     [Fact]
-    public async Task HybridVectorInput_MultipleTypes_ThrowsArgumentException()
+    public Task HybridVectorInput_MultipleTypes_ThrowsArgumentException()
     {
         // This test verifies the discriminated union constraint
         // HybridVectorInput can only hold one of the three types
@@ -1726,6 +1726,7 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Null(input2.VectorSearch);
         Assert.NotNull(input2.NearText);
         Assert.Null(input2.NearVector);
+        return Task.CompletedTask;
     }
 
     #endregion
