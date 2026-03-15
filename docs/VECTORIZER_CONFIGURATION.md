@@ -866,6 +866,7 @@ var config = Configure.Vectors.Multi2VecGoogle(
     imageFields: ["image"],
     textFields: ["title", "description"],
     videoFields: ["video"],
+    audioFields: ["audio"],
     videoIntervalSeconds: 2,
     model: "multimodalembedding",
     dimensions: 512,
@@ -880,8 +881,15 @@ var config = Configure.Vectors.Multi2VecGoogle(
 - `projectId`: GCP project ID
 - `location`: GCP location
 
-**Parameters:**
+**Optional Parameters:**
+- `imageFields`: Array of image field names to vectorize
+- `textFields`: Array of text field names to vectorize
+- `videoFields`: Array of video field names to vectorize
+- `audioFields`: Array of audio field names to vectorize
 - `videoIntervalSeconds`: Interval for video frame sampling
+- `model`: Model name to use
+- `dimensions`: Number of vector dimensions
+- `vectorizeCollectionName`: Whether to vectorize the collection name
 
 #### Multi2VecCohere
 

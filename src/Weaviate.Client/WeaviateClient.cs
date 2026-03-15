@@ -369,7 +369,7 @@ public partial class WeaviateClient : IDisposable
         var maxMessageSize = _metaCache?.GrpcMaxMessageSize;
 
         // Create gRPC client with metadata
-        GrpcClient = CreateGrpcClient(config, tokenService, maxMessageSize);
+        GrpcClient = CreateGrpcClient(config, tokenService, maxMessageSize, _metaCache?.Version);
 
         _logger.LogDebug("Weaviate client initialization completed");
     }
@@ -557,7 +557,8 @@ public partial class WeaviateClient : IDisposable
     internal static WeaviateGrpcClient CreateGrpcClient(
         ClientConfiguration config,
         ITokenService? tokenService,
-        ulong? maxMessageSize = null
+        ulong? maxMessageSize = null,
+        Version? serverVersion = null
     )
     {
         var wcdHost = IsWeaviateDomain(config.RestAddress) ? config.RestAddress : null;
@@ -565,7 +566,7 @@ public partial class WeaviateClient : IDisposable
         var retryPolicy = config.RetryPolicy ?? WeaviateDefaults.DefaultRetryPolicy;
         var defaultTimeout = config.DefaultTimeout ?? WeaviateDefaults.DefaultTimeout;
 
-        return WeaviateGrpcClient.Create(
+        var client = WeaviateGrpcClient.Create(
             config.GrpcUri,
             wcdHost,
             tokenService,
@@ -577,6 +578,14 @@ public partial class WeaviateClient : IDisposable
             config.LogRequests,
             config.RequestLoggingLevel
         );
+
+        // Set alpha default for backward compatibility with Weaviate <= 1.35
+        if (serverVersion != null && serverVersion >= new Version(1, 36))
+        {
+            client.SetUseAlphaParam(true);
+        }
+
+        return client;
     }
 
     /// <summary>

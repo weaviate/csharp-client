@@ -9,6 +9,11 @@ namespace Weaviate.Client.Tests.Unit;
 /// and produce the expected gRPC request structure.
 /// </summary>
 [Collection("Unit Tests")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Performance",
+    "CA1861:Avoid constant arrays as arguments",
+    Justification = "<Pending>"
+)]
 public class TestHybridSearchInputSyntax : IAsyncLifetime
 {
     /// <summary>
@@ -32,7 +37,7 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
     /// <returns>The value task</returns>
     public ValueTask InitializeAsync()
     {
-        var (client, getRequest) = MockGrpcClient.CreateWithSearchCapture();
+        var (client, getRequest) = MockGrpcClient.CreateWithSearchCapture(new Version(1, 36, 0));
         _getRequest = getRequest;
         _collection = client.Collections.Use(CollectionName);
         return ValueTask.CompletedTask;
@@ -70,7 +75,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal("search text", request.HybridSearch.Query);
         Assert.Null(request.HybridSearch.NearText);
         Assert.Null(request.HybridSearch.NearVector);
-        Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -91,7 +105,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal("search text", request.HybridSearch.Query);
-        Assert.Equal(0.5f, request.HybridSearch.Alpha, precision: 5);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.5f, request.HybridSearch.Alpha, precision: 5); // Explicit alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(0.5f, request.HybridSearch.AlphaParam, precision: 5);
+        }
     }
 
     /// <summary>
@@ -112,6 +136,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.Hybrid.Types.FusionType.RelativeScore, request.HybridSearch.FusionType);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     #endregion
@@ -139,6 +173,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("default", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -161,6 +206,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -185,6 +241,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -205,6 +272,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -236,6 +314,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("colbert", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -263,6 +352,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("colbert", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -290,6 +390,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -313,6 +424,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("vector1", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -345,6 +467,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
         Assert.Contains("vector1", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("vector2", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -371,6 +504,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -397,6 +541,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -424,6 +579,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -453,6 +619,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
             V1.CombinationMethod.TypeRelativeScore,
             request.HybridSearch.Targets.Combination
         );
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -481,6 +658,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
         Assert.Single(request.HybridSearch.Targets.TargetVectors);
         Assert.Equal("regular", request.HybridSearch.Targets.TargetVectors[0]);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -505,6 +693,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearText);
         Assert.Contains("semantic search", request.HybridSearch.NearText.Query);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -529,6 +728,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.NearText);
         Assert.Contains("semantic search", request.HybridSearch.NearText.Query);
         Assert.Equal(0.5, request.HybridSearch.NearText.Distance, precision: 5);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -552,6 +762,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearText);
         Assert.Equal(0.8, request.HybridSearch.NearText.Certainty, precision: 5);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -579,6 +800,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.NearText);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -604,6 +836,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -629,6 +872,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -655,6 +909,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -683,6 +948,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
             V1.CombinationMethod.TypeRelativeScore,
             request.HybridSearch.Targets.Combination
         );
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -708,6 +984,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -731,6 +1018,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.True(string.IsNullOrEmpty(request.HybridSearch.Query)); // Verify query is null or empty
         Assert.NotNull(request.HybridSearch.NearText);
         Assert.Contains("banana", request.HybridSearch.NearText.Query);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -757,6 +1055,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearVector);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -780,6 +1089,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearVector);
         Assert.Equal(0.5, request.HybridSearch.NearVector.Distance, precision: 5);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -803,6 +1123,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearVector);
         Assert.Equal(0.9, request.HybridSearch.NearVector.Certainty, precision: 5);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -828,6 +1159,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.NearVector);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -856,6 +1198,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearVector);
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -884,6 +1237,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -907,6 +1271,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.True(string.IsNullOrEmpty(request.HybridSearch.Query)); // Verify query is null or empty
         Assert.NotNull(request.HybridSearch.NearVector);
         Assert.Equal(0.8f, request.HybridSearch.NearVector.Certainty, precision: 5);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -936,6 +1311,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.NearVector);
         Assert.Equal(0.5f, request.HybridSearch.NearVector.Distance, precision: 5);
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     #endregion
@@ -960,6 +1345,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.Equal("keyword search", request.HybridSearch.Query);
         Assert.NotNull(request.HybridSearch.Targets);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -984,6 +1379,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal("keyword", request.HybridSearch.Query);
         Assert.NotNull(request.HybridSearch.NearText);
         Assert.Contains("semantic meaning", request.HybridSearch.NearText.Query);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -1007,6 +1412,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.Equal("keyword", request.HybridSearch.Query);
         Assert.NotNull(request.HybridSearch.NearVector);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -1034,7 +1449,18 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal("search query", request.HybridSearch.Query);
-        Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Explicit alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(0.7f, request.HybridSearch.AlphaParam, precision: 5);
+        }
+
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
     }
 
@@ -1067,6 +1493,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1095,6 +1532,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1124,6 +1572,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -1155,6 +1614,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
         Assert.Contains("vector1", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("vector2", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -1182,6 +1651,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
         Assert.Contains("title", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("description", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1206,6 +1686,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     #endregion
@@ -1279,6 +1769,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         // Assert
         var request = _getRequest();
         Assert.NotNull(request);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1304,6 +1805,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.Contains("vector1", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("vector2", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1324,6 +1836,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearText);
         Assert.Contains("semantic search query", request.HybridSearch.NearText.Query);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1352,6 +1875,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1375,6 +1909,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearText);
         Assert.Equal(0.3, request.HybridSearch.NearText.Distance, precision: 5);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1398,6 +1943,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearVector);
         Assert.Equal(0.4, request.HybridSearch.NearVector.Distance, precision: 5);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1421,6 +1977,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("named", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -1449,6 +2016,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1477,6 +2055,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1505,6 +2094,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1541,6 +2141,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("colbert1", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("colbert2", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1571,6 +2182,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("colbert1", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1599,6 +2221,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1625,6 +2258,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1663,6 +2307,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("colbert", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1696,6 +2351,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("colbert", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -1727,6 +2393,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
         Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1752,6 +2429,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1777,6 +2465,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1803,6 +2502,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1831,6 +2541,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
             V1.CombinationMethod.TypeRelativeScore,
             request.HybridSearch.Targets.Combination
         );
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -1856,6 +2577,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1877,6 +2609,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1898,6 +2641,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1923,6 +2677,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -1950,6 +2715,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
             V1.CombinationMethod.TypeRelativeScore,
             request.HybridSearch.Targets.Combination
         );
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -1977,6 +2753,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("named", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -2007,6 +2794,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("first", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("second", request.HybridSearch.Targets.TargetVectors);
         Assert.Contains("third", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -2034,6 +2832,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("same", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -2058,6 +2867,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Contains("fromVectors", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -2089,6 +2909,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -2116,6 +2947,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         var request = _getRequest();
         Assert.NotNull(request);
         Assert.Equal(V1.CombinationMethod.TypeMin, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     /// <summary>
@@ -2147,6 +2989,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
             request.HybridSearch.Targets.Combination
         );
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -2175,6 +3028,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearVector);
         Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion
@@ -2198,6 +3062,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearText);
         Assert.Equal(V1.CombinationMethod.Unspecified, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -2261,6 +3135,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(2, request.HybridSearch.NearVector.VectorForTargets.Count);
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -2286,6 +3170,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearVector);
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -2313,6 +3207,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         // Note: Hybrid NearVector builders do not accept certainty/distance parameters
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -2337,6 +3241,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Equal(2, request.HybridSearch.NearText.Query.Count);
         Assert.Equal(V1.CombinationMethod.TypeManual, request.HybridSearch.Targets.Combination);
         Assert.Equal(2, request.HybridSearch.Targets.WeightsForTargets.Count);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -2359,6 +3273,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request);
         Assert.NotNull(request.HybridSearch.NearText);
         Assert.Equal(V1.CombinationMethod.TypeAverage, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -2388,6 +3312,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.NotNull(request.HybridSearch.NearText.MoveTo);
         Assert.NotNull(request.HybridSearch.NearText.MoveAway);
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -2411,6 +3345,16 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         Assert.Contains("myVector", request.HybridSearch.Targets.TargetVectors);
         // Combination should be Unspecified when using .Vectors() without combination method
         Assert.Equal(V1.CombinationMethod.Unspecified, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(0.7f, request.HybridSearch.Alpha, precision: 5); // Default alpha
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.False(request.HybridSearch.HasAlphaParam);
+        }
     }
 
     /// <summary>
@@ -2437,6 +3381,17 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
         // Note: Hybrid NearText builders do not accept certainty/distance parameters
         Assert.NotNull(request.HybridSearch.Targets);
         Assert.Equal(V1.CombinationMethod.TypeSum, request.HybridSearch.Targets.Combination);
+
+        // Assert alpha depending on server version
+        if (_collection.Client.WeaviateVersion < new Version(1, 35, 0))
+        {
+            Assert.Equal(1.0f, request.HybridSearch.Alpha, precision: 5); // Pure vector search
+        }
+        else if (_collection.Client.WeaviateVersion >= new Version(1, 36, 0))
+        {
+            Assert.True(request.HybridSearch.HasAlphaParam);
+            Assert.Equal(1.0f, request.HybridSearch.AlphaParam, precision: 5); // Pure vector search
+        }
     }
 
     #endregion

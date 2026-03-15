@@ -45,6 +45,20 @@ internal partial class WeaviateGrpcClient : IDisposable
     private readonly RetryPolicy? _retryPolicy;
 
     /// <summary>
+    /// Whether to use alpha param property or pass a default value (0.7f) for hybrid searches.
+    /// Set to true for Weaviate server versions 1.35 and earlier for backward compatibility.
+    /// </summary>
+    private bool _useAlphaParam = false;
+
+    /// <summary>
+    /// Sets whether to use alpha param property for hybrid searches.
+    /// </summary>
+    internal void SetUseAlphaParam(bool useParam)
+    {
+        _useAlphaParam = useParam;
+    }
+
+    /// <summary>
     /// Internal constructor for testing. Accepts a pre-configured GrpcChannel to bypass network initialization.
     /// </summary>
     internal WeaviateGrpcClient(

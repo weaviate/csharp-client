@@ -42,7 +42,7 @@ public sealed record ClientConfiguration(
     DelegatingHandler[]? CustomHandlers = null,
     HttpMessageHandler? HttpMessageHandler = null,
     ILoggerFactory? LoggerFactory = null,
-    bool LogRequests = false,
+    bool LogRequests = false, // Set to true only for debugging. See CONTRIBUTING.md for guidance.
     LogLevel RequestLoggingLevel = LogLevel.Debug
 )
 {

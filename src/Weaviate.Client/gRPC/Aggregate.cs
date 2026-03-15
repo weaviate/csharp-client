@@ -317,18 +317,18 @@ internal partial class WeaviateGrpcClient
     /// <returns>A task containing the aggregate reply</returns>
     internal async Task<AggregateReply> AggregateHybrid(
         string collection,
-        string? query,
-        float alpha,
-        HybridVectorInput? vectors,
-        string[]? queryProperties,
-        BM25Operator? bm25Operator,
-        float? maxVectorDistance,
-        Filter? filter,
-        Aggregate.GroupBy? groupBy,
-        uint? objectLimit,
-        bool totalCount,
-        string? tenant,
-        IEnumerable<Aggregate.Metric>? metrics,
+        string? query = null,
+        float? alpha = null,
+        HybridVectorInput? vectors = null,
+        string[]? queryProperties = null,
+        BM25Operator? bm25Operator = null,
+        float? maxVectorDistance = null,
+        Filter? filter = null,
+        Aggregate.GroupBy? groupBy = null,
+        uint? objectLimit = null,
+        bool totalCount = true,
+        string? tenant = null,
+        IEnumerable<Aggregate.Metric>? metrics = null,
         CancellationToken cancellationToken = default
     )
     {

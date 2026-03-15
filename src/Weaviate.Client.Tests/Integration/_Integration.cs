@@ -1,6 +1,7 @@
-using System.Diagnostics;
 using System.Reflection;
 using dotenv.net;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
 
@@ -42,6 +43,11 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
     protected HttpMessageHandler? _httpMessageHandler;
 
     /// <summary>
+    /// Configuration for tests, built from environment variables and optional appsettings.Test.json
+    /// </summary>
+    protected readonly IConfiguration _configuration;
+
+    /// <summary>
     /// The new guid
     /// </summary>
     protected static readonly Guid[] _reusableUuids =
@@ -62,13 +68,11 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
             DotEnv.Load(options: new DotEnvOptions(envFilePaths: [ENV_FILE]));
         }
 
-        _httpMessageHandler = new LoggingHandler(str =>
-        {
-            Debug.WriteLine(str);
-        })
-        {
-            InnerHandler = new HttpClientHandler(),
-        };
+        // Build configuration from environment variables and optional test config file
+        _configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.Test.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
     }
 
     /// <summary>
@@ -123,6 +127,29 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
         if (Credentials != null)
         {
             builder.WithCredentials(Credentials);
+        }
+
+        // Enable request logging if configured via Weaviate__LogRequests=true
+        // Console output is captured by xUnit via [assembly: CaptureConsole]
+        if (_configuration.GetValue<bool>("Weaviate:LogRequests"))
+        {
+            var minLogLevel = _configuration.GetValue<LogLevel>(
+                "Weaviate:RequestLoggingLevel",
+                LogLevel.Debug
+            );
+
+            var loggerFactory = LoggerFactory.Create(b =>
+            {
+                b.AddConsole().SetMinimumLevel(minLogLevel);
+            });
+
+            builder.WithLoggerFactory(loggerFactory);
+            builder.UseRequestLogging(
+                _configuration.GetValue<LogLevel>(
+                    "Weaviate:RequestLoggingLevel",
+                    LogLevel.Information
+                )
+            );
         }
 
         _weaviate = await builder.BuildAsync();

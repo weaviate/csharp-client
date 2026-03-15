@@ -303,6 +303,7 @@ public class VectorizerFactory
     /// <param name="imageFields">The image fields</param>
     /// <param name="textFields">The text fields</param>
     /// <param name="videoFields">The video fields</param>
+    /// <param name="audioFields">The audio fields</param>
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
     /// <param name="dimensions">The dimensions</param>
@@ -314,6 +315,7 @@ public class VectorizerFactory
         WeightedFields imageFields,
         WeightedFields textFields,
         WeightedFields videoFields,
+        WeightedFields audioFields,
         int? videoIntervalSeconds = null,
         string? model = null,
         int? dimensions = null,
@@ -326,11 +328,17 @@ public class VectorizerFactory
             ImageFields = imageFields,
             TextFields = textFields,
             VideoFields = videoFields,
+            AudioFields = audioFields,
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
             VectorizeCollectionName = vectorizeCollectionName,
-            Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields, videoFields),
+            Weights = VectorizerWeights.FromWeightedFields(
+                imageFields,
+                textFields,
+                videoFields,
+                audioFields
+            ),
         };
 
     /// <summary>
@@ -341,6 +349,7 @@ public class VectorizerFactory
     /// <param name="imageFields">The image fields</param>
     /// <param name="textFields">The text fields</param>
     /// <param name="videoFields">The video fields</param>
+    /// <param name="audioFields">The audio fields</param>
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
     /// <param name="dimensions">The dimensions</param>
@@ -352,6 +361,7 @@ public class VectorizerFactory
         string[]? imageFields = null,
         string[]? textFields = null,
         string[]? videoFields = null,
+        string[]? audioFields = null,
         int? videoIntervalSeconds = null,
         string? model = null,
         int? dimensions = null,
@@ -364,6 +374,7 @@ public class VectorizerFactory
             ImageFields = imageFields,
             TextFields = textFields,
             VideoFields = videoFields,
+            AudioFields = audioFields,
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
@@ -376,6 +387,7 @@ public class VectorizerFactory
     /// <param name="imageFields">The image fields</param>
     /// <param name="textFields">The text fields</param>
     /// <param name="videoFields">The video fields</param>
+    /// <param name="audioFields">The audio fields</param>
     /// <param name="apiEndpoint">The API endpoint</param>
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
@@ -384,6 +396,7 @@ public class VectorizerFactory
         WeightedFields imageFields,
         WeightedFields textFields,
         WeightedFields videoFields,
+        WeightedFields audioFields,
         string? apiEndpoint = null,
         int? videoIntervalSeconds = null,
         string? model = null
@@ -394,9 +407,15 @@ public class VectorizerFactory
             ImageFields = imageFields,
             TextFields = textFields,
             VideoFields = videoFields,
+            AudioFields = audioFields,
             VideoIntervalSeconds = videoIntervalSeconds,
             Model = model,
-            Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields, videoFields),
+            Weights = VectorizerWeights.FromWeightedFields(
+                imageFields,
+                textFields,
+                videoFields,
+                audioFields
+            ),
         };
 
     /// <summary>
@@ -405,6 +424,7 @@ public class VectorizerFactory
     /// <param name="imageFields">The image fields</param>
     /// <param name="textFields">The text fields</param>
     /// <param name="videoFields">The video fields</param>
+    /// <param name="audioFields">The audio fields</param>
     /// <param name="apiEndpoint">The API endpoint</param>
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
@@ -413,6 +433,7 @@ public class VectorizerFactory
         string[]? imageFields = null,
         string[]? textFields = null,
         string[]? videoFields = null,
+        string[]? audioFields = null,
         string? apiEndpoint = null,
         int? videoIntervalSeconds = null,
         string? model = null
@@ -423,6 +444,7 @@ public class VectorizerFactory
             ImageFields = imageFields,
             TextFields = textFields,
             VideoFields = videoFields,
+            AudioFields = audioFields,
             VideoIntervalSeconds = videoIntervalSeconds,
             Model = model,
         };
