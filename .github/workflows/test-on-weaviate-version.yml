@@ -60,6 +60,18 @@ jobs:
         if: ${{ !inputs.dry-run }}
         run: /bin/bash ci/start_weaviate.sh ${{ inputs.weaviate-version }}
 
+      - name: Run unit tests
+        run: |
+          if [[ "${{ inputs.dry-run }}" == "true" ]]; then
+            echo "🏃 DRY-RUN MODE: Skipping actual unit tests"
+            echo '<?xml version="1.0" encoding="utf-8"?><TestRun><ResultSummary outcome="Completed"><Counters total="91" executed="91" passed="91" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" /></ResultSummary></TestRun>' > ./test-results/test-unit-${{ inputs.weaviate-version }}.trx
+          else
+            WEAVIATE_VERSION=${{ inputs.weaviate-version }} dotnet test --no-restore \
+              --filter "FullyQualifiedName~Unit" \
+              --logger "trx;LogFileName=test-unit-${{ inputs.weaviate-version }}.trx" \
+              --results-directory ./test-results
+          fi
+
       - name: Run quick integration tests
         run: |
           if [[ "${{ inputs.dry-run }}" == "true" ]]; then
