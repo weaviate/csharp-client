@@ -11,7 +11,7 @@ namespace Weaviate.Client.Internal;
 /// </summary>
 internal static class VersionGuard
 {
-    private static readonly ConcurrentDictionary<(Type, string), Version?> _cache = new();
+    private static readonly ConcurrentDictionary<(Type, string, Type[]?), Version?> _cache = new();
 
     /// <summary>
     /// Throws <see cref="WeaviateVersionMismatchException"/> if <paramref name="serverVersion"/>
@@ -33,11 +33,37 @@ internal static class VersionGuard
         if (serverVersion is null)
             return;
 
+        // Disambiguate known ambiguous overloads by parameter types
+        Type[]? paramTypes = null;
+        if (typeof(TCallerType).Name == "BatchManager" && operationName == "InsertMany")
+        {
+            // Try to match the most common overloads used in tests and client
+            // Note: This can be extended if more overloads need version checks
+            // IEnumerable<BatchInsertRequest>, BatchOptions, CancellationToken
+            paramTypes = new[]
+            {
+                typeof(System.Collections.Generic.IEnumerable<>).MakeGenericType(
+                    typeof(Weaviate.Client.Models.BatchInsertRequest)
+                ),
+                typeof(Weaviate.Client.Batch.BatchOptions),
+                typeof(System.Threading.CancellationToken),
+            };
+        }
+
         var required = _cache.GetOrAdd(
-            (typeof(TCallerType), operationName),
+            (typeof(TCallerType), operationName, paramTypes),
             static key =>
             {
-                var method = key.Item1.GetMethod(key.Item2);
+                MethodInfo? method;
+                if (key.Item3 != null)
+                {
+                    // Use parameter types to disambiguate
+                    method = key.Item1.GetMethod(key.Item2, key.Item3);
+                }
+                else
+                {
+                    method = key.Item1.GetMethod(key.Item2);
+                }
                 return method
                     ?.GetCustomAttribute<RequiresWeaviateVersionAttribute>()
                     ?.MinimumVersion;
