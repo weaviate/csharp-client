@@ -183,6 +183,7 @@ jobs:
           name: coverage-report-html
           path: ./coveragereport
           retention-days: 7
+          compression-level: 9
 
       - name: Add coverage to PR comment
         uses: marocchino/sticky-pull-request-comment@v2
