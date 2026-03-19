@@ -6,6 +6,29 @@ namespace Weaviate.Client;
 public static class WeaviateClientBuilderExtensions
 {
     /// <summary>
+    /// Sets the <c>X-Weaviate-Client-Integration</c> header to identify a higher-level library
+    /// built on top of the core client.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <param name="integrationValue">
+    /// An integration identifier in <c>name/version</c> format, e.g.
+    /// <c>weaviate-client-csharp-managed/1.0.0</c>. Multiple tokens can be space-separated.
+    /// </param>
+    /// <returns>The builder for method chaining.</returns>
+    public static WeaviateClientBuilder WithIntegration(
+        this WeaviateClientBuilder builder,
+        string integrationValue
+    )
+    {
+        if (integrationValue.Any(char.IsWhiteSpace))
+            throw new ArgumentException(
+                "Integration value must not contain whitespace.",
+                nameof(integrationValue)
+            );
+        return builder.WithHeader(WeaviateDefaults.IntegrationHeader, integrationValue);
+    }
+
+    /// <summary>
     /// Adds the open ai using the specified builder
     /// </summary>
     /// <param name="builder">The builder</param>

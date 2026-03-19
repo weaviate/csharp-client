@@ -6804,3 +6804,10 @@ Weaviate.Client.Batch.TaskHandle.Result.get -> System.Threading.Tasks.Task<Weavi
 Weaviate.Client.Batch.TaskHandle.TaskHandle() -> void
 Weaviate.Client.Batch.TaskHandle.TimesRetried.get -> int
 Weaviate.Client.Batch.TaskHandle.Uuid.get -> System.Guid?
+static Weaviate.Client.WeaviateDefaults.IntegrationAgent(string! integrationName) -> string!
+const Weaviate.Client.WeaviateDefaults.IntegrationHeader = "X-Weaviate-Client-Integration" -> string!
+Weaviate.Client.DependencyInjection.WeaviateOptions.AddHeader(string! key, string! value) -> Weaviate.Client.DependencyInjection.WeaviateOptions!
+Weaviate.Client.DependencyInjection.WeaviateOptions.AddIntegration(string! integrationValue) -> Weaviate.Client.DependencyInjection.WeaviateOptions!
+Weaviate.Client.ClientConfigurationExtensions
+static Weaviate.Client.ClientConfigurationExtensions.WithIntegration(this Weaviate.Client.ClientConfiguration! config, string! integrationValue) -> Weaviate.Client.ClientConfiguration!
+static Weaviate.Client.WeaviateClientBuilderExtensions.WithIntegration(this Weaviate.Client.WeaviateClientBuilder! builder, string! integrationValue) -> Weaviate.Client.WeaviateClientBuilder!

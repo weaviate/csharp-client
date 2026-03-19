@@ -236,6 +236,50 @@ These methods:
 
 ## Advanced Scenarios
 
+### SDK Integration Header
+
+The `X-Weaviate-Client-Integration` header identifies higher-level libraries (ORMs, framework adapters) built on top of the core client. Weaviate server metrics use it to distinguish integration traffic from raw client traffic.
+
+**DI path — via `AddWeaviate`:**
+
+```csharp
+builder.Services.AddWeaviate(options =>
+{
+    options.RestEndpoint = "localhost";
+
+    // Append your library identity to the integration header
+    options.AddIntegration("my-framework/2.3.0");
+    // Header value: "my-framework/2.3.0"
+});
+```
+
+`WeaviateOptions.AddIntegration(string value)` appends a space-separated token so multiple integrations compose correctly:
+
+```csharp
+// If called multiple times:
+options.AddIntegration("weaviate-client-csharp-managed/1.0.0");
+options.AddIntegration("my-framework/2.3.0");
+// Produces: X-Weaviate-Client-Integration: weaviate-client-csharp-managed/1.0.0 my-framework/2.3.0
+```
+
+**Non-DI path — via `ClientConfiguration`:**
+
+```csharp
+var config = new ClientConfiguration("localhost")
+    .WithIntegration("my-framework/2.3.0");
+
+var client = await WeaviateClientBuilder.Local()
+    .WithIntegration("my-framework/2.3.0")
+    .BuildAsync();
+```
+
+**Generating a canonical identity string:**
+
+```csharp
+// Format: "name/assemblyVersion" e.g. "my-framework/2.3.0"
+var identity = WeaviateDefaults.IntegrationAgent("my-framework");
+```
+
 ### Custom HttpMessageHandler
 
 ```csharp

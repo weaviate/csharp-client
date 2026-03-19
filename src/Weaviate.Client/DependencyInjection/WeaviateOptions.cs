@@ -48,6 +48,44 @@ public class WeaviateOptions
     public Dictionary<string, string>? Headers { get; set; }
 
     /// <summary>
+    /// Adds or appends a single HTTP header. If the key already exists the value is overwritten.
+    /// </summary>
+    /// <param name="key">The header name.</param>
+    /// <param name="value">The header value.</param>
+    /// <returns>This instance for method chaining.</returns>
+    public WeaviateOptions AddHeader(string key, string value)
+    {
+        Headers ??= new Dictionary<string, string>();
+        Headers[key] = value;
+        return this;
+    }
+
+    /// <summary>
+    /// Appends an integration identifier to the <c>X-Weaviate-Client-Integration</c> header.
+    /// Use this to identify higher-level libraries built on top of the core client.
+    /// Multiple calls append space-separated tokens, e.g.
+    /// <c>weaviate-client-csharp-managed/1.0.0 my-framework/2.3.0</c>.
+    /// </summary>
+    /// <param name="integrationValue">
+    /// An integration identifier, typically in <c>name/version</c> format.
+    /// </param>
+    /// <returns>This instance for method chaining.</returns>
+    public WeaviateOptions AddIntegration(string integrationValue)
+    {
+        if (integrationValue.Any(char.IsWhiteSpace))
+            throw new ArgumentException(
+                "Integration value must not contain whitespace.",
+                nameof(integrationValue)
+            );
+        Headers ??= new Dictionary<string, string>();
+        if (Headers.TryGetValue(WeaviateDefaults.IntegrationHeader, out var existing))
+            Headers[WeaviateDefaults.IntegrationHeader] = $"{existing} {integrationValue}";
+        else
+            Headers[WeaviateDefaults.IntegrationHeader] = integrationValue;
+        return this;
+    }
+
+    /// <summary>
     /// Authentication credentials.
     /// </summary>
     public ICredentials? Credentials { get; set; }
