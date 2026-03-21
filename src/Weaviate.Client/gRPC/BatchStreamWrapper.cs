@@ -80,12 +80,57 @@ namespace Weaviate.Client.Grpc
                     Errors = reply
                         .Results.Errors.Select(e => new BatchStreamError
                         {
-                            UUID = e.Uuid,
+                            UUID =
+                                e.DetailCase
+                                == V1.BatchStreamReply
+                                    .Types
+                                    .Results
+                                    .Types
+                                    .Error
+                                    .DetailOneofCase
+                                    .Uuid
+                                    ? Guid.Parse(e.Uuid)
+                                    : null,
+                            Beacon =
+                                e.DetailCase
+                                == V1.BatchStreamReply
+                                    .Types
+                                    .Results
+                                    .Types
+                                    .Error
+                                    .DetailOneofCase
+                                    .Beacon
+                                    ? e.Beacon
+                                    : null,
                             Error = e.Error_,
                         })
                         .ToList(),
                     Successes = reply
-                        .Results.Successes.Select(s => new BatchStreamSuccess { UUID = s.Uuid })
+                        .Results.Successes.Select(s => new BatchStreamSuccess
+                        {
+                            UUID =
+                                s.DetailCase
+                                == V1.BatchStreamReply
+                                    .Types
+                                    .Results
+                                    .Types
+                                    .Success
+                                    .DetailOneofCase
+                                    .Uuid
+                                    ? Guid.Parse(s.Uuid)
+                                    : null,
+                            Beacon =
+                                s.DetailCase
+                                == V1.BatchStreamReply
+                                    .Types
+                                    .Results
+                                    .Types
+                                    .Success
+                                    .DetailOneofCase
+                                    .Beacon
+                                    ? s.Beacon
+                                    : null,
+                        })
                         .ToList(),
                 },
                 V1.BatchStreamReply.MessageOneofCase.None => null,
@@ -119,6 +164,45 @@ namespace Weaviate.Client.Grpc
             {
                 var batchObj = ConvertToBatchObject(request, context);
                 dataRequest.Data.Objects.Values.Add(batchObj);
+            }
+
+            await _stream.RequestStream.WriteAsync(dataRequest, ct);
+        }
+
+        /// <summary>
+        /// Sends a batch of references to the server.
+        /// </summary>
+        /// <param name="references">The references to send</param>
+        /// <param name="context">The collection/tenant context</param>
+        /// <param name="ct">Cancellation token</param>
+        internal async Task SendReferencesAsync(
+            IEnumerable<DataReference> references,
+            BatchStreamContext context,
+            CancellationToken ct
+        )
+        {
+            var dataRequest = new V1.BatchStreamRequest
+            {
+                Data = new V1.BatchStreamRequest.Types.Data
+                {
+                    References = new V1.BatchStreamRequest.Types.Data.Types.References(),
+                },
+            };
+
+            foreach (var r in references)
+            foreach (var toUuid in r.To)
+            {
+                dataRequest.Data.References.Values.Add(
+                    new V1.BatchReference
+                    {
+                        Name = r.FromProperty,
+                        FromCollection = r.FromCollection ?? context.Collection,
+                        FromUuid = r.From.ToString(),
+                        ToCollection = r.ToCollection ?? string.Empty,
+                        ToUuid = toUuid.ToString(),
+                        Tenant = context.Tenant ?? string.Empty,
+                    }
+                );
             }
 
             await _stream.RequestStream.WriteAsync(dataRequest, ct);

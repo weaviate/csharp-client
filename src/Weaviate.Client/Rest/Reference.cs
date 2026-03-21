@@ -141,9 +141,9 @@ internal partial class WeaviateRestClient
     }
 
     /// <summary>
-    /// References the add many using the specified collection name
+    /// References the add many using the specified references
     /// </summary>
-    /// <param name="collectionName">The collection name</param>
+    /// <param name="collectionName">The collection name of the source objects (fallback when DataReference.FromCollection is not set)</param>
     /// <param name="references">The references</param>
     /// <param name="tenant">The tenant</param>
     /// <param name="consistencyLevel">The consistency level</param>
@@ -158,22 +158,17 @@ internal partial class WeaviateRestClient
     )
     {
         var batchRefs = references.SelectMany(r =>
-            Internal
-                .ObjectHelper.MakeBeacons(r.To)
-                .SelectMany(b => b.Values)
-                .Select(beacon => new BatchReference
-                {
-                    From = new Uri(
-                        Internal.ObjectHelper.MakeBeaconSource(
-                            collectionName,
-                            r.From,
-                            r.FromProperty
-                        )
-                    ),
-                    To = new Uri(beacon),
-                    Tenant = tenant ?? default!,
-                })
-        );
+        {
+            var effectiveCollection = r.FromCollection ?? collectionName;
+            var sourceBeacon =
+                r.Beacon ?? $"weaviate://localhost/{effectiveCollection}/{r.From}/{r.FromProperty}";
+            return r.To.Select(toUuid => new BatchReference
+            {
+                From = new Uri(sourceBeacon),
+                To = new Uri($"weaviate://localhost/{toUuid}"),
+                Tenant = tenant ?? default!,
+            });
+        });
 
         var path = WeaviateEndpoints.ReferencesAdd(consistencyLevel);
 

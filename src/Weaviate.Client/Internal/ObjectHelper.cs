@@ -60,16 +60,6 @@ internal class ObjectHelper
     }
 
     /// <summary>
-    /// Makes the beacon source using the specified collection
-    /// </summary>
-    /// <param name="collection">The collection</param>
-    /// <param name="fromUuid">The from uuid</param>
-    /// <param name="fromProperty">The from property</param>
-    /// <returns>The string</returns>
-    public static string MakeBeaconSource(string collection, Guid fromUuid, string fromProperty) =>
-        $"weaviate://localhost/{collection}/{fromUuid}/{fromProperty}";
-
-    /// <summary>
     /// Makes the beacons using the specified guids
     /// </summary>
     /// <param name="guids">The guids</param>

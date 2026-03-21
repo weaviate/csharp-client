@@ -2749,6 +2749,7 @@ Weaviate.Client.BaseCollectionClient.Tenant.get -> string?
 Weaviate.Client.Batch.BatchContext
 Weaviate.Client.Batch.BatchContext.Add(object! obj, System.Guid? uuid = null, Weaviate.Client.Models.Vectors? vectors = null, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.ObjectReference!>? references = null, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Weaviate.Client.Batch.TaskHandle!>
 Weaviate.Client.Batch.BatchContext.Add(Weaviate.Client.Models.BatchInsertRequest! request, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Weaviate.Client.Batch.TaskHandle!>
+Weaviate.Client.Batch.BatchContext.AddReference(Weaviate.Client.Models.DataReference! reference, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Weaviate.Client.Batch.TaskHandle!>
 Weaviate.Client.Batch.BatchContext.Close(System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 Weaviate.Client.Batch.BatchContext.DisposeAsync() -> System.Threading.Tasks.ValueTask
 Weaviate.Client.Batch.BatchContext.Retry(Weaviate.Client.Batch.TaskHandle! handle, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Weaviate.Client.Batch.TaskHandle!>
@@ -3587,17 +3588,11 @@ Weaviate.Client.Models.DatabaseUser.UserId.init -> void
 Weaviate.Client.Models.DatabaseUserType
 Weaviate.Client.Models.DatabaseUserType.DbEnvUser = 1 -> Weaviate.Client.Models.DatabaseUserType
 Weaviate.Client.Models.DatabaseUserType.DbUser = 0 -> Weaviate.Client.Models.DatabaseUserType
-Weaviate.Client.Models.DataReference
-Weaviate.Client.Models.DataReference.DataReference(System.Guid from, string! fromProperty, params System.Guid[]! to) -> void
-Weaviate.Client.Models.DataReference.DataReference(System.Guid From, string! FromProperty, System.Collections.Generic.IEnumerable<System.Guid>! To) -> void
-Weaviate.Client.Models.DataReference.DataReference(Weaviate.Client.Models.DataReference! original) -> void
-Weaviate.Client.Models.DataReference.Deconstruct(out System.Guid From, out string! FromProperty, out System.Collections.Generic.IEnumerable<System.Guid>! To) -> void
-Weaviate.Client.Models.DataReference.From.get -> System.Guid
-Weaviate.Client.Models.DataReference.From.init -> void
-Weaviate.Client.Models.DataReference.FromProperty.get -> string!
-Weaviate.Client.Models.DataReference.FromProperty.init -> void
-Weaviate.Client.Models.DataReference.To.get -> System.Collections.Generic.IEnumerable<System.Guid>!
-Weaviate.Client.Models.DataReference.To.init -> void
+Weaviate.Client.Models.DataReference.Beacon.get -> string?
+Weaviate.Client.Models.DataReference.FromCollection.get -> string?
+Weaviate.Client.Models.DataReference.FromCollection.init -> void
+Weaviate.Client.Models.DataReference.ToCollection.get -> string?
+Weaviate.Client.Models.DataReference.ToCollection.init -> void
 Weaviate.Client.Models.DataResource
 Weaviate.Client.Models.DataResource.Collection.get -> string?
 Weaviate.Client.Models.DataResource.Collection.init -> void

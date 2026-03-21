@@ -43,7 +43,10 @@ public class BatchContext : IAsyncDisposable
     private Weaviate.Client.Grpc.BatchStreamWrapper? _stream;
 
     private readonly ConcurrentDictionary<string, TaskHandle> _pendingTasks = new();
+    private readonly ConcurrentDictionary<string, TaskHandle> _pendingReferences = new();
     private readonly Channel<BatchInsertRequest> _sendQueue;
+    private readonly Channel<DataReference> _referenceQueue =
+        Channel.CreateUnbounded<DataReference>();
     private Task? _readerTask;
     private Task? _writerTask;
     private readonly CancellationTokenSource _cts = new();
@@ -208,9 +211,22 @@ public class BatchContext : IAsyncDisposable
             )
             {
                 if (handle.OriginalRequest != null)
-                {
                     await _sendQueue.Writer.WriteAsync(handle.OriginalRequest, ct);
-                }
+            }
+        }
+
+        // Resend all references that are not Acked
+        foreach (var kvp in _pendingReferences)
+        {
+            var handle = kvp.Value;
+            if (
+                handle.Status == BatchObjectStatus.Pending
+                || handle.Status == BatchObjectStatus.Failed
+                || handle.Status == BatchObjectStatus.Retried
+            )
+            {
+                if (handle.OriginalReference != null)
+                    await _referenceQueue.Writer.WriteAsync(handle.OriginalReference, ct);
             }
         }
     }
@@ -260,10 +276,22 @@ public class BatchContext : IAsyncDisposable
                                 batch.Clear();
                             }
                         }
+
+                        // Drain pending references and send them
+                        var refs = new List<DataReference>();
+                        while (_referenceQueue.Reader.TryRead(out var r))
+                            refs.Add(r);
+                        if (refs.Count > 0)
+                            await SendReferenceBatchAsync(refs, ct);
                     }
                     else
                     {
-                        // Channel completed, exit loop
+                        // _sendQueue completed — drain any remaining references before exiting
+                        var remainingRefs = new List<DataReference>();
+                        while (_referenceQueue.Reader.TryRead(out var r))
+                            remainingRefs.Add(r);
+                        if (remainingRefs.Count > 0)
+                            await SendReferenceBatchAsync(remainingRefs, ct);
                         break;
                     }
                 }
@@ -299,53 +327,74 @@ public class BatchContext : IAsyncDisposable
         await _stream.SendObjectsAsync(batch, _streamContext, ct);
     }
 
+    private async Task SendReferenceBatchAsync(List<DataReference> refs, CancellationToken ct)
+    {
+        if (_stream == null)
+            return;
+
+        await _stream.SendReferencesAsync(refs, _streamContext, ct);
+    }
+
     private void HandleResults(BatchStreamResults results)
     {
         // Process errors
         foreach (var error in results.Errors)
         {
-            var uuid = error.UUID;
-            if (_pendingTasks.TryGetValue(uuid, out var handle))
+            if (error.IsReference)
             {
-                handle.SetResult(
-                    new BatchResult
-                    {
-                        Success = false,
-                        ErrorMessage = error.Error,
-                        ServerResponse = error,
-                    }
-                );
+                if (_pendingReferences.TryGetValue(error.Beacon!, out var h))
+                    h.SetResult(
+                        new BatchResult
+                        {
+                            Success = false,
+                            ErrorMessage = error.Error,
+                            ServerResponse = error,
+                        }
+                    );
+            }
+            else if (error.UUID.HasValue)
+            {
+                if (_pendingTasks.TryGetValue(error.UUID.Value.ToString(), out var h))
+                    h.SetResult(
+                        new BatchResult
+                        {
+                            Success = false,
+                            ErrorMessage = error.Error,
+                            ServerResponse = error,
+                        }
+                    );
             }
         }
 
         // Process successes
         foreach (var success in results.Successes)
         {
-            var uuid = success.UUID;
-            if (_pendingTasks.TryGetValue(uuid, out var handle))
+            if (success.IsReference)
             {
-                handle.SetResult(
-                    new BatchResult
-                    {
-                        Success = true,
-                        ErrorMessage = null,
-                        ServerResponse = success,
-                    }
-                );
-                _pendingTasks.TryRemove(uuid, out _);
+                if (_pendingReferences.TryRemove(success.Beacon!, out var h))
+                    h.SetResult(new BatchResult { Success = true, ServerResponse = success });
+            }
+            else if (success.UUID.HasValue)
+            {
+                var key = success.UUID.Value.ToString();
+                if (_pendingTasks.TryRemove(key, out var h))
+                    h.SetResult(new BatchResult { Success = true, ServerResponse = success });
             }
         }
     }
 
     private void HandleAcks(BatchStreamAcks acks)
     {
-        // Mark all acked UUIDs as acknowledged
         foreach (var uuid in acks.UUIDs)
         {
             if (_pendingTasks.TryGetValue(uuid, out var handle))
-            {
                 handle.SetAcked();
-            }
+        }
+
+        foreach (var beacon in acks.Beacons)
+        {
+            if (_pendingReferences.TryGetValue(beacon, out var handle))
+                handle.SetAcked();
         }
     }
 
@@ -372,7 +421,20 @@ public class BatchContext : IAsyncDisposable
 
     private async Task HandleOutOfMemory(BatchStreamOutOfMemory outOfMemory)
     {
-        // Server is out of memory - pause sending for the specified duration
+        // Re-enqueue objects that weren't processed (they would have caused OOM)
+        foreach (var uuid in outOfMemory.UUIDs)
+        {
+            if (_pendingTasks.TryGetValue(uuid, out var h) && h.OriginalRequest != null)
+                await _sendQueue.Writer.WriteAsync(h.OriginalRequest);
+        }
+
+        foreach (var beacon in outOfMemory.Beacons)
+        {
+            if (_pendingReferences.TryGetValue(beacon, out var h) && h.OriginalReference != null)
+                await _referenceQueue.Writer.WriteAsync(h.OriginalReference);
+        }
+
+        // Wait for server to scale up (signalled by ShuttingDown)
         await _flowControlSemaphore.WaitAsync();
         try
         {
@@ -442,6 +504,39 @@ public class BatchContext : IAsyncDisposable
     }
 
     /// <summary>
+    /// Adds a reference to the batch stream.
+    /// </summary>
+    /// <param name="reference">The reference to add</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns>A task handle for tracking the reference's status</returns>
+    public async ValueTask<TaskHandle> AddReference(
+        DataReference reference,
+        CancellationToken ct = default
+    )
+    {
+        if (State == BatchState.Closed)
+            throw new InvalidOperationException("Batch is closed");
+
+        // Ensure FromCollection is set — fall back to this stream's collection when not provided
+        var effectiveCollection = reference.FromCollection ?? _streamContext.Collection;
+        var effectiveReference =
+            reference.FromCollection != null
+                ? reference
+                : reference with
+                {
+                    FromCollection = effectiveCollection,
+                };
+
+        var beacon =
+            $"weaviate://localhost/{effectiveCollection}/{reference.From}/{reference.FromProperty}";
+
+        var handle = new TaskHandle { TimesRetried = 0, OriginalReference = effectiveReference };
+        _pendingReferences[beacon] = handle;
+        await _referenceQueue.Writer.WriteAsync(effectiveReference, ct);
+        return handle;
+    }
+
+    /// <summary>
     /// Retries a failed batch operation.
     /// </summary>
     /// <param name="handle">The task handle to retry</param>
@@ -498,8 +593,9 @@ public class BatchContext : IAsyncDisposable
         _isDisposed = true;
         State = BatchState.Closed;
 
-        // Complete the send queue to signal no more objects
+        // Complete both queues to signal no more items
         _sendQueue.Writer.Complete();
+        _referenceQueue.Writer.Complete();
 
         // Wait for writer to finish sending all pending objects
         if (_writerTask != null)
@@ -535,9 +631,9 @@ public class BatchContext : IAsyncDisposable
                 // Reader timed out or was cancelled, cancel cts and mark remaining tasks as failed
                 _cts.Cancel();
                 foreach (var kvp in _pendingTasks)
-                {
                     kvp.Value.SetFailed("Batch closed before result was received");
-                }
+                foreach (var kvp in _pendingReferences)
+                    kvp.Value.SetFailed("Batch closed before result was received");
             }
         }
 

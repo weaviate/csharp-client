@@ -53,18 +53,28 @@ internal class BatchStreamResults : BatchStreamMessage
 }
 
 /// <summary>
-/// An error result for a batch object.
+/// An error result for a batch object or reference.
+/// Exactly one of <see cref="UUID"/> or <see cref="Beacon"/> will be set per entry.
 /// </summary>
 internal class BatchStreamError
 {
-    public string UUID { get; set; } = string.Empty;
+    public Guid? UUID { get; set; }
+    public string? Beacon { get; set; }
     public string Error { get; set; } = string.Empty;
+
+    /// <summary>True when this result is for a reference (identified by beacon) rather than an object.</summary>
+    public bool IsReference => Beacon != null;
 }
 
 /// <summary>
-/// A success result for a batch object.
+/// A success result for a batch object or reference.
+/// Exactly one of <see cref="UUID"/> or <see cref="Beacon"/> will be set per entry.
 /// </summary>
 internal class BatchStreamSuccess
 {
-    public string UUID { get; set; } = string.Empty;
+    public Guid? UUID { get; set; }
+    public string? Beacon { get; set; }
+
+    /// <summary>True when this result is for a reference (identified by beacon) rather than an object.</summary>
+    public bool IsReference => Beacon != null;
 }

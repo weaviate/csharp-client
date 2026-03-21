@@ -76,6 +76,11 @@ namespace Weaviate.Client.Batch
         /// </summary>
         internal BatchInsertRequest? OriginalRequest { get; set; }
 
+        /// <summary>
+        /// Internal storage of the original reference for retry/recovery purposes.
+        /// </summary>
+        internal DataReference? OriginalReference { get; set; }
+
         internal void SetAcked()
         {
             Status = BatchObjectStatus.Acked;

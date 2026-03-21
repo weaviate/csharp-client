@@ -1,18 +1,37 @@
 namespace Weaviate.Client.Models;
 
 /// <summary>
-/// The data reference
+/// Represents a cross-reference from one object to one or more target objects.
 /// </summary>
 public record DataReference(Guid From, string FromProperty, IEnumerable<Guid> To)
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="DataReference"/> class
+    /// Convenience constructor for specifying target UUIDs inline.
     /// </summary>
-    /// <param name="from">The from</param>
-    /// <param name="fromProperty">The from property</param>
-    /// <param name="to">The to</param>
     public DataReference(Guid from, string fromProperty, params Guid[] to)
         : this(from, fromProperty, (IEnumerable<Guid>)to) { }
+
+    /// <summary>
+    /// The collection that contains the source object.
+    /// When set, the <see cref="Beacon"/> property becomes available.
+    /// Required for <see cref="Weaviate.Client.Batch.BatchContext.AddReference"/>.
+    /// If not set, <see cref="DataClient.ReferenceAddMany"/> infers it from the collection context.
+    /// </summary>
+    public string? FromCollection { get; init; }
+
+    /// <summary>
+    /// The collection that contains the target objects. Only needed for cross-collection references.
+    /// </summary>
+    public string? ToCollection { get; init; }
+
+    /// <summary>
+    /// Source/tracking beacon: <c>weaviate://localhost/{FromCollection}/{From}/{FromProperty}</c>.
+    /// Returns <c>null</c> when <see cref="FromCollection"/> is not set.
+    /// </summary>
+    public string? Beacon =>
+        FromCollection == null
+            ? null
+            : $"weaviate://localhost/{FromCollection}/{From}/{FromProperty}";
 }
 
 /// <summary>

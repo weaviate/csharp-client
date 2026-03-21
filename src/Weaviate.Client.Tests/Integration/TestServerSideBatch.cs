@@ -492,6 +492,98 @@ public class ServerSideBatchTests : IntegrationTests
     }
 
     /// <summary>
+    /// Tests adding references via server-side batch streaming
+    /// </summary>
+    [Fact(Timeout = 30000)]
+    public async Task ServerSideBatch_AddReference_Success()
+    {
+        // Arrange — two collections with a cross-reference property
+        var target = await CollectionFactory(
+            description: "SSB reference target collection",
+            properties: [Property<string>.New("name")]
+        );
+
+        var source = await CollectionFactory(
+            description: "SSB reference source collection",
+            properties: [Property<string>.New("name")]
+        );
+
+        await source.Config.AddReference(
+            new Reference("target", target.Name),
+            TestContext.Current.CancellationToken
+        );
+
+        // Insert objects into both collections via SSB
+        var targetId = Guid.NewGuid();
+        var sourceId = Guid.NewGuid();
+
+        await using (
+            var targetBatch = await target.Batch.StartBatch(
+                null,
+                TestContext.Current.CancellationToken
+            )
+        )
+        {
+            var h = await targetBatch.Add(
+                BatchInsertRequest.Create(new { name = "T1" }, uuid: targetId),
+                TestContext.Current.CancellationToken
+            );
+            await targetBatch.Close(TestContext.Current.CancellationToken);
+            var r = await h.Result;
+            Assert.True(r.Success, $"Target object insert failed: {r.ErrorMessage}");
+        }
+
+        // Insert source object in its own batch — must be committed before the reference is sent
+        await using (
+            var sourceBatch = await source.Batch.StartBatch(
+                null,
+                TestContext.Current.CancellationToken
+            )
+        )
+        {
+            var objHandle = await sourceBatch.Add(
+                BatchInsertRequest.Create(new { name = "S1" }, uuid: sourceId),
+                TestContext.Current.CancellationToken
+            );
+            await sourceBatch.Close(TestContext.Current.CancellationToken);
+            var objResult = await objHandle.Result;
+            Assert.True(
+                objResult.Success,
+                $"Source object insert failed: {objResult.ErrorMessage}"
+            );
+        }
+
+        // Act — add reference in a third batch (both endpoints now committed)
+        await using (
+            var refBatch = await source.Batch.StartBatch(
+                null,
+                TestContext.Current.CancellationToken
+            )
+        )
+        {
+            var refHandle = await refBatch.AddReference(
+                new DataReference(sourceId, "target", targetId) { FromCollection = source.Name },
+                TestContext.Current.CancellationToken
+            );
+            await refBatch.Close(TestContext.Current.CancellationToken);
+            var refResult = await refHandle.Result;
+            Assert.True(refResult.Success, $"Reference insert failed: {refResult.ErrorMessage}");
+        }
+
+        // Verify the reference was stored
+        var obj = await source.Query.FetchObjectByID(
+            sourceId,
+            returnProperties: [],
+            returnReferences: [new QueryReference("target")],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.NotNull(obj);
+        var refs = obj.References?["target"];
+        Assert.NotNull(refs);
+        Assert.Contains(refs, r => r.UUID == targetId);
+    }
+
+    /// <summary>
     /// Tests InsertManyAsync with consistency level option
     /// </summary>
     [Fact(Timeout = 10000)]
