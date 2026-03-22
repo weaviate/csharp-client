@@ -429,9 +429,12 @@ public class DataClient
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
+        var enriched = references
+            .Select(r => r.FromCollection != null ? r : r with { FromCollection = _collectionName })
+            .ToArray();
+
         var result = await _client.RestClient.ReferenceAddMany(
-            _collectionName,
-            references,
+            enriched,
             _collectionClient.Tenant,
             _collectionClient.ConsistencyLevel,
             CreateTimeoutCancellationToken(cancellationToken)

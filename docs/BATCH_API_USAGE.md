@@ -13,6 +13,7 @@ This guide covers the Weaviate C# client's server-side batching functionality. I
 - [Streaming with Channels](#streaming-with-channels)
 - [Async Enumerable Support](#async-enumerable-support)
 - [Low-Level API](#low-level-api)
+- [Reference Batching](#reference-batching)
 - [Configuration](#configuration)
 - [Error Handling](#error-handling)
 - [Best Practices](#best-practices)
@@ -219,6 +220,91 @@ The `BatchContext.State` property indicates the current state:
 - `InFlight` - Processing in progress
 - `Closed` - Batch completed normally
 - `Aborted` - Batch failed with error
+
+## Reference Batching
+
+Cross-references can be inserted via the same SSB stream using `BatchContext.AddReference`. This sends references as `BatchStreamRequest.Data.References` proto messages, tracked by source beacon.
+
+### Basic usage
+
+```csharp
+await using var batch = await sourceCollection.Batch.StartBatch();
+
+var objHandle = await batch.Add(
+    BatchInsertRequest.Create(new { Name = "Article 1" }, uuid: sourceId)
+);
+await batch.Close();
+await objHandle.Result; // ensure the source object is committed first
+
+await using var refBatch = await sourceCollection.Batch.StartBatch();
+
+var refHandle = await refBatch.AddReference(
+    new DataReference(sourceId, "hasAuthor", authorId)
+);
+
+await refBatch.Close();
+
+var result = await refHandle.Result;
+if (!result.Success)
+    Console.WriteLine($"Reference failed: {result.ErrorMessage}");
+```
+
+> **Note:** Insert and commit source objects before adding references that point from them — the server validates that the source object exists when the reference batch is processed.
+
+### DataReference
+
+`DataReference` describes a set of outgoing references from one object to one or more targets:
+
+```csharp
+// Same-collection reference (FromCollection inferred from stream context)
+new DataReference(sourceId, "hasTag", tagId)
+
+// Multiple targets inline
+new DataReference(sourceId, "hasTag", tagId1, tagId2, tagId3)
+
+// Explicit FromCollection (required when using DataClient.ReferenceAddMany
+// with objects from a different collection than the DataClient's own)
+new DataReference(sourceId, "hasAuthor", authorId) { FromCollection = "Articles" }
+
+// Cross-collection reference
+new DataReference(sourceId, "hasAuthor", authorId)
+{
+    FromCollection = "Articles",
+    ToCollection = "Authors",
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `From` | `Guid` | UUID of the source object |
+| `FromProperty` | `string` | Name of the reference property on the source |
+| `To` | `IEnumerable<Guid>` | Target object UUIDs |
+| `FromCollection` | `string?` | Source collection name. When not set, `DataClient` infers it from the collection context and `BatchContext` infers it from the stream context. |
+| `ToCollection` | `string?` | Target collection name. Only needed for cross-collection references. |
+| `Beacon` | `string?` | Computed source beacon (`weaviate://localhost/{FromCollection}/{From}/{FromProperty}`). `null` when `FromCollection` is not set. |
+
+### REST batch references
+
+`DataClient.ReferenceAddMany` also accepts `DataReference`. `FromCollection` is optional — `DataClient` automatically sets it to the collection's own name before sending, so you only need to set it when the source objects belong to a different collection:
+
+```csharp
+// FromCollection omitted — DataClient fills it in from the collection context
+await sourceCollection.Data.ReferenceAddMany(
+[
+    new DataReference(sourceId, "hasAuthor", authorId1),
+    new DataReference(sourceId, "hasAuthor", authorId2),
+]);
+
+// FromCollection set explicitly — only needed for cross-collection scenarios
+await sourceCollection.Data.ReferenceAddMany(
+[
+    new DataReference(sourceId, "hasAuthor", authorId)
+    {
+        FromCollection = "Articles",
+        ToCollection = "Authors",
+    },
+]);
+```
 
 ## Configuration
 
