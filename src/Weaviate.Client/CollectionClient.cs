@@ -50,6 +50,11 @@ public partial class CollectionClient
     private QueryClient _queryClient;
 
     /// <summary>
+    /// The batch manager
+    /// </summary>
+    private Batch.BatchManager _batchManager;
+
+    /// <summary>
     /// Gets the tenant name for this collection client instance, or empty string for no tenant.
     /// </summary>
     public string? Tenant => _pinnedTenant ?? string.Empty;
@@ -78,6 +83,11 @@ public partial class CollectionClient
     /// Gets the query client for performing query operations on this collection.
     /// </summary>
     public QueryClient Query => _queryClient;
+
+    /// <summary>
+    /// Gets the batch manager for performing server-side batch operations on this collection.
+    /// </summary>
+    public Batch.BatchManager Batch => _batchManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CollectionClient"/> class
@@ -120,6 +130,7 @@ public partial class CollectionClient
 
         _dataClient = new DataClient(this);
         _queryClient = new QueryClient(this);
+        _batchManager = new Batch.BatchManager(this);
     }
 
     /// <summary>

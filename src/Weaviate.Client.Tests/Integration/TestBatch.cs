@@ -116,7 +116,7 @@ public partial class BatchTests : IntegrationTests
             [
                 .. Enumerable
                     .Range(0, numObjects)
-                    .Select(i => new DataReference(uuidsFrom[i], "ref", [uuidsTo[i]])),
+                    .Select(i => new DataReference(uuidsFrom[i], "ref", uuidsTo[i])),
             ],
             TestContext.Current.CancellationToken
         );
@@ -127,7 +127,7 @@ public partial class BatchTests : IntegrationTests
             [
                 .. Enumerable
                     .Range(0, numObjects)
-                    .Select(i => new DataReference(uuidsFrom[i], "ref", [.. batch2Targets])),
+                    .Select(i => new DataReference(uuidsFrom[i], "ref", batch2Targets)),
             ],
             TestContext.Current.CancellationToken
         );

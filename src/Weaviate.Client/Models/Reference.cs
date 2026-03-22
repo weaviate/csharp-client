@@ -1,18 +1,37 @@
 namespace Weaviate.Client.Models;
 
 /// <summary>
-/// The data reference
+/// Represents a cross-reference from one object to one or more target objects.
 /// </summary>
 public record DataReference(Guid From, string FromProperty, IEnumerable<Guid> To)
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="DataReference"/> class
+    /// Convenience constructor for specifying target UUIDs inline.
     /// </summary>
-    /// <param name="from">The from</param>
-    /// <param name="fromProperty">The from property</param>
-    /// <param name="to">The to</param>
     public DataReference(Guid from, string fromProperty, params Guid[] to)
         : this(from, fromProperty, (IEnumerable<Guid>)to) { }
+
+    /// <summary>
+    /// The collection that contains the source object.
+    /// Set internally by <see cref="DataClient"/> and <see cref="Weaviate.Client.Batch.BatchContext"/>
+    /// from their collection context.
+    /// </summary>
+    internal string? FromCollection { get; init; }
+
+    /// <summary>
+    /// The collection that contains the target objects.
+    /// Reserved for future multi-target reference support.
+    /// </summary>
+    internal string? ToCollection { get; init; }
+
+    /// <summary>
+    /// Source/tracking beacon used by the SSB protocol and the REST batch-references endpoint.
+    /// <c>weaviate://localhost/{FromCollection}/{From}/{FromProperty}</c>
+    /// </summary>
+    internal string? Beacon =>
+        FromCollection == null
+            ? null
+            : $"weaviate://localhost/{FromCollection}/{From}/{FromProperty}";
 }
 
 /// <summary>

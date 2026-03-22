@@ -1,4 +1,11 @@
 #nullable enable
+Weaviate.Client.Batch.BatchObjectStatus
+Weaviate.Client.Batch.BatchObjectStatus.Pending = 0 -> Weaviate.Client.Batch.BatchObjectStatus
+Weaviate.Client.Batch.BatchObjectStatus.Acked = 1 -> Weaviate.Client.Batch.BatchObjectStatus
+Weaviate.Client.Batch.BatchObjectStatus.Failed = 2 -> Weaviate.Client.Batch.BatchObjectStatus
+Weaviate.Client.Batch.BatchObjectStatus.Retried = 3 -> Weaviate.Client.Batch.BatchObjectStatus
+Weaviate.Client.Batch.TaskHandle.Status.get -> Weaviate.Client.Batch.BatchObjectStatus
+
 abstract Weaviate.Client.Models.Aggregate.Metric.<Clone>$() -> Weaviate.Client.Models.Aggregate.Metric!
 abstract Weaviate.Client.Models.Aggregate.Property.<Clone>$() -> Weaviate.Client.Models.Aggregate.Property!
 abstract Weaviate.Client.Models.BackupBackend.<Clone>$() -> Weaviate.Client.Models.BackupBackend!
@@ -1408,6 +1415,15 @@ static Weaviate.Client.Models.BM25Operator.Or.operator ==(Weaviate.Client.Models
 static Weaviate.Client.Models.ClusterNode.operator !=(Weaviate.Client.Models.ClusterNode? left, Weaviate.Client.Models.ClusterNode? right) -> bool
 static Weaviate.Client.Models.ClusterNode.operator ==(Weaviate.Client.Models.ClusterNode? left, Weaviate.Client.Models.ClusterNode? right) -> bool
 static Weaviate.Client.Models.ClusterNodeVerbose.NodeStats.operator !=(Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? left, Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? right) -> bool
+
+Weaviate.Client.Batch.BatchObjectStatus.Pending = 0 -> Weaviate.Client.Batch.BatchObjectStatus
+Weaviate.Client.Batch.BatchObjectStatus.Acked = 1 -> Weaviate.Client.Batch.BatchObjectStatus
+Weaviate.Client.Batch.BatchObjectStatus.Failed = 2 -> Weaviate.Client.Batch.BatchObjectStatus
+Weaviate.Client.Batch.BatchObjectStatus.Retried = 3 -> Weaviate.Client.Batch.BatchObjectStatus
+Weaviate.Client.Batch.BatchObjectStatus.Acked
+Weaviate.Client.Batch.BatchObjectStatus.Failed
+Weaviate.Client.Batch.BatchObjectStatus.Retried
+Weaviate.Client.Batch.TaskHandle.Status.get -> Weaviate.Client.Batch.BatchObjectStatus
 static Weaviate.Client.Models.ClusterNodeVerbose.NodeStats.operator ==(Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? left, Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? right) -> bool
 static Weaviate.Client.Models.ClusterNodeVerbose.operator !=(Weaviate.Client.Models.ClusterNodeVerbose? left, Weaviate.Client.Models.ClusterNodeVerbose? right) -> bool
 static Weaviate.Client.Models.ClusterNodeVerbose.operator ==(Weaviate.Client.Models.ClusterNodeVerbose? left, Weaviate.Client.Models.ClusterNodeVerbose? right) -> bool
@@ -2730,6 +2746,15 @@ Weaviate.Client.BaseCollectionClient.Client.get -> Weaviate.Client.WeaviateClien
 Weaviate.Client.BaseCollectionClient.CollectionName.get -> string!
 Weaviate.Client.BaseCollectionClient.ConsistencyLevel.get -> Weaviate.Client.ConsistencyLevels?
 Weaviate.Client.BaseCollectionClient.Tenant.get -> string?
+Weaviate.Client.Batch.BatchContext
+Weaviate.Client.Batch.BatchContext.Add(object! obj, System.Guid? uuid = null, Weaviate.Client.Models.Vectors? vectors = null, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.ObjectReference!>? references = null, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Weaviate.Client.Batch.TaskHandle!>
+Weaviate.Client.Batch.BatchContext.Add(Weaviate.Client.Models.BatchInsertRequest! request, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Weaviate.Client.Batch.TaskHandle!>
+Weaviate.Client.Batch.BatchContext.AddReference(Weaviate.Client.Models.DataReference! reference, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Weaviate.Client.Batch.TaskHandle!>
+Weaviate.Client.Batch.BatchContext.Close(System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.Batch.BatchContext.DisposeAsync() -> System.Threading.Tasks.ValueTask
+Weaviate.Client.Batch.BatchContext.Retry(Weaviate.Client.Batch.TaskHandle! handle, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Weaviate.Client.Batch.TaskHandle!>
+Weaviate.Client.Batch.BatchContext.Start(System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.Batch.BatchContext.State.get -> Weaviate.Client.Batch.BatchState
 Weaviate.Client.Cache.SchemaCache
 Weaviate.Client.Cache.SchemaCache.Clear() -> void
 Weaviate.Client.Cache.SchemaCache.Contains(string! collectionName) -> bool
@@ -2784,6 +2809,7 @@ Weaviate.Client.ClusterClient.ReplicateSync(Weaviate.Client.Models.ReplicateRequ
 Weaviate.Client.ClusterClient.Replications.get -> Weaviate.Client.ReplicationsClient!
 Weaviate.Client.CollectionClient
 Weaviate.Client.CollectionClient.Aggregate.get -> Weaviate.Client.AggregateClient!
+Weaviate.Client.CollectionClient.Batch.get -> Weaviate.Client.Batch.BatchManager!
 Weaviate.Client.CollectionClient.Client.get -> Weaviate.Client.WeaviateClient!
 Weaviate.Client.CollectionClient.Config.get -> Weaviate.Client.CollectionConfigClient!
 Weaviate.Client.CollectionClient.ConsistencyLevel.get -> Weaviate.Client.ConsistencyLevels?
@@ -3562,17 +3588,6 @@ Weaviate.Client.Models.DatabaseUser.UserId.init -> void
 Weaviate.Client.Models.DatabaseUserType
 Weaviate.Client.Models.DatabaseUserType.DbEnvUser = 1 -> Weaviate.Client.Models.DatabaseUserType
 Weaviate.Client.Models.DatabaseUserType.DbUser = 0 -> Weaviate.Client.Models.DatabaseUserType
-Weaviate.Client.Models.DataReference
-Weaviate.Client.Models.DataReference.DataReference(System.Guid from, string! fromProperty, params System.Guid[]! to) -> void
-Weaviate.Client.Models.DataReference.DataReference(System.Guid From, string! FromProperty, System.Collections.Generic.IEnumerable<System.Guid>! To) -> void
-Weaviate.Client.Models.DataReference.DataReference(Weaviate.Client.Models.DataReference! original) -> void
-Weaviate.Client.Models.DataReference.Deconstruct(out System.Guid From, out string! FromProperty, out System.Collections.Generic.IEnumerable<System.Guid>! To) -> void
-Weaviate.Client.Models.DataReference.From.get -> System.Guid
-Weaviate.Client.Models.DataReference.From.init -> void
-Weaviate.Client.Models.DataReference.FromProperty.get -> string!
-Weaviate.Client.Models.DataReference.FromProperty.init -> void
-Weaviate.Client.Models.DataReference.To.get -> System.Collections.Generic.IEnumerable<System.Guid>!
-Weaviate.Client.Models.DataReference.To.init -> void
 Weaviate.Client.Models.DataResource
 Weaviate.Client.Models.DataResource.Collection.get -> string?
 Weaviate.Client.Models.DataResource.Collection.init -> void
@@ -6695,3 +6710,56 @@ Weaviate.Client.WeaviateVersionMismatchException.ActualVersion.get -> System.Ver
 Weaviate.Client.WeaviateVersionMismatchException.Operation.get -> string?
 Weaviate.Client.WeaviateVersionMismatchException.RequiredVersion.get -> System.Version!
 Weaviate.Client.WeaviateVersionMismatchException.WeaviateVersionMismatchException(string? operation, System.Version! requiredVersion, System.Version! actualVersion) -> void
+Weaviate.Client.Batch.BatchManager
+Weaviate.Client.Batch.BatchManager.BatchManager(Weaviate.Client.CollectionClient! collectionClient) -> void
+Weaviate.Client.Batch.BatchManager.InsertMany(System.Collections.Generic.IAsyncEnumerable<Weaviate.Client.Models.BatchInsertRequest!>! requests, Weaviate.Client.Batch.BatchOptions? options = null, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.BatchInsertResponse!>!
+Weaviate.Client.Batch.BatchManager.InsertMany(System.Collections.Generic.IEnumerable<Weaviate.Client.Models.BatchInsertRequest!>! requests, Weaviate.Client.Batch.BatchOptions? options = null, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.BatchInsertResponse!>!
+Weaviate.Client.Batch.BatchManager.InsertMany(System.Threading.Channels.ChannelReader<Weaviate.Client.Models.BatchInsertRequest!>! channelReader, Weaviate.Client.Batch.BatchOptions? options = null, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.BatchInsertResponse!>!
+Weaviate.Client.Batch.BatchManager.InsertMany<T>(System.Collections.Generic.IAsyncEnumerable<T>! items, Weaviate.Client.Batch.BatchOptions? options = null, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.BatchInsertResponse!>!
+Weaviate.Client.Batch.BatchManager.InsertMany<T>(System.Collections.Generic.IEnumerable<T>! items, Weaviate.Client.Batch.BatchOptions? options = null, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.BatchInsertResponse!>!
+Weaviate.Client.Batch.BatchManager.InsertMany<T>(System.Threading.Channels.ChannelReader<T>! channelReader, Weaviate.Client.Batch.BatchOptions? options = null, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.BatchInsertResponse!>!
+Weaviate.Client.Batch.BatchManager.InsertMany(System.Threading.Channels.ChannelReader<Weaviate.Client.Models.BatchInsertRequest!>! channelReader, System.Threading.Channels.ChannelWriter<Weaviate.Client.Models.BatchInsertResponseEntry!>! resultWriter, Weaviate.Client.Batch.BatchOptions? options = null, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.Batch.BatchManager.InsertMany<T>(System.Threading.Channels.ChannelReader<T>! channelReader, System.Threading.Channels.ChannelWriter<Weaviate.Client.Models.BatchInsertResponseEntry!>! resultWriter, Weaviate.Client.Batch.BatchOptions? options = null, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.Batch.BatchManager.StartBatch(Weaviate.Client.Batch.BatchOptions? options = null, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Batch.BatchContext!>!
+Weaviate.Client.Batch.BatchOptions
+Weaviate.Client.Batch.BatchOptions.BatchOptions() -> void
+Weaviate.Client.Batch.BatchOptions.BatchSize.get -> int
+Weaviate.Client.Batch.BatchOptions.BatchSize.set -> void
+Weaviate.Client.Batch.BatchOptions.ConsistencyLevel.get -> Weaviate.Client.ConsistencyLevels?
+Weaviate.Client.Batch.BatchOptions.ConsistencyLevel.set -> void
+const Weaviate.Client.Batch.BatchOptions.DefaultBatchSize = 100 -> int
+const Weaviate.Client.Batch.BatchOptions.DefaultMaxRetries = 3 -> int
+const Weaviate.Client.Batch.BatchOptions.MaxBatchSize = 1000 -> int
+const Weaviate.Client.Batch.BatchOptions.MinBatchSize = 1 -> int
+Weaviate.Client.Batch.BatchOptions.MaxRetries.get -> int
+Weaviate.Client.Batch.BatchOptions.MaxRetries.set -> void
+Weaviate.Client.Batch.BatchOptions.MaxRetryDelay.get -> System.TimeSpan
+Weaviate.Client.Batch.BatchOptions.MaxRetryDelay.set -> void
+Weaviate.Client.Batch.BatchOptions.RetryDelay.get -> System.TimeSpan
+Weaviate.Client.Batch.BatchOptions.RetryDelay.set -> void
+Weaviate.Client.Batch.BatchOptions.SkipInvalidObjects.get -> bool
+Weaviate.Client.Batch.BatchOptions.SkipInvalidObjects.set -> void
+Weaviate.Client.Batch.BatchOptions.StopOnFirstError.get -> bool
+Weaviate.Client.Batch.BatchOptions.StopOnFirstError.set -> void
+Weaviate.Client.Batch.BatchOptions.Timeout.get -> System.TimeSpan?
+Weaviate.Client.Batch.BatchOptions.Timeout.set -> void
+Weaviate.Client.Batch.BatchOptions.Validate() -> void
+static Weaviate.Client.Batch.BatchOptions.Default.get -> Weaviate.Client.Batch.BatchOptions!
+static Weaviate.Client.Batch.BatchOptions.HighReliability.get -> Weaviate.Client.Batch.BatchOptions!
+static Weaviate.Client.Batch.BatchOptions.HighThroughput.get -> Weaviate.Client.Batch.BatchOptions!
+Weaviate.Client.Batch.BatchResult
+Weaviate.Client.Batch.BatchResult.BatchResult() -> void
+Weaviate.Client.Batch.BatchResult.ErrorMessage.get -> string?
+Weaviate.Client.Batch.BatchResult.ServerResponse.get -> object?
+Weaviate.Client.Batch.BatchResult.Success.get -> bool
+Weaviate.Client.Batch.BatchState
+Weaviate.Client.Batch.BatchState.Aborted = 3 -> Weaviate.Client.Batch.BatchState
+Weaviate.Client.Batch.BatchState.Closed = 2 -> Weaviate.Client.Batch.BatchState
+Weaviate.Client.Batch.BatchState.InFlight = 1 -> Weaviate.Client.Batch.BatchState
+Weaviate.Client.Batch.BatchState.Open = 0 -> Weaviate.Client.Batch.BatchState
+Weaviate.Client.Batch.TaskHandle
+Weaviate.Client.Batch.TaskHandle.IsAcked.get -> System.Threading.Tasks.Task<bool>!
+Weaviate.Client.Batch.TaskHandle.Result.get -> System.Threading.Tasks.Task<Weaviate.Client.Batch.BatchResult!>!
+Weaviate.Client.Batch.TaskHandle.TaskHandle() -> void
+Weaviate.Client.Batch.TaskHandle.TimesRetried.get -> int
+Weaviate.Client.Batch.TaskHandle.Uuid.get -> System.Guid?

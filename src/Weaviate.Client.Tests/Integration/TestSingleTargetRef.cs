@@ -113,9 +113,9 @@ public partial class ReferenceTests : IntegrationTests
 
         await cB.Data.ReferenceAddMany(
             [
-                new DataReference(uuid_B2, "a", [uuid_A1]),
-                new DataReference(uuid_B2, "a", [uuid_A2]),
-                new DataReference(uuid_B2, "a", [uuid_A3]),
+                new DataReference(uuid_B2, "a", uuid_A1),
+                new DataReference(uuid_B2, "a", uuid_A2),
+                new DataReference(uuid_B2, "a", uuid_A3),
             ],
             cancellationToken: TestContext.Current.CancellationToken
         );
