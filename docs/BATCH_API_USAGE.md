@@ -274,35 +274,21 @@ new DataReference(sourceId, "hasAuthor", authorId)
 }
 ```
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `From` | `Guid` | UUID of the source object |
-| `FromProperty` | `string` | Name of the reference property on the source |
-| `To` | `IEnumerable<Guid>` | Target object UUIDs |
-| `FromCollection` | `string?` | Source collection name. When not set, `DataClient` infers it from the collection context and `BatchContext` infers it from the stream context. |
-| `ToCollection` | `string?` | Target collection name. Only needed for cross-collection references. |
-| `Beacon` | `string?` | Computed source beacon (`weaviate://localhost/{FromCollection}/{From}/{FromProperty}`). `null` when `FromCollection` is not set. |
+- `From` — UUID of the source object
+- `FromProperty` — name of the reference property on the source
+- `To` — one or more target object UUIDs
+
+The source collection is always inferred from the collection context (`DataClient` or `BatchContext`), so callers never need to specify it.
 
 ### REST batch references
 
-`DataClient.ReferenceAddMany` also accepts `DataReference`. `FromCollection` is optional — `DataClient` automatically sets it to the collection's own name before sending, so you only need to set it when the source objects belong to a different collection:
+`DataClient.ReferenceAddMany` also accepts `DataReference`:
 
 ```csharp
-// FromCollection omitted — DataClient fills it in from the collection context
 await sourceCollection.Data.ReferenceAddMany(
 [
     new DataReference(sourceId, "hasAuthor", authorId1),
     new DataReference(sourceId, "hasAuthor", authorId2),
-]);
-
-// FromCollection set explicitly — only needed for cross-collection scenarios
-await sourceCollection.Data.ReferenceAddMany(
-[
-    new DataReference(sourceId, "hasAuthor", authorId)
-    {
-        FromCollection = "Articles",
-        ToCollection = "Authors",
-    },
 ]);
 ```
 

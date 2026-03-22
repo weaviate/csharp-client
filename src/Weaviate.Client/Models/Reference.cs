@@ -13,22 +13,22 @@ public record DataReference(Guid From, string FromProperty, IEnumerable<Guid> To
 
     /// <summary>
     /// The collection that contains the source object.
-    /// When set, the <see cref="Beacon"/> property becomes available.
-    /// Required for <see cref="Weaviate.Client.Batch.BatchContext.AddReference"/>.
-    /// If not set, <see cref="DataClient.ReferenceAddMany"/> infers it from the collection context.
+    /// Set internally by <see cref="DataClient"/> and <see cref="Weaviate.Client.Batch.BatchContext"/>
+    /// from their collection context.
     /// </summary>
-    public string? FromCollection { get; init; }
+    internal string? FromCollection { get; init; }
 
     /// <summary>
-    /// The collection that contains the target objects. Only needed for cross-collection references.
+    /// The collection that contains the target objects.
+    /// Reserved for future multi-target reference support.
     /// </summary>
-    public string? ToCollection { get; init; }
+    internal string? ToCollection { get; init; }
 
     /// <summary>
-    /// Source/tracking beacon: <c>weaviate://localhost/{FromCollection}/{From}/{FromProperty}</c>.
-    /// Returns <c>null</c> when <see cref="FromCollection"/> is not set.
+    /// Source/tracking beacon used by the SSB protocol and the REST batch-references endpoint.
+    /// <c>weaviate://localhost/{FromCollection}/{From}/{FromProperty}</c>
     /// </summary>
-    public string? Beacon =>
+    internal string? Beacon =>
         FromCollection == null
             ? null
             : $"weaviate://localhost/{FromCollection}/{From}/{FromProperty}";

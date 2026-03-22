@@ -3588,11 +3588,6 @@ Weaviate.Client.Models.DatabaseUser.UserId.init -> void
 Weaviate.Client.Models.DatabaseUserType
 Weaviate.Client.Models.DatabaseUserType.DbEnvUser = 1 -> Weaviate.Client.Models.DatabaseUserType
 Weaviate.Client.Models.DatabaseUserType.DbUser = 0 -> Weaviate.Client.Models.DatabaseUserType
-Weaviate.Client.Models.DataReference.Beacon.get -> string?
-Weaviate.Client.Models.DataReference.FromCollection.get -> string?
-Weaviate.Client.Models.DataReference.FromCollection.init -> void
-Weaviate.Client.Models.DataReference.ToCollection.get -> string?
-Weaviate.Client.Models.DataReference.ToCollection.init -> void
 Weaviate.Client.Models.DataResource
 Weaviate.Client.Models.DataResource.Collection.get -> string?
 Weaviate.Client.Models.DataResource.Collection.init -> void
