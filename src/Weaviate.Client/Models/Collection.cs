@@ -6,6 +6,11 @@ namespace Weaviate.Client.Models;
 public record ObjectTTLConfig
 {
     /// <summary>
+    /// A default disabled ObjectTTLConfig used for null-coalescing equality comparisons.
+    /// </summary>
+    internal static ObjectTTLConfig Disabled => new() { Enabled = false };
+
+    /// <summary>
     /// Indicates whether TTL is enabled for the collection objects.
     /// </summary>
     public bool Enabled { get; set; } = true;
@@ -267,8 +272,8 @@ public abstract record CollectionConfigCommon
 
         if (
             !EqualityComparer<ObjectTTLConfig?>.Default.Equals(
-                ObjectTTLConfig,
-                other.ObjectTTLConfig
+                ObjectTTLConfig ?? ObjectTTLConfig.Disabled,
+                other.ObjectTTLConfig ?? ObjectTTLConfig.Disabled
             )
         )
             return false;
