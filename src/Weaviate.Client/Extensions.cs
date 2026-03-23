@@ -389,16 +389,13 @@ public static class WeaviateExtensions
                             ?? Weaviate.Client.Models.MultiTenancyConfig.Default.AutoTenantCreation,
                     }
                     : null,
-            ObjectTTLConfig =
-                (collection?.ObjectTtlConfig is Rest.Dto.ObjectTtlConfig ottl)
-                    ? new ObjectTTLConfig
-                    {
-                        Enabled = ottl.Enabled ?? false,
-                        DefaultTTL = ottl.DefaultTtl,
-                        DeleteOn = ottl.DeleteOn,
-                        FilterExpiredObjects = ottl.FilterExpiredObjects,
-                    }
-                    : null,
+            ObjectTTLConfig = new ObjectTTLConfig
+            {
+                Enabled = collection?.ObjectTtlConfig?.Enabled ?? false,
+                DefaultTTL = collection?.ObjectTtlConfig?.DefaultTtl,
+                DeleteOn = collection?.ObjectTtlConfig?.DeleteOn,
+                FilterExpiredObjects = collection?.ObjectTtlConfig?.FilterExpiredObjects,
+            },
             ReplicationConfig =
                 (collection?.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
                     ? new ReplicationConfig
