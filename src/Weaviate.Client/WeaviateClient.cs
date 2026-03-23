@@ -580,7 +580,7 @@ public partial class WeaviateClient : IDisposable
         );
 
         // Set alpha default for backward compatibility with Weaviate <= 1.35
-        if (serverVersion != null && serverVersion >= new Version(1, 36))
+        if (serverVersion != null && serverVersion >= new Version(1, 36, 7))
         {
             client.SetUseAlphaParam(true);
         }

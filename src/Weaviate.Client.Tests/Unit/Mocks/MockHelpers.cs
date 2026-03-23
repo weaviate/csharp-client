@@ -213,7 +213,7 @@ internal static class MockGrpcClient
                 : null;
 
         // Set alpha param behavior based on version
-        if (weaviateVersion != null && weaviateVersion >= new Version(1, 36, 0))
+        if (weaviateVersion != null && weaviateVersion >= new Version(1, 36, 7))
         {
             grpcClient.SetUseAlphaParam(true);
         }
