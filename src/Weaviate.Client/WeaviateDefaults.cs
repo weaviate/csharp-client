@@ -35,9 +35,24 @@ public static class WeaviateDefaults
     public static RetryPolicy DefaultRetryPolicy { get; set; } = RetryPolicy.Default;
 
     /// <summary>
+    /// The HTTP header name used to identify integration libraries built on top of the core client.
+    /// </summary>
+    public const string IntegrationHeader = "X-Weaviate-Client-Integration";
+
+    /// <summary>
     /// Gets or sets the default User-Agent headers sent by the client.
     /// This can be used to identify the client or provide additional metadata in requests.
     /// </summary>
     public static string UserAgent =>
         $"weaviate-client-csharp/{typeof(WeaviateClient).Assembly.GetName().Version}";
+
+    /// <summary>
+    /// Returns an integration agent header value for the given integration name.
+    /// Used to populate the <c>X-Weaviate-Client-Integration</c> header so higher-level
+    /// libraries built on top of this client can identify themselves to the server.
+    /// Format: <c>{integrationName}/{version}</c>, e.g. <c>weaviate-client-csharp-managed/1.0.0</c>.
+    /// </summary>
+    /// <param name="integrationName">The integration package name.</param>
+    public static string IntegrationAgent(string integrationName) =>
+        $"{integrationName}/{typeof(WeaviateClient).Assembly.GetName().Version}";
 }

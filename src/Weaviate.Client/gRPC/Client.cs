@@ -80,20 +80,18 @@ internal partial class WeaviateGrpcClient : IDisposable
         _retryPolicy = retryPolicy;
         _channel = channel;
 
-        // Create default headers
+        // Always initialize default headers
+        _defaultHeaders = new Metadata();
+
         if (!string.IsNullOrEmpty(wcdHost))
         {
-            _defaultHeaders = new Metadata { { "X-Weaviate-Cluster-URL", wcdHost } };
+            _defaultHeaders.Add("X-Weaviate-Cluster-URL", wcdHost);
         }
+
+        _defaultHeaders.Add("X-Weaviate-Client", WeaviateDefaults.UserAgent);
+
         if (headers != null)
         {
-            if (_defaultHeaders == null)
-            {
-                _defaultHeaders = new Metadata();
-            }
-
-            _defaultHeaders.Add("X-Weaviate-Client", WeaviateDefaults.UserAgent);
-
             foreach (var header in headers)
             {
                 _defaultHeaders.Add(header.Key, header.Value);

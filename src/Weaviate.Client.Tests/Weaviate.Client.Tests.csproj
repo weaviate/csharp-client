@@ -12,6 +12,7 @@
     <TestingPlatformShowTestsSummary>true</TestingPlatformShowTestsSummary>
     <UseMicrosoftTestingPlatformRunner>false</UseMicrosoftTestingPlatformRunner>
     <OutputType>Exe</OutputType>
+    <DefineConstants>$(DefineConstants);ENABLE_INTERNAL_TESTS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Weaviate.Client.Managed.Tests" />
