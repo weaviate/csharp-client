@@ -253,7 +253,8 @@ public partial class CollectionsTests
                         }}
                     }},
                     ""name"": ""name"",
-                    ""tokenization"": ""word""
+                    ""tokenization"": ""word"",
+                    ""disableDuplicatedReferences"": true
                 }}
             ],
             ""replicationConfig"": {{
@@ -409,7 +410,8 @@ public partial class CollectionsTests
                         }}
                     }},
                     ""name"": ""name"",
-                    ""tokenization"": ""word""
+                    ""tokenization"": ""word"",
+                    ""disableDuplicatedReferences"": true
                 }}
             ],
             ""replicationConfig"": {{
