@@ -39,7 +39,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Cache NuGet packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.*proj') }}
@@ -48,6 +48,18 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
+
+      - name: Run unit tests
+        run: |
+          if [[ "${{ inputs.dry-run }}" == "true" ]]; then
+            echo "🏃 DRY-RUN MODE: Skipping actual unit tests"
+            echo '<?xml version="1.0" encoding="utf-8"?><TestRun><ResultSummary outcome="Completed"><Counters total="91" executed="91" passed="91" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" /></ResultSummary></TestRun>' > ./test-results/test-unit-${{ inputs.weaviate-version }}.trx
+          else
+            WEAVIATE_VERSION=${{ inputs.weaviate-version }} dotnet test --no-restore \
+              --filter "FullyQualifiedName~Unit" \
+              --logger "trx;LogFileName=test-unit-${{ inputs.weaviate-version }}.trx" \
+              --results-directory ./test-results
+          fi
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3

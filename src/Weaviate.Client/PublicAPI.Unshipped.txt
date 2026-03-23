@@ -2656,9 +2656,9 @@ virtual Weaviate.Client.RetryPolicy.EqualityContract.get -> System.Type!
 virtual Weaviate.Client.RetryPolicy.Equals(Weaviate.Client.RetryPolicy? other) -> bool
 virtual Weaviate.Client.RetryPolicy.PrintMembers(System.Text.StringBuilder! builder) -> bool
 Weaviate.Client.AggregateClient
-Weaviate.Client.AggregateClient.Hybrid(string! query, float alpha = 0.7, string![]? queryProperties = null, uint? objectLimit = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, Weaviate.Client.Models.Filter? filters = null, float? maxVectorDistance = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
+Weaviate.Client.AggregateClient.Hybrid(string! query, float? alpha = null, string![]? queryProperties = null, uint? objectLimit = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, Weaviate.Client.Models.Filter? filters = null, float? maxVectorDistance = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
 Weaviate.Client.AggregateClient.Hybrid(string! query, Weaviate.Client.Models.Aggregate.GroupBy! groupBy, float alpha = 0.7, string![]? queryProperties = null, uint? objectLimit = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, Weaviate.Client.Models.Filter? filters = null, float? maxVectorDistance = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
-Weaviate.Client.AggregateClient.Hybrid(string? query, Weaviate.Client.Models.HybridVectorInput? vectors, float alpha = 0.7, string![]? queryProperties = null, uint? objectLimit = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, Weaviate.Client.Models.Filter? filters = null, float? maxVectorDistance = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
+Weaviate.Client.AggregateClient.Hybrid(string? query, Weaviate.Client.Models.HybridVectorInput? vectors, float? alpha = null, string![]? queryProperties = null, uint? objectLimit = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, Weaviate.Client.Models.Filter? filters = null, float? maxVectorDistance = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
 Weaviate.Client.AggregateClient.Hybrid(string? query, Weaviate.Client.Models.HybridVectorInput? vectors, Weaviate.Client.Models.Aggregate.GroupBy! groupBy, float alpha = 0.7, string![]? queryProperties = null, uint? objectLimit = null, Weaviate.Client.Models.BM25Operator? bm25Operator = null, Weaviate.Client.Models.Filter? filters = null, float? maxVectorDistance = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
 Weaviate.Client.AggregateClient.NearMedia(Weaviate.Client.NearMediaInput.FactoryFn! media, Weaviate.Client.Models.Aggregate.GroupBy? groupBy, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateGroupByResult!>!
 Weaviate.Client.AggregateClient.NearMedia(Weaviate.Client.NearMediaInput.FactoryFn! media, Weaviate.Client.Models.Filter? filters = null, uint? limit = null, bool totalCount = true, System.Collections.Generic.IEnumerable<Weaviate.Client.Models.Aggregate.Metric!>? returnMetrics = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.AggregateResult!>!
@@ -2765,12 +2765,12 @@ Weaviate.Client.Cache.SchemaCache.IsFresh(string! collectionName) -> bool
 Weaviate.Client.Cache.SchemaCache.SchemaCache(System.TimeSpan? ttl = null) -> void
 Weaviate.Client.ClientConfiguration
 Weaviate.Client.ClientConfiguration.<Clone>$() -> Weaviate.Client.ClientConfiguration!
-Weaviate.Client.ClientConfiguration.ClientConfiguration(string! RestAddress = "localhost", string! RestPath = "v1/", string! GrpcAddress = "localhost", string! GrpcPath = "", ushort RestPort = 8080, ushort GrpcPort = 50051, bool UseSsl = false, System.Collections.Generic.Dictionary<string!, string!>? Headers = null, Weaviate.Client.ICredentials? Credentials = null, System.TimeSpan? DefaultTimeout = null, System.TimeSpan? InitTimeout = null, System.TimeSpan? InsertTimeout = null, System.TimeSpan? QueryTimeout = null, Weaviate.Client.RetryPolicy? RetryPolicy = null, System.Net.Http.DelegatingHandler![]? CustomHandlers = null, System.Net.Http.HttpMessageHandler? HttpMessageHandler = null) -> void
+Weaviate.Client.ClientConfiguration.ClientConfiguration(string! RestAddress = "localhost", string! RestPath = "v1/", string! GrpcAddress = "localhost", string! GrpcPath = "", ushort RestPort = 8080, ushort GrpcPort = 50051, bool UseSsl = false, System.Collections.Generic.Dictionary<string!, string!>? Headers = null, Weaviate.Client.ICredentials? Credentials = null, System.TimeSpan? DefaultTimeout = null, System.TimeSpan? InitTimeout = null, System.TimeSpan? InsertTimeout = null, System.TimeSpan? QueryTimeout = null, Weaviate.Client.RetryPolicy? RetryPolicy = null, System.Net.Http.DelegatingHandler![]? CustomHandlers = null, System.Net.Http.HttpMessageHandler? HttpMessageHandler = null, Microsoft.Extensions.Logging.ILoggerFactory? LoggerFactory = null, bool LogRequests = false, Microsoft.Extensions.Logging.LogLevel RequestLoggingLevel = Microsoft.Extensions.Logging.LogLevel.Debug) -> void
 Weaviate.Client.ClientConfiguration.Credentials.get -> Weaviate.Client.ICredentials?
 Weaviate.Client.ClientConfiguration.Credentials.init -> void
 Weaviate.Client.ClientConfiguration.CustomHandlers.get -> System.Net.Http.DelegatingHandler![]?
 Weaviate.Client.ClientConfiguration.CustomHandlers.init -> void
-Weaviate.Client.ClientConfiguration.Deconstruct(out string! RestAddress, out string! RestPath, out string! GrpcAddress, out string! GrpcPath, out ushort RestPort, out ushort GrpcPort, out bool UseSsl, out System.Collections.Generic.Dictionary<string!, string!>? Headers, out Weaviate.Client.ICredentials? Credentials, out System.TimeSpan? DefaultTimeout, out System.TimeSpan? InitTimeout, out System.TimeSpan? InsertTimeout, out System.TimeSpan? QueryTimeout, out Weaviate.Client.RetryPolicy? RetryPolicy, out System.Net.Http.DelegatingHandler![]? CustomHandlers, out System.Net.Http.HttpMessageHandler? HttpMessageHandler) -> void
+Weaviate.Client.ClientConfiguration.Deconstruct(out string! RestAddress, out string! RestPath, out string! GrpcAddress, out string! GrpcPath, out ushort RestPort, out ushort GrpcPort, out bool UseSsl, out System.Collections.Generic.Dictionary<string!, string!>? Headers, out Weaviate.Client.ICredentials? Credentials, out System.TimeSpan? DefaultTimeout, out System.TimeSpan? InitTimeout, out System.TimeSpan? InsertTimeout, out System.TimeSpan? QueryTimeout, out Weaviate.Client.RetryPolicy? RetryPolicy, out System.Net.Http.DelegatingHandler![]? CustomHandlers, out System.Net.Http.HttpMessageHandler? HttpMessageHandler, out Microsoft.Extensions.Logging.ILoggerFactory? LoggerFactory, out bool LogRequests, out Microsoft.Extensions.Logging.LogLevel RequestLoggingLevel) -> void
 Weaviate.Client.ClientConfiguration.DefaultTimeout.get -> System.TimeSpan?
 Weaviate.Client.ClientConfiguration.DefaultTimeout.init -> void
 Weaviate.Client.ClientConfiguration.Equals(Weaviate.Client.ClientConfiguration? other) -> bool
@@ -2789,8 +2789,14 @@ Weaviate.Client.ClientConfiguration.InitTimeout.get -> System.TimeSpan?
 Weaviate.Client.ClientConfiguration.InitTimeout.init -> void
 Weaviate.Client.ClientConfiguration.InsertTimeout.get -> System.TimeSpan?
 Weaviate.Client.ClientConfiguration.InsertTimeout.init -> void
+Weaviate.Client.ClientConfiguration.LoggerFactory.get -> Microsoft.Extensions.Logging.ILoggerFactory?
+Weaviate.Client.ClientConfiguration.LoggerFactory.init -> void
+Weaviate.Client.ClientConfiguration.LogRequests.get -> bool
+Weaviate.Client.ClientConfiguration.LogRequests.init -> void
 Weaviate.Client.ClientConfiguration.QueryTimeout.get -> System.TimeSpan?
 Weaviate.Client.ClientConfiguration.QueryTimeout.init -> void
+Weaviate.Client.ClientConfiguration.RequestLoggingLevel.get -> Microsoft.Extensions.Logging.LogLevel
+Weaviate.Client.ClientConfiguration.RequestLoggingLevel.init -> void
 Weaviate.Client.ClientConfiguration.RestAddress.get -> string!
 Weaviate.Client.ClientConfiguration.RestAddress.init -> void
 Weaviate.Client.ClientConfiguration.RestPath.get -> string!
@@ -2901,8 +2907,12 @@ Weaviate.Client.DependencyInjection.WeaviateOptions.InitTimeout.get -> System.Ti
 Weaviate.Client.DependencyInjection.WeaviateOptions.InitTimeout.set -> void
 Weaviate.Client.DependencyInjection.WeaviateOptions.InsertTimeout.get -> System.TimeSpan?
 Weaviate.Client.DependencyInjection.WeaviateOptions.InsertTimeout.set -> void
+Weaviate.Client.DependencyInjection.WeaviateOptions.LogRequests.get -> bool
+Weaviate.Client.DependencyInjection.WeaviateOptions.LogRequests.set -> void
 Weaviate.Client.DependencyInjection.WeaviateOptions.QueryTimeout.get -> System.TimeSpan?
 Weaviate.Client.DependencyInjection.WeaviateOptions.QueryTimeout.set -> void
+Weaviate.Client.DependencyInjection.WeaviateOptions.RequestLoggingLevel.get -> Microsoft.Extensions.Logging.LogLevel
+Weaviate.Client.DependencyInjection.WeaviateOptions.RequestLoggingLevel.set -> void
 Weaviate.Client.DependencyInjection.WeaviateOptions.RestEndpoint.get -> string!
 Weaviate.Client.DependencyInjection.WeaviateOptions.RestEndpoint.set -> void
 Weaviate.Client.DependencyInjection.WeaviateOptions.RestPath.get -> string!
@@ -5744,12 +5754,40 @@ Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ProjectId.get -> string!
 Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ProjectId.set -> void
 Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.TextFields.get -> string![]?
 Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.TextFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.AudioFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.AudioFields.set -> void
 Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VectorizeCollectionName.get -> bool?
 Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VectorizeCollectionName.set -> void
 Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VideoFields.get -> string![]?
 Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VideoFields.set -> void
 Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VideoIntervalSeconds.get -> int?
 Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.VideoIntervalSeconds.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.ApiEndpoint.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.ApiEndpoint.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.AudioFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.AudioFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.ImageFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.Multi2VecGoogleGemini(Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.TextFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.TextFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.VideoFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.VideoFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.VideoIntervalSeconds.get -> int?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.VideoIntervalSeconds.set -> void
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini!
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.ToString() -> string!
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini? other) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.operator !=(Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini? left, Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.operator ==(Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini? left, Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini? right) -> bool
 Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI
 Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.BaseURL.get -> string?
 Weaviate.Client.Models.Vectorizer.Multi2VecJinaAI.BaseURL.set -> void
@@ -6455,10 +6493,10 @@ Weaviate.Client.VectorizerFactory.Multi2VecClip(string![]? imageFields = null, s
 Weaviate.Client.VectorizerFactory.Multi2VecClip(Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, string? inferenceUrl = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
 Weaviate.Client.VectorizerFactory.Multi2VecCohere(string![]? imageFields = null, string![]? textFields = null, string? baseURL = null, string? model = null, int? dimensions = null, string? truncate = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
 Weaviate.Client.VectorizerFactory.Multi2VecCohere(Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, string? baseURL = null, string? model = null, int? dimensions = null, string? truncate = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
-Weaviate.Client.VectorizerFactory.Multi2VecGoogle(string! projectId, string! location, string![]? imageFields = null, string![]? textFields = null, string![]? videoFields = null, int? videoIntervalSeconds = null, string? model = null, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
-Weaviate.Client.VectorizerFactory.Multi2VecGoogle(string! projectId, string! location, Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, Weaviate.Client.Models.WeightedFields! videoFields, int? videoIntervalSeconds = null, string? model = null, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
-Weaviate.Client.VectorizerFactory.Multi2VecGoogleGemini(string![]? imageFields = null, string![]? textFields = null, string![]? videoFields = null, string? apiEndpoint = null, int? videoIntervalSeconds = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!
-Weaviate.Client.VectorizerFactory.Multi2VecGoogleGemini(Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, Weaviate.Client.Models.WeightedFields! videoFields, string? apiEndpoint = null, int? videoIntervalSeconds = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Multi2VecGoogle(string! projectId, string! location, string![]? imageFields = null, string![]? textFields = null, string![]? videoFields = null, string![]? audioFields = null, int? videoIntervalSeconds = null, string? model = null, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Multi2VecGoogle(string! projectId, string! location, Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, Weaviate.Client.Models.WeightedFields! videoFields, Weaviate.Client.Models.WeightedFields! audioFields, int? videoIntervalSeconds = null, string? model = null, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Multi2VecGoogleGemini(string![]? imageFields = null, string![]? textFields = null, string![]? videoFields = null, string![]? audioFields = null, string? apiEndpoint = null, int? videoIntervalSeconds = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Multi2VecGoogleGemini(Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, Weaviate.Client.Models.WeightedFields! videoFields, Weaviate.Client.Models.WeightedFields! audioFields, string? apiEndpoint = null, int? videoIntervalSeconds = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!
 Weaviate.Client.VectorizerFactory.Multi2VecJinaAI(string![]? imageFields = null, string![]? textFields = null, string? model = null, string? baseURL = null, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
 Weaviate.Client.VectorizerFactory.Multi2VecJinaAI(Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, string? model = null, string? baseURL = null, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
 Weaviate.Client.VectorizerFactory.Multi2VecNvidia(string? baseURL = null, string? model = null, string![]? properties = null, bool? truncate = null) -> Weaviate.Client.Models.VectorizerConfig!
@@ -6516,6 +6554,7 @@ Weaviate.Client.WeaviateClient.Users.get -> Weaviate.Client.UsersClient!
 Weaviate.Client.WeaviateClient.WaitUntilReady(System.TimeSpan timeout, System.TimeSpan? pollInterval = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
 Weaviate.Client.WeaviateClient.WeaviateClient(Microsoft.Extensions.Options.IOptions<Weaviate.Client.DependencyInjection.WeaviateOptions!>! options) -> void
 Weaviate.Client.WeaviateClient.WeaviateClient(Microsoft.Extensions.Options.IOptions<Weaviate.Client.DependencyInjection.WeaviateOptions!>! options, Microsoft.Extensions.Logging.ILogger<Weaviate.Client.WeaviateClient!>? logger) -> void
+Weaviate.Client.WeaviateClient.WeaviateClient(Microsoft.Extensions.Options.IOptions<Weaviate.Client.DependencyInjection.WeaviateOptions!>! options, Microsoft.Extensions.Logging.ILogger<Weaviate.Client.WeaviateClient!>? logger, Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory) -> void
 Weaviate.Client.WeaviateClient.WeaviateVersion.get -> System.Version?
 Weaviate.Client.WeaviateClientBuilder
 Weaviate.Client.WeaviateClientBuilder.AddHandler(System.Net.Http.DelegatingHandler! handler) -> Weaviate.Client.WeaviateClientBuilder!
@@ -6533,12 +6572,14 @@ Weaviate.Client.WeaviateClientBuilder.WithHeaders(System.Collections.Generic.Dic
 Weaviate.Client.WeaviateClientBuilder.WithHttpMessageHandler(System.Net.Http.HttpMessageHandler? handler) -> Weaviate.Client.WeaviateClientBuilder!
 Weaviate.Client.WeaviateClientBuilder.WithInitTimeout(System.TimeSpan timeout) -> Weaviate.Client.WeaviateClientBuilder!
 Weaviate.Client.WeaviateClientBuilder.WithInsertTimeout(System.TimeSpan timeout) -> Weaviate.Client.WeaviateClientBuilder!
+Weaviate.Client.WeaviateClientBuilder.WithLoggerFactory(Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Weaviate.Client.WeaviateClientBuilder!
 Weaviate.Client.WeaviateClientBuilder.WithoutRetries() -> Weaviate.Client.WeaviateClientBuilder!
 Weaviate.Client.WeaviateClientBuilder.WithQueryTimeout(System.TimeSpan timeout) -> Weaviate.Client.WeaviateClientBuilder!
 Weaviate.Client.WeaviateClientBuilder.WithRestEndpoint(string! endpoint) -> Weaviate.Client.WeaviateClientBuilder!
 Weaviate.Client.WeaviateClientBuilder.WithRestPath(string! path) -> Weaviate.Client.WeaviateClientBuilder!
 Weaviate.Client.WeaviateClientBuilder.WithRestPort(ushort port) -> Weaviate.Client.WeaviateClientBuilder!
 Weaviate.Client.WeaviateClientBuilder.WithRetryPolicy(Weaviate.Client.RetryPolicy! policy) -> Weaviate.Client.WeaviateClientBuilder!
+Weaviate.Client.WeaviateClientBuilder.UseRequestLogging(Microsoft.Extensions.Logging.LogLevel level = Microsoft.Extensions.Logging.LogLevel.Debug) -> Weaviate.Client.WeaviateClientBuilder!
 Weaviate.Client.WeaviateClientBuilderExtensions
 Weaviate.Client.WeaviateClientException
 Weaviate.Client.WeaviateClientException.WeaviateClientException(string! message) -> void

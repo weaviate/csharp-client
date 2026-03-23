@@ -84,8 +84,8 @@ This eliminates the need to set `Provider` on each prompt individually.
 #### Before
 
 ```csharp
-var openai = new Providers.OpenAI 
-{ 
+var openai = new Providers.OpenAI
+{
     Model = "gpt-4",
     Temperature = 0.7
 };
@@ -95,9 +95,9 @@ var result = await client
     .Generate
     .NearText(
         text: "quantum computing",
-        prompt: new SinglePrompt("Explain this topic") 
-        { 
-            Provider = openai 
+        prompt: new SinglePrompt("Explain this topic")
+        {
+            Provider = openai
         }
     );
 ```
@@ -105,8 +105,8 @@ var result = await client
 #### After
 
 ```csharp
-var openai = new Providers.OpenAI 
-{ 
+var openai = new Providers.OpenAI
+{
     Model = "gpt-4",
     Temperature = 0.7
 };
@@ -128,8 +128,8 @@ The real power comes from combining both shortcuts:
 #### Before
 
 ```csharp
-var anthropic = new Providers.Anthropic 
-{ 
+var anthropic = new Providers.Anthropic
+{
     Model = "claude-3-opus-20240229",
     MaxTokens = 2048
 };
@@ -139,9 +139,9 @@ var result = await client
     .Generate
     .BM25(
         query: "large language models",
-        prompt: new SinglePrompt("Create a detailed analysis") 
-        { 
-            Provider = anthropic 
+        prompt: new SinglePrompt("Create a detailed analysis")
+        {
+            Provider = anthropic
         }
     );
 ```
@@ -149,8 +149,8 @@ var result = await client
 #### After
 
 ```csharp
-var anthropic = new Providers.Anthropic 
-{ 
+var anthropic = new Providers.Anthropic
+{
     Model = "claude-3-opus-20240229",
     MaxTokens = 2048
 };
@@ -199,8 +199,8 @@ using Weaviate.Client.Models.Generative;
 
 var client = new WeaviateClient();
 
-var openai = new Providers.OpenAI 
-{ 
+var openai = new Providers.OpenAI
+{
     Model = "gpt-4o",
     Temperature = 0.3
 };
@@ -224,8 +224,8 @@ foreach (var obj in result.Objects)
 ### Example 2: Grouped Summaries
 
 ```csharp
-var mistral = new Providers.Mistral 
-{ 
+var mistral = new Providers.Mistral
+{
     Model = "mistral-large-latest",
     Temperature = 0.5
 };
@@ -250,8 +250,8 @@ foreach (var group in result.Groups)
 ### Example 3: Multiple Operations with Same Provider
 
 ```csharp
-var anthropic = new Providers.Anthropic 
-{ 
+var anthropic = new Providers.Anthropic
+{
     Model = "claude-3-sonnet-20240229",
     MaxTokens = 1024
 };
@@ -279,8 +279,8 @@ var analysis = await client
 ### Example 4: Hybrid Search with Generation
 
 ```csharp
-var google = new Providers.Google 
-{ 
+var google = new Providers.Google
+{
     Model = "gemini-pro",
     Temperature = 0.8
 };
@@ -290,7 +290,7 @@ var result = await client
     .Generate
     .Hybrid(
         query: "wireless headphones",
-        alpha: 0.5f,
+        alpha: 0.5f, // optional
         limit: 10,
         prompt: "Compare the features and create a buying guide",
         provider: google
@@ -304,7 +304,7 @@ The C# client supports many generative AI providers. Each has its own configurat
 ### OpenAI
 
 ```csharp
-var provider = new Providers.OpenAI 
+var provider = new Providers.OpenAI
 {
     Model = "gpt-4o",
     Temperature = 0.7,
@@ -318,7 +318,7 @@ var provider = new Providers.OpenAI
 ### Anthropic
 
 ```csharp
-var provider = new Providers.Anthropic 
+var provider = new Providers.Anthropic
 {
     Model = "claude-3-opus-20240229",
     MaxTokens = 4096,
@@ -331,7 +331,7 @@ var provider = new Providers.Anthropic
 ### Cohere
 
 ```csharp
-var provider = new Providers.Cohere 
+var provider = new Providers.Cohere
 {
     Model = "command",
     MaxTokens = 2048,
@@ -344,7 +344,7 @@ var provider = new Providers.Cohere
 ### Google
 
 ```csharp
-var provider = new Providers.Google 
+var provider = new Providers.Google
 {
     Model = "gemini-pro",
     MaxTokens = 2048,
@@ -357,7 +357,7 @@ var provider = new Providers.Google
 ### Mistral
 
 ```csharp
-var provider = new Providers.Mistral 
+var provider = new Providers.Mistral
 {
     Model = "mistral-large-latest",
     MaxTokens = 2048,
@@ -369,7 +369,7 @@ var provider = new Providers.Mistral
 ### Ollama (Local)
 
 ```csharp
-var provider = new Providers.Ollama 
+var provider = new Providers.Ollama
 {
     Model = "llama2",
     ApiEndpoint = "http://localhost:11434",
@@ -380,7 +380,7 @@ var provider = new Providers.Ollama
 ### AWS Bedrock
 
 ```csharp
-var provider = new Providers.AWS 
+var provider = new Providers.AWS
 {
     Model = "anthropic.claude-v2",
     Region = "us-east-1",

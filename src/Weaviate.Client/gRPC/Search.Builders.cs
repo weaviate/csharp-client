@@ -822,14 +822,14 @@ internal partial class WeaviateGrpcClient
     /// Builds the hybrid using the specified query
     /// </summary>
     /// <param name="query">The query</param>
-    /// <param name="alpha">The alpha</param>
+    /// <param name="alpha">The alpha value</param>
     /// <param name="vectors">The vectors</param>
     /// <param name="queryProperties">The query properties</param>
     /// <param name="fusionType">The fusion type</param>
     /// <param name="maxVectorDistance">The max vector distance</param>
     /// <param name="bm25Operator">The bm 25 operator</param>
     /// <returns>The hybrid</returns>
-    private static V1.Hybrid BuildHybrid(
+    private V1.Hybrid BuildHybrid(
         string? query = null,
         float? alpha = null,
         HybridVectorInput? vectors = null,
@@ -841,19 +841,46 @@ internal partial class WeaviateGrpcClient
     {
         var hybrid = new V1.Hybrid();
 
+        // Handle query field
         if (!string.IsNullOrEmpty(query))
         {
             hybrid.Query = query;
         }
         else
         {
-            // If no query is provided, move the alpha all the way to vector search
-            alpha = 1.0f;
+            // Set empty query for pure vector search (required for Weaviate 1.36+)
+            hybrid.Query = string.Empty;
         }
 
-        alpha ??= 0.7f; // Default alpha if not provided
-
-        hybrid.Alpha = alpha.Value;
+        // Set alpha in the appropriate field based on server version
+        if (this._useAlphaParam) // Weaviate >= 1.36: use new AlphaParam field
+        {
+            // For pure vector search (no query), set alpha=1.0 explicitly
+            // For hybrid search (with query), only set AlphaParam if explicitly provided
+            if (string.IsNullOrEmpty(query) && !alpha.HasValue)
+            {
+                hybrid.AlphaParam = 1.0f;
+            }
+            else if (alpha.HasValue)
+            {
+                hybrid.AlphaParam = alpha.Value;
+            }
+        }
+        else // Weaviate < 1.36: use deprecated Alpha field with defaults
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            // Pure vector search (no query): default to alpha=1.0
+            // Hybrid search (with query): default to alpha=0.7
+            if (string.IsNullOrEmpty(query) && !alpha.HasValue)
+            {
+                hybrid.Alpha = 1.0f;
+            }
+            else
+            {
+                hybrid.Alpha = alpha ?? 0.7f;
+            }
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
 
         // Pattern match on HybridVectorInput to build the appropriate search type
         if (vectors != null)

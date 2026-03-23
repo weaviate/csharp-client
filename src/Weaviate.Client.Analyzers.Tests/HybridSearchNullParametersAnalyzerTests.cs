@@ -150,7 +150,7 @@ namespace Weaviate.Client
         public async Task<AggregateResult> Hybrid(
             string? query = null,
             HybridVectorInput? vectors = null,
-            float alpha = 0.7f,
+            float? alpha = null,
             string[]? queryProperties = null,
             uint? objectLimit = null,
             BM25Operator? bm25Operator = null,

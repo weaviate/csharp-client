@@ -12,7 +12,7 @@ public partial class AggregateClient
     /// </summary>
     public Task<AggregateResult> Hybrid(
         string query,
-        float alpha = 0.7f,
+        float? alpha = null,
         string[]? queryProperties = null,
         uint? objectLimit = null,
         BM25Operator? bm25Operator = null,
@@ -42,7 +42,7 @@ public partial class AggregateClient
     public async Task<AggregateResult> Hybrid(
         string? query,
         HybridVectorInput? vectors,
-        float alpha = 0.7f,
+        float? alpha = null,
         string[]? queryProperties = null,
         uint? objectLimit = null,
         BM25Operator? bm25Operator = null,
@@ -62,18 +62,18 @@ public partial class AggregateClient
 
         var result = await _client.GrpcClient.AggregateHybrid(
             _collectionName,
-            query,
-            alpha,
-            vectors,
-            queryProperties,
-            bm25Operator,
-            maxVectorDistance,
-            filters,
-            null,
-            objectLimit,
-            totalCount,
-            _collectionClient.Tenant,
-            returnMetrics,
+            query: query,
+            alpha: alpha,
+            vectors: vectors,
+            queryProperties: queryProperties,
+            bm25Operator: bm25Operator,
+            maxVectorDistance: maxVectorDistance,
+            filter: filters,
+            groupBy: null,
+            objectLimit: objectLimit,
+            totalCount: totalCount,
+            tenant: _collectionClient.Tenant,
+            metrics: returnMetrics,
             cancellationToken: cancellationToken
         );
 
@@ -138,18 +138,18 @@ public partial class AggregateClient
 
         var result = await _client.GrpcClient.AggregateHybrid(
             _collectionName,
-            query,
-            alpha,
-            vectors,
-            queryProperties,
-            bm25Operator,
-            maxVectorDistance,
-            filters,
-            groupBy,
-            objectLimit,
-            totalCount,
-            _collectionClient.Tenant,
-            returnMetrics,
+            query: query,
+            alpha: alpha,
+            vectors: vectors,
+            queryProperties: queryProperties,
+            bm25Operator: bm25Operator,
+            maxVectorDistance: maxVectorDistance,
+            filter: filters,
+            groupBy: groupBy,
+            objectLimit: objectLimit,
+            totalCount: totalCount,
+            tenant: _collectionClient.Tenant,
+            metrics: returnMetrics,
             cancellationToken: cancellationToken
         );
 

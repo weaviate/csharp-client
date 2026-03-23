@@ -54,3 +54,6 @@ dotnet_naming_rule.enums_all_caps.symbols = enums_all_caps
 dotnet_naming_rule.enums_all_caps.style = all_caps
 dotnet_naming_rule.enums_all_caps.severity = none
 
+
+# CS0612: Type or member is obsolete
+dotnet_diagnostic.CS0612.severity = silent

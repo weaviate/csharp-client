@@ -131,12 +131,13 @@ public static class MockWeaviateClient
     /// Creates a WeaviateClient that captures gRPC Search requests.
     /// Delegates to MockGrpcClient for consistency.
     /// </summary>
+    /// <param name="weaviateVersion">Optional Weaviate server version to simulate. Defaults to null (no version).</param>
     internal static (
         WeaviateClient Client,
         Func<SearchRequest?> GetCapturedRequest
-    ) CreateWithSearchCapture()
+    ) CreateWithSearchCapture(Version? weaviateVersion = null)
     {
-        return MockGrpcClient.CreateWithSearchCapture();
+        return MockGrpcClient.CreateWithSearchCapture(weaviateVersion);
     }
 
     /// <summary>
@@ -165,13 +166,15 @@ internal static class MockGrpcClient
     /// <typeparam name="TRequest">The protobuf request type to capture (e.g., SearchRequest, BatchObjectsRequest)</typeparam>
     /// <param name="pathPattern">The gRPC path pattern to match (e.g., "/weaviate.v1.Weaviate/Search")</param>
     /// <param name="responseFactory">Optional factory to create custom response messages. If null, returns empty SearchReply for Search operations.</param>
+    /// <param name="weaviateVersion">Optional Weaviate server version to simulate. Defaults to null (no version).</param>
     /// <returns>A tuple containing the client and a function to retrieve the captured request</returns>
     public static (
         WeaviateClient Client,
         Func<TRequest?> GetCapturedRequest
     ) CreateWithRequestCapture<TRequest>(
         string pathPattern,
-        Func<Google.Protobuf.IMessage>? responseFactory = null
+        Func<Google.Protobuf.IMessage>? responseFactory = null,
+        Version? weaviateVersion = null
     )
         where TRequest : class, Google.Protobuf.IMessage<TRequest>, new()
     {
@@ -197,7 +200,25 @@ internal static class MockGrpcClient
         );
 
         var grpcClient = new Grpc.WeaviateGrpcClient(channel);
-        var client = new WeaviateClient(grpcClient: grpcClient);
+
+        // Create MetaInfo with specified version if provided
+        Models.MetaInfo? meta =
+            weaviateVersion != null
+                ? new Models.MetaInfo
+                {
+                    Version = weaviateVersion,
+                    Hostname = "mock-weaviate",
+                    Modules = new Dictionary<string, object>(),
+                }
+                : null;
+
+        // Set alpha param behavior based on version
+        if (weaviateVersion != null && weaviateVersion >= new Version(1, 36, 7))
+        {
+            grpcClient.SetUseAlphaParam(true);
+        }
+
+        var client = new WeaviateClient(grpcClient: grpcClient, meta: meta);
 
         return (client, () => capturedRequest);
     }
@@ -206,12 +227,16 @@ internal static class MockGrpcClient
     /// Creates a WeaviateClient that captures Search requests.
     /// Convenience method for the most common use case.
     /// </summary>
+    /// <param name="weaviateVersion">Optional Weaviate server version to simulate. Defaults to null (no version).</param>
     public static (
         WeaviateClient Client,
         Func<SearchRequest?> GetCapturedRequest
-    ) CreateWithSearchCapture()
+    ) CreateWithSearchCapture(Version? weaviateVersion = null)
     {
-        return CreateWithRequestCapture<SearchRequest>("/weaviate.v1.Weaviate/Search");
+        return CreateWithRequestCapture<SearchRequest>(
+            "/weaviate.v1.Weaviate/Search",
+            weaviateVersion: weaviateVersion
+        );
     }
 
     /// <summary>

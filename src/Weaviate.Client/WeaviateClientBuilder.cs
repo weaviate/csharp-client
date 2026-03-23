@@ -97,6 +97,7 @@ public partial class WeaviateClientBuilder
     /// <summary>
     /// Whether request logging is enabled
     /// </summary>
+    // Controls request/response logging. Default is false. Set to true only for debugging. See CONTRIBUTING.md for guidance.
     private bool _logRequests = false;
 
     /// <summary>
@@ -448,6 +449,11 @@ public partial class WeaviateClientBuilder
     /// Requires a logger factory to be configured via <see cref="WithLoggerFactory"/>.
     /// </summary>
     /// <param name="level">The log level for request/response entries. Defaults to Debug.</param>
+    /// <summary>
+    /// Enables request/response logging. Use only for debugging or manual runs.
+    /// Avoid enabling in CI or normal usage to reduce log verbosity.
+    /// See CONTRIBUTING.md for guidance.
+    /// </summary>
     public WeaviateClientBuilder UseRequestLogging(LogLevel level = LogLevel.Debug)
     {
         _logRequests = true;
