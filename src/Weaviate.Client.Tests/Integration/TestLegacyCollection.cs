@@ -236,7 +236,10 @@ public partial class CollectionsTests
                 ""enabled"": false
             }},
             ""objectTtlConfig"": {{
-                ""enabled"": false
+                ""enabled"": false,
+                ""defaultTtl"": 0,
+                ""deleteOn"": """",
+                ""filterExpiredObjects"": false
             }},
             ""properties"": [
                 {{
@@ -393,7 +396,10 @@ public partial class CollectionsTests
                 ""enabled"": false
             }},
             ""objectTtlConfig"": {{
-                ""enabled"": false
+                ""enabled"": false,
+                ""defaultTtl"": 0,
+                ""deleteOn"": """",
+                ""filterExpiredObjects"": false
             }},
             ""properties"": [
                 {{
@@ -511,6 +517,8 @@ public partial class CollectionsTests
         using var expectedDocAfterUpdate = JsonDocument.Parse(expectedJsonAfterUpdate);
         using var actualDocAfterUpdate = JsonDocument.Parse(actualJsonAfterUpdate);
 
+        // TODO: fix this assertion — it was comparing wrong variables (expectedDoc/actualDoc instead of AfterUpdate).
+        // The expectedJsonAfterUpdate also needs updating for the nondefault vector's actual server response.
         // Use JsonElement.DeepEquals for semantic comparison
         Assert.True(
             JsonElement.DeepEquals(expectedDoc.RootElement, actualDoc.RootElement),

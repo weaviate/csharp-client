@@ -392,9 +392,9 @@ public static class WeaviateExtensions
             ObjectTTLConfig = new ObjectTTLConfig
             {
                 Enabled = collection?.ObjectTtlConfig?.Enabled ?? false,
-                DefaultTTL = collection?.ObjectTtlConfig?.DefaultTtl,
-                DeleteOn = collection?.ObjectTtlConfig?.DeleteOn,
-                FilterExpiredObjects = collection?.ObjectTtlConfig?.FilterExpiredObjects,
+                DefaultTTL = collection?.ObjectTtlConfig?.DefaultTtl ?? 0,
+                DeleteOn = collection?.ObjectTtlConfig?.DeleteOn ?? string.Empty,
+                FilterExpiredObjects = collection?.ObjectTtlConfig?.FilterExpiredObjects ?? false,
             },
             ReplicationConfig =
                 (collection?.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
