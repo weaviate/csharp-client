@@ -235,6 +235,9 @@ public partial class CollectionsTests
                 ""autoTenantCreation"": false,
                 ""enabled"": false
             }},
+            ""objectTtlConfig"": {{
+                ""enabled"": false
+            }},
             ""properties"": [
                 {{
                     ""dataType"": [
@@ -386,6 +389,9 @@ public partial class CollectionsTests
             ""multiTenancyConfig"": {{
                 ""autoTenantActivation"": false,
                 ""autoTenantCreation"": false,
+                ""enabled"": false
+            }},
+            ""objectTtlConfig"": {{
                 ""enabled"": false
             }},
             ""properties"": [
