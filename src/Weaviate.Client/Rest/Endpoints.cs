@@ -82,6 +82,17 @@ internal static partial class WeaviateEndpoints
     ) => $"schema/{className}/properties/{propertyName}/index/{indexName}";
 
     /// <summary>
+    /// Path for deleting the vector index of a named vector in a collection.
+    /// </summary>
+    /// <param name="className">The class name</param>
+    /// <param name="vectorIndexName">The vector index name</param>
+    /// <returns>The string</returns>
+    internal static string CollectionVectorIndex(
+        string className,
+        string vectorIndexName
+    ) => $"schema/{className}/vectors/{vectorIndexName}/index";
+
+    /// <summary>
     /// Collections the shard using the specified class name
     /// </summary>
     /// <param name="className">The class name</param>

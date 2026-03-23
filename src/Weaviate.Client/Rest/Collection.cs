@@ -277,6 +277,32 @@ internal partial class WeaviateRestClient
     }
 
     /// <summary>
+    /// Deletes the vector index for a named vector in a collection.
+    /// </summary>
+    /// <param name="collectionName">The collection name</param>
+    /// <param name="vectorIndexName">The vector index name</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    internal async Task CollectionDeleteVectorIndex(
+        string collectionName,
+        string vectorIndexName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var path = WeaviateEndpoints.CollectionVectorIndex(
+            collectionName,
+            vectorIndexName
+        );
+
+        var response = await _httpClient.DeleteAsync(path, cancellationToken);
+
+        await response.ManageStatusCode(
+            [HttpStatusCode.OK],
+            "collection vector index delete",
+            ResourceType.Collection
+        );
+    }
+
+    /// <summary>
     /// Collections the exists using the specified collection name
     /// </summary>
     /// <param name="collectionName">The collection name</param>

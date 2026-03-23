@@ -108,6 +108,30 @@ public class CollectionConfigClient
         );
     }
 
+    /// <summary>
+    /// Deletes the vector index for a named vector in this collection.
+    /// Requires Weaviate server version 1.37.0 or later.
+    /// </summary>
+    /// <param name="vectorName">The name of the vector whose index should be deleted.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="WeaviateVersionMismatchException">
+    /// Thrown when the connected server version is below 1.37.0.
+    /// </exception>
+    [RequiresWeaviateVersion(1, 37, 0)]
+    public async Task DeleteVectorIndex(
+        string vectorName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        await _client.EnsureVersion<CollectionConfigClient>();
+
+        await _client.RestClient.CollectionDeleteVectorIndex(
+            _collectionName,
+            vectorName,
+            cancellationToken
+        );
+    }
+
     // Add new named vectors
     /// <summary>
     /// Adds a new named vector to the collection.
