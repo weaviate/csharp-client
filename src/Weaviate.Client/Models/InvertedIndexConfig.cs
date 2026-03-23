@@ -99,7 +99,11 @@ public record InvertedIndexConfig : IEquatable<InvertedIndexConfig>
         if (!EqualityComparer<StopwordConfig?>.Default.Equals(Stopwords, other.Stopwords))
             return false;
 
-        if (UsingBlockMaxWAND != other.UsingBlockMaxWAND)
+        if (
+            UsingBlockMaxWAND is not null
+            && other.UsingBlockMaxWAND is not null
+            && UsingBlockMaxWAND != other.UsingBlockMaxWAND
+        )
             return false;
 
         return true;

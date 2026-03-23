@@ -8,7 +8,14 @@ public record ObjectTTLConfig
     /// <summary>
     /// A default disabled ObjectTTLConfig used for null-coalescing equality comparisons.
     /// </summary>
-    internal static ObjectTTLConfig Disabled => new() { Enabled = false };
+    internal static ObjectTTLConfig Disabled =>
+        new()
+        {
+            Enabled = false,
+            DefaultTTL = 0,
+            DeleteOn = string.Empty,
+            FilterExpiredObjects = false,
+        };
 
     /// <summary>
     /// Indicates whether TTL is enabled for the collection objects.
