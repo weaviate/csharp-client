@@ -11,6 +11,11 @@ public abstract class VectorDataIntegrationTests : IAsyncLifetime, IAsyncDisposa
     protected WeaviateClient _weaviate = null!;
     private readonly List<string> _collectionsToCleanup = [];
 
+    /// <summary>
+    /// Shorthand for the xunit test cancellation token.
+    /// </summary>
+    protected static CancellationToken CT => TestContext.Current.CancellationToken;
+
     public async ValueTask InitializeAsync()
     {
         _weaviate = await WeaviateClientBuilder.Local().BuildAsync();

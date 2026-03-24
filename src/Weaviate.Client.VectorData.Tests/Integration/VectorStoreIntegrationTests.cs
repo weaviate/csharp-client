@@ -31,8 +31,8 @@ public class VectorStoreIntegrationTests : VectorDataIntegrationTests
         Assert.NotNull(collection);
         Assert.Equal(name, collection.Name);
 
-        await collection.EnsureCollectionExistsAsync();
-        Assert.True(await collection.CollectionExistsAsync());
+        await collection.EnsureCollectionExistsAsync(CT);
+        Assert.True(await collection.CollectionExistsAsync(CT));
     }
 
     [Fact]
@@ -43,10 +43,10 @@ public class VectorStoreIntegrationTests : VectorDataIntegrationTests
         TrackCollection(name);
 
         var collection = store.GetCollection<Guid, SimpleRecord>(name);
-        await collection.EnsureCollectionExistsAsync();
+        await collection.EnsureCollectionExistsAsync(CT);
 
         var names = new List<string>();
-        await foreach (var n in store.ListCollectionNamesAsync())
+        await foreach (var n in store.ListCollectionNamesAsync(CT))
         {
             names.Add(n);
         }
@@ -61,12 +61,12 @@ public class VectorStoreIntegrationTests : VectorDataIntegrationTests
         var name = $"VdStoreExistsTest{Guid.NewGuid():N}";
         TrackCollection(name);
 
-        Assert.False(await store.CollectionExistsAsync(name));
+        Assert.False(await store.CollectionExistsAsync(name, CT));
 
         var collection = store.GetCollection<Guid, SimpleRecord>(name);
-        await collection.EnsureCollectionExistsAsync();
+        await collection.EnsureCollectionExistsAsync(CT);
 
-        Assert.True(await store.CollectionExistsAsync(name));
+        Assert.True(await store.CollectionExistsAsync(name, CT));
     }
 
     [Fact]
@@ -77,11 +77,11 @@ public class VectorStoreIntegrationTests : VectorDataIntegrationTests
         TrackCollection(name);
 
         var collection = store.GetCollection<Guid, SimpleRecord>(name);
-        await collection.EnsureCollectionExistsAsync();
-        Assert.True(await store.CollectionExistsAsync(name));
+        await collection.EnsureCollectionExistsAsync(CT);
+        Assert.True(await store.CollectionExistsAsync(name, CT));
 
-        await store.EnsureCollectionDeletedAsync(name);
-        Assert.False(await store.CollectionExistsAsync(name));
+        await store.EnsureCollectionDeletedAsync(name, CT);
+        Assert.False(await store.CollectionExistsAsync(name, CT));
     }
 
     [Fact]

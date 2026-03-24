@@ -35,13 +35,13 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
         var name = $"VdTestLifecycle{Guid.NewGuid():N}";
         var collection = CreateCollection(name);
 
-        Assert.False(await collection.CollectionExistsAsync());
+        Assert.False(await collection.CollectionExistsAsync(CT));
 
-        await collection.EnsureCollectionExistsAsync();
-        Assert.True(await collection.CollectionExistsAsync());
+        await collection.EnsureCollectionExistsAsync(CT);
+        Assert.True(await collection.CollectionExistsAsync(CT));
 
-        await collection.EnsureCollectionDeletedAsync();
-        Assert.False(await collection.CollectionExistsAsync());
+        await collection.EnsureCollectionDeletedAsync(CT);
+        Assert.False(await collection.CollectionExistsAsync(CT));
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
     {
         var name = $"VdTestUpsertGet{Guid.NewGuid():N}";
         var collection = CreateCollection(name);
-        await collection.EnsureCollectionExistsAsync();
+        await collection.EnsureCollectionExistsAsync(CT);
 
         var id = Guid.NewGuid();
         var hotel = new Hotel
@@ -60,9 +60,9 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
             Embedding = [0.1f, 0.2f, 0.3f, 0.4f],
         };
 
-        await collection.UpsertAsync(hotel);
+        await collection.UpsertAsync(hotel, CT);
 
-        var retrieved = await collection.GetAsync(id);
+        var retrieved = await collection.GetAsync(id, cancellationToken: CT);
 
         Assert.NotNull(retrieved);
         Assert.Equal(id, retrieved!.Id);
@@ -75,7 +75,7 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
     {
         var name = $"VdTestUpsertOverwrite{Guid.NewGuid():N}";
         var collection = CreateCollection(name);
-        await collection.EnsureCollectionExistsAsync();
+        await collection.EnsureCollectionExistsAsync(CT);
 
         var id = Guid.NewGuid();
         await collection.UpsertAsync(
@@ -85,7 +85,8 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
                 Name = "Old Name",
                 Stars = 3,
                 Embedding = [0.1f, 0.2f, 0.3f, 0.4f],
-            }
+            },
+            CT
         );
 
         await collection.UpsertAsync(
@@ -95,10 +96,11 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
                 Name = "New Name",
                 Stars = 5,
                 Embedding = [0.5f, 0.6f, 0.7f, 0.8f],
-            }
+            },
+            CT
         );
 
-        var retrieved = await collection.GetAsync(id);
+        var retrieved = await collection.GetAsync(id, cancellationToken: CT);
 
         Assert.NotNull(retrieved);
         Assert.Equal("New Name", retrieved!.Name);
@@ -110,7 +112,7 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
     {
         var name = $"VdTestDelete{Guid.NewGuid():N}";
         var collection = CreateCollection(name);
-        await collection.EnsureCollectionExistsAsync();
+        await collection.EnsureCollectionExistsAsync(CT);
 
         var id = Guid.NewGuid();
         await collection.UpsertAsync(
@@ -120,12 +122,13 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
                 Name = "To Delete",
                 Stars = 1,
                 Embedding = [0.1f, 0.2f, 0.3f, 0.4f],
-            }
+            },
+            CT
         );
 
-        await collection.DeleteAsync(id);
+        await collection.DeleteAsync(id, CT);
 
-        var retrieved = await collection.GetAsync(id);
+        var retrieved = await collection.GetAsync(id, cancellationToken: CT);
         Assert.Null(retrieved);
     }
 
@@ -134,7 +137,7 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
     {
         var name = $"VdTestDeleteBatch{Guid.NewGuid():N}";
         var collection = CreateCollection(name);
-        await collection.EnsureCollectionExistsAsync();
+        await collection.EnsureCollectionExistsAsync(CT);
 
         var ids = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
         foreach (var id in ids)
@@ -146,15 +149,16 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
                     Name = $"Hotel {id}",
                     Stars = 3,
                     Embedding = [0.1f, 0.2f, 0.3f, 0.4f],
-                }
+                },
+                CT
             );
         }
 
-        await collection.DeleteAsync(ids);
+        await collection.DeleteAsync(ids, CT);
 
         foreach (var id in ids)
         {
-            var retrieved = await collection.GetAsync(id);
+            var retrieved = await collection.GetAsync(id, cancellationToken: CT);
             Assert.Null(retrieved);
         }
     }
@@ -164,7 +168,7 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
     {
         var name = $"VdTestGetBatch{Guid.NewGuid():N}";
         var collection = CreateCollection(name);
-        await collection.EnsureCollectionExistsAsync();
+        await collection.EnsureCollectionExistsAsync(CT);
 
         var ids = new[] { Guid.NewGuid(), Guid.NewGuid() };
         foreach (var id in ids)
@@ -176,12 +180,13 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
                     Name = $"Hotel {id}",
                     Stars = 4,
                     Embedding = [0.1f, 0.2f, 0.3f, 0.4f],
-                }
+                },
+                CT
             );
         }
 
         var results = new List<Hotel>();
-        await foreach (var record in collection.GetAsync(ids))
+        await foreach (var record in collection.GetAsync(ids, cancellationToken: CT))
         {
             results.Add(record);
         }
@@ -194,9 +199,8 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
     {
         var name = $"VdTestSearch{Guid.NewGuid():N}";
         var collection = CreateCollection(name);
-        await collection.EnsureCollectionExistsAsync();
+        await collection.EnsureCollectionExistsAsync(CT);
 
-        // Insert records with distinct vectors
         await collection.UpsertAsync(
             new Hotel
             {
@@ -204,7 +208,8 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
                 Name = "Close Hotel",
                 Stars = 5,
                 Embedding = [1.0f, 0.0f, 0.0f, 0.0f],
-            }
+            },
+            CT
         );
         await collection.UpsertAsync(
             new Hotel
@@ -213,20 +218,23 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
                 Name = "Far Hotel",
                 Stars = 2,
                 Embedding = [0.0f, 0.0f, 0.0f, 1.0f],
-            }
+            },
+            CT
         );
 
-        // Search near the first vector
         var results = new List<VectorSearchResult<Hotel>>();
         await foreach (
-            var result in collection.SearchAsync(new float[] { 1.0f, 0.0f, 0.0f, 0.0f }, top: 2)
+            var result in collection.SearchAsync(
+                new float[] { 1.0f, 0.0f, 0.0f, 0.0f },
+                top: 2,
+                cancellationToken: CT
+            )
         )
         {
             results.Add(result);
         }
 
         Assert.Equal(2, results.Count);
-        // The closest result should be "Close Hotel"
         Assert.Equal("Close Hotel", results[0].Record.Name);
     }
 
@@ -235,9 +243,9 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
     {
         var name = $"VdTestGetNull{Guid.NewGuid():N}";
         var collection = CreateCollection(name);
-        await collection.EnsureCollectionExistsAsync();
+        await collection.EnsureCollectionExistsAsync(CT);
 
-        var result = await collection.GetAsync(Guid.NewGuid());
+        var result = await collection.GetAsync(Guid.NewGuid(), cancellationToken: CT);
         Assert.Null(result);
     }
 
@@ -246,7 +254,7 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
     {
         var name = $"VdTestExprFilter{Guid.NewGuid():N}";
         var collection = CreateCollection(name);
-        await collection.EnsureCollectionExistsAsync();
+        await collection.EnsureCollectionExistsAsync(CT);
 
         await collection.UpsertAsync(
             new Hotel
@@ -255,7 +263,8 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
                 Name = "Luxury Hotel",
                 Stars = 5,
                 Embedding = [0.1f, 0.2f, 0.3f, 0.4f],
-            }
+            },
+            CT
         );
         await collection.UpsertAsync(
             new Hotel
@@ -264,11 +273,14 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
                 Name = "Budget Hotel",
                 Stars = 2,
                 Embedding = [0.5f, 0.6f, 0.7f, 0.8f],
-            }
+            },
+            CT
         );
 
         var results = new List<Hotel>();
-        await foreach (var record in collection.GetAsync(x => x.Stars == 5, top: 10))
+        await foreach (
+            var record in collection.GetAsync(x => x.Stars == 5, top: 10, cancellationToken: CT)
+        )
         {
             results.Add(record);
         }
@@ -282,7 +294,7 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
     {
         var name = $"VdTestHybrid{Guid.NewGuid():N}";
         var collection = CreateCollection(name);
-        await collection.EnsureCollectionExistsAsync();
+        await collection.EnsureCollectionExistsAsync(CT);
 
         await collection.UpsertAsync(
             new Hotel
@@ -291,7 +303,8 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
                 Name = "Beach Resort",
                 Stars = 4,
                 Embedding = [1.0f, 0.0f, 0.0f, 0.0f],
-            }
+            },
+            CT
         );
         await collection.UpsertAsync(
             new Hotel
@@ -300,7 +313,8 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
                 Name = "Mountain Lodge",
                 Stars = 3,
                 Embedding = [0.0f, 1.0f, 0.0f, 0.0f],
-            }
+            },
+            CT
         );
 
         var results = new List<VectorSearchResult<Hotel>>();
@@ -308,7 +322,8 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
             var result in collection.HybridSearchAsync(
                 new float[] { 1.0f, 0.0f, 0.0f, 0.0f },
                 ["Beach"],
-                top: 2
+                top: 2,
+                cancellationToken: CT
             )
         )
         {
@@ -316,8 +331,6 @@ public class VectorStoreCollectionIntegrationTests : VectorDataIntegrationTests
         }
 
         Assert.NotEmpty(results);
-        // Hybrid search combines vector similarity + keyword matching,
-        // so "Beach Resort" should rank highest
         Assert.Equal("Beach Resort", results[0].Record.Name);
     }
 }
