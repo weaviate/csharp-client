@@ -103,7 +103,6 @@ Connect with the Weaviate community and the team through our online channels. We
 
 - **[GitHub Issues](https://github.com/weaviate/csharp-client/issues)**: For specific feature requests, bug reports, or issues with the client.
 - **[Weaviate Forum](https://forum.weaviate.io/)**: For questions and discussions.
-- **[Weaviate Slack](https://weaviate.io/slack)**: For live chats with the community and team.
 
 ## 🧪 Integration Testing
 
