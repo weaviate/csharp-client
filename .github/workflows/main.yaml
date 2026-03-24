@@ -254,8 +254,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Create NuGet package
-        run: dotnet pack -c Release -o out src/Weaviate.Client/
+      - name: Create NuGet packages
+        run: |
+          dotnet pack -c Release -o out src/Weaviate.Client/
+          dotnet pack -c Release -o out src/Weaviate.Client.VectorData/
 
       - name: Push package to NuGet
         run: dotnet nuget push './out/*.nupkg' --skip-duplicate --api-key ${{ secrets.NUGET_APIKEY }} --source https://api.nuget.org/v3/index.json
