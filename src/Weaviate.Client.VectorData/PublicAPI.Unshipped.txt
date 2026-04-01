@@ -1,0 +1,39 @@
+#nullable enable
+Weaviate.Client.VectorData.DependencyInjection.WeaviateVectorDataServiceCollectionExtensions
+Weaviate.Client.VectorData.WeaviateVectorStore
+Weaviate.Client.VectorData.WeaviateVectorStore.WeaviateVectorStore(Weaviate.Client.WeaviateClient! client, Weaviate.Client.VectorData.WeaviateVectorStoreOptions? options = null) -> void
+Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>
+Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.WeaviateVectorStoreCollection(Weaviate.Client.WeaviateClient! client, string! name, Microsoft.Extensions.VectorData.VectorStoreCollectionDefinition? definition = null, Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions? options = null) -> void
+Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions
+Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions.ConsistencyLevel.get -> Weaviate.Client.ConsistencyLevels?
+Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions.ConsistencyLevel.set -> void
+Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions.Tenant.get -> string?
+Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions.Tenant.set -> void
+Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions.WeaviateVectorStoreCollectionOptions() -> void
+Weaviate.Client.VectorData.WeaviateVectorStoreOptions
+Weaviate.Client.VectorData.WeaviateVectorStoreOptions.CollectionOptionsFactory.get -> System.Func<string!, Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions!>?
+Weaviate.Client.VectorData.WeaviateVectorStoreOptions.CollectionOptionsFactory.set -> void
+Weaviate.Client.VectorData.WeaviateVectorStoreOptions.WeaviateVectorStoreOptions() -> void
+override Weaviate.Client.VectorData.WeaviateVectorStore.CollectionExistsAsync(string! name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
+override Weaviate.Client.VectorData.WeaviateVectorStore.Dispose(bool disposing) -> void
+override Weaviate.Client.VectorData.WeaviateVectorStore.EnsureCollectionDeletedAsync(string! name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override Weaviate.Client.VectorData.WeaviateVectorStore.GetCollection<TKey, TRecord>(string! name, Microsoft.Extensions.VectorData.VectorStoreCollectionDefinition? definition = null) -> Microsoft.Extensions.VectorData.VectorStoreCollection<TKey, TRecord!>!
+override Weaviate.Client.VectorData.WeaviateVectorStore.GetDynamicCollection(string! name, Microsoft.Extensions.VectorData.VectorStoreCollectionDefinition! definition) -> Microsoft.Extensions.VectorData.VectorStoreCollection<object!, System.Collections.Generic.Dictionary<string!, object?>!>!
+override Weaviate.Client.VectorData.WeaviateVectorStore.GetService(System.Type! serviceType, object? serviceKey = null) -> object?
+override Weaviate.Client.VectorData.WeaviateVectorStore.ListCollectionNamesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IAsyncEnumerable<string!>!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.CollectionExistsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.DeleteAsync(System.Collections.Generic.IEnumerable<TKey>! keys, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.DeleteAsync(TKey key, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.Dispose(bool disposing) -> void
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.EnsureCollectionDeletedAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.EnsureCollectionExistsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.GetAsync(System.Collections.Generic.IEnumerable<TKey>! keys, Microsoft.Extensions.VectorData.RecordRetrievalOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IAsyncEnumerable<TRecord!>!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.GetAsync(System.Linq.Expressions.Expression<System.Func<TRecord!, bool>!>! filter, int top, Microsoft.Extensions.VectorData.FilteredRecordRetrievalOptions<TRecord!>? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IAsyncEnumerable<TRecord!>!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.GetAsync(TKey key, Microsoft.Extensions.VectorData.RecordRetrievalOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TRecord?>!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.GetService(System.Type! serviceType, object? serviceKey = null) -> object?
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.Name.get -> string!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.SearchAsync<TInput>(TInput searchValue, int top, Microsoft.Extensions.VectorData.VectorSearchOptions<TRecord!>? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IAsyncEnumerable<Microsoft.Extensions.VectorData.VectorSearchResult<TRecord!>!>!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.UpsertAsync(System.Collections.Generic.IEnumerable<TRecord!>! records, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.UpsertAsync(TRecord! record, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static Weaviate.Client.VectorData.DependencyInjection.WeaviateVectorDataServiceCollectionExtensions.AddWeaviateVectorStore(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Weaviate.Client.VectorData.WeaviateVectorStoreOptions!>? configure = null) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Weaviate.Client.VectorData.DependencyInjection.WeaviateVectorDataServiceCollectionExtensions.AddWeaviateVectorStoreCollection<TKey, TRecord>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! collectionName, System.Action<Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions!>? configure = null) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!

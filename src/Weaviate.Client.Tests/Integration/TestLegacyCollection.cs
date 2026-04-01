@@ -372,7 +372,8 @@ public partial class CollectionsTests
         );
 
         await collectionClient.Config.AddVector(
-            Configure.Vector("nondefault", v => v.SelfProvided())
+            Configure.Vector("nondefault", v => v.SelfProvided()),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         string expectedJsonAfterUpdate =
