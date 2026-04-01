@@ -21,6 +21,10 @@ get_diff() {
             echo "ERROR: Invalid ref argument: $1" >&2
             exit 1
         fi
+        if ! git rev-parse --verify "$1" >/dev/null 2>&1; then
+            echo "ERROR: Git ref not found: $1" >&2
+            exit 2
+        fi
         git diff "$1"
     else
         git diff --cached
@@ -36,6 +40,24 @@ PERL_SCRIPT='
 use utf8;
 use strict;
 use warnings;
+
+sub escape_property {
+    my ($s) = @_;
+    $s =~ s/%/%25/g;
+    $s =~ s/\r/%0D/g;
+    $s =~ s/\n/%0A/g;
+    $s =~ s/:/%3A/g;
+    $s =~ s/,/%2C/g;
+    return $s;
+}
+
+sub escape_message {
+    my ($s) = @_;
+    $s =~ s/%/%25/g;
+    $s =~ s/\r/%0D/g;
+    $s =~ s/\n/%0A/g;
+    return $s;
+}
 
 my $file = "";
 my $line_in_file = 0;
@@ -74,7 +96,7 @@ while (<STDIN>) {
     # Only scan added lines, skip binary files
     next if $in_binary;
     next unless /^\+/;
-    next if /^\+\+\+/;
+    next if /^\+\+\+ (?:$|b\/|\/dev\/null)/;
 
     # Remove the leading + for scanning
     my $content = substr($_, 1);
@@ -98,7 +120,9 @@ while (<STDIN>) {
         my $col = $-[1] + 1;
 
         if ($ENV{GITHUB_ACTIONS}) {
-            print "::error file=${file},line=${line_in_file},col=${col}::Hidden Unicode character ${codepoint} found\n";
+            my $efile = escape_property($file);
+            my $emsg = escape_message("Hidden Unicode character ${codepoint} found");
+            print "::error file=${efile},line=${line_in_file},col=${col}::${emsg}\n";
         } else {
             print "ERROR: $file:$line_in_file:$col - Hidden Unicode character $codepoint found\n";
         }
