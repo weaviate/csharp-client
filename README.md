@@ -30,7 +30,6 @@ The best way to get started is by following our quickstart guide. It will walk y
 
 - **[➡️ Quickstart Guide](https://docs.weaviate.io/weaviate/quickstart)**
 
-
 ### Quickstart example
 
 ```csharp
@@ -74,6 +73,40 @@ foreach (var obj in response.Objects)
 
 ---
 
+## 🔌 Microsoft.Extensions.VectorData Integration
+
+The `Weaviate.Client.VectorData` package wraps the Weaviate client in the standard .NET vector
+database abstraction layer. Use it when you want your code to be portable across vector stores, or
+when you're building on top of Semantic Kernel.
+
+```bash
+dotnet add package Weaviate.Client.VectorData
+```
+
+```csharp
+using Microsoft.Extensions.VectorData;
+using Weaviate.Client.VectorData;
+using Weaviate.Client.VectorData.DependencyInjection;
+
+// DI registration (requires Weaviate.Client to be registered first)
+builder.Services.AddWeaviate(options => { options.RestEndpoint = "localhost"; });
+builder.Services.AddWeaviateVectorStore();
+
+// Or use directly
+var store = new WeaviateVectorStore(weaviateClient);
+var collection = store.GetCollection<Guid, Article>("Article");
+await collection.EnsureCollectionExistsAsync();
+
+await collection.UpsertAsync(article);
+
+await foreach (var result in collection.SearchAsync(queryEmbedding, top: 10))
+    Console.WriteLine($"[{result.Score:F4}] {result.Record.Title}");
+```
+
+See **[Microsoft.Extensions.VectorData Integration](docs/VECTORDATA.md)** for the full guide.
+
+---
+
 ## 📚 Documentation
 
 For more detailed information on specific features, please refer to the official documentation and the how-to guides.
@@ -84,7 +117,6 @@ For more detailed information on specific features, please refer to the official
 - **[How-to: Manage data objects](https://docs.weaviate.io/weaviate/manage-objects)**
 - **[How-to: Query & search data](https://docs.weaviate.io/weaviate/search)**
 
-
 ### Additional Guides
 
 - **[Batch API Usage](docs/BATCH_API_USAGE.md)**: Server-side streaming batch operations
@@ -94,6 +126,7 @@ For more detailed information on specific features, please refer to the official
 - **[Backup API Usage](docs/BACKUP_API_USAGE.md)**: Creating and restoring backups
 - **[Nodes API Usage](docs/NODES_API_USAGE.md)**: Querying cluster node information
 - **[Aggregate Result Accessors](docs/AGGREGATE_RESULT_ACCESSORS.md)**: Type-safe access to aggregation results
+- **[Microsoft.Extensions.VectorData Integration](docs/VECTORDATA.md)**: Standard .NET vector store abstraction support
 
 ---
 
