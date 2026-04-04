@@ -174,10 +174,11 @@ public class WeaviateVectorStoreCollection<TKey, TRecord> : VectorStoreCollectio
             .Value.Data.InsertMany([request], cancellationToken)
             .ConfigureAwait(false);
 
-        if (response.HasErrors)
+        var errors = response.Errors.ToList();
+        if (errors.Count > 0)
         {
-            var messages = string.Join("; ", response.Errors.Select(e => e.Message));
-            throw new VectorStoreException($"Upsert failed for 1 object: {messages}");
+            var messages = string.Join("; ", errors.Select(e => e.Message));
+            throw new VectorStoreException($"Upsert failed for 1 of 1 object(s): {messages}");
         }
     }
 
@@ -187,6 +188,8 @@ public class WeaviateVectorStoreCollection<TKey, TRecord> : VectorStoreCollectio
         CancellationToken cancellationToken = default
     )
     {
+        ArgumentNullException.ThrowIfNull(records);
+
         var requests = records
             .Select(record =>
             {
@@ -202,11 +205,12 @@ public class WeaviateVectorStoreCollection<TKey, TRecord> : VectorStoreCollectio
             .Value.Data.InsertMany(requests, cancellationToken)
             .ConfigureAwait(false);
 
-        if (response.HasErrors)
+        var errors = response.Errors.ToList();
+        if (errors.Count > 0)
         {
-            var messages = string.Join("; ", response.Errors.Select(e => e.Message));
+            var messages = string.Join("; ", errors.Select(e => e.Message));
             throw new VectorStoreException(
-                $"Upsert failed for {response.Errors.Count()} of {requests.Count} object(s): {messages}"
+                $"Upsert failed for {errors.Count} of {requests.Count} object(s): {messages}"
             );
         }
     }
