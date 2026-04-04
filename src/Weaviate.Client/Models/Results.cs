@@ -40,7 +40,13 @@ public record WeaviateGroup<TGroup>
 public record GroupByResult<TObject, TGroup>(
     IList<TObject> Objects,
     IDictionary<string, TGroup> Groups
-);
+)
+{
+    /// <summary>
+    /// Per-shard query profiling data. Only populated when <see cref="MetadataOptions.QueryProfile"/> was requested.
+    /// </summary>
+    public QueryProfile? QueryProfile { get; init; }
+}
 
 /// <summary>
 /// Represents a result set of Weaviate objects.
@@ -51,6 +57,11 @@ public record WeaviateResult<TObject> : IEnumerable<TObject>
     /// The objects in the result set.
     /// </summary>
     public IList<TObject> Objects { get; init; } = Array.Empty<TObject>();
+
+    /// <summary>
+    /// Per-shard query profiling data. Only populated when <see cref="MetadataOptions.QueryProfile"/> was requested.
+    /// </summary>
+    public QueryProfile? QueryProfile { get; init; }
 
     /// <inheritdoc/>
     public IEnumerator<TObject> GetEnumerator() => Objects.GetEnumerator();

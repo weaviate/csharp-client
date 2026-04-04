@@ -67,6 +67,25 @@ public class ResultTests
     }
 
     [Fact]
+    public void WeaviateResult_Has_QueryProfile_Property()
+    {
+        var profile = new QueryProfile { Shards = [] };
+        var result = new WeaviateResult { Objects = [], QueryProfile = profile };
+        Assert.Equal(profile, result.QueryProfile);
+    }
+
+    [Fact]
+    public void GroupByResult_Has_QueryProfile_Property()
+    {
+        var profile = new QueryProfile { Shards = [] };
+        var result = new GroupByResult([], new Dictionary<string, WeaviateGroup>())
+        {
+            QueryProfile = profile,
+        };
+        Assert.Equal(profile, result.QueryProfile);
+    }
+
+    [Fact]
     public void MetadataRequest_QueryProfile_Field_Is_Set_When_Requested()
     {
         var metadataReq = new Weaviate.Client.Grpc.Protobuf.V1.MetadataRequest
