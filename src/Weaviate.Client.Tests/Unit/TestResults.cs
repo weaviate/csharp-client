@@ -65,4 +65,35 @@ public class ResultTests
         var firstObject = res.Objects[0];
         Assert.Equal("apples are big", firstObject.BelongsToGroup);
     }
+
+    [Fact]
+    public void QueryProfile_Model_Can_Be_Created()
+    {
+        var profile = new QueryProfile
+        {
+            Shards =
+            [
+                new ShardProfile
+                {
+                    Name = "shard0",
+                    Node = "node1",
+                    Searches = new Dictionary<string, SearchProfile>
+                    {
+                        ["vector"] = new SearchProfile
+                        {
+                            Details = new Dictionary<string, string>
+                            {
+                                ["total_took"] = "15.234ms",
+                                ["vector_search_took"] = "10.1ms",
+                            },
+                        },
+                    },
+                },
+            ],
+        };
+
+        Assert.Single(profile.Shards);
+        Assert.Equal("shard0", profile.Shards[0].Name);
+        Assert.Equal("15.234ms", profile.Shards[0].Searches["vector"].Details["total_took"]);
+    }
 }
