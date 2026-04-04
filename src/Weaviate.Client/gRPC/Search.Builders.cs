@@ -74,6 +74,7 @@ internal partial class WeaviateGrpcClient
             Score = returnMetadata?.Score ?? false,
             ExplainScore = returnMetadata?.ExplainScore ?? false,
             IsConsistent = returnMetadata?.IsConsistent ?? false,
+            QueryProfile = returnMetadata?.QueryProfile ?? false,
             Vector =
                 ((includeVectors?.Vectors) == null || includeVectors.Vectors.Length == 0)
                 && (includeVectors?.Vectors != null),

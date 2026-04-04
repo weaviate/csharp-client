@@ -67,6 +67,16 @@ public class ResultTests
     }
 
     [Fact]
+    public void MetadataRequest_QueryProfile_Field_Is_Set_When_Requested()
+    {
+        var metadataReq = new Weaviate.Client.Grpc.Protobuf.V1.MetadataRequest
+        {
+            QueryProfile = true,
+        };
+        Assert.True(metadataReq.QueryProfile);
+    }
+
+    [Fact]
     public void MetadataQuery_QueryProfile_Flag_Works()
     {
         var q = new MetadataQuery(MetadataOptions.QueryProfile);
