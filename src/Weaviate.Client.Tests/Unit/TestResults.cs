@@ -67,6 +67,18 @@ public class ResultTests
     }
 
     [Fact]
+    public void MetadataQuery_QueryProfile_Flag_Works()
+    {
+        var q = new MetadataQuery(MetadataOptions.QueryProfile);
+        Assert.True(q.QueryProfile);
+        Assert.False(q.Score);
+
+        var q2 = new MetadataQuery(MetadataOptions.Score | MetadataOptions.QueryProfile);
+        Assert.True(q2.QueryProfile);
+        Assert.True(q2.Score);
+    }
+
+    [Fact]
     public void QueryProfile_Model_Can_Be_Created()
     {
         var profile = new QueryProfile

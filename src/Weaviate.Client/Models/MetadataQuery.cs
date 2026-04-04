@@ -131,6 +131,12 @@ public enum MetadataOptions
     IsConsistent = 1 << 7, // 2^7
 
     /// <summary>
+    /// The query profile metadata options — enables per-shard execution timing.
+    /// Has performance overhead; always opt-in, intentionally excluded from <see cref="All"/>.
+    /// </summary>
+    QueryProfile = 1 << 8, // 2^8
+
+    /// <summary>
     /// The all metadata options
     /// </summary>
     All =
@@ -214,6 +220,11 @@ public record MetadataQuery
     /// Gets the value of the is consistent
     /// </summary>
     public bool IsConsistent => (Options & MetadataOptions.IsConsistent) != 0;
+
+    /// <summary>
+    /// Gets the value of the query profile flag
+    /// </summary>
+    public bool QueryProfile => (Options & MetadataOptions.QueryProfile) != 0;
 
     /// <summary>
     /// Gets or sets the value of the options
