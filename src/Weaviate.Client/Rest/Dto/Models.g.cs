@@ -285,6 +285,14 @@ namespace Weaviate.Client.Rest.Dto
         public Aliases? Aliases { get; set; } = default!;
 
         /// <summary>
+        /// resources applicable for MCP actions
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("mcp")]
+
+        public System.Collections.Generic.IDictionary<string, object>? Mcp { get; set; } = default!;
+
+        /// <summary>
         /// Allowed actions in weaviate.
         /// </summary>
 
@@ -673,6 +681,14 @@ namespace Weaviate.Client.Rest.Dto
         public System.DateTimeOffset? StartedAt { get; set; } = default!;
 
         /// <summary>
+        /// When the export completed (successfully, with failure, or was canceled)
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("completedAt")]
+
+        public System.DateTimeOffset? CompletedAt { get; set; } = default!;
+
+        /// <summary>
         /// Duration of the export in milliseconds
         /// </summary>
 
@@ -1006,6 +1022,114 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
+    /// Request body for the generic tokenize endpoint.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record TokenizeRequest
+    {
+        /// <summary>
+        /// The text to tokenize.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("text")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public string Text { get; set; } = default!;
+
+        /// <summary>
+        /// The tokenization method to apply.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("tokenization")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public TokenizeRequestTokenization Tokenization { get; set; } = default!;
+
+        /// <summary>
+        /// Optional text analyzer configuration (e.g. ASCII folding).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("analyzerConfig")]
+
+        public TextAnalyzerConfig? AnalyzerConfig { get; set; } = default!;
+
+        /// <summary>
+        /// Optional stopword configuration. When provided, stopwords are removed from query tokens but preserved in indexed tokens.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("stopwordConfig")]
+
+        public StopwordConfig? StopwordConfig { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Response from the tokenize endpoint.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record TokenizeResponse
+    {
+        /// <summary>
+        /// The tokenization method that was applied.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("tokenization")]
+
+        public string? Tokenization { get; set; } = default!;
+
+        /// <summary>
+        /// The text analyzer configuration that was used, if any.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("analyzerConfig")]
+
+        public TextAnalyzerConfig? AnalyzerConfig { get; set; } = default!;
+
+        /// <summary>
+        /// The stopword configuration that was used, if any.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("stopwordConfig")]
+
+        public StopwordConfig? StopwordConfig { get; set; } = default!;
+
+        /// <summary>
+        /// The tokens as they would be stored in the inverted index.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("indexed")]
+
+        public System.Collections.Generic.IList<string>? Indexed { get; set; } = default!;
+
+        /// <summary>
+        /// The tokens as they would be used for query matching (e.g., after stopword removal).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("query")]
+
+        public System.Collections.Generic.IList<string>? Query { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Request body for the property-specific tokenize endpoint.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record PropertyTokenizeRequest
+    {
+        /// <summary>
+        /// The text to tokenize using the property's configured tokenization.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("text")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public string Text { get; set; } = default!;
+
+    }
+
+    /// <summary>
     /// Configuration related to multi-tenancy within a collection (class)
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -1114,100 +1238,6 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("grpcMaxMessageSize")]
 
         public int? GrpcMaxMessageSize { get; set; } = default!;
-
-    }
-
-    /// <summary>
-    /// Either a JSONPatch document as defined by RFC 6902 (from, op, path, value), or a merge document (RFC 7396).
-    /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record PatchDocumentObject
-    {
-        /// <summary>
-        /// A string containing a JSON Pointer value.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("from")]
-
-        public string? From { get; set; } = default!;
-
-        /// <summary>
-        /// The operation to be performed.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("op")]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
-
-        public PatchDocumentObjectOp Op { get; set; } = default!;
-
-        /// <summary>
-        /// A JSON-Pointer.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("path")]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-
-        public string Path { get; set; } = default!;
-
-        /// <summary>
-        /// The value to be used within the operations.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("value")]
-
-        public System.Collections.Generic.IDictionary<string, object>? Value { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("merge")]
-
-        public Object? Merge { get; set; } = default!;
-
-    }
-
-    /// <summary>
-    /// Either a JSONPatch document as defined by RFC 6902 (from, op, path, value), or a merge document (RFC 7396).
-    /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record PatchDocumentAction
-    {
-        /// <summary>
-        /// A string containing a JSON Pointer value.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("from")]
-
-        public string? From { get; set; } = default!;
-
-        /// <summary>
-        /// The operation to be performed.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("op")]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
-
-        public PatchDocumentActionOp Op { get; set; } = default!;
-
-        /// <summary>
-        /// A JSON-Pointer.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("path")]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-
-        public string Path { get; set; } = default!;
-
-        /// <summary>
-        /// The value to be used within the operations.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("value")]
-
-        public System.Collections.Generic.IDictionary<string, object>? Value { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("merge")]
-
-        public Object? Merge { get; set; } = default!;
 
     }
 
@@ -1361,76 +1391,6 @@ namespace Weaviate.Client.Rest.Dto
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
 
         public string Collection { get; set; } = default!;
-
-    }
-
-    /// <summary>
-    /// Specifies the parameters required to mark a specific shard replica as inactive (soft-delete) on a particular node. This action typically prevents the replica from serving requests but does not immediately remove its data.
-    /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record ReplicationDisableReplicaRequest
-    {
-        /// <summary>
-        /// The name of the Weaviate node hosting the shard replica that is to be disabled.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("node")]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-
-        public string Node { get; set; } = default!;
-
-        /// <summary>
-        /// The name of the collection to which the shard replica belongs.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("collection")]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-
-        public string Collection { get; set; } = default!;
-
-        /// <summary>
-        /// The ID of the shard whose replica is to be disabled.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("shard")]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-
-        public string Shard { get; set; } = default!;
-
-    }
-
-    /// <summary>
-    /// Specifies the parameters required to permanently delete a specific shard replica from a particular node. This action will remove the replica's data from the node.
-    /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record ReplicationDeleteReplicaRequest
-    {
-        /// <summary>
-        /// The name of the Weaviate node from which the shard replica will be deleted.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("node")]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-
-        public string Node { get; set; } = default!;
-
-        /// <summary>
-        /// The name of the collection to which the shard replica belongs.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("collection")]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-
-        public string Collection { get; set; } = default!;
-
-        /// <summary>
-        /// The ID of the shard whose replica is to be deleted.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("shard")]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-
-        public string Shard { get; set; } = default!;
 
     }
 
@@ -1788,54 +1748,6 @@ namespace Weaviate.Client.Rest.Dto
 
     }
 
-    /// <summary>
-    /// Indicates the health of the schema in a cluster.
-    /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record SchemaClusterStatus
-    {
-        /// <summary>
-        /// True if the cluster is in sync, false if there is an issue (see error).
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("healthy")]
-
-        public bool? Healthy { get; set; } = default!;
-
-        /// <summary>
-        /// Contains the sync check error if one occurred
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("error")]
-
-        public string? Error { get; set; } = default!;
-
-        /// <summary>
-        /// Hostname of the coordinating node, i.e. the one that received the cluster. This can be useful information if the error message contains phrases such as 'other nodes agree, but local does not', etc.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("hostname")]
-
-        public string? Hostname { get; set; } = default!;
-
-        /// <summary>
-        /// Number of nodes that participated in the sync check
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("nodeCount")]
-
-        public double? NodeCount { get; set; } = default!;
-
-        /// <summary>
-        /// The cluster check at startup can be ignored (to recover from an out-of-sync situation).
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("ignoreSchemaSync")]
-
-        public bool? IgnoreSchemaSync { get; set; } = default!;
-
-    }
-
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal partial record Class
     {
@@ -2021,6 +1933,34 @@ namespace Weaviate.Client.Rest.Dto
 
         public bool? DisableDuplicatedReferences { get; set; } = true;
 
+        [System.Text.Json.Serialization.JsonPropertyName("textAnalyzer")]
+
+        public TextAnalyzerConfig? TextAnalyzer { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Text analysis options for a property. The asciiFold setting is immutable after creation, while the asciiFoldIgnore list can be updated later; changes to asciiFoldIgnore only affect newly indexed data and do not retroactively re-index existing data. Applies only to text and text[] data types that use an inverted index (searchable or filterable).
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record TextAnalyzerConfig
+    {
+        /// <summary>
+        /// If true, accent/diacritic marks are folded to their base characters during indexing and search. For example, 'école' matches 'ecole'. Defaults to false.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("asciiFold")]
+
+        public bool? AsciiFold { get; set; } = default!;
+
+        /// <summary>
+        /// If provided, specifies a list of characters that should be excluded from ascii folding. For example, if ['é'] is provided, then 'é' will not be folded to 'e' during indexing and search. This list can be updated after the property is created, but updates only affect documents indexed after the change.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("asciiFoldIgnore")]
+
+        public System.Collections.Generic.IList<string>? AsciiFoldIgnore { get; set; } = default!;
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -2092,6 +2032,10 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("nestedProperties")]
 
         public System.Collections.Generic.IList<NestedProperty>? NestedProperties { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("textAnalyzer")]
+
+        public TextAnalyzerConfig? TextAnalyzer { get; set; } = default!;
 
     }
 
@@ -3045,6 +2989,78 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("payload")]
 
         public System.Collections.Generic.IDictionary<string, object>? Payload { get; set; } = default!;
+
+        /// <summary>
+        /// Units of the task. Only present for tasks that use unit tracking.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("units")]
+
+        public System.Collections.Generic.IList<DistributedTaskUnit>? Units { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// A unit of a distributed task.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record DistributedTaskUnit
+    {
+        /// <summary>
+        /// The ID of the unit.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("id")]
+
+        public string? Id { get; set; } = default!;
+
+        /// <summary>
+        /// The node that owns this unit.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("nodeId")]
+
+        public string? NodeId { get; set; } = default!;
+
+        /// <summary>
+        /// The status of the unit.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("status")]
+
+        public string? Status { get; set; } = default!;
+
+        /// <summary>
+        /// The progress of the unit (0.0 to 1.0).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("progress")]
+
+        public float? Progress { get; set; } = default!;
+
+        /// <summary>
+        /// The error message if the unit failed.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("error")]
+
+        public string? Error { get; set; } = default!;
+
+        /// <summary>
+        /// The time when the unit was last updated.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("updatedAt")]
+
+        public System.DateTimeOffset? UpdatedAt { get; set; } = default!;
+
+        /// <summary>
+        /// The time when the unit finished.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("finishedAt")]
+
+        public System.DateTimeOffset? FinishedAt { get; set; } = default!;
 
     }
 
@@ -4713,6 +4729,9 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_groups")]
         Read_groups = 33,
 
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"manage_mcp")]
+        Manage_mcp = 34,
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -4778,14 +4797,6 @@ namespace Weaviate.Client.Rest.Dto
     internal partial record Config
     {
         /// <summary>
-        /// Bucket, container, or volume name for cloud storage backends
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("bucket")]
-
-        public string? Bucket { get; set; } = default!;
-
-        /// <summary>
         /// Path prefix within the bucket or filesystem
         /// </summary>
 
@@ -4823,32 +4834,23 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
         CANCELED = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SKIPPED")]
-        SKIPPED = 5,
-
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal enum ShardProgressStatus
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"STARTED")]
-        STARTED = 0,
-
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"TRANSFERRING")]
-        TRANSFERRING = 1,
+        TRANSFERRING = 0,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SUCCESS")]
-        SUCCESS = 2,
+        SUCCESS = 1,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FAILED")]
-        FAILED = 3,
-
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELED")]
-        CANCELED = 4,
+        FAILED = 2,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"SKIPPED")]
-        SKIPPED = 5,
+        SKIPPED = 3,
 
     }
 
@@ -4905,50 +4907,35 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal enum PatchDocumentObjectOp
+    internal enum TokenizeRequestTokenization
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"add")]
-        Add = 0,
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"word")]
+        Word = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"remove")]
-        Remove = 1,
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"lowercase")]
+        Lowercase = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"replace")]
-        Replace = 2,
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"whitespace")]
+        Whitespace = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"move")]
-        Move = 3,
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"field")]
+        Field = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"copy")]
-        Copy = 4,
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"trigram")]
+        Trigram = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"test")]
-        Test = 5,
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"gse")]
+        Gse = 5,
 
-    }
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"kagome_kr")]
+        Kagome_kr = 6,
 
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal enum PatchDocumentActionOp
-    {
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"kagome_ja")]
+        Kagome_ja = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"add")]
-        Add = 0,
-
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"remove")]
-        Remove = 1,
-
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"replace")]
-        Replace = 2,
-
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"move")]
-        Move = 3,
-
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"copy")]
-        Copy = 4,
-
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"test")]
-        Test = 5,
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"gse_ch")]
+        Gse_ch = 8,
 
     }
 
@@ -5739,6 +5726,43 @@ namespace Weaviate.Client.Rest.Dto
         FAILED = 2,
 
     }
+
+    [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class FileResponse : System.IDisposable
+    {
+        private System.IDisposable? _client;
+        private System.IDisposable? _response;
+
+        public int StatusCode { get; private set; }
+
+        public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
+
+        public System.IO.Stream Stream { get; private set; }
+
+        public bool IsPartial
+        {
+            get { return StatusCode == 206; }
+        }
+
+        public FileResponse(int statusCode, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.IO.Stream stream, System.IDisposable? client, System.IDisposable? response)
+        {
+            StatusCode = statusCode;
+            Headers = headers;
+            Stream = stream;
+            _client = client;
+            _response = response;
+        }
+
+        public void Dispose()
+        {
+            Stream.Dispose();
+            if (_response != null)
+                _response.Dispose();
+            if (_client != null)
+                _client.Dispose();
+        }
+    }
+
 
 
 }

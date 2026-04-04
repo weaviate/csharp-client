@@ -425,6 +425,7 @@ public class PermissionsScopeTests
             "Delete_aliases",
             "Assign_and_revoke_groups",
             "Read_groups",
+            "Manage_mcp",
         };
         foreach (var action in allActions)
         {
