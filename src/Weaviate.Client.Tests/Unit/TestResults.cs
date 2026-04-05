@@ -1,5 +1,6 @@
 using Google.Protobuf;
 using Weaviate.Client.Models;
+using Weaviate.Client.Models.Typed;
 
 namespace Weaviate.Client.Tests.Unit;
 
@@ -202,5 +203,30 @@ public class ResultTests
         Assert.Single(profile.Shards);
         Assert.Equal("shard0", profile.Shards[0].Name);
         Assert.Equal("15.234ms", profile.Shards[0].Searches["vector"].Details["total_took"]);
+    }
+
+    [Fact]
+    public void ToTyped_WeaviateResult_Preserves_QueryProfile()
+    {
+        var profile = new QueryProfile { Shards = [] };
+        var untyped = new WeaviateResult { Objects = [], QueryProfile = profile };
+
+        var typed = untyped.ToTyped<object>();
+
+        Assert.Equal(profile, typed.QueryProfile);
+    }
+
+    [Fact]
+    public void ToTyped_GroupByResult_Preserves_QueryProfile()
+    {
+        var profile = new QueryProfile { Shards = [] };
+        var untyped = new GroupByResult([], new Dictionary<string, WeaviateGroup>())
+        {
+            QueryProfile = profile,
+        };
+
+        var typed = untyped.ToTyped<object>();
+
+        Assert.Equal(profile, typed.QueryProfile);
     }
 }

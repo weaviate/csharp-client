@@ -397,7 +397,7 @@ internal partial class WeaviateGrpcClient
                         BuildObjectFromResult(reply.Collection, r.Metadata, r.Properties)
                     )
                     .ToList() ?? [],
-            QueryProfile = BuildQueryProfile(reply.QueryProfile),
+            QueryProfile = BuildQueryProfile(reply?.QueryProfile),
         };
     }
 
@@ -430,7 +430,7 @@ internal partial class WeaviateGrpcClient
 
         return new GroupByResult(objects, groups)
         {
-            QueryProfile = BuildQueryProfile(reply.QueryProfile),
+            QueryProfile = BuildQueryProfile(reply?.QueryProfile),
         };
     }
 
@@ -458,7 +458,7 @@ internal partial class WeaviateGrpcClient
                     )
                     .ToList() ?? [],
             Generative = BuildGenerativeResult(reply.GenerativeGroupedResults),
-            QueryProfile = BuildQueryProfile(reply.QueryProfile),
+            QueryProfile = BuildQueryProfile(reply?.QueryProfile),
         };
     }
 
@@ -563,7 +563,7 @@ internal partial class WeaviateGrpcClient
 
         var result = new GenerativeGroupByResult(objects, groups, gs)
         {
-            QueryProfile = BuildQueryProfile(reply.QueryProfile),
+            QueryProfile = BuildQueryProfile(reply?.QueryProfile),
         };
 
         return result;
