@@ -56,7 +56,7 @@ public partial class SearchTests : IntegrationTests
 
         objs = (
             await collection.Query.Hybrid(
-                query: "name word",
+                query: "name",
                 vectors: new Vectors(objs.First().Vectors["default"]),
                 alpha: 1,
                 fusionType: fusionType,
@@ -112,8 +112,9 @@ public partial class SearchTests : IntegrationTests
     /// </summary>
     /// <param name="query">The query</param>
     [Theory]
-    [InlineData("some other")]
-    public async Task Test_SearchHybridOnlyVector(string query)
+    [InlineData((string?)null)]
+    [InlineData("")]
+    public async Task Test_SearchHybridOnlyVector(string? query)
     {
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("Name") },
@@ -275,10 +276,8 @@ public partial class SearchTests : IntegrationTests
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
-        // Note: In Weaviate 1.36.9+, behavior of hybrid alpha=1 may differ from NearText
-        // Just verify both return results
-        Assert.NotEmpty(hybridRes);
-        Assert.NotEmpty(textRes);
+        Assert.Equal(hybridRes.Count, textRes.Count);
+        Assert.True(hybridRes.Zip(textRes).All(pair => pair.First.UUID == pair.Second.UUID));
     }
 
     /// <summary>
@@ -316,14 +315,13 @@ public partial class SearchTests : IntegrationTests
 
         var hybridObjs = (
             await collection.Query.Hybrid(
-                query: "banana dog different",
+                query: null,
                 vectors: new NearVectorInput(Vector: obj.Vectors["default"]),
-                alpha: 1,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
-        Assert.Contains(uuidBanana, hybridObjs.Select(o => o.UUID));
+        Assert.Equal(uuidBanana, hybridObjs.First().UUID);
         Assert.Equal(3, hybridObjs.Count);
 
         var nearVec = (
@@ -337,20 +335,18 @@ public partial class SearchTests : IntegrationTests
         Assert.NotNull(nearVec.First().Metadata.Distance);
 
         var hybridObjs2 = await collection.Query.Hybrid(
-            query: "banana dog different",
+            query: null,
             vectors: new NearVectorInput(
                 obj.Vectors["default"],
                 Certainty: null,
                 Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
             ),
-            alpha: 1,
             returnMetadata: MetadataOptions.All,
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        Assert.Contains(uuidBanana, hybridObjs2.Select(o => o.UUID));
-        // Note: Distance filtering in hybrid with query may return more results
-        Assert.NotEmpty(hybridObjs2);
+        Assert.Equal(uuidBanana, hybridObjs2.First().UUID);
+        Assert.Single(hybridObjs2);
     }
 
     /// <summary>
@@ -393,14 +389,13 @@ public partial class SearchTests : IntegrationTests
 
         var hybridObjs = (
             await collection.Query.Hybrid(
-                query: "banana dog different",
+                query: null,
                 vectors: new NearVectorInput(Vector: obj.Vectors["text"]),
-                alpha: 1,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
-        Assert.Contains(uuidBanana, hybridObjs.Select(o => o.UUID));
+        Assert.Equal(uuidBanana, hybridObjs.First().UUID);
         Assert.Equal(3, hybridObjs.Count);
 
         var nearVec = (
@@ -415,20 +410,19 @@ public partial class SearchTests : IntegrationTests
 
         var hybridObjs2 = (
             await collection.Query.Hybrid(
-                query: "banana dog different",
+                query: null,
                 vectors: new NearVectorInput(
                     obj.Vectors["text"],
                     Certainty: null,
                     Distance: Convert.ToSingle(nearVec.First().Metadata.Distance!.Value + 0.001)
                 ),
-                alpha: 1,
                 returnMetadata: MetadataOptions.All,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
-        Assert.Contains(uuidBanana, hybridObjs2.Select(o => o.UUID));
-        Assert.NotEmpty(hybridObjs2);
+        Assert.Equal(uuidBanana, hybridObjs2.First().UUID);
+        Assert.Single(hybridObjs2);
     }
 
     /// <summary>
@@ -459,19 +453,18 @@ public partial class SearchTests : IntegrationTests
 
         var hybridObjs = (
             await collection.Query.Hybrid(
-                query: "banana apple different",
+                query: null,
                 vectors: new NearTextInput(Query: "banana pudding"),
-                alpha: 1,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
-        Assert.Contains(uuidBananaPudding, hybridObjs.Select(o => o.UUID));
+        Assert.Equal(uuidBananaPudding, hybridObjs.First().UUID);
         Assert.Equal(3, hybridObjs.Count);
 
         var hybridObjs2 = (
             await collection.Query.Hybrid(
-                query: "banana apple different",
+                query: null,
                 vectors: new NearTextInput(
                     "banana",
                     Certainty: null,
@@ -479,13 +472,12 @@ public partial class SearchTests : IntegrationTests
                     MoveTo: new Move(force: 0.1f, concepts: ["pudding"]),
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"])
                 ),
-                alpha: 1,
                 returnMetadata: MetadataOptions.All,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
-        Assert.Contains(uuidBananaPudding, hybridObjs2.Select(o => o.UUID));
+        Assert.Equal(uuidBananaPudding, hybridObjs2.First().UUID);
     }
 
     /// <summary>
@@ -520,22 +512,21 @@ public partial class SearchTests : IntegrationTests
 
         var hybridObjs = (
             await collection.Query.Hybrid(
-                query: "banana apple different",
+                query: null,
                 vectors: new NearTextInput(
                     Query: "banana pudding",
                     TargetVectors: new[] { "text" }
                 ),
-                alpha: 1,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
-        Assert.Contains(uuidBananaPudding, hybridObjs.Select(o => o.UUID));
+        Assert.Equal(uuidBananaPudding, hybridObjs.First().UUID);
         Assert.Equal(3, hybridObjs.Count);
 
         var hybridObjs2 = (
             await collection.Query.Hybrid(
-                query: "banana apple different",
+                query: null,
                 vectors: new NearTextInput(
                     "banana",
                     Certainty: null,
@@ -544,13 +535,12 @@ public partial class SearchTests : IntegrationTests
                     MoveAway: new Move(force: 0.1f, concepts: ["smoothie"]),
                     TargetVectors: new[] { "text" }
                 ),
-                alpha: 1,
                 returnMetadata: MetadataOptions.All,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).Objects;
 
-        Assert.Contains(uuidBananaPudding, hybridObjs2.Select(o => o.UUID));
+        Assert.Equal(uuidBananaPudding, hybridObjs2.First().UUID);
     }
 
     /// <summary>
@@ -560,7 +550,7 @@ public partial class SearchTests : IntegrationTests
     public async Task Test_Vector_Per_Target()
     {
         var collection = await CollectionFactory(
-            properties: new[] { Property.Text("name") },
+            properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
                 Configure.Vector("first", v => v.SelfProvided()),
@@ -575,7 +565,7 @@ public partial class SearchTests : IntegrationTests
         };
 
         var uuid1 = await collection.Data.Insert(
-            new { name = "first" },
+            new { },
             vectors: new Vectors
             {
                 { "first", new float[] { 1, 0 } },
@@ -584,7 +574,7 @@ public partial class SearchTests : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid2 = await collection.Data.Insert(
-            new { name = "second" },
+            new { },
             vectors: new Vectors
             {
                 { "first", new float[] { 0, 1 } },
@@ -595,34 +585,29 @@ public partial class SearchTests : IntegrationTests
 
         var objs = (
             await collection.Query.Hybrid(
-                query: "first second",
+                query: null,
                 vectors: new NearVectorInput(Vector: vector),
-                alpha: 1,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).ToList();
 
         Assert.Equal(2, objs.Count);
-        Assert.Contains(uuid1, objs.Select(o => o.UUID));
-        Assert.Contains(uuid2, objs.Select(o => o.UUID));
+        Assert.Equal(uuid1, objs[0].UUID);
+        Assert.Equal(uuid2, objs[1].UUID);
 
-        // Note: Distance filtering in hybrid mode with a query string may behave differently
-        // than with query: null. The distance filter is best tested via NearVector search.
         objs =
         [
             .. (
                 await collection.Query.Hybrid(
-                    query: "first second",
-                    vectors: new NearVectorInput(Vector: vector, Certainty: null, Distance: 0.01f),
-                    alpha: 1,
+                    query: null,
+                    vectors: new NearVectorInput(Vector: vector, Certainty: null, Distance: 0.1f),
                     cancellationToken: TestContext.Current.CancellationToken
                 )
             ).Objects,
         ];
 
-        // With hybrid + query, distance filtering may include more results
-        Assert.NotEmpty(objs);
-        Assert.Contains(uuid1, objs.Select(o => o.UUID));
+        Assert.Single(objs);
+        Assert.Equal(uuid1, objs[0].UUID);
     }
 
     /// <summary>
@@ -695,7 +680,7 @@ public partial class SearchTests : IntegrationTests
     )
     {
         var collection = await CollectionFactory(
-            properties: new[] { Property.Text("name") },
+            properties: Array.Empty<Property>(),
             vectorConfig: new[]
             {
                 Configure.Vector("first", t => t.SelfProvided()),
@@ -704,7 +689,7 @@ public partial class SearchTests : IntegrationTests
         );
 
         var uuid1 = await collection.Data.Insert(
-            new { name = "first" },
+            new { },
             vectors: new()
             {
                 { "first", new float[] { 1, 0 } },
@@ -713,7 +698,7 @@ public partial class SearchTests : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid2 = await collection.Data.Insert(
-            new { name = "second" },
+            new { },
             vectors: new()
             {
                 { "first", new float[] { 0, 1 } },
@@ -724,9 +709,8 @@ public partial class SearchTests : IntegrationTests
 
         var objs = (
             await collection.Query.Hybrid(
-                query: "first second",
+                query: null,
                 vectors: nearVector,
-                alpha: 1,
                 returnMetadata: MetadataOptions.All,
                 cancellationToken: TestContext.Current.CancellationToken
             )
@@ -749,48 +733,46 @@ public partial class SearchTests : IntegrationTests
         );
 
         var uuid1 = await collection.Data.Insert(
-            new { name = "item1" },
+            new { },
             vectors: new float[] { 1, 0, 0 },
             cancellationToken: TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(
-            new { name = "item2" },
+            new { },
             vectors: new float[] { 0, 1, 0 },
             cancellationToken: TestContext.Current.CancellationToken
         );
         await collection.Data.Insert(
-            new { name = "item3" },
+            new { },
             vectors: new float[] { 0, 0, 1 },
             cancellationToken: TestContext.Current.CancellationToken
         );
 
         var objs = (
             await collection.Query.Hybrid(
-                "item1 item2 item3",
+                "name",
                 vectors: new float[] { 1f, 0f, 0f },
                 alpha: 0.7f,
                 cancellationToken: TestContext.Current.CancellationToken
             )
         ).ToList();
         Assert.Equal(3, objs.Count);
-        Assert.Contains(uuid1, objs.Select(o => o.UUID));
+        Assert.Equal(uuid1, objs[0].UUID);
 
         objs =
         [
             .. (
                 await collection.Query.Hybrid(
-                    "item1 item2 item3",
+                    "name",
                     vectors: new float[] { 1f, 0f, 0f },
-                    maxVectorDistance: 0.01f,
+                    maxVectorDistance: 0.1f,
                     alpha: 0.7f,
                     cancellationToken: TestContext.Current.CancellationToken
                 )
             ),
         ];
-        // Note: maxVectorDistance filtering in hybrid mode with a query string
-        // may return more results than expected. Verify uuid1 is included.
-        Assert.NotEmpty(objs);
-        Assert.Contains(uuid1, objs.Select(o => o.UUID));
+        Assert.Single(objs);
+        Assert.Equal(uuid1, objs[0].UUID);
     }
 
     /// <summary>

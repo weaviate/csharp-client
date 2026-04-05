@@ -856,6 +856,8 @@ internal partial class WeaviateGrpcClient
         // Set alpha in the appropriate field based on server version
         if (this._useAlphaParam) // Weaviate >= 1.36: use new AlphaParam field
         {
+            hybrid.UseAlphaParam = true;
+
             // For pure vector search (no query), set alpha=1.0 explicitly
             // For hybrid search (with query), only set AlphaParam if explicitly provided
             if (string.IsNullOrEmpty(query) && !alpha.HasValue)
