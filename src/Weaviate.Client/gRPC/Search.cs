@@ -56,6 +56,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="returnReferences">The return references</param>
     /// <param name="returnMetadata">The return metadata</param>
     /// <param name="includeVectors">The include vectors</param>
+    /// <param name="shardCursors">Per-shard cursors for filtered iterator continuation</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the search reply</returns>
     internal async Task<V1.SearchReply> FetchObjects(
@@ -75,6 +76,7 @@ internal partial class WeaviateGrpcClient
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
+        IDictionary<string, string>? shardCursors = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -96,6 +98,16 @@ internal partial class WeaviateGrpcClient
             returnReferences: returnReferences,
             includeVectors: includeVectors
         );
+
+        if (filters is not null && !req.HasAfter)
+        {
+            req.After = "";
+        }
+
+        if (shardCursors is { Count: > 0 })
+        {
+            req.ShardCursors.Add(shardCursors);
+        }
 
         return await Search(req, cancellationToken);
     }

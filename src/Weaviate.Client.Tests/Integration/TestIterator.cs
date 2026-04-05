@@ -36,6 +36,39 @@ public partial class BasicTests
     }
 
     /// <summary>
+    /// Tests that test iterator
+    /// </summary>
+    [Fact]
+    public async Task Test_Iterator_With_Filter()
+    {
+        var collection = await CollectionFactory(
+            properties: [Property.Text("name"), Property.Bool("isActive")],
+            vectorConfig: Configure.Vector("custom", v => v.SelfProvided())
+        );
+
+        await collection.Data.InsertMany(
+            BatchInsertRequest.Create(
+                Enumerable.Range(1, 200).Select(i => new { Name = $"Name {i}", IsActive = i == 2 })
+            ),
+            TestContext.Current.CancellationToken
+        );
+
+        var names = new List<string>();
+        await foreach (
+            var obj in collection.Iterator(
+                filter: Filter.Property("isActive").IsEqual(true),
+                cacheSize: 10,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        )
+        {
+            obj.Do(o => names.Add(o.Name));
+        }
+
+        Assert.Single(names);
+    }
+
+    /// <summary>
     /// Tests that test iterator arguments
     /// </summary>
     /// <param name="includeVector">The include vector</param>

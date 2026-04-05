@@ -141,11 +141,13 @@ public partial class CollectionClient
     /// <param name="returnMetadata">Metadata to include in the response.</param>
     /// <param name="includeVectors">Vector configuration for returned objects.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
+    /// <param name="filter">Filter to apply to the objects.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>An async enumerable of WeaviateObject instances.</returns>
     public async IAsyncEnumerable<WeaviateObject> Iterator(
         Guid? after = null,
+        Filter? filter = null,
         uint cacheSize = ITERATOR_CACHE_SIZE,
         MetadataQuery? returnMetadata = null,
         VectorQuery? includeVectors = null,
@@ -156,15 +158,18 @@ public partial class CollectionClient
     {
         await _client.EnsureInitializedAsync();
         Guid? cursor = after;
+        IDictionary<string, string>? shardCursors = null;
 
         while (true)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            WeaviateResult page = await _client.GrpcClient.FetchObjects(
+            var reply = await _client.GrpcClient.FetchObjects(
                 Name,
                 limit: cacheSize,
                 after: cursor,
+                filters: filter,
+                shardCursors: shardCursors,
                 returnMetadata: returnMetadata,
                 includeVectors: includeVectors,
                 returnProperties: returnProperties,
@@ -173,15 +178,34 @@ public partial class CollectionClient
                 tenant: Tenant
             );
 
-            if (!page.Objects.Any())
-            {
-                yield break;
-            }
+            WeaviateResult page = reply;
 
-            foreach (var c in page.Objects)
+            if (filter is null)
             {
-                cursor = c.UUID;
-                yield return c;
+                if (!page.Objects.Any())
+                {
+                    yield break;
+                }
+
+                foreach (var c in page.Objects)
+                {
+                    cursor = c.UUID;
+                    yield return c;
+                }
+            }
+            else
+            {
+                foreach (var c in page.Objects)
+                {
+                    yield return c;
+                }
+
+                if (reply.ShardCursors.Count == 0)
+                {
+                    yield break;
+                }
+
+                shardCursors = reply.ShardCursors;
             }
         }
     }
