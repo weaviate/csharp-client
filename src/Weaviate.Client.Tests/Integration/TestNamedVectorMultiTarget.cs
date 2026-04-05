@@ -277,7 +277,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         RequireVersion("1.27.0");
 
         var collection = await CollectionFactory(
-            properties: Array.Empty<Property>(),
+            properties: new[] { Property.Text("name") },
             vectorConfig: new[]
             {
                 Configure.Vector("first", v => v.SelfProvided()),
@@ -286,7 +286,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         );
 
         var uuid1 = await collection.Data.Insert(
-            new { },
+            new { name = "first" },
             vectors: new Vectors
             {
                 { "first", new[] { 1f, 0f } },
@@ -295,7 +295,7 @@ public class TestNamedVectorMultiTarget : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
         var uuid2 = await collection.Data.Insert(
-            new { },
+            new { name = "second" },
             vectors: new Vectors
             {
                 { "first", new[] { 0f, 1f } },
@@ -305,8 +305,9 @@ public class TestNamedVectorMultiTarget : IntegrationTests
         );
 
         var objs = await collection.Query.Hybrid(
-            query: null,
+            query: "first second",
             vectors: nearVector,
+            alpha: 1,
             returnMetadata: MetadataOptions.All,
             cancellationToken: TestContext.Current.CancellationToken
         );
