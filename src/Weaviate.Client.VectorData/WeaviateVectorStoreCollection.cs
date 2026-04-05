@@ -168,21 +168,17 @@ public class WeaviateVectorStoreCollection<TKey, TRecord> : VectorStoreCollectio
     )
     {
         var (key, properties, vectors) = _mapper.MapToWeaviate(record);
-        var guid = key ?? Guid.NewGuid();
-        var collection = _collectionClient.Value;
+        var request = new BatchInsertRequest(properties, key ?? Guid.NewGuid(), vectors);
 
-        try
+        var response = await _collectionClient
+            .Value.Data.InsertMany([request], cancellationToken)
+            .ConfigureAwait(false);
+
+        var errors = response.Errors.ToList();
+        if (errors.Count > 0)
         {
-            await collection
-                .Data.Insert(properties, guid, vectors, cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
-        }
-        catch (WeaviateUnprocessableEntityException)
-        {
-            // Object already exists — replace it
-            await collection
-                .Data.Replace(guid, properties, vectors, cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
+            var messages = string.Join("; ", errors.Select(e => e.Message));
+            throw new VectorStoreException($"Upsert failed for 1 of 1 object(s): {messages}");
         }
     }
 
@@ -192,11 +188,30 @@ public class WeaviateVectorStoreCollection<TKey, TRecord> : VectorStoreCollectio
         CancellationToken cancellationToken = default
     )
     {
-        // Upsert uses Replace (PUT) which is create-or-replace; no batch Replace exists,
-        // so we must iterate individually.
-        foreach (var record in records)
+        ArgumentNullException.ThrowIfNull(records);
+
+        var requests = records
+            .Select(record =>
+            {
+                var (key, properties, vectors) = _mapper.MapToWeaviate(record);
+                return new BatchInsertRequest(properties, key ?? Guid.NewGuid(), vectors);
+            })
+            .ToList();
+
+        if (requests.Count == 0)
+            return;
+
+        var response = await _collectionClient
+            .Value.Data.InsertMany(requests, cancellationToken)
+            .ConfigureAwait(false);
+
+        var errors = response.Errors.ToList();
+        if (errors.Count > 0)
         {
-            await UpsertAsync(record, cancellationToken).ConfigureAwait(false);
+            var messages = string.Join("; ", errors.Select(e => e.Message));
+            throw new VectorStoreException(
+                $"Upsert failed for {errors.Count} of {requests.Count} object(s): {messages}"
+            );
         }
     }
 

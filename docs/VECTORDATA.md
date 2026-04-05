@@ -266,13 +266,12 @@ either the record type's VectorData attributes or an explicit `VectorStoreCollec
 // Single record
 await articles.UpsertAsync(article);
 
-// Multiple records (sequential — see Limitations)
+// Multiple records
 await articles.UpsertAsync(new[] { article1, article2, article3 });
 ```
 
-Upsert uses insert-then-replace semantics: it attempts an insert and falls back to a full replace
-if the object already exists. There is no native batch replace API in Weaviate, so multi-record
-upsert iterates individually.
+Both single-record and multi-record upsert are sent as a single gRPC batch call (`InsertMany`).
+Weaviate handles upsert semantics at the database level — existing objects are replaced in place.
 
 ### Get by key
 
@@ -548,9 +547,9 @@ The `"Key"` entry in the dictionary maps to the Weaviate UUID.
 
 - **`ManhattanDistance`** is not supported by Weaviate and will throw `NotSupportedException` at
   schema creation time.
-- **Bulk upsert is sequential**: `UpsertAsync(IEnumerable<TRecord>)` inserts records one by one.
-  For high-throughput ingestion, use the core client's batch API
-  ([BATCH_API_USAGE.md](BATCH_API_USAGE.md)) instead.
+- **Upsert error handling**: if any object fails during a bulk upsert, a `VectorStoreException`
+  is thrown with a summary of all failures. Successfully upserted objects in the same batch
+  are not rolled back.
 - **No cross-references**: Weaviate cross-reference properties are not supported through the
   VectorData abstraction.
 - **No NearText / generative search**: These Weaviate-specific features require the core client.
