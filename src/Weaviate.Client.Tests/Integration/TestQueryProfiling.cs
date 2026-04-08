@@ -108,4 +108,35 @@ public partial class SearchTests : IntegrationTests
 
         Assert.Null(result.QueryProfile);
     }
+
+    [Fact]
+    public async Task QueryProfiling_NearText_GroupBy_Returns_Profile()
+    {
+        RequireVersion("1.36.9");
+
+        var collection = await CollectionFactory(
+            properties: new[] { Property.Text("name") },
+            vectorConfig: Configure.Vector(v => v.Text2VecTransformers())
+        );
+
+        await collection.Data.Insert(
+            new { name = "first object" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        await collection.Data.Insert(
+            new { name = "second object" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var result = await collection.Query.NearText(
+            query: "test",
+            groupBy: new GroupByRequest("name") { NumberOfGroups = 2, ObjectsPerGroup = 1 },
+            returnMetadata: MetadataOptions.QueryProfile,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        Assert.NotNull(result.QueryProfile);
+        Assert.NotEmpty(result.QueryProfile.Shards);
+    }
 }
