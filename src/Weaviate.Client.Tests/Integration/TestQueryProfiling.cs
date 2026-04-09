@@ -13,7 +13,7 @@ public partial class SearchTests : IntegrationTests
     [Fact]
     public async Task QueryProfiling_BM25_Returns_Profile()
     {
-        RequireVersion("1.36.9");
+        RequireVersion("1.36.10");
 
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("name") },
@@ -38,7 +38,7 @@ public partial class SearchTests : IntegrationTests
     [Fact]
     public async Task QueryProfiling_NearText_Returns_Profile()
     {
-        RequireVersion("1.36.9");
+        RequireVersion("1.36.10");
 
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("name") },
@@ -63,7 +63,7 @@ public partial class SearchTests : IntegrationTests
     [Fact]
     public async Task QueryProfiling_Hybrid_Returns_Profile()
     {
-        RequireVersion("1.36.9");
+        RequireVersion("1.36.10");
 
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("name") },
@@ -89,7 +89,7 @@ public partial class SearchTests : IntegrationTests
     [Fact]
     public async Task QueryProfiling_NotRequested_Returns_Null()
     {
-        RequireVersion("1.36.9");
+        RequireVersion("1.36.10");
 
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("name") },
@@ -112,7 +112,7 @@ public partial class SearchTests : IntegrationTests
     [Fact]
     public async Task QueryProfiling_NearText_GroupBy_Returns_Profile()
     {
-        RequireVersion("1.36.9");
+        RequireVersion("1.36.10");
 
         var collection = await CollectionFactory(
             properties: new[] { Property.Text("name") },
