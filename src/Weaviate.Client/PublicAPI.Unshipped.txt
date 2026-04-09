@@ -1415,15 +1415,6 @@ static Weaviate.Client.Models.BM25Operator.Or.operator ==(Weaviate.Client.Models
 static Weaviate.Client.Models.ClusterNode.operator !=(Weaviate.Client.Models.ClusterNode? left, Weaviate.Client.Models.ClusterNode? right) -> bool
 static Weaviate.Client.Models.ClusterNode.operator ==(Weaviate.Client.Models.ClusterNode? left, Weaviate.Client.Models.ClusterNode? right) -> bool
 static Weaviate.Client.Models.ClusterNodeVerbose.NodeStats.operator !=(Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? left, Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? right) -> bool
-
-Weaviate.Client.Batch.BatchObjectStatus.Pending = 0 -> Weaviate.Client.Batch.BatchObjectStatus
-Weaviate.Client.Batch.BatchObjectStatus.Acked = 1 -> Weaviate.Client.Batch.BatchObjectStatus
-Weaviate.Client.Batch.BatchObjectStatus.Failed = 2 -> Weaviate.Client.Batch.BatchObjectStatus
-Weaviate.Client.Batch.BatchObjectStatus.Retried = 3 -> Weaviate.Client.Batch.BatchObjectStatus
-Weaviate.Client.Batch.BatchObjectStatus.Acked
-Weaviate.Client.Batch.BatchObjectStatus.Failed
-Weaviate.Client.Batch.BatchObjectStatus.Retried
-Weaviate.Client.Batch.TaskHandle.Status.get -> Weaviate.Client.Batch.BatchObjectStatus
 static Weaviate.Client.Models.ClusterNodeVerbose.NodeStats.operator ==(Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? left, Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? right) -> bool
 static Weaviate.Client.Models.ClusterNodeVerbose.operator !=(Weaviate.Client.Models.ClusterNodeVerbose? left, Weaviate.Client.Models.ClusterNodeVerbose? right) -> bool
 static Weaviate.Client.Models.ClusterNodeVerbose.operator ==(Weaviate.Client.Models.ClusterNodeVerbose? left, Weaviate.Client.Models.ClusterNodeVerbose? right) -> bool
