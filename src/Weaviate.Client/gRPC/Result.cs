@@ -352,6 +352,34 @@ internal partial class WeaviateGrpcClient
     }
 
     /// <summary>
+    /// Builds a <see cref="Models.QueryProfile"/> from a gRPC <see cref="Protobuf.V1.QueryProfile"/>.
+    /// Returns null when the reply has no query profile.
+    /// </summary>
+    internal static Models.QueryProfile? BuildQueryProfile(Protobuf.V1.QueryProfile? profile)
+    {
+        if (profile is null)
+            return null;
+
+        return new Models.QueryProfile
+        {
+            Shards = profile
+                .Shards.Select(s => new Models.ShardProfile
+                {
+                    Name = s.Name,
+                    Node = s.Node,
+                    Searches = s.Searches.ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => new Models.SearchProfile
+                        {
+                            Details = new Dictionary<string, string>(kvp.Value.Details),
+                        }
+                    ),
+                })
+                .ToList(),
+        };
+    }
+
+    /// <summary>
     /// Builds the result using the specified reply
     /// </summary>
     /// <param name="reply">The reply</param>
@@ -369,6 +397,7 @@ internal partial class WeaviateGrpcClient
                         BuildObjectFromResult(reply.Collection, r.Metadata, r.Properties)
                     )
                     .ToList() ?? [],
+            QueryProfile = BuildQueryProfile(reply?.QueryProfile),
         };
     }
 
@@ -399,7 +428,10 @@ internal partial class WeaviateGrpcClient
 
         var objects = groups.Values.SelectMany(g => g.Objects).ToArray();
 
-        return new GroupByResult(objects, groups);
+        return new GroupByResult(objects, groups)
+        {
+            QueryProfile = BuildQueryProfile(reply?.QueryProfile),
+        };
     }
 
     /// <summary>
@@ -426,6 +458,7 @@ internal partial class WeaviateGrpcClient
                     )
                     .ToList() ?? [],
             Generative = BuildGenerativeResult(reply.GenerativeGroupedResults),
+            QueryProfile = BuildQueryProfile(reply?.QueryProfile),
         };
     }
 
@@ -528,7 +561,10 @@ internal partial class WeaviateGrpcClient
         }
 #pragma warning restore CS0612 // Type or member is obsolete
 
-        var result = new GenerativeGroupByResult(objects, groups, gs);
+        var result = new GenerativeGroupByResult(objects, groups, gs)
+        {
+            QueryProfile = BuildQueryProfile(reply?.QueryProfile),
+        };
 
         return result;
     }

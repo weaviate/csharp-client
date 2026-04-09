@@ -49,7 +49,10 @@ public static class TypedResultConverter
         return new GroupByResult<T>(
             result.Objects.Select(o => o.ToTyped<T>()).ToList(),
             result.Groups.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToTyped<T>())
-        );
+        )
+        {
+            QueryProfile = result.QueryProfile,
+        };
     }
 
     /// <summary>
@@ -61,6 +64,7 @@ public static class TypedResultConverter
         return new WeaviateResult<WeaviateObject<T>>
         {
             Objects = result.Objects.Select(o => o.ToTyped<T>()).ToList(),
+            QueryProfile = result.QueryProfile,
         };
     }
 
@@ -110,7 +114,10 @@ public static class TypedResultConverter
             result.Objects.Select(o => o.ToTyped<T>()).ToList(),
             result.Groups.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToTyped<T>()),
             result.Generative
-        );
+        )
+        {
+            QueryProfile = result.QueryProfile,
+        };
     }
 
     /// <summary>
@@ -123,6 +130,7 @@ public static class TypedResultConverter
         {
             Objects = result.Objects.Select(o => o.ToTyped<T>()).ToList(),
             Generative = result.Generative,
+            QueryProfile = result.QueryProfile,
         };
     }
 

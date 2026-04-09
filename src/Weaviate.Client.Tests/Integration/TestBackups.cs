@@ -135,7 +135,7 @@ public class TestBackups : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        var id = Helpers.GenerateUniqueIdentifier(dummyCollectionName);
+        var id = Helpers.GenerateUniqueIdentifier("bkp_list_status");
         var request = new BackupCreateRequest(id, _backend);
 
         try
@@ -175,9 +175,9 @@ public class TestBackups : IntegrationTests
     [Fact]
     public async Task Test_Create_And_Restore_Backup_With_Waiting()
     {
-        // Arrange
-        var collectionSeed = MakeUniqueCollectionName<object>("bkp");
-        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+        // Arrange — use a short backup ID to avoid exceeding filesystem NAME_MAX (255 chars)
+        // when Weaviate creates staging directories named .backup-staging-{backupId}-{collectionName}
+        var backupId = Helpers.GenerateUniqueIdentifier("bkp");
 
         // Create two collections with sample data
         var articles = await CollectionFactory(
@@ -266,8 +266,7 @@ public class TestBackups : IntegrationTests
     public async Task Test_Create_And_Restore_Backup_Without_Waiting()
     {
         // Arrange
-        var collectionSeed = MakeUniqueCollectionName<object>("bkp_async");
-        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+        var backupId = Helpers.GenerateUniqueIdentifier("bkp_async");
 
         var article = await CollectionFactory(
             name: "ArticleAsync",
@@ -330,8 +329,7 @@ public class TestBackups : IntegrationTests
     [Fact]
     public async Task Test_Create_And_Restore_Single_Collection_Backup_With_Waiting()
     {
-        var collectionSeed = MakeUniqueCollectionName<object>("bkp_single");
-        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+        var backupId = Helpers.GenerateUniqueIdentifier("bkp_single");
 
         var article = await CollectionFactory(
             name: "ArticleSingle",
@@ -383,8 +381,7 @@ public class TestBackups : IntegrationTests
     [Fact]
     public async Task Test_Fail_Backup_On_NonExisting_Collection()
     {
-        var collectionSeed = MakeUniqueCollectionName<object>("bkp_fail_nonexist");
-        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+        var backupId = Helpers.GenerateUniqueIdentifier("bkp_fail_nonexist");
         var bogusCollectionName = MakeUniqueCollectionName<object>("DoesNotExist");
 
         // Create should fail when including non-existing collection
@@ -418,8 +415,7 @@ public class TestBackups : IntegrationTests
     [Fact]
     public async Task Test_Fail_Creating_Duplicate_Backup()
     {
-        var collectionSeed = MakeUniqueCollectionName<object>("bkp_duplicate");
-        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+        var backupId = Helpers.GenerateUniqueIdentifier("bkp_duplicate");
 
         var collection = await CollectionFactory(
             name: "ArticleDup",
@@ -461,8 +457,7 @@ public class TestBackups : IntegrationTests
     [Fact]
     public async Task Test_Fail_Restoring_Backup_For_Existing_Collection()
     {
-        var collectionSeed = MakeUniqueCollectionName<object>("bkp_restore_conflict");
-        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+        var backupId = Helpers.GenerateUniqueIdentifier("bkp_restore_conflict");
 
         var collection = await CollectionFactory(
             name: "ArticleConflict",
@@ -510,8 +505,7 @@ public class TestBackups : IntegrationTests
     [Fact]
     public async Task Test_Cancel_Running_Backup()
     {
-        var collectionSeed = MakeUniqueCollectionName<object>("bkp_cancel");
-        var backupId = Helpers.GenerateUniqueIdentifier(collectionSeed);
+        var backupId = Helpers.GenerateUniqueIdentifier("bkp_cancel");
 
         // Create a collection with enough objects to keep backup busy for a moment
         var collection = await CollectionFactory(
