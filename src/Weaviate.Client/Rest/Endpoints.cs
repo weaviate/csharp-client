@@ -87,10 +87,8 @@ internal static partial class WeaviateEndpoints
     /// <param name="className">The class name</param>
     /// <param name="vectorIndexName">The vector index name</param>
     /// <returns>The string</returns>
-    internal static string CollectionVectorIndex(
-        string className,
-        string vectorIndexName
-    ) => $"schema/{className}/vectors/{vectorIndexName}/index";
+    internal static string CollectionVectorIndex(string className, string vectorIndexName) =>
+        $"schema/{className}/vectors/{vectorIndexName}/index";
 
     /// <summary>
     /// Collections the shard using the specified class name

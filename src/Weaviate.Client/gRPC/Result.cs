@@ -288,7 +288,8 @@ internal partial class WeaviateGrpcClient
                 //Debug: g.Debug is null ? null : new GenerativeDebug(g.Debug.FullPrompt),
                 //Metadata: g.Metadata
                 ))
-                .ToList() ?? [];
+                .ToList()
+            ?? [];
     }
 
     /// <summary>
@@ -396,7 +397,8 @@ internal partial class WeaviateGrpcClient
                     ?.Results?.Select(r =>
                         BuildObjectFromResult(reply.Collection, r.Metadata, r.Properties)
                     )
-                    .ToList() ?? [],
+                    .ToList()
+                ?? [],
             QueryProfile = BuildQueryProfile(reply?.QueryProfile),
         };
     }
@@ -456,7 +458,8 @@ internal partial class WeaviateGrpcClient
                             r.Generative
                         )
                     )
-                    .ToList() ?? [],
+                    .ToList()
+                ?? [],
             Generative = BuildGenerativeResult(reply.GenerativeGroupedResults),
             QueryProfile = BuildQueryProfile(reply?.QueryProfile),
         };
@@ -549,15 +552,13 @@ internal partial class WeaviateGrpcClient
             && reply is { HasGenerativeGroupedResult: true, GenerativeGroupedResult: not null }
         )
         {
-            gs = new GenerativeResult(
-                [
-                    new GenerativeReply(
-                        Text: reply.GenerativeGroupedResult
-                    // Debug: null,
-                    // Metadata: null
-                    ),
-                ]
-            );
+            gs = new GenerativeResult([
+                new GenerativeReply(
+                    Text: reply.GenerativeGroupedResult
+                // Debug: null,
+                // Metadata: null
+                ),
+            ]);
         }
 #pragma warning restore CS0612 // Type or member is obsolete
 

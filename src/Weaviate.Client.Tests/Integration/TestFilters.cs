@@ -395,9 +395,10 @@ public partial class FilterTests : IntegrationTests
 
         // Act
         var objects = await collection.Query.FetchObjects(
-            filters: Filter.CreationTime.ContainsAny(
-                [obj2!.Metadata.CreationTime!.Value, obj3!.Metadata.CreationTime!.Value]
-            ),
+            filters: Filter.CreationTime.ContainsAny([
+                obj2!.Metadata.CreationTime!.Value,
+                obj3!.Metadata.CreationTime!.Value,
+            ]),
             cancellationToken: TestContext.Current.CancellationToken
         );
 

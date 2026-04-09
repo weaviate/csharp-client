@@ -167,9 +167,11 @@ public partial class SearchTests : IntegrationTests
         );
 
         var res = await collection.Data.InsertMany(
-            BatchInsertRequest.Create(
-                [new { Name = "test" }, new { Name = "another" }, new { Name = "test" }]
-            ),
+            BatchInsertRequest.Create([
+                new { Name = "test" },
+                new { Name = "another" },
+                new { Name = "test" },
+            ]),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -205,9 +207,11 @@ public partial class SearchTests : IntegrationTests
         );
 
         var res = await collection.Data.InsertMany(
-            BatchInsertRequest.Create(
-                [new { Name = "test" }, new { Name = "another" }, new { Name = "test" }]
-            ),
+            BatchInsertRequest.Create([
+                new { Name = "test" },
+                new { Name = "another" },
+                new { Name = "test" },
+            ]),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -238,9 +242,11 @@ public partial class SearchTests : IntegrationTests
         );
 
         var res = await collection.Data.InsertMany(
-            BatchInsertRequest.Create(
-                [new { name = "banana" }, new { name = "fruit" }, new { name = "car" }]
-            ),
+            BatchInsertRequest.Create([
+                new { name = "banana" },
+                new { name = "fruit" },
+                new { name = "car" },
+            ]),
             cancellationToken: TestContext.Current.CancellationToken
         );
         Assert.Equal(0, res.Count(r => r.Error is not null));

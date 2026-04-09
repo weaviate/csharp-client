@@ -13,15 +13,10 @@ public class TestCollectionVectorIndex : IntegrationTests
     [Fact]
     public async Task DeleteVectorIndex_DropsVectorIndex()
     {
-        RequireVersion<CollectionConfigClient>(
-            nameof(CollectionConfigClient.DeleteVectorIndex)
-        );
+        RequireVersion<CollectionConfigClient>(nameof(CollectionConfigClient.DeleteVectorIndex));
 
         var collection = await CollectionFactory(
-            vectorConfig:
-            [
-                Configure.Vector("myVector", v => v.SelfProvided()),
-            ]
+            vectorConfig: [Configure.Vector("myVector", v => v.SelfProvided())]
         );
 
         // Should not throw on a 1.37+ server

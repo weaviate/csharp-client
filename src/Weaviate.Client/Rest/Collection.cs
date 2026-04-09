@@ -288,10 +288,7 @@ internal partial class WeaviateRestClient
         CancellationToken cancellationToken = default
     )
     {
-        var path = WeaviateEndpoints.CollectionVectorIndex(
-            collectionName,
-            vectorIndexName
-        );
+        var path = WeaviateEndpoints.CollectionVectorIndex(collectionName, vectorIndexName);
 
         var response = await _httpClient.DeleteAsync(path, cancellationToken);
 

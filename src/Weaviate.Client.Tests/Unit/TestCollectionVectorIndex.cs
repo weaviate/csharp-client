@@ -19,10 +19,7 @@ public class CollectionVectorIndexTests
         await Assert.ThrowsAsync<WeaviateVersionMismatchException>(() =>
             client
                 .Collections.Use("Article")
-                .Config.DeleteVectorIndex(
-                    "myVector",
-                    TestContext.Current.CancellationToken
-                )
+                .Config.DeleteVectorIndex("myVector", TestContext.Current.CancellationToken)
         );
     }
 
@@ -37,10 +34,7 @@ public class CollectionVectorIndexTests
 
         await client
             .Collections.Use("Article")
-            .Config.DeleteVectorIndex(
-                "myVector",
-                TestContext.Current.CancellationToken
-            );
+            .Config.DeleteVectorIndex("myVector", TestContext.Current.CancellationToken);
 
         Assert.NotNull(handler.LastRequest);
         handler
@@ -59,10 +53,7 @@ public class CollectionVectorIndexTests
 
         await client
             .Collections.Use("Article")
-            .Config.DeleteVectorIndex(
-                "default",
-                TestContext.Current.CancellationToken
-            );
+            .Config.DeleteVectorIndex("default", TestContext.Current.CancellationToken);
 
         Assert.NotNull(handler.LastRequest);
         handler
