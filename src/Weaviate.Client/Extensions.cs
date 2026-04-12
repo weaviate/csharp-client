@@ -276,9 +276,9 @@ public static class WeaviateExtensions
             return new VectorConfig(name, vc, vic);
         };
 
-        var vectorConfig = new VectorConfigList(
-            [.. collection.VectorConfig?.Select(e => makeVectorConfig(e.Key, e.Value)) ?? []]
-        );
+        var vectorConfig = new VectorConfigList([
+            .. collection.VectorConfig?.Select(e => makeVectorConfig(e.Key, e.Value)) ?? [],
+        ]);
 
         ShardingConfig? shardingConfig = _dictToObject<ShardingConfig>(collection?.ShardingConfig);
 

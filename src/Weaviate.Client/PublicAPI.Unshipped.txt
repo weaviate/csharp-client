@@ -1415,15 +1415,6 @@ static Weaviate.Client.Models.BM25Operator.Or.operator ==(Weaviate.Client.Models
 static Weaviate.Client.Models.ClusterNode.operator !=(Weaviate.Client.Models.ClusterNode? left, Weaviate.Client.Models.ClusterNode? right) -> bool
 static Weaviate.Client.Models.ClusterNode.operator ==(Weaviate.Client.Models.ClusterNode? left, Weaviate.Client.Models.ClusterNode? right) -> bool
 static Weaviate.Client.Models.ClusterNodeVerbose.NodeStats.operator !=(Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? left, Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? right) -> bool
-
-Weaviate.Client.Batch.BatchObjectStatus.Pending = 0 -> Weaviate.Client.Batch.BatchObjectStatus
-Weaviate.Client.Batch.BatchObjectStatus.Acked = 1 -> Weaviate.Client.Batch.BatchObjectStatus
-Weaviate.Client.Batch.BatchObjectStatus.Failed = 2 -> Weaviate.Client.Batch.BatchObjectStatus
-Weaviate.Client.Batch.BatchObjectStatus.Retried = 3 -> Weaviate.Client.Batch.BatchObjectStatus
-Weaviate.Client.Batch.BatchObjectStatus.Acked
-Weaviate.Client.Batch.BatchObjectStatus.Failed
-Weaviate.Client.Batch.BatchObjectStatus.Retried
-Weaviate.Client.Batch.TaskHandle.Status.get -> Weaviate.Client.Batch.BatchObjectStatus
 static Weaviate.Client.Models.ClusterNodeVerbose.NodeStats.operator ==(Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? left, Weaviate.Client.Models.ClusterNodeVerbose.NodeStats? right) -> bool
 static Weaviate.Client.Models.ClusterNodeVerbose.operator !=(Weaviate.Client.Models.ClusterNodeVerbose? left, Weaviate.Client.Models.ClusterNodeVerbose? right) -> bool
 static Weaviate.Client.Models.ClusterNodeVerbose.operator ==(Weaviate.Client.Models.ClusterNodeVerbose? left, Weaviate.Client.Models.ClusterNodeVerbose? right) -> bool
@@ -2836,6 +2827,7 @@ Weaviate.Client.CollectionConfigClient.AddProperty(Weaviate.Client.Models.Proper
 Weaviate.Client.CollectionConfigClient.AddReference(Weaviate.Client.Models.Reference! referenceProperty, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 Weaviate.Client.CollectionConfigClient.AddVector(Weaviate.Client.Models.VectorConfig! vector, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 Weaviate.Client.CollectionConfigClient.DeletePropertyIndex(string! propertyName, Weaviate.Client.Models.PropertyIndexType indexType, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.CollectionConfigClient.DeleteVectorIndex(string! vectorName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 Weaviate.Client.CollectionConfigClient.Get(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.CollectionConfigExport!>!
 Weaviate.Client.CollectionConfigClient.GetCachedConfig(Weaviate.Client.Cache.SchemaCache? schemaCache = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.CollectionConfig?>!
 Weaviate.Client.CollectionConfigClient.GetShard(string! shardName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.ShardInfo?>!

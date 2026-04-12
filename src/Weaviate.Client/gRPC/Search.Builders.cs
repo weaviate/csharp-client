@@ -538,15 +538,13 @@ internal partial class WeaviateGrpcClient
         vector ??= [];
 
         // If no target vector specified, create one from vector names
-        targetVector ??= new SimpleTargetVectors(
-            [
-                .. vector
-                    .Select(v => v.Name)
-                    .Where(tv => string.IsNullOrEmpty(tv) is false)
-                    .ToHashSet()
-                    .Order(),
-            ]
-        );
+        targetVector ??= new SimpleTargetVectors([
+            .. vector
+                .Select(v => v.Name)
+                .Where(tv => string.IsNullOrEmpty(tv) is false)
+                .ToHashSet()
+                .Order(),
+        ]);
 
         if (targetVector.Count() == 1 && vector.Count() == 1)
         {

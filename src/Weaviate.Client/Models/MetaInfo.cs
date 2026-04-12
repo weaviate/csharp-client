@@ -38,8 +38,11 @@ public struct MetaInfo
         // Remove 'v' or 'V' prefix if present
         var cleaned = versionString.TrimStart('v', 'V');
 
-        // Split on common pre-release separators and take the first part
-        cleaned = cleaned.Split('-', '+')[0];
+        // Take only the numeric version portion (digits and dots)
+        var end = 0;
+        while (end < cleaned.Length && (char.IsDigit(cleaned[end]) || cleaned[end] == '.'))
+            end++;
+        cleaned = cleaned[..end];
 
         return Version.TryParse(cleaned, out var version) ? version : null;
     }

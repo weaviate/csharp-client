@@ -22,7 +22,9 @@ public class TestHybridSearchInputSyntax : IAsyncLifetime
     {
         var versionString =
             Environment.GetEnvironmentVariable(ServerVersionEnvVar) ?? DefaultServerVersion;
-        var version = Version.Parse(versionString);
+        var version =
+            MetaInfo.ParseWeaviateVersion(versionString)
+            ?? throw new FormatException($"Cannot parse version: {versionString}");
         var (client, getRequest) = MockGrpcClient.CreateWithSearchCapture(version);
         _getRequest = getRequest;
         _collection = client.Collections.Use(CollectionName);
