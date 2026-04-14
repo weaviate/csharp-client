@@ -268,6 +268,51 @@ public static class Permissions
     }
 
     /// <summary>
+    /// The mcp class
+    /// </summary>
+    /// <seealso cref="PermissionScope"/>
+    public class Mcp : PermissionScope
+    {
+        /// <summary>
+        /// Gets or sets the value of the manage
+        /// </summary>
+        public bool Manage { get; set; }
+
+        /// <summary>
+        /// Returns the dto
+        /// </summary>
+        /// <returns>An enumerable of rest dto permission</returns>
+        internal override IEnumerable<Rest.Dto.Permission> ToDto()
+        {
+            if (Manage)
+                yield return new Rest.Dto.Permission()
+                {
+                    Action = Rest.Dto.PermissionAction.Manage_mcp,
+                };
+        }
+
+        /// <summary>
+        /// Parses the infos
+        /// </summary>
+        /// <param name="infos">The infos</param>
+        /// <returns>A list of permission scope</returns>
+        internal static List<PermissionScope> Parse(IEnumerable<Rest.Dto.Permission> infos)
+        {
+            var mcp = new Mcp()
+            {
+                Manage = infos.Any(i => i.Action == Rest.Dto.PermissionAction.Manage_mcp),
+            };
+
+            if (!mcp.Manage)
+            {
+                return [];
+            }
+
+            return [mcp];
+        }
+    }
+
+    /// <summary>
     /// The cluster class
     /// </summary>
     /// <seealso cref="PermissionScope"/>
@@ -918,6 +963,7 @@ public static class Permissions
         scopes.AddRange(Alias.Parse(infos));
         scopes.AddRange(Data.Parse(infos));
         scopes.AddRange(Backups.Parse(infos));
+        scopes.AddRange(Mcp.Parse(infos));
         scopes.AddRange(Cluster.Parse(infos));
         scopes.AddRange(Nodes.Parse(infos));
         scopes.AddRange(Roles.Parse(infos));

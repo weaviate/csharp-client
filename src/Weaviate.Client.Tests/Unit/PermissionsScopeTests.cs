@@ -77,6 +77,21 @@ public class PermissionsScopeTests
     }
 
     /// <summary>
+    /// Tests that mcp aggregates manage permission
+    /// </summary>
+    [Fact]
+    public void Mcp_Aggregates_ManagePermission()
+    {
+        var permissions = new List<Rest.Dto.Permission>
+        {
+            new() { Action = Weaviate.Client.Rest.Dto.PermissionAction.Manage_mcp },
+        };
+        var mcps = Permissions.Mcp.Parse(permissions).Cast<Permissions.Mcp>().ToList();
+        Assert.Single(mcps);
+        Assert.True(mcps[0].Manage);
+    }
+
+    /// <summary>
     /// Tests that cluster aggregates read permission
     /// </summary>
     [Fact]

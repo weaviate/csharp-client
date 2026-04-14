@@ -4712,6 +4712,10 @@ Weaviate.Client.Models.Permissions.Cluster
 Weaviate.Client.Models.Permissions.Cluster.Cluster() -> void
 Weaviate.Client.Models.Permissions.Cluster.Read.get -> bool
 Weaviate.Client.Models.Permissions.Cluster.Read.set -> void
+Weaviate.Client.Models.Permissions.Mcp
+Weaviate.Client.Models.Permissions.Mcp.Mcp() -> void
+Weaviate.Client.Models.Permissions.Mcp.Manage.get -> bool
+Weaviate.Client.Models.Permissions.Mcp.Manage.set -> void
 Weaviate.Client.Models.Permissions.Collections
 Weaviate.Client.Models.Permissions.Collections.Collections(string? collection) -> void
 Weaviate.Client.Models.Permissions.Collections.Create.get -> bool
