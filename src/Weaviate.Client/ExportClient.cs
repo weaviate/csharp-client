@@ -123,7 +123,6 @@ public class ExportClient
             },
             Include = request.IncludeCollections?.ToList(),
             Exclude = request.ExcludeCollections?.ToList(),
-            Config = new Rest.Dto.Config { Path = request.Backend.Path },
         };
     }
 
@@ -131,6 +130,7 @@ public class ExportClient
         new(
             dto.Id ?? string.Empty,
             ParseBackend(dto.Backend),
+            dto.Path,
             dto.Status?.ToString() ?? string.Empty,
             dto.Classes?.ToArray(),
             dto.StartedAt,
@@ -142,6 +142,7 @@ public class ExportClient
         new(
             dto.Id ?? string.Empty,
             backend,
+            dto.Path,
             dto.Status?.ToString() ?? string.Empty,
             dto.Classes?.ToArray(),
             dto.StartedAt,

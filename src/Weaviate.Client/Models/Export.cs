@@ -80,6 +80,7 @@ public static class ExportStatusExtensions
 public record Export(
     string Id,
     BackupBackend Backend,
+    string? Path,
     string StatusRaw,
     string[]? Collections,
     DateTimeOffset? StartedAt,
