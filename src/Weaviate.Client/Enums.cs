@@ -42,6 +42,11 @@ public enum ResourceType
     Backup,
 
     /// <summary>
+    /// The export resource type
+    /// </summary>
+    Export,
+
+    /// <summary>
     /// The group resource type
     /// </summary>
     Group,

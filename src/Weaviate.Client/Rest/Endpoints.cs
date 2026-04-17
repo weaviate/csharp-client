@@ -313,6 +313,11 @@ internal static partial class WeaviateEndpoints
         return ep;
     }
 
+    // Export endpoints
+    internal static string Exports(string backend) => $"export/{backend}";
+
+    internal static string ExportStatus(string backend, string id) => $"export/{backend}/{id}";
+
     // Users endpoints
     /// <summary>
     /// Userses the own info
