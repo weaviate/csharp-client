@@ -1,7 +1,7 @@
 namespace Weaviate.Client.Models;
 
 /// <summary>
-/// Abstract base for export operations, with status polling and cancellation.
+/// Abstract base class for export operations, providing status polling, cancellation, and resource management.
 /// </summary>
 public abstract class ExportOperationBase : IDisposable, IAsyncDisposable
 {
@@ -15,6 +15,12 @@ public abstract class ExportOperationBase : IDisposable, IAsyncDisposable
     private volatile bool _isCanceled;
     private bool _disposed;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExportOperationBase"/> class.
+    /// </summary>
+    /// <param name="initial">The initial export state.</param>
+    /// <param name="statusFetcher">A delegate to fetch the latest export status.</param>
+    /// <param name="operationCancel">A delegate to cancel the export operation.</param>
     protected ExportOperationBase(
         Export initial,
         Func<CancellationToken, Task<Export>> statusFetcher,
