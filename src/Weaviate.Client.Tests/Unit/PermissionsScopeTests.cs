@@ -77,6 +77,25 @@ public class PermissionsScopeTests
     }
 
     /// <summary>
+    /// Tests that mcp aggregates all actions
+    /// </summary>
+    [Fact]
+    public void Mcp_Aggregates_AllActions()
+    {
+        var permissions = new List<Rest.Dto.Permission>
+        {
+            new() { Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_mcp },
+            new() { Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_mcp },
+            new() { Action = Weaviate.Client.Rest.Dto.PermissionAction.Update_mcp },
+        };
+        var mcps = Permissions.Mcp.Parse(permissions).Cast<Permissions.Mcp>().ToList();
+        Assert.Single(mcps);
+        Assert.True(mcps[0].Read);
+        Assert.True(mcps[0].Create);
+        Assert.True(mcps[0].Update);
+    }
+
+    /// <summary>
     /// Tests that cluster aggregates read permission
     /// </summary>
     [Fact]
@@ -425,7 +444,9 @@ public class PermissionsScopeTests
             "Delete_aliases",
             "Assign_and_revoke_groups",
             "Read_groups",
-            "Manage_mcp",
+            "Read_mcp",
+            "Create_mcp",
+            "Update_mcp",
         };
         foreach (var action in allActions)
         {

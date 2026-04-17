@@ -661,9 +661,11 @@ internal static class VectorIndexSerialization
     {
         ArgumentException.ThrowIfNullOrEmpty(type);
 
+        if (vectorIndexConfig is null)
+            return null;
+
         if (vectorIndexConfig is IDictionary<string, object?> vic)
-        {
-            var result = type switch
+            return type switch
             {
                 VectorIndex.HNSW.TypeValue => (VectorIndexConfig?)DeserializeHnsw(vic),
                 VectorIndex.Flat.TypeValue => DeserializeFlat(vic),
@@ -671,9 +673,6 @@ internal static class VectorIndexSerialization
                 VectorIndex.HFresh.TypeValue => DeserializeHFresh(vic),
                 _ => null,
             };
-
-            return result;
-        }
 
         throw new WeaviateClientException("Unable to create VectorIndexConfig");
     }

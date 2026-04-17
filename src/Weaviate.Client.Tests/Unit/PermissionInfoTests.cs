@@ -116,6 +116,26 @@ public class PermissionInfoTests
         Assert.True(backupsModel is Permissions.Backups);
         Assert.Equal("backup-collection", ((Permissions.Backups)backupsModel).Resource.Collection);
 
+        // Mcp
+        var mcpDtos = new[]
+        {
+            new Rest.Dto.Permission { Action = Weaviate.Client.Rest.Dto.PermissionAction.Read_mcp },
+            new Rest.Dto.Permission
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Create_mcp,
+            },
+            new Rest.Dto.Permission
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Update_mcp,
+            },
+        };
+        var mcpModel = Permissions.Parse(mcpDtos).Single();
+        Assert.True(mcpModel is Permissions.Mcp);
+        var mcp = (Permissions.Mcp)mcpModel;
+        Assert.True(mcp.Read);
+        Assert.True(mcp.Create);
+        Assert.True(mcp.Update);
+
         // Data
         var dataDto = new Rest.Dto.Permission
         {

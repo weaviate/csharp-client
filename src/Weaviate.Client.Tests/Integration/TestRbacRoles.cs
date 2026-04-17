@@ -547,4 +547,51 @@ public class TestRbacRoles : IntegrationTests
             await _weaviate.Roles.Delete(roleName, TestContext.Current.CancellationToken);
         }
     }
+
+    /// <summary>
+    /// Tests that create role with mcp permission roundtrips correctly
+    /// </summary>
+    [Fact]
+    public async Task CreateRoleWithMcpPermission()
+    {
+        RequireVersion("1.37.1");
+        var roleName = MakeRoleName("mcp");
+        try
+        {
+            await _weaviate.Roles.Delete(roleName, TestContext.Current.CancellationToken);
+            var created = await _weaviate.Roles.Create(
+                roleName,
+                [
+                    new Permissions.Mcp
+                    {
+                        Read = true,
+                        Create = true,
+                        Update = true,
+                    },
+                ],
+                TestContext.Current.CancellationToken
+            );
+            Assert.NotNull(created);
+            Assert.Single(created.Permissions);
+            Assert.Contains(
+                created.Permissions,
+                p => p is Permissions.Mcp { Read: true, Create: true, Update: true }
+            );
+
+            var fetched = await _weaviate.Roles.Get(
+                roleName,
+                TestContext.Current.CancellationToken
+            );
+            Assert.NotNull(fetched);
+            Assert.Single(fetched!.Permissions);
+            Assert.Contains(
+                fetched.Permissions,
+                p => p is Permissions.Mcp { Read: true, Create: true, Update: true }
+            );
+        }
+        finally
+        {
+            await _weaviate.Roles.Delete(roleName, TestContext.Current.CancellationToken);
+        }
+    }
 }
