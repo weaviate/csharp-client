@@ -424,11 +424,31 @@ override Weaviate.Client.Models.DatabaseUser.ToString() -> string!
 override Weaviate.Client.Models.DataReference.Equals(object? obj) -> bool
 override Weaviate.Client.Models.DataReference.GetHashCode() -> int
 override Weaviate.Client.Models.DataReference.ToString() -> string!
+Weaviate.Client.Models.DataReference
+Weaviate.Client.Models.DataReference.DataReference(System.Guid From, string! FromProperty, System.Collections.Generic.IEnumerable<System.Guid>! To) -> void
+Weaviate.Client.Models.DataReference.DataReference(System.Guid from, string! fromProperty, params System.Guid[]! to) -> void
+Weaviate.Client.Models.DataReference.DataReference(Weaviate.Client.Models.DataReference! original) -> void
+Weaviate.Client.Models.DataReference.Deconstruct(out System.Guid From, out string! FromProperty, out System.Collections.Generic.IEnumerable<System.Guid>! To) -> void
+Weaviate.Client.Models.DataReference.From.get -> System.Guid
+Weaviate.Client.Models.DataReference.From.init -> void
+Weaviate.Client.Models.DataReference.FromProperty.get -> string!
+Weaviate.Client.Models.DataReference.FromProperty.init -> void
+Weaviate.Client.Models.DataReference.To.get -> System.Collections.Generic.IEnumerable<System.Guid>!
+Weaviate.Client.Models.DataReference.To.init -> void
 override Weaviate.Client.Models.DataResource.Equals(object? obj) -> bool
 override Weaviate.Client.Models.DataResource.GetHashCode() -> int
 override Weaviate.Client.Models.DataResource.ToString() -> string!
 override Weaviate.Client.Models.EmptyStringEnumConverter<T>.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> T
 override Weaviate.Client.Models.EmptyStringEnumConverter<T>.Write(System.Text.Json.Utf8JsonWriter! writer, T value, System.Text.Json.JsonSerializerOptions! options) -> void
+override Weaviate.Client.Models.Export.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Export.GetHashCode() -> int
+override Weaviate.Client.Models.Export.ToString() -> string!
+override Weaviate.Client.Models.ExportClientConfig.Equals(object? obj) -> bool
+override Weaviate.Client.Models.ExportClientConfig.GetHashCode() -> int
+override Weaviate.Client.Models.ExportClientConfig.ToString() -> string!
+override Weaviate.Client.Models.ExportCreateRequest.Equals(object? obj) -> bool
+override Weaviate.Client.Models.ExportCreateRequest.GetHashCode() -> int
+override Weaviate.Client.Models.ExportCreateRequest.ToString() -> string!
 override Weaviate.Client.Models.FilesystemBackend.<Clone>$() -> Weaviate.Client.Models.FilesystemBackend!
 override Weaviate.Client.Models.FilesystemBackend.EqualityContract.get -> System.Type!
 override Weaviate.Client.Models.FilesystemBackend.Equals(object? obj) -> bool
@@ -674,6 +694,8 @@ override Weaviate.Client.Models.GroupByResult.ToString() -> string!
 override Weaviate.Client.Models.GroupByResult<TObject, TGroup>.Equals(object? obj) -> bool
 override Weaviate.Client.Models.GroupByResult<TObject, TGroup>.GetHashCode() -> int
 override Weaviate.Client.Models.GroupByResult<TObject, TGroup>.ToString() -> string!
+Weaviate.Client.Models.GroupByResult<TObject, TGroup>.QueryProfile.get -> Weaviate.Client.Models.QueryProfile?
+Weaviate.Client.Models.GroupByResult<TObject, TGroup>.QueryProfile.init -> void
 override Weaviate.Client.Models.GroupedTask.<Clone>$() -> Weaviate.Client.Models.GroupedTask!
 override Weaviate.Client.Models.GroupedTask.EqualityContract.get -> System.Type!
 override Weaviate.Client.Models.GroupedTask.Equals(object? obj) -> bool
@@ -839,6 +861,9 @@ override Weaviate.Client.Models.ShardInfo.ToString() -> string!
 override Weaviate.Client.Models.ShardingConfig.Equals(object? obj) -> bool
 override Weaviate.Client.Models.ShardingConfig.GetHashCode() -> int
 override Weaviate.Client.Models.ShardingConfig.ToString() -> string!
+override Weaviate.Client.Models.ShardProgress.Equals(object? obj) -> bool
+override Weaviate.Client.Models.ShardProgress.GetHashCode() -> int
+override Weaviate.Client.Models.ShardProgress.ToString() -> string!
 override Weaviate.Client.Models.SimpleTargetVectors.<Clone>$() -> Weaviate.Client.Models.SimpleTargetVectors!
 override Weaviate.Client.Models.SimpleTargetVectors.Equals(object? obj) -> bool
 override Weaviate.Client.Models.SimpleTargetVectors.GetHashCode() -> int
@@ -1250,6 +1275,8 @@ override Weaviate.Client.Models.WeaviateResult.ToString() -> string!
 override Weaviate.Client.Models.WeaviateResult<TObject>.Equals(object? obj) -> bool
 override Weaviate.Client.Models.WeaviateResult<TObject>.GetHashCode() -> int
 override Weaviate.Client.Models.WeaviateResult<TObject>.ToString() -> string!
+Weaviate.Client.Models.WeaviateResult<TObject>.QueryProfile.get -> Weaviate.Client.Models.QueryProfile?
+Weaviate.Client.Models.WeaviateResult<TObject>.QueryProfile.init -> void
 override Weaviate.Client.Models.WeightedField.Equals(object? obj) -> bool
 override Weaviate.Client.Models.WeightedField.GetHashCode() -> int
 override Weaviate.Client.Models.WeightedField.ToString() -> string!
@@ -1304,6 +1331,8 @@ static Weaviate.Client.Connect.Cloud(string! restEndpoint, string? apiKey = null
 static Weaviate.Client.Connect.FromEnvironment(string! prefix = "WEAVIATE_", System.TimeSpan? defaultTimeout = null, System.TimeSpan? initTimeout = null, System.TimeSpan? insertTimeout = null, System.TimeSpan? queryTimeout = null) -> System.Threading.Tasks.Task<Weaviate.Client.WeaviateClient!>!
 static Weaviate.Client.Connect.Local(Weaviate.Client.Auth.ApiKeyCredentials! credentials, string! hostname = "localhost", ushort restPort = 8080, ushort grpcPort = 50051, bool useSsl = false, System.Collections.Generic.Dictionary<string!, string!>? headers = null, System.Net.Http.HttpMessageHandler? httpMessageHandler = null, System.TimeSpan? defaultTimeout = null, System.TimeSpan? initTimeout = null, System.TimeSpan? insertTimeout = null, System.TimeSpan? queryTimeout = null) -> System.Threading.Tasks.Task<Weaviate.Client.WeaviateClient!>!
 static Weaviate.Client.Connect.Local(Weaviate.Client.ICredentials? credentials = null, string! hostname = "localhost", ushort restPort = 8080, ushort grpcPort = 50051, bool useSsl = false, System.Collections.Generic.Dictionary<string!, string!>? headers = null, System.Net.Http.HttpMessageHandler? httpMessageHandler = null, System.TimeSpan? defaultTimeout = null, System.TimeSpan? initTimeout = null, System.TimeSpan? insertTimeout = null, System.TimeSpan? queryTimeout = null) -> System.Threading.Tasks.Task<Weaviate.Client.WeaviateClient!>!
+static Weaviate.Client.ExportClient.Config.get -> Weaviate.Client.Models.ExportClientConfig!
+static Weaviate.Client.ExportClient.Config.set -> void
 static Weaviate.Client.DependencyInjection.WeaviateServiceCollectionExtensions.AddWeaviate(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, bool eagerInitialization = true) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Weaviate.Client.DependencyInjection.WeaviateServiceCollectionExtensions.AddWeaviate(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Weaviate.Client.DependencyInjection.WeaviateOptions!>! configureOptions, bool eagerInitialization = true) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Weaviate.Client.DependencyInjection.WeaviateServiceCollectionExtensions.AddWeaviateClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! name, System.Action<Weaviate.Client.DependencyInjection.WeaviateOptions!>! configureOptions) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -1440,6 +1469,14 @@ static Weaviate.Client.Models.DataReference.operator !=(Weaviate.Client.Models.D
 static Weaviate.Client.Models.DataReference.operator ==(Weaviate.Client.Models.DataReference? left, Weaviate.Client.Models.DataReference? right) -> bool
 static Weaviate.Client.Models.DataResource.operator !=(Weaviate.Client.Models.DataResource? left, Weaviate.Client.Models.DataResource? right) -> bool
 static Weaviate.Client.Models.DataResource.operator ==(Weaviate.Client.Models.DataResource? left, Weaviate.Client.Models.DataResource? right) -> bool
+static Weaviate.Client.Models.Export.operator !=(Weaviate.Client.Models.Export? left, Weaviate.Client.Models.Export? right) -> bool
+static Weaviate.Client.Models.Export.operator ==(Weaviate.Client.Models.Export? left, Weaviate.Client.Models.Export? right) -> bool
+static Weaviate.Client.Models.ExportClientConfig.Default.get -> Weaviate.Client.Models.ExportClientConfig!
+static Weaviate.Client.Models.ExportClientConfig.operator !=(Weaviate.Client.Models.ExportClientConfig? left, Weaviate.Client.Models.ExportClientConfig? right) -> bool
+static Weaviate.Client.Models.ExportClientConfig.operator ==(Weaviate.Client.Models.ExportClientConfig? left, Weaviate.Client.Models.ExportClientConfig? right) -> bool
+static Weaviate.Client.Models.ExportCreateRequest.operator !=(Weaviate.Client.Models.ExportCreateRequest? left, Weaviate.Client.Models.ExportCreateRequest? right) -> bool
+static Weaviate.Client.Models.ExportCreateRequest.operator ==(Weaviate.Client.Models.ExportCreateRequest? left, Weaviate.Client.Models.ExportCreateRequest? right) -> bool
+static Weaviate.Client.Models.ExportStatusExtensions.ToExportStatus(this string? status) -> Weaviate.Client.Models.ExportStatus
 static Weaviate.Client.Models.FilesystemBackend.operator !=(Weaviate.Client.Models.FilesystemBackend? left, Weaviate.Client.Models.FilesystemBackend? right) -> bool
 static Weaviate.Client.Models.FilesystemBackend.operator ==(Weaviate.Client.Models.FilesystemBackend? left, Weaviate.Client.Models.FilesystemBackend? right) -> bool
 static Weaviate.Client.Models.Filter.AllOf(params Weaviate.Client.Models.Filter![]! filters) -> Weaviate.Client.Models.Filter!
@@ -1714,6 +1751,8 @@ static Weaviate.Client.Models.ShardingConfig.Default.get -> Weaviate.Client.Mode
 static Weaviate.Client.Models.ShardingConfig.operator !=(Weaviate.Client.Models.ShardingConfig? left, Weaviate.Client.Models.ShardingConfig? right) -> bool
 static Weaviate.Client.Models.ShardingConfig.operator ==(Weaviate.Client.Models.ShardingConfig? left, Weaviate.Client.Models.ShardingConfig? right) -> bool
 static Weaviate.Client.Models.ShardingConfig.Zero.get -> Weaviate.Client.Models.ShardingConfig!
+static Weaviate.Client.Models.ShardProgress.operator !=(Weaviate.Client.Models.ShardProgress? left, Weaviate.Client.Models.ShardProgress? right) -> bool
+static Weaviate.Client.Models.ShardProgress.operator ==(Weaviate.Client.Models.ShardProgress? left, Weaviate.Client.Models.ShardProgress? right) -> bool
 static Weaviate.Client.Models.SimpleTargetVectors.operator !=(Weaviate.Client.Models.SimpleTargetVectors? left, Weaviate.Client.Models.SimpleTargetVectors? right) -> bool
 static Weaviate.Client.Models.SimpleTargetVectors.operator ==(Weaviate.Client.Models.SimpleTargetVectors? left, Weaviate.Client.Models.SimpleTargetVectors? right) -> bool
 static Weaviate.Client.Models.SinglePrompt.implicit operator Weaviate.Client.Models.SinglePrompt!(string! prompt) -> Weaviate.Client.Models.SinglePrompt!
@@ -2201,6 +2240,19 @@ virtual Weaviate.Client.Models.DataResource.<Clone>$() -> Weaviate.Client.Models
 virtual Weaviate.Client.Models.DataResource.EqualityContract.get -> System.Type!
 virtual Weaviate.Client.Models.DataResource.Equals(Weaviate.Client.Models.DataResource? other) -> bool
 virtual Weaviate.Client.Models.DataResource.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual Weaviate.Client.Models.Export.<Clone>$() -> Weaviate.Client.Models.Export!
+virtual Weaviate.Client.Models.Export.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.Export.Equals(Weaviate.Client.Models.Export? other) -> bool
+virtual Weaviate.Client.Models.Export.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual Weaviate.Client.Models.ExportClientConfig.<Clone>$() -> Weaviate.Client.Models.ExportClientConfig!
+virtual Weaviate.Client.Models.ExportClientConfig.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.ExportClientConfig.Equals(Weaviate.Client.Models.ExportClientConfig? other) -> bool
+virtual Weaviate.Client.Models.ExportClientConfig.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual Weaviate.Client.Models.ExportCreateRequest.<Clone>$() -> Weaviate.Client.Models.ExportCreateRequest!
+virtual Weaviate.Client.Models.ExportCreateRequest.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.ExportCreateRequest.Equals(Weaviate.Client.Models.ExportCreateRequest? other) -> bool
+virtual Weaviate.Client.Models.ExportCreateRequest.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual Weaviate.Client.Models.ExportOperationBase.Dispose(bool disposing) -> void
 virtual Weaviate.Client.Models.FilesystemBackend.Equals(Weaviate.Client.Models.FilesystemBackend? other) -> bool
 virtual Weaviate.Client.Models.Filter.<Clone>$() -> Weaviate.Client.Models.Filter!
 virtual Weaviate.Client.Models.Filter.EqualityContract.get -> System.Type!
@@ -2494,6 +2546,10 @@ virtual Weaviate.Client.Models.ShardingConfig.<Clone>$() -> Weaviate.Client.Mode
 virtual Weaviate.Client.Models.ShardingConfig.EqualityContract.get -> System.Type!
 virtual Weaviate.Client.Models.ShardingConfig.Equals(Weaviate.Client.Models.ShardingConfig? other) -> bool
 virtual Weaviate.Client.Models.ShardingConfig.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual Weaviate.Client.Models.ShardProgress.<Clone>$() -> Weaviate.Client.Models.ShardProgress!
+virtual Weaviate.Client.Models.ShardProgress.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.ShardProgress.Equals(Weaviate.Client.Models.ShardProgress? other) -> bool
+virtual Weaviate.Client.Models.ShardProgress.PrintMembers(System.Text.StringBuilder! builder) -> bool
 virtual Weaviate.Client.Models.SinglePrompt.Equals(Weaviate.Client.Models.SinglePrompt? other) -> bool
 virtual Weaviate.Client.Models.Sort.<Clone>$() -> Weaviate.Client.Models.Sort!
 virtual Weaviate.Client.Models.Sort.EqualityContract.get -> System.Type!
@@ -2879,6 +2935,11 @@ Weaviate.Client.DefaultTokenServiceFactory
 Weaviate.Client.DefaultTokenServiceFactory.CreateAsync(Weaviate.Client.ClientConfiguration! configuration) -> System.Threading.Tasks.Task<Weaviate.Client.ITokenService?>!
 Weaviate.Client.DefaultTokenServiceFactory.CreateSync(Weaviate.Client.ClientConfiguration! configuration) -> Weaviate.Client.ITokenService?
 Weaviate.Client.DefaultTokenServiceFactory.DefaultTokenServiceFactory() -> void
+Weaviate.Client.ExportClient
+Weaviate.Client.ExportClient.Cancel(Weaviate.Client.Models.BackupBackend! backend, string! id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.ExportClient.Create(Weaviate.Client.Models.ExportCreateRequest! request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.ExportOperation!>!
+Weaviate.Client.ExportClient.CreateSync(Weaviate.Client.Models.ExportCreateRequest! request, System.TimeSpan? timeout = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Export!>!
+Weaviate.Client.ExportClient.GetStatus(Weaviate.Client.Models.BackupBackend! backend, string! id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Export!>!
 Weaviate.Client.DependencyInjection.IWeaviateClientFactory
 Weaviate.Client.DependencyInjection.IWeaviateClientFactory.GetClient(string! name) -> Weaviate.Client.WeaviateClient!
 Weaviate.Client.DependencyInjection.IWeaviateClientFactory.GetClientAsync(string! name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.WeaviateClient!>!
@@ -3641,6 +3702,73 @@ Weaviate.Client.Models.DeletionStrategy.NoAutomatedResolution = 0 -> Weaviate.Cl
 Weaviate.Client.Models.DeletionStrategy.TimeBasedResolution = 2 -> Weaviate.Client.Models.DeletionStrategy
 Weaviate.Client.Models.EmptyStringEnumConverter<T>
 Weaviate.Client.Models.EmptyStringEnumConverter<T>.EmptyStringEnumConverter() -> void
+Weaviate.Client.Models.Export
+Weaviate.Client.Models.Export.Backend.get -> Weaviate.Client.Models.BackupBackend!
+Weaviate.Client.Models.Export.Backend.init -> void
+Weaviate.Client.Models.Export.Collections.get -> string![]?
+Weaviate.Client.Models.Export.Collections.init -> void
+Weaviate.Client.Models.Export.CompletedAt.get -> System.DateTimeOffset?
+Weaviate.Client.Models.Export.CompletedAt.init -> void
+Weaviate.Client.Models.Export.Deconstruct(out string! Id, out Weaviate.Client.Models.BackupBackend! Backend, out string? Path, out string! StatusRaw, out string![]? Collections, out System.DateTimeOffset? StartedAt, out System.DateTimeOffset? CompletedAt, out string? Error) -> void
+Weaviate.Client.Models.Export.Error.get -> string?
+Weaviate.Client.Models.Export.Error.init -> void
+Weaviate.Client.Models.Export.Export(Weaviate.Client.Models.Export! original) -> void
+Weaviate.Client.Models.Export.Export(string! Id, Weaviate.Client.Models.BackupBackend! Backend, string? Path, string! StatusRaw, string![]? Collections, System.DateTimeOffset? StartedAt, System.DateTimeOffset? CompletedAt, string? Error) -> void
+Weaviate.Client.Models.Export.Path.get -> string?
+Weaviate.Client.Models.Export.Path.init -> void
+Weaviate.Client.Models.Export.Id.get -> string!
+Weaviate.Client.Models.Export.Id.init -> void
+Weaviate.Client.Models.Export.ShardStatus.get -> System.Collections.Generic.Dictionary<string!, System.Collections.Generic.Dictionary<string!, Weaviate.Client.Models.ShardProgress!>!>?
+Weaviate.Client.Models.Export.ShardStatus.init -> void
+Weaviate.Client.Models.Export.StartedAt.get -> System.DateTimeOffset?
+Weaviate.Client.Models.Export.StartedAt.init -> void
+Weaviate.Client.Models.Export.Status.get -> Weaviate.Client.Models.ExportStatus
+Weaviate.Client.Models.Export.StatusRaw.get -> string!
+Weaviate.Client.Models.Export.StatusRaw.init -> void
+Weaviate.Client.Models.Export.TookInMs.get -> int?
+Weaviate.Client.Models.Export.TookInMs.init -> void
+Weaviate.Client.Models.ExportClientConfig
+Weaviate.Client.Models.ExportClientConfig.ExportClientConfig() -> void
+Weaviate.Client.Models.ExportClientConfig.ExportClientConfig(Weaviate.Client.Models.ExportClientConfig! original) -> void
+Weaviate.Client.Models.ExportClientConfig.PollInterval.get -> System.TimeSpan
+Weaviate.Client.Models.ExportClientConfig.PollInterval.init -> void
+Weaviate.Client.Models.ExportClientConfig.Timeout.get -> System.TimeSpan
+Weaviate.Client.Models.ExportClientConfig.Timeout.init -> void
+Weaviate.Client.Models.ExportCreateRequest
+Weaviate.Client.Models.ExportCreateRequest.Backend.get -> Weaviate.Client.Models.BackupBackend!
+Weaviate.Client.Models.ExportCreateRequest.Backend.init -> void
+Weaviate.Client.Models.ExportCreateRequest.Deconstruct(out string! Id, out Weaviate.Client.Models.BackupBackend! Backend, out Weaviate.Client.Models.ExportFileFormat FileFormat, out Weaviate.Client.Internal.AutoArray<string!>? IncludeCollections, out Weaviate.Client.Internal.AutoArray<string!>? ExcludeCollections) -> void
+Weaviate.Client.Models.ExportCreateRequest.ExcludeCollections.get -> Weaviate.Client.Internal.AutoArray<string!>?
+Weaviate.Client.Models.ExportCreateRequest.ExcludeCollections.init -> void
+Weaviate.Client.Models.ExportCreateRequest.ExportCreateRequest(Weaviate.Client.Models.ExportCreateRequest! original) -> void
+Weaviate.Client.Models.ExportCreateRequest.ExportCreateRequest(string! Id, Weaviate.Client.Models.BackupBackend! Backend, Weaviate.Client.Models.ExportFileFormat FileFormat = Weaviate.Client.Models.ExportFileFormat.Parquet, Weaviate.Client.Internal.AutoArray<string!>? IncludeCollections = null, Weaviate.Client.Internal.AutoArray<string!>? ExcludeCollections = null) -> void
+Weaviate.Client.Models.ExportCreateRequest.FileFormat.get -> Weaviate.Client.Models.ExportFileFormat
+Weaviate.Client.Models.ExportCreateRequest.FileFormat.init -> void
+Weaviate.Client.Models.ExportCreateRequest.Id.get -> string!
+Weaviate.Client.Models.ExportCreateRequest.Id.init -> void
+Weaviate.Client.Models.ExportCreateRequest.IncludeCollections.get -> Weaviate.Client.Internal.AutoArray<string!>?
+Weaviate.Client.Models.ExportCreateRequest.IncludeCollections.init -> void
+Weaviate.Client.Models.ExportFileFormat
+Weaviate.Client.Models.ExportFileFormat.Parquet = 0 -> Weaviate.Client.Models.ExportFileFormat
+Weaviate.Client.Models.ExportOperation
+Weaviate.Client.Models.ExportOperationBase
+Weaviate.Client.Models.ExportOperationBase.Cancel(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.Models.ExportOperationBase.Current.get -> Weaviate.Client.Models.Export!
+Weaviate.Client.Models.ExportOperationBase.Dispose() -> void
+Weaviate.Client.Models.ExportOperationBase.DisposeAsync() -> System.Threading.Tasks.ValueTask
+Weaviate.Client.Models.ExportOperationBase.ExportOperationBase(Weaviate.Client.Models.Export! initial, System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<Weaviate.Client.Models.Export!>!>! statusFetcher, System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task!>! operationCancel) -> void
+Weaviate.Client.Models.ExportOperationBase.IsCanceled.get -> bool
+Weaviate.Client.Models.ExportOperationBase.IsCompleted.get -> bool
+Weaviate.Client.Models.ExportOperationBase.IsSuccessful.get -> bool
+Weaviate.Client.Models.ExportOperationBase.WaitForCompletion(System.TimeSpan? timeout = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Export!>!
+Weaviate.Client.Models.ExportStatus
+Weaviate.Client.Models.ExportStatus.Canceled = 5 -> Weaviate.Client.Models.ExportStatus
+Weaviate.Client.Models.ExportStatus.Failed = 4 -> Weaviate.Client.Models.ExportStatus
+Weaviate.Client.Models.ExportStatus.Started = 1 -> Weaviate.Client.Models.ExportStatus
+Weaviate.Client.Models.ExportStatus.Success = 3 -> Weaviate.Client.Models.ExportStatus
+Weaviate.Client.Models.ExportStatus.Transferring = 2 -> Weaviate.Client.Models.ExportStatus
+Weaviate.Client.Models.ExportStatus.Unknown = 0 -> Weaviate.Client.Models.ExportStatus
+Weaviate.Client.Models.ExportStatusExtensions
 Weaviate.Client.Models.FilesystemBackend
 Weaviate.Client.Models.FilesystemBackend.FilesystemBackend(string? path = null) -> void
 Weaviate.Client.Models.FilesystemBackend.FilesystemBackend(Weaviate.Client.Models.FilesystemBackend! original) -> void
@@ -5154,6 +5282,18 @@ Weaviate.Client.Models.ShardingConfig.Strategy.get -> Weaviate.Client.Models.Sha
 Weaviate.Client.Models.ShardingConfig.Strategy.set -> void
 Weaviate.Client.Models.ShardingConfig.VirtualPerPhysical.get -> int
 Weaviate.Client.Models.ShardingConfig.VirtualPerPhysical.set -> void
+Weaviate.Client.Models.ShardProgress
+Weaviate.Client.Models.ShardProgress.Deconstruct(out string! StatusRaw, out int ObjectsExported, out string? Error, out string? SkipReason) -> void
+Weaviate.Client.Models.ShardProgress.Error.get -> string?
+Weaviate.Client.Models.ShardProgress.Error.init -> void
+Weaviate.Client.Models.ShardProgress.ObjectsExported.get -> int
+Weaviate.Client.Models.ShardProgress.ObjectsExported.init -> void
+Weaviate.Client.Models.ShardProgress.ShardProgress(Weaviate.Client.Models.ShardProgress! original) -> void
+Weaviate.Client.Models.ShardProgress.ShardProgress(string! StatusRaw, int ObjectsExported, string? Error, string? SkipReason) -> void
+Weaviate.Client.Models.ShardProgress.SkipReason.get -> string?
+Weaviate.Client.Models.ShardProgress.SkipReason.init -> void
+Weaviate.Client.Models.ShardProgress.StatusRaw.get -> string!
+Weaviate.Client.Models.ShardProgress.StatusRaw.init -> void
 Weaviate.Client.Models.ShardStatus
 Weaviate.Client.Models.ShardStatus.Indexing = 2 -> Weaviate.Client.Models.ShardStatus
 Weaviate.Client.Models.ShardStatus.ReadOnly = 1 -> Weaviate.Client.Models.ShardStatus
@@ -6233,15 +6373,16 @@ Weaviate.Client.ResourceType
 Weaviate.Client.ResourceType.Alias = 0 -> Weaviate.Client.ResourceType
 Weaviate.Client.ResourceType.Backup = Weaviate.Client.ResourceType.Object | Weaviate.Client.ResourceType.User -> Weaviate.Client.ResourceType
 Weaviate.Client.ResourceType.Collection = 1 -> Weaviate.Client.ResourceType
-Weaviate.Client.ResourceType.Group = Weaviate.Client.ResourceType.Collection | Weaviate.Client.ResourceType.Backup -> Weaviate.Client.ResourceType
+Weaviate.Client.ResourceType.Export = Weaviate.Client.ResourceType.Collection | Weaviate.Client.ResourceType.Backup -> Weaviate.Client.ResourceType
+Weaviate.Client.ResourceType.Group = 8 -> Weaviate.Client.ResourceType
 Weaviate.Client.ResourceType.Object = 2 -> Weaviate.Client.ResourceType
 Weaviate.Client.ResourceType.Property = Weaviate.Client.ResourceType.Collection | Weaviate.Client.ResourceType.Object -> Weaviate.Client.ResourceType
-Weaviate.Client.ResourceType.Reference = 8 -> Weaviate.Client.ResourceType
-Weaviate.Client.ResourceType.Replication = Weaviate.Client.ResourceType.Collection | Weaviate.Client.ResourceType.Tenant -> Weaviate.Client.ResourceType
+Weaviate.Client.ResourceType.Reference = Weaviate.Client.ResourceType.Collection | Weaviate.Client.ResourceType.Group -> Weaviate.Client.ResourceType
+Weaviate.Client.ResourceType.Replication = Weaviate.Client.ResourceType.User | Weaviate.Client.ResourceType.Group -> Weaviate.Client.ResourceType
 Weaviate.Client.ResourceType.Role = Weaviate.Client.ResourceType.Collection | Weaviate.Client.ResourceType.User -> Weaviate.Client.ResourceType
-Weaviate.Client.ResourceType.Shard = Weaviate.Client.ResourceType.Collection | Weaviate.Client.ResourceType.Reference -> Weaviate.Client.ResourceType
-Weaviate.Client.ResourceType.Tenant = Weaviate.Client.ResourceType.Object | Weaviate.Client.ResourceType.Reference -> Weaviate.Client.ResourceType
-Weaviate.Client.ResourceType.Unknown = Weaviate.Client.ResourceType.User | Weaviate.Client.ResourceType.Reference -> Weaviate.Client.ResourceType
+Weaviate.Client.ResourceType.Shard = Weaviate.Client.ResourceType.Object | Weaviate.Client.ResourceType.Group -> Weaviate.Client.ResourceType
+Weaviate.Client.ResourceType.Tenant = Weaviate.Client.ResourceType.Collection | Weaviate.Client.ResourceType.Shard -> Weaviate.Client.ResourceType
+Weaviate.Client.ResourceType.Unknown = Weaviate.Client.ResourceType.Collection | Weaviate.Client.ResourceType.Replication -> Weaviate.Client.ResourceType
 Weaviate.Client.ResourceType.User = 4 -> Weaviate.Client.ResourceType
 Weaviate.Client.RetryOn
 Weaviate.Client.RetryOn.NetworkError = 8 -> Weaviate.Client.RetryOn
@@ -6542,6 +6683,7 @@ Weaviate.Client.WeaviateClient.Cluster.get -> Weaviate.Client.ClusterClient!
 Weaviate.Client.WeaviateClient.Collections.get -> Weaviate.Client.CollectionsClient!
 Weaviate.Client.WeaviateClient.Configuration.get -> Weaviate.Client.ClientConfiguration!
 Weaviate.Client.WeaviateClient.Dispose() -> void
+Weaviate.Client.WeaviateClient.Export.get -> Weaviate.Client.ExportClient!
 Weaviate.Client.WeaviateClient.GetMeta(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.MetaInfo>!
 Weaviate.Client.WeaviateClient.Groups.get -> Weaviate.Client.GroupsClient!
 Weaviate.Client.WeaviateClient.InitializeAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
