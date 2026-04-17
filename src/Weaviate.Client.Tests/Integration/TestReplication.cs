@@ -476,23 +476,36 @@ public class TestReplication : IntegrationTests
 
         Assert.NotNull(op1);
 
-        // Delete all operations
-        await _weaviate.Cluster.Replications.DeleteAll(TestContext.Current.CancellationToken);
+        // Wait for the replication to reach a terminal state before requesting deletion.
+        // Deleting while the op is in HYDRATING/FINALIZING (uncancelable) gets queued by the
+        // server and may not clear within a short polling window.
+        await op1.WaitForCompletion(
+            TimeSpan.FromSeconds(60),
+            TestContext.Current.CancellationToken
+        );
 
-        // Verify all deleted - poll until actually gone (deletion is asynchronous)
+        // Delete all operations, retrying once if any remain after the first wait.
         var allDeleted = false;
-        for (int i = 0; i < 20; i++) // Try for up to 10 seconds
+        for (int attempt = 0; attempt < 2 && !allDeleted; attempt++)
         {
-            var operations = await _weaviate.Cluster.Replications.ListAll(
-                TestContext.Current.CancellationToken
-            );
-            Trace.WriteLine($"Remaining operations: {operations.Count()}");
-            if (!operations.Any())
+            await _weaviate.Cluster.Replications.DeleteAll(TestContext.Current.CancellationToken);
+
+            // Poll up to 30s for asynchronous deletion to take effect.
+            for (int i = 0; i < 60; i++)
             {
-                allDeleted = true;
-                break;
+                var operations = await _weaviate.Cluster.Replications.ListAll(
+                    TestContext.Current.CancellationToken
+                );
+                Trace.WriteLine(
+                    $"Attempt {attempt + 1}, poll {i}: remaining operations: {operations.Count()}"
+                );
+                if (!operations.Any())
+                {
+                    allDeleted = true;
+                    break;
+                }
+                await Task.Delay(500, TestContext.Current.CancellationToken);
             }
-            await Task.Delay(500, TestContext.Current.CancellationToken);
         }
         Assert.True(allDeleted, "All operations should be deleted after waiting");
     }
