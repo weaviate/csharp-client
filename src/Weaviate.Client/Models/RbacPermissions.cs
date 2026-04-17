@@ -274,9 +274,19 @@ public static class Permissions
     public class Mcp : PermissionScope
     {
         /// <summary>
-        /// Gets or sets the value of the manage
+        /// Gets or sets the value of the read
         /// </summary>
-        public bool Manage { get; set; }
+        public bool Read { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the create
+        /// </summary>
+        public bool Create { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the update
+        /// </summary>
+        public bool Update { get; set; }
 
         /// <summary>
         /// Returns the dto
@@ -284,11 +294,16 @@ public static class Permissions
         /// <returns>An enumerable of rest dto permission</returns>
         internal override IEnumerable<Rest.Dto.Permission> ToDto()
         {
-            if (Manage)
-                yield return new Rest.Dto.Permission()
-                {
-                    Action = Rest.Dto.PermissionAction.Manage_mcp,
-                };
+            var permissions = new[]
+            {
+                (Action: Rest.Dto.PermissionAction.Read_mcp, Allowed: Read),
+                (Action: Rest.Dto.PermissionAction.Create_mcp, Allowed: Create),
+                (Action: Rest.Dto.PermissionAction.Update_mcp, Allowed: Update),
+            };
+
+            return permissions
+                .Where(p => p.Allowed)
+                .Select(p => new Rest.Dto.Permission { Action = p.Action });
         }
 
         /// <summary>
@@ -298,17 +313,27 @@ public static class Permissions
         /// <returns>A list of permission scope</returns>
         internal static List<PermissionScope> Parse(IEnumerable<Rest.Dto.Permission> infos)
         {
-            var mcp = new Mcp()
-            {
-                Manage = infos.Any(i => i.Action == Rest.Dto.PermissionAction.Manage_mcp),
-            };
+            var actions = infos
+                .Where(i =>
+                    i.Action == Rest.Dto.PermissionAction.Read_mcp
+                    || i.Action == Rest.Dto.PermissionAction.Create_mcp
+                    || i.Action == Rest.Dto.PermissionAction.Update_mcp
+                )
+                .Select(i => i.Action)
+                .ToHashSet();
 
-            if (!mcp.Manage)
-            {
+            if (actions.Count == 0)
                 return [];
-            }
 
-            return [mcp];
+            return
+            [
+                new Mcp
+                {
+                    Read = actions.Contains(Rest.Dto.PermissionAction.Read_mcp),
+                    Create = actions.Contains(Rest.Dto.PermissionAction.Create_mcp),
+                    Update = actions.Contains(Rest.Dto.PermissionAction.Update_mcp),
+                },
+            ];
         }
     }
 

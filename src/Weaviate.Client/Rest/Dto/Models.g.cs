@@ -285,14 +285,6 @@ namespace Weaviate.Client.Rest.Dto
         public Aliases? Aliases { get; set; } = default!;
 
         /// <summary>
-        /// resources applicable for MCP actions
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("mcp")]
-
-        public System.Collections.Generic.IDictionary<string, object>? Mcp { get; set; } = default!;
-
-        /// <summary>
         /// Allowed actions in weaviate.
         /// </summary>
 
@@ -4729,8 +4721,14 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_groups")]
         Read_groups = 33,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"manage_mcp")]
-        Manage_mcp = 34,
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_mcp")]
+        Read_mcp = 34,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"create_mcp")]
+        Create_mcp = 35,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"update_mcp")]
+        Update_mcp = 36,
 
     }
 
