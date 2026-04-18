@@ -10,28 +10,8 @@ using Xunit;
 /// Requires Weaviate with RBAC running on port defined in 8092/50063.
 /// </summary>
 [Trait("Category", "RBAC")]
-public class TestRbacUsers : IntegrationTests
+public class TestRbacUsers : RbacIntegrationTests
 {
-    /// <summary>
-    /// Gets the value of the rest port
-    /// </summary>
-    public override ushort RestPort => 8092;
-
-    /// <summary>
-    /// Gets the value of the grpc port
-    /// </summary>
-    public override ushort GrpcPort => 50063;
-
-    /// <summary>
-    /// The admin api key
-    /// </summary>
-    private const string ADMIN_API_KEY = "admin-key";
-
-    /// <summary>
-    /// Gets the value of the credentials
-    /// </summary>
-    public override ICredentials? Credentials => Auth.ApiKey(ADMIN_API_KEY);
-
     /// <summary>
     /// Initializes this instance
     /// </summary>

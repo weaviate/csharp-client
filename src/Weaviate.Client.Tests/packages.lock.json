@@ -14,6 +14,12 @@
         "resolved": "4.0.0",
         "contentHash": "SM8Qp6L/E3tsLKDFkV23M8WHyp5l1YqsXkylQDjQjV02Z2tUL3J6j1gV0gMs4L6YtoSB7jZPw2dnDdnpEXnpNQ=="
       },
+      "JunitXml.TestLogger": {
+        "type": "Direct",
+        "requested": "[5.0.0, )",
+        "resolved": "5.0.0",
+        "contentHash": "wpmmxsaAmvOylBPMngyjwWdUiG3tu9eouBB9VN/5gbiWvaE6TInbKH8F0IGFIH0zTUaqbx4t4FV1avvC5htpdA=="
+      },
       "Microsoft.Extensions.Configuration.EnvironmentVariables": {
         "type": "Direct",
         "requested": "[9.0.0, )",
