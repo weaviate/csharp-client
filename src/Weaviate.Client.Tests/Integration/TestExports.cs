@@ -24,14 +24,13 @@ public class TestExports : IntegrationTests
     public async Task CreateSync_CompletesSuccessfully()
     {
         var ct = TestContext.Current.CancellationToken;
-        var collectionName = "ExportTest1";
-        await CollectionFactory(collectionName);
+        var collection = await CollectionFactory("ExportTest1");
 
         var export = await _weaviate.Export.CreateSync(
             new ExportCreateRequest(
                 $"export-sync-{Guid.NewGuid():N}",
                 _backend,
-                IncludeCollections: [collectionName]
+                IncludeCollections: [collection.Name]
             ),
             timeout: TimeSpan.FromMinutes(2),
             cancellationToken: ct
@@ -45,14 +44,13 @@ public class TestExports : IntegrationTests
     public async Task Create_ThenWaitForCompletion()
     {
         var ct = TestContext.Current.CancellationToken;
-        var collectionName = "ExportTest2";
-        await CollectionFactory(collectionName);
+        var collection = await CollectionFactory("ExportTest2");
 
         await using var operation = await _weaviate.Export.Create(
             new ExportCreateRequest(
                 $"export-async-{Guid.NewGuid():N}",
                 _backend,
-                IncludeCollections: [collectionName]
+                IncludeCollections: [collection.Name]
             ),
             ct
         );
@@ -70,12 +68,11 @@ public class TestExports : IntegrationTests
     public async Task GetStatus_ReturnsExportInfo()
     {
         var ct = TestContext.Current.CancellationToken;
-        var collectionName = "ExportTest3";
-        await CollectionFactory(collectionName);
+        var collection = await CollectionFactory("ExportTest3");
         var exportId = $"export-status-{Guid.NewGuid():N}";
 
         await _weaviate.Export.CreateSync(
-            new ExportCreateRequest(exportId, _backend, IncludeCollections: [collectionName]),
+            new ExportCreateRequest(exportId, _backend, IncludeCollections: [collection.Name]),
             timeout: TimeSpan.FromMinutes(2),
             cancellationToken: ct
         );
@@ -90,14 +87,13 @@ public class TestExports : IntegrationTests
     public async Task Cancel_StopsRunningExport()
     {
         var ct = TestContext.Current.CancellationToken;
-        var collectionName = "ExportTest4";
-        await CollectionFactory(collectionName);
+        var collection = await CollectionFactory("ExportTest4");
 
         await using var operation = await _weaviate.Export.Create(
             new ExportCreateRequest(
                 $"export-cancel-{Guid.NewGuid():N}",
                 _backend,
-                IncludeCollections: [collectionName]
+                IncludeCollections: [collection.Name]
             ),
             ct
         );
