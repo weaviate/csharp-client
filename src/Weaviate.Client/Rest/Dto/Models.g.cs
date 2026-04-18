@@ -558,14 +558,6 @@ namespace Weaviate.Client.Rest.Dto
 
         public System.Collections.Generic.IList<string>? Exclude { get; set; } = default!;
 
-        /// <summary>
-        /// Backend-specific configuration
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("config")]
-
-        public Config? Config { get; set; } = default!;
-
     }
 
     /// <summary>
@@ -894,6 +886,14 @@ namespace Weaviate.Client.Rest.Dto
 
         public System.Collections.Generic.IList<TokenizerUserDictConfig>? TokenizerUserDict { get; set; } = default!;
 
+        /// <summary>
+        /// User-defined named stopword lists. Each key is a preset name that can be referenced by a property's textAnalyzer.stopwordPreset field. The value is an array of stopword strings.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("stopwordPresets")]
+
+        public System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<string>>? StopwordPresets { get; set; } = default!;
+
     }
 
     /// <summary>
@@ -1047,12 +1047,12 @@ namespace Weaviate.Client.Rest.Dto
         public TextAnalyzerConfig? AnalyzerConfig { get; set; } = default!;
 
         /// <summary>
-        /// Optional stopword configuration. When provided, stopwords are removed from query tokens but preserved in indexed tokens.
+        /// Optional named stopword configurations. Each key is a preset name that can be referenced by analyzerConfig.stopwordPreset. Each value is a StopwordConfig (with optional preset, additions, and removals).
         /// </summary>
 
-        [System.Text.Json.Serialization.JsonPropertyName("stopwordConfig")]
+        [System.Text.Json.Serialization.JsonPropertyName("stopwordPresets")]
 
-        public StopwordConfig? StopwordConfig { get; set; } = default!;
+        public System.Collections.Generic.IDictionary<string, StopwordConfig>? StopwordPresets { get; set; } = default!;
 
     }
 
@@ -1952,6 +1952,14 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("asciiFoldIgnore")]
 
         public System.Collections.Generic.IList<string>? AsciiFoldIgnore { get; set; } = default!;
+
+        /// <summary>
+        /// Stopword preset name. Overrides the collection-level invertedIndexConfig.stopwords for this property. Only applies to properties using 'word' tokenization. Can be a built-in preset ('en', 'none') or a user-defined preset from invertedIndexConfig.stopwordPresets.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("stopwordPreset")]
+
+        public string? StopwordPreset { get; set; } = default!;
 
     }
 
@@ -4721,11 +4729,11 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_groups")]
         Read_groups = 33,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_mcp")]
-        Read_mcp = 34,
-
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"create_mcp")]
-        Create_mcp = 35,
+        Create_mcp = 34,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_mcp")]
+        Read_mcp = 35,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"update_mcp")]
         Update_mcp = 36,
@@ -4788,19 +4796,6 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"parquet")]
         Parquet = 0,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record Config
-    {
-        /// <summary>
-        /// Path prefix within the bucket or filesystem
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("path")]
-
-        public string? Path { get; set; } = default!;
 
     }
 

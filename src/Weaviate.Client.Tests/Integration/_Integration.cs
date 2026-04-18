@@ -83,12 +83,12 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
     /// <summary>
     /// Gets the value of the rest port
     /// </summary>
-    public virtual ushort RestPort => 8080;
+    public virtual ushort RestPort => _configuration.GetValue<ushort>("WV_HTTP_PORT", 8080);
 
     /// <summary>
     /// Gets the value of the grpc port
     /// </summary>
-    public virtual ushort GrpcPort => 50051; // default local gRPC port
+    public virtual ushort GrpcPort => _configuration.GetValue<ushort>("WV_GRPC_PORT", 50051);
 
     /// <summary>
     /// Disposes this instance
