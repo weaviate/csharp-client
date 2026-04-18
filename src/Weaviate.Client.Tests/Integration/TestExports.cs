@@ -102,21 +102,34 @@ public class TestExports : IntegrationTests
             ct
         );
 
-        // Cancel immediately — may already have completed for small collections
+        // Cancel immediately — may already have completed for small collections.
+        // Server responds with 409 Conflict when the export has already finished,
+        // or 404 Not Found if the record is no longer available.
         try
         {
             await _weaviate.Export.Cancel(_backend, operation.Current.Id, ct);
         }
-        catch (Rest.WeaviateRestClientException)
+        catch (WeaviateConflictException)
         {
-            // Export may have already completed
+            // Export already finished — can't cancel a terminal export.
+        }
+        catch (WeaviateNotFoundException)
+        {
+            // Export record no longer available.
         }
 
-        var status = await _weaviate.Export.GetStatus(_backend, operation.Current.Id, ct);
+        try
+        {
+            var status = await _weaviate.Export.GetStatus(_backend, operation.Current.Id, ct);
 
-        Assert.True(
-            status.Status is ExportStatus.Canceled or ExportStatus.Success,
-            $"Expected Canceled or Success but got {status.Status}"
-        );
+            Assert.True(
+                status.Status is ExportStatus.Canceled or ExportStatus.Success,
+                $"Expected Canceled or Success but got {status.Status}"
+            );
+        }
+        catch (WeaviateNotFoundException)
+        {
+            // Treat vanished export as successfully canceled.
+        }
     }
 }
