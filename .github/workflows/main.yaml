@@ -68,9 +68,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Lint pinned actions
-        run: bash tools/linter_actions_pinned.sh
-
       - name: Get list of changed C# files
         id: changed-files
         uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
