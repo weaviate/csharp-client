@@ -232,4 +232,10 @@ public partial class CollectionClient
     /// Gets the configuration client for managing collection configuration.
     /// </summary>
     public CollectionConfigClient Config => new(Client, Name);
+
+    /// <summary>
+    /// Gets the tokenize client for inspecting how text is tokenized by
+    /// properties of this collection. Requires Weaviate server version 1.37.0 or later.
+    /// </summary>
+    public CollectionTokenizeClient Tokenize => new(Client, Name);
 }

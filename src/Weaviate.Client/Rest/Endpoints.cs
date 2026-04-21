@@ -208,6 +208,21 @@ internal static partial class WeaviateEndpoints
         return path;
     }
 
+    /// <summary>
+    /// Path for the generic tokenize endpoint.
+    /// </summary>
+    /// <returns>The string</returns>
+    internal static string Tokenize() => "tokenize";
+
+    /// <summary>
+    /// Path for the per-property tokenize endpoint.
+    /// </summary>
+    /// <param name="className">The collection (class) name.</param>
+    /// <param name="propertyName">The property name.</param>
+    /// <returns>The string</returns>
+    internal static string TokenizeProperty(string className, string propertyName) =>
+        $"schema/{className}/properties/{propertyName}/tokenize";
+
     // Well-known endpoints
     /// <summary>
     /// Wells the known live
