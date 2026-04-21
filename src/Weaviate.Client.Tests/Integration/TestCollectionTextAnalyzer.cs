@@ -142,7 +142,7 @@ public class TestCollectionTextAnalyzer : IntegrationTests
             }
         );
 
-        await Assert.ThrowsAnyAsync<WeaviateClientException>(async () =>
+        await Assert.ThrowsAnyAsync<WeaviateUnprocessableEntityException>(async () =>
         {
             await collection.Config.Update(
                 c =>
@@ -240,7 +240,7 @@ public class TestCollectionTextAnalyzer : IntegrationTests
             }
         );
 
-        await Assert.ThrowsAnyAsync<WeaviateClientException>(async () =>
+        await Assert.ThrowsAnyAsync<WeaviateUnprocessableEntityException>(async () =>
         {
             await collection.Config.Update(
                 c =>
