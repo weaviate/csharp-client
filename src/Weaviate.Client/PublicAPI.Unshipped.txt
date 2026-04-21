@@ -6982,3 +6982,53 @@ virtual Weaviate.Client.Models.ExportBackend.Equals(Weaviate.Client.Models.Expor
 virtual Weaviate.Client.Models.StorageBackend.EqualityContract.get -> System.Type!
 virtual Weaviate.Client.Models.StorageBackend.Equals(Weaviate.Client.Models.StorageBackend? other) -> bool
 virtual Weaviate.Client.Models.StorageBackend.PrintMembers(System.Text.StringBuilder! builder) -> bool
+Weaviate.Client.TokenizeClient
+Weaviate.Client.TokenizeClient.Text(string! text, Weaviate.Client.Models.PropertyTokenization tokenization, Weaviate.Client.Models.TokenizeAnalyzerConfig? analyzerConfig = null, System.Collections.Generic.IDictionary<string!, Weaviate.Client.Models.StopwordConfig!>? stopwordPresets = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.TokenizeResult!>!
+Weaviate.Client.WeaviateClient.Tokenize.get -> Weaviate.Client.TokenizeClient!
+Weaviate.Client.CollectionTokenizeClient
+Weaviate.Client.CollectionTokenizeClient.Property(string! propertyName, string! text, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.TokenizeResult!>!
+Weaviate.Client.CollectionClient.Tokenize.get -> Weaviate.Client.CollectionTokenizeClient!
+Weaviate.Client.Models.AsciiFoldConfig
+Weaviate.Client.Models.AsciiFoldConfig.AsciiFoldConfig(System.Collections.Generic.IReadOnlyList<string!>? Ignore = null) -> void
+Weaviate.Client.Models.AsciiFoldConfig.Ignore.get -> System.Collections.Generic.IReadOnlyList<string!>?
+Weaviate.Client.Models.AsciiFoldConfig.Ignore.init -> void
+Weaviate.Client.Models.AsciiFoldConfig.Equals(Weaviate.Client.Models.AsciiFoldConfig? other) -> bool
+Weaviate.Client.Models.AsciiFoldConfig.<Clone>$() -> Weaviate.Client.Models.AsciiFoldConfig!
+Weaviate.Client.Models.AsciiFoldConfig.Deconstruct(out System.Collections.Generic.IReadOnlyList<string!>? Ignore) -> void
+override Weaviate.Client.Models.AsciiFoldConfig.Equals(object? obj) -> bool
+override Weaviate.Client.Models.AsciiFoldConfig.GetHashCode() -> int
+override Weaviate.Client.Models.AsciiFoldConfig.ToString() -> string!
+static Weaviate.Client.Models.AsciiFoldConfig.operator !=(Weaviate.Client.Models.AsciiFoldConfig? left, Weaviate.Client.Models.AsciiFoldConfig? right) -> bool
+static Weaviate.Client.Models.AsciiFoldConfig.operator ==(Weaviate.Client.Models.AsciiFoldConfig? left, Weaviate.Client.Models.AsciiFoldConfig? right) -> bool
+Weaviate.Client.Models.TokenizeAnalyzerConfig
+Weaviate.Client.Models.TokenizeAnalyzerConfig.TokenizeAnalyzerConfig() -> void
+Weaviate.Client.Models.TokenizeAnalyzerConfig.AsciiFold.get -> Weaviate.Client.Models.AsciiFoldConfig?
+Weaviate.Client.Models.TokenizeAnalyzerConfig.AsciiFold.init -> void
+Weaviate.Client.Models.TokenizeAnalyzerConfig.StopwordPreset.get -> string?
+Weaviate.Client.Models.TokenizeAnalyzerConfig.StopwordPreset.init -> void
+Weaviate.Client.Models.TokenizeAnalyzerConfig.Equals(Weaviate.Client.Models.TokenizeAnalyzerConfig? other) -> bool
+Weaviate.Client.Models.TokenizeAnalyzerConfig.<Clone>$() -> Weaviate.Client.Models.TokenizeAnalyzerConfig!
+override Weaviate.Client.Models.TokenizeAnalyzerConfig.Equals(object? obj) -> bool
+override Weaviate.Client.Models.TokenizeAnalyzerConfig.GetHashCode() -> int
+override Weaviate.Client.Models.TokenizeAnalyzerConfig.ToString() -> string!
+static Weaviate.Client.Models.TokenizeAnalyzerConfig.operator !=(Weaviate.Client.Models.TokenizeAnalyzerConfig? left, Weaviate.Client.Models.TokenizeAnalyzerConfig? right) -> bool
+static Weaviate.Client.Models.TokenizeAnalyzerConfig.operator ==(Weaviate.Client.Models.TokenizeAnalyzerConfig? left, Weaviate.Client.Models.TokenizeAnalyzerConfig? right) -> bool
+Weaviate.Client.Models.TokenizeResult
+Weaviate.Client.Models.TokenizeResult.TokenizeResult() -> void
+Weaviate.Client.Models.TokenizeResult.Tokenization.get -> Weaviate.Client.Models.PropertyTokenization
+Weaviate.Client.Models.TokenizeResult.Tokenization.init -> void
+Weaviate.Client.Models.TokenizeResult.Indexed.get -> System.Collections.Immutable.ImmutableList<string!>!
+Weaviate.Client.Models.TokenizeResult.Indexed.init -> void
+Weaviate.Client.Models.TokenizeResult.Query.get -> System.Collections.Immutable.ImmutableList<string!>!
+Weaviate.Client.Models.TokenizeResult.Query.init -> void
+Weaviate.Client.Models.TokenizeResult.AnalyzerConfig.get -> Weaviate.Client.Models.TokenizeAnalyzerConfig?
+Weaviate.Client.Models.TokenizeResult.AnalyzerConfig.init -> void
+Weaviate.Client.Models.TokenizeResult.StopwordConfig.get -> Weaviate.Client.Models.StopwordConfig?
+Weaviate.Client.Models.TokenizeResult.StopwordConfig.init -> void
+Weaviate.Client.Models.TokenizeResult.Equals(Weaviate.Client.Models.TokenizeResult? other) -> bool
+Weaviate.Client.Models.TokenizeResult.<Clone>$() -> Weaviate.Client.Models.TokenizeResult!
+override Weaviate.Client.Models.TokenizeResult.Equals(object? obj) -> bool
+override Weaviate.Client.Models.TokenizeResult.GetHashCode() -> int
+override Weaviate.Client.Models.TokenizeResult.ToString() -> string!
+static Weaviate.Client.Models.TokenizeResult.operator !=(Weaviate.Client.Models.TokenizeResult? left, Weaviate.Client.Models.TokenizeResult? right) -> bool
+static Weaviate.Client.Models.TokenizeResult.operator ==(Weaviate.Client.Models.TokenizeResult? left, Weaviate.Client.Models.TokenizeResult? right) -> bool
