@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
 
+#### Tokenization
+
+- **Tokenize Endpoints** ([#329](https://github.com/weaviate/csharp-client/pull/329)): Expose the `POST /v1/tokenize` and `POST /v1/schema/{class}/properties/{prop}/tokenize` endpoints introduced in Weaviate 1.37.0. Inspect how text is tokenized for a given method and analyzer configuration, or how a specific collection property would tokenize it. Access via `client.Tokenize.Text(...)` and `collection.Tokenize.Property(...)`. `AsciiFoldConfig` is modeled as a nullable record so the invalid "ignore without fold" state is unrepresentable. See [TOKENIZE_API_USAGE.md](docs/TOKENIZE_API_USAGE.md). Requires Weaviate ≥ 1.37.0.
 
 ---
 
