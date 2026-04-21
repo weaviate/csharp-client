@@ -26,7 +26,7 @@ public sealed class TokenizeClient
     /// <param name="analyzerConfig">Optional text analyzer configuration (e.g. ASCII folding, stopword preset).</param>
     /// <param name="stopwordPresets">
     /// Optional named stopword configurations. Each key is a preset name that can be referenced by
-    /// <see cref="TokenizeAnalyzerConfig.StopwordPreset"/>. Each value is a <see cref="StopwordConfig"/>.
+    /// <see cref="TextAnalyzerConfig.StopwordPreset"/>. Each value is a <see cref="StopwordConfig"/>.
     /// </param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <exception cref="WeaviateVersionMismatchException">
@@ -36,7 +36,7 @@ public sealed class TokenizeClient
     public async Task<TokenizeResult> Text(
         string text,
         PropertyTokenization tokenization,
-        TokenizeAnalyzerConfig? analyzerConfig = null,
+        TextAnalyzerConfig? analyzerConfig = null,
         IDictionary<string, StopwordConfig>? stopwordPresets = null,
         CancellationToken cancellationToken = default
     )

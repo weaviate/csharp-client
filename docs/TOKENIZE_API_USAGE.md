@@ -14,6 +14,8 @@ This guide covers the Weaviate C# client's tokenize API — a pair of endpoints 
 - [Analyzer Configuration](#analyzer-configuration)
 - [Stopwords](#stopwords)
 - [Result Shape](#result-shape)
+- [Property-level Text Analyzer (schema)](#property-level-text-analyzer-schema)
+- [Collection-level Stopword Presets (schema)](#collection-level-stopword-presets-schema)
 - [Common Patterns](#common-patterns)
 
 ## Overview
@@ -70,7 +72,7 @@ Signature:
 Task<TokenizeResult> Tokenize.Text(
     string text,
     PropertyTokenization tokenization,
-    TokenizeAnalyzerConfig? analyzerConfig = null,
+    TextAnalyzerConfig? analyzerConfig = null,
     IDictionary<string, StopwordConfig>? stopwordPresets = null,
     CancellationToken cancellationToken = default
 );
@@ -96,14 +98,14 @@ The server uses the property's configured tokenization method and any analyzer c
 
 ## Analyzer Configuration
 
-`TokenizeAnalyzerConfig` controls two optional analyzer stages: **ASCII folding** and **stopword removal**.
+`TextAnalyzerConfig` controls two optional analyzer stages: **ASCII folding** and **stopword removal**.
 
 ### ASCII Folding
 
 `AsciiFoldConfig` is a nullable record — `null` means folding is disabled, non-`null` means it's enabled. The `Ignore` list lets you exempt specific characters from folding.
 
 ```csharp
-var cfg = new TokenizeAnalyzerConfig
+var cfg = new TextAnalyzerConfig
 {
     AsciiFold = new AsciiFoldConfig(), // folding enabled, nothing ignored
 };
@@ -119,7 +121,7 @@ var result = await client.Tokenize.Text(
 Ignore a specific character:
 
 ```csharp
-var cfg = new TokenizeAnalyzerConfig
+var cfg = new TextAnalyzerConfig
 {
     AsciiFold = new AsciiFoldConfig(Ignore: ["é"]),
 };
@@ -139,7 +141,7 @@ var result = await client.Tokenize.Text(
 Use a built-in preset (`"en"`, `"none"`) via the `StopwordPreset` field:
 
 ```csharp
-var cfg = new TokenizeAnalyzerConfig { StopwordPreset = "en" };
+var cfg = new TextAnalyzerConfig { StopwordPreset = "en" };
 
 var result = await client.Tokenize.Text(
     "The quick brown fox",
@@ -158,7 +160,7 @@ For more control, define a named preset via the `stopwordPresets` dictionary and
 ### Add words to a preset
 
 ```csharp
-var cfg = new TokenizeAnalyzerConfig { StopwordPreset = "custom" };
+var cfg = new TextAnalyzerConfig { StopwordPreset = "custom" };
 
 var presets = new Dictionary<string, StopwordConfig>
 {
@@ -183,7 +185,7 @@ var result = await client.Tokenize.Text(
 ### Start from a base preset and remove words
 
 ```csharp
-var cfg = new TokenizeAnalyzerConfig { StopwordPreset = "en-no-the" };
+var cfg = new TextAnalyzerConfig { StopwordPreset = "en-no-the" };
 
 var presets = new Dictionary<string, StopwordConfig>
 {
@@ -207,7 +209,7 @@ var result = await client.Tokenize.Text(
 ### Combining folding and stopwords
 
 ```csharp
-var cfg = new TokenizeAnalyzerConfig
+var cfg = new TextAnalyzerConfig
 {
     AsciiFold = new AsciiFoldConfig(Ignore: ["é"]),
     StopwordPreset = "en",
@@ -232,10 +234,83 @@ var result = await client.Tokenize.Text(
 | `Tokenization` | `PropertyTokenization` | The method that was applied. |
 | `Indexed` | `ImmutableList<string>` | Tokens as stored in the inverted index. |
 | `Query` | `ImmutableList<string>` | Tokens used at query time (after stopword removal). |
-| `AnalyzerConfig` | `TokenizeAnalyzerConfig?` | Echo of the analyzer config that was applied, or `null`. |
+| `AnalyzerConfig` | `TextAnalyzerConfig?` | Echo of the analyzer config that was applied, or `null`. |
 | `StopwordConfig` | `StopwordConfig?` | Echo of the resolved stopword config, or `null`. |
 
 The `AnalyzerConfig` echo is the server's view of what was applied — useful for verifying that your config was parsed correctly. The round-trip also normalizes wire-format quirks (the server represents `asciiFold` as a `bool` + separate `asciiFoldIgnore[]`, but the client unwraps it back into the nested `AsciiFoldConfig` record).
+
+## Property-level Text Analyzer (schema)
+
+Beyond the ad-hoc tokenize endpoint, Weaviate 1.37.0 also lets you pin analyzer options directly on a property at **collection-creation time**. The same `TextAnalyzerConfig` record is reused: whatever you would pass to `client.Tokenize.Text(...)` can also be attached to a property so every value indexed through that property gets the same treatment.
+
+```csharp
+await client.Collections.Create(new CollectionCreateParams
+{
+    Name = "Article",
+    Properties =
+    [
+        new Property
+        {
+            Name = "title",
+            DataType = [DataType.Text],
+            Tokenization = PropertyTokenization.Word,
+            TextAnalyzer = new TextAnalyzerConfig
+            {
+                AsciiFold = new AsciiFoldConfig(),
+                StopwordPreset = "en",
+            },
+        },
+    ],
+});
+```
+
+Nested properties (object / object-array) accept `TextAnalyzer` too — they are `Property` records themselves, so the same field is available on every depth.
+
+> **Version requirement:** `Property.TextAnalyzer` is only wired up for servers at Weaviate ≥ 1.37.0. `CollectionsClient.Create` performs a preflight version check and throws `WeaviateVersionMismatchException` if the connected server is older, before the schema request is sent.
+
+## Collection-level Stopword Presets (schema)
+
+Named stopword lists live on the collection's inverted-index config. A preset is a `preset-name → word-list` pair; properties reference one by name via `TextAnalyzer.StopwordPreset`.
+
+```csharp
+await client.Collections.Create(new CollectionCreateParams
+{
+    Name = "Article",
+    InvertedIndexConfig = new InvertedIndexConfig
+    {
+        StopwordPresets = new Dictionary<string, IList<string>>
+        {
+            ["fr"] = new[] { "le", "la", "les" },
+            ["custom_en"] = new[] { "foo", "bar" },
+        },
+    },
+    Properties =
+    [
+        new Property
+        {
+            Name = "body",
+            DataType = [DataType.Text],
+            TextAnalyzer = new TextAnalyzerConfig { StopwordPreset = "fr" },
+        },
+    ],
+});
+```
+
+Updating presets on an existing collection goes through the normal update path:
+
+```csharp
+await collection.Config.Update(c =>
+{
+    c.InvertedIndexConfig.StopwordPresets = new Dictionary<string, IList<string>>
+    {
+        ["fr"] = new[] { "le", "la", "les", "un", "une" },
+    };
+});
+```
+
+Setting `StopwordPresets` replaces the whole preset map on the server. The server rejects removing a preset that is still referenced by a property's `TextAnalyzer.StopwordPreset` — keep preset removals and property-config changes in the same update, or unwire the property first.
+
+> **Version requirement:** Requires Weaviate ≥ 1.37.0. The preflight in `CollectionsClient.Create` also trips on `InvertedIndexConfig.StopwordPresets` before contacting the server.
 
 ## Common Patterns
 
@@ -264,7 +339,7 @@ var docTokens   = (await collection.Tokenize.Property("body", "I was running")).
 When you configure ASCII folding or a stopword preset, the server echoes back its interpretation on every call:
 
 ```csharp
-var cfg = new TokenizeAnalyzerConfig
+var cfg = new TextAnalyzerConfig
 {
     AsciiFold = new AsciiFoldConfig(Ignore: ["é"]),
     StopwordPreset = "en",
