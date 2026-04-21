@@ -79,7 +79,7 @@ public class TestTokenize : IntegrationTests
     {
         RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
 
-        var cfg = new TokenizeAnalyzerConfig { AsciiFold = new AsciiFoldConfig() };
+        var cfg = new TextAnalyzerConfig { AsciiFold = new AsciiFoldConfig() };
         var result = await _weaviate.Tokenize.Text(
             "L'école est fermée",
             PropertyTokenization.Word,
@@ -95,7 +95,7 @@ public class TestTokenize : IntegrationTests
     {
         RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
 
-        var cfg = new TokenizeAnalyzerConfig { AsciiFold = new AsciiFoldConfig(Ignore: ["é"]) };
+        var cfg = new TextAnalyzerConfig { AsciiFold = new AsciiFoldConfig(Ignore: ["é"]) };
         var result = await _weaviate.Tokenize.Text(
             "L'école est fermée",
             PropertyTokenization.Word,
@@ -111,7 +111,7 @@ public class TestTokenize : IntegrationTests
     {
         RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
 
-        var cfg = new TokenizeAnalyzerConfig { StopwordPreset = "en" };
+        var cfg = new TextAnalyzerConfig { StopwordPreset = "en" };
         var result = await _weaviate.Tokenize.Text(
             "The quick brown fox",
             PropertyTokenization.Word,
@@ -128,7 +128,7 @@ public class TestTokenize : IntegrationTests
     {
         RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
 
-        var cfg = new TokenizeAnalyzerConfig
+        var cfg = new TextAnalyzerConfig
         {
             AsciiFold = new AsciiFoldConfig(Ignore: ["é"]),
             StopwordPreset = "en",
@@ -150,7 +150,7 @@ public class TestTokenize : IntegrationTests
     {
         RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
 
-        var cfg = new TokenizeAnalyzerConfig { StopwordPreset = "custom" };
+        var cfg = new TextAnalyzerConfig { StopwordPreset = "custom" };
         var presets = new Dictionary<string, StopwordConfig>
         {
             ["custom"] = new StopwordConfig
@@ -177,7 +177,7 @@ public class TestTokenize : IntegrationTests
     {
         RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
 
-        var cfg = new TokenizeAnalyzerConfig { StopwordPreset = "en-no-the" };
+        var cfg = new TextAnalyzerConfig { StopwordPreset = "en-no-the" };
         var presets = new Dictionary<string, StopwordConfig>
         {
             ["en-no-the"] = new StopwordConfig
@@ -224,7 +224,7 @@ public class TestTokenize : IntegrationTests
     {
         RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
 
-        var cfg = new TokenizeAnalyzerConfig
+        var cfg = new TextAnalyzerConfig
         {
             AsciiFold = new AsciiFoldConfig(Ignore: ["é"]),
             StopwordPreset = "en",

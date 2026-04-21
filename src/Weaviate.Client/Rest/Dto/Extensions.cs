@@ -88,6 +88,7 @@ internal partial record NestedProperty
             IndexRangeFilters = IndexRangeFilters,
             PropertyTokenization = (Models.PropertyTokenization?)Tokenization,
             NestedProperties = NestedProperties?.Select(np => np.ToModel()).ToArray(),
+            TextAnalyzer = Weaviate.Client.Models.TokenizeMapping.ToModel(TextAnalyzer),
         };
     }
 }
@@ -150,6 +151,7 @@ internal partial record Property
             NestedProperties = NestedProperties?.Select(np => np.ToModel()).ToArray(),
             SkipVectorization = skipVectorization,
             VectorizePropertyName = vectorizePropertyName,
+            TextAnalyzer = Weaviate.Client.Models.TokenizeMapping.ToModel(TextAnalyzer),
         };
     }
 

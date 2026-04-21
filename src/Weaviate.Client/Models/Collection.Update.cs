@@ -123,6 +123,17 @@ public record InvertedIndexConfigUpdate(InvertedIndexConfig WrappedConfig)
     /// </summary>
     public StopwordsConfigUpdate Stopwords =>
         new(WrappedConfig.Stopwords ??= StopwordConfig.Default);
+
+    /// <summary>
+    /// Gets or sets the named stopword presets defined at the collection level.
+    /// Setting this replaces the full preset map on the server.
+    /// Requires Weaviate ≥ 1.37.0.
+    /// </summary>
+    public IDictionary<string, IList<string>>? StopwordPresets
+    {
+        get => WrappedConfig.StopwordPresets;
+        set => WrappedConfig.StopwordPresets = value;
+    }
 }
 
 /// <summary>

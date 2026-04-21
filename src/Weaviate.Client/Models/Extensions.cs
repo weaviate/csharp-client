@@ -57,6 +57,7 @@ internal static class ModelsToDtoExtensions
             NestedProperties = property
                 .NestedProperties?.Select(np => np.ToNestedPropertyDto())
                 .ToList(),
+            TextAnalyzer = property.TextAnalyzer.ToDto(),
         };
     }
 
@@ -122,6 +123,7 @@ internal static class ModelsToDtoExtensions
                 .NestedProperties?.Select(np => np.ToNestedPropertyDto())
                 .ToList(),
             ModuleConfig = moduleConfig,
+            TextAnalyzer = property.TextAnalyzer.ToDto(),
         };
     }
 }

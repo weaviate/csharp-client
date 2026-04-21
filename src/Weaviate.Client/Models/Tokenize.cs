@@ -5,7 +5,7 @@ namespace Weaviate.Client.Models;
 /// <summary>
 /// ASCII-folding configuration: enables accent/diacritic folding, with an
 /// optional list of characters to exclude. When set on
-/// <see cref="TokenizeAnalyzerConfig.AsciiFold"/>, folding is applied; when
+/// <see cref="TextAnalyzerConfig.AsciiFold"/>, folding is applied; when
 /// null, folding is disabled.
 /// </summary>
 /// <param name="Ignore">
@@ -17,7 +17,7 @@ public sealed record AsciiFoldConfig(IReadOnlyList<string>? Ignore = null);
 /// Optional text-analyzer configuration for the tokenize endpoint.
 /// Mirrors the server's <c>TextAnalyzerConfig</c>.
 /// </summary>
-public sealed record TokenizeAnalyzerConfig
+public sealed record TextAnalyzerConfig
 {
     /// <summary>
     /// ASCII-folding configuration. When non-null, accent/diacritic marks are
@@ -30,7 +30,7 @@ public sealed record TokenizeAnalyzerConfig
     /// <summary>
     /// Stopword preset name. May be a built-in preset (<c>"en"</c>, <c>"none"</c>)
     /// or the name of a custom preset provided via
-    /// <see cref="TokenizeClient.Text(string, PropertyTokenization, TokenizeAnalyzerConfig?, System.Collections.Generic.IDictionary{string, StopwordConfig}?, System.Threading.CancellationToken)"/>'s
+    /// <see cref="TokenizeClient.Text(string, PropertyTokenization, TextAnalyzerConfig?, System.Collections.Generic.IDictionary{string, StopwordConfig}?, System.Threading.CancellationToken)"/>'s
     /// <c>stopwordPresets</c> dictionary.
     /// </summary>
     public string? StopwordPreset { get; init; }
@@ -59,7 +59,7 @@ public sealed record TokenizeResult
     /// <summary>
     /// The text-analyzer configuration that was applied, if any.
     /// </summary>
-    public TokenizeAnalyzerConfig? AnalyzerConfig { get; init; }
+    public TextAnalyzerConfig? AnalyzerConfig { get; init; }
 
     /// <summary>
     /// The stopword configuration that was applied, if any.
@@ -80,7 +80,7 @@ internal static class TokenizeMapping
             ? PropertyTokenization.Word
             : wireValue.FromEnumMemberString<PropertyTokenization>();
 
-    internal static Rest.Dto.TextAnalyzerConfig? ToDto(this TokenizeAnalyzerConfig? config) =>
+    internal static Rest.Dto.TextAnalyzerConfig? ToDto(this TextAnalyzerConfig? config) =>
         config is null
             ? null
             : new Rest.Dto.TextAnalyzerConfig
@@ -92,10 +92,10 @@ internal static class TokenizeMapping
                 StopwordPreset = config.StopwordPreset,
             };
 
-    internal static TokenizeAnalyzerConfig? ToModel(this Rest.Dto.TextAnalyzerConfig? dto) =>
+    internal static TextAnalyzerConfig? ToModel(this Rest.Dto.TextAnalyzerConfig? dto) =>
         dto is null
             ? null
-            : new TokenizeAnalyzerConfig
+            : new TextAnalyzerConfig
             {
                 AsciiFold =
                     dto.AsciiFold == true
