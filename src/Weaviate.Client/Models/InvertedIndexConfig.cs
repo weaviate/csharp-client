@@ -52,6 +52,14 @@ public record InvertedIndexConfig : IEquatable<InvertedIndexConfig>
     public bool? UsingBlockMaxWAND { get; set; } = null;
 
     /// <summary>
+    /// Optional named stopword presets defined at the collection level.
+    /// Each entry is a preset name → list of stopwords. Individual properties
+    /// can reference a preset via <see cref="TextAnalyzerConfig.StopwordPreset"/>.
+    /// Requires Weaviate ≥ 1.37.0.
+    /// </summary>
+    public IDictionary<string, IList<string>>? StopwordPresets { get; set; } = null;
+
+    /// <summary>
     /// Gets the hash code
     /// </summary>
     /// <returns>The int</returns>
@@ -65,6 +73,15 @@ public record InvertedIndexConfig : IEquatable<InvertedIndexConfig>
         hash.Add(IndexTimestamps);
         hash.Add(Stopwords?.GetHashCode() ?? 0);
         hash.Add(UsingBlockMaxWAND);
+        if (StopwordPresets is not null)
+        {
+            foreach (var kvp in StopwordPresets.OrderBy(kvp => kvp.Key, StringComparer.Ordinal))
+            {
+                hash.Add(kvp.Key);
+                foreach (var word in kvp.Value)
+                    hash.Add(word);
+            }
+        }
         return hash.ToHashCode();
     }
 
@@ -106,6 +123,30 @@ public record InvertedIndexConfig : IEquatable<InvertedIndexConfig>
         )
             return false;
 
+        if (!StopwordPresetsEqual(StopwordPresets, other.StopwordPresets))
+            return false;
+
+        return true;
+    }
+
+    private static bool StopwordPresetsEqual(
+        IDictionary<string, IList<string>>? a,
+        IDictionary<string, IList<string>>? b
+    )
+    {
+        if (ReferenceEquals(a, b))
+            return true;
+        if (a is null || b is null)
+            return false;
+        if (a.Count != b.Count)
+            return false;
+        foreach (var kvp in a)
+        {
+            if (!b.TryGetValue(kvp.Key, out var otherValue))
+                return false;
+            if (!kvp.Value.SequenceEqual(otherValue))
+                return false;
+        }
         return true;
     }
 }

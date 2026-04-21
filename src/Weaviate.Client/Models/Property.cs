@@ -606,6 +606,13 @@ public record Property : IEquatable<Property>
     /// </summary>
     public bool VectorizePropertyName { get; init; } = true;
 
+    /// <summary>
+    /// Optional property-level text analyzer configuration. When set, the property's
+    /// indexed and query tokens are post-processed according to the configured
+    /// ASCII-folding and stopword preset. Requires Weaviate ≥ 1.37.0.
+    /// </summary>
+    public TextAnalyzerConfig? TextAnalyzer { get; init; }
+
     /// <summary>Gets a factory for creating text properties.</summary>
     public static PropertyFactory Text => PropertyHelper.Factory(DataType.Text);
 
@@ -795,6 +802,7 @@ public record Property : IEquatable<Property>
         hash.Add(NestedProperties);
         hash.Add(SkipVectorization);
         hash.Add(VectorizePropertyName);
+        hash.Add(TextAnalyzer);
         return hash.ToHashCode();
     }
 
@@ -820,6 +828,10 @@ public record Property : IEquatable<Property>
             && PropertyTokenization == other.PropertyTokenization
             && SkipVectorization == other.SkipVectorization
             && VectorizePropertyName == other.VectorizePropertyName
+            && EqualityComparer<TextAnalyzerConfig?>.Default.Equals(
+                TextAnalyzer,
+                other.TextAnalyzer
+            )
             && (
                 (NestedProperties == null && other.NestedProperties == null)
                 || (

@@ -242,6 +242,7 @@ public static class WeaviateExtensions
                         ? collection.InvertedIndexConfig.IndexTimestamps
                         : null,
                 UsingBlockMaxWAND = collection.InvertedIndexConfig.UsingBlockMaxWAND,
+                StopwordPresets = collection.InvertedIndexConfig.StopwordPresets,
             };
         }
 
@@ -352,6 +353,7 @@ public static class WeaviateExtensions
                         ?? Weaviate.Client.Models.InvertedIndexConfig.Default.IndexTimestamps,
 
                     UsingBlockMaxWAND = iic.UsingBlockMaxWAND,
+                    StopwordPresets = iic.StopwordPresets,
                 }
                 : null;
 

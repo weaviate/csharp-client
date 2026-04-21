@@ -194,6 +194,12 @@ public partial class WeaviateClient : IDisposable
     public GroupsClient Groups { get; }
 
     /// <summary>
+    /// Gets the tokenize client for inspecting how text is tokenized by the server.
+    /// Requires Weaviate server version 1.37.0 or later.
+    /// </summary>
+    public TokenizeClient Tokenize { get; }
+
+    /// <summary>
     /// Ises the weaviate domain using the specified url
     /// </summary>
     /// <param name="url">The url</param>
@@ -227,6 +233,7 @@ public partial class WeaviateClient : IDisposable
         Users = new UsersClient(this);
         Roles = new RolesClient(this);
         Groups = new GroupsClient(this);
+        Tokenize = new TokenizeClient(this);
     }
 
     /// <summary>
@@ -267,6 +274,7 @@ public partial class WeaviateClient : IDisposable
         Users = new UsersClient(this);
         Roles = new RolesClient(this);
         Groups = new GroupsClient(this);
+        Tokenize = new TokenizeClient(this);
     }
 
     /// <summary>
@@ -322,6 +330,7 @@ public partial class WeaviateClient : IDisposable
         Users = new UsersClient(this);
         Roles = new RolesClient(this);
         Groups = new GroupsClient(this);
+        Tokenize = new TokenizeClient(this);
     }
 
     /// <summary>

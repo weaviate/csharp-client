@@ -197,6 +197,8 @@ public record CollectionsClient
     {
         ArgumentNullException.ThrowIfNull(collection);
 
+        await EnsureTextAnalyzerFeaturesSupported(collection);
+
         var config = CollectionConfig.FromCollectionCreate(collection);
 
         var jsonString = JsonSerializer.Serialize(
@@ -205,6 +207,59 @@ public record CollectionsClient
         );
 
         return await CreateFromJson(jsonString, cancellationToken);
+    }
+
+    private static readonly Version TextAnalyzerMinimumVersion = new(1, 37, 0);
+
+    private async Task EnsureTextAnalyzerFeaturesSupported(CollectionCreateParams collection)
+    {
+        string? feature = DetectTextAnalyzerFeature(collection);
+        if (feature is null)
+            return;
+
+        await _client.EnsureInitializedAsync();
+
+        var serverVersion = _client.WeaviateVersion;
+        if (serverVersion is null)
+            return;
+
+        if (serverVersion < TextAnalyzerMinimumVersion)
+        {
+            throw new WeaviateVersionMismatchException(
+                feature,
+                TextAnalyzerMinimumVersion,
+                serverVersion
+            );
+        }
+    }
+
+    private static string? DetectTextAnalyzerFeature(CollectionCreateParams collection)
+    {
+        if (collection.InvertedIndexConfig?.StopwordPresets is { Count: > 0 })
+            return "InvertedIndexConfig.StopwordPresets";
+
+        foreach (var property in collection.Properties)
+        {
+            if (PropertyUsesTextAnalyzer(property))
+                return "Property.TextAnalyzer";
+        }
+
+        return null;
+    }
+
+    private static bool PropertyUsesTextAnalyzer(Property property)
+    {
+        if (property.TextAnalyzer is not null)
+            return true;
+        if (property.NestedProperties is { } nested)
+        {
+            foreach (var np in nested)
+            {
+                if (PropertyUsesTextAnalyzer(np))
+                    return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>
