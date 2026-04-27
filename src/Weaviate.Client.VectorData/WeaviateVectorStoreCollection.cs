@@ -297,7 +297,7 @@ public class WeaviateVectorStoreCollection<TKey, TRecord> : VectorStoreCollectio
     }
 
     /// <inheritdoc />
-    public new async IAsyncEnumerable<VectorSearchResult<TRecord>> HybridSearchAsync<TInput>(
+    public async IAsyncEnumerable<VectorSearchResult<TRecord>> HybridSearchAsync<TInput>(
         TInput searchValue,
         ICollection<string> keywords,
         int top,
