@@ -2936,7 +2936,7 @@ Weaviate.Client.DefaultTokenServiceFactory.CreateAsync(Weaviate.Client.ClientCon
 Weaviate.Client.DefaultTokenServiceFactory.CreateSync(Weaviate.Client.ClientConfiguration! configuration) -> Weaviate.Client.ITokenService?
 Weaviate.Client.DefaultTokenServiceFactory.DefaultTokenServiceFactory() -> void
 Weaviate.Client.ExportClient
-Weaviate.Client.ExportClient.Cancel(Weaviate.Client.Models.BackupBackend! backend, string! id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.ExportClient.Cancel(Weaviate.Client.Models.BackupBackend! backend, string! id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
 Weaviate.Client.ExportClient.Create(Weaviate.Client.Models.ExportCreateRequest! request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.ExportOperation!>!
 Weaviate.Client.ExportClient.CreateSync(Weaviate.Client.Models.ExportCreateRequest! request, System.TimeSpan? timeout = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Export!>!
 Weaviate.Client.ExportClient.GetStatus(Weaviate.Client.Models.BackupBackend! backend, string! id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.Export!>!
@@ -3741,7 +3741,7 @@ Weaviate.Client.Models.ExportCreateRequest.Deconstruct(out string! Id, out Weavi
 Weaviate.Client.Models.ExportCreateRequest.ExcludeCollections.get -> Weaviate.Client.Internal.AutoArray<string!>?
 Weaviate.Client.Models.ExportCreateRequest.ExcludeCollections.init -> void
 Weaviate.Client.Models.ExportCreateRequest.ExportCreateRequest(Weaviate.Client.Models.ExportCreateRequest! original) -> void
-Weaviate.Client.Models.ExportCreateRequest.ExportCreateRequest(string! Id, Weaviate.Client.Models.BackupBackend! Backend, Weaviate.Client.Models.ExportFileFormat FileFormat = Weaviate.Client.Models.ExportFileFormat.Parquet, Weaviate.Client.Internal.AutoArray<string!>? IncludeCollections = null, Weaviate.Client.Internal.AutoArray<string!>? ExcludeCollections = null) -> void
+Weaviate.Client.Models.ExportCreateRequest.ExportCreateRequest(string! Id, Weaviate.Client.Models.BackupBackend! Backend, Weaviate.Client.Models.ExportFileFormat FileFormat, Weaviate.Client.Internal.AutoArray<string!>? IncludeCollections = null, Weaviate.Client.Internal.AutoArray<string!>? ExcludeCollections = null) -> void
 Weaviate.Client.Models.ExportCreateRequest.FileFormat.get -> Weaviate.Client.Models.ExportFileFormat
 Weaviate.Client.Models.ExportCreateRequest.FileFormat.init -> void
 Weaviate.Client.Models.ExportCreateRequest.Id.get -> string!
@@ -3752,11 +3752,11 @@ Weaviate.Client.Models.ExportFileFormat
 Weaviate.Client.Models.ExportFileFormat.Parquet = 0 -> Weaviate.Client.Models.ExportFileFormat
 Weaviate.Client.Models.ExportOperation
 Weaviate.Client.Models.ExportOperationBase
-Weaviate.Client.Models.ExportOperationBase.Cancel(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Weaviate.Client.Models.ExportOperationBase.Cancel(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
 Weaviate.Client.Models.ExportOperationBase.Current.get -> Weaviate.Client.Models.Export!
 Weaviate.Client.Models.ExportOperationBase.Dispose() -> void
 Weaviate.Client.Models.ExportOperationBase.DisposeAsync() -> System.Threading.Tasks.ValueTask
-Weaviate.Client.Models.ExportOperationBase.ExportOperationBase(Weaviate.Client.Models.Export! initial, System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<Weaviate.Client.Models.Export!>!>! statusFetcher, System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task!>! operationCancel) -> void
+Weaviate.Client.Models.ExportOperationBase.ExportOperationBase(Weaviate.Client.Models.Export! initial, System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<Weaviate.Client.Models.Export!>!>! statusFetcher, System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<bool>!>! operationCancel) -> void
 Weaviate.Client.Models.ExportOperationBase.IsCanceled.get -> bool
 Weaviate.Client.Models.ExportOperationBase.IsCompleted.get -> bool
 Weaviate.Client.Models.ExportOperationBase.IsSuccessful.get -> bool

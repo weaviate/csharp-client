@@ -33,7 +33,7 @@ public class TestExportClient
         );
 
         await using var operation = await client.Export.Create(
-            new ExportCreateRequest("my-export", new FilesystemBackend()),
+            new ExportCreateRequest("my-export", new FilesystemBackend(), ExportFileFormat.Parquet),
             TestContext.Current.CancellationToken
         );
 
@@ -85,7 +85,7 @@ public class TestExportClient
     }
 
     /// <summary>
-    /// Cancel must issue a DELETE to /v1/export/filesystem/{id}.
+    /// Cancel must issue a DELETE to /v1/export/filesystem/{id} and return true on 204.
     /// </summary>
     [Fact]
     public async Task Cancel_SendsDeleteToExportEndpoint()
@@ -95,16 +95,58 @@ public class TestExportClient
             serverVersion: "1.37.0"
         );
 
-        await client.Export.Cancel(
+        var canceled = await client.Export.Cancel(
             new FilesystemBackend(),
             "my-export",
             TestContext.Current.CancellationToken
         );
 
+        Assert.True(canceled);
         Assert.NotNull(handler.LastRequest);
         handler
             .LastRequest!.ShouldHaveMethod(HttpMethod.Delete)
             .ShouldHavePath("/v1/export/filesystem/my-export");
+    }
+
+    /// <summary>
+    /// Cancel returns false (no throw) when the server responds 409 Conflict —
+    /// the export reached a terminal state and cannot be canceled.
+    /// </summary>
+    [Fact]
+    public async Task Cancel_OnConflict_ReturnsFalseWithoutThrowing()
+    {
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: _ => new HttpResponseMessage(HttpStatusCode.Conflict),
+            serverVersion: "1.37.0"
+        );
+
+        var canceled = await client.Export.Cancel(
+            new FilesystemBackend(),
+            "my-export",
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.False(canceled);
+    }
+
+    /// <summary>
+    /// Cancel still throws on 404 Not Found — the export id is unknown.
+    /// </summary>
+    [Fact]
+    public async Task Cancel_OnNotFound_Throws()
+    {
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: _ => new HttpResponseMessage(HttpStatusCode.NotFound),
+            serverVersion: "1.37.0"
+        );
+
+        await Assert.ThrowsAsync<WeaviateNotFoundException>(async () =>
+            await client.Export.Cancel(
+                new FilesystemBackend(),
+                "unknown-export",
+                TestContext.Current.CancellationToken
+            )
+        );
     }
 
     /// <summary>
@@ -230,6 +272,7 @@ public class TestExportClient
             new ExportCreateRequest(
                 "my-export",
                 new FilesystemBackend(),
+                ExportFileFormat.Parquet,
                 IncludeCollections: ["Article", "Author"]
             ),
             TestContext.Current.CancellationToken
@@ -262,7 +305,11 @@ public class TestExportClient
         );
 
         await using var operation = await client.Export.Create(
-            new ExportCreateRequest("my-export", ObjectStorageBackend.S3()),
+            new ExportCreateRequest(
+                "my-export",
+                ObjectStorageBackend.S3(),
+                ExportFileFormat.Parquet
+            ),
             TestContext.Current.CancellationToken
         );
 

@@ -120,7 +120,7 @@ public record ShardProgress(
 public record ExportCreateRequest(
     string Id,
     BackupBackend Backend,
-    ExportFileFormat FileFormat = ExportFileFormat.Parquet,
+    ExportFileFormat FileFormat,
     AutoArray<string>? IncludeCollections = null,
     AutoArray<string>? ExcludeCollections = null
 );

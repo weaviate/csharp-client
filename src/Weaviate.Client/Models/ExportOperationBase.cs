@@ -6,7 +6,7 @@ namespace Weaviate.Client.Models;
 public abstract class ExportOperationBase : IDisposable, IAsyncDisposable
 {
     private readonly Func<CancellationToken, Task<Export>> _statusFetcher;
-    private readonly Func<CancellationToken, Task> _operationCancel;
+    private readonly Func<CancellationToken, Task<bool>> _operationCancel;
     private readonly CancellationTokenSource _cts = new();
     private readonly Task _backgroundRefreshTask;
     private Export _current;
@@ -24,7 +24,7 @@ public abstract class ExportOperationBase : IDisposable, IAsyncDisposable
     protected ExportOperationBase(
         Export initial,
         Func<CancellationToken, Task<Export>> statusFetcher,
-        Func<CancellationToken, Task> operationCancel
+        Func<CancellationToken, Task<bool>> operationCancel
     )
     {
         _current = initial;
@@ -134,13 +134,16 @@ public abstract class ExportOperationBase : IDisposable, IAsyncDisposable
     }
 
     /// <summary>
-    /// Cancels the export operation asynchronously.
+    /// Cancels the export operation asynchronously. Returns <c>true</c> if the server
+    /// accepted the cancel request, <c>false</c> if the export is already in a terminal
+    /// state and cannot be canceled (HTTP 409). Throws if the export id is unknown.
     /// </summary>
     /// <param name="cancellationToken">A cancellation token to observe while canceling.</param>
-    public async Task Cancel(CancellationToken cancellationToken = default)
+    public async Task<bool> Cancel(CancellationToken cancellationToken = default)
     {
-        await _operationCancel(cancellationToken);
+        var canceled = await _operationCancel(cancellationToken);
         await RefreshStatusInternal(cancellationToken);
+        return canceled;
     }
 
     protected virtual void Dispose(bool disposing)

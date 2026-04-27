@@ -95,10 +95,13 @@ public class ExportClient
     }
 
     /// <summary>
-    /// Cancel a running export
+    /// Cancel a running export. Returns <c>true</c> if the cancel request was accepted,
+    /// <c>false</c> if the server responded 409 Conflict (export already in a terminal
+    /// state and cannot be canceled). Throws <see cref="WeaviateNotFoundException"/>
+    /// if the export id is unknown.
     /// </summary>
     [RequiresWeaviateVersion(1, 37, 0)]
-    public async Task Cancel(
+    public async Task<bool> Cancel(
         BackupBackend backend,
         string id,
         CancellationToken cancellationToken = default
@@ -106,7 +109,7 @@ public class ExportClient
     {
         await _client.EnsureVersion<ExportClient>();
 
-        await _client.RestClient.ExportCancel(backend.Provider, id, cancellationToken);
+        return await _client.RestClient.ExportCancel(backend.Provider, id, cancellationToken);
     }
 
     private static Rest.Dto.ExportCreateRequest BuildExportCreateRequest(

@@ -30,6 +30,7 @@ public class TestExports : IntegrationTests
             new ExportCreateRequest(
                 $"export-sync-{Guid.NewGuid():N}",
                 _backend,
+                ExportFileFormat.Parquet,
                 IncludeCollections: [collection.Name]
             ),
             timeout: TimeSpan.FromMinutes(2),
@@ -50,6 +51,7 @@ public class TestExports : IntegrationTests
             new ExportCreateRequest(
                 $"export-async-{Guid.NewGuid():N}",
                 _backend,
+                ExportFileFormat.Parquet,
                 IncludeCollections: [collection.Name]
             ),
             ct
@@ -72,7 +74,12 @@ public class TestExports : IntegrationTests
         var exportId = $"export-status-{Guid.NewGuid():N}";
 
         await _weaviate.Export.CreateSync(
-            new ExportCreateRequest(exportId, _backend, IncludeCollections: [collection.Name]),
+            new ExportCreateRequest(
+                exportId,
+                _backend,
+                ExportFileFormat.Parquet,
+                IncludeCollections: [collection.Name]
+            ),
             timeout: TimeSpan.FromMinutes(2),
             cancellationToken: ct
         );
@@ -93,35 +100,39 @@ public class TestExports : IntegrationTests
             new ExportCreateRequest(
                 $"export-cancel-{Guid.NewGuid():N}",
                 _backend,
+                ExportFileFormat.Parquet,
                 IncludeCollections: [collection.Name]
             ),
             ct
         );
 
         // Cancel immediately — may already have completed for small collections.
-        // Server responds with 409 Conflict when the export has already finished,
-        // or 404 Not Found if the record is no longer available.
+        // Cancel returns false when the export has already finished (409 Conflict);
+        // 404 Not Found still throws if the record is no longer available.
+        bool canceled;
         try
         {
-            await _weaviate.Export.Cancel(_backend, operation.Current.Id, ct);
-        }
-        catch (WeaviateConflictException)
-        {
-            // Export already finished — can't cancel a terminal export.
+            canceled = await _weaviate.Export.Cancel(_backend, operation.Current.Id, ct);
         }
         catch (WeaviateNotFoundException)
         {
-            // Export record no longer available.
+            // Export record no longer available — treat as canceled.
+            return;
         }
 
         try
         {
             var status = await _weaviate.Export.GetStatus(_backend, operation.Current.Id, ct);
 
-            Assert.True(
-                status.Status is ExportStatus.Canceled or ExportStatus.Success,
-                $"Expected Canceled or Success but got {status.Status}"
-            );
+            if (canceled)
+            {
+                Assert.Equal(ExportStatus.Canceled, status.Status);
+            }
+            else
+            {
+                // 409: export reached a terminal state before we could cancel.
+                Assert.Equal(ExportStatus.Success, status.Status);
+            }
         }
         catch (WeaviateNotFoundException)
         {

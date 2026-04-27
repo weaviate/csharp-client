@@ -36,7 +36,7 @@ internal partial class WeaviateRestClient
         return await response.DecodeAsync<Dto.ExportStatusResponse>(cancellationToken);
     }
 
-    internal async Task ExportCancel(
+    internal async Task<bool> ExportCancel(
         BackupStorageProvider backend,
         string id,
         CancellationToken cancellationToken = default
@@ -46,10 +46,15 @@ internal partial class WeaviateRestClient
             WeaviateEndpoints.ExportStatus(backend.ToEnumMemberString()!, id),
             cancellationToken
         );
+        if (response.StatusCode == HttpStatusCode.Conflict)
+        {
+            return false;
+        }
         await response.ManageStatusCode(
             [HttpStatusCode.OK, HttpStatusCode.NoContent],
             "export cancel",
             ResourceType.Export
         );
+        return true;
     }
 }
