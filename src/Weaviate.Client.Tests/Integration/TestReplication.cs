@@ -490,7 +490,8 @@ public class TestReplication : IntegrationTests
         {
             await _weaviate.Cluster.Replications.DeleteAll(TestContext.Current.CancellationToken);
 
-            // Poll up to 30s for asynchronous deletion to take effect.
+            // Poll up to 30s for asynchronous deletion to take effect. Operations flagged
+            // ScheduledForDelete count as deleted — the server clears them on its own cadence.
             for (int i = 0; i < 60; i++)
             {
                 var operations = await _weaviate.Cluster.Replications.ListAll(
@@ -499,7 +500,7 @@ public class TestReplication : IntegrationTests
                 Trace.WriteLine(
                     $"Attempt {attempt + 1}, poll {i}: remaining operations: {operations.Count()}"
                 );
-                if (!operations.Any())
+                if (!operations.Any(o => o.ScheduledForDelete != true))
                 {
                     allDeleted = true;
                     break;

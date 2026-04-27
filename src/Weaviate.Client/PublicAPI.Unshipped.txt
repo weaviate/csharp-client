@@ -6794,7 +6794,6 @@ Weaviate.Client.Batch.BatchResult.ErrorMessage.get -> string?
 Weaviate.Client.Batch.BatchResult.ServerResponse.get -> object?
 Weaviate.Client.Batch.BatchResult.Success.get -> bool
 Weaviate.Client.Batch.BatchState
-Weaviate.Client.Batch.BatchState.Aborted = 3 -> Weaviate.Client.Batch.BatchState
 Weaviate.Client.Batch.BatchState.Closed = 2 -> Weaviate.Client.Batch.BatchState
 Weaviate.Client.Batch.BatchState.InFlight = 1 -> Weaviate.Client.Batch.BatchState
 Weaviate.Client.Batch.BatchState.Open = 0 -> Weaviate.Client.Batch.BatchState

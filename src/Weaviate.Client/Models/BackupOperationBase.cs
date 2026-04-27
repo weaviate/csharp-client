@@ -34,17 +34,17 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
     /// <summary>
     /// The is completed
     /// </summary>
-    private bool _isCompleted;
+    private volatile bool _isCompleted;
 
     /// <summary>
     /// The is successful
     /// </summary>
-    private bool _isSuccessful;
+    private volatile bool _isSuccessful;
 
     /// <summary>
     /// The is canceled
     /// </summary>
-    private bool _isCanceled;
+    private volatile bool _isCanceled;
 
     /// <summary>
     /// The disposed
@@ -97,6 +97,8 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
     /// </summary>
     private Task StartBackgroundRefresh()
     {
+        if (_isCompleted)
+            return Task.CompletedTask;
         return Task.Run(async () =>
         {
             while (!_isCompleted && !_cts.IsCancellationRequested)
@@ -110,10 +112,7 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
                 {
                     break;
                 }
-                catch
-                {
-                    // Swallow errors, optionally log
-                }
+                catch { }
             }
         });
     }
@@ -135,10 +134,7 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
             _isCompleted = true;
             _isSuccessful = status.Status == BackupStatus.Success;
             _isCanceled = status.Status == BackupStatus.Canceled;
-            await _cts.CancelAsync(); // Stop background polling
-
-            // Auto-dispose resources now that operation is complete
-            // This prevents resource leaks if caller forgets to dispose
+            await _cts.CancelAsync();
             DisposeInternal();
         }
     }
@@ -157,13 +153,14 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
         var effectiveTimeout = timeout ?? BackupClient.Config.Timeout;
         var start = DateTime.UtcNow;
 
-        var effectiveToken = CancellationTokenSource
-            .CreateLinkedTokenSource(_cts.Token, cancellationToken)
-            .Token;
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            _cts.Token,
+            cancellationToken
+        );
+        var effectiveToken = linkedCts.Token;
 
         while (!_isCompleted && !effectiveToken.IsCancellationRequested)
         {
-            effectiveToken.ThrowIfCancellationRequested();
             if (DateTime.UtcNow - start > effectiveTimeout)
             {
                 throw new TimeoutException(
@@ -174,10 +171,7 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
             {
                 await Task.Delay(BackupClient.Config.PollInterval, effectiveToken);
             }
-            catch (OperationCanceledException) when (_isCompleted)
-            {
-                // Operation completed while waiting
-            }
+            catch (OperationCanceledException) when (_isCompleted) { }
         }
         return _current;
     }
@@ -187,7 +181,6 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
     /// </summary>
     public async Task Cancel(CancellationToken cancellationToken = default)
     {
-        // Call server-side Cancel
         await _operationCancel(cancellationToken);
 
         await RefreshStatusInternal(cancellationToken);
@@ -207,10 +200,7 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
             {
                 _backgroundRefreshTask.Wait(BackupClient.Config.PollInterval);
             }
-            catch (Exception)
-            {
-                // Ignore exceptions from waiting on background task, as disposal is best-effort
-            }
+            catch (Exception) { }
             _cts.Dispose();
         }
         _disposed = true;
@@ -226,13 +216,9 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
 
         try
         {
-            // Wait for background task to complete (should be immediate since we just canceled)
             _backgroundRefreshTask.Wait(BackupClient.Config.PollInterval);
         }
-        catch (Exception)
-        {
-            // Ignore exceptions, disposal is best-effort
-        }
+        catch (Exception) { }
 
         _cts.Dispose();
         _disposed = true;
@@ -258,13 +244,9 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
 
         try
         {
-            // Await the background task gracefully
             await _backgroundRefreshTask.ConfigureAwait(false);
         }
-        catch (Exception)
-        {
-            // Ignore exceptions, disposal is best-effort
-        }
+        catch (Exception) { }
 
         _cts.Dispose();
         _disposed = true;

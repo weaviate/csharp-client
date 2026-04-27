@@ -30,7 +30,7 @@ Manages the lifecycle and state of a batch, including adding objects, retrying, 
 - `Close(CancellationToken)` - Close the batch and wait for all results
 
 **Properties:**
-- `State` - Current `BatchState` (Open, InFlight, Closed, Aborted)
+- `State` - Current `BatchState` (Open, InFlight, Closed)
 
 ### `TaskHandle`
 

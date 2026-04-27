@@ -3,6 +3,7 @@ Weaviate.Client.VectorData.DependencyInjection.WeaviateVectorDataServiceCollecti
 Weaviate.Client.VectorData.WeaviateVectorStore
 Weaviate.Client.VectorData.WeaviateVectorStore.WeaviateVectorStore(Weaviate.Client.WeaviateClient! client, Weaviate.Client.VectorData.WeaviateVectorStoreOptions? options = null) -> void
 Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>
+Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.HybridSearchAsync<TInput>(TInput searchValue, System.Collections.Generic.ICollection<string!>! keywords, int top, Microsoft.Extensions.VectorData.HybridSearchOptions<TRecord!>? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IAsyncEnumerable<Microsoft.Extensions.VectorData.VectorSearchResult<TRecord!>!>!
 Weaviate.Client.VectorData.WeaviateVectorStoreCollection<TKey, TRecord>.WeaviateVectorStoreCollection(Weaviate.Client.WeaviateClient! client, string! name, Microsoft.Extensions.VectorData.VectorStoreCollectionDefinition? definition = null, Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions? options = null) -> void
 Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions
 Weaviate.Client.VectorData.WeaviateVectorStoreCollectionOptions.ConsistencyLevel.get -> Weaviate.Client.ConsistencyLevels?
