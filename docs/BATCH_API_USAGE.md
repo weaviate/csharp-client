@@ -219,7 +219,6 @@ The `BatchContext.State` property indicates the current state:
 - `Open` - Batch is accepting objects
 - `InFlight` - Processing in progress
 - `Closed` - Batch completed normally
-- `Aborted` - Batch failed with error
 
 ## Reference Batching
 
