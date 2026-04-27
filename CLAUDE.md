@@ -80,6 +80,15 @@ dotnet test src/Weaviate.Client.Tests --filter "FullyQualifiedName~Integration"
 ./ci/stop_weaviate.sh 1.36.9    # stop when done
 ```
 
+## REST DTO Generation
+
+`src/Weaviate.Client/Rest/Dto/Models.g.cs` is **auto-generated** — never edit it manually. To update it:
+
+1. Run `./tools/openapi_sync.sh` followed by the desired branch or tag to target from the github.com/weaviate/weaviate repo
+2. Run `./tools/gen_rest_dto.sh` to regenerate `Models.g.cs` via NSwag
+
+To customize the generated output (e.g., access modifiers), edit the Liquid templates in `src/Weaviate.Client/Rest/Schema/Templates/`. These override NSwag's built-in templates. `File.liquid` overrides the file-level template (controls `FileResponse` visibility, etc.).
+
 ## Public API Tracking
 
 After adding public types/members, run:
