@@ -13,7 +13,7 @@ public partial class ClientTests : IntegrationTests
     [Fact]
     public async Task ConnectToLocal()
     {
-        var client = await Connect.Local();
+        var client = await Connect.Local(restPort: RestPort, grpcPort: GrpcPort);
 
         var ex = await Record.ExceptionAsync(async () =>
             await client
@@ -49,11 +49,14 @@ public partial class ClientTests : IntegrationTests
     [Fact]
     public async Task TestMeta()
     {
-        var client = await Connect.Local();
+        var client = await Connect.Local(restPort: RestPort, grpcPort: GrpcPort);
         var meta = await client.GetMeta(TestContext.Current.CancellationToken);
 
         // ip is different depending on the environment
-        Assert.Contains("8080", meta.Hostname);
+        Assert.Contains(
+            RestPort.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            meta.Hostname
+        );
         Assert.Contains("http://", meta.Hostname);
     }
 

@@ -8,7 +8,6 @@ using Weaviate.Client;
 
 public class TestAuth : IntegrationTests
 {
-    const int ANON_PORT = 8080;
     const int OKTA_PORT_CC = 8082;
     const int OKTA_PORT_USERS = 8083;
 
@@ -133,11 +132,12 @@ public class TestAuth : IntegrationTests
     [Fact]
     public async Task TestClientWithAuthenticationWithAnonWeaviate()
     {
-        Assert.False(await IsAuthEnabled($"localhost:{ANON_PORT}"));
+        Assert.False(await IsAuthEnabled($"localhost:{RestPort}"));
 
         var client = await Connect.Local(
             hostname: "localhost",
-            restPort: ANON_PORT,
+            restPort: RestPort,
+            grpcPort: GrpcPort,
             credentials: Auth.ClientPassword(
                 username: "someUser",
                 password: "SomePw",
