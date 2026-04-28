@@ -70,7 +70,7 @@ public class ExportClient
     )
     {
         await _client.EnsureVersion<ExportClient>();
-        var operation = await Create(request, cancellationToken);
+        await using var operation = await Create(request, cancellationToken);
         return await operation.WaitForCompletion(timeout, cancellationToken);
     }
 
