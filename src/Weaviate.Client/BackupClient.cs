@@ -90,7 +90,7 @@ public class BackupClient
         CancellationToken cancellationToken = default
     )
     {
-        var operation = await Create(request, cancellationToken);
+        await using var operation = await Create(request, cancellationToken);
         return await operation.WaitForCompletion(timeout, cancellationToken);
     }
 
@@ -277,7 +277,7 @@ public class BackupClient
         CancellationToken cancellationToken = default
     )
     {
-        var operation = await Restore(request, cancellationToken);
+        await using var operation = await Restore(request, cancellationToken);
         return await operation.WaitForCompletion(timeout, cancellationToken);
     }
 
