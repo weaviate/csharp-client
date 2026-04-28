@@ -79,7 +79,7 @@ public static class ExportStatusExtensions
 /// </summary>
 public record Export(
     string Id,
-    BackupBackend Backend,
+    StorageBackend Backend,
     string? Path,
     string StatusRaw,
     string[]? Collections,
@@ -119,8 +119,34 @@ public record ShardProgress(
 /// </summary>
 public record ExportCreateRequest(
     string Id,
-    BackupBackend Backend,
+    StorageBackend Backend,
     ExportFileFormat FileFormat,
     AutoArray<string>? IncludeCollections = null,
     AutoArray<string>? ExcludeCollections = null
 );
+
+/// <summary>
+/// Export-feature view of a storage backend. Inherits the abstract
+/// <see cref="StorageBackend.Provider"/> / <see cref="StorageBackend.Path"/> contract
+/// from <see cref="StorageBackend"/>, and exposes static factories under an
+/// export-themed name so the backend choices are discoverable through the export API.
+/// Each factory delegates to the matching <see cref="BackupBackend"/> factory —
+/// exports and backups share the same concrete backend types underneath.
+/// </summary>
+public abstract record ExportBackend : StorageBackend
+{
+    /// <summary>Creates a filesystem export backend.</summary>
+    public static StorageBackend Filesystem(string? path = null) => BackupBackend.Filesystem(path);
+
+    /// <summary>Creates an S3 export backend.</summary>
+    public static StorageBackend S3(string? bucket = null, string? path = null) =>
+        BackupBackend.S3(bucket, path);
+
+    /// <summary>Creates a GCS export backend.</summary>
+    public static StorageBackend GCS(string? bucket = null, string? path = null) =>
+        BackupBackend.GCS(bucket, path);
+
+    /// <summary>Creates an Azure export backend.</summary>
+    public static StorageBackend Azure(string? bucket = null, string? path = null) =>
+        BackupBackend.Azure(bucket, path);
+}

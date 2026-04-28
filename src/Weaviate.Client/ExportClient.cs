@@ -79,7 +79,7 @@ public class ExportClient
     /// </summary>
     [RequiresWeaviateVersion(1, 37, 0)]
     public async Task<Export> GetStatus(
-        BackupBackend backend,
+        StorageBackend backend,
         string id,
         CancellationToken cancellationToken = default
     )
@@ -102,7 +102,7 @@ public class ExportClient
     /// </summary>
     [RequiresWeaviateVersion(1, 37, 0)]
     public async Task<bool> Cancel(
-        BackupBackend backend,
+        StorageBackend backend,
         string id,
         CancellationToken cancellationToken = default
     )
@@ -141,7 +141,7 @@ public class ExportClient
             null
         );
 
-    private static Export ToModel(Rest.Dto.ExportStatusResponse dto, BackupBackend backend) =>
+    private static Export ToModel(Rest.Dto.ExportStatusResponse dto, StorageBackend backend) =>
         new(
             dto.Id ?? string.Empty,
             backend,
@@ -169,7 +169,7 @@ public class ExportClient
             TookInMs = dto.TookInMs.HasValue ? (int)dto.TookInMs.Value : null,
         };
 
-    private static BackupBackend ParseBackend(string? backendStr)
+    private static StorageBackend ParseBackend(string? backendStr)
     {
         var provider = backendStr?.ToLowerInvariant() switch
         {
