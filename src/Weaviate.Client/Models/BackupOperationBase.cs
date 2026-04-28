@@ -207,19 +207,16 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
     }
 
     /// <summary>
-    /// Internal disposal logic that can be called from background task without re-entrancy issues.
+    /// Internal disposal called from the background refresh task itself when a terminal status
+    /// is observed. Must NOT Wait() on _backgroundRefreshTask — that would block the very task
+    /// executing this code on its own completion (bounded only by the Wait timeout). The task
+    /// is already exiting because _cts has been canceled and _isCompleted is set, so just
+    /// release the CTS.
     /// </summary>
     private void DisposeInternal()
     {
         if (_disposed)
             return;
-
-        try
-        {
-            _backgroundRefreshTask.Wait(BackupClient.Config.PollInterval);
-        }
-        catch (Exception) { }
-
         _cts.Dispose();
         _disposed = true;
     }
