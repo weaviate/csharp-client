@@ -131,20 +131,13 @@ public enum BackupStorageProvider
 }
 
 /// <summary>
-/// Base class for backup backend configurations
+/// Backup-feature view of a storage backend. Inherits the abstract
+/// <see cref="StorageBackend.Provider"/> / <see cref="StorageBackend.Path"/> contract
+/// from <see cref="StorageBackend"/>, and exposes static factories that return
+/// <see cref="BackupBackend"/> for use with <see cref="BackupClient"/>.
 /// </summary>
-public abstract record BackupBackend
+public abstract record BackupBackend : StorageBackend
 {
-    /// <summary>
-    /// The backend storage provider
-    /// </summary>
-    public abstract BackupStorageProvider Provider { get; }
-
-    /// <summary>
-    /// Optional path for the backup location
-    /// </summary>
-    public abstract string? Path { get; }
-
     /// <summary>
     /// Creates an empty backend (no backend specified)
     /// </summary>

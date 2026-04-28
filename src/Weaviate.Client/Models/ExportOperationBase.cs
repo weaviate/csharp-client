@@ -1,0 +1,217 @@
+namespace Weaviate.Client.Models;
+
+/// <summary>
+/// Abstract base class for export operations, providing status polling, cancellation, and resource management.
+/// </summary>
+public abstract class ExportOperationBase : IDisposable, IAsyncDisposable
+{
+    private readonly Func<CancellationToken, Task<Export>> _statusFetcher;
+    private readonly Func<CancellationToken, Task<bool>> _operationCancel;
+    private readonly CancellationTokenSource _cts = new();
+    private readonly Task _backgroundRefreshTask;
+    private Export _current;
+    private volatile bool _isCompleted;
+    private volatile bool _isSuccessful;
+    private volatile bool _isCanceled;
+    private bool _disposed;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExportOperationBase"/> class.
+    /// </summary>
+    /// <param name="initial">The initial export state.</param>
+    /// <param name="statusFetcher">A delegate to fetch the latest export status.</param>
+    /// <param name="operationCancel">A delegate to cancel the export operation.</param>
+    protected ExportOperationBase(
+        Export initial,
+        Func<CancellationToken, Task<Export>> statusFetcher,
+        Func<CancellationToken, Task<bool>> operationCancel
+    )
+    {
+        _current = initial;
+        _statusFetcher = statusFetcher;
+        _operationCancel = operationCancel;
+        _isCompleted = IsTerminalStatus(initial.Status);
+        _isSuccessful = initial.Status == ExportStatus.Success;
+        _isCanceled = initial.Status == ExportStatus.Canceled;
+        _backgroundRefreshTask = StartBackgroundRefresh();
+    }
+
+    /// <summary>
+    /// Gets the current export status and metadata.
+    /// </summary>
+    public Export Current => _current;
+
+    /// <summary>
+    /// Gets a value indicating whether the export operation has completed (success, failure, or canceled).
+    /// </summary>
+    public bool IsCompleted => _isCompleted;
+
+    /// <summary>
+    /// Gets a value indicating whether the export operation completed successfully.
+    /// </summary>
+    public bool IsSuccessful => _isSuccessful;
+
+    /// <summary>
+    /// Gets a value indicating whether the export operation was canceled.
+    /// </summary>
+    public bool IsCanceled => _isCanceled;
+
+    private Task StartBackgroundRefresh()
+    {
+        if (_isCompleted)
+            return Task.CompletedTask;
+        return Task.Run(async () =>
+        {
+            while (!_isCompleted && !_cts.IsCancellationRequested)
+            {
+                try
+                {
+                    await Task.Delay(ExportClient.Config.PollInterval, _cts.Token);
+                    await RefreshStatusInternal();
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch { }
+            }
+        });
+    }
+
+    private async Task RefreshStatusInternal(CancellationToken cancellationToken = default)
+    {
+        if (_isCompleted)
+            return;
+        var status = await _statusFetcher(
+            cancellationToken == default ? _cts.Token : cancellationToken
+        );
+        _current = status;
+        if (IsTerminalStatus(status.Status))
+        {
+            _isCompleted = true;
+            _isSuccessful = status.Status == ExportStatus.Success;
+            _isCanceled = status.Status == ExportStatus.Canceled;
+            await _cts.CancelAsync();
+            DisposeInternal();
+        }
+    }
+
+    /// <summary>
+    /// Waits asynchronously for the export operation to complete or timeout.
+    /// </summary>
+    /// <param name="timeout">Optional timeout for the operation. If not specified, uses the default export timeout.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting.</param>
+    /// <returns>The final <see cref="Export"/> result.</returns>
+    public async Task<Export> WaitForCompletion(
+        TimeSpan? timeout = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var effectiveTimeout = timeout ?? ExportClient.Config.Timeout;
+        var start = DateTime.UtcNow;
+
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            _cts.Token,
+            cancellationToken
+        );
+        var effectiveToken = linkedCts.Token;
+
+        while (!_isCompleted && !effectiveToken.IsCancellationRequested)
+        {
+            if (DateTime.UtcNow - start > effectiveTimeout)
+            {
+                throw new TimeoutException(
+                    $"Export operation did not complete within {effectiveTimeout} (last status={_current.Status})."
+                );
+            }
+            try
+            {
+                await Task.Delay(ExportClient.Config.PollInterval, effectiveToken);
+            }
+            catch (OperationCanceledException) when (_isCompleted) { }
+        }
+        return _current;
+    }
+
+    /// <summary>
+    /// Cancels the export operation asynchronously. Returns <c>true</c> if the server
+    /// accepted the cancel request, <c>false</c> if the export is already in a terminal
+    /// state and cannot be canceled (HTTP 409). Throws if the export id is unknown.
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token to observe while canceling.</param>
+    public async Task<bool> Cancel(CancellationToken cancellationToken = default)
+    {
+        var canceled = await _operationCancel(cancellationToken);
+        await RefreshStatusInternal(cancellationToken);
+        return canceled;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+            return;
+        if (disposing)
+        {
+            _cts.Cancel();
+            try
+            {
+                _backgroundRefreshTask.Wait(ExportClient.Config.PollInterval);
+            }
+            catch (Exception) { }
+            _cts.Dispose();
+        }
+        _disposed = true;
+    }
+
+    /// <summary>
+    /// Internal disposal called from the background refresh task itself when a terminal status
+    /// is observed. Must NOT Wait() on _backgroundRefreshTask — that would block the very task
+    /// executing this code on its own completion (bounded only by the Wait timeout). The task
+    /// is already exiting because _cts has been canceled and _isCompleted is set, so just
+    /// release the CTS.
+    /// </summary>
+    private void DisposeInternal()
+    {
+        if (_disposed)
+            return;
+        _cts.Dispose();
+        _disposed = true;
+    }
+
+    /// <summary>
+    /// Disposes the export operation and releases resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(true);
+    }
+
+    /// <summary>
+    /// Disposes the export operation asynchronously and releases resources.
+    /// </summary>
+    /// <returns>A <see cref="ValueTask"/> representing the asynchronous dispose operation.</returns>
+    public async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+            return;
+        _cts.Cancel();
+        try
+        {
+            await _backgroundRefreshTask.ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            // Best-effort disposal
+        }
+        _cts.Dispose();
+        _disposed = true;
+        GC.SuppressFinalize(this);
+    }
+
+    private static bool IsTerminalStatus(ExportStatus? status)
+    {
+        return status == ExportStatus.Success
+            || status == ExportStatus.Failed
+            || status == ExportStatus.Canceled;
+    }
+}

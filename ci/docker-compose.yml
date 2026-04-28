@@ -24,6 +24,8 @@ services:
       PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
       ENABLE_MODULES: text2vec-transformers,text2vec-cohere,backup-filesystem,generative-dummy,generative-anyscale,reranker-dummy,reranker-cohere,text2vec-ollama,generative-ollama
       BACKUP_FILESYSTEM_PATH: "/tmp/backups"
+      EXPORT_ENABLED: 'true'
+      EXPORT_DEFAULT_PATH: "/tmp/exports"
       CLUSTER_GOSSIP_BIND_PORT: "7100"
       CLUSTER_DATA_BIND_PORT: "7101"
       CLUSTER_HOSTNAME: "singlenode"
