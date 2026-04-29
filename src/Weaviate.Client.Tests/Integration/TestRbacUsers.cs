@@ -83,7 +83,7 @@ public class TestRbacUsers : RbacIntegrationTests
 
             // Verify we can connect with the new user's API key
             var newUserClient = await Connect.Local(
-                hostname: "localhost",
+                hostname: RestHost,
                 restPort: RestPort,
                 grpcPort: GrpcPort,
                 credentials: Auth.ApiKey(apiKey),
@@ -146,7 +146,7 @@ public class TestRbacUsers : RbacIntegrationTests
 
             // Verify old key works
             var oldKeyClient = await Connect.Local(
-                hostname: "localhost",
+                hostname: RestHost,
                 restPort: RestPort,
                 grpcPort: GrpcPort,
                 credentials: Auth.ApiKey(apiKeyOld),
@@ -167,7 +167,7 @@ public class TestRbacUsers : RbacIntegrationTests
 
             // Verify new key works
             var newKeyClient = await Connect.Local(
-                hostname: "localhost",
+                hostname: RestHost,
                 restPort: RestPort,
                 grpcPort: GrpcPort,
                 credentials: Auth.ApiKey(apiKeyNew),
@@ -281,7 +281,7 @@ public class TestRbacUsers : RbacIntegrationTests
             await Assert.ThrowsAnyAsync<WeaviateException>(async () =>
             {
                 var oldKeyClient = await Connect.Local(
-                    hostname: "localhost",
+                    hostname: RestHost,
                     restPort: RestPort,
                     grpcPort: GrpcPort,
                     credentials: Auth.ApiKey(apiKeyOld),
@@ -300,7 +300,7 @@ public class TestRbacUsers : RbacIntegrationTests
             await Assert.ThrowsAnyAsync<WeaviateException>(async () =>
             {
                 var oldKeyClient = await Connect.Local(
-                    hostname: "localhost",
+                    hostname: RestHost,
                     restPort: RestPort,
                     grpcPort: GrpcPort,
                     credentials: Auth.ApiKey(apiKeyOld),
@@ -317,7 +317,7 @@ public class TestRbacUsers : RbacIntegrationTests
 
             // New key should work
             var newKeyClient = await Connect.Local(
-                hostname: "localhost",
+                hostname: RestHost,
                 restPort: RestPort,
                 grpcPort: GrpcPort,
                 credentials: Auth.ApiKey(apiKeyNew ?? string.Empty),
