@@ -8,9 +8,6 @@ using Weaviate.Client;
 
 public class TestAuth : IntegrationTests
 {
-    const int OKTA_PORT_CC = 8082;
-    const int OKTA_PORT_USERS = 8083;
-
     private static async Task<(
         bool IsSuccessStatusCode,
         string? TokenEndpoint,
@@ -71,11 +68,11 @@ public class TestAuth : IntegrationTests
     [Fact]
     public async Task TestNoAuthProvided()
     {
-        Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_CC}"));
+        Assert.True(await IsAuthEnabled($"{OidcHost}:{OidcOktaCcPort}"));
 
         await Assert.ThrowsAnyAsync<WeaviateServerException>(async () =>
         {
-            await Connect.Local(hostname: "localhost", restPort: OKTA_PORT_CC);
+            await Connect.Local(hostname: OidcHost, restPort: OidcOktaCcPort);
         });
     }
 
@@ -88,11 +85,11 @@ public class TestAuth : IntegrationTests
             Assert.Skip("OKTA_CLIENT_SECRET is not set");
         }
 
-        Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_CC}"));
+        Assert.True(await IsAuthEnabled($"{OidcHost}:{OidcOktaCcPort}"));
 
         var client = await Connect.Local(
-            hostname: "localhost",
-            restPort: OKTA_PORT_CC,
+            hostname: OidcHost,
+            restPort: OidcOktaCcPort,
             credentials: Auth.ClientCredentials(clientSecret, "some_scope"),
             httpMessageHandler: _httpMessageHandler
         );
@@ -111,11 +108,11 @@ public class TestAuth : IntegrationTests
             Assert.Skip("OKTA_DUMMY_CI_PW is not set");
         }
 
-        Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_USERS}"));
+        Assert.True(await IsAuthEnabled($"{OidcHost}:{OidcOktaUsersPort}"));
 
         var client = await Connect.Local(
-            hostname: "localhost",
-            restPort: OKTA_PORT_USERS,
+            hostname: OidcHost,
+            restPort: OidcOktaUsersPort,
             credentials: Auth.ClientPassword(
                 username: "test@test.de",
                 password: pw,
@@ -132,10 +129,10 @@ public class TestAuth : IntegrationTests
     [Fact]
     public async Task TestClientWithAuthenticationWithAnonWeaviate()
     {
-        Assert.False(await IsAuthEnabled($"localhost:{RestPort}"));
+        Assert.False(await IsAuthEnabled($"{RestHost}:{RestPort}"));
 
         var client = await Connect.Local(
-            hostname: "localhost",
+            hostname: RestHost,
             restPort: RestPort,
             grpcPort: GrpcPort,
             credentials: Auth.ClientPassword(
@@ -152,7 +149,7 @@ public class TestAuth : IntegrationTests
     [Fact]
     public async Task TestAuthenticationWithBearerToken_Okta()
     {
-        string url = $"localhost:{OKTA_PORT_USERS}";
+        string url = $"{OidcHost}:{OidcOktaUsersPort}";
         Assert.True(await IsAuthEnabled(url));
         string pw = Environment.GetEnvironmentVariable("OKTA_DUMMY_CI_PW")!;
         if (string.IsNullOrEmpty(pw))
@@ -168,8 +165,8 @@ public class TestAuth : IntegrationTests
         );
 
         var client = await Connect.Local(
-            hostname: "localhost",
-            restPort: OKTA_PORT_USERS,
+            hostname: OidcHost,
+            restPort: OidcOktaUsersPort,
             credentials: auth,
             httpMessageHandler: _httpMessageHandler
         );
@@ -180,7 +177,7 @@ public class TestAuth : IntegrationTests
     [Fact]
     public async Task TestAuthenticationWithBearerTokenNoRefresh()
     {
-        string url = $"localhost:{OKTA_PORT_USERS}";
+        string url = $"{OidcHost}:{OidcOktaUsersPort}";
         Assert.True(await IsAuthEnabled(url));
         string pw = Environment.GetEnvironmentVariable("OKTA_DUMMY_CI_PW")!;
         if (string.IsNullOrEmpty(pw))
@@ -196,8 +193,8 @@ public class TestAuth : IntegrationTests
         );
 
         var client = await Connect.Local(
-            hostname: "localhost",
-            restPort: OKTA_PORT_USERS,
+            hostname: OidcHost,
+            restPort: OidcOktaUsersPort,
             credentials: auth,
             httpMessageHandler: _httpMessageHandler
         );
@@ -213,13 +210,13 @@ public class TestAuth : IntegrationTests
     public async Task TestAuthenticationFailure()
     {
         string clientSecret = "invalid-secret";
-        Assert.True(await IsAuthEnabled($"localhost:{OKTA_PORT_CC}"));
+        Assert.True(await IsAuthEnabled($"{OidcHost}:{OidcOktaCcPort}"));
 
         await Assert.ThrowsAsync<WeaviateAuthenticationException>(async () =>
         {
             await Connect.Local(
-                hostname: "localhost",
-                restPort: OKTA_PORT_CC,
+                hostname: OidcHost,
+                restPort: OidcOktaCcPort,
                 credentials: Auth.ClientCredentials(clientSecret, "some_scope"),
                 httpMessageHandler: _httpMessageHandler
             );
