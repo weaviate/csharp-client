@@ -3,6 +3,7 @@ namespace Weaviate.Client.Tests.Integration;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Weaviate.Client;
 using Weaviate.Client.Models;
 using Xunit;
@@ -16,16 +17,23 @@ using Xunit;
 [CollectionDefinition("TestReplication", DisableParallelization = true)]
 public class TestReplication : IntegrationTests
 {
-    // Use dedicated ports for replication test suite to avoid clashes with other running instances
+    // Use the dedicated cluster instance to avoid clashes with other running instances.
+    // Configurable via WV_TEST_CLUSTER_HOST, WV_TEST_CLUSTER_REST_PORT, WV_TEST_CLUSTER_GRPC_PORT.
+    /// <inheritdoc />
+    public override string RestHost =>
+        _configuration.GetValue<string>("WV_TEST_CLUSTER_HOST") ?? "localhost";
+
     /// <summary>
     /// Gets the value of the rest port
     /// </summary>
-    public override ushort RestPort => 8087;
+    public override ushort RestPort =>
+        _configuration.GetValue<ushort>("WV_TEST_CLUSTER_REST_PORT", 8087);
 
     /// <summary>
     /// Gets the value of the grpc port
     /// </summary>
-    public override ushort GrpcPort => 50058;
+    public override ushort GrpcPort =>
+        _configuration.GetValue<ushort>("WV_TEST_CLUSTER_GRPC_PORT", 50058);
 
     /// <summary>
     /// Initializes this instance

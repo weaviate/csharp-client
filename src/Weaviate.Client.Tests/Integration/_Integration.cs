@@ -81,14 +81,40 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
     public virtual ICredentials? Credentials => null;
 
     /// <summary>
+    /// Gets the value of the rest host
+    /// </summary>
+    public virtual string RestHost =>
+        _configuration.GetValue<string>("WV_TEST_HOST") ?? "localhost";
+
+    /// <summary>
     /// Gets the value of the rest port
     /// </summary>
-    public virtual ushort RestPort => _configuration.GetValue<ushort>("WV_HTTP_PORT", 8080);
+    public virtual ushort RestPort => _configuration.GetValue<ushort>("WV_TEST_REST_PORT", 8080);
 
     /// <summary>
     /// Gets the value of the grpc port
     /// </summary>
-    public virtual ushort GrpcPort => _configuration.GetValue<ushort>("WV_GRPC_PORT", 50051);
+    public virtual ushort GrpcPort => _configuration.GetValue<ushort>("WV_TEST_GRPC_PORT", 50051);
+
+    /// <summary>
+    /// Gets the value of the OIDC host. Override via WV_TEST_OIDC_HOST (default: localhost).
+    /// </summary>
+    public virtual string OidcHost =>
+        _configuration.GetValue<string>("WV_TEST_OIDC_HOST") ?? "localhost";
+
+    /// <summary>
+    /// Gets the value of the OIDC Okta client-credentials REST port.
+    /// Override via WV_TEST_OIDC_OKTA_CC_PORT (default: 8082).
+    /// </summary>
+    public virtual ushort OidcOktaCcPort =>
+        _configuration.GetValue<ushort>("WV_TEST_OIDC_OKTA_CC_PORT", 8082);
+
+    /// <summary>
+    /// Gets the value of the OIDC Okta users REST port.
+    /// Override via WV_TEST_OIDC_OKTA_USERS_PORT (default: 8083).
+    /// </summary>
+    public virtual ushort OidcOktaUsersPort =>
+        _configuration.GetValue<ushort>("WV_TEST_OIDC_OKTA_USERS_PORT", 8083);
 
     /// <summary>
     /// Disposes this instance
