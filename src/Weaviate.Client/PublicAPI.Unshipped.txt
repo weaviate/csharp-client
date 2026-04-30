@@ -6812,7 +6812,7 @@ Weaviate.Client.ClientConfigurationExtensions
 static Weaviate.Client.ClientConfigurationExtensions.WithIntegration(this Weaviate.Client.ClientConfiguration! config, string! integrationValue) -> Weaviate.Client.ClientConfiguration!
 static Weaviate.Client.WeaviateClientBuilderExtensions.WithIntegration(this Weaviate.Client.WeaviateClientBuilder! builder, string! integrationValue) -> Weaviate.Client.WeaviateClientBuilder!
 Weaviate.Client.TokenizeClient
-Weaviate.Client.TokenizeClient.Text(string! text, Weaviate.Client.Models.PropertyTokenization tokenization, Weaviate.Client.Models.TextAnalyzerConfig? analyzerConfig = null, System.Collections.Generic.IDictionary<string!, Weaviate.Client.Models.StopwordConfig!>? stopwordPresets = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.TokenizeResult!>!
+Weaviate.Client.TokenizeClient.Text(string! text, Weaviate.Client.Models.PropertyTokenization tokenization, Weaviate.Client.Models.TextAnalyzerConfig? analyzerConfig = null, Weaviate.Client.Models.StopwordConfig? stopwords = null, System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string!>!>? stopwordPresets = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.TokenizeResult!>!
 Weaviate.Client.WeaviateClient.Tokenize.get -> Weaviate.Client.TokenizeClient!
 Weaviate.Client.CollectionTokenizeClient
 Weaviate.Client.CollectionTokenizeClient.Property(string! propertyName, string! text, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Weaviate.Client.Models.TokenizeResult!>!
@@ -6844,16 +6844,10 @@ static Weaviate.Client.Models.TextAnalyzerConfig.operator !=(Weaviate.Client.Mod
 static Weaviate.Client.Models.TextAnalyzerConfig.operator ==(Weaviate.Client.Models.TextAnalyzerConfig? left, Weaviate.Client.Models.TextAnalyzerConfig? right) -> bool
 Weaviate.Client.Models.TokenizeResult
 Weaviate.Client.Models.TokenizeResult.TokenizeResult() -> void
-Weaviate.Client.Models.TokenizeResult.Tokenization.get -> Weaviate.Client.Models.PropertyTokenization
-Weaviate.Client.Models.TokenizeResult.Tokenization.init -> void
 Weaviate.Client.Models.TokenizeResult.Indexed.get -> System.Collections.Immutable.ImmutableList<string!>!
 Weaviate.Client.Models.TokenizeResult.Indexed.init -> void
 Weaviate.Client.Models.TokenizeResult.Query.get -> System.Collections.Immutable.ImmutableList<string!>!
 Weaviate.Client.Models.TokenizeResult.Query.init -> void
-Weaviate.Client.Models.TokenizeResult.AnalyzerConfig.get -> Weaviate.Client.Models.TextAnalyzerConfig?
-Weaviate.Client.Models.TokenizeResult.AnalyzerConfig.init -> void
-Weaviate.Client.Models.TokenizeResult.StopwordConfig.get -> Weaviate.Client.Models.StopwordConfig?
-Weaviate.Client.Models.TokenizeResult.StopwordConfig.init -> void
 Weaviate.Client.Models.TokenizeResult.Equals(Weaviate.Client.Models.TokenizeResult? other) -> bool
 Weaviate.Client.Models.TokenizeResult.<Clone>$() -> Weaviate.Client.Models.TokenizeResult!
 override Weaviate.Client.Models.TokenizeResult.Equals(object? obj) -> bool
