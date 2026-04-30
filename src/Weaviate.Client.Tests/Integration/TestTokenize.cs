@@ -47,9 +47,13 @@ public class TestTokenize : IntegrationTests
     {
         RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
 
+        // Disable stopwords explicitly: from 1.37.2 onward, Word tokenization
+        // defaults to the EN preset when no stopwords config is supplied, which
+        // would strip "the" from both lists and break the assertions below.
         var result = await _weaviate.Tokenize.Text(
             text,
             tokenization,
+            stopwords: new StopwordConfig { Preset = StopwordConfig.Presets.None },
             cancellationToken: TestContext.Current.CancellationToken
         );
 

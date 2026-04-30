@@ -46,9 +46,9 @@ The `PropertyTokenization` enum covers all nine server-supported strategies:
 | `Field` | `"  Hello World  "` | `["Hello World"]` *(entire field, trimmed)* |
 | `Trigram` | `"Hello"` | `["hel", "ell", "llo"]` |
 | `Gse` | Chinese/Japanese | Requires `ENABLE_TOKENIZER_GSE=true` on the server |
-| `GseCh` | Chinese-only GSE | Requires `ENABLE_TOKENIZER_GSE_CH=true` |
-| `KagomeJa` | Japanese | Requires `ENABLE_TOKENIZER_KAGOME_JA=true` |
-| `KagomeKr` | Korean | Requires `ENABLE_TOKENIZER_KAGOME_KR=true` |
+| `Gse_ch` | Chinese-only GSE | Requires `ENABLE_TOKENIZER_GSE_CH=true` |
+| `Kagome_ja` | Japanese | Requires `ENABLE_TOKENIZER_KAGOME_JA=true` |
+| `Kagome_kr` | Korean | Requires `ENABLE_TOKENIZER_KAGOME_KR=true` |
 
 ## Ad-hoc Tokenization (`client.Tokenize.Text`)
 
@@ -73,24 +73,26 @@ Task<TokenizeResult> Tokenize.Text(
     string text,
     PropertyTokenization tokenization,
     TextAnalyzerConfig? analyzerConfig = null,
-    IDictionary<string, StopwordConfig>? stopwordPresets = null,
+    StopwordConfig? stopwords = null,
+    IDictionary<string, IList<string>>? stopwordPresets = null,
     CancellationToken cancellationToken = default
 );
 ```
+
+`stopwords` and `stopwordPresets` are mutually exclusive — passing both throws `ArgumentException`.
 
 ## Property-scoped Tokenization (`collection.Tokenize.Property`)
 
 When you want to see how a specific property would tokenize text — using that property's configured tokenization — use the collection-scoped variant:
 
 ```csharp
-var collection = await client.Collections.Get("Article");
+var collection = client.Collections.Use("Article");
 
 var result = await collection.Tokenize.Property(
     propertyName: "title",
     text: "  Hello World  "
 );
 
-Console.WriteLine(result.Tokenization);          // Field (whatever the property is configured with)
 Console.WriteLine(string.Join(", ", result.Indexed)); // Hello World
 ```
 
@@ -155,20 +157,21 @@ var result = await client.Tokenize.Text(
 
 ## Stopwords
 
-For more control, define a named preset via the `stopwordPresets` dictionary and reference it from `StopwordPreset`.
+There are two ways to feed stopwords into a tokenize call:
 
-### Add words to a preset
+1. **`stopwordPresets`** — a `name → word-list` dictionary. Each value is a flat list of stopwords for that preset. `TextAnalyzerConfig.StopwordPreset` then references one by name. A preset name that matches a built-in (`"en"`, `"none"`) replaces the built-in for this call.
+2. **`stopwords`** — a one-off `StopwordConfig` (`preset` + `additions` + `removals`) applied directly. Mirrors the collection-level `invertedIndexConfig.stopwords` shape.
+
+The two parameters are **mutually exclusive** — pass one or the other.
+
+### Custom named preset
 
 ```csharp
 var cfg = new TextAnalyzerConfig { StopwordPreset = "custom" };
 
-var presets = new Dictionary<string, StopwordConfig>
+var presets = new Dictionary<string, IList<string>>
 {
-    ["custom"] = new StopwordConfig
-    {
-        Preset = StopwordConfig.Presets.None,
-        Additions = ["test"],
-    },
+    ["custom"] = new[] { "test" },
 };
 
 var result = await client.Tokenize.Text(
@@ -182,28 +185,24 @@ var result = await client.Tokenize.Text(
 // result.Query   → ["hello", "world"]          ("test" dropped)
 ```
 
-### Start from a base preset and remove words
+### One-off `stopwords` block
+
+Use `stopwords` when you want a base preset plus tweaks for a single call without defining a named preset:
 
 ```csharp
-var cfg = new TextAnalyzerConfig { StopwordPreset = "en-no-the" };
-
-var presets = new Dictionary<string, StopwordConfig>
-{
-    ["en-no-the"] = new StopwordConfig
-    {
-        Preset = StopwordConfig.Presets.EN,
-        Removals = ["the"],
-    },
-};
-
 var result = await client.Tokenize.Text(
     "the quick",
     PropertyTokenization.Word,
-    analyzerConfig: cfg,
-    stopwordPresets: presets
+    stopwords: new StopwordConfig
+    {
+        Preset = StopwordConfig.Presets.EN,
+        Removals = ["the"],
+    }
 );
 
-// "the" is no longer a stopword in this preset, so it survives in both lists.
+// "the" was removed from the EN base, so it survives in both lists:
+// result.Indexed → ["the", "quick"]
+// result.Query   → ["the", "quick"]
 ```
 
 ### Combining folding and stopwords
@@ -227,17 +226,14 @@ var result = await client.Tokenize.Text(
 
 ## Result Shape
 
-`TokenizeResult` is a sealed record:
+`TokenizeResult` is a sealed record with two members:
 
 | Member | Type | Description |
 |---|---|---|
-| `Tokenization` | `PropertyTokenization` | The method that was applied. |
 | `Indexed` | `ImmutableList<string>` | Tokens as stored in the inverted index. |
 | `Query` | `ImmutableList<string>` | Tokens used at query time (after stopword removal). |
-| `AnalyzerConfig` | `TextAnalyzerConfig?` | Echo of the analyzer config that was applied, or `null`. |
-| `StopwordConfig` | `StopwordConfig?` | Echo of the resolved stopword config, or `null`. |
 
-The `AnalyzerConfig` echo is the server's view of what was applied — useful for verifying that your config was parsed correctly. The round-trip also normalizes wire-format quirks (the server represents `asciiFold` as a `bool` + separate `asciiFoldIgnore[]`, but the client unwraps it back into the nested `AsciiFoldConfig` record).
+The two lists differ when stopwords are configured: stopwords stay in `Indexed` (so BM25 can count document length) but are dropped from `Query` so they don't inflate match scores.
 
 ## Property-level Text Analyzer (schema)
 
@@ -252,8 +248,8 @@ await client.Collections.Create(new CollectionCreateParams
         new Property
         {
             Name = "title",
-            DataType = [DataType.Text],
-            Tokenization = PropertyTokenization.Word,
+            DataType = DataType.Text,
+            PropertyTokenization = PropertyTokenization.Word,
             TextAnalyzer = new TextAnalyzerConfig
             {
                 AsciiFold = new AsciiFoldConfig(),
@@ -289,7 +285,8 @@ await client.Collections.Create(new CollectionCreateParams
         new Property
         {
             Name = "body",
-            DataType = [DataType.Text],
+            DataType = DataType.Text,
+            PropertyTokenization = PropertyTokenization.Word,
             TextAnalyzer = new TextAnalyzerConfig { StopwordPreset = "fr" },
         },
     ],
@@ -336,7 +333,7 @@ var docTokens   = (await collection.Tokenize.Property("body", "I was running")).
 
 ### Verifying analyzer config round-trip
 
-When you configure ASCII folding or a stopword preset, the server echoes back its interpretation on every call:
+Pass the analyzer config to `Tokenize.Text` and check the tokens it returns:
 
 ```csharp
 var cfg = new TextAnalyzerConfig
@@ -347,6 +344,6 @@ var cfg = new TextAnalyzerConfig
 
 var result = await client.Tokenize.Text("L'école", PropertyTokenization.Word, analyzerConfig: cfg);
 
-Debug.Assert(result.AnalyzerConfig!.AsciiFold!.Ignore!.SequenceEqual(new[] { "é" }));
-Debug.Assert(result.AnalyzerConfig.StopwordPreset == "en");
+// AsciiFold is on, but "é" is in Ignore → "école" survives intact.
+Debug.Assert(result.Indexed.Contains("école"));
 ```
