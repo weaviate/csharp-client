@@ -29,9 +29,8 @@ public sealed record TextAnalyzerConfig
 
     /// <summary>
     /// Stopword preset name. May be a built-in preset (<c>"en"</c>, <c>"none"</c>)
-    /// or the name of a custom preset provided via
-    /// <see cref="TokenizeClient.Text(string, PropertyTokenization, TextAnalyzerConfig?, System.Collections.Generic.IDictionary{string, StopwordConfig}?, System.Threading.CancellationToken)"/>'s
-    /// <c>stopwordPresets</c> dictionary.
+    /// or the name of a custom preset provided via the
+    /// <c>stopwordPresets</c> dictionary on <see cref="TokenizeClient.Text"/>.
     /// </summary>
     public string? StopwordPreset { get; init; }
 }
@@ -42,11 +41,6 @@ public sealed record TextAnalyzerConfig
 public sealed record TokenizeResult
 {
     /// <summary>
-    /// The tokenization method that was applied.
-    /// </summary>
-    public PropertyTokenization Tokenization { get; init; }
-
-    /// <summary>
     /// Tokens as they are stored in the inverted index.
     /// </summary>
     public ImmutableList<string> Indexed { get; init; } = [];
@@ -55,16 +49,6 @@ public sealed record TokenizeResult
     /// Tokens as they are used for query matching (after stopword removal, etc.).
     /// </summary>
     public ImmutableList<string> Query { get; init; } = [];
-
-    /// <summary>
-    /// The text-analyzer configuration that was applied, if any.
-    /// </summary>
-    public TextAnalyzerConfig? AnalyzerConfig { get; init; }
-
-    /// <summary>
-    /// The stopword configuration that was applied, if any.
-    /// </summary>
-    public StopwordConfig? StopwordConfig { get; init; }
 }
 
 /// <summary>
@@ -74,11 +58,6 @@ internal static class TokenizeMapping
 {
     internal static Rest.Dto.TokenizeRequestTokenization ToDto(this PropertyTokenization value) =>
         (Rest.Dto.TokenizeRequestTokenization)(int)value;
-
-    internal static PropertyTokenization ToTokenization(string? wireValue) =>
-        string.IsNullOrEmpty(wireValue)
-            ? PropertyTokenization.Word
-            : wireValue.FromEnumMemberString<PropertyTokenization>();
 
     internal static Rest.Dto.TextAnalyzerConfig? ToDto(this TextAnalyzerConfig? config) =>
         config is null
@@ -129,10 +108,7 @@ internal static class TokenizeMapping
     internal static TokenizeResult ToModel(this Rest.Dto.TokenizeResponse dto) =>
         new()
         {
-            Tokenization = ToTokenization(dto.Tokenization),
             Indexed = dto.Indexed?.ToImmutableList() ?? [],
             Query = dto.Query?.ToImmutableList() ?? [],
-            AnalyzerConfig = dto.AnalyzerConfig.ToModel(),
-            StopwordConfig = dto.StopwordConfig.ToModel(),
         };
 }

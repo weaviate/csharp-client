@@ -18,17 +18,26 @@ public sealed class TokenizeClient
 
     /// <summary>
     /// Tokenizes <paramref name="text"/> using the given <paramref name="tokenization"/> strategy.
-    /// Returns the indexed and query forms produced by the server, plus the analyzer/stopword
-    /// configurations that were applied.
+    /// Returns the indexed and query token forms produced by the server.
     /// </summary>
     /// <param name="text">The text to tokenize.</param>
     /// <param name="tokenization">The tokenization method to apply.</param>
-    /// <param name="analyzerConfig">Optional text analyzer configuration (e.g. ASCII folding, stopword preset).</param>
+    /// <param name="analyzerConfig">Optional text analyzer configuration (e.g. ASCII folding, stopword preset name).</param>
+    /// <param name="stopwords">
+    /// Optional one-off stopword block applied to this request. Mirrors the collection-level
+    /// <c>invertedIndexConfig.stopwords</c> shape (preset + additions + removals).
+    /// Mutually exclusive with <paramref name="stopwordPresets"/>.
+    /// </param>
     /// <param name="stopwordPresets">
-    /// Optional named stopword configurations. Each key is a preset name that can be referenced by
-    /// <see cref="TextAnalyzerConfig.StopwordPreset"/>. Each value is a <see cref="StopwordConfig"/>.
+    /// Optional named stopword catalog. Each key is a preset name that can be referenced by
+    /// <see cref="TextAnalyzerConfig.StopwordPreset"/>; each value is a plain list of stopword strings.
+    /// Matches the collection-level <c>invertedIndexConfig.stopwordPresets</c> shape.
+    /// Mutually exclusive with <paramref name="stopwords"/>.
     /// </param>
     /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown when both <paramref name="stopwords"/> and <paramref name="stopwordPresets"/> are supplied.
+    /// </exception>
     /// <exception cref="WeaviateVersionMismatchException">
     /// Thrown when the connected server version is below 1.37.0.
     /// </exception>
@@ -37,11 +46,17 @@ public sealed class TokenizeClient
         string text,
         PropertyTokenization tokenization,
         TextAnalyzerConfig? analyzerConfig = null,
-        IDictionary<string, StopwordConfig>? stopwordPresets = null,
+        StopwordConfig? stopwords = null,
+        IDictionary<string, IList<string>>? stopwordPresets = null,
         CancellationToken cancellationToken = default
     )
     {
         ArgumentNullException.ThrowIfNull(text);
+        if (stopwords is not null && stopwordPresets is not null)
+            throw new ArgumentException(
+                "stopwords and stopwordPresets are mutually exclusive; pass only one.",
+                nameof(stopwords)
+            );
 
         await _client.EnsureVersion<TokenizeClient>();
 
@@ -50,10 +65,8 @@ public sealed class TokenizeClient
             Text = text,
             Tokenization = tokenization.ToDto(),
             AnalyzerConfig = analyzerConfig.ToDto(),
-            StopwordPresets = stopwordPresets?.ToDictionary(
-                kvp => kvp.Key,
-                kvp => kvp.Value.ToDto()
-            ),
+            Stopwords = stopwords?.ToDto(),
+            StopwordPresets = stopwordPresets,
         };
 
         var response =

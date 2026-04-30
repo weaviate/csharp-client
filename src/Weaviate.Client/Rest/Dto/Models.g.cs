@@ -887,7 +887,7 @@ namespace Weaviate.Client.Rest.Dto
         public System.Collections.Generic.IList<TokenizerUserDictConfig>? TokenizerUserDict { get; set; } = default!;
 
         /// <summary>
-        /// User-defined named stopword lists. Each key is a preset name that can be referenced by a property's textAnalyzer.stopwordPreset field. The value is an array of stopword strings.
+        /// User-defined named stopword lists. Each key is a preset name that can be referenced by a property's textAnalyzer.stopwordPreset field. The value is an array of stopword strings. Preset names must not be empty or whitespace-only; each list must contain at least one word; individual words must not be empty or whitespace-only.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("stopwordPresets")]
@@ -1047,45 +1047,29 @@ namespace Weaviate.Client.Rest.Dto
         public TextAnalyzerConfig? AnalyzerConfig { get; set; } = default!;
 
         /// <summary>
-        /// Optional named stopword configurations. Each key is a preset name that can be referenced by analyzerConfig.stopwordPreset. Each value is a StopwordConfig (with optional preset, additions, and removals).
+        /// Optional fallback stopword configuration. Used when analyzerConfig.stopwordPreset is not set. Shape matches InvertedIndexConfig.stopwords on a collection. When analyzerConfig.stopwordPreset is not set and this field is omitted, word tokenization defaults to preset 'en'. Mutually exclusive with stopwordPresets — pass one or the other, not both.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("stopwords")]
+
+        public StopwordConfig? Stopwords { get; set; } = default!;
+
+        /// <summary>
+        /// Optional user-defined named stopword presets. Shape matches InvertedIndexConfig.stopwordPresets on a collection: each key is a preset name, each value is a plain list of stopwords. A preset name that matches a built-in ('en', 'none') fully replaces the built-in. Preset names must not be empty or whitespace-only; each word list must contain at least one word; individual words must not be empty or whitespace-only. Mutually exclusive with stopwords — pass one or the other, not both.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("stopwordPresets")]
 
-        public System.Collections.Generic.IDictionary<string, StopwordConfig>? StopwordPresets { get; set; } = default!;
+        public System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<string>>? StopwordPresets { get; set; } = default!;
 
     }
 
     /// <summary>
-    /// Response from the tokenize endpoint.
+    /// Response from the tokenize endpoints. Returns `indexed` text and text used at `query` time
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal partial record TokenizeResponse
     {
-        /// <summary>
-        /// The tokenization method that was applied.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("tokenization")]
-
-        public string? Tokenization { get; set; } = default!;
-
-        /// <summary>
-        /// The text analyzer configuration that was used, if any.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("analyzerConfig")]
-
-        public TextAnalyzerConfig? AnalyzerConfig { get; set; } = default!;
-
-        /// <summary>
-        /// The stopword configuration that was used, if any.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("stopwordConfig")]
-
-        public StopwordConfig? StopwordConfig { get; set; } = default!;
-
         /// <summary>
         /// The tokens as they would be stored in the inverted index.
         /// </summary>

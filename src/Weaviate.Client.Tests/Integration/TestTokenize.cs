@@ -53,7 +53,6 @@ public class TestTokenize : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(tokenization, result.Tokenization);
         Assert.Equal(expectedTokens, result.Indexed);
         Assert.Equal(expectedTokens, result.Query);
     }
@@ -69,9 +68,7 @@ public class TestTokenize : IntegrationTests
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(PropertyTokenization.Word, result.Tokenization);
         Assert.Equal(new[] { "hello", "world" }, result.Indexed);
-        Assert.Null(result.AnalyzerConfig);
     }
 
     [Fact]
@@ -151,14 +148,7 @@ public class TestTokenize : IntegrationTests
         RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
 
         var cfg = new TextAnalyzerConfig { StopwordPreset = "custom" };
-        var presets = new Dictionary<string, StopwordConfig>
-        {
-            ["custom"] = new StopwordConfig
-            {
-                Preset = StopwordConfig.Presets.None,
-                Additions = ["test"],
-            },
-        };
+        var presets = new Dictionary<string, IList<string>> { ["custom"] = ["test"] };
 
         var result = await _weaviate.Tokenize.Text(
             "hello world test",
@@ -173,25 +163,19 @@ public class TestTokenize : IntegrationTests
     }
 
     [Fact]
-    public async Task CustomPreset_BaseAndRemovals()
+    public async Task Stopwords_OneOff_BaseAndRemovals()
     {
         RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
 
-        var cfg = new TextAnalyzerConfig { StopwordPreset = "en-no-the" };
-        var presets = new Dictionary<string, StopwordConfig>
-        {
-            ["en-no-the"] = new StopwordConfig
+        // Use the one-off stopwords block: start from EN preset, remove "the" so it is not filtered.
+        var result = await _weaviate.Tokenize.Text(
+            "the quick",
+            PropertyTokenization.Word,
+            stopwords: new StopwordConfig
             {
                 Preset = StopwordConfig.Presets.EN,
                 Removals = ["the"],
             },
-        };
-
-        var result = await _weaviate.Tokenize.Text(
-            "the quick",
-            PropertyTokenization.Word,
-            analyzerConfig: cfg,
-            stopwordPresets: presets,
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -220,43 +204,6 @@ public class TestTokenize : IntegrationTests
     }
 
     [Fact]
-    public async Task AnalyzerConfig_Echoed()
-    {
-        RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
-
-        var cfg = new TextAnalyzerConfig
-        {
-            AsciiFold = new AsciiFoldConfig(Ignore: ["é"]),
-            StopwordPreset = "en",
-        };
-        var result = await _weaviate.Tokenize.Text(
-            "L'école",
-            PropertyTokenization.Word,
-            analyzerConfig: cfg,
-            cancellationToken: TestContext.Current.CancellationToken
-        );
-
-        Assert.NotNull(result.AnalyzerConfig);
-        Assert.NotNull(result.AnalyzerConfig!.AsciiFold);
-        Assert.Equal(new[] { "é" }, result.AnalyzerConfig.AsciiFold!.Ignore);
-        Assert.Equal("en", result.AnalyzerConfig.StopwordPreset);
-    }
-
-    [Fact]
-    public async Task AnalyzerConfig_None()
-    {
-        RequireVersion<TokenizeClient>(nameof(TokenizeClient.Text));
-
-        var result = await _weaviate.Tokenize.Text(
-            "hello",
-            PropertyTokenization.Word,
-            cancellationToken: TestContext.Current.CancellationToken
-        );
-
-        Assert.Null(result.AnalyzerConfig);
-    }
-
-    [Fact]
     public async Task PropertyTokenize_Field()
     {
         RequireVersion<CollectionTokenizeClient>(nameof(CollectionTokenizeClient.Property));
@@ -279,7 +226,6 @@ public class TestTokenize : IntegrationTests
             TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(PropertyTokenization.Field, result.Tokenization);
         Assert.Equal(new[] { "Hello World" }, result.Indexed);
     }
 }
