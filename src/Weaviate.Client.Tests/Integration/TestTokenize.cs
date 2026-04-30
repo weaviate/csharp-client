@@ -49,7 +49,7 @@ public class TestTokenize : IntegrationTests
 
         // Disable stopwords explicitly: when no stopwords config is supplied,
         // the server defaults Word tokenization to the EN preset, which strips
-        // "the" from both lists and would break the assertions below.
+        // "the" from result.Query and would break the assertion below.
         var result = await _weaviate.Tokenize.Text(
             text,
             tokenization,
