@@ -3,9 +3,6 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
-/// <summary>
-/// The collection client class
-/// </summary>
 public partial class CollectionClient
 {
     /// <summary>
@@ -19,19 +16,10 @@ public partial class CollectionClient
 /// </summary>
 public partial class GenerateClient
 {
-    /// <summary>
-    /// The collection client
-    /// </summary>
     private readonly CollectionClient _collectionClient;
 
-    /// <summary>
-    /// Gets the value of the  collectionname
-    /// </summary>
     private string _collectionName => _collectionClient.Name;
 
-    /// <summary>
-    /// Gets the value of the  client
-    /// </summary>
     private WeaviateClient _client => _collectionClient.Client;
 
     /// <summary>

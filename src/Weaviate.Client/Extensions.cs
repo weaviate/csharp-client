@@ -439,9 +439,9 @@ public static class WeaviateExtensions
     }
 
     /// <summary>
-    /// Creates the byte string using the specified byte string
+    /// Deserializes a protobuf <see cref="Google.Protobuf.ByteString"/> into an enumerable of <typeparamref name="T"/> values.
     /// </summary>
-    /// <typeparam name="T">The </typeparam>
+    /// <typeparam name="T">The numeric struct type stored in the byte string (e.g. <c>float</c>, <c>double</c>).</typeparam>
     /// <param name="byteString">The byte string</param>
     /// <exception cref="NotSupportedException">The type '{typeof(T).FullName}' is not supported by FromByteString&lt;T&gt;.</exception>
     /// <returns>An enumerable of t</returns>
@@ -477,9 +477,10 @@ public static class WeaviateExtensions
     }
 
     /// <summary>
-    /// Creates the byte string using the specified vector
+    /// Extracts a <see cref="NamedVector"/> from a proto <c>Vectors</c> message by deserializing
+    /// the appropriate byte-string field for type <typeparamref name="T"/>.
     /// </summary>
-    /// <typeparam name="T">The </typeparam>
+    /// <typeparam name="T">The numeric struct type of the vector elements.</typeparam>
     /// <param name="vector">The vector</param>
     /// <returns>The named vector</returns>
     internal static NamedVector FromByteString<T>(this Grpc.Protobuf.V1.Vectors vector)
@@ -941,10 +942,10 @@ public static class WeaviateExtensions
     }
 
     /// <summary>
-    /// Ises the native type using the specified type
+    /// Returns <c>true</c> if <paramref name="type"/> is a CLR primitive, string, Guid, or DateTime
+    /// (including their nullable counterparts). Used to distinguish scalar properties from object references.
     /// </summary>
-    /// <param name="type">The type</param>
-    /// <returns>The bool</returns>
+    /// <param name="type">The type to test.</param>
     internal static bool IsNativeType(this Type type)
     {
         // Handle nullable types

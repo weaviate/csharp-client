@@ -6,34 +6,19 @@ namespace Weaviate.Client;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
-/// The factory class
+/// Internal factory for building vectorizer, generative, and reranker configuration objects.
 /// </summary>
 internal static partial class Factory
 {
-    /// <summary>
-    /// Gets the value of the vectorizer
-    /// </summary>
     public static VectorizerFactory Vectorizer { get; } = new VectorizerFactory();
 
-    /// <summary>
-    /// Gets the value of the vectorizer multi
-    /// </summary>
     public static VectorizerFactoryMulti VectorizerMulti { get; } = new VectorizerFactoryMulti();
 
-    /// <summary>
-    /// Gets the value of the generative provider
-    /// </summary>
     public static GenerativeProviderFactory GenerativeProvider { get; } =
         new GenerativeProviderFactory();
 
-    /// <summary>
-    /// Gets the value of the generative
-    /// </summary>
     public static GenerativeConfigFactory Generative { get; } = new GenerativeConfigFactory();
 
-    /// <summary>
-    /// Gets the value of the reranker
-    /// </summary>
     public static RerankerConfigFactory Reranker { get; } = new RerankerConfigFactory();
 }
 

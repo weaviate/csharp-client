@@ -2,14 +2,8 @@ using Weaviate.Client.Models;
 
 namespace Weaviate.Client;
 
-/// <summary>
-/// The weaviate client class
-/// </summary>
 public partial class WeaviateClient
 {
-    /// <summary>
-    /// The backups
-    /// </summary>
     private BackupClient? _backups;
 
     /// <summary>
@@ -23,9 +17,6 @@ public partial class WeaviateClient
 /// </summary>
 public class BackupClient
 {
-    /// <summary>
-    /// The client
-    /// </summary>
     private readonly WeaviateClient _client;
 
     /// <summary>

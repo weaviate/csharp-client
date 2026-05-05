@@ -8,9 +8,6 @@ namespace Weaviate.Client;
 /// </summary>
 public record CollectionsClient
 {
-    /// <summary>
-    /// The client
-    /// </summary>
     private readonly WeaviateClient _client;
 
     /// <summary>

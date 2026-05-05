@@ -230,9 +230,8 @@ internal class OAuthTokenService : ITokenService
     }
 
     /// <summary>
-    /// Ises the authenticated
+    /// Returns <c>true</c> if the service holds a valid, non-expired access token.
     /// </summary>
-    /// <returns>The bool</returns>
     public bool IsAuthenticated()
     {
         return CurrentToken?.AccessToken != null && !IsTokenExpired();
@@ -317,9 +316,8 @@ internal class OAuthTokenService : ITokenService
     }
 
     /// <summary>
-    /// Ises the token expired
+    /// Returns <c>true</c> if the current token is missing or within one minute of expiry.
     /// </summary>
-    /// <returns>The is expired</returns>
     private bool IsTokenExpired()
     {
         if (CurrentToken?.ExpiresIn == null)

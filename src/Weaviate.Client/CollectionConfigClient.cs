@@ -9,14 +9,8 @@ namespace Weaviate.Client;
 /// </summary>
 public class CollectionConfigClient
 {
-    /// <summary>
-    /// The client
-    /// </summary>
     private readonly WeaviateClient _client;
 
-    /// <summary>
-    /// The collection name
-    /// </summary>
     private readonly string _collectionName;
 
     /// <summary>

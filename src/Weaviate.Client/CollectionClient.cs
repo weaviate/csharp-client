@@ -19,39 +19,18 @@ public partial class CollectionClient
     /// </summary>
     public Version? WeaviateVersion => _client.WeaviateVersion;
 
-    /// <summary>
-    /// The client
-    /// </summary>
     private readonly WeaviateClient _client;
 
-    /// <summary>
-    /// The collection name
-    /// </summary>
     private readonly string _collectionName;
 
-    /// <summary>
-    /// The pinned tenant
-    /// </summary>
     private readonly string? _pinnedTenant = null;
 
-    /// <summary>
-    /// The pinned consistency level
-    /// </summary>
     private readonly ConsistencyLevels? _pinnedConsistencyLevel = null;
 
-    /// <summary>
-    /// The data client
-    /// </summary>
     private DataClient _dataClient;
 
-    /// <summary>
-    /// The query client
-    /// </summary>
     private QueryClient _queryClient;
 
-    /// <summary>
-    /// The batch manager
-    /// </summary>
     private Batch.BatchManager _batchManager;
 
     /// <summary>

@@ -11,7 +11,7 @@ internal partial class WeaviateRestClient
 {
     // Roles
     /// <summary>
-    /// Roleses the list using the specified cancellation token
+    /// Lists all roles defined in the Weaviate instance.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing an enumerable of dto role</returns>

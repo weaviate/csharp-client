@@ -4,7 +4,7 @@ using Weaviate.Client.Rest;
 namespace Weaviate.Client;
 
 /// <summary>
-/// The weaviate exception class
+/// Base exception for all errors originating from the Weaviate C# client.
 /// </summary>
 /// <seealso cref="Exception"/>
 public class WeaviateException : Exception
@@ -33,7 +33,8 @@ public class WeaviateException : Exception
 }
 
 /// <summary>
-/// The weaviate client exception class
+/// Exception thrown when the client detects a problem before or after sending a request —
+/// for example, invalid configuration, a cancelled operation, or a version mismatch.
 /// </summary>
 /// <seealso cref="WeaviateException"/>
 public class WeaviateClientException : WeaviateException
@@ -68,12 +69,12 @@ public class WeaviateClientException : WeaviateException
 public class WeaviateTimeoutException : WeaviateClientException
 {
     /// <summary>
-    /// Gets the value of the timeout
+    /// The configured timeout that was exceeded, if known.
     /// </summary>
     public TimeSpan? Timeout { get; }
 
     /// <summary>
-    /// Gets the value of the operation
+    /// The name of the operation that timed out, if known.
     /// </summary>
     public string? Operation { get; }
 
@@ -207,7 +208,7 @@ public class WeaviateVersionMismatchException : WeaviateClientException
 }
 
 /// <summary>
-/// The weaviate server exception class
+/// Exception thrown when the Weaviate server returns an error response.
 /// </summary>
 /// <seealso cref="WeaviateException"/>
 public class WeaviateServerException : WeaviateException
@@ -294,7 +295,7 @@ public class WeaviateConflictException : WeaviateServerException
 }
 
 /// <summary>
-/// The weaviate not found exception class
+/// Exception thrown when a requested Weaviate resource (collection, object, etc.) does not exist.
 /// </summary>
 /// <seealso cref="WeaviateServerException"/>
 public class WeaviateNotFoundException : WeaviateServerException
@@ -305,7 +306,7 @@ public class WeaviateNotFoundException : WeaviateServerException
     private const string DefaultMessage = "The requested resource was not found in Weaviate.";
 
     /// <summary>
-    /// Gets the value of the resource type
+    /// The kind of resource that was not found, if known.
     /// </summary>
     public ResourceType? ResourceType { get; }
 

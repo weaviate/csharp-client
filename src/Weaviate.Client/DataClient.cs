@@ -8,23 +8,14 @@ using Weaviate.Client.Validation;
 namespace Weaviate.Client;
 
 /// <summary>
-/// The data client class
+/// Provides CRUD operations for objects within a Weaviate collection.
 /// </summary>
 public class DataClient
 {
-    /// <summary>
-    /// The collection client
-    /// </summary>
     private readonly CollectionClient _collectionClient;
 
-    /// <summary>
-    /// Gets the value of the  client
-    /// </summary>
     private WeaviateClient _client => _collectionClient.Client;
 
-    /// <summary>
-    /// Gets the value of the  collectionname
-    /// </summary>
     private string _collectionName => _collectionClient.Name;
 
     /// <summary>

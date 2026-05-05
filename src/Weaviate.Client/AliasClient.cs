@@ -7,9 +7,6 @@ namespace Weaviate.Client;
 /// </summary>
 public class AliasClient
 {
-    /// <summary>
-    /// The client
-    /// </summary>
     private readonly WeaviateClient _client;
 
     /// <summary>

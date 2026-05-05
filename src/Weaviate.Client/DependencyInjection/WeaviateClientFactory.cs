@@ -10,24 +10,12 @@ namespace Weaviate.Client.DependencyInjection;
 /// </summary>
 internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
 {
-    /// <summary>
-    /// The options monitor
-    /// </summary>
     private readonly IOptionsMonitor<WeaviateOptions> _optionsMonitor;
 
-    /// <summary>
-    /// The logger factory
-    /// </summary>
     private readonly ILoggerFactory _loggerFactory;
 
-    /// <summary>
-    /// The clients
-    /// </summary>
     private readonly ConcurrentDictionary<string, Lazy<Task<WeaviateClient>>> _clients = new();
 
-    /// <summary>
-    /// The disposed
-    /// </summary>
     private bool _disposed;
 
     /// <summary>
