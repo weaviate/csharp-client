@@ -33,14 +33,23 @@ public partial class ClientTests : IntegrationTests
         var WCS_HOST = "piblpmmdsiknacjnm1ltla.c1.europe-west3.gcp.weaviate.cloud";
         var WCS_CREDS = "cy4ua772mBlMdfw3YnclqAWzFhQt0RLIN0sl";
 
+        var ct = TestContext.Current.CancellationToken;
         var client = await Connect.Cloud(WCS_HOST, WCS_CREDS);
 
-        var ex = await Record.ExceptionAsync(async () =>
-            await client
-                .Collections.List(TestContext.Current.CancellationToken)
-                .ToListAsync(TestContext.Current.CancellationToken)
-        );
-        Assert.Null(ex);
+        Exception? lastEx = null;
+        for (var attempt = 0; attempt < 3; attempt++)
+        {
+            if (attempt > 0)
+                await Task.Delay(TimeSpan.FromSeconds(2 << attempt), ct);
+
+            lastEx = await Record.ExceptionAsync(async () =>
+                await client.Collections.List(ct).ToListAsync(ct)
+            );
+
+            if (lastEx is null)
+                break;
+        }
+        Assert.Null(lastEx);
     }
 
     /// <summary>
