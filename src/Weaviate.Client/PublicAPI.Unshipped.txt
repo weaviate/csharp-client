@@ -1672,6 +1672,7 @@ static Weaviate.Client.Models.PhoneNumber.FromNational(string! country, string! 
 static Weaviate.Client.Models.PhoneNumber.operator !=(Weaviate.Client.Models.PhoneNumber? left, Weaviate.Client.Models.PhoneNumber? right) -> bool
 static Weaviate.Client.Models.PhoneNumber.operator ==(Weaviate.Client.Models.PhoneNumber? left, Weaviate.Client.Models.PhoneNumber? right) -> bool
 static Weaviate.Client.Models.Property.Blob.get -> Weaviate.Client.Models.PropertyFactory!
+static Weaviate.Client.Models.Property.BlobHash.get -> Weaviate.Client.Models.PropertyFactory!
 static Weaviate.Client.Models.Property.Bool.get -> Weaviate.Client.Models.PropertyFactory!
 static Weaviate.Client.Models.Property.BoolArray.get -> Weaviate.Client.Models.PropertyFactory!
 static Weaviate.Client.Models.Property.Date.get -> Weaviate.Client.Models.PropertyFactory!
@@ -3654,6 +3655,7 @@ Weaviate.Client.Models.DataResource.Tenant.get -> string?
 Weaviate.Client.Models.DataResource.Tenant.init -> void
 Weaviate.Client.Models.DataType
 Weaviate.Client.Models.DataType.Blob = 14 -> Weaviate.Client.Models.DataType
+Weaviate.Client.Models.DataType.BlobHash = 18 -> Weaviate.Client.Models.DataType
 Weaviate.Client.Models.DataType.Bool = 5 -> Weaviate.Client.Models.DataType
 Weaviate.Client.Models.DataType.BoolArray = 6 -> Weaviate.Client.Models.DataType
 Weaviate.Client.Models.DataType.Date = 9 -> Weaviate.Client.Models.DataType
@@ -6412,6 +6414,7 @@ Weaviate.Client.Serialization.PropertyBag.CopyTo(System.Collections.Generic.KeyV
 Weaviate.Client.Serialization.PropertyBag.Count.get -> int
 Weaviate.Client.Serialization.PropertyBag.GetAs<T>(string! name) -> T?
 Weaviate.Client.Serialization.PropertyBag.GetBlob(string! name) -> byte[]?
+Weaviate.Client.Serialization.PropertyBag.GetBlobHash(string! name) -> string?
 Weaviate.Client.Serialization.PropertyBag.GetBool(string! name) -> bool?
 Weaviate.Client.Serialization.PropertyBag.GetDateTime(string! name) -> System.DateTime?
 Weaviate.Client.Serialization.PropertyBag.GetDouble(string! name) -> double?

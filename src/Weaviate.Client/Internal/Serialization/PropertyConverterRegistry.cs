@@ -63,6 +63,7 @@ internal class PropertyConverterRegistry
 
         // Special converters (no array support)
         registry.Register(new BlobPropertyConverter());
+        registry.Register(new BlobHashPropertyConverter());
         registry.Register(new GeoPropertyConverter());
         registry.Register(new PhonePropertyConverter());
 
