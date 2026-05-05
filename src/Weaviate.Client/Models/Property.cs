@@ -440,6 +440,10 @@ public enum DataType
     /// <summary>Object array data type.</summary>
     [System.Text.Json.Serialization.JsonStringEnumMemberName("object[]")]
     ObjectArray,
+
+    /// <summary>Blob hash data type. Stores the hash of a blob instead of the blob data itself.</summary>
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("blobHash")]
+    BlobHash,
 }
 
 /// <summary>
@@ -663,6 +667,9 @@ public record Property : IEquatable<Property>
 
     /// <summary>Gets a factory for creating object array properties.</summary>
     public static PropertyFactory ObjectArray => PropertyHelper.Factory(DataType.ObjectArray);
+
+    /// <summary>Gets a factory for creating blob hash properties.</summary>
+    public static PropertyFactory BlobHash => PropertyHelper.Factory(DataType.BlobHash);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Property"/> class.

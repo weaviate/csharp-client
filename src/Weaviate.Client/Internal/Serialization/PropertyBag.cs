@@ -167,6 +167,18 @@ public class PropertyBag : IDictionary<string, object?>
     }
 
     /// <summary>
+    /// Gets a blob hash (string) value by property name.
+    /// </summary>
+    public string? GetBlobHash(string name)
+    {
+        if (!TryGetValue(name, out var value) || value is null)
+            return null;
+
+        var converter = PropertyConverterRegistry.Default.GetConverterByDataType("blobHash");
+        return (string?)converter?.FromRest(value, typeof(string));
+    }
+
+    /// <summary>
     /// Gets an array of strings by property name.
     /// </summary>
     public string[]? GetStringArray(string name)

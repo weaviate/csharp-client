@@ -322,6 +322,55 @@ public class TestPropertyConverters
 
     #endregion
 
+    #region BlobHashPropertyConverter Tests
+
+    /// <summary>
+    /// Tests that blob hash converter to rest returns string
+    /// </summary>
+    [Fact]
+    public void BlobHashConverter_ToRest_ReturnsString()
+    {
+        var converter = new BlobHashPropertyConverter();
+        var hash = "abc123def456";
+        var result = converter.ToRest(hash);
+        Assert.Equal(hash, result);
+    }
+
+    /// <summary>
+    /// Tests that blob hash converter from rest returns string
+    /// </summary>
+    [Fact]
+    public void BlobHashConverter_FromRest_ReturnsString()
+    {
+        var converter = new BlobHashPropertyConverter();
+        var hash = "abc123def456";
+        var result = converter.FromRest(hash, typeof(string));
+        Assert.IsType<string>(result);
+        Assert.Equal(hash, result);
+    }
+
+    /// <summary>
+    /// Tests that blob hash converter does not support array
+    /// </summary>
+    [Fact]
+    public void BlobHashConverter_DoesNotSupportArray()
+    {
+        var converter = new BlobHashPropertyConverter();
+        Assert.False(converter.SupportsArray);
+    }
+
+    /// <summary>
+    /// Tests that blob hash converter has correct data type
+    /// </summary>
+    [Fact]
+    public void BlobHashConverter_HasCorrectDataType()
+    {
+        var converter = new BlobHashPropertyConverter();
+        Assert.Equal("blobHash", converter.DataType);
+    }
+
+    #endregion
+
     #region GeoPropertyConverter Tests
 
     /// <summary>
@@ -435,6 +484,7 @@ public class TestPropertyConverters
         Assert.IsType<DatePropertyConverter>(registry.GetConverterByDataType("date"));
         Assert.IsType<UuidPropertyConverter>(registry.GetConverterByDataType("uuid"));
         Assert.IsType<BlobPropertyConverter>(registry.GetConverterByDataType("blob"));
+        Assert.IsType<BlobHashPropertyConverter>(registry.GetConverterByDataType("blobHash"));
         Assert.IsType<GeoPropertyConverter>(registry.GetConverterByDataType("geoCoordinates"));
         Assert.IsType<PhonePropertyConverter>(registry.GetConverterByDataType("phoneNumber"));
     }
