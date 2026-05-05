@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Weaviate.Client.DependencyInjection;
 
@@ -192,6 +194,80 @@ public static class WeaviateServiceCollectionExtensions
         );
 
         return services;
+    }
+
+    // Scoped token provider overloads
+
+    /// <summary>
+    /// Adds a single Weaviate client whose authentication tokens are resolved from a scoped
+    /// <typeparamref name="TTokenService"/> on every call. This is the recommended pattern
+    /// when tokens vary per HTTP request (e.g. multi-tenant scenarios, token forwarding).
+    /// </summary>
+    /// <typeparam name="TTokenService">
+    /// A scoped <see cref="ITokenService"/> implementation. It is registered as
+    /// <see cref="ServiceLifetime.Scoped"/> so it is constructed once per DI scope; in ASP.NET
+    /// Core that maps to once per incoming HTTP request.
+    /// </typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configureOptions">Action to configure Weaviate connection options. Credentials
+    /// set here are ignored — token acquisition is handled entirely by
+    /// <typeparamref name="TTokenService"/>.</param>
+    /// <param name="eagerInitialization">Whether to initialize the client eagerly on application
+    /// startup via <see cref="WeaviateInitializationService"/>. Default is <c>true</c>.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    public static IServiceCollection AddWeaviate<TTokenService>(
+        this IServiceCollection services,
+        Action<WeaviateOptions> configureOptions,
+        bool eagerInitialization = true
+    )
+        where TTokenService : class, ITokenService
+    {
+        services.Configure(configureOptions);
+        services.AddScoped<ITokenService, TTokenService>();
+        services.AddSingleton<WeaviateClient>(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<WeaviateOptions>>();
+            var logger = sp.GetService<ILogger<WeaviateClient>>();
+            var loggerFactory = sp.GetService<ILoggerFactory>();
+            var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+            return new WeaviateClient(options, logger, loggerFactory, scopeFactory);
+        });
+
+        if (eagerInitialization)
+        {
+            services.AddHostedService<WeaviateInitializationService>();
+        }
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds a single Weaviate client configured for Weaviate Cloud, with authentication tokens
+    /// resolved from a scoped <typeparamref name="TTokenService"/> on every call.
+    /// </summary>
+    /// <typeparam name="TTokenService">A scoped <see cref="ITokenService"/> implementation.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <param name="clusterEndpoint">The Weaviate Cloud cluster endpoint (e.g. "my-cluster.weaviate.cloud").</param>
+    /// <param name="eagerInitialization">Whether to initialize eagerly on startup. Default is <c>true</c>.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    public static IServiceCollection AddWeaviateCloud<TTokenService>(
+        this IServiceCollection services,
+        string clusterEndpoint,
+        bool eagerInitialization = true
+    )
+        where TTokenService : class, ITokenService
+    {
+        return services.AddWeaviate<TTokenService>(
+            options =>
+            {
+                options.RestEndpoint = clusterEndpoint;
+                options.GrpcEndpoint = $"grpc-{clusterEndpoint}";
+                options.RestPort = 443;
+                options.GrpcPort = 443;
+                options.UseSsl = true;
+            },
+            eagerInitialization
+        );
     }
 
     // Named client helper methods

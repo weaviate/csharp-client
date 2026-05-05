@@ -36,6 +36,12 @@ public partial class WeaviateClient : IDisposable
     private readonly ClientConfiguration? _configForAsyncInit;
 
     /// <summary>
+    /// When set, the client resolves ITokenService from a fresh DI scope on every auth call
+    /// instead of creating a fixed token service at startup.
+    /// </summary>
+    private readonly Microsoft.Extensions.DependencyInjection.IServiceScopeFactory? _scopeFactory;
+
+    /// <summary>
     /// Fetches the server metadata from the Weaviate instance.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -304,6 +310,21 @@ public partial class WeaviateClient : IDisposable
         ILogger<WeaviateClient>? logger,
         ILoggerFactory? loggerFactory
     )
+        : this(options, logger, loggerFactory, null) { }
+
+    /// <summary>
+    /// Constructor for dependency injection scenarios with a scoped token provider.
+    /// When <paramref name="scopeFactory"/> is provided, a fresh DI scope is opened on every
+    /// auth call so the registered <see cref="ITokenService"/> is resolved per scope (typically
+    /// per HTTP request in ASP.NET Core). Use
+    /// <c>AddWeaviate&lt;TTokenService&gt;(services, options)</c> to register clients with this pattern.
+    /// </summary>
+    internal WeaviateClient(
+        IOptions<DependencyInjection.WeaviateOptions> options,
+        ILogger<WeaviateClient>? logger,
+        ILoggerFactory? loggerFactory,
+        Microsoft.Extensions.DependencyInjection.IServiceScopeFactory? scopeFactory
+    )
     {
         var weaviateOptions = options.Value;
         var config = weaviateOptions.ToClientConfiguration();
@@ -320,6 +341,7 @@ public partial class WeaviateClient : IDisposable
             ?? (
                 _configForAsyncInit.LoggerFactory ?? NullLoggerFactory.Instance
             ).CreateLogger<WeaviateClient>();
+        _scopeFactory = scopeFactory;
 
         // Initialize Lazy task that will run initialization on first access
         _initializationTask = new Lazy<Task>(() => PerformInitializationAsync(_configForAsyncInit));
@@ -341,8 +363,11 @@ public partial class WeaviateClient : IDisposable
     {
         _logger.LogDebug("Starting Weaviate client initialization...");
 
-        // Initialize token service asynchronously - always use DefaultTokenServiceFactory
-        var tokenService = await new DefaultTokenServiceFactory().CreateAsync(config);
+        // When a scope factory is present, tokens are resolved from the DI container on every
+        // auth call (scope-per-call) rather than creating a fixed service at startup.
+        ITokenService? tokenService = _scopeFactory is not null
+            ? new DependencyInjection.ScopedTokenServiceAdapter(_scopeFactory)
+            : await new DefaultTokenServiceFactory().CreateAsync(config);
 
         // Create REST client - get HttpMessageHandler from config
         RestClient = CreateRestClient(config, config.HttpMessageHandler, tokenService, _logger);
