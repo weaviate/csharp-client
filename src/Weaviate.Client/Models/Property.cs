@@ -441,7 +441,7 @@ public enum DataType
     [System.Text.Json.Serialization.JsonStringEnumMemberName("object[]")]
     ObjectArray,
 
-    /// <summary>Blob hash data type. Stores the hash of a blob instead of the blob data itself.</summary>
+    /// <summary>Blob hash data type. Stores the hash of a blob instead of the blob data itself. Introduced in Weaviate v1.37.</summary>
     [System.Text.Json.Serialization.JsonStringEnumMemberName("blobHash")]
     BlobHash,
 }
