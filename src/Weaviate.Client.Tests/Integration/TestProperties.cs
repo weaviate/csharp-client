@@ -943,4 +943,28 @@ public partial class PropertyTests : IntegrationTests
             );
         }
     }
+
+    /// <summary>
+    /// Tests that a collection with a blobHash property can be created and the schema
+    /// round-trips correctly through the API (data type serialized and deserialized).
+    /// </summary>
+    [Fact]
+    public async Task BlobHash_SchemaRoundTrip_DataTypePreserved()
+    {
+        RequireVersion("1.37.0");
+
+        var ct = TestContext.Current.CancellationToken;
+
+        var c = await CollectionFactory(
+            description: "Testing blobHash property schema round-trip",
+            properties: [Property.BlobHash("imageHash")]
+        );
+
+        var config = await c.Config.Get(cancellationToken: ct);
+
+        Assert.NotNull(config);
+        var prop = config?.Properties?.FirstOrDefault(p => p.Name == "imageHash");
+        Assert.NotNull(prop);
+        Assert.Equal(DataType.BlobHash, prop.DataType);
+    }
 }
