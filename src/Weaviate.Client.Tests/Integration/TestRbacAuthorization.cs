@@ -66,9 +66,9 @@ public class TestRbacAuthorization : RbacIntegrationTests
 
         // Create a new client with the user's API key
         var userClient = await new WeaviateClientBuilder()
-            .WithRestEndpoint("localhost")
+            .WithRestEndpoint(RestHost)
             .WithRestPort(RestPort)
-            .WithGrpcEndpoint("localhost")
+            .WithGrpcEndpoint(RestHost)
             .WithGrpcPort(GrpcPort)
             .WithCredentials(Auth.ApiKey(apiKey))
             .BuildAsync();
