@@ -3106,9 +3106,9 @@ Weaviate.Client.Internal.MultiKeySortedList<TKey, TValue>.this[TKey key].get -> 
 Weaviate.Client.Internal.MultiKeySortedList<TKey, TValue>.TryGetValue(TKey key, out TValue[]! value) -> bool
 Weaviate.Client.Internal.MultiKeySortedList<TKey, TValue>.Values.get -> System.Collections.Generic.IEnumerable<TValue>!
 Weaviate.Client.ITokenService
-Weaviate.Client.ITokenService.GetAccessTokenAsync() -> System.Threading.Tasks.Task<string?>!
+Weaviate.Client.ITokenService.GetAccessTokenAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<string?>!
 Weaviate.Client.ITokenService.IsAuthenticated() -> bool
-Weaviate.Client.ITokenService.RefreshTokenAsync() -> System.Threading.Tasks.Task<bool>!
+Weaviate.Client.ITokenService.RefreshTokenAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
 Weaviate.Client.ITokenServiceFactory
 Weaviate.Client.ITokenServiceFactory.CreateAsync(Weaviate.Client.ClientConfiguration! configuration) -> System.Threading.Tasks.Task<Weaviate.Client.ITokenService?>!
 Weaviate.Client.ITokenServiceFactory.CreateSync(Weaviate.Client.ClientConfiguration! configuration) -> Weaviate.Client.ITokenService?

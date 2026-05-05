@@ -8,26 +8,25 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Weaviate.Client;
 
 /// <summary>
-/// The token service interface
+/// Provides access tokens for authenticating requests to Weaviate.
 /// </summary>
 public interface ITokenService
 {
     /// <summary>
-    /// Gets the access token
+    /// Returns a valid access token, refreshing or re-authenticating as needed.
     /// </summary>
-    /// <returns>A task containing the string</returns>
-    Task<string?> GetAccessTokenAsync();
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    Task<string?> GetAccessTokenAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Refreshes the token
+    /// Explicitly refreshes the access token.
     /// </summary>
-    /// <returns>A task containing the bool</returns>
-    Task<bool> RefreshTokenAsync();
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    Task<bool> RefreshTokenAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Ises the authenticated
+    /// Returns <c>true</c> if the service holds a valid, non-expired token.
     /// </summary>
-    /// <returns>The bool</returns>
     bool IsAuthenticated();
 }
 
@@ -94,32 +93,13 @@ internal class ApiKeyTokenService : ITokenService
         this.credentialsAPIKey = credentialsAPIKey;
     }
 
-    /// <summary>
-    /// Gets the access token
-    /// </summary>
-    /// <returns>A task containing the string</returns>
-    public async Task<string?> GetAccessTokenAsync()
-    {
-        return await Task.FromResult(credentialsAPIKey?.Value);
-    }
+    public Task<string?> GetAccessTokenAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult<string?>(credentialsAPIKey?.Value);
 
-    /// <summary>
-    /// Ises the authenticated
-    /// </summary>
-    /// <returns>The bool</returns>
-    public bool IsAuthenticated()
-    {
-        return credentialsAPIKey != null;
-    }
+    public bool IsAuthenticated() => credentialsAPIKey != null;
 
-    /// <summary>
-    /// Refreshes the token
-    /// </summary>
-    /// <returns>A task containing the bool</returns>
-    public Task<bool> RefreshTokenAsync()
-    {
-        return Task.FromResult(true);
-    }
+    public Task<bool> RefreshTokenAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult(true);
 }
 
 /// <summary>
@@ -181,34 +161,25 @@ internal class OAuthTokenService : ITokenService
         _logger = (loggerFactory ?? NullLoggerFactory.Instance).CreateLogger<OAuthTokenService>();
     }
 
-    /// <summary>
-    /// Gets the access token
-    /// </summary>
-    /// <returns>A task containing the string</returns>
-    public async Task<string?> GetAccessTokenAsync()
+    public async Task<string?> GetAccessTokenAsync(CancellationToken cancellationToken = default)
     {
         if (CurrentToken?.AccessToken == null || IsTokenExpired())
         {
-            await AuthenticateAsync();
+            await AuthenticateAsync(cancellationToken);
         }
 
         return CurrentToken?.AccessToken;
     }
 
-    /// <summary>
-    /// Refreshes the token
-    /// </summary>
-    /// <returns>A task containing the bool</returns>
-    public async Task<bool> RefreshTokenAsync()
+    public async Task<bool> RefreshTokenAsync(CancellationToken cancellationToken = default)
     {
-        await _refreshSemaphore.WaitAsync();
+        await _refreshSemaphore.WaitAsync(cancellationToken);
         try
         {
             // For client credentials, we just get a new token
             if (_config.GrantType == "client_credentials")
             {
-                await AuthenticateAsync();
-
+                await AuthenticateAsync(cancellationToken);
                 return !(CurrentToken?.IsError ?? true);
             }
 
@@ -224,7 +195,8 @@ internal class OAuthTokenService : ITokenService
                         ClientSecret = _config.ClientSecret,
                         RefreshToken = CurrentToken.RefreshToken,
                         Scope = _config.Scope,
-                    }
+                    },
+                    cancellationToken
                 );
 
                 if (!refreshTokenResponse.IsError)
@@ -248,7 +220,7 @@ internal class OAuthTokenService : ITokenService
             }
 
             // Fallback to full authentication
-            await AuthenticateAsync();
+            await AuthenticateAsync(cancellationToken);
             return !(CurrentToken?.IsError ?? true);
         }
         finally
@@ -266,19 +238,14 @@ internal class OAuthTokenService : ITokenService
         return CurrentToken?.AccessToken != null && !IsTokenExpired();
     }
 
-    /// <summary>
-    /// Authenticates this instance
-    /// </summary>
-    /// <exception cref="NotSupportedException">Grant type '{_config.GrantType}' is not supported</exception>
-    /// <exception cref="WeaviateAuthenticationException">OAuth authentication failed: {tokenResponse.Error}</exception>
-    private async Task AuthenticateAsync()
+    private async Task AuthenticateAsync(CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Starting OAuth authentication with {GrantType}", _config.GrantType);
 
         var tokenResponse = _config.GrantType switch
         {
-            "client_credentials" => await RequestClientCredentialsTokenAsync(),
-            "password" => await RequestPasswordTokenAsync(),
+            "client_credentials" => await RequestClientCredentialsTokenAsync(cancellationToken),
+            "password" => await RequestPasswordTokenAsync(cancellationToken),
             _ => throw new NotSupportedException(
                 $"Grant type '{_config.GrantType}' is not supported"
             ),
@@ -308,11 +275,9 @@ internal class OAuthTokenService : ITokenService
         _logger.LogDebug("OAuth authentication successful");
     }
 
-    /// <summary>
-    /// Requests the client credentials token
-    /// </summary>
-    /// <returns>A task containing the token response</returns>
-    private async Task<TokenResponse> RequestClientCredentialsTokenAsync()
+    private async Task<TokenResponse> RequestClientCredentialsTokenAsync(
+        CancellationToken cancellationToken = default
+    )
     {
         return await _httpClient.RequestClientCredentialsTokenAsync(
             new ClientCredentialsTokenRequest
@@ -321,16 +286,14 @@ internal class OAuthTokenService : ITokenService
                 ClientId = _config.ClientId,
                 ClientSecret = _config.ClientSecret,
                 Scope = _config.Scope,
-            }
+            },
+            cancellationToken
         );
     }
 
-    /// <summary>
-    /// Requests the password token
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Username and Password are required for password grant type</exception>
-    /// <returns>A task containing the token response</returns>
-    private async Task<TokenResponse> RequestPasswordTokenAsync()
+    private async Task<TokenResponse> RequestPasswordTokenAsync(
+        CancellationToken cancellationToken = default
+    )
     {
         if (string.IsNullOrEmpty(_config.Username) || string.IsNullOrEmpty(_config.Password))
         {
@@ -348,7 +311,8 @@ internal class OAuthTokenService : ITokenService
                 UserName = _config.Username,
                 Password = _config.Password,
                 Scope = _config.Scope,
-            }
+            },
+            cancellationToken
         );
     }
 
@@ -480,7 +444,7 @@ public class AuthenticatedHttpHandler : DelegatingHandler
         CancellationToken cancellationToken
     )
     {
-        var token = await _tokenService.GetAccessTokenAsync();
+        var token = await _tokenService.GetAccessTokenAsync(cancellationToken);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var response = await base.SendAsync(request, cancellationToken);
@@ -488,9 +452,9 @@ public class AuthenticatedHttpHandler : DelegatingHandler
         // Handle 401 by refreshing token and retrying once
         if (response.StatusCode == HttpStatusCode.Unauthorized)
         {
-            if (await _tokenService.RefreshTokenAsync())
+            if (await _tokenService.RefreshTokenAsync(cancellationToken))
             {
-                var newToken = await _tokenService.GetAccessTokenAsync();
+                var newToken = await _tokenService.GetAccessTokenAsync(cancellationToken);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", newToken);
                 response = await base.SendAsync(request, cancellationToken);
             }
