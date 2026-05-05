@@ -46,9 +46,11 @@ internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
 
     /// <summary>
     /// Gets or creates a client synchronously.
-    /// If the client hasn't been initialized yet, this will block until initialization completes.
-    /// Consider using GetClientAsync() for better async behavior.
     /// </summary>
+    [Obsolete(
+        "GetClient() blocks the calling thread and can deadlock in ASP.NET or any single-threaded SynchronizationContext. Use GetClientAsync() instead.",
+        error: false
+    )]
     public WeaviateClient GetClient(string name)
     {
         if (_disposed)
@@ -59,9 +61,10 @@ internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
             n => new Lazy<Task<WeaviateClient>>(() => CreateClientAsync(n))
         );
 
-        // This will block if the client is still initializing
-        // For non-blocking behavior, use GetClientAsync()
-        return lazyClient.Value.GetAwaiter().GetResult();
+        // Task.Run escapes the captured SynchronizationContext so the async
+        // continuation can run on a thread-pool thread and avoid deadlocking
+        // callers that block on the result (e.g. classic ASP.NET, WinForms).
+        return Task.Run(() => lazyClient.Value).GetAwaiter().GetResult();
     }
 
     /// <summary>
@@ -116,7 +119,7 @@ internal class WeaviateClientFactory : IWeaviateClientFactory, IDisposable
         {
             if (lazyClient.IsValueCreated && lazyClient.Value.IsCompletedSuccessfully)
             {
-                lazyClient.Value.Result.Dispose();
+                lazyClient.Value.GetAwaiter().GetResult().Dispose();
             }
         }
 

@@ -13,7 +13,7 @@ public abstract class ExportOperationBase : IDisposable, IAsyncDisposable
     private volatile bool _isCompleted;
     private volatile bool _isSuccessful;
     private volatile bool _isCanceled;
-    private bool _disposed;
+    private volatile bool _disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExportOperationBase"/> class.
@@ -73,7 +73,11 @@ public abstract class ExportOperationBase : IDisposable, IAsyncDisposable
                 {
                     break;
                 }
-                catch { }
+                catch (Exception ex) when (ex is not OutOfMemoryException)
+                {
+                    // Transient errors (network, server) are swallowed so the loop
+                    // retries on the next poll interval rather than killing the background task.
+                }
             }
         });
     }
@@ -146,6 +150,10 @@ public abstract class ExportOperationBase : IDisposable, IAsyncDisposable
         return canceled;
     }
 
+    /// <summary>
+    /// Releases the unmanaged resources used by the <see cref="ExportOperationBase"/> and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (_disposed)
@@ -157,7 +165,7 @@ public abstract class ExportOperationBase : IDisposable, IAsyncDisposable
             {
                 _backgroundRefreshTask.Wait(ExportClient.Config.PollInterval);
             }
-            catch (Exception) { }
+            catch (Exception ex) when (ex is AggregateException or OperationCanceledException) { }
             _cts.Dispose();
         }
         _disposed = true;
@@ -199,13 +207,9 @@ public abstract class ExportOperationBase : IDisposable, IAsyncDisposable
         {
             await _backgroundRefreshTask.ConfigureAwait(false);
         }
-        catch (Exception)
-        {
-            // Best-effort disposal
-        }
+        catch (Exception ex) when (ex is OperationCanceledException or AggregateException) { }
         _cts.Dispose();
         _disposed = true;
-        GC.SuppressFinalize(this);
     }
 
     private static bool IsTerminalStatus(ExportStatus? status)

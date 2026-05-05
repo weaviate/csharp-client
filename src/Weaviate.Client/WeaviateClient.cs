@@ -140,7 +140,7 @@ public partial class WeaviateClient : IDisposable
     /// <summary>
     /// The is disposed
     /// </summary>
-    private bool _isDisposed = false;
+    private bool _isDisposed;
 
     /// <summary>
     /// The weaviate client
@@ -204,7 +204,7 @@ public partial class WeaviateClient : IDisposable
     /// </summary>
     /// <param name="url">The url</param>
     /// <returns>The bool</returns>
-    static bool IsWeaviateDomain(string url)
+    private static bool IsWeaviateDomain(string url)
     {
         return url.Contains("weaviate.io", StringComparison.CurrentCultureIgnoreCase)
             || url.Contains("semi.technology", StringComparison.CurrentCultureIgnoreCase)
@@ -605,11 +605,8 @@ public partial class WeaviateClient : IDisposable
         if (_isDisposed)
             return;
 
+        _isDisposed = true;
         GrpcClient?.Dispose();
         RestClient?.Dispose();
-
-        GC.SuppressFinalize(this);
-
-        _isDisposed = true;
     }
 }

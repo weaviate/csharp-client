@@ -142,9 +142,9 @@ internal partial record Property
             DataType = DataType?.FirstOrDefault()?.FromEnumMemberString<Models.DataType>() ?? Models.DataType.Unknown,
             Description = Description,
             IndexFilterable = IndexFilterable,
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
             IndexInverted = IndexInverted,
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
             IndexRangeFilters = IndexRangeFilters,
             IndexSearchable = IndexSearchable,
             PropertyTokenization = (Models.PropertyTokenization?)Tokenization,
