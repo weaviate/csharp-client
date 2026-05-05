@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
 
+#### Tokenization
+
+- **Tokenize Endpoints** ([#329](https://github.com/weaviate/csharp-client/pull/329)): Expose the `POST /v1/tokenize` and `POST /v1/schema/{class}/properties/{prop}/tokenize` endpoints introduced in Weaviate 1.37.0. Inspect how text is tokenized for a given method and analyzer configuration, or how a specific collection property would tokenize it. Access via `client.Tokenize.Text(...)` and `collection.Tokenize.Property(...)`. `AsciiFoldConfig` is modeled as a nullable record so the invalid "ignore without fold" state is unrepresentable. See [TOKENIZE_API_USAGE.md](docs/TOKENIZE_API_USAGE.md). Requires Weaviate ≥ 1.37.0.
+- **Property-Level `TextAnalyzerConfig`** ([#329](https://github.com/weaviate/csharp-client/pull/329)): `Property.TextAnalyzer` (also applies to nested properties) lets a collection schema pin ASCII folding and/or a stopword preset per property at index time. The same `TextAnalyzerConfig` record is reused from the `Tokenize` endpoint so tokenize-at-query and index-at-insert stay aligned. A preflight version check on `CollectionsClient.Create` raises `WeaviateVersionMismatchException` when the server is older than 1.37.0. Requires Weaviate ≥ 1.37.0.
+- **Collection-Level `StopwordPresets`** ([#329](https://github.com/weaviate/csharp-client/pull/329)): `InvertedIndexConfig.StopwordPresets` and `InvertedIndexConfigUpdate.StopwordPresets` define named preset name → word-list maps on the inverted-index config. Properties reference these presets via `TextAnalyzer.StopwordPreset`. Preset changes flow through `CollectionClient.Config.Update(c => c.InvertedIndexConfig.StopwordPresets = ...)`. Requires Weaviate ≥ 1.37.0.
 
 ---
 

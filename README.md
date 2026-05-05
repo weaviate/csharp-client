@@ -126,6 +126,7 @@ For more detailed information on specific features, please refer to the official
 - **[Backup API Usage](docs/BACKUP_API_USAGE.md)**: Creating and restoring backups
 - **[Nodes API Usage](docs/NODES_API_USAGE.md)**: Querying cluster node information
 - **[Aggregate Result Accessors](docs/AGGREGATE_RESULT_ACCESSORS.md)**: Type-safe access to aggregation results
+- **[Tokenize API Usage](docs/TOKENIZE_API_USAGE.md)**: Inspect how text is tokenized with a given method or for a specific collection property. Requires Weaviate ≥ 1.37.0.
 - **[Microsoft.Extensions.VectorData Integration](docs/VECTORDATA.md)**: Standard .NET vector store abstraction support
 
 ---
