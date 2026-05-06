@@ -100,24 +100,14 @@ public class DefaultTokenServiceFactory : ITokenServiceFactory
         if (configuration.Credentials is Auth.ApiKeyCredentials apiKey)
             return new ApiKeyTokenService(apiKey);
 
-        (bool IsSuccessStatusCode, string? TokenEndpoint, string? ClientID) openIdConfig;
-        try
-        {
-            // Task.Run escapes any captured SynchronizationContext so the await
-            // inside GetOpenIdConfig can schedule continuations on the thread pool.
-            openIdConfig = Task.Run(() =>
-                    OAuthTokenService.GetOpenIdConfig(configuration.RestUri.ToString())
-                )
-                .GetAwaiter()
-                .GetResult();
-        }
-        catch (HttpRequestException ex)
-        {
-            throw new InvalidOperationException(
-                $"OIDC discovery failed for {configuration.RestUri}: {ex.Message}",
-                ex
-            );
-        }
+        // Task.Run escapes any captured SynchronizationContext so the await
+        // inside GetOpenIdConfig can schedule continuations on the thread pool.
+        // GetOpenIdConfig swallows network exceptions and signals failure via IsSuccessStatusCode.
+        var openIdConfig = Task.Run(() =>
+                OAuthTokenService.GetOpenIdConfig(configuration.RestUri.ToString())
+            )
+            .GetAwaiter()
+            .GetResult();
 
         if (!openIdConfig.IsSuccessStatusCode)
             return null;

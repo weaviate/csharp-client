@@ -127,7 +127,7 @@ internal partial class WeaviateGrpcClient : IDisposable
             {
                 var token = await tokenService.GetAccessTokenAsync(context.CancellationToken);
 
-                if (tokenService.IsAuthenticated())
+                if (!string.IsNullOrEmpty(token))
                 {
                     metadata.Add("Authorization", $"Bearer {token}");
                 }

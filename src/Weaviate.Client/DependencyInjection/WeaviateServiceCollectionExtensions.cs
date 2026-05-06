@@ -204,21 +204,24 @@ public static class WeaviateServiceCollectionExtensions
     /// when tokens vary per HTTP request (e.g. multi-tenant scenarios, token forwarding).
     /// </summary>
     /// <typeparam name="TTokenService">
-    /// A scoped <see cref="ITokenService"/> implementation. It is registered as
-    /// <see cref="ServiceLifetime.Scoped"/> so it is constructed once per DI scope; in ASP.NET
-    /// Core that maps to once per incoming HTTP request.
+    /// A scoped <see cref="ITokenService"/> implementation registered as
+    /// <see cref="ServiceLifetime.Scoped"/>. A fresh DI scope — and therefore a fresh
+    /// <typeparamref name="TTokenService"/> instance — is created on every auth call, not
+    /// once per HTTP request. The service must not rely on request-scoped dependencies
+    /// (e.g. <c>IHttpContextAccessor</c>) unless those are available at startup too.
     /// </typeparam>
     /// <param name="services">The service collection.</param>
     /// <param name="configureOptions">Action to configure Weaviate connection options. Credentials
     /// set here are ignored — token acquisition is handled entirely by
     /// <typeparamref name="TTokenService"/>.</param>
     /// <param name="eagerInitialization">Whether to initialize the client eagerly on application
-    /// startup via <see cref="WeaviateInitializationService"/>. Default is <c>true</c>.</param>
+    /// startup via <see cref="WeaviateInitializationService"/>. Defaults to <c>false</c> because
+    /// the token service may depend on request context unavailable at startup.</param>
     /// <returns>The service collection for method chaining.</returns>
     public static IServiceCollection AddWeaviate<TTokenService>(
         this IServiceCollection services,
         Action<WeaviateOptions> configureOptions,
-        bool eagerInitialization = true
+        bool eagerInitialization = false
     )
         where TTokenService : class, ITokenService
     {
@@ -248,12 +251,13 @@ public static class WeaviateServiceCollectionExtensions
     /// <typeparam name="TTokenService">A scoped <see cref="ITokenService"/> implementation.</typeparam>
     /// <param name="services">The service collection.</param>
     /// <param name="clusterEndpoint">The Weaviate Cloud cluster endpoint (e.g. "my-cluster.weaviate.cloud").</param>
-    /// <param name="eagerInitialization">Whether to initialize eagerly on startup. Default is <c>true</c>.</param>
+    /// <param name="eagerInitialization">Whether to initialize eagerly on startup. Defaults to <c>false</c>
+    /// because the token service may depend on request context unavailable at startup.</param>
     /// <returns>The service collection for method chaining.</returns>
     public static IServiceCollection AddWeaviateCloud<TTokenService>(
         this IServiceCollection services,
         string clusterEndpoint,
-        bool eagerInitialization = true
+        bool eagerInitialization = false
     )
         where TTokenService : class, ITokenService
     {

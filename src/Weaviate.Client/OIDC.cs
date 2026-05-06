@@ -443,7 +443,8 @@ public class AuthenticatedHttpHandler : DelegatingHandler
     )
     {
         var token = await _tokenService.GetAccessTokenAsync(cancellationToken);
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        if (!string.IsNullOrEmpty(token))
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var response = await base.SendAsync(request, cancellationToken);
 
@@ -453,7 +454,11 @@ public class AuthenticatedHttpHandler : DelegatingHandler
             if (await _tokenService.RefreshTokenAsync(cancellationToken))
             {
                 var newToken = await _tokenService.GetAccessTokenAsync(cancellationToken);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", newToken);
+                if (!string.IsNullOrEmpty(newToken))
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        newToken
+                    );
                 response = await base.SendAsync(request, cancellationToken);
             }
         }
