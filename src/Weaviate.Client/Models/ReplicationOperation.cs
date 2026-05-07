@@ -6,42 +6,13 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
 {
-    /// <summary>
-    /// The status fetcher
-    /// </summary>
     private readonly Func<CancellationToken, Task<ReplicationOperation>> _statusFetcher;
-
-    /// <summary>
-    /// The operation cancel
-    /// </summary>
     private readonly Func<CancellationToken, Task> _operationCancel;
-
-    /// <summary>
-    /// The cts
-    /// </summary>
     private readonly CancellationTokenSource _cts = new();
-
-    /// <summary>
-    /// The background refresh task
-    /// </summary>
     private readonly Task _backgroundRefreshTask;
-
-    /// <summary>
-    /// The current
-    /// </summary>
     private ReplicationOperation _current;
+    private volatile bool _disposed;
 
-    /// <summary>
-    /// The disposed
-    /// </summary>
-    private bool _disposed;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReplicationOperationTracker"/> class
-    /// </summary>
-    /// <param name="initial">The initial</param>
-    /// <param name="statusFetcher">The status fetcher</param>
-    /// <param name="operationCancel">The operation cancel</param>
     internal ReplicationOperationTracker(
         ReplicationOperation initial,
         Func<CancellationToken, Task<ReplicationOperation>> statusFetcher,
@@ -74,9 +45,6 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
     /// </summary>
     public bool IsCancelled => _current.IsCancelled;
 
-    /// <summary>
-    /// Starts the background refresh
-    /// </summary>
     private Task StartBackgroundRefresh()
     {
         return Task.Run(async () =>
@@ -92,18 +60,15 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
                 {
                     break;
                 }
-                catch
+                catch (Exception ex) when (ex is not OutOfMemoryException)
                 {
-                    // Swallow errors, optionally log
+                    // Transient errors (network, server) are swallowed so the loop
+                    // retries on the next poll interval rather than killing the background task.
                 }
             }
         });
     }
 
-    /// <summary>
-    /// Refreshes the status internal using the specified cancellation token
-    /// </summary>
-    /// <param name="cancellationToken">The cancellation token</param>
     private async Task RefreshStatusInternal(CancellationToken cancellationToken = default)
     {
         if (_current.IsCompleted)
@@ -210,10 +175,7 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
             {
                 _backgroundRefreshTask.Wait(ReplicationClientConfig.Default.PollInterval);
             }
-            catch (Exception)
-            {
-                // Ignore exceptions from waiting on background task, as disposal is best-effort
-            }
+            catch (Exception ex) when (ex is AggregateException or OperationCanceledException) { }
             _cts.Dispose();
         }
         _disposed = true;
@@ -232,10 +194,7 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
             // Wait for background task to complete (should be immediate since we just canceled)
             _backgroundRefreshTask.Wait(ReplicationClientConfig.Default.PollInterval);
         }
-        catch (Exception)
-        {
-            // Ignore exceptions, disposal is best-effort
-        }
+        catch (Exception ex) when (ex is AggregateException or OperationCanceledException) { }
 
         _cts.Dispose();
         _disposed = true;
@@ -262,17 +221,11 @@ public class ReplicationOperationTracker : IDisposable, IAsyncDisposable
 
         try
         {
-            // Await the background task gracefully
             await _backgroundRefreshTask.ConfigureAwait(false);
         }
-        catch (Exception)
-        {
-            // Ignore exceptions, disposal is best-effort
-        }
+        catch (Exception ex) when (ex is OperationCanceledException or AggregateException) { }
 
         _cts.Dispose();
         _disposed = true;
-
-        GC.SuppressFinalize(this);
     }
 }

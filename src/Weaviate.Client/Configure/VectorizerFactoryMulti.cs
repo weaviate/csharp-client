@@ -7,7 +7,7 @@ namespace Weaviate.Client;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
-/// The vectorizer factory multi class
+/// Factory methods for configuring multi-modal vectorizer providers on a Weaviate collection.
 /// </summary>
 public class VectorizerFactoryMulti
 {

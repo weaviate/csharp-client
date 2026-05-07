@@ -7,24 +7,12 @@ namespace Weaviate.Client;
 /// </summary>
 public class ClusterClient
 {
-    /// <summary>
-    /// The client
-    /// </summary>
     private readonly WeaviateClient _client;
 
-    /// <summary>
-    /// Gets the value of the  restclient
-    /// </summary>
     private Rest.WeaviateRestClient _restClient => _client.RestClient;
 
-    /// <summary>
-    /// The nodes
-    /// </summary>
     private NodesClient? _nodes;
 
-    /// <summary>
-    /// The replications
-    /// </summary>
     private ReplicationsClient? _replications;
 
     /// <summary>

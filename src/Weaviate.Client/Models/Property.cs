@@ -577,7 +577,7 @@ public record Property : IEquatable<Property>
     /// <summary>
     /// Gets whether inverted indexing is enabled for the property.
     /// </summary>
-    [Obsolete]
+    [Obsolete("Use IndexFilterable instead. IndexInverted was deprecated in Weaviate 1.19.")]
     public bool? IndexInverted { get; init; }
 
     /// <summary>
@@ -799,9 +799,9 @@ public record Property : IEquatable<Property>
         hash.Add(Name);
         hash.Add(DataType);
         hash.Add(Description);
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
         hash.Add(IndexInverted);
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
         hash.Add(IndexFilterable);
         hash.Add(IndexRangeFilters);
         hash.Add(IndexSearchable);

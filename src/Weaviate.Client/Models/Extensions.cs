@@ -113,9 +113,9 @@ internal static class ModelsToDtoExtensions
             DataType = [property.DataType.ToEnumMemberString()],
             Description = property.Description,
             IndexFilterable = property.IndexFilterable,
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
             IndexInverted = property.IndexInverted,
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
             IndexRangeFilters = property.IndexRangeFilters,
             IndexSearchable = property.IndexSearchable,
             Tokenization = (Rest.Dto.PropertyTokenization?)property.PropertyTokenization,

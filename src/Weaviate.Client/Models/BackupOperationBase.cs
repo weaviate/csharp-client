@@ -6,57 +6,22 @@ namespace Weaviate.Client.Models;
 /// </summary>
 public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
 {
-    /// <summary>
-    /// The status fetcher
-    /// </summary>
     private readonly Func<CancellationToken, Task<Backup>> _statusFetcher;
-
-    /// <summary>
-    /// The operation cancel
-    /// </summary>
     private readonly Func<CancellationToken, Task> _operationCancel;
-
-    /// <summary>
-    /// The cts
-    /// </summary>
     private readonly CancellationTokenSource _cts = new();
-
-    /// <summary>
-    /// The background refresh task
-    /// </summary>
     private readonly Task _backgroundRefreshTask;
-
-    /// <summary>
-    /// The current
-    /// </summary>
     private Backup _current;
-
-    /// <summary>
-    /// The is completed
-    /// </summary>
     private volatile bool _isCompleted;
-
-    /// <summary>
-    /// The is successful
-    /// </summary>
     private volatile bool _isSuccessful;
-
-    /// <summary>
-    /// The is canceled
-    /// </summary>
     private volatile bool _isCanceled;
+    private volatile bool _disposed;
 
     /// <summary>
-    /// The disposed
+    /// Initializes a new instance of the <see cref="BackupOperationBase"/> class.
     /// </summary>
-    private bool _disposed;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BackupOperationBase"/> class
-    /// </summary>
-    /// <param name="initial">The initial</param>
-    /// <param name="statusFetcher">The status fetcher</param>
-    /// <param name="operationCancel">The operation cancel</param>
+    /// <param name="initial">The initial backup state returned by the server.</param>
+    /// <param name="statusFetcher">Delegate to poll the latest status from the server.</param>
+    /// <param name="operationCancel">Delegate to request cancellation on the server.</param>
     protected BackupOperationBase(
         Backup initial,
         Func<CancellationToken, Task<Backup>> statusFetcher,
@@ -92,9 +57,6 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
     /// </summary>
     public bool IsCanceled => _isCanceled;
 
-    /// <summary>
-    /// Starts the background refresh
-    /// </summary>
     private Task StartBackgroundRefresh()
     {
         if (_isCompleted)
@@ -112,15 +74,15 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
                 {
                     break;
                 }
-                catch { }
+                catch (Exception ex) when (ex is not OutOfMemoryException)
+                {
+                    // Transient errors (network, server) are swallowed so the loop
+                    // retries on the next poll interval rather than killing the background task.
+                }
             }
         });
     }
 
-    /// <summary>
-    /// Refreshes the status internal using the specified cancellation token
-    /// </summary>
-    /// <param name="cancellationToken">The cancellation token</param>
     private async Task RefreshStatusInternal(CancellationToken cancellationToken = default)
     {
         if (_isCompleted)
@@ -200,7 +162,7 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
             {
                 _backgroundRefreshTask.Wait(BackupClient.Config.PollInterval);
             }
-            catch (Exception) { }
+            catch (Exception ex) when (ex is AggregateException or OperationCanceledException) { }
             _cts.Dispose();
         }
         _disposed = true;
@@ -243,19 +205,12 @@ public abstract class BackupOperationBase : IDisposable, IAsyncDisposable
         {
             await _backgroundRefreshTask.ConfigureAwait(false);
         }
-        catch (Exception) { }
+        catch (Exception ex) when (ex is OperationCanceledException or AggregateException) { }
 
         _cts.Dispose();
         _disposed = true;
-
-        GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Ises the terminal status using the specified status
-    /// </summary>
-    /// <param name="status">The status</param>
-    /// <returns>The bool</returns>
     private static bool IsTerminalStatus(BackupStatus? status)
     {
         return status == BackupStatus.Success

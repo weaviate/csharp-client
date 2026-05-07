@@ -6,7 +6,7 @@ namespace Weaviate.Client;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
-/// The generative provider factory class
+/// Factory methods for configuring generative AI provider settings on a Weaviate collection.
 /// </summary>
 public class GenerativeProviderFactory
 {

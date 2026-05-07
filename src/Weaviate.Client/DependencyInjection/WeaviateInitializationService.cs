@@ -9,14 +9,8 @@ namespace Weaviate.Client.DependencyInjection;
 /// </summary>
 internal class WeaviateInitializationService : IHostedService
 {
-    /// <summary>
-    /// The client
-    /// </summary>
     private readonly WeaviateClient _client;
 
-    /// <summary>
-    /// The logger
-    /// </summary>
     private readonly ILogger<WeaviateInitializationService> _logger;
 
     /// <summary>
