@@ -9,13 +9,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.1.0] — 2026-05-11
+
+### Highlights
+
+- Weaviate 1.37 support: tokenization endpoints, blobHash property type, collection export, TextAnalyzerConfig per-property
+- New `Weaviate.Client.VectorData` package: `IVectorStore` / `IVectorStoreRecordCollection` for Semantic Kernel and compatible AI frameworks
+- Server-side batching via `BatchContext` streaming API
+- Query profiling, delete-vector-index, MCP RBAC permissions
+- Authentication hardening: `CancellationToken` threading, scoped DI token providers, deadlock fix in `GetClient()`
+
 ### Added
+
+#### Collection Export
+
+- **Collection Export** ([#324](https://github.com/weaviate/weaviate-csharp-client/pull/324)): New `ExportClient` accessible via `client.Export` and `collection.Export`. Supports `Create()`, `CreateAndWait()`, `GetStatus()`, and `CancelExport()`. `ExportOperation` tracks export progress with the same polling pattern as backup operations. Requires Weaviate ≥ 1.37.0.
+
+#### Server-Side Batching
+
+- **`BatchContext` Streaming Batch API** ([#305](https://github.com/weaviate/weaviate-csharp-client/pull/305)): `collection.Batch.StreamAsync()` opens a server-side batch session that streams objects and cross-references directly to the server without buffering all data in memory. `BatchContext.AddReference` enqueues cross-references alongside objects in the same stream. Requires Weaviate ≥ 1.27.0.
 
 #### Tokenization
 
-- **Tokenize Endpoints** ([#329](https://github.com/weaviate/csharp-client/pull/329)): Expose the `POST /v1/tokenize` and `POST /v1/schema/{class}/properties/{prop}/tokenize` endpoints introduced in Weaviate 1.37.0. Inspect how text is tokenized for a given method and analyzer configuration, or how a specific collection property would tokenize it. Access via `client.Tokenize.Text(...)` and `collection.Tokenize.Property(...)`. `AsciiFoldConfig` is modeled as a nullable record so the invalid "ignore without fold" state is unrepresentable. See [TOKENIZE_API_USAGE.md](docs/TOKENIZE_API_USAGE.md). Requires Weaviate ≥ 1.37.0.
-- **Property-Level `TextAnalyzerConfig`** ([#329](https://github.com/weaviate/csharp-client/pull/329)): `Property.TextAnalyzer` (also applies to nested properties) lets a collection schema pin ASCII folding and/or a stopword preset per property at index time. The same `TextAnalyzerConfig` record is reused from the `Tokenize` endpoint so tokenize-at-query and index-at-insert stay aligned. A preflight version check on `CollectionsClient.Create` raises `WeaviateVersionMismatchException` when the server is older than 1.37.0. Requires Weaviate ≥ 1.37.0.
-- **Collection-Level `StopwordPresets`** ([#329](https://github.com/weaviate/csharp-client/pull/329)): `InvertedIndexConfig.StopwordPresets` and `InvertedIndexConfigUpdate.StopwordPresets` define named preset name → word-list maps on the inverted-index config. Properties reference these presets via `TextAnalyzer.StopwordPreset`. Preset changes flow through `CollectionClient.Config.Update(c => c.InvertedIndexConfig.StopwordPresets = ...)`. Requires Weaviate ≥ 1.37.0.
+- **Tokenize Endpoints** ([#329](https://github.com/weaviate/weaviate-csharp-client/pull/329)): Expose `POST /v1/tokenize` and `POST /v1/schema/{class}/properties/{prop}/tokenize` introduced in Weaviate 1.37.0. Inspect how text is tokenized for a given analyzer configuration, or for a specific collection property. Access via `client.Tokenize.Text(...)` and `collection.Tokenize.Property(...)`. `AsciiFoldConfig` is modeled as a nullable record so the invalid "ignore without fold" state is unrepresentable. See [TOKENIZE_API_USAGE.md](docs/TOKENIZE_API_USAGE.md). Requires Weaviate ≥ 1.37.0.
+- **Property-Level `TextAnalyzerConfig`** ([#329](https://github.com/weaviate/weaviate-csharp-client/pull/329)): `Property.TextAnalyzer` (also applies to nested properties) pins ASCII folding and/or a stopword preset per property at index time. Reuses the same `TextAnalyzerConfig` record from the Tokenize endpoint so tokenize-at-query and index-at-insert stay aligned. Raises `WeaviateVersionMismatchException` on `CollectionsClient.Create` when the server is older than 1.37.0.
+- **Collection-Level `StopwordPresets`** ([#329](https://github.com/weaviate/weaviate-csharp-client/pull/329)): `InvertedIndexConfig.StopwordPresets` and `InvertedIndexConfigUpdate.StopwordPresets` define named preset → word-list maps. Properties reference presets via `TextAnalyzer.StopwordPreset`. Changes flow through `CollectionClient.Config.Update(...)`. Requires Weaviate ≥ 1.37.0.
+
+#### Microsoft.Extensions.VectorData Integration
+
+- **`Weaviate.Client.VectorData` Package** ([#312](https://github.com/weaviate/weaviate-csharp-client/pull/312)): New NuGet package implementing `IVectorStore` and `IVectorStoreRecordCollection<TKey, TRecord>` from `Microsoft.Extensions.VectorData.Abstractions`. Enables drop-in use of Weaviate with AI frameworks built on the shared VectorData abstraction (e.g., Semantic Kernel). Install via `dotnet add package Weaviate.Client.VectorData`.
+
+#### Vector Index Management
+
+- **Delete Vector Index** ([#310](https://github.com/weaviate/weaviate-csharp-client/pull/310)): `CollectionConfigClient.DeleteVectorIndex(name)` removes a named vector index from an existing collection without dropping the collection or its data. Requires Weaviate ≥ 1.37.0.
+
+#### RBAC Permissions
+
+- **MCP Permission Type** ([#321](https://github.com/weaviate/weaviate-csharp-client/pull/321)): New `Permission.Mcp` permission for granting Model Context Protocol actions in RBAC role configurations.
+
+#### Query Profiling
+
+- **`MetadataOptions.QueryProfile`** ([#318](https://github.com/weaviate/weaviate-csharp-client/pull/318)): New flag that requests per-phase timing from the server. Profiling data is exposed as `WeaviateResult.QueryProfile`.
+
+#### Client Integration Headers
+
+- **`X-Weaviate-Client-Integration` Header** ([#306](https://github.com/weaviate/weaviate-csharp-client/pull/306)): `WeaviateOptions.AddIntegration(name)` and `WeaviateClientBuilder.WithIntegration(name)` append integration agent tokens to the `X-Weaviate-Client-Integration` header. `WeaviateDefaults.IntegrationAgent(name)` builds a `"name/assemblyVersion"` token automatically. Values containing whitespace are rejected (space is the token separator). The gRPC client now always sends the `X-Weaviate-Client` header regardless of whether custom headers are present.
+
+#### Property Types
+
+- **`blobHash` Property Type** ([#336](https://github.com/weaviate/weaviate-csharp-client/pull/336)): New `BlobHashPropertyConverter` for reading `blobHash`-type properties from search results. Register via `PropertyConverterRegistry`. Requires Weaviate ≥ 1.37.0.
+
+#### Vectorizers
+
+- **Audio Field Support** ([#302](https://github.com/weaviate/weaviate-csharp-client/pull/302)): `Multi2VecGoogle` and `Multi2VecGoogleGemini` vectorizers now support audio field configurations with configurable per-field weights.
+
+#### API Ergonomics
+
+- **Nullable `Alpha` in Hybrid Search** ([#304](https://github.com/weaviate/weaviate-csharp-client/pull/304)): `HybridInput.Alpha` and `HybridAggregateInput.Alpha` are now nullable. Omitting the parameter defers to the server's default (0.75), removing the need to specify it explicitly on every query.
+
+### Fixed
+
+- **Authentication / Concurrency / Resource Safety** ([#337](https://github.com/weaviate/weaviate-csharp-client/pull/337)):
+  - `ITokenService.GetAccessTokenAsync` and `RefreshTokenAsync` now accept an optional `CancellationToken`; a cancelled gRPC call also cancels the in-flight token fetch.
+  - New `AddWeaviate<TTokenService>` DI overloads resolve a fresh token service from a DI scope per call, enabling multi-tenant and token-forwarding scenarios.
+  - `WeaviateClientFactory.GetClient()` marked `[Obsolete]`; internals now use `Task.Run()` to escape `SynchronizationContext` and prevent deadlocks in ASP.NET Core hosts.
+  - `_disposed` fields in `BackupOperationBase`, `ExportOperationBase`, and `ReplicationOperationTracker` made `volatile` to prevent data races between `Dispose()` and `DisposeInternal()`.
+  - Background polling loops now catch `Exception when (ex is not OutOfMemoryException)` so CLR fatal exceptions are not suppressed.
+- **Backup Disposal Leak** ([#331](https://github.com/weaviate/weaviate-csharp-client/pull/331)): `BackupOperationBase` and `BackupClient` now correctly dispose background polling tasks and `CancellationTokenSource` instances.
+- **`ObjectTTLConfig` Null-vs-Disabled Equality** ([#307](https://github.com/weaviate/weaviate-csharp-client/pull/307)): The server returns `objectTtlConfig` with `enabled=false` for collections without TTL; client-side equality now null-coalesces to `ObjectTTLConfig.Disabled` to prevent spurious mismatches.
+- **Null `vectorIndexConfig` Crash** ([#321](https://github.com/weaviate/weaviate-csharp-client/pull/321)): `VectorIndexSerialization.Factory` returns `null` instead of throwing when `vectorIndexConfig` is `null`, fixing `ConnectToLocal` failures against Weaviate 1.37.1.
+
+### Changed
+
+- `Property.IndexInverted` `[Obsolete]` attribute now includes a migration message.
+
+### Minimum Supported Weaviate Version
+
+| Feature                                                                                                         | Minimum Weaviate Version |
+|-----------------------------------------------------------------------------------------------------------------|--------------------------|
+| Core client                                                                                                     | 1.32.0                   |
+| Delete vector index, tokenize endpoints, `TextAnalyzerConfig`, `StopwordPresets`, `blobHash`, collection export | 1.37.0                   |
 
 ---
 
@@ -117,6 +192,7 @@ Initial stable release of the Weaviate C# client.
 
 ---
 
-[Unreleased]: https://github.com/weaviate/weaviate-csharp-client/compare/1.0.1...HEAD
+[Unreleased]: https://github.com/weaviate/weaviate-csharp-client/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/weaviate/weaviate-csharp-client/compare/1.0.1...1.1.0
 [1.0.1]: https://github.com/weaviate/weaviate-csharp-client/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/weaviate/weaviate-csharp-client/releases/tag/1.0.0
