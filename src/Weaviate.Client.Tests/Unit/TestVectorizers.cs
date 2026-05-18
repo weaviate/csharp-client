@@ -431,8 +431,8 @@ public partial class VectorConfigListTests
             "default",
             v =>
                 v.Text2VecDigitalOcean(
-                    baseURL: "https://inference.do-ai.run",
                     model: "qwen3-embedding-0.6b",
+                    baseURL: "https://inference.do-ai.run",
                     vectorizeCollectionName: false
                 )
         );
@@ -457,7 +457,8 @@ public partial class VectorConfigListTests
 
     /// <summary>
     /// Tests that Text2VecDigitalOcean omits unset optional fields so the server can apply
-    /// its defaults (no <c>baseURL</c>, no <c>model</c>).
+    /// its defaults (no <c>baseURL</c>). <c>model</c> is required by the factory so it is
+    /// always present.
     /// </summary>
     [Fact]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -465,10 +466,13 @@ public partial class VectorConfigListTests
         "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
         Justification = "<Pending>"
     )]
-    public void Test_Text2VecDigitalOcean_Omits_Unset_Optionals()
+    public void Test_Text2VecDigitalOcean_Omits_Unset_BaseURL()
     {
         // Arrange
-        var vc = Configure.Vector("default", v => v.Text2VecDigitalOcean());
+        var vc = Configure.Vector(
+            "default",
+            v => v.Text2VecDigitalOcean(model: "qwen3-embedding-0.6b")
+        );
 
         // Act
         var dto = vc.Vectorizer?.ToDto() ?? default;
@@ -489,7 +493,7 @@ public partial class VectorConfigListTests
 
         // Assert
         Assert.Contains("\"text2vec-digitalocean\"", json);
+        Assert.Contains("\"model\":\"qwen3-embedding-0.6b\"", json);
         Assert.DoesNotContain("\"baseURL\"", json);
-        Assert.DoesNotContain("\"model\"", json);
     }
 }

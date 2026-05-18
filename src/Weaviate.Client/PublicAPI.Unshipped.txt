@@ -17,4 +17,4 @@ Weaviate.Client.Models.Vectorizer.Text2VecDigitalOcean.Model.set -> void
 Weaviate.Client.Models.Vectorizer.Text2VecDigitalOcean.Text2VecDigitalOcean(Weaviate.Client.Models.Vectorizer.Text2VecDigitalOcean! original) -> void
 Weaviate.Client.Models.Vectorizer.Text2VecDigitalOcean.VectorizeCollectionName.get -> bool?
 Weaviate.Client.Models.Vectorizer.Text2VecDigitalOcean.VectorizeCollectionName.set -> void
-Weaviate.Client.VectorizerFactory.Text2VecDigitalOcean(string? baseURL = null, string? model = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Text2VecDigitalOcean(string! model, string? baseURL = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
