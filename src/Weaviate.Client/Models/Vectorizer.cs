@@ -1065,6 +1065,39 @@ public static class Vectorizer
     }
 
     /// <summary>
+    /// The configuration for text vectorization using the DigitalOcean module.
+    /// See the <a href="https://weaviate.io/developers/weaviate/model-providers/digitalocean/embeddings">documentation</a>
+    /// for detailed usage.
+    /// </summary>
+    [Vectorizer("text2vec-digitalocean")]
+    public record Text2VecDigitalOcean : VectorizerConfig
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Text2VecDigitalOcean"/> class
+        /// </summary>
+        [JsonConstructor]
+        internal Text2VecDigitalOcean() { }
+
+        /// <summary>
+        /// Gets or sets the base URL where API requests should go.
+        /// Defaults to <c>null</c>, which uses the server-defined default of <c>https://inference.do-ai.run</c>.
+        /// </summary>
+        [JsonPropertyName("baseURL")]
+        public string? BaseURL { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the model to use, e.g. <c>qwen3-embedding-0.6b</c>. Required by the server.
+        /// </summary>
+        public string? Model { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the vectorize collection name
+        /// </summary>
+        [JsonPropertyName("vectorizeClassName")]
+        public bool? VectorizeCollectionName { get; set; } = null;
+    }
+
+    /// <summary>
     /// The configuration for text vectorization using the Model2Vec module.
     /// See the documentation for detailed usage.
     /// </summary>
