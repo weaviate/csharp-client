@@ -751,6 +751,27 @@ public class VectorizerFactory
         };
 
     /// <summary>
+    /// Creates a configuration for the <c>text2vec-digitalocean</c> vectorizer.
+    /// See the <a href="https://weaviate.io/developers/weaviate/model-providers/digitalocean/embeddings">documentation</a>
+    /// for detailed usage.
+    /// </summary>
+    /// <param name="baseURL">The base URL where API requests should go. Defaults to <c>null</c>, which uses the server-defined default of <c>https://inference.do-ai.run</c>.</param>
+    /// <param name="model">The model to use, e.g. <c>qwen3-embedding-0.6b</c>. Required by the server.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
+    /// <returns>The vectorizer config</returns>
+    public VectorizerConfig Text2VecDigitalOcean(
+        string? baseURL = null,
+        string? model = null,
+        bool? vectorizeCollectionName = null
+    ) =>
+        new Text2VecDigitalOcean
+        {
+            BaseURL = baseURL,
+            Model = model,
+            VectorizeCollectionName = vectorizeCollectionName,
+        };
+
+    /// <summary>
     /// Texts the 2 vec model 2 vec using the specified inference url
     /// </summary>
     /// <param name="inferenceURL">The inference url</param>

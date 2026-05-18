@@ -413,4 +413,83 @@ public partial class VectorConfigListTests
         Assert.Contains("\"textFields\"", json);
         Assert.Contains("\"videoFields\"", json);
     }
+
+    /// <summary>
+    /// Tests that Text2VecDigitalOcean serializes baseURL and model correctly under the
+    /// <c>text2vec-digitalocean</c> module key.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Text2VecDigitalOcean_Serializes_BaseURL_And_Model()
+    {
+        // Arrange
+        var vc = Configure.Vector(
+            "default",
+            v =>
+                v.Text2VecDigitalOcean(
+                    baseURL: "https://inference.do-ai.run",
+                    model: "qwen3-embedding-0.6b",
+                    vectorizeCollectionName: false
+                )
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"text2vec-digitalocean\"", json);
+        Assert.Contains("\"baseURL\":\"https://inference.do-ai.run\"", json);
+        Assert.Contains("\"model\":\"qwen3-embedding-0.6b\"", json);
+        Assert.Contains("\"vectorizeClassName\":false", json);
+    }
+
+    /// <summary>
+    /// Tests that Text2VecDigitalOcean omits unset optional fields so the server can apply
+    /// its defaults (no <c>baseURL</c>, no <c>model</c>).
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Text2VecDigitalOcean_Omits_Unset_Optionals()
+    {
+        // Arrange
+        var vc = Configure.Vector("default", v => v.Text2VecDigitalOcean());
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"text2vec-digitalocean\"", json);
+        Assert.DoesNotContain("\"baseURL\"", json);
+        Assert.DoesNotContain("\"model\"", json);
+    }
 }
