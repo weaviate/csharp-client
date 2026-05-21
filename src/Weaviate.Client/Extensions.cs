@@ -131,7 +131,7 @@ public static class WeaviateExtensions
                 VectorIndexConfig = e.VectorIndexConfig is not null
                     ? _objectToDict(VectorIndexSerialization.ToDto(e.VectorIndexConfig))
                     : new Dictionary<string, object>(),
-                VectorIndexType = e.VectorIndexType ?? "hnsw",
+                VectorIndexType = e.VectorIndexType,
                 Vectorizer = e.Vectorizer?.ToDto(),
             }
         );
