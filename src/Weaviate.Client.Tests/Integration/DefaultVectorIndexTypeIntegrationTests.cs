@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using Weaviate.Client.Models;
@@ -14,10 +13,8 @@ namespace Weaviate.Client.Tests.Integration;
 /// One container per run. The target server version is read from the
 /// <c>WEAVIATE_VERSION</c> environment variable (the existing convention used
 /// by the unit tests, see <c>TestHybridSearchInputSyntax.ServerVersionEnvVar</c>),
-/// defaulting to a 1.37.5+ build when unset. CI's matrix runs the suite once
-/// per version, so coverage across the 1.37.5 cutoff happens automatically;
-/// locally, set <c>WEAVIATE_VERSION=1.37.4</c> (or any older tag) to exercise
-/// the legacy branch.
+/// and is required — CI sets it; locally export it (e.g.
+/// <c>WEAVIATE_VERSION=1.37.4</c> for the legacy branch) before running.
 /// </para>
 ///
 /// <para>
@@ -73,14 +70,6 @@ public sealed class DefaultVectorIndexTypeIntegrationTests : IAsyncLifetime
     /// </summary>
     private const string DefaultVectorIndexFallback = "hfresh";
 
-    /// <summary>
-    /// Default tag when <see cref="ServerVersionEnvVar"/> is unset. The amd64
-    /// variant is the canonical default; if the host is arm64 we swap to the
-    /// matching arm64 build. When the user explicitly sets the env var, they
-    /// own the suffix and we use the value verbatim.
-    /// </summary>
-    private const string DefaultServerVersion = "1.37.5-e0fe0d5.amd64";
-
     private const string ImageRepo = "cr.weaviate.io/semitechnologies/weaviate";
 
     /// <summary>
@@ -104,18 +93,11 @@ public sealed class DefaultVectorIndexTypeIntegrationTests : IAsyncLifetime
         var envValue = Environment.GetEnvironmentVariable(ServerVersionEnvVar);
         if (string.IsNullOrWhiteSpace(envValue))
         {
-            // Default kicked in — swap amd64 -> arm64 if needed so the test
-            // works locally on Apple Silicon without a manual override.
-            _imageTag =
-                RuntimeInformation.OSArchitecture == Architecture.Arm64
-                    ? DefaultServerVersion.Replace(".amd64", ".arm64")
-                    : DefaultServerVersion;
+            throw new InvalidOperationException(
+                $"{ServerVersionEnvVar} env var is required for this integration test."
+            );
         }
-        else
-        {
-            // User explicitly set the version; respect the tag suffix exactly.
-            _imageTag = envValue;
-        }
+        _imageTag = envValue;
 
         var parsedVersion = MetaInfo.ParseWeaviateVersion(_imageTag);
         _serverAppliesDefault = parsedVersion is not null && parsedVersion >= ServerDefaultCutoff;
