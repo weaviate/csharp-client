@@ -204,4 +204,26 @@ public class CollectionsClientDefaultVectorIndexTypeTests
 
         Assert.Equal("hnsw", dto.VectorIndexType);
     }
+
+    [Fact]
+    public void InjectLegacyDefaultVectorIndexType_SkipsTopLevelWhenNamedVectorsPresent()
+    {
+        // The server rejects a class that has both a class-level VectorIndexType
+        // AND named vectors (VectorConfig). The inject helper must not create
+        // that invalid combination.
+        var dto = new Dto.Class
+        {
+            Class1 = "Mixed",
+            VectorIndexType = null,
+            VectorConfig = new Dictionary<string, Dto.VectorConfig>
+            {
+                ["main"] = new Dto.VectorConfig { VectorIndexType = null },
+            },
+        };
+
+        CollectionsClient.InjectLegacyDefaultVectorIndexType(dto);
+
+        Assert.Null(dto.VectorIndexType);
+        Assert.Equal("hnsw", dto.VectorConfig!["main"].VectorIndexType);
+    }
 }

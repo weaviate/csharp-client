@@ -70,7 +70,16 @@ public static partial class Configure
     )
     {
         name ??= "default";
-        index ??= new VectorIndex.HNSW();
+        // Only synthesize an HNSW index when the user provided a quantizer but
+        // no explicit index — the quantizer needs an index to attach to and
+        // HNSW is the implied choice. If the user provided nothing, leave the
+        // index null so the server can apply its own DEFAULT_VECTOR_INDEX
+        // (introduced in 1.37.5); on older servers, the legacy "hnsw" string
+        // is injected as a wire-level default by CollectionsClient.
+        if (index is null && quantizer is not null)
+        {
+            index = new VectorIndex.HNSW();
+        }
 
         return new(
             name: name,

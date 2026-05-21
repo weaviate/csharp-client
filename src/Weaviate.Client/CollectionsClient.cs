@@ -221,7 +221,13 @@ public record CollectionsClient
             foreach (var vc in dto.VectorConfig.Values)
                 if (string.IsNullOrEmpty(vc.VectorIndexType))
                     vc.VectorIndexType = "hnsw";
-        if (string.IsNullOrEmpty(dto.VectorIndexType))
+        // Only inject a class-level VectorIndexType when the class is NOT
+        // using named vectors. Mixing class-level VectorIndexType with
+        // VectorConfig is rejected by the server.
+        if (
+            string.IsNullOrEmpty(dto.VectorIndexType)
+            && (dto.VectorConfig is null || dto.VectorConfig.Count == 0)
+        )
             dto.VectorIndexType = "hnsw";
     }
 
