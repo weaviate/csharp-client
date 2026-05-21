@@ -2704,14 +2704,6 @@ namespace Weaviate.Client.Rest.Dto
     internal partial record ReplicationAsyncConfig
     {
         /// <summary>
-        /// Maximum number of async replication workers.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("maxWorkers")]
-
-        public long? MaxWorkers { get; set; } = default!;
-
-        /// <summary>
         /// Height of the hashtree used for diffing.
         /// </summary>
 
@@ -2734,14 +2726,6 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("frequencyWhilePropagating")]
 
         public long? FrequencyWhilePropagating { get; set; } = default!;
-
-        /// <summary>
-        /// Interval in milliseconds at which liveness of target nodes is checked.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("aliveNodesCheckingFrequency")]
-
-        public long? AliveNodesCheckingFrequency { get; set; } = default!;
 
         /// <summary>
         /// Interval in seconds at which async replication logs its status.
