@@ -28,6 +28,8 @@ jobs:
       contents: read
       checks: write
     runs-on: ubuntu-latest
+    env:
+      DEFAULT_VECTOR_INDEX: hfresh
 
     steps:
       - name: Checkout code
