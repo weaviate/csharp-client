@@ -202,6 +202,18 @@ public sealed class DefaultVectorIndexTypeIntegrationTests : IAsyncLifetime
     }
 
     /// <summary>
+    /// Returns the expected stored <c>VectorIndexType</c> for a vector that was
+    /// configured without an explicit index type.
+    /// <list type="bullet">
+    ///   <item>1.37.5+: server applies <c>DEFAULT_VECTOR_INDEX</c> from the
+    ///   container env var.</item>
+    ///   <item>Older: client injects <c>"hnsw"</c>.</item>
+    /// </list>
+    /// </summary>
+    private string ExpectedDefaultIndexType() =>
+        _serverAppliesDefault ? _defaultVectorIndex : VectorIndex.HNSW.TypeValue;
+
+    /// <summary>
     /// Scenario A on the named-vector path: user omits <c>VectorIndexType</c>
     /// when configuring a named vector.
     /// <list type="bullet">
@@ -233,8 +245,7 @@ public sealed class DefaultVectorIndexTypeIntegrationTests : IAsyncLifetime
             }
         );
 
-        var expected = _serverAppliesDefault ? _defaultVectorIndex : VectorIndex.HNSW.TypeValue;
-        Assert.Equal(expected, stored);
+        Assert.Equal(ExpectedDefaultIndexType(), stored);
     }
 
     /// <summary>

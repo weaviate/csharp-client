@@ -145,6 +145,8 @@ public class CollectionConfigClient
         collection.VectorConfig.Add(vector);
 
         var dto = collection.ToDto();
+        if (_client.InjectLegacyVectorIndexDefault)
+            CollectionsClient.InjectLegacyDefaultVectorIndexType(dto);
 
         // 3. PUT to /schema
         await _client.RestClient.CollectionUpdate(_collectionName, dto, cancellationToken);
