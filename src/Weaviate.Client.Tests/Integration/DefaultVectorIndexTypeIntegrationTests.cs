@@ -26,8 +26,9 @@ namespace Weaviate.Client.Tests.Integration;
 /// <list type="bullet">
 ///   <item>
 ///     On 1.37.5+ the server applies its own default — the container is
-///     started with <c>DEFAULT_VECTOR_INDEX=flat</c>, so any user-omitted
-///     <c>vectorIndexType</c> must land as <c>"flat"</c>.
+///     started with <c>DEFAULT_VECTOR_INDEX</c> set from the host env var
+///     (default <c>"hfresh"</c>), so any user-omitted <c>vectorIndexType</c>
+///     must land as that value.
 ///   </item>
 ///   <item>
 ///     On older servers the client injects <c>"hnsw"</c> client-side, and the
@@ -41,9 +42,10 @@ namespace Weaviate.Client.Tests.Integration;
 /// </para>
 ///
 /// <para>
-/// <c>DEFAULT_VECTOR_INDEX=flat</c> is set on every run: older servers ignore
-/// unknown env vars, so it is harmless on 1.37.4-and-below and asserts the
-/// new behaviour on 1.37.5+.
+/// <c>DEFAULT_VECTOR_INDEX</c> is read from the host env var (default
+/// <c>"hfresh"</c>) and forwarded to the container on every run: older
+/// servers ignore unknown env vars, so it is harmless on 1.37.4-and-below
+/// and asserts the new behaviour on 1.37.5+.
 /// </para>
 ///
 /// Requires Docker. If Docker is not reachable, the tests fail rather than
@@ -56,6 +58,20 @@ public sealed class DefaultVectorIndexTypeIntegrationTests : IAsyncLifetime
     /// existing convention in the unit-test suite.
     /// </summary>
     private const string ServerVersionEnvVar = "WEAVIATE_VERSION";
+
+    /// <summary>
+    /// Name of the env var that picks both the container's
+    /// <c>DEFAULT_VECTOR_INDEX</c> setting and the expected stored
+    /// <c>vectorIndexType</c> on servers <c>&gt;= 1.37.5</c>. Defaults to
+    /// <see cref="DefaultVectorIndexFallback"/> when unset so local runs match
+    /// the production recommended default.
+    /// </summary>
+    private const string DefaultVectorIndexEnvVar = "DEFAULT_VECTOR_INDEX";
+
+    /// <summary>
+    /// Fallback value when <see cref="DefaultVectorIndexEnvVar"/> is unset.
+    /// </summary>
+    private const string DefaultVectorIndexFallback = "hfresh";
 
     /// <summary>
     /// Default tag when <see cref="ServerVersionEnvVar"/> is unset. The amd64
@@ -75,10 +91,16 @@ public sealed class DefaultVectorIndexTypeIntegrationTests : IAsyncLifetime
 
     private readonly string _imageTag;
     private readonly bool _serverAppliesDefault;
+    private readonly string _defaultVectorIndex;
     private readonly List<IContainer> _containers = new();
 
     public DefaultVectorIndexTypeIntegrationTests()
     {
+        var defaultVectorIndexEnv = Environment.GetEnvironmentVariable(DefaultVectorIndexEnvVar);
+        _defaultVectorIndex = string.IsNullOrWhiteSpace(defaultVectorIndexEnv)
+            ? DefaultVectorIndexFallback
+            : defaultVectorIndexEnv;
+
         var envValue = Environment.GetEnvironmentVariable(ServerVersionEnvVar);
         if (string.IsNullOrWhiteSpace(envValue))
         {
@@ -119,10 +141,11 @@ public sealed class DefaultVectorIndexTypeIntegrationTests : IAsyncLifetime
 
     /// <summary>
     /// Builds and starts a single-node Weaviate container at the configured
-    /// version with anonymous auth enabled and <c>DEFAULT_VECTOR_INDEX=flat</c>
-    /// applied. The flat default is always set: older servers ignore it.
-    /// Returns a <see cref="WeaviateClient"/> wired to the container; the
-    /// client's meta cache is populated by <c>BuildAsync</c>.
+    /// version with anonymous auth enabled and <c>DEFAULT_VECTOR_INDEX</c>
+    /// applied (value read from the host env var, default
+    /// <see cref="DefaultVectorIndexFallback"/>). Older servers ignore the
+    /// env var. Returns a <see cref="WeaviateClient"/> wired to the
+    /// container; the client's meta cache is populated by <c>BuildAsync</c>.
     /// </summary>
     private async Task<WeaviateClient> StartWeaviateAsync()
     {
@@ -136,7 +159,7 @@ public sealed class DefaultVectorIndexTypeIntegrationTests : IAsyncLifetime
             .WithEnvironment("PERSISTENCE_DATA_PATH", "/var/lib/weaviate")
             .WithEnvironment("CLUSTER_HOSTNAME", "node1")
             .WithEnvironment("DISABLE_TELEMETRY", "true")
-            .WithEnvironment("DEFAULT_VECTOR_INDEX", "flat")
+            .WithEnvironment("DEFAULT_VECTOR_INDEX", _defaultVectorIndex)
             .WithCommand("--host", "0.0.0.0", "--port", "8080", "--scheme", "http")
             .WithWaitStrategy(
                 Wait.ForUnixContainer()
@@ -200,7 +223,8 @@ public sealed class DefaultVectorIndexTypeIntegrationTests : IAsyncLifetime
     /// Scenario A on the named-vector path: user omits <c>VectorIndexType</c>
     /// when configuring a named vector.
     /// <list type="bullet">
-    ///   <item>1.37.5+: server applies <c>DEFAULT_VECTOR_INDEX=flat</c>.</item>
+    ///   <item>1.37.5+: server applies <c>DEFAULT_VECTOR_INDEX</c> from the
+    ///   host env var (default <see cref="DefaultVectorIndexFallback"/>).</item>
     ///   <item>Older: client injects <c>"hnsw"</c> and server stores it.</item>
     /// </list>
     /// </summary>
@@ -227,9 +251,7 @@ public sealed class DefaultVectorIndexTypeIntegrationTests : IAsyncLifetime
             }
         );
 
-        var expected = _serverAppliesDefault
-            ? VectorIndex.Flat.TypeValue
-            : VectorIndex.HNSW.TypeValue;
+        var expected = _serverAppliesDefault ? _defaultVectorIndex : VectorIndex.HNSW.TypeValue;
         Assert.Equal(expected, stored);
     }
 
