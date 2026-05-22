@@ -82,7 +82,7 @@ public class TestMultiVector : IntegrationTests
             name: "TestMultiVectorCollectionConfig",
             vectorConfig: new[]
             {
-                Configure.Vector("regular", v => v.SelfProvided()),
+                Configure.Vector("regular", v => v.SelfProvided(), index: new VectorIndex.HNSW()),
                 Configure.MultiVector("colbert", v => v.SelfProvided()),
             }
         );
