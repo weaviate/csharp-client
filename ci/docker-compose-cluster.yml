@@ -20,6 +20,7 @@ services:
       DEFAULT_VECTORIZER_MODULE: text2vec-transformers
       ENABLE_MODULES: text2vec-transformers
       AUTOSCHEMA_ENABLED: 'false'
+      DEFAULT_VECTOR_INDEX: '${DEFAULT_VECTOR_INDEX:-hfresh}'
       REPLICA_MOVEMENT_ENABLED: 'true'
       TRANSFORMERS_INFERENCE_API: http://transformers:8080
 
@@ -54,6 +55,7 @@ services:
       DEFAULT_VECTORIZER_MODULE: text2vec-transformers
       ENABLE_MODULES: text2vec-transformers
       AUTOSCHEMA_ENABLED: 'false'
+      DEFAULT_VECTOR_INDEX: '${DEFAULT_VECTOR_INDEX:-hfresh}'
       REPLICA_MOVEMENT_ENABLED: 'true'
       TRANSFORMERS_INFERENCE_API: http://transformers:8080
 
@@ -88,6 +90,7 @@ services:
       DEFAULT_VECTORIZER_MODULE: text2vec-transformers
       ENABLE_MODULES: text2vec-transformers
       AUTOSCHEMA_ENABLED: 'false'
+      DEFAULT_VECTOR_INDEX: '${DEFAULT_VECTOR_INDEX:-hfresh}'
       REPLICA_MOVEMENT_ENABLED: 'true'
       TRANSFORMERS_INFERENCE_API: http://transformers:8080
 ...

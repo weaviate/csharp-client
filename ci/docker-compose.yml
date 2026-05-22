@@ -31,6 +31,7 @@ services:
       CLUSTER_HOSTNAME: "singlenode"
       AUTOSCHEMA_ENABLED: 'false'
       DISABLE_TELEMETRY: 'true'
+      DEFAULT_VECTOR_INDEX: '${DEFAULT_VECTOR_INDEX:-hfresh}'
       DISABLE_LAZY_LOAD_SHARDS: 'true'
       OBJECTS_TTL_DELETE_SCHEDULE: "@every 1m"
       GRPC_MAX_MESSAGE_SIZE: 100000000  # 100mb

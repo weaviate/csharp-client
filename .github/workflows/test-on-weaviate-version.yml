@@ -28,9 +28,6 @@ jobs:
       contents: read
       checks: write
     runs-on: ubuntu-latest
-    env:
-      DEFAULT_VECTOR_INDEX: hfresh
-      WEAVIATE_VERSION: ${{ inputs.weaviate-version }}
 
     steps:
       - name: Checkout code
