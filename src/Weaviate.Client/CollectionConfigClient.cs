@@ -145,6 +145,8 @@ public class CollectionConfigClient
         collection.VectorConfig.Add(vector);
 
         var dto = collection.ToDto();
+        if (_client.InjectLegacyVectorIndexDefault)
+            CollectionsClient.InjectLegacyDefaultVectorIndexType(dto);
 
         // 3. PUT to /schema
         await _client.RestClient.CollectionUpdate(_collectionName, dto, cancellationToken);
@@ -172,10 +174,14 @@ public class CollectionConfigClient
         // 2. Apply everything that is not null over a  collection export
         c(new CollectionUpdate(collection));
 
+        var dto = collection.ToDto();
+        if (_client.InjectLegacyVectorIndexDefault)
+            CollectionsClient.InjectLegacyDefaultVectorIndexType(dto);
+
         // 3. PUT to /schema
         var result = await _client.RestClient.CollectionUpdate(
             _collectionName,
-            collection.ToDto(),
+            dto,
             cancellationToken
         );
 

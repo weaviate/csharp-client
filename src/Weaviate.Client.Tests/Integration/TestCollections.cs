@@ -196,7 +196,7 @@ public partial class CollectionsTests : IntegrationTests
             name: "MyOwnSuffix",
             description: "My own description too",
             properties: [Property.Text("Name")],
-            vectorConfig: Configure.Vector(v => v.SelfProvided())
+            vectorConfig: Configure.Vector(v => v.SelfProvided(), index: new VectorIndex.HNSW())
         );
 
         var export = await _weaviate.Collections.Export(
@@ -327,7 +327,8 @@ public partial class CollectionsTests : IntegrationTests
             collectionNamePartSeparator: "",
             vectorConfig: Configure.Vector(
                 "nondefault",
-                v => v.Text2VecTransformers(vectorizeCollectionName: false)
+                v => v.Text2VecTransformers(vectorizeCollectionName: false),
+                index: new VectorIndex.HNSW()
             ),
             invertedIndexConfig: new()
             {
@@ -485,7 +486,8 @@ public partial class CollectionsTests : IntegrationTests
             collectionNamePartSeparator: "",
             vectorConfig: Configure.Vector(
                 "nondefault",
-                v => v.Text2VecTransformers(vectorizeCollectionName: false)
+                v => v.Text2VecTransformers(vectorizeCollectionName: false),
+                index: new VectorIndex.HNSW()
             ),
             multiTenancyConfig: new()
             {
@@ -736,7 +738,7 @@ public partial class CollectionsTests : IntegrationTests
         // Arrange
         var collection = await CollectionFactory(
             name: "TestCollectionUpdate",
-            vectorConfig: Configure.Vector(t => t.SelfProvided()),
+            vectorConfig: Configure.Vector(t => t.SelfProvided(), index: new VectorIndex.HNSW()),
             properties: [Property.Text("name"), Property.Int("age")],
             multiTenancyConfig: new()
             {

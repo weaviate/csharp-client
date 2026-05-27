@@ -198,12 +198,37 @@ public record CollectionsClient
 
         var config = CollectionConfig.FromCollectionCreate(collection);
 
+        var dto = config.ToDto();
+        if (_client.InjectLegacyVectorIndexDefault)
+            InjectLegacyDefaultVectorIndexType(dto);
         var jsonString = JsonSerializer.Serialize(
-            config.ToDto(),
+            dto,
             Rest.WeaviateRestClient.RestJsonSerializerOptions
         );
 
         return await CreateFromJson(jsonString, cancellationToken);
+    }
+
+    /// <summary>
+    /// Injects the legacy <c>"hnsw"</c> default into every empty <c>VectorIndexType</c>
+    /// slot on the given DTO. Only invoked when the connected server (or unknown server)
+    /// is older than 1.37.5, the first version that applies a server-side default.
+    /// Exposed as <c>internal</c> for direct unit testing.
+    /// </summary>
+    internal static void InjectLegacyDefaultVectorIndexType(Rest.Dto.Class dto)
+    {
+        if (dto.VectorConfig is not null)
+            foreach (var vc in dto.VectorConfig.Values)
+                if (string.IsNullOrEmpty(vc.VectorIndexType))
+                    vc.VectorIndexType = "hnsw";
+        // Only inject a class-level VectorIndexType when the class is NOT
+        // using named vectors. Mixing class-level VectorIndexType with
+        // VectorConfig is rejected by the server.
+        if (
+            string.IsNullOrEmpty(dto.VectorIndexType)
+            && (dto.VectorConfig is null || dto.VectorConfig.Count == 0)
+        )
+            dto.VectorIndexType = "hnsw";
     }
 
     private static readonly Version TextAnalyzerMinimumVersion = new(1, 37, 0);
@@ -353,8 +378,11 @@ public record CollectionsClient
 
         var config = CollectionConfig.FromCollectionCreate(collection);
 
+        var dto = config.ToDto();
+        if (_client.InjectLegacyVectorIndexDefault)
+            InjectLegacyDefaultVectorIndexType(dto);
         var jsonString = JsonSerializer.Serialize(
-            config.ToDto(),
+            dto,
             Rest.WeaviateRestClient.RestJsonSerializerOptions
         );
 

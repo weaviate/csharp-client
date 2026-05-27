@@ -28,9 +28,6 @@ public enum DeletionStrategy
 /// </summary>
 public record ReplicationAsyncConfig
 {
-    /// <summary>Maximum number of async replication workers.</summary>
-    public long? MaxWorkers { get; set; }
-
     /// <summary>Height of the hashtree used for diffing.</summary>
     public long? HashtreeHeight { get; set; }
 
@@ -39,9 +36,6 @@ public record ReplicationAsyncConfig
 
     /// <summary>Frequency in milliseconds at which async replication runs while propagation is active.</summary>
     public long? FrequencyWhilePropagating { get; set; }
-
-    /// <summary>Interval in milliseconds at which liveness of target nodes is checked.</summary>
-    public long? AliveNodesCheckingFrequency { get; set; }
 
     /// <summary>Interval in seconds at which async replication logs its status.</summary>
     public long? LoggingFrequency { get; set; }

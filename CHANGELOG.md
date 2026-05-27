@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **`ReplicationAsyncConfig.MaxWorkers` and `ReplicationAsyncConfig.AliveNodesCheckingFrequency`** — Both fields have been no-ops on the server since Weaviate 1.37.3 and are now removed from the user-facing model, the OpenAPI spec, and the generated DTO. Existing code that sets these properties will not compile after upgrading; no behavioral change results from the removal.
+
 ---
 
 ## [1.1.0] — 2026-05-11

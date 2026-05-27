@@ -131,7 +131,7 @@ public static class WeaviateExtensions
                 VectorIndexConfig = e.VectorIndexConfig is not null
                     ? _objectToDict(VectorIndexSerialization.ToDto(e.VectorIndexConfig))
                     : new Dictionary<string, object>(),
-                VectorIndexType = e.VectorIndexType ?? "hnsw",
+                VectorIndexType = e.VectorIndexType,
                 Vectorizer = e.Vectorizer?.ToDto(),
             }
         );
@@ -169,11 +169,9 @@ public static class WeaviateExtensions
                 AsyncConfig = rc.AsyncConfig is ReplicationAsyncConfig ac
                     ? new Rest.Dto.ReplicationAsyncConfig
                     {
-                        MaxWorkers = ac.MaxWorkers,
                         HashtreeHeight = ac.HashtreeHeight,
                         Frequency = ac.Frequency,
                         FrequencyWhilePropagating = ac.FrequencyWhilePropagating,
-                        AliveNodesCheckingFrequency = ac.AliveNodesCheckingFrequency,
                         LoggingFrequency = ac.LoggingFrequency,
                         DiffBatchSize = ac.DiffBatchSize,
                         DiffPerNodeTimeout = ac.DiffPerNodeTimeout,
@@ -414,11 +412,9 @@ public static class WeaviateExtensions
                         AsyncConfig = rc.AsyncConfig is Rest.Dto.ReplicationAsyncConfig ac
                             ? new ReplicationAsyncConfig
                             {
-                                MaxWorkers = ac.MaxWorkers,
                                 HashtreeHeight = ac.HashtreeHeight,
                                 Frequency = ac.Frequency,
                                 FrequencyWhilePropagating = ac.FrequencyWhilePropagating,
-                                AliveNodesCheckingFrequency = ac.AliveNodesCheckingFrequency,
                                 LoggingFrequency = ac.LoggingFrequency,
                                 DiffBatchSize = ac.DiffBatchSize,
                                 DiffPerNodeTimeout = ac.DiffPerNodeTimeout,

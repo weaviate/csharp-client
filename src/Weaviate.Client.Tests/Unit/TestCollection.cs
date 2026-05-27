@@ -591,11 +591,9 @@ public class CollectionTests
     {
         var asyncConfig = new ReplicationAsyncConfig
         {
-            MaxWorkers = 4,
             HashtreeHeight = 16,
             Frequency = 1000,
             FrequencyWhilePropagating = 500,
-            AliveNodesCheckingFrequency = 30000,
             LoggingFrequency = 60,
             DiffBatchSize = 100,
             DiffPerNodeTimeout = 30,
@@ -617,11 +615,9 @@ public class CollectionTests
 
         Assert.NotNull(dto.ReplicationConfig?.AsyncConfig);
         var ac = dto.ReplicationConfig!.AsyncConfig!;
-        Assert.Equal(4, ac.MaxWorkers);
         Assert.Equal(16, ac.HashtreeHeight);
         Assert.Equal(1000, ac.Frequency);
         Assert.Equal(500, ac.FrequencyWhilePropagating);
-        Assert.Equal(30000, ac.AliveNodesCheckingFrequency);
         Assert.Equal(60, ac.LoggingFrequency);
         Assert.Equal(100, ac.DiffBatchSize);
         Assert.Equal(30, ac.DiffPerNodeTimeout);
@@ -641,9 +637,9 @@ public class CollectionTests
     {
         var dtoAsyncConfig = new Rest.Dto.ReplicationAsyncConfig
         {
-            MaxWorkers = 8,
             HashtreeHeight = 12,
             PropagationLimit = 5000,
+            PropagationConcurrency = 3,
         };
 
         var dto = new Rest.Dto.Class
@@ -656,9 +652,9 @@ public class CollectionTests
 
         Assert.NotNull(model.ReplicationConfig?.AsyncConfig);
         var ac = model.ReplicationConfig!.AsyncConfig!;
-        Assert.Equal(8, ac.MaxWorkers);
         Assert.Equal(12, ac.HashtreeHeight);
         Assert.Equal(5000, ac.PropagationLimit);
+        Assert.Equal(3, ac.PropagationConcurrency);
         // Unset fields are null
         Assert.Null(ac.Frequency);
         Assert.Null(ac.PropagationBatchSize);
@@ -689,11 +685,9 @@ public class CollectionTests
     {
         var dtoAsyncConfig = new Rest.Dto.ReplicationAsyncConfig
         {
-            MaxWorkers = 1,
             HashtreeHeight = 2,
             Frequency = 3,
             FrequencyWhilePropagating = 4,
-            AliveNodesCheckingFrequency = 5,
             LoggingFrequency = 6,
             DiffBatchSize = 7,
             DiffPerNodeTimeout = 8,
@@ -715,11 +709,9 @@ public class CollectionTests
 
         Assert.NotNull(model.ReplicationConfig?.AsyncConfig);
         var ac = model.ReplicationConfig!.AsyncConfig!;
-        Assert.Equal(1, ac.MaxWorkers);
         Assert.Equal(2, ac.HashtreeHeight);
         Assert.Equal(3, ac.Frequency);
         Assert.Equal(4, ac.FrequencyWhilePropagating);
-        Assert.Equal(5, ac.AliveNodesCheckingFrequency);
         Assert.Equal(6, ac.LoggingFrequency);
         Assert.Equal(7, ac.DiffBatchSize);
         Assert.Equal(8, ac.DiffPerNodeTimeout);
@@ -742,11 +734,11 @@ public class CollectionTests
 
         Assert.Null(update.AsyncConfig);
 
-        update.AsyncConfig = new ReplicationAsyncConfig { MaxWorkers = 42 };
+        update.AsyncConfig = new ReplicationAsyncConfig { PropagationConcurrency = 42 };
 
         Assert.NotNull(update.AsyncConfig);
-        Assert.Equal(42, update.AsyncConfig!.MaxWorkers);
+        Assert.Equal(42, update.AsyncConfig!.PropagationConcurrency);
         Assert.NotNull(replicationConfig.AsyncConfig);
-        Assert.Equal(42, replicationConfig.AsyncConfig!.MaxWorkers);
+        Assert.Equal(42, replicationConfig.AsyncConfig!.PropagationConcurrency);
     }
 }

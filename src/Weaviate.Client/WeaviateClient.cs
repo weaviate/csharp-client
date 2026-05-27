@@ -65,6 +65,20 @@ public partial class WeaviateClient : IDisposable
     }
 
     /// <summary>
+    /// The first Weaviate server version that applies a server-side default for
+    /// <c>vectorIndexType</c> when omitted by the client.
+    /// </summary>
+    private static readonly Version FirstServerDefaultVectorIndexVersion = new(1, 37, 5);
+
+    /// <summary>
+    /// When true, the client injects <c>"hnsw"</c> for any empty <c>VectorIndexType</c>
+    /// before sending a class definition to the server. Older servers (&lt; 1.37.5) require this
+    /// because they do not apply a server-side default. On 1.37.5+ this is left to the server.
+    /// Defaults to true so unit-test mocks and pre-initialization usages stay safe.
+    /// </summary>
+    internal bool InjectLegacyVectorIndexDefault { get; private set; } = true;
+
+    /// <summary>
     /// The meta cache
     /// </summary>
     private Models.MetaInfo? _metaCache;
@@ -273,6 +287,8 @@ public partial class WeaviateClient : IDisposable
         RestClient = restClient;
         GrpcClient = grpcClientInstance;
         _metaCache = meta;
+        InjectLegacyVectorIndexDefault =
+            _metaCache is null || _metaCache.Value.Version < FirstServerDefaultVectorIndexVersion;
 
         Cluster = new ClusterClient(this);
         Collections = new CollectionsClient(this);
@@ -388,6 +404,8 @@ public partial class WeaviateClient : IDisposable
                 ?? new Version(0, 0),
             Modules = metaDto?.Modules?.ToDictionary() ?? [],
         };
+        InjectLegacyVectorIndexDefault =
+            _metaCache is null || _metaCache.Value.Version < FirstServerDefaultVectorIndexVersion;
 
         // Log warning if connecting to a server older than 1.32.0
         var minSupportedVersion = new Version(1, 32, 0);

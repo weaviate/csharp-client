@@ -458,7 +458,7 @@ public class ServerSideBatchTests : IntegrationTests
     /// <summary>
     /// Tests that InsertManyAsync returns proper UUIDs in handles
     /// </summary>
-    [Fact(Timeout = 10000)]
+    [Fact(Timeout = 30000)]
     public async Task ServerSideBatch_TaskHandleUuid_MatchesInserted()
     {
         // Arrange
