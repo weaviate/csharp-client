@@ -34,13 +34,15 @@ jobs:
 
       - name: Check for dry-run mode
         id: check-dry-run
+        env:
+          TITLE_TEXT: ${{ github.event.pull_request.title }}
         run: |
           # For PRs, check the actual HEAD commit (not the merge commit)
           # For push events, check the latest commit
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             # Get the actual branch HEAD commit message (not the merge commit)
             COMMIT_MSG=$(git log -1 --pretty=%B HEAD^2 2>/dev/null || git log -1 --pretty=%B)
-            PR_TITLE="${{ github.event.pull_request.title }}"
+            PR_TITLE="$TITLE_TEXT"
           else
             COMMIT_MSG=$(git log -1 --pretty=%B)
             PR_TITLE=""
@@ -93,9 +95,11 @@ jobs:
 
       - name: Check formatting
         if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           dotnet tool restore
-          dotnet csharpier check ${{ steps.changed-files.outputs.all_changed_files }}
+          dotnet csharpier check $CHANGED_FILES
 
       - name: Run analyzer unit tests
         run: |
@@ -232,8 +236,10 @@ jobs:
       contents: write
     steps:
       - name: Check for required secrets
+        env:
+          NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
         run: |
-          if [ -z "${{ secrets.NUGET_APIKEY }}" ]; then echo "Warning: NUGET_APIKEY is not set"; fi
+          if [ -z "$NUGET_APIKEY" ]; then echo "Warning: NUGET_APIKEY is not set"; fi
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -260,7 +266,9 @@ jobs:
           dotnet pack -c Release -o out src/Weaviate.Client.VectorData/
 
       - name: Push package to NuGet
-        run: dotnet nuget push './out/*.nupkg' --skip-duplicate --api-key ${{ secrets.NUGET_APIKEY }} --source https://api.nuget.org/v3/index.json
+        env:
+          NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
+        run: dotnet nuget push './out/*.nupkg' --skip-duplicate --api-key "$NUGET_APIKEY" --source https://api.nuget.org/v3/index.json
 
       - name: GH Release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
