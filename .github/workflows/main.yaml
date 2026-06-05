@@ -34,13 +34,15 @@ jobs:
 
       - name: Check for dry-run mode
         id: check-dry-run
+        env:
+          TITLE_TEXT: ${{ github.event.pull_request.title }}
         run: |
           # For PRs, check the actual HEAD commit (not the merge commit)
           # For push events, check the latest commit
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             # Get the actual branch HEAD commit message (not the merge commit)
             COMMIT_MSG=$(git log -1 --pretty=%B HEAD^2 2>/dev/null || git log -1 --pretty=%B)
-            PR_TITLE="${{ github.event.pull_request.title }}"
+            PR_TITLE="$TITLE_TEXT"
           else
             COMMIT_MSG=$(git log -1 --pretty=%B)
             PR_TITLE=""
