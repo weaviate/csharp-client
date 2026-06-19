@@ -496,4 +496,41 @@ public partial class VectorConfigListTests
         Assert.Contains("\"model\":\"qwen3-embedding-0.6b\"", json);
         Assert.DoesNotContain("\"baseURL\"", json);
     }
+
+    /// <summary>
+    /// Tests that Text2VecGoogle omits <c>location</c> when unset so the server can apply its
+    /// default.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Text2VecGoogle_Omits_Unset_Location()
+    {
+        // Arrange
+        var vc = Configure.Vector("default", v => v.Text2VecGoogleVertex(projectId: "my-project"));
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"text2vec-google\"", json);
+        Assert.DoesNotContain("\"location\"", json);
+    }
 }

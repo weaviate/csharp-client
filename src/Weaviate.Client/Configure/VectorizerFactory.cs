@@ -863,6 +863,7 @@ public class VectorizerFactory
     /// <param name="dimensions">The dimensions</param>
     /// <param name="taskType">The task type</param>
     /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <param name="location">The Google Vertex AI region; optional, server-defaulted when null</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecGoogleVertex(
         string? apiEndpoint = null,
@@ -871,7 +872,8 @@ public class VectorizerFactory
         string? titleProperty = null,
         int? dimensions = null,
         string? taskType = null,
-        bool? vectorizeCollectionName = null
+        bool? vectorizeCollectionName = null,
+        string? location = null
     ) =>
         new Text2VecGoogle
         {
@@ -882,6 +884,7 @@ public class VectorizerFactory
             Dimensions = dimensions,
             TaskType = taskType,
             VectorizeCollectionName = vectorizeCollectionName,
+            Location = location,
         };
 
     /// <summary>
@@ -909,6 +912,9 @@ public class VectorizerFactory
             Dimensions = dimensions,
             TaskType = taskType,
             VectorizeCollectionName = vectorizeCollectionName,
+            // Location (Vertex AI region) is not applicable to the Gemini
+            // (generative-language) API; left null so it is omitted on the wire.
+            Location = null,
         };
 
     /// <summary>

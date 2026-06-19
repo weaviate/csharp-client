@@ -1,1 +1,5 @@
 #nullable enable
+*REMOVED*Weaviate.Client.VectorizerFactory.Text2VecGoogleVertex(string? apiEndpoint = null, string? model = null, string? projectId = null, string? titleProperty = null, int? dimensions = null, string? taskType = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Location.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Location.set -> void
+Weaviate.Client.VectorizerFactory.Text2VecGoogleVertex(string? apiEndpoint = null, string? model = null, string? projectId = null, string? titleProperty = null, int? dimensions = null, string? taskType = null, bool? vectorizeCollectionName = null, string? location = null) -> Weaviate.Client.Models.VectorizerConfig!
