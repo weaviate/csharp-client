@@ -496,4 +496,90 @@ public partial class VectorConfigListTests
         Assert.Contains("\"model\":\"qwen3-embedding-0.6b\"", json);
         Assert.DoesNotContain("\"baseURL\"", json);
     }
+
+    /// <summary>
+    /// Tests that Text2VecAWS serializes <c>dimensions</c> as a JSON number (not a string) when it
+    /// is set via the Bedrock factory.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Text2VecAWS_Serializes_Dimensions_When_Set()
+    {
+        // Arrange
+        var vc = Configure.Vector(
+            "default",
+            v =>
+                v.Text2VecAWSBedrock(
+                    region: "us-east-1",
+                    model: "amazon.titan-embed-text-v2:0",
+                    dimensions: 1024
+                )
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"text2vec-aws\"", json);
+        Assert.Contains("\"dimensions\":1024", json);
+        Assert.DoesNotContain("\"dimensions\":\"1024\"", json);
+    }
+
+    /// <summary>
+    /// Tests that Text2VecAWS omits <c>dimensions</c> when it is unset so the server can apply its
+    /// default.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Text2VecAWS_Omits_Unset_Dimensions()
+    {
+        // Arrange
+        var vc = Configure.Vector(
+            "default",
+            v => v.Text2VecAWSSagemaker(region: "us-east-1", endpoint: "my-endpoint")
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"text2vec-aws\"", json);
+        Assert.DoesNotContain("\"dimensions\"", json);
+    }
 }

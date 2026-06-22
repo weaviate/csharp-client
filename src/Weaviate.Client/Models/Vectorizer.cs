@@ -718,6 +718,11 @@ public static class Vectorizer
         public string? TargetVariant { get; set; } = null;
 
         /// <summary>
+        /// Gets or sets the value of the dimensions
+        /// </summary>
+        public int? Dimensions { get; set; } = null;
+
+        /// <summary>
         /// Gets or sets the value of the vectorize collection name
         /// </summary>
         [JsonPropertyName("vectorizeClassName")]
