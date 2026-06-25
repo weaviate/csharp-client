@@ -536,11 +536,13 @@ public class VectorizerFactory
     /// </summary>
     /// <param name="region">The region</param>
     /// <param name="model">The model</param>
+    /// <param name="dimensions">Number of vector dimensions.</param>
     /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecAWSBedrock(
         string region,
         string model,
+        int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
         new Text2VecAWS
@@ -551,6 +553,7 @@ public class VectorizerFactory
             Model = model,
             TargetModel = null,
             TargetVariant = null,
+            Dimensions = dimensions,
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
@@ -561,6 +564,7 @@ public class VectorizerFactory
     /// <param name="endpoint">The endpoint</param>
     /// <param name="targetModel">The target model</param>
     /// <param name="targetVariant">The target variant</param>
+    /// <param name="dimensions">Number of vector dimensions.</param>
     /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecAWSSagemaker(
@@ -568,6 +572,7 @@ public class VectorizerFactory
         string endpoint,
         string? targetModel = null,
         string? targetVariant = null,
+        int? dimensions = null,
         bool? vectorizeCollectionName = null
     ) =>
         new Text2VecAWS
@@ -578,6 +583,7 @@ public class VectorizerFactory
             Model = null,
             TargetModel = targetModel,
             TargetVariant = targetVariant,
+            Dimensions = dimensions,
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
