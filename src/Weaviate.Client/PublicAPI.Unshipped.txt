@@ -1,7 +1,11 @@
 #nullable enable
 *REMOVED*Weaviate.Client.VectorizerFactory.Text2VecAWSBedrock(string! region, string! model, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
 *REMOVED*Weaviate.Client.VectorizerFactory.Text2VecAWSSagemaker(string! region, string! endpoint, string? targetModel = null, string? targetVariant = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
+*REMOVED*Weaviate.Client.VectorizerFactory.Text2VecGoogleVertex(string? apiEndpoint = null, string? model = null, string? projectId = null, string? titleProperty = null, int? dimensions = null, string? taskType = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
 Weaviate.Client.Models.Vectorizer.Text2VecAWS.Dimensions.get -> int?
 Weaviate.Client.Models.Vectorizer.Text2VecAWS.Dimensions.set -> void
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Location.get -> string?
+Weaviate.Client.Models.Vectorizer.Text2VecGoogle.Location.set -> void
 Weaviate.Client.VectorizerFactory.Text2VecAWSBedrock(string! region, string! model, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
 Weaviate.Client.VectorizerFactory.Text2VecAWSSagemaker(string! region, string! endpoint, string? targetModel = null, string? targetVariant = null, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Text2VecGoogleVertex(string? apiEndpoint = null, string? model = null, string? projectId = null, string? titleProperty = null, int? dimensions = null, string? taskType = null, bool? vectorizeCollectionName = null, string? location = null) -> Weaviate.Client.Models.VectorizerConfig!

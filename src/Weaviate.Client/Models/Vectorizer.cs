@@ -1278,6 +1278,13 @@ public static class Vectorizer
         public string? TaskType { get; set; } = null;
 
         /// <summary>
+        /// Gets or sets the Google Vertex AI region.
+        /// Optional; when omitted the server applies its default.
+        /// Serialized as the lowercase <c>location</c> module-config key.
+        /// </summary>
+        public string? Location { get; set; } = null;
+
+        /// <summary>
         /// Gets or sets the value of the vectorize collection name
         /// </summary>
         [JsonPropertyName("vectorizeClassName")]
