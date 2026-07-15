@@ -31,6 +31,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
     /// <param name="groupedTask">Grouped task for generative AI.</param>
     /// <param name="provider">Generative AI provider configuration.</param>
@@ -47,6 +48,7 @@ public partial class TypedGenerateClient<T>
         uint? offset = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -64,6 +66,7 @@ public partial class TypedGenerateClient<T>
             offset: offset,
             autoLimit: autoLimit,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
@@ -94,6 +97,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
     /// <param name="groupedTask">Grouped task for generative AI.</param>
     /// <param name="provider">Generative AI provider configuration.</param>
@@ -111,6 +115,7 @@ public partial class TypedGenerateClient<T>
         uint? offset = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -129,6 +134,7 @@ public partial class TypedGenerateClient<T>
             offset: offset,
             autoLimit: autoLimit,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,

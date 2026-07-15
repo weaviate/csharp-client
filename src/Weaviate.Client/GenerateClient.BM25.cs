@@ -19,6 +19,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="rerank">Rerank configuration</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
@@ -39,6 +40,7 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -61,6 +63,7 @@ public partial class GenerateClient
             offset: offset,
             groupBy: groupBy,
             rerank: rerank,
+            boost: boost,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             after: after,
@@ -85,6 +88,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="rerank">Rerank configuration</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
@@ -104,6 +108,7 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -126,6 +131,7 @@ public partial class GenerateClient
             offset: offset,
             groupBy: null,
             rerank: rerank,
+            boost: boost,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             after: after,

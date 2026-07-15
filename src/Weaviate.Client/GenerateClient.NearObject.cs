@@ -19,6 +19,7 @@ public partial class GenerateClient
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
@@ -38,6 +39,7 @@ public partial class GenerateClient
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -60,6 +62,7 @@ public partial class GenerateClient
             filters: filters,
             groupBy: null,
             rerank: rerank,
+            boost: boost,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             targetVector: targetVectors?.Invoke(new TargetVectors.Builder()),
@@ -87,6 +90,7 @@ public partial class GenerateClient
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
@@ -107,6 +111,7 @@ public partial class GenerateClient
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -129,6 +134,7 @@ public partial class GenerateClient
             filters: filters,
             groupBy: groupBy,
             rerank: rerank,
+            boost: boost,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             targetVector: targetVectors?.Invoke(new TargetVectors.Builder()),

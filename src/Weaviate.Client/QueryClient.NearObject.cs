@@ -19,6 +19,7 @@ public partial class QueryClient
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="targets">The targets</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
@@ -35,6 +36,7 @@ public partial class QueryClient
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         TargetVectors.FactoryFn? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -53,6 +55,7 @@ public partial class QueryClient
             filters: filters,
             groupBy: null,
             rerank: rerank,
+            boost: boost,
             singlePrompt: null,
             groupedTask: null,
             targetVector: targets?.Invoke(new TargetVectors.Builder()),
@@ -77,6 +80,7 @@ public partial class QueryClient
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="targets">The targets</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
@@ -94,6 +98,7 @@ public partial class QueryClient
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         TargetVectors.FactoryFn? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -112,6 +117,7 @@ public partial class QueryClient
             filters: filters,
             groupBy: groupBy,
             rerank: rerank,
+            boost: boost,
             singlePrompt: null,
             groupedTask: null,
             targetVector: targets?.Invoke(new TargetVectors.Builder()),

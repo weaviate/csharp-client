@@ -19,6 +19,7 @@ public partial class QueryClient
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -36,6 +37,7 @@ public partial class QueryClient
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -56,6 +58,7 @@ public partial class QueryClient
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
+            boost: boost,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -76,6 +79,7 @@ public partial class QueryClient
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -94,6 +98,7 @@ public partial class QueryClient
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -114,6 +119,7 @@ public partial class QueryClient
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
+            boost: boost,
             targetVector: null,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
@@ -141,6 +147,7 @@ public partial class QueryClient
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -154,6 +161,7 @@ public partial class QueryClient
         uint? offset = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -176,6 +184,7 @@ public partial class QueryClient
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
+            boost: boost,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -196,6 +205,7 @@ public partial class QueryClient
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -210,6 +220,7 @@ public partial class QueryClient
         uint? offset = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -232,6 +243,7 @@ public partial class QueryClient
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
+            boost: boost,
             targetVector: input.TargetVectors,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
@@ -259,6 +271,7 @@ public static class QueryClientNearTextExtensions
         uint? offset = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -276,6 +289,7 @@ public static class QueryClientNearTextExtensions
                 offset: offset,
                 autoLimit: autoLimit,
                 rerank: rerank,
+                boost: boost,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata,
@@ -296,6 +310,7 @@ public static class QueryClientNearTextExtensions
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
+            boost: boost,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -316,6 +331,7 @@ public static class QueryClientNearTextExtensions
         uint? offset = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -334,6 +350,7 @@ public static class QueryClientNearTextExtensions
                 offset: offset,
                 autoLimit: autoLimit,
                 rerank: rerank,
+                boost: boost,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata,
@@ -355,6 +372,7 @@ public static class QueryClientNearTextExtensions
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
+            boost: boost,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
