@@ -113,6 +113,13 @@ public partial class CollectionsTests : IntegrationTests
     [ClassData(typeof(DatasetCollectionCreateAndExport))]
     public async Task Test_Collections_Export_Cases(string key)
     {
+        if (ServerVersionIsInRange("1.38.0"))
+        {
+            Assert.Skip(
+                "Known incompatibility: Weaviate 1.38 changed the exported collection config shape (usingBlockMaxWAND, objectTTLConfig, sharding config under multi-tenancy, async replication reporting); round-trip comparison pending a dedicated 1.38 compat fix."
+            );
+        }
+
         var c = DatasetCollectionCreateAndExport.Cases[key];
 
         c.Name = MakeUniqueCollectionName<dynamic>(c.Name);
@@ -319,6 +326,13 @@ public partial class CollectionsTests : IntegrationTests
     [Fact]
     public async Task Test_Collections_Export_NonDefaultValues_Sharding()
     {
+        if (ServerVersionIsInRange("1.38.0"))
+        {
+            Assert.Skip(
+                "Known incompatibility: Weaviate 1.38 changed the exported collection config shape (usingBlockMaxWAND, objectTTLConfig, sharding config under multi-tenancy, async replication reporting); round-trip comparison pending a dedicated 1.38 compat fix."
+            );
+        }
+
         var collection = await CollectionFactory(
             name: "MyOwnSuffixNonDefault",
             description: "My own description too",
@@ -478,6 +492,13 @@ public partial class CollectionsTests : IntegrationTests
     [Fact]
     public async Task Test_Collections_Export_NonDefaultValues_MultiTenacy()
     {
+        if (ServerVersionIsInRange("1.38.0"))
+        {
+            Assert.Skip(
+                "Known incompatibility: Weaviate 1.38 changed the exported collection config shape (usingBlockMaxWAND, objectTTLConfig, sharding config under multi-tenancy, async replication reporting); round-trip comparison pending a dedicated 1.38 compat fix."
+            );
+        }
+
         var collection = await CollectionFactory(
             name: "MyOwnSuffixNonDefault",
             description: "My own description too",

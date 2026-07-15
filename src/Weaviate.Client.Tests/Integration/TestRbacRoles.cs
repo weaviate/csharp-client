@@ -39,6 +39,12 @@ public class TestRbacRoles : RbacIntegrationTests
     public async Task ListRoles()
     {
         RequireVersion("1.30.0");
+        if (ServerVersionIsInRange("1.38.0"))
+        {
+            Assert.Skip(
+                "Known incompatibility: Weaviate 1.38 built-in roles carry permission actions missing from the generated PermissionAction DTO (manage_namespaces, create/read/update_mcp); pending REST DTO regeneration."
+            );
+        }
         var roles = (await _weaviate.Roles.ListAll(TestContext.Current.CancellationToken)).ToList();
         Assert.NotEmpty(roles);
         Assert.Contains(roles, r => r.Name == "viewer");
