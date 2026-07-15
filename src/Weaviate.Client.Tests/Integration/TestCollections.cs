@@ -113,13 +113,6 @@ public partial class CollectionsTests : IntegrationTests
     [ClassData(typeof(DatasetCollectionCreateAndExport))]
     public async Task Test_Collections_Export_Cases(string key)
     {
-        if (ServerVersionIsInRange("1.38.0"))
-        {
-            Assert.Skip(
-                "Known incompatibility: Weaviate 1.38 changed the exported collection config shape (usingBlockMaxWAND, objectTTLConfig, sharding config under multi-tenancy, async replication reporting); round-trip comparison pending a dedicated 1.38 compat fix."
-            );
-        }
-
         var c = DatasetCollectionCreateAndExport.Cases[key];
 
         c.Name = MakeUniqueCollectionName<dynamic>(c.Name);
@@ -132,6 +125,13 @@ public partial class CollectionsTests : IntegrationTests
         );
 
         var expected = CollectionConfig.FromCollectionCreate(c);
+
+        if (ServerVersionIsInRange("1.38.0") && expected.ReplicationConfig is not null)
+        {
+            // Weaviate 1.38 removed the per-collection asyncEnabled setting: the server
+            // derives it as `factor > 1` and ignores the value sent at creation.
+            expected.ReplicationConfig.AsyncEnabled = expected.ReplicationConfig.Factor > 1;
+        }
 
         Assert.Equal(expected, export);
     }
@@ -326,13 +326,6 @@ public partial class CollectionsTests : IntegrationTests
     [Fact]
     public async Task Test_Collections_Export_NonDefaultValues_Sharding()
     {
-        if (ServerVersionIsInRange("1.38.0"))
-        {
-            Assert.Skip(
-                "Known incompatibility: Weaviate 1.38 changed the exported collection config shape (usingBlockMaxWAND, objectTTLConfig, sharding config under multi-tenancy, async replication reporting); round-trip comparison pending a dedicated 1.38 compat fix."
-            );
-        }
-
         var collection = await CollectionFactory(
             name: "MyOwnSuffixNonDefault",
             description: "My own description too",
@@ -418,7 +411,16 @@ public partial class CollectionsTests : IntegrationTests
 
         // ReplicationConfig validation
         Assert.NotNull(export.ReplicationConfig);
-        Assert.True(export.ReplicationConfig.AsyncEnabled);
+        if (ServerVersionIsInRange("1.38.0"))
+        {
+            // Weaviate 1.38 removed the per-collection asyncEnabled setting: the server
+            // derives it as `factor > 1` (factor is 1 here) and ignores the value sent.
+            Assert.False(export.ReplicationConfig.AsyncEnabled);
+        }
+        else
+        {
+            Assert.True(export.ReplicationConfig.AsyncEnabled);
+        }
         Assert.True(
             new[]
             {
@@ -492,13 +494,6 @@ public partial class CollectionsTests : IntegrationTests
     [Fact]
     public async Task Test_Collections_Export_NonDefaultValues_MultiTenacy()
     {
-        if (ServerVersionIsInRange("1.38.0"))
-        {
-            Assert.Skip(
-                "Known incompatibility: Weaviate 1.38 changed the exported collection config shape (usingBlockMaxWAND, objectTTLConfig, sharding config under multi-tenancy, async replication reporting); round-trip comparison pending a dedicated 1.38 compat fix."
-            );
-        }
-
         var collection = await CollectionFactory(
             name: "MyOwnSuffixNonDefault",
             description: "My own description too",
@@ -582,7 +577,16 @@ public partial class CollectionsTests : IntegrationTests
 
         // ReplicationConfig validation
         Assert.NotNull(export.ReplicationConfig);
-        Assert.True(export.ReplicationConfig.AsyncEnabled);
+        if (ServerVersionIsInRange("1.38.0"))
+        {
+            // Weaviate 1.38 removed the per-collection asyncEnabled setting: the server
+            // derives it as `factor > 1` (factor is 1 here) and ignores the value sent.
+            Assert.False(export.ReplicationConfig.AsyncEnabled);
+        }
+        else
+        {
+            Assert.True(export.ReplicationConfig.AsyncEnabled);
+        }
         Assert.True(
             new[]
             {

@@ -407,6 +407,10 @@ public class PermissionsScopeTests
             || a.ToString() == "Update_backup"
             || a.ToString() == "Delete_backup"
         );
+        // manage_namespaces (Weaviate 1.38+) is deserialized but has no client-side
+        // permission scope yet; Permissions.Parse leaves it unmapped. Remove this
+        // exclusion once a Namespaces permission scope is implemented.
+        allActions.RemoveAll(a => a.ToString() == "Manage_namespaces");
         // List of actions covered by tests
         var testedActions = new HashSet<string>
         {

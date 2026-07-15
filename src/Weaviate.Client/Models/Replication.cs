@@ -58,6 +58,14 @@ public enum ReplicationOperationState
     /// </summary>
     [System.Text.Json.Serialization.JsonStringEnumMemberName("CANCELLED")]
     Cancelled,
+
+    /// <summary>
+    /// Replica has finished copying and is being integrated as a queryable member of the
+    /// shard (Weaviate 1.38+; occurs between <see cref="Finalizing"/> and <see cref="Dehydrating"/>).
+    /// Appended after <see cref="Cancelled"/> to keep existing member values stable.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonStringEnumMemberName("INTEGRATING")]
+    Integrating,
 }
 
 /// <summary>

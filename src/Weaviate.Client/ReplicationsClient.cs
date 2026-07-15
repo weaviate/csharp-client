@@ -183,6 +183,8 @@ public class ReplicationsClient
                 ReplicationOperationState.Hydrating,
             Rest.Dto.ReplicationReplicateDetailsReplicaStatusState.FINALIZING =>
                 ReplicationOperationState.Finalizing,
+            Rest.Dto.ReplicationReplicateDetailsReplicaStatusState.INTEGRATING =>
+                ReplicationOperationState.Integrating,
             Rest.Dto.ReplicationReplicateDetailsReplicaStatusState.DEHYDRATING =>
                 ReplicationOperationState.Dehydrating,
             Rest.Dto.ReplicationReplicateDetailsReplicaStatusState.READY =>
