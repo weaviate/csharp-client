@@ -390,6 +390,54 @@ public class PermissionsScopeTests
     }
 
     /// <summary>
+    /// Tests that namespaces aggregates manage namespaces only (Weaviate 1.38+)
+    /// </summary>
+    [Fact]
+    public void Namespaces_Aggregates_ManageNamespacesOnly()
+    {
+        var resource = new Rest.Dto.Namespaces { Namespace = "ns-.*" };
+        var permissions = new List<Rest.Dto.Permission>
+        {
+            new()
+            {
+                Action = Weaviate.Client.Rest.Dto.PermissionAction.Manage_namespaces,
+                Namespaces = resource,
+            },
+        };
+        var namespaces = Permissions
+            .Namespaces.Parse(permissions)
+            .Cast<Permissions.Namespaces>()
+            .ToList();
+        Assert.Single(namespaces);
+        Assert.True(namespaces[0].Manage);
+        Assert.Equal("ns-.*", namespaces[0].Resource.Namespace);
+    }
+
+    /// <summary>
+    /// Tests that namespaces round trips through the dto (Weaviate 1.38+)
+    /// </summary>
+    [Fact]
+    public void Namespaces_ToDto_RoundTrips()
+    {
+        var scope = new Permissions.Namespaces("team-a") { Manage = true };
+
+        var dtos = scope.ToDto().ToList();
+
+        var dto = Assert.Single(dtos);
+        Assert.Equal(Weaviate.Client.Rest.Dto.PermissionAction.Manage_namespaces, dto.Action);
+        Assert.NotNull(dto.Namespaces);
+        Assert.Equal("team-a", dto.Namespaces!.Namespace);
+
+        var parsed = Assert.Single(Permissions.Namespaces.Parse(dtos));
+        var roundTripped = Assert.IsType<Permissions.Namespaces>(parsed);
+        Assert.True(roundTripped.Manage);
+        Assert.Equal("team-a", roundTripped.Resource.Namespace);
+
+        // No actions set -> no permission entries are emitted.
+        Assert.Empty(new Permissions.Namespaces("team-a").ToDto());
+    }
+
+    /// <summary>
     /// Tests that all permission actions are mentioned
     /// </summary>
     [Fact]
@@ -407,14 +455,11 @@ public class PermissionsScopeTests
             || a.ToString() == "Update_backup"
             || a.ToString() == "Delete_backup"
         );
-        // manage_namespaces (Weaviate 1.38+) is deserialized but has no client-side
-        // permission scope yet; Permissions.Parse leaves it unmapped. Remove this
-        // exclusion once a Namespaces permission scope is implemented.
-        allActions.RemoveAll(a => a.ToString() == "Manage_namespaces");
         // List of actions covered by tests
         var testedActions = new HashSet<string>
         {
             "Manage_backups",
+            "Manage_namespaces",
             "Read_cluster",
             "Create_data",
             "Read_data",

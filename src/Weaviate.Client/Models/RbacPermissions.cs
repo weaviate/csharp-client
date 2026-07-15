@@ -268,6 +268,74 @@ public static class Permissions
     }
 
     /// <summary>
+    /// The namespaces class. Requires Weaviate 1.38 or later.
+    /// </summary>
+    /// <seealso cref="PermissionScope"/>
+    public class Namespaces : PermissionScope
+    {
+        /// <summary>
+        /// Gets the value of the resource
+        /// </summary>
+        public NamespacesResource Resource { get; }
+
+        /// <summary>
+        /// Gets or sets the value of the manage
+        /// </summary>
+        public bool Manage { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Namespaces"/> class
+        /// </summary>
+        /// <param name="namespace">The namespace name or regex pattern</param>
+        public Namespaces(string? @namespace)
+            : this(new NamespacesResource(@namespace)) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Namespaces"/> class
+        /// </summary>
+        /// <param name="resource">The resource</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        Namespaces(NamespacesResource resource)
+        {
+            Resource = resource ?? throw new ArgumentNullException(nameof(resource));
+        }
+
+        /// <summary>
+        /// Returns the dto
+        /// </summary>
+        /// <returns>An enumerable of rest dto permission</returns>
+        internal override IEnumerable<Rest.Dto.Permission> ToDto()
+        {
+            var permissions = new[]
+            {
+                (Action: Rest.Dto.PermissionAction.Manage_namespaces, Allowed: Manage),
+            };
+
+            return permissions
+                .Where(p => p.Allowed)
+                .Select(p => new Rest.Dto.Permission
+                {
+                    Namespaces = Resource.ToDto(),
+                    Action = p.Action,
+                });
+        }
+
+        /// <summary>
+        /// Parses the infos
+        /// </summary>
+        /// <param name="infos">The infos</param>
+        /// <returns>A list of permission scope</returns>
+        internal static List<PermissionScope> Parse(IEnumerable<Rest.Dto.Permission> infos)
+        {
+            return infos
+                .Where(i => i.Namespaces != null)
+                .GroupBy(i => i.Namespaces!)
+                .Select(group => group.Key.ToModel(group.AsEnumerable()))
+                .ToList();
+        }
+    }
+
+    /// <summary>
     /// The mcp class
     /// </summary>
     /// <seealso cref="PermissionScope"/>
@@ -988,6 +1056,7 @@ public static class Permissions
         scopes.AddRange(Alias.Parse(infos));
         scopes.AddRange(Data.Parse(infos));
         scopes.AddRange(Backups.Parse(infos));
+        scopes.AddRange(Namespaces.Parse(infos));
         scopes.AddRange(Mcp.Parse(infos));
         scopes.AddRange(Cluster.Parse(infos));
         scopes.AddRange(Nodes.Parse(infos));
