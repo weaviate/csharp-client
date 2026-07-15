@@ -107,6 +107,8 @@ public partial class SearchTests
     [Fact]
     public async Task Test_Boost_Filter_PromotesMatchingObjects()
     {
+        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0 (Preview)");
+
         var collection = await BoostCollectionFactory();
 
         var result = await collection.Query.BM25(
@@ -130,6 +132,8 @@ public partial class SearchTests
     [Fact]
     public async Task Test_Boost_NumericProperty_RanksByValue()
     {
+        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0 (Preview)");
+
         var collection = await BoostCollectionFactory();
 
         var result = await collection.Query.BM25(
@@ -148,6 +152,8 @@ public partial class SearchTests
     [Fact]
     public async Task Test_Boost_TimeDecay_PrefersRecentObjects()
     {
+        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0 (Preview)");
+
         var collection = await BoostCollectionFactory();
 
         var result = await collection.Query.BM25(
@@ -170,6 +176,8 @@ public partial class SearchTests
     [Fact]
     public async Task Test_Boost_NumericDecay_OnNearVector_PrefersClosestToOrigin()
     {
+        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0 (Preview)");
+
         var collection = await CollectionFactory<BoostDoc>(
             properties: Property.FromClass<BoostDoc>(),
             vectorConfig: Configure.Vector(v => v.SelfProvided())
@@ -208,6 +216,8 @@ public partial class SearchTests
     [Fact]
     public async Task Test_Boost_Blend_WeighsConditions()
     {
+        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0 (Preview)");
+
         var collection = await BoostCollectionFactory();
 
         // The promoted-filter condition carries twice the weight of the view-count condition,
