@@ -114,10 +114,7 @@ public partial class SearchTests
         var result = await collection.Query.BM25(
             "banana",
             searchFields: ["name"],
-            boost: Boost.Filter(
-                Filter.Property("category").IsEqual("promoted"),
-                weight: 0.9f
-            ),
+            boost: Boost.Filter(Filter.Property("category").IsEqual("promoted"), weight: 0.9f),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -159,11 +156,7 @@ public partial class SearchTests
         var result = await collection.Query.BM25(
             "banana",
             searchFields: ["name"],
-            boost: Boost.TimeDecay(
-                "publishedAt",
-                scale: TimeSpan.FromDays(30),
-                weight: 0.9f
-            ),
+            boost: Boost.TimeDecay("publishedAt", scale: TimeSpan.FromDays(30), weight: 0.9f),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -227,10 +220,7 @@ public partial class SearchTests
             searchFields: ["name"],
             boost: Boost.Blend(
                 [
-                    Boost.Filter(
-                        Filter.Property("category").IsEqual("promoted"),
-                        weight: 2f
-                    ),
+                    Boost.Filter(Filter.Property("category").IsEqual("promoted"), weight: 2f),
                     Boost.NumericProperty("viewCount", weight: 1f),
                 ],
                 weight: 0.9f

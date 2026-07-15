@@ -78,7 +78,11 @@ public class TestBoostSyntax : IAsyncLifetime
     {
         await _collection.Query.BM25(
             "banana",
-            boost: Boost.Filter(Filter.Property("category").IsEqual("fruit"), weight: 0.7f, depth: 200),
+            boost: Boost.Filter(
+                Filter.Property("category").IsEqual("fruit"),
+                weight: 0.7f,
+                depth: 200
+            ),
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -245,7 +249,12 @@ public class TestBoostSyntax : IAsyncLifetime
     {
         await _collection.Query.NearVector(
             new float[] { 1f, 2f, 3f },
-            boost: Boost.NumericDecay("price", origin: 50, scale: 10, curve: Boost.Curve.Exponential),
+            boost: Boost.NumericDecay(
+                "price",
+                origin: 50,
+                scale: 10,
+                curve: Boost.Curve.Exponential
+            ),
             cancellationToken: TestContext.Current.CancellationToken
         );
 

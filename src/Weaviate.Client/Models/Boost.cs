@@ -265,7 +265,12 @@ public sealed record Boost
         Modifier? modifier = null,
         float? weight = null,
         uint? depth = null
-    ) => new([new Condition { PropertyValue = new PropertyValueFunction(name, modifier) }], weight, depth);
+    ) =>
+        new(
+            [new Condition { PropertyValue = new PropertyValueFunction(name, modifier) }],
+            weight,
+            depth
+        );
 
     /// <summary>
     /// Combine several boosts into one, each weighted relative to the others.
@@ -306,7 +311,10 @@ public sealed record Boost
             {
                 conditions.Add(
                     condition.Weight is null && input.Weight is not null
-                        ? condition with { Weight = input.Weight }
+                        ? condition with
+                        {
+                            Weight = input.Weight,
+                        }
                         : condition
                 );
             }
