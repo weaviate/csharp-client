@@ -163,6 +163,14 @@ namespace Weaviate.Client.Rest.Dto
 
         public System.DateTimeOffset? LastUsedAt { get; set; } = default!;
 
+        /// <summary>
+        /// The namespace this user is bound to. Only populated for callers with global-operator privileges; omitted otherwise.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("namespace")]
+
+        public string? Namespace { get; set; } = default!;
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -285,6 +293,14 @@ namespace Weaviate.Client.Rest.Dto
         public Aliases? Aliases { get; set; } = default!;
 
         /// <summary>
+        /// Resources applicable for namespace actions.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("namespaces")]
+
+        public Namespaces? Namespaces { get; set; } = default!;
+
+        /// <summary>
         /// Allowed actions in weaviate.
         /// </summary>
 
@@ -352,6 +368,22 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
 
         public UserTypeInput? UserType { get; set; } = default!;
+
+        /// <summary>
+        /// The namespace this principal is bound to. Empty for global principals (e.g. static API keys).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("namespace")]
+
+        public string? Namespace { get; set; } = default!;
+
+        /// <summary>
+        /// True for principals that operate across all namespaces (e.g. static API keys). Authoritative marker for operator-level principals; do not infer from an empty namespace.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("isGlobalOperator")]
+
+        public bool? IsGlobalOperator { get; set; } = default!;
 
     }
 
@@ -514,6 +546,315 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("error")]
 
         public System.Collections.Generic.IList<Error>? Error { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record IndexStatusResponse
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("collection")]
+
+        public string? Collection { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("properties")]
+
+        public System.Collections.Generic.IList<PropertyIndexStatus>? Properties { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record PropertyIndexStatus
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("name")]
+
+        public string? Name { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("dataType")]
+
+        public string? DataType { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("description")]
+
+        public string? Description { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("indexes")]
+
+        public System.Collections.Generic.IList<IndexStatus>? Indexes { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record IndexStatus
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("type")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public IndexStatusType? Type { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public IndexStatusStatus? Status { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("progress")]
+
+        public float? Progress { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("tokenization")]
+
+        public string? Tokenization { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("targetTokenization")]
+
+        public string? TargetTokenization { get; set; } = default!;
+
+        /// <summary>
+        /// BM25 algorithm currently backing this searchable index. 'wand' is the legacy map-based bucket strategy; 'blockmax' is the Block Max WAND inverted strategy. Only populated for `type=searchable` entries. Not populated for filterable or rangeable indexes.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("algorithm")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public IndexStatusAlgorithm? Algorithm { get; set; } = default!;
+
+        /// <summary>
+        /// BM25 algorithm this searchable index is being rebuilt onto. Populated only while an in-flight rebuild is changing the algorithm; mirrors `targetTokenization` for the change-tokenization verb. Today the only supported transition is wand -&gt; blockmax.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("targetAlgorithm")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public IndexStatusTargetAlgorithm? TargetAlgorithm { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record IndexUpdateRequest
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("searchable")]
+
+        public IndexUpdateSearchable? Searchable { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("filterable")]
+
+        public IndexUpdateFilterable? Filterable { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("rangeable")]
+
+        public IndexUpdateRangeable? Rangeable { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record IndexUpdateSearchable
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("tokenization")]
+
+        public string? Tokenization { get; set; } = default!;
+
+        /// <summary>
+        /// When true, rebuilds the searchable index for this property from the stored objects. Preserves the current tokenization and BM25 algorithm. Only valid when the property's current algorithm is `blockmax`; on a WAND property the request is rejected with guidance to use `algorithm:"blockmax"` first.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("rebuild")]
+
+        public bool? Rebuild { get; set; } = default!;
+
+        /// <summary>
+        /// Switch the BM25 algorithm for this property's searchable index. Currently only `blockmax` is accepted. From WAND this triggers the Map → BlockMax migration; on an already-`blockmax` property the request is rejected. WAND is deprecated; downgrade is intentionally not supported.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("algorithm")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public IndexUpdateSearchableAlgorithm? Algorithm { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("enabled")]
+
+        public bool? Enabled { get; set; } = default!;
+
+        /// <summary>
+        /// When true, cancels the in-flight reindex task targeting this property's searchable index. The task transitions to CANCELLED; partial state is left on disk for the next-restart finalize.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("cancel")]
+
+        public bool? Cancel { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record IndexUpdateFilterable
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("rebuild")]
+
+        public bool? Rebuild { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("enabled")]
+
+        public bool? Enabled { get; set; } = default!;
+
+        /// <summary>
+        /// Change the tokenization used by the filterable index on this text/text[] property. Only valid when the property already has a filterable index. Use this for filterable-only properties; for properties that ALSO have a searchable index, prefer searchable.tokenization since it retokenizes both buckets in a single coordinated migration.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("tokenization")]
+
+        public string? Tokenization { get; set; } = default!;
+
+        /// <summary>
+        /// When true, cancels the in-flight reindex task targeting this property's filterable index.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("cancel")]
+
+        public bool? Cancel { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record IndexUpdateRangeable
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("enabled")]
+
+        public bool? Enabled { get; set; } = default!;
+
+        /// <summary>
+        /// When true, rebuilds the rangeable index from the existing filterable bucket (same source-of-truth as enable-rangeable).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("rebuild")]
+
+        public bool? Rebuild { get; set; } = default!;
+
+        /// <summary>
+        /// When true, cancels the in-flight reindex task targeting this property's rangeable index.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("cancel")]
+
+        public bool? Cancel { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record IndexUpdateResponse
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("taskId")]
+
+        public string? TaskId { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("status")]
+
+        public string? Status { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Returned with HTTP 429 when a configured Weaviate usage limit (objects/collections/tenants/shards) is exceeded. The structured fields (`errorCode`, `limit`, `value`) are stable contract; the `message` text is operator-overridable via the `USAGE_LIMITS_ERROR_MESSAGE` template.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record UsageLimitExceededResponse
+    {
+        /// <summary>
+        /// Machine-stable identifier. Always `USAGE_LIMIT_EXCEEDED` for this response.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("errorCode")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public UsageLimitExceededResponseErrorCode? ErrorCode { get; set; } = default!;
+
+        /// <summary>
+        /// Which limit was hit.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("limit")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public UsageLimitExceededResponseLimit? Limit { get; set; } = default!;
+
+        /// <summary>
+        /// The configured threshold value (the cap, not the current count).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("value")]
+
+        public long? Value { get; set; } = default!;
+
+        /// <summary>
+        /// Human-readable message rendered from the `USAGE_LIMITS_ERROR_MESSAGE` template with `{limit}` and `{value}` placeholders substituted.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("message")]
+
+        public string? Message { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Returned with HTTP 422 from class create/update endpoints. For restriction violations (operator-disallowed config via ALLOWED_VECTOR_INDEX_TYPES or ALLOWED_COMPRESSION_TYPES) the structured fields (`errorCode`, `restriction`, `value`, `allowed`, `message`) are populated; the `message` text is rendered from the operator-overridable `RESTRICTIONS_ERROR_MESSAGE` template. For unrelated 422 errors the `error` array is populated (matching the legacy ErrorResponse shape) and the structured fields are omitted.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record RestrictionViolationResponse
+    {
+        /// <summary>
+        /// Legacy ErrorResponse-style error list, populated for non-restriction 422 errors.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("error")]
+
+        public System.Collections.Generic.IList<Error2>? Error { get; set; } = default!;
+
+        /// <summary>
+        /// Machine-stable identifier. Set to `CONFIG_NOT_ALLOWED` for restriction violations; omitted otherwise.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("errorCode")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public RestrictionViolationResponseErrorCode? ErrorCode { get; set; } = default!;
+
+        /// <summary>
+        /// Which restriction was violated.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("restriction")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public RestrictionViolationResponseRestriction? Restriction { get; set; } = default!;
+
+        /// <summary>
+        /// The disallowed value the client submitted.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("value")]
+
+        public string? Value { get; set; } = default!;
+
+        /// <summary>
+        /// The operator-configured allow-list.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("allowed")]
+
+        public System.Collections.Generic.IList<string>? Allowed { get; set; } = default!;
+
+        /// <summary>
+        /// Human-readable message rendered from the `RESTRICTIONS_ERROR_MESSAGE` template with `{restriction}`, `{value}`, `{allowed}` placeholders substituted.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("message")]
+
+        public string? Message { get; set; } = default!;
 
     }
 
@@ -909,14 +1250,6 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("factor")]
 
         public int? Factor { get; set; } = default!;
-
-        /// <summary>
-        /// Enable asynchronous replication (default: `false`).
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("asyncEnabled")]
-
-        public bool? AsyncEnabled { get; set; } = default!;
 
         /// <summary>
         /// Configuration parameters for asynchronous replication.
@@ -1861,6 +2194,14 @@ namespace Weaviate.Client.Rest.Dto
         public bool? IndexInverted { get; set; } = default!;
 
         /// <summary>
+        /// Internal RAFT-replicated counter bumped by semantic runtime-reindex migrations (e.g. change-tokenization, enable-filterable, enable-searchable). Used by the data path to resolve the property's inverted-index bucket name; a single RAFT commit flipping the schema flag AND bumping this counter atomically cuts the cluster from the old bucket to the new one. Defaults to 0. Internal use; clients should not set this.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("bucketGeneration")]
+
+        public long? BucketGeneration { get; set; } = default!;
+
+        /// <summary>
         /// Whether to include this property in the filterable, Roaring Bitmap index. If `false`, this property cannot be used in `where` filters. &lt;br/&gt;&lt;br/&gt;Note: Unrelated to vectorization behavior.
         /// </summary>
 
@@ -1916,7 +2257,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// Text analysis options for a property. The asciiFold setting is immutable after creation, while the asciiFoldIgnore list can be updated later; changes to asciiFoldIgnore only affect newly indexed data and do not retroactively re-index existing data. Applies only to text and text[] data types that use an inverted index (searchable or filterable).
+    /// Text analysis options for a property. These settings are immutable after the property is created. Applies only to text and text[] data types that use an inverted index (searchable or filterable).
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal partial record TextAnalyzerConfig
@@ -1930,7 +2271,7 @@ namespace Weaviate.Client.Rest.Dto
         public bool? AsciiFold { get; set; } = default!;
 
         /// <summary>
-        /// If provided, specifies a list of characters that should be excluded from ascii folding. For example, if ['é'] is provided, then 'é' will not be folded to 'e' during indexing and search. This list can be updated after the property is created, but updates only affect documents indexed after the change.
+        /// If provided, specifies a list of characters that should be excluded from ascii folding. For example, if ['é'] is provided, then 'é' will not be folded to 'e' during indexing and search. This list is immutable after the property is created.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("asciiFoldIgnore")]
@@ -2142,6 +2483,14 @@ namespace Weaviate.Client.Rest.Dto
 
         public double? Size { get; set; } = default!;
 
+        /// <summary>
+        /// The ID of the base backup this incremental backup was built on; empty if the backup is not incremental.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("incremental_base_backup_id")]
+
+        public string? Incremental_base_backup_id { get; set; } = default!;
+
     }
 
     /// <summary>
@@ -2334,7 +2683,7 @@ namespace Weaviate.Client.Rest.Dto
         public BackupConfig? Config { get; set; } = default!;
 
         /// <summary>
-        /// List of collections to include in the backup creation process. If not set, all collections are included. Cannot be used together with `exclude`.
+        /// List of collections to include in the backup creation process. If not set, all collections are included. Cannot be used together with `exclude`. Permits wildcards, e.g. `*` or `prefix*`.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("include")]
@@ -2342,12 +2691,20 @@ namespace Weaviate.Client.Rest.Dto
         public System.Collections.Generic.IList<string>? Include { get; set; } = default!;
 
         /// <summary>
-        /// List of collections to exclude from the backup creation process. If not set, all collections are included. Cannot be used together with `include`.
+        /// List of collections to exclude from the backup creation process. If not set, all collections are included. Cannot be used together with `include`. Permits wildcards, e.g. `*` or `prefix*`.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("exclude")]
 
         public System.Collections.Generic.IList<string>? Exclude { get; set; } = default!;
+
+        /// <summary>
+        /// List of dynamic DB users to include in the backup. Permits `*` and `?` wildcards, e.g. `*` or `prefix*`. When omitted, the whole dynamic-user store is captured as part of the cluster snapshot and no per-user permission check is applied; when set, only matching users are captured and each is authorized individually.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("includeUsers")]
+
+        public System.Collections.Generic.IList<string>? IncludeUsers { get; set; } = default!;
 
         /// <summary>
         /// The ID of an existing backup to use as the base for a file-based incremental backup. If set, only files that have changed since the base backup will be included in the new backup.
@@ -4019,6 +4376,72 @@ namespace Weaviate.Client.Rest.Dto
 
     }
 
+    /// <summary>
+    /// A cluster-level namespace used to group resources under a common administrative unit. Namespace names must contain only lowercase letters, digits, and hyphens, must start and end with a letter or digit, must be 3-36 characters long, and must not be a reserved name.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record Namespace
+    {
+        /// <summary>
+        /// The unique name of the namespace.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("name")]
+
+        public string? Name { get; set; } = default!;
+
+        /// <summary>
+        /// The cluster node where this namespace's shards are placed. Set at create time and updatable later. Updating it only affects future placement decisions; existing live shards are not moved.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("home_node")]
+
+        public string? Home_node { get; set; } = default!;
+
+        /// <summary>
+        /// Lifecycle state. "active" namespaces accept all operations. "deleting" namespaces are being removed: new classes, aliases, and users can no longer be created in the namespace, and the namespace itself disappears once removal completes.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("state")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public NamespaceState? State { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Optional body for namespace creation. When `home_node` is omitted, the cluster picks one automatically.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record NamespaceCreateRequest
+    {
+        /// <summary>
+        /// Optional. Cluster node to place this namespace's shards on. Must be a current storage candidate. When omitted, the cluster picks one.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("home_node")]
+
+        public string? Home_node { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Update payload for an existing namespace.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record NamespaceUpdateRequest
+    {
+        /// <summary>
+        /// Cluster node to use for future placements in this namespace. Must be a current storage candidate. Existing live shards are not moved.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("home_node")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public string Home_node { get; set; } = default!;
+
+    }
+
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal partial record Body
     {
@@ -4384,6 +4807,14 @@ namespace Weaviate.Client.Rest.Dto
 
         public double? Size { get; set; } = default!;
 
+        /// <summary>
+        /// The ID of the base backup this incremental backup was built on; empty if the backup is not incremental.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("incremental_base_backup_id")]
+
+        public string? Incremental_base_backup_id { get; set; } = default!;
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -4592,6 +5023,19 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record Namespaces
+    {
+        /// <summary>
+        /// A string that specifies which namespaces this permission applies to. Can be an exact namespace name or a regex pattern. The default value `*` applies the permission to all namespaces.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("namespace")]
+
+        public string? Namespace { get; set; } = "*";
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal enum PermissionAction
     {
 
@@ -4706,6 +5150,9 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"update_mcp")]
         Update_mcp = 36,
 
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"manage_namespaces")]
+        Manage_namespaces = 37,
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -4755,6 +5202,133 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("message")]
 
         public string? Message { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum IndexStatusType
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"filterable")]
+        Filterable = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"searchable")]
+        Searchable = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeable")]
+        Rangeable = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum IndexStatusStatus
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"ready")]
+        Ready = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"indexing")]
+        Indexing = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"pending")]
+        Pending = 2,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"failed")]
+        Failed = 3,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"cancelled")]
+        Cancelled = 4,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum IndexStatusAlgorithm
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"wand")]
+        Wand = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"blockmax")]
+        Blockmax = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum IndexStatusTargetAlgorithm
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"wand")]
+        Wand = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"blockmax")]
+        Blockmax = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum IndexUpdateSearchableAlgorithm
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"blockmax")]
+        Blockmax = 0,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum UsageLimitExceededResponseErrorCode
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"USAGE_LIMIT_EXCEEDED")]
+        USAGE_LIMIT_EXCEEDED = 0,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum UsageLimitExceededResponseLimit
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"objects")]
+        Objects = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"collections")]
+        Collections = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"tenants")]
+        Tenants = 2,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"shards")]
+        Shards = 3,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record Error2
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("message")]
+
+        public string? Message { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum RestrictionViolationResponseErrorCode
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CONFIG_NOT_ALLOWED")]
+        CONFIG_NOT_ALLOWED = 0,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum RestrictionViolationResponseRestriction
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"vector_index_type")]
+        Vector_index_type = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"compression")]
+        Compression = 1,
 
     }
 
@@ -4949,14 +5523,17 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"FINALIZING")]
         FINALIZING = 2,
 
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"INTEGRATING")]
+        INTEGRATING = 3,
+
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"DEHYDRATING")]
-        DEHYDRATING = 3,
+        DEHYDRATING = 4,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"READY")]
-        READY = 4,
+        READY = 5,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"CANCELLED")]
-        CANCELLED = 5,
+        CANCELLED = 6,
 
     }
 
@@ -5518,6 +6095,18 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"UNFREEZING")]
         UNFREEZING = 9,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum NamespaceState
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"active")]
+        Active = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"deleting")]
+        Deleting = 1,
 
     }
 
