@@ -103,7 +103,9 @@ public sealed record Boost
     /// Only equality/comparison operators and And/Or/Not are supported.</param>
     /// <param name="weight">How much the boost influences the final score, in [0, 1]: the result is
     /// (1 - weight) of the primary score plus weight of the boost score. 0 is a no-op.
-    /// If not set, the server default of 0.5 is used.</param>
+    /// If not set, the server default of 0.5 is used.
+    /// When this boost is passed to <see cref="Blend"/>, the weight instead acts as the relative
+    /// per-condition weight: unbounded, and negative values demote matching objects.</param>
     /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
     /// If not set, the server default (100) is used.</param>
     /// <returns>The boost</returns>
@@ -126,7 +128,9 @@ public sealed record Boost
     /// If not set, the server default of 0.5 is used.</param>
     /// <param name="weight">How much the boost influences the final score, in [0, 1]: the result is
     /// (1 - weight) of the primary score plus weight of the boost score. 0 is a no-op.
-    /// If not set, the server default of 0.5 is used.</param>
+    /// If not set, the server default of 0.5 is used.
+    /// When this boost is passed to <see cref="Blend"/>, the weight instead acts as the relative
+    /// per-condition weight: unbounded, and negative values demote matching objects.</param>
     /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
     /// If not set, the server default (100) is used.</param>
     /// <returns>The boost</returns>
@@ -165,7 +169,9 @@ public sealed record Boost
     /// If not set, the server default of 0.5 is used.</param>
     /// <param name="weight">How much the boost influences the final score, in [0, 1]: the result is
     /// (1 - weight) of the primary score plus weight of the boost score. 0 is a no-op.
-    /// If not set, the server default of 0.5 is used.</param>
+    /// If not set, the server default of 0.5 is used.
+    /// When this boost is passed to <see cref="Blend"/>, the weight instead acts as the relative
+    /// per-condition weight: unbounded, and negative values demote matching objects.</param>
     /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
     /// If not set, the server default (100) is used.</param>
     /// <returns>The boost</returns>
@@ -213,7 +219,9 @@ public sealed record Boost
     /// If not set, the server default of 0.5 is used.</param>
     /// <param name="weight">How much the boost influences the final score, in [0, 1]: the result is
     /// (1 - weight) of the primary score plus weight of the boost score. 0 is a no-op.
-    /// If not set, the server default of 0.5 is used.</param>
+    /// If not set, the server default of 0.5 is used.
+    /// When this boost is passed to <see cref="Blend"/>, the weight instead acts as the relative
+    /// per-condition weight: unbounded, and negative values demote matching objects.</param>
     /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
     /// If not set, the server default (100) is used.</param>
     /// <returns>The boost</returns>
@@ -256,7 +264,9 @@ public sealed record Boost
     /// <see cref="Modifier.Log1P"/> or <see cref="Modifier.Sqrt"/>. If not set, the raw value is used.</param>
     /// <param name="weight">How much the boost influences the final score, in [0, 1]: the result is
     /// (1 - weight) of the primary score plus weight of the boost score. 0 is a no-op.
-    /// If not set, the server default of 0.5 is used.</param>
+    /// If not set, the server default of 0.5 is used.
+    /// When this boost is passed to <see cref="Blend"/>, the weight instead acts as the relative
+    /// per-condition weight: unbounded, and negative values demote matching objects.</param>
     /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
     /// If not set, the server default (100) is used.</param>
     /// <returns>The boost</returns>
