@@ -101,6 +101,9 @@ jobs:
           dotnet tool restore
           dotnet csharpier check $CHANGED_FILES
 
+      - name: Check XML param docs (query/generate API)
+        run: python3 ci/check_xml_param_docs.py
+
       - name: Run analyzer unit tests
         run: |
           if [[ "${{ needs.setup.outputs.dry-run }}" == "true" ]]; then
