@@ -81,46 +81,6 @@ public class TestRbacRoles : RbacIntegrationTests
     }
 
     /// <summary>
-    /// Tests that create role with namespaces permission round trips (Weaviate 1.38+)
-    /// </summary>
-    [Fact]
-    public async Task CreateRoleWithNamespacesPermission()
-    {
-        RequireVersion("1.38.0");
-        var roleName = MakeRoleName("namespaces");
-        try
-        {
-            await _weaviate.Roles.Delete(roleName, TestContext.Current.CancellationToken);
-            var created = await _weaviate.Roles.Create(
-                roleName,
-                [new Permissions.Namespaces("*") { Manage = true }],
-                TestContext.Current.CancellationToken
-            );
-            Assert.NotNull(created);
-            Assert.Equal(roleName, created.Name);
-            Assert.Single(created.Permissions);
-            var scope = Assert.IsType<Permissions.Namespaces>(created.Permissions.Single());
-            Assert.True(scope.Manage);
-            Assert.Equal("*", scope.Resource.Namespace);
-
-            var fetched = await _weaviate.Roles.Get(
-                roleName,
-                TestContext.Current.CancellationToken
-            );
-            Assert.NotNull(fetched);
-            Assert.Equal(roleName, fetched!.Name);
-            Assert.Single(fetched.Permissions);
-            var fetchedScope = Assert.IsType<Permissions.Namespaces>(fetched.Permissions.Single());
-            Assert.True(fetchedScope.Manage);
-            Assert.Equal("*", fetchedScope.Resource.Namespace);
-        }
-        finally
-        {
-            await _weaviate.Roles.Delete(roleName, TestContext.Current.CancellationToken);
-        }
-    }
-
-    /// <summary>
     /// Tests that create role conflict
     /// </summary>
     [Fact]
@@ -608,6 +568,46 @@ public class TestRbacRoles : RbacIntegrationTests
                 fetched.Permissions,
                 p => p is Permissions.Mcp { Read: true, Create: true, Update: true }
             );
+        }
+        finally
+        {
+            await _weaviate.Roles.Delete(roleName, TestContext.Current.CancellationToken);
+        }
+    }
+
+    /// <summary>
+    /// Tests that create role with namespaces permission round trips (Weaviate 1.38+)
+    /// </summary>
+    [Fact]
+    public async Task CreateRoleWithNamespacesPermission()
+    {
+        RequireVersion("1.38.0");
+        var roleName = MakeRoleName("namespaces");
+        try
+        {
+            await _weaviate.Roles.Delete(roleName, TestContext.Current.CancellationToken);
+            var created = await _weaviate.Roles.Create(
+                roleName,
+                [new Permissions.Namespaces("*") { Manage = true }],
+                TestContext.Current.CancellationToken
+            );
+            Assert.NotNull(created);
+            Assert.Equal(roleName, created.Name);
+            Assert.Single(created.Permissions);
+            var scope = Assert.IsType<Permissions.Namespaces>(created.Permissions.Single());
+            Assert.True(scope.Manage);
+            Assert.Equal("*", scope.Resource.Namespace);
+
+            var fetched = await _weaviate.Roles.Get(
+                roleName,
+                TestContext.Current.CancellationToken
+            );
+            Assert.NotNull(fetched);
+            Assert.Equal(roleName, fetched!.Name);
+            Assert.Single(fetched.Permissions);
+            var fetchedScope = Assert.IsType<Permissions.Namespaces>(fetched.Permissions.Single());
+            Assert.True(fetchedScope.Manage);
+            Assert.Equal("*", fetchedScope.Resource.Namespace);
         }
         finally
         {
