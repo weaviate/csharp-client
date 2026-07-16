@@ -210,6 +210,39 @@ public class TestBoostSyntax : IAsyncLifetime
     }
 
     /// <summary>
+    /// Tests that a TimeSpan scale serializes to the same duration string as the Python
+    /// client's _decay_duration_to_str, including the seconds branch where the two
+    /// implementations diverge textually
+    /// </summary>
+    /// <param name="seconds">The scale duration in seconds</param>
+    /// <param name="expected">The expected duration string</param>
+    [Theory]
+    [InlineData(604800, "7d")]
+    [InlineData(129600, "36h")]
+    [InlineData(60, "1m")]
+    [InlineData(90, "90s")]
+    [InlineData(30, "30s")]
+    [InlineData(1.5, "1.5s")]
+    public async Task NearText_TimeDecayBoost_TimeSpanScaleMatchesPythonDurationString(
+        double seconds,
+        string expected
+    )
+    {
+        await _collection.Query.NearText(
+            "banana",
+            boost: Boost.TimeDecay("publishedAt", scale: TimeSpan.FromSeconds(seconds)),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.Boost);
+        var condition = Assert.Single(request.Boost.Conditions);
+        Assert.NotNull(condition.TimeDecay);
+        Assert.Equal(expected, condition.TimeDecay.Scale);
+    }
+
+    /// <summary>
     /// Tests that a numeric decay boost serializes its fields
     /// </summary>
     [Fact]
