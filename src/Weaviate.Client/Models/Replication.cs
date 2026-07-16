@@ -61,7 +61,7 @@ public enum ReplicationOperationState
 
     /// <summary>
     /// Replica has finished copying and is being integrated as a queryable member of the
-    /// shard. Occurs between <see cref="Finalizing"/> and <see cref="Dehydrating"/>).
+    /// shard. Occurs between <see cref="Finalizing"/> and <see cref="Dehydrating"/>.
     /// </summary>
     [System.Text.Json.Serialization.JsonStringEnumMemberName("INTEGRATING")]
     Integrating,
