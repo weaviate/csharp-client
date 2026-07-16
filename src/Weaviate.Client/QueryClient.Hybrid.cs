@@ -11,6 +11,23 @@ public partial class QueryClient
     /// <summary>
     /// Performs a hybrid search (keyword + vector search).
     /// </summary>
+    /// <param name="query">The query</param>
+    /// <param name="alpha">The alpha</param>
+    /// <param name="queryProperties">The query properties</param>
+    /// <param name="fusionType">The fusion type</param>
+    /// <param name="maxVectorDistance">The max vector distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public Task<WeaviateResult> Hybrid(
         string query,
         float? alpha = null,
@@ -54,6 +71,24 @@ public partial class QueryClient
     /// <summary>
     /// Performs a hybrid search (keyword + vector search).
     /// </summary>
+    /// <param name="query">The query</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="alpha">The alpha</param>
+    /// <param name="queryProperties">The query properties</param>
+    /// <param name="fusionType">The fusion type</param>
+    /// <param name="maxVectorDistance">The max vector distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task<WeaviateResult> Hybrid(
         string? query,
         HybridVectorInput? vectors,
@@ -110,6 +145,24 @@ public partial class QueryClient
     /// <summary>
     /// Performs a hybrid search (keyword + vector search) with grouping.
     /// </summary>
+    /// <param name="query">The query</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="alpha">The alpha</param>
+    /// <param name="queryProperties">The query properties</param>
+    /// <param name="fusionType">The fusion type</param>
+    /// <param name="maxVectorDistance">The max vector distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public Task<GroupByResult> Hybrid(
         string query,
         GroupByRequest groupBy,
@@ -155,6 +208,25 @@ public partial class QueryClient
     /// <summary>
     /// Performs a hybrid search (keyword + vector search) with grouping.
     /// </summary>
+    /// <param name="query">The query</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="alpha">The alpha</param>
+    /// <param name="queryProperties">The query properties</param>
+    /// <param name="fusionType">The fusion type</param>
+    /// <param name="maxVectorDistance">The max vector distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task<GroupByResult> Hybrid(
         string? query,
         HybridVectorInput? vectors,
@@ -229,6 +301,25 @@ public static class QueryClientHybridExtensions
     ///     )
     /// );
     /// </example>
+    /// <param name="client">The query client</param>
+    /// <param name="query">The query</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="alpha">The alpha</param>
+    /// <param name="queryProperties">The query properties</param>
+    /// <param name="fusionType">The fusion type</param>
+    /// <param name="maxVectorDistance">The max vector distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public static async Task<WeaviateResult> Hybrid(
         this QueryClient client,
         string? query = null,
@@ -279,6 +370,26 @@ public static class QueryClientHybridExtensions
     /// Performs a hybrid search (keyword + vector search) with grouping using a lambda to build HybridVectorInput.
     /// This allows chaining NearVector or NearText configuration with target vectors.
     /// </summary>
+    /// <param name="client">The query client</param>
+    /// <param name="query">The query</param>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="alpha">The alpha</param>
+    /// <param name="queryProperties">The query properties</param>
+    /// <param name="fusionType">The fusion type</param>
+    /// <param name="maxVectorDistance">The max vector distance</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public static async Task<GroupByResult> Hybrid(
         this QueryClient client,
         string? query,

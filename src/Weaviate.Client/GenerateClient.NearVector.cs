@@ -11,6 +11,23 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities.
     /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="provider">The provider</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task<GenerativeWeaviateResult> NearVector(
         VectorSearchInput vectors,
         Filter? filters = null,
@@ -55,6 +72,24 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities and grouping.
     /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="provider">The provider</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task<GenerativeGroupByResult> NearVector(
         VectorSearchInput vectors,
         GroupByRequest groupBy,
@@ -101,6 +136,23 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities using lambda builder.
     /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="provider">The provider</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task<GenerativeWeaviateResult> NearVector(
         VectorSearchInput.FactoryFn vectors,
         Filter? filters = null,
@@ -143,6 +195,24 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities and grouping using lambda builder.
     /// </summary>
+    /// <param name="vectors">The vectors</param>
+    /// <param name="groupBy">The group by</param>
+    /// <param name="filters">The filters</param>
+    /// <param name="certainty">The certainty</param>
+    /// <param name="distance">The distance</param>
+    /// <param name="autoLimit">The auto limit</param>
+    /// <param name="limit">The limit</param>
+    /// <param name="offset">The offset</param>
+    /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
+    /// <param name="singlePrompt">The single prompt</param>
+    /// <param name="groupedTask">The grouped task</param>
+    /// <param name="provider">The provider</param>
+    /// <param name="returnProperties">The return properties</param>
+    /// <param name="returnReferences">The return references</param>
+    /// <param name="returnMetadata">The return metadata</param>
+    /// <param name="includeVectors">The include vectors</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     public async Task<GenerativeGroupByResult> NearVector(
         VectorSearchInput.FactoryFn vectors,
         GroupByRequest groupBy,
