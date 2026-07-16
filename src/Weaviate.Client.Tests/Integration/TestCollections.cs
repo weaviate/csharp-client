@@ -126,6 +126,13 @@ public partial class CollectionsTests : IntegrationTests
 
         var expected = CollectionConfig.FromCollectionCreate(c);
 
+        if (ServerVersionIsInRange("1.38.0") && expected.ReplicationConfig is not null)
+        {
+            // Weaviate 1.38 removed the per-collection asyncEnabled setting: the server
+            // derives it as `factor > 1` and ignores the value sent at creation.
+            expected.ReplicationConfig.AsyncEnabled = expected.ReplicationConfig.Factor > 1;
+        }
+
         Assert.Equal(expected, export);
     }
 #endif
@@ -404,7 +411,16 @@ public partial class CollectionsTests : IntegrationTests
 
         // ReplicationConfig validation
         Assert.NotNull(export.ReplicationConfig);
-        Assert.True(export.ReplicationConfig.AsyncEnabled);
+        if (ServerVersionIsInRange("1.38.0"))
+        {
+            // Weaviate 1.38 removed the per-collection asyncEnabled setting: the server
+            // derives it as `factor > 1` (factor is 1 here) and ignores the value sent.
+            Assert.False(export.ReplicationConfig.AsyncEnabled);
+        }
+        else
+        {
+            Assert.True(export.ReplicationConfig.AsyncEnabled);
+        }
         Assert.True(
             new[]
             {
@@ -561,7 +577,16 @@ public partial class CollectionsTests : IntegrationTests
 
         // ReplicationConfig validation
         Assert.NotNull(export.ReplicationConfig);
-        Assert.True(export.ReplicationConfig.AsyncEnabled);
+        if (ServerVersionIsInRange("1.38.0"))
+        {
+            // Weaviate 1.38 removed the per-collection asyncEnabled setting: the server
+            // derives it as `factor > 1` (factor is 1 here) and ignores the value sent.
+            Assert.False(export.ReplicationConfig.AsyncEnabled);
+        }
+        else
+        {
+            Assert.True(export.ReplicationConfig.AsyncEnabled);
+        }
         Assert.True(
             new[]
             {

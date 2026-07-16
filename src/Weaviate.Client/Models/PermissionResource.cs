@@ -71,6 +71,12 @@ public record ReplicateResource(string? Collection = "*", string? Shard = "*");
 public record AliasesResource(string? Collection = "*", string? Alias = "*");
 
 /// <summary>
+/// Represents a namespaces resource, optionally scoped to a namespace. Requires Weaviate 1.38 or later.
+/// </summary>
+/// <param name="Namespace">Optional namespace name or regex pattern (defaults to "*" for all namespaces)</param>
+public record NamespacesResource(string? Namespace = "*");
+
+/// <summary>
 /// The permission resource extensions class
 /// </summary>
 internal static class PermissionResourceExtensions
@@ -189,6 +195,16 @@ internal static class PermissionResourceExtensions
     internal static Rest.Dto.Aliases ToDto(this AliasesResource resource)
     {
         return new Rest.Dto.Aliases { Collection = resource.Collection, Alias = resource.Alias };
+    }
+
+    /// <summary>
+    /// Returns the dto using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <returns>The rest dto namespaces</returns>
+    internal static Rest.Dto.Namespaces ToDto(this NamespacesResource resource)
+    {
+        return new Rest.Dto.Namespaces { Namespace = resource.Namespace };
     }
 
     /// <summary>
@@ -419,6 +435,28 @@ internal static class PermissionResourceExtensions
             Read = actions.Contains(Rest.Dto.PermissionAction.Read_collections),
             Update = actions.Contains(Rest.Dto.PermissionAction.Update_collections),
             Delete = actions.Contains(Rest.Dto.PermissionAction.Delete_collections),
+        };
+    }
+
+    /// <summary>
+    /// Returns the model using the specified resource
+    /// </summary>
+    /// <param name="resource">The resource</param>
+    /// <param name="permissions">The permissions</param>
+    /// <returns>The permission scope</returns>
+    internal static PermissionScope ToModel(
+        this Rest.Dto.Namespaces resource,
+        IEnumerable<Rest.Dto.Permission> permissions
+    )
+    {
+        var actions = permissions
+            .Where(p => p.Namespaces == resource)
+            .Select(p => p.Action)
+            .ToHashSet();
+
+        return new Permissions.Namespaces(resource.Namespace)
+        {
+            Manage = actions.Contains(Rest.Dto.PermissionAction.Manage_namespaces),
         };
     }
 }
