@@ -1147,6 +1147,11 @@ public static class Vectorizer
         public string? BaseURL { get; set; } = null;
 
         /// <summary>
+        /// Gets or sets the value of the endpoint
+        /// </summary>
+        public string? Endpoint { get; set; } = null;
+
+        /// <summary>
         /// Gets or sets the value of the model
         /// </summary>
         public string? Model { get; set; } = null;
@@ -1211,6 +1216,11 @@ public static class Vectorizer
         /// Gets or sets the value of the dimensions
         /// </summary>
         public int? Dimensions { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the endpoint
+        /// </summary>
+        public string? Endpoint { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the value of the model

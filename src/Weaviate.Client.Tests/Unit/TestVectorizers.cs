@@ -619,4 +619,159 @@ public partial class VectorConfigListTests
         Assert.Contains("\"text2vec-aws\"", json);
         Assert.DoesNotContain("\"dimensions\"", json);
     }
+
+    /// <summary>
+    /// Tests that Text2VecOpenAI serializes <c>endpoint</c> when it is set.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Text2VecOpenAI_Serializes_Endpoint_When_Set()
+    {
+        // Arrange
+        var vc = Configure.Vector(
+            "default",
+            v => v.Text2VecOpenAI(model: "text-embedding-3-small", endpoint: "/v2/embeddings")
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"text2vec-openai\"", json);
+        Assert.Contains("\"endpoint\":\"/v2/embeddings\"", json);
+    }
+
+    /// <summary>
+    /// Tests that Text2VecOpenAI omits <c>endpoint</c> when unset so the server can apply its
+    /// default.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Text2VecOpenAI_Omits_Unset_Endpoint()
+    {
+        // Arrange
+        var vc = Configure.Vector(
+            "default",
+            v => v.Text2VecOpenAI(model: "text-embedding-3-small")
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"text2vec-openai\"", json);
+        Assert.DoesNotContain("\"endpoint\"", json);
+    }
+
+    /// <summary>
+    /// Tests that Text2VecMorph serializes <c>endpoint</c> when it is set.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Text2VecMorph_Serializes_Endpoint_When_Set()
+    {
+        // Arrange
+        var vc = Configure.Vector(
+            "default",
+            v => v.Text2VecMorph(model: "morph-embedding-v2", endpoint: "/v2/embeddings")
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"text2vec-morph\"", json);
+        Assert.Contains("\"endpoint\":\"/v2/embeddings\"", json);
+    }
+
+    /// <summary>
+    /// Tests that Text2VecMorph omits <c>endpoint</c> when unset so the server can apply its
+    /// default.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Text2VecMorph_Omits_Unset_Endpoint()
+    {
+        // Arrange
+        var vc = Configure.Vector("default", v => v.Text2VecMorph(model: "morph-embedding-v2"));
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"text2vec-morph\"", json);
+        Assert.DoesNotContain("\"endpoint\"", json);
+    }
 }
