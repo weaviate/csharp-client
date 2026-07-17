@@ -86,6 +86,69 @@ public class GenerativeShortcutsTests
     }
 
     /// <summary>
+    /// Tests that the GoogleVertex provider maps <c>Location</c> onto the gRPC message.
+    /// </summary>
+    [Fact]
+    public async Task GenerateClient_FetchObjects_WithGoogleVertexProvider_MapsLocation()
+    {
+        // Arrange
+        var provider = new Providers.GoogleVertex
+        {
+            Model = "gemini-1.5-pro",
+            Location = "us-east4",
+        };
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
+
+        // Act
+        await client
+            .Collections.Use("TestCollection")
+            .Generate.FetchObjects(
+                limit: 10,
+                singlePrompt: "Summarize this",
+                provider: provider,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+
+        // Assert
+        var capturedRequest = getCapturedRequest();
+        Assert.NotNull(capturedRequest);
+        Assert.NotNull(capturedRequest.Generative);
+        Assert.NotNull(capturedRequest.Generative.Single);
+        var providerQuery = capturedRequest.Generative.Single.Queries[0];
+        Assert.NotNull(providerQuery.Google);
+        Assert.Equal("gemini-1.5-pro", providerQuery.Google.Model);
+        Assert.Equal("us-east4", providerQuery.Google.Location);
+    }
+
+    /// <summary>
+    /// Tests that the GoogleVertex provider leaves <c>Location</c> empty when unset.
+    /// </summary>
+    [Fact]
+    public async Task GenerateClient_FetchObjects_WithGoogleVertexProvider_LeavesLocationEmptyWhenUnset()
+    {
+        // Arrange
+        var provider = new Providers.GoogleVertex { Model = "gemini-1.5-pro" };
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
+
+        // Act
+        await client
+            .Collections.Use("TestCollection")
+            .Generate.FetchObjects(
+                limit: 10,
+                singlePrompt: "Summarize this",
+                provider: provider,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+
+        // Assert
+        var capturedRequest = getCapturedRequest();
+        Assert.NotNull(capturedRequest);
+        var providerQuery = capturedRequest!.Generative!.Single!.Queries[0];
+        Assert.NotNull(providerQuery.Google);
+        Assert.Equal(string.Empty, providerQuery.Google.Location);
+    }
+
+    /// <summary>
     /// Tests that generate client fetch objects with string grouped task and provider enriches task
     /// </summary>
     [Fact]

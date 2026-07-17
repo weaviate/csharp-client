@@ -372,6 +372,7 @@ internal partial class WeaviateGrpcClient
                     ProjectId = a.ProjectId ?? string.Empty,
                     EndpointId = a.EndpointId ?? string.Empty,
                     Region = a.Region ?? string.Empty,
+                    Location = a.Location ?? string.Empty,
                     Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
                     ImageProperties =
                         a.ImageProperties != null
@@ -397,6 +398,9 @@ internal partial class WeaviateGrpcClient
                     ProjectId = string.Empty,
                     EndpointId = string.Empty,
                     Region = string.Empty,
+                    // Location (Vertex AI region) is not applicable to the Gemini
+                    // (generative-language) API; left empty like Region above.
+                    Location = string.Empty,
                     Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
                     ImageProperties =
                         a.ImageProperties != null
