@@ -97,3 +97,17 @@ public abstract record BM25Operator(string Operator)
     /// </summary>
     public record Or(int MinimumMatch) : BM25Operator("Or");
 }
+
+/// <summary>
+/// The diversity selection applied to search results. Requires Weaviate 1.38.6+.
+/// </summary>
+public abstract record Diversity
+{
+    /// <summary>
+    /// Maximal Marginal Relevance; Limit is the number of results returned after
+    /// diversification (the server requires it to be at least 1), Balance is the
+    /// trade-off in [0.0, 1.0] — 1.0 pure relevance, 0.0 pure diversity (the server
+    /// default when omitted).
+    /// </summary>
+    public record MMR(uint? Limit = null, float? Balance = null) : Diversity;
+}

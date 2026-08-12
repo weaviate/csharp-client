@@ -875,6 +875,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="fusionType">The fusion type</param>
     /// <param name="maxVectorDistance">The max vector distance</param>
     /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <returns>The hybrid</returns>
     private V1.Hybrid BuildHybrid(
         string? query = null,
@@ -883,7 +884,8 @@ internal partial class WeaviateGrpcClient
         string[]? queryProperties = null,
         HybridFusion? fusionType = null,
         float? maxVectorDistance = null,
-        BM25Operator? bm25Operator = null
+        BM25Operator? bm25Operator = null,
+        Diversity? diversitySelection = null
     )
     {
         var hybrid = new V1.Hybrid();
@@ -1020,6 +1022,19 @@ internal partial class WeaviateGrpcClient
                 },
                 MinimumOrTokensMatch = (bm25Operator as BM25Operator.Or)?.MinimumMatch ?? 1,
             };
+        }
+        if (diversitySelection is Diversity.MMR mmr)
+        {
+            var mmrGrpc = new V1.Selection.Types.MMR();
+            if (mmr.Limit.HasValue)
+            {
+                mmrGrpc.Limit = mmr.Limit.Value;
+            }
+            if (mmr.Balance.HasValue)
+            {
+                mmrGrpc.Balance = mmr.Balance.Value;
+            }
+            hybrid.Selection = new V1.Selection { Mmr = mmrGrpc };
         }
 
         return hybrid;

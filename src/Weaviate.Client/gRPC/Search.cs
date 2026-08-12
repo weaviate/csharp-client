@@ -336,6 +336,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="groupBy">The group by</param>
@@ -362,6 +363,7 @@ internal partial class WeaviateGrpcClient
         uint? limit = null,
         uint? offset = null,
         BM25Operator? bm25Operator = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         GroupByRequest? groupBy = null,
@@ -410,7 +412,8 @@ internal partial class WeaviateGrpcClient
             queryProperties,
             fusionType,
             maxVectorDistance,
-            bm25Operator
+            bm25Operator,
+            diversitySelection
         );
 
         return await Search(request, cancellationToken);
