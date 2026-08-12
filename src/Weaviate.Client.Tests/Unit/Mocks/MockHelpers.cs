@@ -217,6 +217,7 @@ internal static class MockGrpcClient
         {
             grpcClient.SetUseAlphaParam(true);
         }
+        grpcClient.SetServerVersion(weaviateVersion);
 
         var client = new WeaviateClient(grpcClient: grpcClient, meta: meta);
 

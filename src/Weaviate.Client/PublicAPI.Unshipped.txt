@@ -30,3 +30,16 @@ Weaviate.Client.Models.Permissions.Namespaces.Manage.get -> bool
 Weaviate.Client.Models.Permissions.Namespaces.Manage.set -> void
 Weaviate.Client.Models.Permissions.Namespaces.Namespaces(string? namespace) -> void
 Weaviate.Client.Models.Permissions.Namespaces.Resource.get -> Weaviate.Client.Models.NamespacesResource!
+override sealed Weaviate.Client.Models.BM25Operator.AndCross.Equals(Weaviate.Client.Models.BM25Operator? other) -> bool
+override Weaviate.Client.Models.BM25Operator.AndCross.<Clone>$() -> Weaviate.Client.Models.BM25Operator.AndCross!
+override Weaviate.Client.Models.BM25Operator.AndCross.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.BM25Operator.AndCross.Equals(object? obj) -> bool
+override Weaviate.Client.Models.BM25Operator.AndCross.GetHashCode() -> int
+override Weaviate.Client.Models.BM25Operator.AndCross.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.BM25Operator.AndCross.ToString() -> string!
+static Weaviate.Client.Models.BM25Operator.AndCross.operator !=(Weaviate.Client.Models.BM25Operator.AndCross? left, Weaviate.Client.Models.BM25Operator.AndCross? right) -> bool
+static Weaviate.Client.Models.BM25Operator.AndCross.operator ==(Weaviate.Client.Models.BM25Operator.AndCross? left, Weaviate.Client.Models.BM25Operator.AndCross? right) -> bool
+virtual Weaviate.Client.Models.BM25Operator.AndCross.Equals(Weaviate.Client.Models.BM25Operator.AndCross? other) -> bool
+Weaviate.Client.Models.BM25Operator.AndCross
+Weaviate.Client.Models.BM25Operator.AndCross.AndCross() -> void
+Weaviate.Client.Models.BM25Operator.AndCross.AndCross(Weaviate.Client.Models.BM25Operator.AndCross! original) -> void

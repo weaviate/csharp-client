@@ -86,6 +86,13 @@ public abstract record BM25Operator(string Operator)
     public record And() : BM25Operator("And");
 
     /// <summary>
+    /// The cross-property and; every query token must match in at least one searched property,
+    /// which all must share the same tokenization and analyzer settings.
+    /// Requires Weaviate 1.37.15, 1.38.8 or 1.39.0 or later.
+    /// </summary>
+    public record AndCross() : BM25Operator("AndCross");
+
+    /// <summary>
     /// The or
     /// </summary>
     public record Or(int MinimumMatch) : BM25Operator("Or");

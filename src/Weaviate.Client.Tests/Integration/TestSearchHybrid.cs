@@ -832,6 +832,55 @@ public partial class SearchTests : IntegrationTests
     }
 
     /// <summary>
+    /// Tests that test hybrid bm 25 operator and cross
+    /// </summary>
+    [Fact]
+    public async Task Test_Hybrid_BM25_Operator_AndCross()
+    {
+        RequireVersion("1.38.8");
+
+        var collection = await CollectionFactory(
+            properties: new[] { Property.Text("title"), Property.Text("body") },
+            vectorConfig: Configure.Vector(t => t.SelfProvided())
+        );
+
+        // Neither of splitAcross's properties holds both tokens, so only cross-property AND matches it.
+        var splitAcross = await collection.Data.Insert(
+            new { title = "banana", body = "split" },
+            vectors: new float[] { 1, 0, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { title = "banana", body = "bread" },
+            vectors: new float[] { 0, 1, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var andObjs = (
+            await collection.Query.Hybrid(
+                "banana split",
+                vectors: null,
+                alpha: 0.0f,
+                bm25Operator: new BM25Operator.And(),
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
+        Assert.Empty(andObjs);
+
+        var andCrossObjs = (
+            await collection.Query.Hybrid(
+                "banana split",
+                vectors: null,
+                alpha: 0.0f,
+                bm25Operator: new BM25Operator.AndCross(),
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
+        Assert.Single(andCrossObjs);
+        Assert.Equal(splitAcross, andCrossObjs[0].UUID);
+    }
+
+    /// <summary>
     /// Tests that test aggregate max vector distance
     /// </summary>
     [Fact]
