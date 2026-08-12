@@ -523,6 +523,57 @@ public class VectorizerFactory
         };
 
     /// <summary>
+    /// Creates a configuration for the Multi2VecTwelveLabs vectorizer using weighted fields.
+    /// </summary>
+    /// <param name="imageFields">Weighted image fields.</param>
+    /// <param name="textFields">Weighted text fields.</param>
+    /// <param name="baseURL">Optional base URL for the model.</param>
+    /// <param name="model">Model name to use.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
+    /// <returns>Multi2VecTwelveLabs vectorizer configuration.</returns>
+    public VectorizerConfig Multi2VecTwelveLabs(
+        WeightedFields imageFields,
+        WeightedFields textFields,
+        string? baseURL = null,
+        string? model = null,
+        bool? vectorizeCollectionName = null
+    ) =>
+        new Multi2VecTwelveLabs
+        {
+            BaseURL = baseURL,
+            ImageFields = imageFields,
+            Model = model,
+            TextFields = textFields,
+            VectorizeCollectionName = vectorizeCollectionName,
+            Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+        };
+
+    /// <summary>
+    /// Creates a configuration for the Multi2VecTwelveLabs vectorizer using string arrays.
+    /// </summary>
+    /// <param name="imageFields">Array of image field names.</param>
+    /// <param name="textFields">Array of text field names.</param>
+    /// <param name="baseURL">Optional base URL for the model.</param>
+    /// <param name="model">Model name to use.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
+    /// <returns>Multi2VecTwelveLabs vectorizer configuration.</returns>
+    public VectorizerConfig Multi2VecTwelveLabs(
+        string[]? imageFields = null,
+        string[]? textFields = null,
+        string? baseURL = null,
+        string? model = null,
+        bool? vectorizeCollectionName = null
+    ) =>
+        new Multi2VecTwelveLabs
+        {
+            BaseURL = baseURL,
+            ImageFields = imageFields,
+            Model = model,
+            TextFields = textFields,
+            VectorizeCollectionName = vectorizeCollectionName,
+        };
+
+    /// <summary>
     /// Refs the 2 vec centroid using the specified reference properties
     /// </summary>
     /// <param name="referenceProperties">The reference properties</param>

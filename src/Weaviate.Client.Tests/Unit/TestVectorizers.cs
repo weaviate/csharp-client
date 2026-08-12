@@ -619,4 +619,167 @@ public partial class VectorConfigListTests
         Assert.Contains("\"text2vec-aws\"", json);
         Assert.DoesNotContain("\"dimensions\"", json);
     }
+
+    /// <summary>
+    /// Tests that Multi2VecTwelveLabs serializes all fields correctly under the
+    /// <c>multi2vec-twelvelabs</c> module key.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Multi2VecTwelveLabs_Serializes_All_Fields()
+    {
+        // Arrange
+        var vc = Configure.Vector(
+            "default",
+            v =>
+                v.Multi2VecTwelveLabs(
+                    imageFields: new[] { "image" },
+                    textFields: new[] { "text" },
+                    baseURL: "https://api.twelvelabs.io/v1.3",
+                    model: "marengo3.0",
+                    vectorizeCollectionName: false
+                )
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"multi2vec-twelvelabs\"", json);
+        Assert.Contains("\"baseURL\":\"https://api.twelvelabs.io/v1.3\"", json);
+        Assert.Contains("\"imageFields\":[\"image\"]", json);
+        Assert.Contains("\"model\":\"marengo3.0\"", json);
+        Assert.Contains("\"textFields\":[\"text\"]", json);
+        Assert.Contains("\"vectorizeClassName\":false", json);
+    }
+
+    /// <summary>
+    /// Tests that Multi2VecTwelveLabs omits unset optional fields so the server can apply
+    /// its defaults (no <c>baseURL</c>, <c>model</c> or <c>vectorizeClassName</c>).
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Multi2VecTwelveLabs_Omits_Unset_Optional_Fields()
+    {
+        // Arrange
+        var vc = Configure.Vector(
+            "default",
+            v => v.Multi2VecTwelveLabs(imageFields: new[] { "image" }, textFields: new[] { "text" })
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"multi2vec-twelvelabs\"", json);
+        Assert.Contains("\"imageFields\":[\"image\"]", json);
+        Assert.Contains("\"textFields\":[\"text\"]", json);
+        Assert.DoesNotContain("\"baseURL\"", json);
+        Assert.DoesNotContain("\"model\"", json);
+        Assert.DoesNotContain("\"vectorizeClassName\"", json);
+    }
+
+    /// <summary>
+    /// Tests that the Multi2VecTwelveLabs WeightedFields overload maps the field names into
+    /// the <c>imageFields</c> and <c>textFields</c> arrays. The weights themselves do not
+    /// reach the wire today (family-wide internal-Weights serialization bug, board task
+    /// b9f5cdf8); the last assertion pins that behavior and flips when the bug is fixed.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Multi2VecTwelveLabs_WeightedFields_Overload_Maps_Field_Names()
+    {
+        // Arrange
+        var imageFields = new WeightedFields { ("image", 0.7) };
+        var textFields = new WeightedFields { ("text", 0.3) };
+
+        var vc = Configure.Vector(
+            "default",
+            v => v.Multi2VecTwelveLabs(imageFields: imageFields, textFields: textFields)
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"multi2vec-twelvelabs\"", json);
+        Assert.Contains("\"imageFields\":[\"image\"]", json);
+        Assert.Contains("\"textFields\":[\"text\"]", json);
+        // Pins current behavior: internal Weights is invisible to the serializer (b9f5cdf8).
+        Assert.DoesNotContain("\"weights\"", json);
+    }
+
+    /// <summary>
+    /// Tests that Multi2VecTwelveLabs deserializes from the <c>multi2vec-twelvelabs</c>
+    /// module configuration returned by the server.
+    /// </summary>
+    [Fact]
+    public void Test_Multi2VecTwelveLabs_Deserialization()
+    {
+        // Arrange
+        var parameters = new Dictionary<string, object>
+        {
+            ["baseURL"] = "https://api.twelvelabs.io/v1.3",
+            ["imageFields"] = new[] { "image" },
+            ["model"] = "marengo3.0",
+            ["textFields"] = new[] { "text" },
+            ["vectorizeClassName"] = false,
+        };
+
+        // Act
+        var config = VectorizerConfigFactory.Create("multi2vec-twelvelabs", parameters);
+
+        // Assert
+        var twelveLabs = Assert.IsType<Vectorizer.Multi2VecTwelveLabs>(config);
+        Assert.Equal("multi2vec-twelvelabs", twelveLabs.Identifier);
+        Assert.Equal("https://api.twelvelabs.io/v1.3", twelveLabs.BaseURL);
+        Assert.NotNull(twelveLabs.ImageFields);
+        Assert.Equal(["image"], twelveLabs.ImageFields);
+        Assert.Equal("marengo3.0", twelveLabs.Model);
+        Assert.NotNull(twelveLabs.TextFields);
+        Assert.Equal(["text"], twelveLabs.TextFields);
+        Assert.False(twelveLabs.VectorizeCollectionName);
+    }
 }

@@ -30,3 +30,27 @@ Weaviate.Client.Models.Permissions.Namespaces.Manage.get -> bool
 Weaviate.Client.Models.Permissions.Namespaces.Manage.set -> void
 Weaviate.Client.Models.Permissions.Namespaces.Namespaces(string? namespace) -> void
 Weaviate.Client.Models.Permissions.Namespaces.Resource.get -> Weaviate.Client.Models.NamespacesResource!
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.<Clone>$() -> Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs!
+override Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.GetHashCode() -> int
+override Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.ToString() -> string!
+static Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.operator !=(Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs? left, Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs? right) -> bool
+static Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.operator ==(Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs? left, Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs? right) -> bool
+virtual Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs? other) -> bool
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.BaseURL.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.BaseURL.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.ImageFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.ImageFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.Model.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.Model.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.Multi2VecTwelveLabs(Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs! original) -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.TextFields.get -> string![]?
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.TextFields.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.VectorizeCollectionName.get -> bool?
+Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.VectorizeCollectionName.set -> void
+Weaviate.Client.VectorizerFactory.Multi2VecTwelveLabs(string![]? imageFields = null, string![]? textFields = null, string? baseURL = null, string? model = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Multi2VecTwelveLabs(Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, string? baseURL = null, string? model = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!

@@ -651,6 +651,52 @@ public static class Vectorizer
     }
 
     /// <summary>
+    /// The configuration for multi-media vectorization using the TwelveLabs module.
+    /// See the documentation for detailed usage.
+    /// </summary>
+    [Vectorizer("multi2vec-twelvelabs")]
+    public record Multi2VecTwelveLabs : VectorizerConfig
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Multi2VecTwelveLabs"/> class
+        /// </summary>
+        [JsonConstructor]
+        internal Multi2VecTwelveLabs() { }
+
+        /// <summary>
+        /// Gets or sets the value of the base url
+        /// </summary>
+        [JsonPropertyName("baseURL")]
+        public string? BaseURL { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the image fields
+        /// </summary>
+        public string[]? ImageFields { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the model
+        /// </summary>
+        public string? Model { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the text fields
+        /// </summary>
+        public string[]? TextFields { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the vectorize collection name
+        /// </summary>
+        [JsonPropertyName("vectorizeClassName")]
+        public bool? VectorizeCollectionName { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the weights
+        /// </summary>
+        internal VectorizerWeights? Weights { get; set; } = null;
+    }
+
+    /// <summary>
     /// The configuration for reference-based vectorization using the centroid method.
     /// See the documentation for detailed usage.
     /// </summary>
