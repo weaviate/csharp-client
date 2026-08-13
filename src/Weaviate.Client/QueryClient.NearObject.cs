@@ -16,6 +16,7 @@ public partial class QueryClient
     /// <param name="distance">The distance</param>
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="rerank">The rerank</param>
@@ -32,6 +33,7 @@ public partial class QueryClient
         double? distance = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -49,6 +51,7 @@ public partial class QueryClient
             distance: distance,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             groupBy: null,
@@ -74,6 +77,7 @@ public partial class QueryClient
     /// <param name="distance">The distance</param>
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="rerank">The rerank</param>
@@ -91,6 +95,7 @@ public partial class QueryClient
         double? distance = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -108,6 +113,7 @@ public partial class QueryClient
             distance: distance,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             groupBy: groupBy,

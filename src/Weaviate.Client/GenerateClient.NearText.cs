@@ -18,6 +18,7 @@ public partial class GenerateClient
     /// <param name="moveAway">Move away from concept</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
@@ -38,6 +39,7 @@ public partial class GenerateClient
         Move? moveAway = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -60,6 +62,7 @@ public partial class GenerateClient
             moveTo: moveTo,
             moveAway: moveAway,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             targetVector: null,
             filters: filters,
@@ -88,6 +91,7 @@ public partial class GenerateClient
     /// <param name="moveAway">Move away from concept</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
@@ -109,6 +113,7 @@ public partial class GenerateClient
         Move? moveAway = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -132,6 +137,7 @@ public partial class GenerateClient
             moveAway: moveAway,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             tenant: _collectionClient.Tenant,
@@ -156,6 +162,7 @@ public partial class GenerateClient
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
@@ -172,6 +179,7 @@ public partial class GenerateClient
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         SinglePrompt? singlePrompt = null,
@@ -193,6 +201,7 @@ public partial class GenerateClient
             moveTo: query.MoveTo,
             moveAway: query.MoveAway,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             targetVector: query.TargetVectors,
             filters: filters,
@@ -218,6 +227,7 @@ public partial class GenerateClient
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
@@ -235,6 +245,7 @@ public partial class GenerateClient
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         SinglePrompt? singlePrompt = null,
@@ -257,6 +268,7 @@ public partial class GenerateClient
             moveAway: query.MoveAway,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             tenant: _collectionClient.Tenant,
@@ -281,6 +293,7 @@ public partial class GenerateClient
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
@@ -297,6 +310,7 @@ public partial class GenerateClient
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         SinglePrompt? singlePrompt = null,
@@ -313,6 +327,7 @@ public partial class GenerateClient
             filters,
             limit,
             offset,
+            diversitySelection,
             autoLimit,
             rerank,
             singlePrompt,
@@ -333,6 +348,7 @@ public partial class GenerateClient
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
@@ -350,6 +366,7 @@ public partial class GenerateClient
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         SinglePrompt? singlePrompt = null,
@@ -367,6 +384,7 @@ public partial class GenerateClient
             filters,
             limit,
             offset,
+            diversitySelection,
             autoLimit,
             rerank,
             singlePrompt,

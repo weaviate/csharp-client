@@ -109,6 +109,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="distance">The distance</param>
     /// <param name="certainty">The certainty</param>
     /// <param name="limit">The limit</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="filters">The filters</param>
@@ -130,6 +131,7 @@ internal partial class WeaviateGrpcClient
         float? distance = null,
         float? certainty = null,
         uint? limit = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? offset = null,
         Filter? filters = null,
@@ -164,7 +166,7 @@ internal partial class WeaviateGrpcClient
             includeVectors: includeVectors
         );
 
-        request.NearVector = BuildNearVector(vectors, certainty, distance);
+        request.NearVector = BuildNearVector(vectors, certainty, distance, diversitySelection);
 
         return await Search(request, cancellationToken);
     }
@@ -178,6 +180,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="certainty">The certainty</param>
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="moveTo">The move to</param>
@@ -202,6 +205,7 @@ internal partial class WeaviateGrpcClient
         float? certainty = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Move? moveTo = null,
@@ -245,7 +249,8 @@ internal partial class WeaviateGrpcClient
             certainty,
             moveTo,
             moveAway,
-            targetVector
+            targetVector,
+            diversitySelection
         );
 
         return await Search(request, cancellationToken);
@@ -428,6 +433,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="distance">The distance</param>
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="groupBy">The group by</param>
@@ -450,6 +456,7 @@ internal partial class WeaviateGrpcClient
         double? distance,
         uint? limit,
         uint? offset,
+        Diversity? diversitySelection,
         uint? autoLimit,
         Filter? filters,
         GroupByRequest? groupBy,
@@ -485,7 +492,13 @@ internal partial class WeaviateGrpcClient
             includeVectors: includeVectors
         );
 
-        request.NearObject = BuildNearObject(objectID, certainty, distance, targetVector);
+        request.NearObject = BuildNearObject(
+            objectID,
+            certainty,
+            distance,
+            targetVector,
+            diversitySelection
+        );
 
         return await Search(request, cancellationToken);
     }
@@ -500,6 +513,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="distance">The distance</param>
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="groupBy">The group by</param>
@@ -524,6 +538,7 @@ internal partial class WeaviateGrpcClient
         double? distance,
         uint? limit,
         uint? offset,
+        Diversity? diversitySelection,
         uint? autoLimit,
         Filter? filters,
         GroupByRequest? groupBy,
@@ -559,6 +574,8 @@ internal partial class WeaviateGrpcClient
             includeVectors: includeVectors
         );
 
+        var selection = BuildSelection(diversitySelection);
+
         switch (mediaType)
         {
             case NearMediaType.Image:
@@ -578,6 +595,11 @@ internal partial class WeaviateGrpcClient
 
                 request.NearImage.Targets = targetVector ?? new V1.Targets();
 
+                if (selection is not null)
+                {
+                    request.NearImage.Selection = selection;
+                }
+
                 break;
             case NearMediaType.Video:
                 request.NearVideo = new V1.NearVideoSearch
@@ -595,6 +617,11 @@ internal partial class WeaviateGrpcClient
                 }
 
                 request.NearVideo.Targets = targetVector ?? new V1.Targets();
+
+                if (selection is not null)
+                {
+                    request.NearVideo.Selection = selection;
+                }
                 break;
             case NearMediaType.Audio:
                 request.NearAudio = new V1.NearAudioSearch
@@ -612,6 +639,11 @@ internal partial class WeaviateGrpcClient
                 }
 
                 request.NearAudio.Targets = targetVector ?? new V1.Targets();
+
+                if (selection is not null)
+                {
+                    request.NearAudio.Selection = selection;
+                }
                 break;
             case NearMediaType.Depth:
                 request.NearDepth = new V1.NearDepthSearch
@@ -629,6 +661,11 @@ internal partial class WeaviateGrpcClient
                 }
 
                 request.NearDepth.Targets = targetVector ?? new V1.Targets();
+
+                if (selection is not null)
+                {
+                    request.NearDepth.Selection = selection;
+                }
                 break;
             case NearMediaType.Thermal:
                 request.NearThermal = new V1.NearThermalSearch
@@ -646,6 +683,11 @@ internal partial class WeaviateGrpcClient
                 }
 
                 request.NearThermal.Targets = targetVector ?? new V1.Targets();
+
+                if (selection is not null)
+                {
+                    request.NearThermal.Selection = selection;
+                }
                 break;
             case NearMediaType.IMU:
                 request.NearImu = new V1.NearIMUSearch { Imu = Convert.ToBase64String(media) };
@@ -660,6 +702,11 @@ internal partial class WeaviateGrpcClient
                 }
 
                 request.NearImu.Targets = targetVector ?? new V1.Targets();
+
+                if (selection is not null)
+                {
+                    request.NearImu.Selection = selection;
+                }
                 break;
             default:
                 throw new ArgumentException("Unsupported media type for near media search.");

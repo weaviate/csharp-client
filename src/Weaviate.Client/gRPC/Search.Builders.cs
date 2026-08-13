@@ -686,6 +686,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="moveTo">The move to</param>
     /// <param name="moveAway">The move away</param>
     /// <param name="targetVector">The target vector</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <returns>The near text</returns>
     private static V1.NearTextSearch BuildNearText(
         string[] query,
@@ -693,7 +694,8 @@ internal partial class WeaviateGrpcClient
         double? certainty,
         Move? moveTo,
         Move? moveAway,
-        TargetVectors? targetVector = null
+        TargetVectors? targetVector = null,
+        Diversity? diversitySelection = null
     )
     {
         var nearText = new V1.NearTextSearch
@@ -736,6 +738,12 @@ internal partial class WeaviateGrpcClient
             nearText.Certainty = certainty.Value;
         }
 
+        var selection = BuildSelection(diversitySelection);
+        if (selection is not null)
+        {
+            nearText.Selection = selection;
+        }
+
         return nearText;
     }
 
@@ -745,11 +753,13 @@ internal partial class WeaviateGrpcClient
     /// <param name="vectors">The vectors</param>
     /// <param name="certainty">The certainty</param>
     /// <param name="distance">The distance</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <returns>The near vector</returns>
     private static V1.NearVector BuildNearVector(
         VectorSearchInput vectors,
         double? certainty,
-        double? distance
+        double? distance,
+        Diversity? diversitySelection = null
     )
     {
         V1.NearVector nearVector = new();
@@ -777,6 +787,12 @@ internal partial class WeaviateGrpcClient
         else if (vectorsLocal is not null)
         {
             nearVector.Vectors.Add(vectorsLocal);
+        }
+
+        var selection = BuildSelection(diversitySelection);
+        if (selection is not null)
+        {
+            nearVector.Selection = selection;
         }
 
         return nearVector;
@@ -1023,21 +1039,38 @@ internal partial class WeaviateGrpcClient
                 MinimumOrTokensMatch = (bm25Operator as BM25Operator.Or)?.MinimumMatch ?? 1,
             };
         }
-        if (diversitySelection is Diversity.MMR mmr)
+        var selection = BuildSelection(diversitySelection);
+        if (selection is not null)
         {
-            var mmrGrpc = new V1.Selection.Types.MMR();
-            if (mmr.Limit.HasValue)
-            {
-                mmrGrpc.Limit = mmr.Limit.Value;
-            }
-            if (mmr.Balance.HasValue)
-            {
-                mmrGrpc.Balance = mmr.Balance.Value;
-            }
-            hybrid.Selection = new V1.Selection { Mmr = mmrGrpc };
+            hybrid.Selection = selection;
         }
 
         return hybrid;
+    }
+
+    /// <summary>
+    /// Builds the selection using the specified diversity selection
+    /// </summary>
+    /// <param name="diversitySelection">The diversity selection</param>
+    /// <returns>The selection, or null when no diversity selection was requested</returns>
+    private static V1.Selection? BuildSelection(Diversity? diversitySelection)
+    {
+        if (diversitySelection is not Diversity.MMR mmr)
+        {
+            return null;
+        }
+
+        var mmrGrpc = new V1.Selection.Types.MMR();
+        if (mmr.Limit.HasValue)
+        {
+            mmrGrpc.Limit = mmr.Limit.Value;
+        }
+        if (mmr.Balance.HasValue)
+        {
+            mmrGrpc.Balance = mmr.Balance.Value;
+        }
+
+        return new V1.Selection { Mmr = mmrGrpc };
     }
 
     /// <summary>
@@ -1047,12 +1080,14 @@ internal partial class WeaviateGrpcClient
     /// <param name="certainty">The certainty</param>
     /// <param name="distance">The distance</param>
     /// <param name="targetVector">The target vector</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <returns>The near object</returns>
     private static V1.NearObject BuildNearObject(
         Guid objectID,
         double? certainty,
         double? distance,
-        TargetVectors? targetVector
+        TargetVectors? targetVector,
+        Diversity? diversitySelection = null
     )
     {
         var nearObject = new V1.NearObject { Id = objectID.ToString() };
@@ -1068,6 +1103,12 @@ internal partial class WeaviateGrpcClient
         }
 
         nearObject.Targets = targetVector ?? new V1.Targets();
+
+        var selection = BuildSelection(diversitySelection);
+        if (selection is not null)
+        {
+            nearObject.Selection = selection;
+        }
 
         return nearObject;
     }

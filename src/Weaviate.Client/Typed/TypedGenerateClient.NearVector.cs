@@ -16,6 +16,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="filters">Filters to apply</param>
     /// <param name="certainty">Certainty threshold</param>
     /// <param name="distance">Distance threshold</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
@@ -34,6 +35,7 @@ public partial class TypedGenerateClient<T>
         Filter? filters = null,
         float? certainty = null,
         float? distance = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -53,6 +55,7 @@ public partial class TypedGenerateClient<T>
             filters: filters,
             certainty: certainty,
             distance: distance,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
@@ -77,6 +80,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="filters">Filters to apply</param>
     /// <param name="distance">Distance threshold</param>
     /// <param name="certainty">Certainty threshold</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
@@ -96,6 +100,7 @@ public partial class TypedGenerateClient<T>
         Filter? filters = null,
         float? distance = null,
         float? certainty = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -116,6 +121,7 @@ public partial class TypedGenerateClient<T>
             filters: filters,
             distance: distance,
             certainty: certainty,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
@@ -139,6 +145,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="filters">Filters to apply</param>
     /// <param name="certainty">Certainty threshold</param>
     /// <param name="distance">Distance threshold</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
@@ -157,6 +164,7 @@ public partial class TypedGenerateClient<T>
         Filter? filters = null,
         float? certainty = null,
         float? distance = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -175,6 +183,7 @@ public partial class TypedGenerateClient<T>
             filters,
             certainty,
             distance,
+            diversitySelection,
             autoLimit,
             limit,
             offset,
@@ -197,6 +206,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="filters">Filters to apply</param>
     /// <param name="certainty">Certainty threshold</param>
     /// <param name="distance">Distance threshold</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
@@ -216,6 +226,7 @@ public partial class TypedGenerateClient<T>
         Filter? filters = null,
         float? certainty = null,
         float? distance = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -235,6 +246,7 @@ public partial class TypedGenerateClient<T>
             filters,
             certainty,
             distance,
+            diversitySelection,
             autoLimit,
             limit,
             offset,
@@ -254,6 +266,7 @@ public partial class TypedGenerateClient<T>
     /// </summary>
     /// <param name="vectors">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -270,6 +283,7 @@ public partial class TypedGenerateClient<T>
     public Task<GenerativeWeaviateResult<T>> NearVector(
         NearVectorInput vectors,
         Filter? filters = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -288,6 +302,7 @@ public partial class TypedGenerateClient<T>
             certainty: vectors.Certainty,
             distance: vectors.Distance,
             filters: filters,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
@@ -308,6 +323,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="vectors">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -325,6 +341,7 @@ public partial class TypedGenerateClient<T>
         NearVectorInput vectors,
         GroupByRequest groupBy,
         Filter? filters = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -344,6 +361,7 @@ public partial class TypedGenerateClient<T>
             distance: vectors.Distance,
             groupBy: groupBy,
             filters: filters,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
@@ -363,6 +381,7 @@ public partial class TypedGenerateClient<T>
     /// </summary>
     /// <param name="vectors">Lambda builder for creating NearVectorInput with target vectors.</param>
     /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -379,6 +398,7 @@ public partial class TypedGenerateClient<T>
     public Task<GenerativeWeaviateResult<T>> NearVector(
         NearVectorInput.FactoryFn vectors,
         Filter? filters = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -395,6 +415,7 @@ public partial class TypedGenerateClient<T>
         NearVector(
             vectors(VectorInputBuilderFactories.CreateNearVectorBuilder()),
             filters,
+            diversitySelection,
             autoLimit,
             limit,
             offset,
@@ -415,6 +436,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="vectors">Lambda builder for creating NearVectorInput with target vectors.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -432,6 +454,7 @@ public partial class TypedGenerateClient<T>
         NearVectorInput.FactoryFn vectors,
         GroupByRequest groupBy,
         Filter? filters = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -449,6 +472,7 @@ public partial class TypedGenerateClient<T>
             vectors(VectorInputBuilderFactories.CreateNearVectorBuilder()),
             groupBy,
             filters,
+            diversitySelection,
             autoLimit,
             limit,
             offset,

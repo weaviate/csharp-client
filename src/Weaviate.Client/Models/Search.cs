@@ -99,7 +99,9 @@ public abstract record BM25Operator(string Operator)
 }
 
 /// <summary>
-/// The diversity selection applied to search results. Requires Weaviate 1.38.6+.
+/// The diversity selection applied to search results. Requires Weaviate 1.37.0+ on the
+/// near-vector, near-object, near-text and near-media searches, and Weaviate 1.38.6+ on
+/// hybrid search.
 /// </summary>
 public abstract record Diversity
 {
