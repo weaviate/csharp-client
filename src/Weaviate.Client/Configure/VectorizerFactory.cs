@@ -76,8 +76,8 @@ public class VectorizerFactory
             Region = region,
             Model = model,
             Dimensions = dimensions,
-            ImageFields = imageFields,
-            TextFields = textFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
+            TextFields = ModalityFields.OrNull(textFields),
             VectorizeCollectionName = vectorizeCollectionName,
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
@@ -108,8 +108,8 @@ public class VectorizerFactory
             Region = region,
             Model = model,
             Dimensions = dimensions,
-            ImageFields = imageFields,
-            TextFields = textFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
+            TextFields = ModalityFields.OrNull(textFields),
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
@@ -129,9 +129,9 @@ public class VectorizerFactory
     ) =>
         new Multi2VecClip
         {
-            ImageFields = imageFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
             InferenceUrl = inferenceUrl,
-            TextFields = textFields,
+            TextFields = ModalityFields.OrNull(textFields),
             VectorizeCollectionName = vectorizeCollectionName,
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
@@ -155,9 +155,9 @@ public class VectorizerFactory
     ) =>
         new Multi2VecClip
         {
-            ImageFields = imageFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
             InferenceUrl = inferenceUrl,
-            TextFields = textFields,
+            TextFields = ModalityFields.OrNull(textFields),
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
@@ -184,10 +184,10 @@ public class VectorizerFactory
         new Multi2VecCohere
         {
             BaseURL = baseURL,
-            ImageFields = imageFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
             Model = model,
             Dimensions = dimensions,
-            TextFields = textFields,
+            TextFields = ModalityFields.OrNull(textFields),
             Truncate = truncate,
             VectorizeCollectionName = vectorizeCollectionName,
             Weights = VectorizerWeights.FromWeightedFields(
@@ -219,10 +219,10 @@ public class VectorizerFactory
         new Multi2VecCohere
         {
             BaseURL = baseURL,
-            ImageFields = imageFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
             Model = model,
             Dimensions = dimensions,
-            TextFields = textFields,
+            TextFields = ModalityFields.OrNull(textFields),
             Truncate = truncate,
             VectorizeCollectionName = vectorizeCollectionName,
         };
@@ -251,17 +251,18 @@ public class VectorizerFactory
     ) =>
         new Multi2VecBind
         {
-            AudioFields = audioFields,
-            DepthFields = depthFields,
-            ImageFields = imageFields,
-            IMUFields = imuFields,
-            TextFields = textFields,
-            ThermalFields = thermalFields,
-            VideoFields = videoFields,
+            AudioFields = ModalityFields.OrNull(audioFields),
+            DepthFields = ModalityFields.OrNull(depthFields),
+            ImageFields = ModalityFields.OrNull(imageFields),
+            IMUFields = ModalityFields.OrNull(imuFields),
+            TextFields = ModalityFields.OrNull(textFields),
+            ThermalFields = ModalityFields.OrNull(thermalFields),
+            VideoFields = ModalityFields.OrNull(videoFields),
             VectorizeCollectionName = vectorizeCollectionName,
-            // Named arguments are mandatory here: FromWeightedFields declares seven optional
-            // modalities in the order image, text, audio, depth, imu, thermal, video, so a
-            // positional call would silently file each modality's weights under its neighbour.
+            // This overload's parameters happen to be in FromWeightedFields' own declaration
+            // order (image, text, audio, depth, imu, thermal, video), so the named arguments
+            // are a safeguard rather than a correction: they keep the mapping right if either
+            // parameter list is ever reordered.
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields,
@@ -297,13 +298,13 @@ public class VectorizerFactory
     ) =>
         new Multi2VecBind
         {
-            AudioFields = audioFields,
-            DepthFields = depthFields,
-            ImageFields = imageFields,
-            IMUFields = imuFields,
-            TextFields = textFields,
-            ThermalFields = thermalFields,
-            VideoFields = videoFields,
+            AudioFields = ModalityFields.OrNull(audioFields),
+            DepthFields = ModalityFields.OrNull(depthFields),
+            ImageFields = ModalityFields.OrNull(imageFields),
+            IMUFields = ModalityFields.OrNull(imuFields),
+            TextFields = ModalityFields.OrNull(textFields),
+            ThermalFields = ModalityFields.OrNull(thermalFields),
+            VideoFields = ModalityFields.OrNull(videoFields),
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
@@ -337,17 +338,18 @@ public class VectorizerFactory
         {
             ProjectId = projectId,
             Location = location,
-            ImageFields = imageFields,
-            TextFields = textFields,
-            VideoFields = videoFields,
-            AudioFields = audioFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
+            TextFields = ModalityFields.OrNull(textFields),
+            VideoFields = ModalityFields.OrNull(videoFields),
+            AudioFields = ModalityFields.OrNull(audioFields),
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
             VectorizeCollectionName = vectorizeCollectionName,
             // Named arguments are mandatory here: FromWeightedFields declares seven optional
-            // modalities in the order image, text, audio, depth, imu, thermal, video, so a
-            // positional call would silently file video weights under audio.
+            // modalities in the order image, text, audio, depth, imu, thermal, video, so the
+            // positional call this replaced filed video weights under audio and audio weights
+            // under depth.
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields,
@@ -386,10 +388,10 @@ public class VectorizerFactory
         {
             ProjectId = projectId,
             Location = location,
-            ImageFields = imageFields,
-            TextFields = textFields,
-            VideoFields = videoFields,
-            AudioFields = audioFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
+            TextFields = ModalityFields.OrNull(textFields),
+            VideoFields = ModalityFields.OrNull(videoFields),
+            AudioFields = ModalityFields.OrNull(audioFields),
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
@@ -419,15 +421,16 @@ public class VectorizerFactory
         new Multi2VecGoogleGemini
         {
             ApiEndpoint = apiEndpoint ?? "generativelanguage.googleapis.com",
-            ImageFields = imageFields,
-            TextFields = textFields,
-            VideoFields = videoFields,
-            AudioFields = audioFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
+            TextFields = ModalityFields.OrNull(textFields),
+            VideoFields = ModalityFields.OrNull(videoFields),
+            AudioFields = ModalityFields.OrNull(audioFields),
             VideoIntervalSeconds = videoIntervalSeconds,
             Model = model,
             // Named arguments are mandatory here: FromWeightedFields declares seven optional
-            // modalities in the order image, text, audio, depth, imu, thermal, video, so a
-            // positional call would silently file video weights under audio.
+            // modalities in the order image, text, audio, depth, imu, thermal, video, so the
+            // positional call this replaced filed video weights under audio and audio weights
+            // under depth.
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields,
@@ -459,10 +462,10 @@ public class VectorizerFactory
         new Multi2VecGoogleGemini
         {
             ApiEndpoint = apiEndpoint ?? "generativelanguage.googleapis.com",
-            ImageFields = imageFields,
-            TextFields = textFields,
-            VideoFields = videoFields,
-            AudioFields = audioFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
+            TextFields = ModalityFields.OrNull(textFields),
+            VideoFields = ModalityFields.OrNull(videoFields),
+            AudioFields = ModalityFields.OrNull(audioFields),
             VideoIntervalSeconds = videoIntervalSeconds,
             Model = model,
         };
@@ -493,15 +496,16 @@ public class VectorizerFactory
         {
             BaseURL = baseURL,
             Dimensions = dimensions,
-            ImageFields = imageFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
             Model = model,
-            TextFields = textFields,
-            VideoFields = videoFields,
+            TextFields = ModalityFields.OrNull(textFields),
+            VideoFields = ModalityFields.OrNull(videoFields),
             Truncate = truncate,
             VectorizeCollectionName = vectorizeCollectionName,
-            // Named arguments are mandatory here: FromWeightedFields declares seven optional
-            // modalities in the order image, text, audio, depth, imu, thermal, video, so a
-            // positional call would silently file video weights under audio.
+            // FromWeightedFields declares seven optional modalities in the order image, text,
+            // audio, depth, imu, thermal, video. Video is the one at risk — positionally it
+            // would land in audioFields, which this module does not have — and it was already
+            // passed by name; naming all three is a safeguard against a future reordering.
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields,
@@ -535,10 +539,10 @@ public class VectorizerFactory
         {
             BaseURL = baseURL,
             Dimensions = dimensions,
-            ImageFields = imageFields,
-            VideoFields = videoFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
+            VideoFields = ModalityFields.OrNull(videoFields),
             Model = model,
-            TextFields = textFields,
+            TextFields = ModalityFields.OrNull(textFields),
             Truncate = truncate,
             VectorizeCollectionName = vectorizeCollectionName,
         };
@@ -562,9 +566,9 @@ public class VectorizerFactory
         new Multi2VecTwelveLabs
         {
             BaseURL = baseURL,
-            ImageFields = imageFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
             Model = model,
-            TextFields = textFields,
+            TextFields = ModalityFields.OrNull(textFields),
             VectorizeCollectionName = vectorizeCollectionName,
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
@@ -591,9 +595,9 @@ public class VectorizerFactory
         new Multi2VecTwelveLabs
         {
             BaseURL = baseURL,
-            ImageFields = imageFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
             Model = model,
-            TextFields = textFields,
+            TextFields = ModalityFields.OrNull(textFields),
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
@@ -1096,8 +1100,8 @@ public class VectorizerFactory
             Model = model,
             BaseURL = baseURL,
             Dimensions = dimensions,
-            ImageFields = imageFields,
-            TextFields = textFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
+            TextFields = ModalityFields.OrNull(textFields),
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
@@ -1124,8 +1128,8 @@ public class VectorizerFactory
             Model = model,
             BaseURL = baseURL,
             Dimensions = dimensions,
-            ImageFields = imageFields,
-            TextFields = textFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
+            TextFields = ModalityFields.OrNull(textFields),
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields

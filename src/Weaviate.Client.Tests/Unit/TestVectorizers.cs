@@ -510,6 +510,79 @@ public partial class VectorConfigListTests
     }
 
     /// <summary>
+    /// Tests the configuration Multi2VecBind's weighted overload forces on every caller: all
+    /// seven modalities are required parameters, so an unused one has to be passed as an empty
+    /// <c>WeightedFields</c>. Each empty modality must vanish from the payload — both its field
+    /// name list and its weight array — because the server rejects a modality key that is
+    /// present but empty. Without that, the overload cannot create anything but a collection
+    /// that uses all seven modalities.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Multi2VecBind_WeightedFields_Overload_Omits_Empty_Modalities()
+    {
+        // Arrange — only image and audio are in use; the other five are unavoidably empty.
+        var vc = Configure.Vector(
+            "default",
+            v =>
+                v.Multi2VecBind(
+                    imageFields: new WeightedFields { ("image", 0.11) },
+                    textFields: new WeightedFields(),
+                    audioFields: new WeightedFields { ("audio", 0.31) },
+                    depthFields: new WeightedFields(),
+                    imuFields: new WeightedFields(),
+                    thermalFields: new WeightedFields(),
+                    videoFields: new WeightedFields()
+                )
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false,
+            }
+        );
+        var wireJson = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"multi2vec-bind\"", json);
+        Assert.Contains("\"weights\":{\"audioFields\":[0.31],\"imageFields\":[0.11]}", json);
+        Assert.DoesNotContain("\"textFields\":[]", json);
+        Assert.DoesNotContain("\"depthFields\":[]", json);
+        Assert.DoesNotContain("\"imuFields\":[]", json);
+        Assert.DoesNotContain("\"thermalFields\":[]", json);
+        Assert.DoesNotContain("\"videoFields\":[]", json);
+        Assert.Contains("\"imageFields\":[\"image\"]", wireJson);
+        Assert.Contains("\"audioFields\":[\"audio\"]", wireJson);
+        Assert.DoesNotContain("\"textFields\"", wireJson);
+        Assert.DoesNotContain("\"depthFields\"", wireJson);
+        Assert.DoesNotContain("\"imuFields\"", wireJson);
+        Assert.DoesNotContain("\"thermalFields\"", wireJson);
+        Assert.DoesNotContain("\"videoFields\"", wireJson);
+    }
+
+    /// <summary>
     /// Tests that Multi2VecVoyageAI routes its three modalities' weights to their own keys.
     /// Video is the modality at risk here: it is the last <c>FromWeightedFields</c> parameter,
     /// so a positional third argument would land it in <c>audioFields</c>, which this module
@@ -903,9 +976,11 @@ public partial class VectorConfigListTests
     }
 
     /// <summary>
-    /// Tests that a modality whose weighted field collection is empty contributes no weight
-    /// array, so the server never sees a <c>weights.textFields</c> shorter than
-    /// <c>textFields</c>.
+    /// Tests that a modality whose weighted field collection is empty drops out of the payload
+    /// completely: no weight array, and no field name list either. The server rejects a
+    /// modality key that is present but empty (<c>must contain at least one text field name in
+    /// textFields</c>), so emitting <c>"textFields":[]</c> would make this image-only
+    /// configuration impossible to create.
     /// </summary>
     [Fact]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -934,15 +1009,36 @@ public partial class VectorConfigListTests
                 WriteIndented = false,
             }
         );
+        // The REST client serializes with WhenWritingNull, so the wire shape is the one that
+        // decides whether the server sees a textFields key at all.
+        var wireJson = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
 
         // Assert
         Assert.Contains("\"multi2vec-twelvelabs\"", json);
         Assert.Contains("\"weights\":{\"imageFields\":[0.7]}", json);
+        // The empty modality contributes no field name list, not an empty one.
+        Assert.DoesNotContain("\"textFields\":[]", json);
+        Assert.Contains("\"imageFields\":[\"image\"]", wireJson);
+        Assert.DoesNotContain("\"textFields\"", wireJson);
     }
 
     /// <summary>
-    /// Tests that when no modality supplies a weight the <c>weights</c> key is dropped
-    /// entirely rather than serialized as an empty object.
+    /// Tests that when every modality is empty the <c>weights</c> key is dropped entirely
+    /// rather than serialized as an empty object, and that no modality key is emitted either:
+    /// the payload carries the module key alone and the server decides what to make of it.
     /// </summary>
     [Fact]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -972,10 +1068,78 @@ public partial class VectorConfigListTests
                 WriteIndented = false,
             }
         );
+        var wireJson = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
 
         // Assert
         Assert.Contains("\"multi2vec-twelvelabs\"", json);
         Assert.DoesNotContain("\"weights\"", json);
+        Assert.DoesNotContain("\"imageFields\"", wireJson);
+        Assert.DoesNotContain("\"textFields\"", wireJson);
+    }
+
+    /// <summary>
+    /// Tests that the string-array overload treats an empty array exactly like an empty
+    /// <c>WeightedFields</c>: the modality is omitted rather than emitted as <c>[]</c>, which
+    /// the server rejects.
+    /// </summary>
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "CA1869:Cache and reuse 'JsonSerializerOptions' instances",
+        Justification = "<Pending>"
+    )]
+    public void Test_Multi2VecTwelveLabs_StringArray_Overload_Omits_Empty_Modality()
+    {
+        // Arrange
+        var vc = Configure.Vector(
+            "default",
+            v => v.Multi2VecTwelveLabs(imageFields: ["image"], textFields: [])
+        );
+
+        // Act
+        var dto = vc.Vectorizer?.ToDto() ?? default;
+        var json = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false,
+            }
+        );
+        var wireJson = JsonSerializer.Serialize(
+            dto,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System
+                    .Text
+                    .Json
+                    .Serialization
+                    .JsonIgnoreCondition
+                    .WhenWritingNull,
+                WriteIndented = false,
+            }
+        );
+
+        // Assert
+        Assert.Contains("\"multi2vec-twelvelabs\"", json);
+        Assert.DoesNotContain("\"textFields\":[]", json);
+        Assert.DoesNotContain("\"weights\"", json);
+        Assert.Contains("\"imageFields\":[\"image\"]", wireJson);
+        Assert.DoesNotContain("\"textFields\"", wireJson);
     }
 
     /// <summary>

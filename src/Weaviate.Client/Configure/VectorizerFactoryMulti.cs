@@ -65,8 +65,8 @@ public class VectorizerFactoryMulti
         {
             BaseURL = baseURL,
             Model = model,
-            ImageFields = imageFields,
-            TextFields = textFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
+            TextFields = ModalityFields.OrNull(textFields),
             VectorizeCollectionName = vectorizeCollectionName,
         };
 
@@ -90,8 +90,8 @@ public class VectorizerFactoryMulti
         {
             BaseURL = baseURL,
             Model = model,
-            ImageFields = imageFields,
-            TextFields = textFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
+            TextFields = ModalityFields.OrNull(textFields),
             VectorizeCollectionName = vectorizeCollectionName,
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
@@ -115,7 +115,7 @@ public class VectorizerFactoryMulti
         {
             BaseURL = baseURL,
             Model = model,
-            ImageFields = imageFields,
+            ImageFields = ModalityFields.OrNull(imageFields),
         };
 #pragma warning restore CA1822 // Mark members as static
 }
