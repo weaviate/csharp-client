@@ -1,5 +1,6 @@
 using Weaviate.Client.Models;
 using Weaviate.Client.Tests.Unit.Mocks;
+using Weaviate.Client.Typed;
 using V1 = Weaviate.Client.Grpc.Protobuf.V1;
 
 namespace Weaviate.Client.Tests.Unit;
@@ -15,6 +16,17 @@ public class TestBM25OperatorSyntax : IAsyncLifetime
 
     private Func<V1.SearchRequest?> _getRequest = null!;
     private CollectionClient _collection = null!;
+
+    /// <summary>
+    /// The test document class
+    /// </summary>
+    private class TestDocument
+    {
+        /// <summary>
+        /// Gets or sets the value of the title
+        /// </summary>
+        public string Title { get; set; } = string.Empty;
+    }
 
     /// <summary>
     /// Initializes this instance
@@ -112,6 +124,181 @@ public class TestBM25OperatorSyntax : IAsyncLifetime
         await _collection.Query.BM25(
             "banana split",
             searchOperator: new BM25Operator.Or(MinimumMatch: 2),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(
+            V1.SearchOperatorOptions.Types.Operator.Or,
+            request.Bm25Search.SearchOperator.Operator
+        );
+        Assert.Equal(2, request.Bm25Search.SearchOperator.MinimumOrTokensMatch);
+    }
+
+    #endregion
+
+    #region GenerateClient.BM25 Tests
+
+    /// <summary>
+    /// Tests that generate bm 25 without operator leaves search operator unset
+    /// </summary>
+    [Fact]
+    public async Task Generate_BM25_NoOperator_LeavesSearchOperatorUnset()
+    {
+        // Act
+        await _collection.Generate.BM25(
+            "banana split",
+            singlePrompt: "Summarize this item",
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Null(request.Bm25Search.SearchOperator);
+    }
+
+    /// <summary>
+    /// Tests that generate bm 25 operator and produces valid request
+    /// </summary>
+    [Fact]
+    public async Task Generate_BM25_Operator_And_ProducesValidRequest()
+    {
+        // Act
+        await _collection.Generate.BM25(
+            "banana split",
+            searchOperator: new BM25Operator.And(),
+            singlePrompt: "Summarize this item",
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(
+            V1.SearchOperatorOptions.Types.Operator.And,
+            request.Bm25Search.SearchOperator.Operator
+        );
+    }
+
+    /// <summary>
+    /// Tests that generate bm 25 operator and cross produces valid request
+    /// </summary>
+    [Fact]
+    public async Task Generate_BM25_Operator_AndCross_ProducesValidRequest()
+    {
+        // Act
+        await _collection.Generate.BM25(
+            "banana split",
+            searchOperator: new BM25Operator.AndCross(),
+            singlePrompt: "Summarize this item",
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(
+            V1.SearchOperatorOptions.Types.Operator.AndCross,
+            request.Bm25Search.SearchOperator.Operator
+        );
+    }
+
+    /// <summary>
+    /// Tests that generate bm 25 operator or produces valid request
+    /// </summary>
+    [Fact]
+    public async Task Generate_BM25_Operator_Or_ProducesValidRequest()
+    {
+        // Act
+        await _collection.Generate.BM25(
+            "banana split",
+            searchOperator: new BM25Operator.Or(MinimumMatch: 2),
+            singlePrompt: "Summarize this item",
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(
+            V1.SearchOperatorOptions.Types.Operator.Or,
+            request.Bm25Search.SearchOperator.Operator
+        );
+        Assert.Equal(2, request.Bm25Search.SearchOperator.MinimumOrTokensMatch);
+    }
+
+    /// <summary>
+    /// Tests that generate bm 25 with group by operator and cross produces valid request
+    /// </summary>
+    [Fact]
+    public async Task Generate_BM25_GroupBy_Operator_AndCross_ProducesValidRequest()
+    {
+        // Act
+        await _collection.Generate.BM25(
+            "banana split",
+            new GroupByRequest("category") { NumberOfGroups = 5 },
+            searchOperator: new BM25Operator.AndCross(),
+            groupedTask: "Summarize by category",
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(
+            V1.SearchOperatorOptions.Types.Operator.AndCross,
+            request.Bm25Search.SearchOperator.Operator
+        );
+    }
+
+    #endregion
+
+    #region TypedGenerateClient.BM25 Tests
+
+    /// <summary>
+    /// Tests that typed generate bm 25 operator and cross produces valid request
+    /// </summary>
+    [Fact]
+    public async Task Typed_Generate_BM25_Operator_AndCross_ProducesValidRequest()
+    {
+        // Arrange
+        var typedGenerate = new TypedGenerateClient<TestDocument>(_collection.Generate);
+
+        // Act
+        await typedGenerate.BM25(
+            "banana split",
+            searchOperator: new BM25Operator.AndCross(),
+            singlePrompt: "Summarize this item",
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.Equal(
+            V1.SearchOperatorOptions.Types.Operator.AndCross,
+            request.Bm25Search.SearchOperator.Operator
+        );
+    }
+
+    /// <summary>
+    /// Tests that typed generate bm 25 with group by operator or produces valid request
+    /// </summary>
+    [Fact]
+    public async Task Typed_Generate_BM25_GroupBy_Operator_Or_ProducesValidRequest()
+    {
+        // Arrange
+        var typedGenerate = new TypedGenerateClient<TestDocument>(_collection.Generate);
+
+        // Act
+        await typedGenerate.BM25(
+            "banana split",
+            new GroupByRequest("category") { NumberOfGroups = 5 },
+            searchOperator: new BM25Operator.Or(MinimumMatch: 2),
+            groupedTask: "Summarize by category",
             cancellationToken: TestContext.Current.CancellationToken
         );
 
@@ -232,6 +419,31 @@ public class TestBM25OperatorSyntax : IAsyncLifetime
         Assert.Equal(
             V1.SearchOperatorOptions.Types.Operator.AndCross,
             request.Bm25Search.SearchOperator.Operator
+        );
+    }
+
+    /// <summary>
+    /// Tests that generate bm 25 operator and cross is rejected on servers predating the backports
+    /// </summary>
+    [Theory]
+    [InlineData("1.36.9")]
+    [InlineData("1.37.14")]
+    [InlineData("1.38.4")]
+    [InlineData("1.38.7")]
+    public async Task Generate_BM25_Operator_AndCross_UnsupportedVersion_Throws(string version)
+    {
+        // Arrange
+        var (client, _) = MockGrpcClient.CreateWithSearchCapture(Version.Parse(version));
+        var collection = client.Collections.Use(CollectionName);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<WeaviateFeatureNotSupportedException>(async () =>
+            await collection.Generate.BM25(
+                "banana split",
+                searchOperator: new BM25Operator.AndCross(),
+                singlePrompt: "Summarize this item",
+                cancellationToken: TestContext.Current.CancellationToken
+            )
         );
     }
 
