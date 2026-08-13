@@ -8,13 +8,22 @@ namespace Weaviate.Client.Models;
 public static class Vectorizer
 {
     /// <summary>
-    /// Unified weights configuration for multi-media vectorizers.
-    /// All fields are optional and will be omitted from JSON when null.
+    /// Unified weights configuration for multi-media vectorizers, serialized as the
+    /// <c>weights</c> object of a multi2vec module configuration. All modalities are optional
+    /// and are omitted from JSON when null.
     /// </summary>
+    /// <remarks>
+    /// The server validates a modality's weight array against that modality's field array
+    /// (<c>weights.&lt;name&gt;Fields does not equal number of &lt;name&gt;Fields</c>), so a
+    /// weight array is only emitted when it is non-empty and therefore the same length as the
+    /// field name list it was derived from.
+    /// </remarks>
     internal record VectorizerWeights
     {
         /// <summary>
-        /// Creates the weighted fields using the specified image fields
+        /// Creates the weights payload from the supplied weighted field collections. A modality
+        /// with no weighted fields contributes no weight array, and when no modality supplies
+        /// weights the result is null so that the <c>weights</c> key is omitted entirely.
         /// </summary>
         /// <param name="imageFields">The image fields</param>
         /// <param name="textFields">The text fields</param>
@@ -23,8 +32,8 @@ public static class Vectorizer
         /// <param name="imuFields">The imu fields</param>
         /// <param name="thermalFields">The thermal fields</param>
         /// <param name="videoFields">The video fields</param>
-        /// <returns>The vectorizer weights</returns>
-        public static VectorizerWeights FromWeightedFields(
+        /// <returns>The vectorizer weights, or null when no weights were supplied</returns>
+        public static VectorizerWeights? FromWeightedFields(
             WeightedFields? imageFields = null,
             WeightedFields? textFields = null,
             WeightedFields? audioFields = null,
@@ -32,17 +41,37 @@ public static class Vectorizer
             WeightedFields? imuFields = null,
             WeightedFields? thermalFields = null,
             WeightedFields? videoFields = null
-        ) =>
-            new()
+        )
+        {
+            static double[]? ToWeights(WeightedFields? fields) =>
+                fields is { Count: > 0 } ? fields.Weights : null;
+
+            var weights = new VectorizerWeights
             {
-                ImageFields = imageFields?.Weights,
-                TextFields = textFields?.Weights,
-                AudioFields = audioFields?.Weights,
-                DepthFields = depthFields?.Weights,
-                IMUFields = imuFields?.Weights,
-                ThermalFields = thermalFields?.Weights,
-                VideoFields = videoFields?.Weights,
+                ImageFields = ToWeights(imageFields),
+                TextFields = ToWeights(textFields),
+                AudioFields = ToWeights(audioFields),
+                DepthFields = ToWeights(depthFields),
+                IMUFields = ToWeights(imuFields),
+                ThermalFields = ToWeights(thermalFields),
+                VideoFields = ToWeights(videoFields),
             };
+
+            return weights.HasWeights ? weights : null;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether any modality supplied a weight array. Internal, so it
+        /// is invisible to the serializer.
+        /// </summary>
+        internal bool HasWeights =>
+            AudioFields is not null
+            || DepthFields is not null
+            || ImageFields is not null
+            || IMUFields is not null
+            || TextFields is not null
+            || ThermalFields is not null
+            || VideoFields is not null;
 
         /// <summary>
         /// Gets or sets the value of the audio fields
@@ -164,8 +193,11 @@ public static class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the weights
+        /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.
+        /// <c>[JsonInclude]</c> is required: the serializer skips internal properties by default.
         /// </summary>
+        [JsonInclude]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         internal VectorizerWeights? Weights { get; set; } = null;
     }
 
@@ -204,8 +236,11 @@ public static class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the weights
+        /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.
+        /// <c>[JsonInclude]</c> is required: the serializer skips internal properties by default.
         /// </summary>
+        [JsonInclude]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         internal VectorizerWeights? Weights { get; set; } = null;
     }
 
@@ -260,8 +295,11 @@ public static class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the weights
+        /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.
+        /// <c>[JsonInclude]</c> is required: the serializer skips internal properties by default.
         /// </summary>
+        [JsonInclude]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         internal VectorizerWeights? Weights { get; set; } = null;
     }
 
@@ -320,8 +358,11 @@ public static class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the weights
+        /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.
+        /// <c>[JsonInclude]</c> is required: the serializer skips internal properties by default.
         /// </summary>
+        [JsonInclude]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         internal VectorizerWeights? Weights { get; set; } = null;
     }
 
@@ -390,8 +431,11 @@ public static class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the weights
+        /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.
+        /// <c>[JsonInclude]</c> is required: the serializer skips internal properties by default.
         /// </summary>
+        [JsonInclude]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         internal VectorizerWeights? Weights { get; set; } = null;
     }
 
@@ -457,8 +501,11 @@ public static class Vectorizer
         public string? Model { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the weights
+        /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.
+        /// <c>[JsonInclude]</c> is required: the serializer skips internal properties by default.
         /// </summary>
+        [JsonInclude]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         internal VectorizerWeights? Weights { get; set; } = null;
     }
 
@@ -508,8 +555,11 @@ public static class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the weights
+        /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.
+        /// <c>[JsonInclude]</c> is required: the serializer skips internal properties by default.
         /// </summary>
+        [JsonInclude]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         internal VectorizerWeights? Weights { get; set; } = null;
     }
 
@@ -548,8 +598,11 @@ public static class Vectorizer
         public string[]? TextFields { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the weights
+        /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.
+        /// <c>[JsonInclude]</c> is required: the serializer skips internal properties by default.
         /// </summary>
+        [JsonInclude]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         internal VectorizerWeights? Weights { get; set; } = null;
 
         /// <summary>
@@ -645,8 +698,11 @@ public static class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the weights
+        /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.
+        /// <c>[JsonInclude]</c> is required: the serializer skips internal properties by default.
         /// </summary>
+        [JsonInclude]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         internal VectorizerWeights? Weights { get; set; } = null;
     }
 
@@ -691,8 +747,11 @@ public static class Vectorizer
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the weights
+        /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.
+        /// <c>[JsonInclude]</c> is required: the serializer skips internal properties by default.
         /// </summary>
+        [JsonInclude]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         internal VectorizerWeights? Weights { get; set; } = null;
     }
 

@@ -93,7 +93,10 @@ public class VectorizerFactoryMulti
             ImageFields = imageFields,
             TextFields = textFields,
             VectorizeCollectionName = vectorizeCollectionName,
-            Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+            Weights = VectorizerWeights.FromWeightedFields(
+                imageFields: imageFields,
+                textFields: textFields
+            ),
         };
 
     /// <summary>

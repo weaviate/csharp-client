@@ -79,7 +79,10 @@ public class VectorizerFactory
             ImageFields = imageFields,
             TextFields = textFields,
             VectorizeCollectionName = vectorizeCollectionName,
-            Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+            Weights = VectorizerWeights.FromWeightedFields(
+                imageFields: imageFields,
+                textFields: textFields
+            ),
         };
 
     /// <summary>
@@ -130,7 +133,10 @@ public class VectorizerFactory
             InferenceUrl = inferenceUrl,
             TextFields = textFields,
             VectorizeCollectionName = vectorizeCollectionName,
-            Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+            Weights = VectorizerWeights.FromWeightedFields(
+                imageFields: imageFields,
+                textFields: textFields
+            ),
         };
 
     /// <summary>
@@ -184,7 +190,10 @@ public class VectorizerFactory
             TextFields = textFields,
             Truncate = truncate,
             VectorizeCollectionName = vectorizeCollectionName,
-            Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+            Weights = VectorizerWeights.FromWeightedFields(
+                imageFields: imageFields,
+                textFields: textFields
+            ),
         };
 
     /// <summary>
@@ -250,14 +259,17 @@ public class VectorizerFactory
             ThermalFields = thermalFields,
             VideoFields = videoFields,
             VectorizeCollectionName = vectorizeCollectionName,
+            // Named arguments are mandatory here: FromWeightedFields declares seven optional
+            // modalities in the order image, text, audio, depth, imu, thermal, video, so a
+            // positional call would silently file each modality's weights under its neighbour.
             Weights = VectorizerWeights.FromWeightedFields(
-                imageFields,
-                textFields,
-                audioFields,
-                depthFields,
-                imuFields,
-                thermalFields,
-                videoFields
+                imageFields: imageFields,
+                textFields: textFields,
+                audioFields: audioFields,
+                depthFields: depthFields,
+                imuFields: imuFields,
+                thermalFields: thermalFields,
+                videoFields: videoFields
             ),
         };
 
@@ -333,11 +345,14 @@ public class VectorizerFactory
             ModelId = model,
             Dimensions = dimensions,
             VectorizeCollectionName = vectorizeCollectionName,
+            // Named arguments are mandatory here: FromWeightedFields declares seven optional
+            // modalities in the order image, text, audio, depth, imu, thermal, video, so a
+            // positional call would silently file video weights under audio.
             Weights = VectorizerWeights.FromWeightedFields(
-                imageFields,
-                textFields,
-                videoFields,
-                audioFields
+                imageFields: imageFields,
+                textFields: textFields,
+                videoFields: videoFields,
+                audioFields: audioFields
             ),
         };
 
@@ -410,11 +425,14 @@ public class VectorizerFactory
             AudioFields = audioFields,
             VideoIntervalSeconds = videoIntervalSeconds,
             Model = model,
+            // Named arguments are mandatory here: FromWeightedFields declares seven optional
+            // modalities in the order image, text, audio, depth, imu, thermal, video, so a
+            // positional call would silently file video weights under audio.
             Weights = VectorizerWeights.FromWeightedFields(
-                imageFields,
-                textFields,
-                videoFields,
-                audioFields
+                imageFields: imageFields,
+                textFields: textFields,
+                videoFields: videoFields,
+                audioFields: audioFields
             ),
         };
 
@@ -481,9 +499,12 @@ public class VectorizerFactory
             VideoFields = videoFields,
             Truncate = truncate,
             VectorizeCollectionName = vectorizeCollectionName,
+            // Named arguments are mandatory here: FromWeightedFields declares seven optional
+            // modalities in the order image, text, audio, depth, imu, thermal, video, so a
+            // positional call would silently file video weights under audio.
             Weights = VectorizerWeights.FromWeightedFields(
-                imageFields,
-                textFields,
+                imageFields: imageFields,
+                textFields: textFields,
                 videoFields: videoFields
             ),
         };
@@ -545,7 +566,10 @@ public class VectorizerFactory
             Model = model,
             TextFields = textFields,
             VectorizeCollectionName = vectorizeCollectionName,
-            Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+            Weights = VectorizerWeights.FromWeightedFields(
+                imageFields: imageFields,
+                textFields: textFields
+            ),
         };
 
     /// <summary>
@@ -1102,7 +1126,10 @@ public class VectorizerFactory
             Dimensions = dimensions,
             ImageFields = imageFields,
             TextFields = textFields,
-            Weights = VectorizerWeights.FromWeightedFields(imageFields, textFields),
+            Weights = VectorizerWeights.FromWeightedFields(
+                imageFields: imageFields,
+                textFields: textFields
+            ),
             VectorizeCollectionName = vectorizeCollectionName,
         };
 #pragma warning restore CA1822 // Mark members as static
