@@ -117,14 +117,16 @@ public class GenerativeShortcutsTests
         var providerQuery = capturedRequest.Generative.Single.Queries[0];
         Assert.NotNull(providerQuery.Google);
         Assert.Equal("gemini-1.5-pro", providerQuery.Google.Model);
+        Assert.True(providerQuery.Google.HasLocation);
         Assert.Equal("us-east4", providerQuery.Google.Location);
     }
 
     /// <summary>
-    /// Tests that the GoogleVertex provider leaves <c>Location</c> empty when unset.
+    /// Tests that the GoogleVertex provider leaves <c>Location</c> unset when it is not supplied,
+    /// so the server applies its own default.
     /// </summary>
     [Fact]
-    public async Task GenerateClient_FetchObjects_WithGoogleVertexProvider_LeavesLocationEmptyWhenUnset()
+    public async Task GenerateClient_FetchObjects_WithGoogleVertexProvider_LeavesLocationUnsetWhenNotSupplied()
     {
         // Arrange
         var provider = new Providers.GoogleVertex { Model = "gemini-1.5-pro" };
@@ -145,7 +147,37 @@ public class GenerativeShortcutsTests
         Assert.NotNull(capturedRequest);
         var providerQuery = capturedRequest!.Generative!.Single!.Queries[0];
         Assert.NotNull(providerQuery.Google);
-        Assert.Equal(string.Empty, providerQuery.Google.Location);
+        Assert.False(providerQuery.Google.HasLocation);
+    }
+
+    /// <summary>
+    /// Tests that the GoogleGemini provider leaves <c>Location</c> unset, as a Vertex AI region
+    /// does not apply to the generative-language API.
+    /// </summary>
+    [Fact]
+    public async Task GenerateClient_FetchObjects_WithGoogleGeminiProvider_LeavesLocationUnset()
+    {
+        // Arrange
+        var provider = new Providers.GoogleGemini { Model = "gemini-1.5-flash" };
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
+
+        // Act
+        await client
+            .Collections.Use("TestCollection")
+            .Generate.FetchObjects(
+                limit: 10,
+                singlePrompt: "Summarize this",
+                provider: provider,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+
+        // Assert
+        var capturedRequest = getCapturedRequest();
+        Assert.NotNull(capturedRequest);
+        var providerQuery = capturedRequest!.Generative!.Single!.Queries[0];
+        Assert.NotNull(providerQuery.Google);
+        Assert.Equal("gemini-1.5-flash", providerQuery.Google.Model);
+        Assert.False(providerQuery.Google.HasLocation);
     }
 
     /// <summary>

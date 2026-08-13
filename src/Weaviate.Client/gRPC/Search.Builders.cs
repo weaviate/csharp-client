@@ -372,13 +372,18 @@ internal partial class WeaviateGrpcClient
                     ProjectId = a.ProjectId ?? string.Empty,
                     EndpointId = a.EndpointId ?? string.Empty,
                     Region = a.Region ?? string.Empty,
-                    Location = a.Location ?? string.Empty,
                     Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
                     ImageProperties =
                         a.ImageProperties != null
                             ? new V1.TextArray { Values = { a.ImageProperties } }
                             : null,
                 };
+                // 'location' has explicit presence, so only set it when the caller supplied one;
+                // an explicit empty value would suppress the server-side default.
+                if (!string.IsNullOrEmpty(a.Location))
+                {
+                    result.Google.Location = a.Location;
+                }
                 SetIfNotNull(v => result.Google.FrequencyPenalty = (float)v, a.FrequencyPenalty);
                 SetIfNotNull(v => result.Google.MaxTokens = v, a.MaxTokens);
                 SetIfNotNull(v => result.Google.PresencePenalty = (float)v, a.PresencePenalty);
@@ -398,9 +403,8 @@ internal partial class WeaviateGrpcClient
                     ProjectId = string.Empty,
                     EndpointId = string.Empty,
                     Region = string.Empty,
-                    // Location (Vertex AI region) is not applicable to the Gemini
-                    // (generative-language) API; left empty like Region above.
-                    Location = string.Empty,
+                    // Location (a Vertex AI region) is not applicable to the Gemini
+                    // (generative-language) API, so it is deliberately left unset.
                     Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
                     ImageProperties =
                         a.ImageProperties != null
