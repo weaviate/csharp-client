@@ -50,7 +50,5 @@ Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.Model.set -> void
 Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.Multi2VecTwelveLabs(Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs! original) -> void
 Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.TextFields.get -> string![]?
 Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.TextFields.set -> void
-Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.VectorizeCollectionName.get -> bool?
-Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.VectorizeCollectionName.set -> void
-Weaviate.Client.VectorizerFactory.Multi2VecTwelveLabs(string![]? imageFields = null, string![]? textFields = null, string? baseURL = null, string? model = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
-Weaviate.Client.VectorizerFactory.Multi2VecTwelveLabs(Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, string? baseURL = null, string? model = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Multi2VecTwelveLabs(string![]? imageFields = null, string![]? textFields = null, string? baseURL = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Multi2VecTwelveLabs(Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, string? baseURL = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!

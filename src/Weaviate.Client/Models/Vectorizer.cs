@@ -740,11 +740,10 @@ public static class Vectorizer
         /// </summary>
         public string[]? TextFields { get; set; } = null;
 
-        /// <summary>
-        /// Gets or sets the value of the vectorize collection name
-        /// </summary>
-        [JsonPropertyName("vectorizeClassName")]
-        public bool? VectorizeCollectionName { get; set; } = null;
+        // No VectorizeCollectionName here: vectorizeClassName is a no-op for multi2vec modules
+        // (multi2vec-twelvelabs registers the default and never reads it), so exposing it would
+        // let a caller set a value that changes nothing yet reads back from the schema as if it
+        // had taken effect. The server still stamps its own default into the stored config.
 
         /// <summary>
         /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.

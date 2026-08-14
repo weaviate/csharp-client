@@ -847,6 +847,11 @@ public partial class VectorConfigListTests
     /// <c>multi2vec-twelvelabs</c> module key, and that the unweighted overload emits no
     /// <c>weights</c> key at all (asserted without <c>DefaultIgnoreCondition</c>, so a missing
     /// per-property ignore condition would show up as <c>"weights":null</c>).
+    /// Every field the record exposes is set here, so the absence of <c>vectorizeClassName</c>
+    /// pins that the client never sends that key: the setting is a no-op for multi2vec modules,
+    /// and sending it makes a caller believe a value they chose took effect. Serializing without
+    /// <c>DefaultIgnoreCondition</c> means re-adding the property would surface here even if it
+    /// were left null.
     /// </summary>
     [Fact]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -864,8 +869,7 @@ public partial class VectorConfigListTests
                     imageFields: new[] { "image" },
                     textFields: new[] { "text" },
                     baseURL: "https://api.twelvelabs.io/v1.3",
-                    model: "marengo3.0",
-                    vectorizeCollectionName: false
+                    model: "marengo3.0"
                 )
         );
 
@@ -886,13 +890,16 @@ public partial class VectorConfigListTests
         Assert.Contains("\"imageFields\":[\"image\"]", json);
         Assert.Contains("\"model\":\"marengo3.0\"", json);
         Assert.Contains("\"textFields\":[\"text\"]", json);
-        Assert.Contains("\"vectorizeClassName\":false", json);
+        // vectorizeClassName does nothing in a multi2vec module, so the client does not offer it
+        // and never puts it on the wire, not even as null.
+        Assert.DoesNotContain("vectorizeClassName", json);
         Assert.DoesNotContain("\"weights\"", json);
     }
 
     /// <summary>
     /// Tests that Multi2VecTwelveLabs omits unset optional fields so the server can apply
-    /// its defaults (no <c>baseURL</c>, <c>model</c> or <c>vectorizeClassName</c>).
+    /// its defaults (no <c>baseURL</c> and no <c>model</c>), and that <c>vectorizeClassName</c>
+    /// is absent on the wire shape too — it is not part of this vectorizer's surface at all.
     /// </summary>
     [Fact]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -1218,7 +1225,10 @@ public partial class VectorConfigListTests
 
     /// <summary>
     /// Tests that Multi2VecTwelveLabs deserializes from the <c>multi2vec-twelvelabs</c>
-    /// module configuration returned by the server.
+    /// module configuration returned by the server. The server stamps its own
+    /// <c>vectorizeClassName</c> default into the stored config even though the module never
+    /// reads it, so the payload here includes that key: the client must ignore it rather than
+    /// fail, since it no longer models the setting.
     /// </summary>
     [Fact]
     public void Test_Multi2VecTwelveLabs_Deserialization()
@@ -1230,6 +1240,7 @@ public partial class VectorConfigListTests
             ["imageFields"] = new[] { "image" },
             ["model"] = "marengo3.0",
             ["textFields"] = new[] { "text" },
+            // Server-supplied and unmodelled; present to prove it is tolerated, not mapped.
             ["vectorizeClassName"] = false,
         };
 
@@ -1245,6 +1256,5 @@ public partial class VectorConfigListTests
         Assert.Equal("marengo3.0", twelveLabs.Model);
         Assert.NotNull(twelveLabs.TextFields);
         Assert.Equal(["text"], twelveLabs.TextFields);
-        Assert.False(twelveLabs.VectorizeCollectionName);
     }
 }

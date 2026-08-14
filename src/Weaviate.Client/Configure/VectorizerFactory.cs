@@ -554,14 +554,12 @@ public class VectorizerFactory
     /// <param name="textFields">Weighted text fields.</param>
     /// <param name="baseURL">Optional base URL for the model.</param>
     /// <param name="model">Model name to use.</param>
-    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
     /// <returns>Multi2VecTwelveLabs vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecTwelveLabs(
         WeightedFields imageFields,
         WeightedFields textFields,
         string? baseURL = null,
-        string? model = null,
-        bool? vectorizeCollectionName = null
+        string? model = null
     ) =>
         new Multi2VecTwelveLabs
         {
@@ -569,7 +567,6 @@ public class VectorizerFactory
             ImageFields = ModalityFields.OrNull(imageFields),
             Model = model,
             TextFields = ModalityFields.OrNull(textFields),
-            VectorizeCollectionName = vectorizeCollectionName,
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields
@@ -583,14 +580,12 @@ public class VectorizerFactory
     /// <param name="textFields">Array of text field names.</param>
     /// <param name="baseURL">Optional base URL for the model.</param>
     /// <param name="model">Model name to use.</param>
-    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
     /// <returns>Multi2VecTwelveLabs vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecTwelveLabs(
         string[]? imageFields = null,
         string[]? textFields = null,
         string? baseURL = null,
-        string? model = null,
-        bool? vectorizeCollectionName = null
+        string? model = null
     ) =>
         new Multi2VecTwelveLabs
         {
@@ -598,7 +593,6 @@ public class VectorizerFactory
             ImageFields = ModalityFields.OrNull(imageFields),
             Model = model,
             TextFields = ModalityFields.OrNull(textFields),
-            VectorizeCollectionName = vectorizeCollectionName,
         };
 
     /// <summary>
