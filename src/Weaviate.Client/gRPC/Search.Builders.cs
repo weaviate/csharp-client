@@ -378,6 +378,12 @@ internal partial class WeaviateGrpcClient
                             ? new V1.TextArray { Values = { a.ImageProperties } }
                             : null,
                 };
+                // 'location' has explicit presence, so only set it when the caller supplied one;
+                // an explicit empty value would suppress the server-side default.
+                if (!string.IsNullOrEmpty(a.Location))
+                {
+                    result.Google.Location = a.Location;
+                }
                 SetIfNotNull(v => result.Google.FrequencyPenalty = (float)v, a.FrequencyPenalty);
                 SetIfNotNull(v => result.Google.MaxTokens = v, a.MaxTokens);
                 SetIfNotNull(v => result.Google.PresencePenalty = (float)v, a.PresencePenalty);
@@ -397,6 +403,8 @@ internal partial class WeaviateGrpcClient
                     ProjectId = string.Empty,
                     EndpointId = string.Empty,
                     Region = string.Empty,
+                    // Location (a Vertex AI region) is not applicable to the Gemini
+                    // (generative-language) API, so it is deliberately left unset.
                     Images = a.Images != null ? new V1.TextArray { Values = { a.Images } } : null,
                     ImageProperties =
                         a.ImageProperties != null
@@ -815,7 +823,7 @@ internal partial class WeaviateGrpcClient
     /// back to 'Or' semantics. Does nothing when the server version is unknown.
     /// </summary>
     /// <param name="searchOperator">The search operator</param>
-    /// <exception cref="WeaviateFeatureNotSupportedException">The server does not support the operator.</exception>
+    /// <exception cref="WeaviateVersionMismatchException">The server does not support the operator.</exception>
     private void EnsureBM25OperatorSupported(BM25Operator? searchOperator)
     {
         if (searchOperator is not BM25Operator.AndCross || _serverVersion is null)
@@ -839,8 +847,10 @@ internal partial class WeaviateGrpcClient
             return;
         }
 
-        throw new WeaviateFeatureNotSupportedException(
-            $"BM25Operator.AndCross requires Weaviate server version 1.37.15, 1.38.8 or 1.39.0 or later, but connected server is version {_serverVersion}."
+        throw new WeaviateVersionMismatchException(
+            $"BM25Operator.AndCross (backported to {string.Join<Version>(" and ", AndCrossMinimumVersions[..^1])})",
+            AndCrossMinimumVersions[^1],
+            _serverVersion
         );
     }
 
