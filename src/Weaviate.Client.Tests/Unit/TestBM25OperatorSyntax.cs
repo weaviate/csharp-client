@@ -382,13 +382,17 @@ public class TestBM25OperatorSyntax : IAsyncLifetime
         var collection = client.Collections.Use(CollectionName);
 
         // Act & Assert
-        await Assert.ThrowsAsync<WeaviateFeatureNotSupportedException>(async () =>
+        var exception = await Assert.ThrowsAsync<WeaviateVersionMismatchException>(async () =>
             await collection.Query.BM25(
                 "banana split",
                 searchOperator: new BM25Operator.AndCross(),
                 cancellationToken: TestContext.Current.CancellationToken
             )
         );
+        Assert.Equal(new Version(1, 39, 0), exception.RequiredVersion);
+        Assert.Equal(Version.Parse(version), exception.ActualVersion);
+        Assert.Contains("1.37.15", exception.Message);
+        Assert.Contains("1.38.8", exception.Message);
     }
 
     /// <summary>
@@ -437,7 +441,7 @@ public class TestBM25OperatorSyntax : IAsyncLifetime
         var collection = client.Collections.Use(CollectionName);
 
         // Act & Assert
-        await Assert.ThrowsAsync<WeaviateFeatureNotSupportedException>(async () =>
+        await Assert.ThrowsAsync<WeaviateVersionMismatchException>(async () =>
             await collection.Generate.BM25(
                 "banana split",
                 searchOperator: new BM25Operator.AndCross(),
@@ -458,7 +462,7 @@ public class TestBM25OperatorSyntax : IAsyncLifetime
         var collection = client.Collections.Use(CollectionName);
 
         // Act & Assert
-        await Assert.ThrowsAsync<WeaviateFeatureNotSupportedException>(async () =>
+        await Assert.ThrowsAsync<WeaviateVersionMismatchException>(async () =>
             await collection.Query.Hybrid(
                 query: "banana split",
                 vectors: (HybridVectorInput?)null,

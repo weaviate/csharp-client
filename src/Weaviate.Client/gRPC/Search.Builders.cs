@@ -799,7 +799,7 @@ internal partial class WeaviateGrpcClient
     /// back to 'Or' semantics. Does nothing when the server version is unknown.
     /// </summary>
     /// <param name="searchOperator">The search operator</param>
-    /// <exception cref="WeaviateFeatureNotSupportedException">The server does not support the operator.</exception>
+    /// <exception cref="WeaviateVersionMismatchException">The server does not support the operator.</exception>
     private void EnsureBM25OperatorSupported(BM25Operator? searchOperator)
     {
         if (searchOperator is not BM25Operator.AndCross || _serverVersion is null)
@@ -823,8 +823,10 @@ internal partial class WeaviateGrpcClient
             return;
         }
 
-        throw new WeaviateFeatureNotSupportedException(
-            $"BM25Operator.AndCross requires Weaviate server version 1.37.15, 1.38.8 or 1.39.0 or later, but connected server is version {_serverVersion}."
+        throw new WeaviateVersionMismatchException(
+            $"BM25Operator.AndCross (backported to {string.Join<Version>(" and ", AndCrossMinimumVersions[..^1])})",
+            AndCrossMinimumVersions[^1],
+            _serverVersion
         );
     }
 
