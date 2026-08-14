@@ -313,3 +313,33 @@ Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.TextFields.get -> string![
 Weaviate.Client.Models.Vectorizer.Multi2VecTwelveLabs.TextFields.set -> void
 Weaviate.Client.VectorizerFactory.Multi2VecTwelveLabs(string![]? imageFields = null, string![]? textFields = null, string? baseURL = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!
 Weaviate.Client.VectorizerFactory.Multi2VecTwelveLabs(Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, string? baseURL = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.Location.get -> string!
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ProjectId.get -> string!
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.ApiEndpoint.get -> string?
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.ApiEndpoint.set -> void
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.AudioFields.get -> string![]?
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.AudioFields.set -> void
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.ImageFields.get -> string![]?
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.ImageFields.set -> void
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.Model.get -> string?
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.Model.set -> void
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.TextFields.get -> string![]?
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.TextFields.set -> void
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.VideoFields.get -> string![]?
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.VideoFields.set -> void
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.VideoIntervalSeconds.get -> int?
+*REMOVED*Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.VideoIntervalSeconds.set -> void
+*REMOVED*override sealed Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.Equals(Weaviate.Client.Models.VectorizerConfig? other) -> bool
+*REMOVED*Weaviate.Client.VectorizerFactory.Multi2VecGoogle(string! projectId, string! location, string![]? imageFields = null, string![]? textFields = null, string![]? videoFields = null, string![]? audioFields = null, int? videoIntervalSeconds = null, string? model = null, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
+*REMOVED*Weaviate.Client.VectorizerFactory.Multi2VecGoogle(string! projectId, string! location, Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, Weaviate.Client.Models.WeightedFields! videoFields, Weaviate.Client.Models.WeightedFields! audioFields, int? videoIntervalSeconds = null, string? model = null, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
+*REMOVED*Weaviate.Client.VectorizerFactory.Multi2VecGoogleGemini(string![]? imageFields = null, string![]? textFields = null, string![]? videoFields = null, string![]? audioFields = null, string? apiEndpoint = null, int? videoIntervalSeconds = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!
+*REMOVED*Weaviate.Client.VectorizerFactory.Multi2VecGoogleGemini(Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, Weaviate.Client.Models.WeightedFields! videoFields, Weaviate.Client.Models.WeightedFields! audioFields, string? apiEndpoint = null, int? videoIntervalSeconds = null, string? model = null) -> Weaviate.Client.Models.VectorizerConfig!
+override sealed Weaviate.Client.Models.Vectorizer.Multi2VecGoogleGemini.Equals(Weaviate.Client.Models.Vectorizer.Multi2VecGoogle? other) -> bool
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ApiEndpoint.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ApiEndpoint.set -> void
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.Location.get -> string?
+Weaviate.Client.Models.Vectorizer.Multi2VecGoogle.ProjectId.get -> string?
+Weaviate.Client.VectorizerFactory.Multi2VecGoogle(string! projectId, string! location, string![]? imageFields = null, string![]? textFields = null, string![]? videoFields = null, string![]? audioFields = null, int? videoIntervalSeconds = null, string? model = null, int? dimensions = null, bool? vectorizeCollectionName = null, string? apiEndpoint = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Multi2VecGoogle(string! projectId, string! location, Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, Weaviate.Client.Models.WeightedFields! videoFields, Weaviate.Client.Models.WeightedFields! audioFields, int? videoIntervalSeconds = null, string? model = null, int? dimensions = null, bool? vectorizeCollectionName = null, string? apiEndpoint = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Multi2VecGoogleGemini(string![]? imageFields = null, string![]? textFields = null, string![]? videoFields = null, string![]? audioFields = null, string? apiEndpoint = null, int? videoIntervalSeconds = null, string? model = null, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!
+Weaviate.Client.VectorizerFactory.Multi2VecGoogleGemini(Weaviate.Client.Models.WeightedFields! imageFields, Weaviate.Client.Models.WeightedFields! textFields, Weaviate.Client.Models.WeightedFields! videoFields, Weaviate.Client.Models.WeightedFields! audioFields, string? apiEndpoint = null, int? videoIntervalSeconds = null, string? model = null, int? dimensions = null, bool? vectorizeCollectionName = null) -> Weaviate.Client.Models.VectorizerConfig!

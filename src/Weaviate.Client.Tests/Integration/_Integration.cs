@@ -419,6 +419,20 @@ public abstract partial class IntegrationTests : IAsyncDisposable, IAsyncLifetim
     }
 
     /// <summary>
+    /// Skips the test unless the connected server has the named module enabled.
+    /// A module the server does not load cannot be named in a collection config at all, so
+    /// tests that create such a collection are meaningless — not failing — without it.
+    /// </summary>
+    /// <param name="moduleName">The module name, e.g. <c>multi2vec-google</c>.</param>
+    protected void RequireModule(string moduleName)
+    {
+        if (_weaviate.Meta?.Modules.ContainsKey(moduleName) != true)
+        {
+            Assert.Skip($"Weaviate module '{moduleName}' is not enabled on the test server.");
+        }
+    }
+
+    /// <summary>
     /// Requires the version using the specified minimum version
     /// </summary>
     /// <param name="minimumVersion">The minimum version</param>

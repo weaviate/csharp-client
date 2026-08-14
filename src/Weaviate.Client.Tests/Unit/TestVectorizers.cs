@@ -347,6 +347,10 @@ public partial class VectorConfigListTests
     /// <summary>
     /// Tests that Multi2VecGoogleGemini maps each string-array modality to its own key, and
     /// that the unweighted overload emits no <c>weights</c> object.
+    /// Also pins the module name: there is no <c>multi2vec-google-gemini</c> module on any
+    /// server, so the Gemini factory must emit the <c>multi2vec-google</c> module (under its
+    /// <c>multi2vec-palm</c> wire name) and select Gemini with <c>apiEndpoint</c> instead —
+    /// and must send neither <c>projectId</c> nor <c>location</c>, which are Vertex-only.
     /// </summary>
     [Fact]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -364,7 +368,9 @@ public partial class VectorConfigListTests
                     imageFields: new[] { "image" },
                     textFields: new[] { "text" },
                     videoFields: new[] { "video" },
-                    audioFields: new[] { "audio" }
+                    audioFields: new[] { "audio" },
+                    dimensions: 512,
+                    vectorizeCollectionName: false
                 )
         );
 
@@ -380,10 +386,20 @@ public partial class VectorConfigListTests
         );
 
         // Assert
+        Assert.Contains("\"multi2vec-palm\"", json);
+        Assert.DoesNotContain("multi2vec-google-gemini", json);
+        Assert.Contains("\"apiEndpoint\":\"generativelanguage.googleapis.com\"", json);
+        // Vertex-only settings the Gemini API has no equivalent of. This test serializes with a
+        // bare options object, so nulls are written out; the REST client's options drop them, so
+        // neither key reaches the wire.
+        Assert.Contains("\"projectId\":null", json);
+        Assert.Contains("\"location\":null", json);
         Assert.Contains("\"imageFields\":[\"image\"]", json);
         Assert.Contains("\"textFields\":[\"text\"]", json);
         Assert.Contains("\"videoFields\":[\"video\"]", json);
         Assert.Contains("\"audioFields\":[\"audio\"]", json);
+        Assert.Contains("\"dimensions\":512", json);
+        Assert.Contains("\"vectorizeClassName\":false", json);
         Assert.DoesNotContain("\"weights\"", json);
     }
 
@@ -430,6 +446,9 @@ public partial class VectorConfigListTests
         );
 
         // Assert
+        Assert.Contains("\"multi2vec-palm\"", json);
+        Assert.DoesNotContain("multi2vec-google-gemini", json);
+        Assert.Contains("\"apiEndpoint\":\"generativelanguage.googleapis.com\"", json);
         Assert.Contains("\"imageFields\":[\"image\",\"thumbnail\"]", json);
         Assert.Contains("\"textFields\":[\"text\"]", json);
         Assert.Contains("\"videoFields\":[\"video\",\"clip\"]", json);
@@ -439,6 +458,9 @@ public partial class VectorConfigListTests
                 + "\"textFields\":[0.23],\"videoFields\":[0.33,0.34]}",
             json
         );
+        // Left unset by this case, so the omit-when-null path stays covered.
+        Assert.Contains("\"dimensions\":null", json);
+        Assert.Contains("\"vectorizeClassName\":null", json);
         Assert.DoesNotContain("depthFields", json);
         Assert.DoesNotContain("imuFields", json);
         Assert.DoesNotContain("thermalFields", json);

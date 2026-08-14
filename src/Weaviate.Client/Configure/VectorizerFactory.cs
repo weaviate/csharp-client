@@ -321,6 +321,7 @@ public class VectorizerFactory
     /// <param name="model">The model</param>
     /// <param name="dimensions">The dimensions</param>
     /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <param name="apiEndpoint">The api endpoint</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogle(
         string projectId,
@@ -332,12 +333,14 @@ public class VectorizerFactory
         int? videoIntervalSeconds = null,
         string? model = null,
         int? dimensions = null,
-        bool? vectorizeCollectionName = null
+        bool? vectorizeCollectionName = null,
+        string? apiEndpoint = null
     ) =>
         new Multi2VecGoogle
         {
             ProjectId = projectId,
             Location = location,
+            ApiEndpoint = apiEndpoint,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
             VideoFields = ModalityFields.OrNull(videoFields),
@@ -371,6 +374,7 @@ public class VectorizerFactory
     /// <param name="model">The model</param>
     /// <param name="dimensions">The dimensions</param>
     /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <param name="apiEndpoint">The api endpoint</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogle(
         string projectId,
@@ -382,12 +386,14 @@ public class VectorizerFactory
         int? videoIntervalSeconds = null,
         string? model = null,
         int? dimensions = null,
-        bool? vectorizeCollectionName = null
+        bool? vectorizeCollectionName = null,
+        string? apiEndpoint = null
     ) =>
         new Multi2VecGoogle
         {
             ProjectId = projectId,
             Location = location,
+            ApiEndpoint = apiEndpoint,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
             VideoFields = ModalityFields.OrNull(videoFields),
@@ -399,7 +405,9 @@ public class VectorizerFactory
         };
 
     /// <summary>
-    /// Multi2Vec Google Gemini configuration (using Google AI Studio/Gemini API)
+    /// Multi2Vec Google Gemini configuration (using Google AI Studio/Gemini API).
+    /// Emits the <c>multi2vec-google</c> module with the Gemini API endpoint; there is no
+    /// separate Gemini module, so no project id or location is sent.
     /// </summary>
     /// <param name="imageFields">The image fields</param>
     /// <param name="textFields">The text fields</param>
@@ -408,6 +416,8 @@ public class VectorizerFactory
     /// <param name="apiEndpoint">The API endpoint</param>
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogleGemini(
         WeightedFields imageFields,
@@ -416,17 +426,25 @@ public class VectorizerFactory
         WeightedFields audioFields,
         string? apiEndpoint = null,
         int? videoIntervalSeconds = null,
-        string? model = null
+        string? model = null,
+        int? dimensions = null,
+        bool? vectorizeCollectionName = null
     ) =>
-        new Multi2VecGoogleGemini
+        new Multi2VecGoogle
         {
+            // The Gemini API is not scoped to a Vertex AI project or region; left null so both
+            // are omitted on the wire.
+            ProjectId = null,
+            Location = null,
             ApiEndpoint = apiEndpoint ?? "generativelanguage.googleapis.com",
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
             VideoFields = ModalityFields.OrNull(videoFields),
             AudioFields = ModalityFields.OrNull(audioFields),
             VideoIntervalSeconds = videoIntervalSeconds,
-            Model = model,
+            ModelId = model,
+            Dimensions = dimensions,
+            VectorizeCollectionName = vectorizeCollectionName,
             // Named arguments are mandatory here: FromWeightedFields declares seven optional
             // modalities in the order image, text, audio, depth, imu, thermal, video, so the
             // positional call this replaced filed video weights under audio and audio weights
@@ -440,7 +458,9 @@ public class VectorizerFactory
         };
 
     /// <summary>
-    /// Multi2Vec Google Gemini configuration (using Google AI Studio/Gemini API)
+    /// Multi2Vec Google Gemini configuration (using Google AI Studio/Gemini API).
+    /// Emits the <c>multi2vec-google</c> module with the Gemini API endpoint; there is no
+    /// separate Gemini module, so no project id or location is sent.
     /// </summary>
     /// <param name="imageFields">The image fields</param>
     /// <param name="textFields">The text fields</param>
@@ -449,6 +469,8 @@ public class VectorizerFactory
     /// <param name="apiEndpoint">The API endpoint</param>
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
+    /// <param name="dimensions">The dimensions</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogleGemini(
         string[]? imageFields = null,
@@ -457,17 +479,25 @@ public class VectorizerFactory
         string[]? audioFields = null,
         string? apiEndpoint = null,
         int? videoIntervalSeconds = null,
-        string? model = null
+        string? model = null,
+        int? dimensions = null,
+        bool? vectorizeCollectionName = null
     ) =>
-        new Multi2VecGoogleGemini
+        new Multi2VecGoogle
         {
+            // The Gemini API is not scoped to a Vertex AI project or region; left null so both
+            // are omitted on the wire.
+            ProjectId = null,
+            Location = null,
             ApiEndpoint = apiEndpoint ?? "generativelanguage.googleapis.com",
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
             VideoFields = ModalityFields.OrNull(videoFields),
             AudioFields = ModalityFields.OrNull(audioFields),
             VideoIntervalSeconds = videoIntervalSeconds,
-            Model = model,
+            ModelId = model,
+            Dimensions = dimensions,
+            VectorizeCollectionName = vectorizeCollectionName,
         };
 
     /// <summary>
