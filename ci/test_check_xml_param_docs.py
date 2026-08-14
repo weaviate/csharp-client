@@ -10,7 +10,6 @@ from __future__ import annotations
 import importlib.util
 import io
 import re
-import sys
 import tempfile
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
@@ -64,7 +63,12 @@ def test_generic_methods() -> None:
     with tempfile.TemporaryDirectory() as td:
         p = Path(td) / "QueryClient.Generic.cs"
         p.write_text(GENERIC_SRC, encoding="utf-8")
-        issues, _scanned = chk.check_file(p, root=Path(td))
+        issues, scanned = chk.check_file(p, root=Path(td))
+    check(
+        "the generic overload is the one declaration counted in the file",
+        scanned == 1,
+        f"got {scanned}",
+    )
     check(
         "undocumented 'query' on the generic overload is reported",
         any("missing <param> for: query" in i for i in issues),
