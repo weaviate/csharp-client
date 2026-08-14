@@ -216,4 +216,156 @@ public class TestBackupClient
 
         Assert.Equal(expected, backup.Status);
     }
+
+    /// <summary>
+    /// A create response body, reused by the incremental-backup cases below.
+    /// </summary>
+    private const string CreateResponseJson = """
+        {
+            "id": "my-backup",
+            "backend": "filesystem",
+            "status": "STARTED",
+            "path": "/backups"
+        }
+        """;
+
+    /// <summary>
+    /// Create() must put IncrementalBaseBackupId on the wire under the spec's
+    /// <c>incremental_base_backup_id</c> key. Without it the client silently drops the
+    /// caller's request and takes a full backup instead of an incremental one.
+    /// </summary>
+    [Fact]
+    public async Task Create_SendsIncrementalBaseBackupId()
+    {
+        var (client, handler) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: req =>
+                req.Method == HttpMethod.Post
+                    ? new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(
+                            CreateResponseJson,
+                            System.Text.Encoding.UTF8,
+                            "application/json"
+                        ),
+                    }
+                    : null!,
+            serverVersion: "1.37.0"
+        );
+
+        await client.Backup.Create(
+            new BackupCreateRequest(
+                "my-backup",
+                new FilesystemBackend("/backups"),
+                IncrementalBaseBackupId: "base-backup"
+            ),
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.NotNull(handler.LastRequest);
+        var body = await handler.LastRequest!.Content!.ReadAsStringAsync(
+            TestContext.Current.CancellationToken
+        );
+        Assert.Contains("\"incremental_base_backup_id\":\"base-backup\"", body);
+    }
+
+    /// <summary>
+    /// A create request that asks for no base backup must not send the key at all, so a plain
+    /// backup is unchanged.
+    /// </summary>
+    [Fact]
+    public async Task Create_OmitsIncrementalBaseBackupId_WhenNotRequested()
+    {
+        var (client, handler) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: req =>
+                req.Method == HttpMethod.Post
+                    ? new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(
+                            CreateResponseJson,
+                            System.Text.Encoding.UTF8,
+                            "application/json"
+                        ),
+                    }
+                    : null!,
+            serverVersion: "1.37.0"
+        );
+
+        await client.Backup.Create(
+            new BackupCreateRequest("my-backup", new FilesystemBackend("/backups")),
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.NotNull(handler.LastRequest);
+        var body = await handler.LastRequest!.Content!.ReadAsStringAsync(
+            TestContext.Current.CancellationToken
+        );
+        Assert.DoesNotContain("incremental_base_backup_id", body);
+    }
+
+    /// <summary>
+    /// Incremental backups arrived in Weaviate 1.37.0, so asking for one against an older
+    /// server must fail in the client rather than silently producing a full backup.
+    /// </summary>
+    [Fact]
+    public async Task Create_Throws_WhenIncrementalRequestedOnOlderServer()
+    {
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: req =>
+                req.Method == HttpMethod.Post
+                    ? new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(
+                            CreateResponseJson,
+                            System.Text.Encoding.UTF8,
+                            "application/json"
+                        ),
+                    }
+                    : null!,
+            serverVersion: "1.36.0"
+        );
+
+        var exception = await Assert.ThrowsAsync<WeaviateVersionMismatchException>(async () =>
+            await client.Backup.Create(
+                new BackupCreateRequest(
+                    "my-backup",
+                    new FilesystemBackend("/backups"),
+                    IncrementalBaseBackupId: "base-backup"
+                ),
+                TestContext.Current.CancellationToken
+            )
+        );
+
+        Assert.Equal(new Version(1, 37, 0), exception.RequiredVersion);
+        Assert.Equal(new Version(1, 36, 0), exception.ActualVersion);
+    }
+
+    /// <summary>
+    /// The version gate is on the field, not the operation: a plain backup must still work on a
+    /// server older than 1.37.0.
+    /// </summary>
+    [Fact]
+    public async Task Create_PlainBackup_Succeeds_OnOlderServer()
+    {
+        var (client, handler) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: req =>
+                req.Method == HttpMethod.Post
+                    ? new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(
+                            CreateResponseJson,
+                            System.Text.Encoding.UTF8,
+                            "application/json"
+                        ),
+                    }
+                    : null!,
+            serverVersion: "1.36.0"
+        );
+
+        await client.Backup.Create(
+            new BackupCreateRequest("my-backup", new FilesystemBackend("/backups")),
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.NotNull(handler.LastRequest);
+    }
 }

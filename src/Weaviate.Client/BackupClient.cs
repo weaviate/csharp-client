@@ -56,6 +56,8 @@ public class BackupClient
         CancellationToken cancellationToken = default
     )
     {
+        await EnsureIncrementalBackupSupported(request);
+
         var restRequest = BuildBackupCreateRequest(request);
         var response = await _client.RestClient.BackupCreate(
             request.Backend.Provider,
@@ -86,6 +88,42 @@ public class BackupClient
     }
 
     /// <summary>
+    /// The first Weaviate server version that accepts a file-based incremental backup base.
+    /// </summary>
+    private static readonly Version IncrementalBackupMinimumVersion = new(1, 37, 0);
+
+    /// <summary>
+    /// Throws <see cref="WeaviateVersionMismatchException"/> when the request asks for an
+    /// incremental backup and the connected server predates support for it. Gated on the field
+    /// rather than on the whole operation, because plain backups still work on older servers.
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <exception cref="WeaviateVersionMismatchException">
+    /// Thrown when <see cref="BackupCreateRequest.IncrementalBaseBackupId"/> is set and the
+    /// connected server version is below 1.37.0.
+    /// </exception>
+    private async Task EnsureIncrementalBackupSupported(BackupCreateRequest request)
+    {
+        if (string.IsNullOrEmpty(request.IncrementalBaseBackupId))
+            return;
+
+        await _client.EnsureInitializedAsync();
+
+        var serverVersion = _client.WeaviateVersion;
+        if (serverVersion is null)
+            return;
+
+        if (serverVersion < IncrementalBackupMinimumVersion)
+        {
+            throw new WeaviateVersionMismatchException(
+                nameof(BackupCreateRequest.IncrementalBaseBackupId),
+                IncrementalBackupMinimumVersion,
+                serverVersion
+            );
+        }
+    }
+
+    /// <summary>
     /// Builds the backup create request using the specified request
     /// </summary>
     /// <param name="request">The request</param>
@@ -101,6 +139,7 @@ public class BackupClient
             Id = request.Id,
             Include = request.IncludeCollections?.ToList(),
             Exclude = request.ExcludeCollections?.ToList(),
+            Incremental_base_backup_id = request.IncrementalBaseBackupId,
             Config = new Rest.Dto.BackupConfig
             {
                 Bucket = bucket,
