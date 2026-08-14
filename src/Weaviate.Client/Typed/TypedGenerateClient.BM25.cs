@@ -19,6 +19,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
+    /// <param name="searchOperator">BM25 search operator (AND/OR)</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
@@ -39,6 +40,7 @@ public partial class TypedGenerateClient<T>
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
+        BM25Operator? searchOperator = null,
         Rerank? rerank = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
@@ -60,6 +62,7 @@ public partial class TypedGenerateClient<T>
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
+            searchOperator: searchOperator,
             rerank: rerank,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
@@ -84,6 +87,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
+    /// <param name="searchOperator">BM25 search operator (AND/OR)</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
@@ -103,6 +107,7 @@ public partial class TypedGenerateClient<T>
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
+        BM25Operator? searchOperator = null,
         Rerank? rerank = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
@@ -123,6 +128,7 @@ public partial class TypedGenerateClient<T>
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
+            searchOperator: searchOperator,
             rerank: rerank,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,

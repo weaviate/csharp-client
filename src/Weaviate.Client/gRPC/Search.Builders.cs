@@ -791,13 +791,61 @@ internal partial class WeaviateGrpcClient
     }
 
     /// <summary>
+    /// The minimum server version per release branch that supports cross-property BM25 AND;
+    /// the feature landed in 1.39.0 and was backported to the 1.37 and 1.38 branches.
+    /// </summary>
+    private static readonly Version[] AndCrossMinimumVersions =
+    [
+        new(1, 37, 15),
+        new(1, 38, 8),
+        new(1, 39, 0),
+    ];
+
+    /// <summary>
+    /// Throws when the operator is <see cref="BM25Operator.AndCross"/> and the connected server
+    /// predates it. Pre-backport servers do not reject the unknown operator — they silently fall
+    /// back to 'Or' semantics. Does nothing when the server version is unknown.
+    /// </summary>
+    /// <param name="searchOperator">The search operator</param>
+    /// <exception cref="WeaviateVersionMismatchException">The server does not support the operator.</exception>
+    private void EnsureBM25OperatorSupported(BM25Operator? searchOperator)
+    {
+        if (searchOperator is not BM25Operator.AndCross || _serverVersion is null)
+        {
+            return;
+        }
+
+        foreach (var minimum in AndCrossMinimumVersions)
+        {
+            if (_serverVersion.Major == minimum.Major && _serverVersion.Minor == minimum.Minor)
+            {
+                if (_serverVersion >= minimum)
+                {
+                    return;
+                }
+                break;
+            }
+        }
+        if (_serverVersion >= AndCrossMinimumVersions[^1])
+        {
+            return;
+        }
+
+        throw new WeaviateVersionMismatchException(
+            $"BM25Operator.AndCross (backported to {string.Join<Version>(" and ", AndCrossMinimumVersions[..^1])})",
+            AndCrossMinimumVersions[^1],
+            _serverVersion
+        );
+    }
+
+    /// <summary>
     /// Builds the bm 25 using the specified request
     /// </summary>
     /// <param name="request">The request</param>
     /// <param name="query">The query</param>
     /// <param name="properties">The properties</param>
     /// <param name="searchOperator">The search operator</param>
-    private static void BuildBM25(
+    private void BuildBM25(
         V1.SearchRequest request,
         string query,
         string[]? properties = null,
@@ -812,11 +860,13 @@ internal partial class WeaviateGrpcClient
         }
         if (searchOperator != null)
         {
+            EnsureBM25OperatorSupported(searchOperator);
             request.Bm25Search.SearchOperator = new()
             {
                 Operator = searchOperator switch
                 {
                     BM25Operator.And => V1.SearchOperatorOptions.Types.Operator.And,
+                    BM25Operator.AndCross => V1.SearchOperatorOptions.Types.Operator.AndCross,
                     BM25Operator.Or => V1.SearchOperatorOptions.Types.Operator.Or,
                     _ => V1.SearchOperatorOptions.Types.Operator.Unspecified,
                 },
@@ -968,11 +1018,13 @@ internal partial class WeaviateGrpcClient
         }
         if (bm25Operator != null)
         {
+            EnsureBM25OperatorSupported(bm25Operator);
             hybrid.Bm25SearchOperator = new()
             {
                 Operator = bm25Operator switch
                 {
                     BM25Operator.And => V1.SearchOperatorOptions.Types.Operator.And,
+                    BM25Operator.AndCross => V1.SearchOperatorOptions.Types.Operator.AndCross,
                     BM25Operator.Or => V1.SearchOperatorOptions.Types.Operator.Or,
                     _ => V1.SearchOperatorOptions.Types.Operator.Unspecified,
                 },
