@@ -263,14 +263,14 @@ public static class QueryClientNearTextExtensions
     /// <summary>
     /// Performs a near-text search using a NearTextInput record.
     /// </summary>
-    /// <param name="client">The query client</param>
-    /// <param name="query">The near-text input</param>
+    /// <param name="client">The client.</param>
+    /// <param name="query">The near-text input.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -335,15 +335,15 @@ public static class QueryClientNearTextExtensions
     /// <summary>
     /// Performs a near-text search with group-by using a NearTextInput record.
     /// </summary>
-    /// <param name="client">The query client</param>
-    /// <param name="query">The near-text input</param>
+    /// <param name="client">The client.</param>
+    /// <param name="query">The near-text input.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>

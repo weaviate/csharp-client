@@ -19,10 +19,10 @@ public partial class QueryClient
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="rerank">The rerank</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
     /// <param name="returnMetadata">The return metadata</param>
@@ -80,10 +80,10 @@ public partial class QueryClient
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="rerank">The rerank</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
     /// <param name="returnMetadata">The return metadata</param>
@@ -154,10 +154,10 @@ public partial class QueryClient
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="rerank">The rerank</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
     /// <param name="returnMetadata">The return metadata</param>
@@ -218,10 +218,10 @@ public partial class QueryClient
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="rerank">The rerank</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
     /// <param name="returnMetadata">The return metadata</param>
@@ -301,7 +301,7 @@ public static class QueryClientHybridExtensions
     ///     )
     /// );
     /// </example>
-    /// <param name="client">The query client</param>
+    /// <param name="client">The client</param>
     /// <param name="query">The query</param>
     /// <param name="vectors">The vectors</param>
     /// <param name="alpha">The alpha</param>
@@ -311,10 +311,10 @@ public static class QueryClientHybridExtensions
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="rerank">The rerank</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
     /// <param name="returnMetadata">The return metadata</param>
@@ -370,7 +370,7 @@ public static class QueryClientHybridExtensions
     /// Performs a hybrid search (keyword + vector search) with grouping using a lambda to build HybridVectorInput.
     /// This allows chaining NearVector or NearText configuration with target vectors.
     /// </summary>
-    /// <param name="client">The query client</param>
+    /// <param name="client">The client</param>
     /// <param name="query">The query</param>
     /// <param name="vectors">The vectors</param>
     /// <param name="groupBy">The group by</param>
@@ -381,10 +381,10 @@ public static class QueryClientHybridExtensions
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="bm25Operator">The bm 25 operator</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="filters">The filters</param>
     /// <param name="rerank">The rerank</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
     /// <param name="returnMetadata">The return metadata</param>
