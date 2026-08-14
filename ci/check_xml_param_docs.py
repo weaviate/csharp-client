@@ -79,8 +79,8 @@ RESERVED_NAMES = frozenset(
 MAX_HEADER_SCAN = 800
 
 
-def is_scoped(path: Path) -> bool:
-    rel = path.relative_to(CLIENT_ROOT).as_posix()
+def is_scoped(path: Path, client_root: Path = CLIENT_ROOT) -> bool:
+    rel = path.relative_to(client_root).as_posix()
     return any(rel.startswith(prefix) for prefix in SCOPED_PREFIXES)
 
 
@@ -267,9 +267,9 @@ def parse_param_names(signature: str) -> list[str]:
     return names
 
 
-def check_file(path: Path) -> tuple[list[str], int]:
+def check_file(path: Path, root: Path = ROOT) -> tuple[list[str], int]:
     text = path.read_text(encoding="utf-8")
-    rel = path.relative_to(ROOT).as_posix()
+    rel = path.relative_to(root).as_posix()
     issues: list[str] = []
     scanned = 0
 
@@ -307,10 +307,11 @@ def check_file(path: Path) -> tuple[list[str], int]:
     return issues, scanned
 
 
-def main() -> int:
-    if not CLIENT_ROOT.is_dir():
+def main(root: Path = ROOT, client_root: Path = CLIENT_ROOT) -> int:
+    """Run the check. Roots are injectable so tests need not patch globals."""
+    if not client_root.is_dir():
         print(
-            f"XML param doc check failed: client root not found at {CLIENT_ROOT}",
+            f"XML param doc check failed: client root not found at {client_root}",
             file=sys.stderr,
         )
         return 1
@@ -318,11 +319,11 @@ def main() -> int:
     issues: list[str] = []
     files_scanned = 0
     declarations = 0
-    for path in sorted(CLIENT_ROOT.rglob("*.cs")):
-        if not is_scoped(path):
+    for path in sorted(client_root.rglob("*.cs")):
+        if not is_scoped(path, client_root):
             continue
         files_scanned += 1
-        file_issues, scanned = check_file(path)
+        file_issues, scanned = check_file(path, root)
         issues.extend(file_issues)
         declarations += scanned
 
@@ -330,7 +331,7 @@ def main() -> int:
     if files_scanned == 0:
         print(
             "XML param doc check failed: scanned 0 files under "
-            f"{CLIENT_ROOT} matching {', '.join(SCOPED_PREFIXES)}. "
+            f"{client_root} matching {', '.join(SCOPED_PREFIXES)}. "
             "The check is misconfigured (did the layout move?).",
             file=sys.stderr,
         )

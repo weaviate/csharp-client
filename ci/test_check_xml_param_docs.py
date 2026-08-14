@@ -16,9 +16,12 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-spec = importlib.util.spec_from_file_location("chk", HERE / "check_xml_param_docs.py")
-chk = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(chk)
+
+_spec = importlib.util.spec_from_file_location("chk", HERE / "check_xml_param_docs.py")
+assert _spec is not None, "could not build a module spec for check_xml_param_docs.py"
+assert _spec.loader is not None, "module spec for check_xml_param_docs.py has no loader"
+chk = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(chk)
 
 FAILURES: list[str] = []
 
@@ -61,9 +64,7 @@ def test_generic_methods() -> None:
     with tempfile.TemporaryDirectory() as td:
         p = Path(td) / "QueryClient.Generic.cs"
         p.write_text(GENERIC_SRC, encoding="utf-8")
-        old_root, chk.ROOT = chk.ROOT, Path(td)
-        issues, scanned = chk.check_file(p)
-        chk.ROOT = old_root
+        issues, _scanned = chk.check_file(p, root=Path(td))
     check(
         "undocumented 'query' on the generic overload is reported",
         any("missing <param> for: query" in i for i in issues),
@@ -99,12 +100,9 @@ def test_empty_scan_fails() -> None:
     with tempfile.TemporaryDirectory() as td:
         empty = Path(td) / "src" / "Weaviate.Client"
         empty.mkdir(parents=True)
-        old_root, old_client = chk.ROOT, chk.CLIENT_ROOT
-        chk.ROOT, chk.CLIENT_ROOT = Path(td), empty
         err = io.StringIO()
         with redirect_stdout(io.StringIO()), redirect_stderr(err):
-            rc = chk.main()
-        chk.ROOT, chk.CLIENT_ROOT = old_root, old_client
+            rc = chk.main(root=Path(td), client_root=empty)
     check("exit code is non-zero when 0 files are scanned", rc != 0, f"rc={rc}")
     check(
         "message explains the misconfiguration",
@@ -116,12 +114,9 @@ def test_empty_scan_fails() -> None:
 def test_missing_client_root_fails() -> None:
     print("defect 3b - a missing client root fails loudly")
     with tempfile.TemporaryDirectory() as td:
-        old_root, old_client = chk.ROOT, chk.CLIENT_ROOT
-        chk.ROOT, chk.CLIENT_ROOT = Path(td), Path(td) / "does" / "not" / "exist"
         err = io.StringIO()
         with redirect_stdout(io.StringIO()), redirect_stderr(err):
-            rc = chk.main()
-        chk.ROOT, chk.CLIENT_ROOT = old_root, old_client
+            rc = chk.main(root=Path(td), client_root=Path(td) / "does" / "not" / "exist")
     check("exit code is non-zero when the client root is absent", rc != 0, f"rc={rc}")
     check(
         "message names the missing root",

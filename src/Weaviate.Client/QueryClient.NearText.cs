@@ -268,7 +268,7 @@ public static class QueryClientNearTextExtensions
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
-    /// <param name="diversitySelection">The diversity selection</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
@@ -341,7 +341,7 @@ public static class QueryClientNearTextExtensions
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
-    /// <param name="diversitySelection">The diversity selection</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
