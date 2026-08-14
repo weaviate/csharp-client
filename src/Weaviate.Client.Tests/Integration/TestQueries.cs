@@ -145,6 +145,84 @@ public class TestQueries : IntegrationTests
     }
 
     /// <summary>
+    /// Tests that test bm 25 operator and cross matches tokens across properties
+    /// </summary>
+    [Fact]
+    public async Task Test_BM25_Operator_AndCross()
+    {
+        RequireVersion("1.38.8");
+
+        var collection = await CollectionFactory(
+            properties: [Property.Text("title"), Property.Text("body")],
+            vectorConfig: Configure.Vector(t => t.SelfProvided())
+        );
+
+        // Neither of splitAcross's properties holds both tokens, so only cross-property AND matches it.
+        var splitAcross = await collection.Data.Insert(
+            new { title = "banana", body = "split" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var singleProperty = await collection.Data.Insert(
+            new { title = "banana split", body = "dessert" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { title = "banana", body = "bread" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var andObjs = await collection.Query.BM25(
+            "banana split",
+            searchOperator: new BM25Operator.And(),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(new List<Guid?> { singleProperty }, andObjs.Select(o => o.UUID).ToList());
+
+        var andCrossObjs = await collection.Query.BM25(
+            "banana split",
+            searchOperator: new BM25Operator.AndCross(),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var expected = new List<Guid?> { splitAcross, singleProperty };
+        expected.Sort();
+        Assert.Equal(expected, andCrossObjs.Select(o => o.UUID).OrderBy(x => x).ToList());
+    }
+
+    /// <summary>
+    /// Tests that test bm 25 operator and cross rejects mixed tokenization
+    /// </summary>
+    [Fact]
+    public async Task Test_BM25_Operator_AndCross_MixedTokenization_Errors()
+    {
+        RequireVersion("1.38.8");
+
+        var collection = await CollectionFactory(
+            properties:
+            [
+                Property.Text("title", tokenization: PropertyTokenization.Word),
+                Property.Text("code", tokenization: PropertyTokenization.Field),
+            ],
+            vectorConfig: Configure.Vector(t => t.SelfProvided())
+        );
+
+        await collection.Data.Insert(
+            new { title = "banana split", code = "banana-split" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var exception = await Assert.ThrowsAnyAsync<WeaviateException>(async () =>
+            await collection.Query.BM25(
+                "banana split",
+                searchFields: ["title", "code"],
+                searchOperator: new BM25Operator.AndCross(),
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
+        Assert.NotNull(exception.InnerException);
+        Assert.Contains("tokenization", exception.InnerException.Message);
+    }
+
+    /// <summary>
     /// Tests that test collection generative fetch objects
     /// </summary>
     [Fact]

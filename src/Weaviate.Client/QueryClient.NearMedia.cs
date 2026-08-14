@@ -29,6 +29,7 @@ public partial class QueryClient
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
@@ -42,6 +43,7 @@ public partial class QueryClient
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         AutoArray<string>? returnProperties = null,
@@ -60,6 +62,7 @@ public partial class QueryClient
             distance: input.Distance,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             groupBy: null,
@@ -92,6 +95,7 @@ public partial class QueryClient
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
@@ -106,6 +110,7 @@ public partial class QueryClient
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         AutoArray<string>? returnProperties = null,
@@ -124,6 +129,7 @@ public partial class QueryClient
             distance: input.Distance,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             groupBy: groupBy,
@@ -151,6 +157,7 @@ public partial class QueryClient
     /// <param name="distance">Maximum distance threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
@@ -168,6 +175,7 @@ public partial class QueryClient
         double? distance = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -186,6 +194,7 @@ public partial class QueryClient
             distance: distance,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             groupBy: null,
@@ -213,6 +222,7 @@ public partial class QueryClient
     /// <param name="distance">Maximum distance threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
@@ -231,6 +241,7 @@ public partial class QueryClient
         double? distance = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -249,6 +260,7 @@ public partial class QueryClient
             distance: distance,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             groupBy: groupBy,

@@ -377,6 +377,7 @@ public class GenerativeConfigFactory
     /// <param name="temperature">The temperature.</param>
     /// <param name="topK">The top K.</param>
     /// <param name="topP">The top P.</param>
+    /// <param name="location">The location.</param>
     /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
     public IGenerativeConfig GoogleVertex(
         string? apiEndpoint = null,
@@ -387,7 +388,8 @@ public class GenerativeConfigFactory
         string? region = null,
         double? temperature = null,
         int? topK = null,
-        double? topP = null
+        double? topP = null,
+        string? location = null
     ) =>
         new GenerativeConfig.GoogleVertex
         {
@@ -400,6 +402,7 @@ public class GenerativeConfigFactory
             Temperature = temperature,
             TopK = topK,
             TopP = topP,
+            Location = location,
         };
 
     /// <summary>

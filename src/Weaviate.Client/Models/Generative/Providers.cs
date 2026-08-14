@@ -670,6 +670,11 @@ public static class Providers
         public string? Region { get; set; }
 
         /// <summary>
+        /// Gets or sets the Google Vertex AI location.
+        /// </summary>
+        public string? Location { get; set; }
+
+        /// <summary>
         /// Gets or sets the list of base64-encoded images to include in the prompt.
         /// </summary>
         public List<string>? Images { get; set; }
