@@ -368,4 +368,115 @@ public class TestBackupClient
 
         Assert.NotNull(handler.LastRequest);
     }
+
+    /// <summary>
+    /// List() parses the list payload and then discarded two fields it had already read: Size
+    /// was left null for every listed backup even though the property exists and the create
+    /// status path fills it, and the incremental base id had nowhere to go at all. Both must
+    /// survive onto the model.
+    /// </summary>
+    [Fact]
+    public async Task List_PopulatesSizeAndIncrementalBaseBackupId()
+    {
+        var json = """
+            [
+                {
+                    "id": "my-backup",
+                    "classes": ["Article"],
+                    "status": "SUCCESS",
+                    "startedAt": "2026-08-14T10:00:00Z",
+                    "completedAt": "2026-08-14T10:05:00Z",
+                    "size": 2.5,
+                    "incremental_base_backup_id": "base-backup"
+                }
+            ]
+            """;
+
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: _ => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"),
+            }
+        );
+
+        var backups = await client.Backup.List(
+            BackupStorageProvider.Filesystem,
+            TestContext.Current.CancellationToken
+        );
+
+        var backup = Assert.Single(backups);
+        Assert.Equal("my-backup", backup.Id);
+        Assert.Equal(2.5, backup.Size);
+        Assert.Equal("base-backup", backup.IncrementalBaseBackupId);
+    }
+
+    /// <summary>
+    /// A full (non-incremental) backup has no base, and the server omits the key entirely, so
+    /// the model must report null rather than an empty string.
+    /// </summary>
+    [Fact]
+    public async Task List_IncrementalBaseBackupIdIsNull_ForFullBackup()
+    {
+        var json = """
+            [
+                {
+                    "id": "my-backup",
+                    "classes": ["Article"],
+                    "status": "SUCCESS",
+                    "size": 2.5
+                }
+            ]
+            """;
+
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: _ => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"),
+            }
+        );
+
+        var backups = await client.Backup.List(
+            BackupStorageProvider.Filesystem,
+            TestContext.Current.CancellationToken
+        );
+
+        var backup = Assert.Single(backups);
+        Assert.Null(backup.IncrementalBaseBackupId);
+        Assert.Equal(2.5, backup.Size);
+    }
+
+    /// <summary>
+    /// The create-status response carries the same field, and the model is shared with the list
+    /// path, so leaving it unset there would reintroduce the same silent null.
+    /// </summary>
+    [Fact]
+    public async Task GetStatus_PopulatesIncrementalBaseBackupId()
+    {
+        var json = """
+            {
+                "id": "my-backup",
+                "status": "SUCCESS",
+                "path": "/backups",
+                "backend": "filesystem",
+                "size": 1.5,
+                "incremental_base_backup_id": "base-backup"
+            }
+            """;
+
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: _ => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"),
+            }
+        );
+
+        var backup = await client.Backup.GetStatus(
+            new FilesystemBackend("/backups"),
+            "my-backup",
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.Equal("base-backup", backup.IncrementalBaseBackupId);
+        Assert.Equal(1.5, backup.Size);
+    }
 }

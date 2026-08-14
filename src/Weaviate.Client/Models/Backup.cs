@@ -295,6 +295,12 @@ public record Backup(
     /// Gets the size of the backup in GiB. Available after completion.
     /// </summary>
     public double? Size { get; init; }
+
+    /// <summary>
+    /// Gets the id of the base backup this backup was built on, or null when the backup is not
+    /// incremental.
+    /// </summary>
+    public string? IncrementalBaseBackupId { get; init; }
 }
 
 /// <summary>

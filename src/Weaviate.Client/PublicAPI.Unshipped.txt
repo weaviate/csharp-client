@@ -349,3 +349,5 @@ Weaviate.Client.Models.BackupCreateRequest.BackupCreateRequest(string! Id, Weavi
 Weaviate.Client.Models.BackupCreateRequest.Deconstruct(out string! Id, out Weaviate.Client.Models.BackupBackend! Backend, out Weaviate.Client.Internal.AutoArray<string!>? IncludeCollections, out Weaviate.Client.Internal.AutoArray<string!>? ExcludeCollections, out int? CPUPercentage, out Weaviate.Client.Models.BackupCompressionLevel? CompressionLevel, out string? IncrementalBaseBackupId) -> void
 Weaviate.Client.Models.BackupCreateRequest.IncrementalBaseBackupId.get -> string?
 Weaviate.Client.Models.BackupCreateRequest.IncrementalBaseBackupId.init -> void
+Weaviate.Client.Models.Backup.IncrementalBaseBackupId.get -> string?
+Weaviate.Client.Models.Backup.IncrementalBaseBackupId.init -> void

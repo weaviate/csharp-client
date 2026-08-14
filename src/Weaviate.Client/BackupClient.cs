@@ -435,6 +435,7 @@ public class BackupClient
         )
         {
             Size = dto.Size,
+            IncrementalBaseBackupId = dto.Incremental_base_backup_id,
         };
 
     /// <summary>
@@ -487,5 +488,9 @@ public class BackupClient
             dto.StartedAt,
             dto.CompletedAt,
             null
-        );
+        )
+        {
+            Size = dto.Size,
+            IncrementalBaseBackupId = dto.Incremental_base_backup_id,
+        };
 }
