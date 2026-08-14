@@ -799,17 +799,20 @@ public class VectorizerFactory
     /// <param name="baseURL">The base url</param>
     /// <param name="model">The model</param>
     /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <param name="endpoint">The endpoint</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecMorph(
         string? baseURL = null,
         string? model = null,
-        bool? vectorizeCollectionName = null
+        bool? vectorizeCollectionName = null,
+        string? endpoint = null
     ) =>
         new Text2VecMorph
         {
             BaseURL = baseURL,
             Model = model,
             VectorizeCollectionName = vectorizeCollectionName,
+            Endpoint = endpoint,
         };
 
     /// <summary>
@@ -840,6 +843,7 @@ public class VectorizerFactory
     /// <param name="modelVersion">The model version</param>
     /// <param name="type">The type</param>
     /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <param name="endpoint">The endpoint</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Text2VecOpenAI(
         string? baseURL = null,
@@ -847,7 +851,8 @@ public class VectorizerFactory
         string? model = null,
         string? modelVersion = null,
         string? type = null,
-        bool? vectorizeCollectionName = null
+        bool? vectorizeCollectionName = null,
+        string? endpoint = null
     ) =>
         new Text2VecOpenAI
         {
@@ -857,6 +862,7 @@ public class VectorizerFactory
             ModelVersion = modelVersion,
             Type = type,
             VectorizeCollectionName = vectorizeCollectionName,
+            Endpoint = endpoint,
         };
 
     /// <summary>

@@ -647,6 +647,11 @@ public static class GenerativeConfig
         public string? Region { get; set; }
 
         /// <summary>
+        /// Gets or sets the Google Vertex AI location.
+        /// </summary>
+        public string? Location { get; set; }
+
+        /// <summary>
         /// Gets or sets the temperature for controlling randomness in generation.
         /// </summary>
         public double? Temperature { get; set; }
