@@ -310,6 +310,89 @@ public class GenerativeShortcutsTests
         Assert.Equal(0.5f, providerQuery.Mistral.Temperature);
     }
 
+    /// <summary>
+    /// Tests that a runtime DeepSeek provider reaches the request as GenerativeDeepseek with
+    /// every setting mapped to its own proto field. Unlike the collection config, the runtime
+    /// provider travels over gRPC, so this also pins that the vendored generative.proto carries
+    /// the deepseek member of the provider oneof.
+    /// </summary>
+    [Fact]
+    public async Task GenerateClient_FetchObjects_WithDeepseekProvider_MapsAllFields()
+    {
+        // Arrange
+        var provider = new Providers.Deepseek
+        {
+            BaseUrl = "https://api.deepseek.com",
+            Model = "deepseek-chat",
+            Temperature = 0.7,
+            MaxTokens = 2048,
+            FrequencyPenalty = 0.5,
+            PresencePenalty = 0.25,
+            TopP = 0.9,
+            Stop = ["\n\n"],
+        };
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
+
+        // Act
+        await client
+            .Collections.Use("TestCollection")
+            .Generate.FetchObjects(
+                limit: 10,
+                singlePrompt: "Summarize this",
+                provider: provider,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+
+        // Assert
+        var capturedRequest = getCapturedRequest();
+        Assert.NotNull(capturedRequest);
+        var providerQuery = capturedRequest!.Generative!.Single!.Queries[0];
+        Assert.NotNull(providerQuery.Deepseek);
+        Assert.Equal("https://api.deepseek.com", providerQuery.Deepseek.BaseUrl);
+        Assert.Equal("deepseek-chat", providerQuery.Deepseek.Model);
+        Assert.Equal(0.7, providerQuery.Deepseek.Temperature);
+        Assert.Equal(2048, providerQuery.Deepseek.MaxTokens);
+        Assert.Equal(0.5, providerQuery.Deepseek.FrequencyPenalty);
+        Assert.Equal(0.25, providerQuery.Deepseek.PresencePenalty);
+        Assert.Equal(0.9, providerQuery.Deepseek.TopP);
+        Assert.Equal(["\n\n"], providerQuery.Deepseek.Stop.Values);
+    }
+
+    /// <summary>
+    /// Tests that an unset optional stays unset rather than travelling as a proto default, so
+    /// the server applies its own default instead of a client-invented zero.
+    /// </summary>
+    [Fact]
+    public async Task GenerateClient_FetchObjects_WithBareDeepseekProvider_LeavesOptionalsUnset()
+    {
+        // Arrange
+        var provider = new Providers.Deepseek { Model = "deepseek-reasoner" };
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
+
+        // Act
+        await client
+            .Collections.Use("TestCollection")
+            .Generate.FetchObjects(
+                limit: 10,
+                singlePrompt: "Summarize this",
+                provider: provider,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+
+        // Assert
+        var capturedRequest = getCapturedRequest();
+        Assert.NotNull(capturedRequest);
+        var providerQuery = capturedRequest!.Generative!.Single!.Queries[0];
+        Assert.NotNull(providerQuery.Deepseek);
+        Assert.Equal("deepseek-reasoner", providerQuery.Deepseek.Model);
+        Assert.False(providerQuery.Deepseek.HasTemperature);
+        Assert.False(providerQuery.Deepseek.HasMaxTokens);
+        Assert.False(providerQuery.Deepseek.HasFrequencyPenalty);
+        Assert.False(providerQuery.Deepseek.HasPresencePenalty);
+        Assert.False(providerQuery.Deepseek.HasTopP);
+        Assert.Null(providerQuery.Deepseek.Stop);
+    }
+
     #endregion
 
     #region Helper Methods

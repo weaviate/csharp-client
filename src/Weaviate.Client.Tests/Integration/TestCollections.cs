@@ -194,6 +194,64 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     /// <summary>
+    /// Tests that a generative-deepseek collection round-trips through a real server. The module
+    /// validates its own settings on create (temperature, both penalties and topP all have
+    /// ranges, and baseURL is parsed), so a misspelt key or a wrong type shows up here rather
+    /// than silently falling back to a default.
+    /// </summary>
+    /// <remarks>
+    /// Every float here is deliberately integral. On a class that uses named vectors, Weaviate
+    /// 1.39.0 rejects any fractional float in this module's config — <c>temperature: 0.7</c>
+    /// comes back as "Wrong temperature configuration, values are between 0.0 and 2.0". The
+    /// client sends plain JSON numbers and the same payload is accepted on a class-level
+    /// vectorizer, so this is a server-side defect, not a client one: the settings helper
+    /// receives the value as a <c>json.Number</c>, its non-integer path returns the caller's
+    /// "defaultValue", and generative-deepseek passes a -100 sentinel there
+    /// (usecases/modulecomponents/settings/class_settings_property_helper.go getNumberValue,
+    /// modules/generative-deepseek/config/class_settings.go getFloatProperty).
+    /// generative-openai fails identically. Fractional values and the exact wire keys are
+    /// covered by the unit test instead.
+    /// </remarks>
+    [Fact]
+    public async Task Collection_Creates_And_Retrieves_GenerativeDeepseek_Config()
+    {
+        RequireModule("generative-deepseek");
+
+        // Arrange
+        var collectionClient = await CollectionFactory(
+            properties: [Property.Text("Name")],
+            generativeConfig: Configure.Generative.Deepseek(
+                model: "deepseek-chat",
+                temperature: 1,
+                maxTokens: 2048,
+                frequencyPenalty: 0,
+                presencePenalty: 0,
+                topP: 1,
+                baseURL: "https://api.deepseek.com",
+                stop: ["\n\n"]
+            )
+        );
+
+        // Act
+        var collection = await _weaviate
+            .Collections.Use(collectionClient.Name)
+            .Config.Get(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.NotNull(collection);
+        var deepseek = Assert.IsType<GenerativeConfig.Deepseek>(collection.GenerativeConfig);
+        Assert.Equal("deepseek-chat", deepseek.Model);
+        Assert.Equal(1, deepseek.Temperature);
+        Assert.Equal(2048, deepseek.MaxTokens);
+        Assert.Equal(0, deepseek.FrequencyPenalty);
+        Assert.Equal(0, deepseek.PresencePenalty);
+        Assert.Equal(1, deepseek.TopP);
+        Assert.Equal("https://api.deepseek.com", deepseek.BaseURL);
+        Assert.NotNull(deepseek.Stop);
+        Assert.Equal(["\n\n"], deepseek.Stop);
+    }
+
+    /// <summary>
     /// Tests that test collections export
     /// </summary>
     [Fact]

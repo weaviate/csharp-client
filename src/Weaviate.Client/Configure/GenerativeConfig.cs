@@ -202,6 +202,40 @@ public class GenerativeConfigFactory
         };
 
     /// <summary>
+    /// Create a generative configuration for DeepSeek.
+    /// </summary>
+    /// <param name="model">The model to use.</param>
+    /// <param name="temperature">The temperature.</param>
+    /// <param name="maxTokens">The maximum number of tokens to generate.</param>
+    /// <param name="frequencyPenalty">The frequency penalty.</param>
+    /// <param name="presencePenalty">The presence penalty.</param>
+    /// <param name="topP">The top P.</param>
+    /// <param name="baseURL">The base URL.</param>
+    /// <param name="stop">The stop sequences.</param>
+    /// <returns>A <see cref="IGenerativeConfig"/> instance.</returns>
+    public IGenerativeConfig Deepseek(
+        string? model = null,
+        double? temperature = null,
+        int? maxTokens = null,
+        double? frequencyPenalty = null,
+        double? presencePenalty = null,
+        double? topP = null,
+        string? baseURL = null,
+        string[]? stop = null
+    ) =>
+        new GenerativeConfig.Deepseek
+        {
+            Model = model,
+            Temperature = temperature,
+            MaxTokens = maxTokens,
+            FrequencyPenalty = frequencyPenalty,
+            PresencePenalty = presencePenalty,
+            TopP = topP,
+            BaseURL = baseURL,
+            Stop = stop,
+        };
+
+    /// <summary>
     /// Create a generative configuration for FriendliAI.
     /// </summary>
     /// <param name="baseURL">The base URL.</param>

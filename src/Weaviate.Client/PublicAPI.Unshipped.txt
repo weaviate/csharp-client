@@ -351,3 +351,63 @@ Weaviate.Client.Models.BackupCreateRequest.IncrementalBaseBackupId.get -> string
 Weaviate.Client.Models.BackupCreateRequest.IncrementalBaseBackupId.init -> void
 Weaviate.Client.Models.Backup.IncrementalBaseBackupId.get -> string?
 Weaviate.Client.Models.Backup.IncrementalBaseBackupId.init -> void
+const Weaviate.Client.Models.GenerativeConfig.Deepseek.TypeValue = "generative-deepseek" -> string!
+override sealed Weaviate.Client.Models.Generative.Providers.Deepseek.Equals(Weaviate.Client.Models.GenerativeProvider? other) -> bool
+override Weaviate.Client.Models.Generative.Providers.Deepseek.<Clone>$() -> Weaviate.Client.Models.Generative.Providers.Deepseek!
+override Weaviate.Client.Models.Generative.Providers.Deepseek.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Generative.Providers.Deepseek.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Generative.Providers.Deepseek.GetHashCode() -> int
+override Weaviate.Client.Models.Generative.Providers.Deepseek.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Generative.Providers.Deepseek.ToString() -> string!
+override Weaviate.Client.Models.GenerativeConfig.Deepseek.Equals(object? obj) -> bool
+override Weaviate.Client.Models.GenerativeConfig.Deepseek.GetHashCode() -> int
+override Weaviate.Client.Models.GenerativeConfig.Deepseek.ToString() -> string!
+static Weaviate.Client.Models.Generative.Providers.Deepseek.operator !=(Weaviate.Client.Models.Generative.Providers.Deepseek? left, Weaviate.Client.Models.Generative.Providers.Deepseek? right) -> bool
+static Weaviate.Client.Models.Generative.Providers.Deepseek.operator ==(Weaviate.Client.Models.Generative.Providers.Deepseek? left, Weaviate.Client.Models.Generative.Providers.Deepseek? right) -> bool
+static Weaviate.Client.Models.GenerativeConfig.Deepseek.operator !=(Weaviate.Client.Models.GenerativeConfig.Deepseek? left, Weaviate.Client.Models.GenerativeConfig.Deepseek? right) -> bool
+static Weaviate.Client.Models.GenerativeConfig.Deepseek.operator ==(Weaviate.Client.Models.GenerativeConfig.Deepseek? left, Weaviate.Client.Models.GenerativeConfig.Deepseek? right) -> bool
+virtual Weaviate.Client.Models.Generative.Providers.Deepseek.Equals(Weaviate.Client.Models.Generative.Providers.Deepseek? other) -> bool
+virtual Weaviate.Client.Models.GenerativeConfig.Deepseek.<Clone>$() -> Weaviate.Client.Models.GenerativeConfig.Deepseek!
+virtual Weaviate.Client.Models.GenerativeConfig.Deepseek.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.GenerativeConfig.Deepseek.Equals(Weaviate.Client.Models.GenerativeConfig.Deepseek? other) -> bool
+virtual Weaviate.Client.Models.GenerativeConfig.Deepseek.PrintMembers(System.Text.StringBuilder! builder) -> bool
+Weaviate.Client.GenerativeConfigFactory.Deepseek(string? model = null, double? temperature = null, int? maxTokens = null, double? frequencyPenalty = null, double? presencePenalty = null, double? topP = null, string? baseURL = null, string![]? stop = null) -> Weaviate.Client.Models.IGenerativeConfig!
+Weaviate.Client.GenerativeProviderFactory.Deepseek(string? baseUrl = null, string? model = null, double? temperature = null, long? maxTokens = null, double? frequencyPenalty = null, double? presencePenalty = null, double? topP = null, System.Collections.Generic.List<string!>? stop = null) -> Weaviate.Client.Models.Generative.Providers.Deepseek!
+Weaviate.Client.Models.Generative.Providers.Deepseek
+Weaviate.Client.Models.Generative.Providers.Deepseek.BaseUrl.get -> string?
+Weaviate.Client.Models.Generative.Providers.Deepseek.BaseUrl.set -> void
+Weaviate.Client.Models.Generative.Providers.Deepseek.Deepseek() -> void
+Weaviate.Client.Models.Generative.Providers.Deepseek.Deepseek(Weaviate.Client.Models.Generative.Providers.Deepseek! original) -> void
+Weaviate.Client.Models.Generative.Providers.Deepseek.FrequencyPenalty.get -> double?
+Weaviate.Client.Models.Generative.Providers.Deepseek.FrequencyPenalty.set -> void
+Weaviate.Client.Models.Generative.Providers.Deepseek.MaxTokens.get -> long?
+Weaviate.Client.Models.Generative.Providers.Deepseek.MaxTokens.set -> void
+Weaviate.Client.Models.Generative.Providers.Deepseek.Model.get -> string?
+Weaviate.Client.Models.Generative.Providers.Deepseek.Model.set -> void
+Weaviate.Client.Models.Generative.Providers.Deepseek.PresencePenalty.get -> double?
+Weaviate.Client.Models.Generative.Providers.Deepseek.PresencePenalty.set -> void
+Weaviate.Client.Models.Generative.Providers.Deepseek.Stop.get -> System.Collections.Generic.List<string!>?
+Weaviate.Client.Models.Generative.Providers.Deepseek.Stop.set -> void
+Weaviate.Client.Models.Generative.Providers.Deepseek.Temperature.get -> double?
+Weaviate.Client.Models.Generative.Providers.Deepseek.Temperature.set -> void
+Weaviate.Client.Models.Generative.Providers.Deepseek.TopP.get -> double?
+Weaviate.Client.Models.Generative.Providers.Deepseek.TopP.set -> void
+Weaviate.Client.Models.GenerativeConfig.Deepseek
+Weaviate.Client.Models.GenerativeConfig.Deepseek.BaseURL.get -> string?
+Weaviate.Client.Models.GenerativeConfig.Deepseek.BaseURL.set -> void
+Weaviate.Client.Models.GenerativeConfig.Deepseek.Deepseek(Weaviate.Client.Models.GenerativeConfig.Deepseek! original) -> void
+Weaviate.Client.Models.GenerativeConfig.Deepseek.FrequencyPenalty.get -> double?
+Weaviate.Client.Models.GenerativeConfig.Deepseek.FrequencyPenalty.set -> void
+Weaviate.Client.Models.GenerativeConfig.Deepseek.MaxTokens.get -> int?
+Weaviate.Client.Models.GenerativeConfig.Deepseek.MaxTokens.set -> void
+Weaviate.Client.Models.GenerativeConfig.Deepseek.Model.get -> string?
+Weaviate.Client.Models.GenerativeConfig.Deepseek.Model.set -> void
+Weaviate.Client.Models.GenerativeConfig.Deepseek.PresencePenalty.get -> double?
+Weaviate.Client.Models.GenerativeConfig.Deepseek.PresencePenalty.set -> void
+Weaviate.Client.Models.GenerativeConfig.Deepseek.Stop.get -> string![]?
+Weaviate.Client.Models.GenerativeConfig.Deepseek.Stop.set -> void
+Weaviate.Client.Models.GenerativeConfig.Deepseek.Temperature.get -> double?
+Weaviate.Client.Models.GenerativeConfig.Deepseek.Temperature.set -> void
+Weaviate.Client.Models.GenerativeConfig.Deepseek.TopP.get -> double?
+Weaviate.Client.Models.GenerativeConfig.Deepseek.TopP.set -> void
+Weaviate.Client.Models.GenerativeConfig.Deepseek.Type.get -> string!
