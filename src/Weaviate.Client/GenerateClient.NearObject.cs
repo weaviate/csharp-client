@@ -16,6 +16,7 @@ public partial class GenerateClient
     /// <param name="distance">Distance threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
@@ -35,6 +36,7 @@ public partial class GenerateClient
         double? distance = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -56,6 +58,7 @@ public partial class GenerateClient
             distance: distance,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             groupBy: null,
@@ -84,6 +87,7 @@ public partial class GenerateClient
     /// <param name="distance">Distance threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">Auto-limit threshold</param>
     /// <param name="filters">Filters to apply</param>
     /// <param name="rerank">Rerank configuration</param>
@@ -104,6 +108,7 @@ public partial class GenerateClient
         double? distance = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -125,6 +130,7 @@ public partial class GenerateClient
             distance: distance,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             groupBy: groupBy,
