@@ -411,3 +411,11 @@ Weaviate.Client.Models.GenerativeConfig.Deepseek.Temperature.set -> void
 Weaviate.Client.Models.GenerativeConfig.Deepseek.TopP.get -> double?
 Weaviate.Client.Models.GenerativeConfig.Deepseek.TopP.set -> void
 Weaviate.Client.Models.GenerativeConfig.Deepseek.Type.get -> string!
+*REMOVED*Weaviate.Client.Models.Aggregate.Boolean.PercentageFalse.get -> double
+*REMOVED*Weaviate.Client.Models.Aggregate.Boolean.PercentageTrue.get -> double
+*REMOVED*Weaviate.Client.Models.Aggregate.Boolean.TotalFalse.get -> long
+*REMOVED*Weaviate.Client.Models.Aggregate.Boolean.TotalTrue.get -> long
+Weaviate.Client.Models.Aggregate.Boolean.PercentageFalse.get -> double?
+Weaviate.Client.Models.Aggregate.Boolean.PercentageTrue.get -> double?
+Weaviate.Client.Models.Aggregate.Boolean.TotalFalse.get -> long?
+Weaviate.Client.Models.Aggregate.Boolean.TotalTrue.get -> long?
