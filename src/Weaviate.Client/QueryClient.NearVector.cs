@@ -16,6 +16,7 @@ public partial class QueryClient
     /// <param name="filters">The filters</param>
     /// <param name="certainty">The certainty</param>
     /// <param name="distance">The distance</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
@@ -32,6 +33,7 @@ public partial class QueryClient
         Filter? filters = null,
         float? certainty = null,
         float? distance = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -49,6 +51,7 @@ public partial class QueryClient
             distance: distance,
             certainty: certainty,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             limit: limit,
             filters: filters,
@@ -72,6 +75,7 @@ public partial class QueryClient
     /// <param name="filters">The filters</param>
     /// <param name="certainty">The certainty</param>
     /// <param name="distance">The distance</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
@@ -89,6 +93,7 @@ public partial class QueryClient
         Filter? filters = null,
         float? certainty = null,
         float? distance = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -108,6 +113,7 @@ public partial class QueryClient
             distance: distance,
             certainty: certainty,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             limit: limit,
             tenant: _collectionClient.Tenant,
@@ -129,6 +135,7 @@ public partial class QueryClient
     /// <param name="filters">The filters</param>
     /// <param name="certainty">The certainty</param>
     /// <param name="distance">The distance</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
@@ -145,6 +152,7 @@ public partial class QueryClient
         Filter? filters = null,
         float? certainty = null,
         float? distance = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -161,6 +169,7 @@ public partial class QueryClient
             filters,
             certainty,
             distance,
+            diversitySelection,
             autoLimit,
             limit,
             offset,
@@ -182,6 +191,7 @@ public partial class QueryClient
     /// <param name="filters">The filters</param>
     /// <param name="certainty">The certainty</param>
     /// <param name="distance">The distance</param>
+    /// <param name="diversitySelection">The diversity selection</param>
     /// <param name="autoLimit">The auto limit</param>
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
@@ -199,6 +209,7 @@ public partial class QueryClient
         Filter? filters = null,
         float? certainty = null,
         float? distance = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -216,6 +227,7 @@ public partial class QueryClient
             filters,
             certainty,
             distance,
+            diversitySelection,
             autoLimit,
             limit,
             offset,
@@ -234,6 +246,7 @@ public partial class QueryClient
     /// </summary>
     /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -248,6 +261,7 @@ public partial class QueryClient
     public async Task<WeaviateResult> NearVector(
         NearVectorInput query,
         Filter? filters = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -264,6 +278,7 @@ public partial class QueryClient
             filters: filters,
             certainty: query.Certainty,
             distance: query.Distance,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
@@ -283,6 +298,7 @@ public partial class QueryClient
     /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -298,6 +314,7 @@ public partial class QueryClient
         NearVectorInput query,
         GroupByRequest groupBy,
         Filter? filters = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -315,6 +332,7 @@ public partial class QueryClient
             filters: filters,
             certainty: query.Certainty,
             distance: query.Distance,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
@@ -339,6 +357,7 @@ public partial class QueryClient
     /// </example>
     /// <param name="vectors"></param>
     /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -353,6 +372,7 @@ public partial class QueryClient
     public async Task<WeaviateResult> NearVector(
         NearVectorInput.FactoryFn vectors,
         Filter? filters = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -367,6 +387,7 @@ public partial class QueryClient
         await NearVector(
             vectors(VectorInputBuilderFactories.CreateNearVectorBuilder()),
             filters,
+            diversitySelection,
             autoLimit,
             limit,
             offset,
@@ -386,6 +407,7 @@ public partial class QueryClient
     /// <param name="vectors"></param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -401,6 +423,7 @@ public partial class QueryClient
         NearVectorInput.FactoryFn vectors,
         GroupByRequest groupBy,
         Filter? filters = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -416,6 +439,7 @@ public partial class QueryClient
             vectors(VectorInputBuilderFactories.CreateNearVectorBuilder()),
             groupBy,
             filters,
+            diversitySelection,
             autoLimit,
             limit,
             offset,

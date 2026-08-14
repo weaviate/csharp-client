@@ -636,6 +636,7 @@ public partial class WeaviateClient : IDisposable
         {
             client.SetUseAlphaParam(true);
         }
+        client.SetServerVersion(serverVersion);
 
         return client;
     }

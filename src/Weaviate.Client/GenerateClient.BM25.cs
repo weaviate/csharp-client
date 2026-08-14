@@ -18,6 +18,7 @@ public partial class GenerateClient
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
+    /// <param name="searchOperator">BM25 search operator (AND/OR)</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
@@ -39,6 +40,7 @@ public partial class GenerateClient
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
+        BM25Operator? searchOperator = null,
         Rerank? rerank = null,
         Boost? boost = null,
         SinglePrompt? singlePrompt = null,
@@ -61,6 +63,7 @@ public partial class GenerateClient
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
+            searchOperator: searchOperator,
             groupBy: groupBy,
             rerank: rerank,
             boost: boost,
@@ -87,6 +90,7 @@ public partial class GenerateClient
     /// <param name="autoLimit">Auto-cut threshold</param>
     /// <param name="limit">Maximum number of results</param>
     /// <param name="offset">Offset for pagination</param>
+    /// <param name="searchOperator">BM25 search operator (AND/OR)</param>
     /// <param name="rerank">Rerank configuration</param>
     /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
@@ -107,6 +111,7 @@ public partial class GenerateClient
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
+        BM25Operator? searchOperator = null,
         Rerank? rerank = null,
         Boost? boost = null,
         SinglePrompt? singlePrompt = null,
@@ -129,6 +134,7 @@ public partial class GenerateClient
             autoLimit: autoLimit,
             limit: limit,
             offset: offset,
+            searchOperator: searchOperator,
             groupBy: null,
             rerank: rerank,
             boost: boost,

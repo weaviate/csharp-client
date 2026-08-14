@@ -17,6 +17,7 @@ public partial class TypedQueryClient<T>
     /// <param name="distance">Maximum distance threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result limit threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
@@ -34,6 +35,7 @@ public partial class TypedQueryClient<T>
         double? distance = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -52,6 +54,7 @@ public partial class TypedQueryClient<T>
             distance: distance,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
@@ -75,6 +78,7 @@ public partial class TypedQueryClient<T>
     /// <param name="distance">Maximum distance threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result limit threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
@@ -93,6 +97,7 @@ public partial class TypedQueryClient<T>
         double? distance = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -112,6 +117,7 @@ public partial class TypedQueryClient<T>
             distance: distance,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,

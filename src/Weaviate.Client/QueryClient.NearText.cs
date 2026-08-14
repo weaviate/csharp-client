@@ -16,6 +16,7 @@ public partial class QueryClient
     /// <param name="moveAway">Move-away configuration.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
@@ -34,6 +35,7 @@ public partial class QueryClient
         Move? moveAway = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -53,6 +55,7 @@ public partial class QueryClient
             moveTo: moveTo,
             moveAway: moveAway,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             targetVector: null,
             filters: filters,
@@ -76,6 +79,7 @@ public partial class QueryClient
     /// <param name="moveAway">Move-away configuration.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
@@ -95,6 +99,7 @@ public partial class QueryClient
         Move? moveAway = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -115,6 +120,7 @@ public partial class QueryClient
             moveAway: moveAway,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             tenant: _collectionClient.Tenant,
@@ -145,6 +151,7 @@ public partial class QueryClient
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
@@ -159,6 +166,7 @@ public partial class QueryClient
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         Boost? boost = null,
@@ -179,6 +187,7 @@ public partial class QueryClient
             moveTo: input.MoveTo,
             moveAway: input.MoveAway,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             targetVector: input.TargetVectors,
             filters: filters,
@@ -203,6 +212,7 @@ public partial class QueryClient
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
@@ -218,6 +228,7 @@ public partial class QueryClient
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         Boost? boost = null,
@@ -239,6 +250,7 @@ public partial class QueryClient
             moveAway: input.MoveAway,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             tenant: _collectionClient.Tenant,
@@ -269,6 +281,7 @@ public static class QueryClientNearTextExtensions
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         Boost? boost = null,
@@ -287,6 +300,7 @@ public static class QueryClientNearTextExtensions
                 filters: filters,
                 limit: limit,
                 offset: offset,
+                diversitySelection: diversitySelection,
                 autoLimit: autoLimit,
                 rerank: rerank,
                 boost: boost,
@@ -307,6 +321,7 @@ public static class QueryClientNearTextExtensions
             moveAway: query.MoveAway,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
@@ -329,6 +344,7 @@ public static class QueryClientNearTextExtensions
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         Boost? boost = null,
@@ -348,6 +364,7 @@ public static class QueryClientNearTextExtensions
                 filters: filters,
                 limit: limit,
                 offset: offset,
+                diversitySelection: diversitySelection,
                 autoLimit: autoLimit,
                 rerank: rerank,
                 boost: boost,
@@ -369,6 +386,7 @@ public static class QueryClientNearTextExtensions
             moveAway: query.MoveAway,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,

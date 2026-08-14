@@ -19,6 +19,7 @@ public partial class TypedQueryClient<T>
     /// <param name="moveAway">Move the query vector away from these concepts.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
@@ -37,6 +38,7 @@ public partial class TypedQueryClient<T>
         Move? moveAway = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -56,6 +58,7 @@ public partial class TypedQueryClient<T>
             moveAway: moveAway,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
@@ -80,6 +83,7 @@ public partial class TypedQueryClient<T>
     /// <param name="moveAway">Move the query vector away from these concepts.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
@@ -99,6 +103,7 @@ public partial class TypedQueryClient<T>
         Move? moveAway = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
@@ -119,6 +124,7 @@ public partial class TypedQueryClient<T>
             moveAway: moveAway,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
@@ -139,6 +145,7 @@ public partial class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
@@ -153,6 +160,7 @@ public partial class TypedQueryClient<T>
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         Boost? boost = null,
@@ -168,6 +176,7 @@ public partial class TypedQueryClient<T>
             filters: filters,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             rerank: rerank,
             boost: boost,
@@ -188,6 +197,7 @@ public partial class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
@@ -203,6 +213,7 @@ public partial class TypedQueryClient<T>
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         Boost? boost = null,
@@ -219,6 +230,7 @@ public partial class TypedQueryClient<T>
             filters: filters,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             rerank: rerank,
             boost: boost,
@@ -238,6 +250,7 @@ public partial class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
@@ -252,6 +265,7 @@ public partial class TypedQueryClient<T>
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         Boost? boost = null,
@@ -266,6 +280,7 @@ public partial class TypedQueryClient<T>
             filters,
             limit,
             offset,
+            diversitySelection,
             autoLimit,
             rerank,
             boost,
@@ -284,6 +299,7 @@ public partial class TypedQueryClient<T>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
     /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
@@ -299,6 +315,7 @@ public partial class TypedQueryClient<T>
         Filter? filters = null,
         uint? limit = null,
         uint? offset = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
         Boost? boost = null,
@@ -314,6 +331,7 @@ public partial class TypedQueryClient<T>
             filters,
             limit,
             offset,
+            diversitySelection,
             autoLimit,
             rerank,
             boost,

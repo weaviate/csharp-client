@@ -86,7 +86,30 @@ public abstract record BM25Operator(string Operator)
     public record And() : BM25Operator("And");
 
     /// <summary>
+    /// The cross-property and; every query token must match in at least one searched property,
+    /// which all must share the same tokenization and analyzer settings.
+    /// Requires Weaviate 1.37.15, 1.38.8 or 1.39.0 or later.
+    /// </summary>
+    public record AndCross() : BM25Operator("AndCross");
+
+    /// <summary>
     /// The or
     /// </summary>
     public record Or(int MinimumMatch) : BM25Operator("Or");
+}
+
+/// <summary>
+/// The diversity selection applied to search results. Requires Weaviate 1.37.0+ on the
+/// near-vector, near-object, near-text and near-media searches, and Weaviate 1.38.6+ on
+/// hybrid search.
+/// </summary>
+public abstract record Diversity
+{
+    /// <summary>
+    /// Maximal Marginal Relevance; Limit is the number of results returned after
+    /// diversification (the server requires it to be at least 1), Balance is the
+    /// trade-off in [0.0, 1.0] — 1.0 pure relevance, 0.0 pure diversity (the server
+    /// default when omitted).
+    /// </summary>
+    public record MMR(uint? Limit = null, float? Balance = null) : Diversity;
 }

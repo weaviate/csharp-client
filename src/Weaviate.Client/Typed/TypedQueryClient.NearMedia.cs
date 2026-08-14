@@ -21,6 +21,7 @@ public partial class TypedQueryClient<T>
     /// </example>
     /// <param name="media">Lambda builder for creating NearMediaInput with media data and target vectors.</param>
     /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -35,6 +36,7 @@ public partial class TypedQueryClient<T>
     public async Task<WeaviateResult<WeaviateObject<T>>> NearMedia(
         NearMediaInput.FactoryFn media,
         Filter? filters = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -52,6 +54,7 @@ public partial class TypedQueryClient<T>
             filters: filters,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             rerank: rerank,
             boost: boost,
@@ -77,6 +80,7 @@ public partial class TypedQueryClient<T>
     /// <param name="media">Lambda builder for creating NearMediaInput with media data and target vectors.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
@@ -92,6 +96,7 @@ public partial class TypedQueryClient<T>
         NearMediaInput.FactoryFn media,
         GroupByRequest groupBy,
         Filter? filters = null,
+        Diversity? diversitySelection = null,
         uint? autoLimit = null,
         uint? limit = null,
         uint? offset = null,
@@ -110,6 +115,7 @@ public partial class TypedQueryClient<T>
             filters: filters,
             limit: limit,
             offset: offset,
+            diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             rerank: rerank,
             boost: boost,

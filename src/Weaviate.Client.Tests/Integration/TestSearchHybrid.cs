@@ -832,6 +832,193 @@ public partial class SearchTests : IntegrationTests
     }
 
     /// <summary>
+    /// Tests that test hybrid bm 25 operator and cross
+    /// </summary>
+    [Fact]
+    public async Task Test_Hybrid_BM25_Operator_AndCross()
+    {
+        RequireVersion("1.38.8");
+
+        var collection = await CollectionFactory(
+            properties: new[] { Property.Text("title"), Property.Text("body") },
+            vectorConfig: Configure.Vector(t => t.SelfProvided())
+        );
+
+        // Neither of splitAcross's properties holds both tokens, so only cross-property AND matches it.
+        var splitAcross = await collection.Data.Insert(
+            new { title = "banana", body = "split" },
+            vectors: new float[] { 1, 0, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        await collection.Data.Insert(
+            new { title = "banana", body = "bread" },
+            vectors: new float[] { 0, 1, 0, 0 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var andObjs = (
+            await collection.Query.Hybrid(
+                "banana split",
+                vectors: null,
+                alpha: 0.0f,
+                bm25Operator: new BM25Operator.And(),
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
+        Assert.Empty(andObjs);
+
+        var andCrossObjs = (
+            await collection.Query.Hybrid(
+                "banana split",
+                vectors: null,
+                alpha: 0.0f,
+                bm25Operator: new BM25Operator.AndCross(),
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        ).ToList();
+        Assert.Single(andCrossObjs);
+        Assert.Equal(splitAcross, andCrossObjs[0].UUID);
+    }
+
+    /// <summary>
+    /// Creates a collection with 3 tight clusters (a, b, c) of vectors in 3D.
+    /// </summary>
+    private async Task<CollectionClient> CreateClusteredCollection()
+    {
+        var collection = await CollectionFactory(
+            properties: new[] { Property.Text("name") },
+            vectorConfig: Configure.Vector(t => t.SelfProvided())
+        );
+
+        var data = new (string Name, float[] Vector)[]
+        {
+            ("a1", [1.0f, 0.0f, 0.0f]),
+            ("a2", [0.95f, 0.05f, 0.0f]),
+            ("a3", [0.9f, 0.1f, 0.0f]),
+            ("b1", [0.0f, 1.0f, 0.0f]),
+            ("b2", [0.05f, 0.95f, 0.0f]),
+            ("c1", [0.0f, 0.0f, 1.0f]),
+        };
+        foreach (var (name, vector) in data)
+        {
+            await collection.Data.Insert(
+                new { name },
+                vectors: vector,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+        }
+
+        return collection;
+    }
+
+    /// <summary>
+    /// Tests that test hybrid diversity balance zero differs from balance one
+    /// </summary>
+    [Fact]
+    public async Task Test_Hybrid_Diversity_Balance_Reorders()
+    {
+        RequireVersion("1.38.6");
+
+        var collection = await CreateClusteredCollection();
+
+        var baseline = (
+            await collection.Query.Hybrid(
+                query: null,
+                vectors: new float[] { 1f, 0f, 0f },
+                limit: 3,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        )
+            .Select(o => o.UUID)
+            .ToList();
+
+        var balanceZero = (
+            await collection.Query.Hybrid(
+                query: null,
+                vectors: new float[] { 1f, 0f, 0f },
+                diversitySelection: new Diversity.MMR(Limit: 3, Balance: 0.0f),
+                limit: 3,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        )
+            .Select(o => o.UUID)
+            .ToList();
+
+        var balanceOne = (
+            await collection.Query.Hybrid(
+                query: null,
+                vectors: new float[] { 1f, 0f, 0f },
+                diversitySelection: new Diversity.MMR(Limit: 3, Balance: 1.0f),
+                limit: 3,
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        )
+            .Select(o => o.UUID)
+            .ToList();
+
+        // Pure diversity picks across clusters, so it must differ from pure relevance,
+        // while pure relevance matches the plain hybrid baseline.
+        Assert.NotEqual(balanceZero, balanceOne);
+        Assert.Equal(baseline, balanceOne);
+    }
+
+    /// <summary>
+    /// Tests that test hybrid diversity mmr limit caps results
+    /// </summary>
+    [Fact]
+    public async Task Test_Hybrid_Diversity_MMR_Limit_Caps_Results()
+    {
+        RequireVersion("1.38.6");
+
+        var collection = await CollectionFactory(
+            properties: new[] { Property.Text("name") },
+            vectorConfig: Configure.Vector(t => t.SelfProvided())
+        );
+
+        // Enough items (>25) that a small mmr limit is distinguishable from the server's default limit.
+        for (var i = 0; i < 50; i++)
+        {
+            await collection.Data.Insert(
+                new { name = $"t{i}" },
+                vectors: new float[] { 1.0f - 0.001f * i, 0f, 0f },
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+        }
+
+        var objs = await collection.Query.Hybrid(
+            query: null,
+            vectors: new float[] { 1f, 0f, 0f },
+            diversitySelection: new Diversity.MMR(Limit: 5, Balance: 0.5f),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        Assert.Equal(5, objs.Count());
+    }
+
+    /// <summary>
+    /// Tests that test hybrid diversity missing limit errors
+    /// </summary>
+    [Fact]
+    public async Task Test_Hybrid_Diversity_MissingLimit_Errors()
+    {
+        RequireVersion("1.38.6");
+
+        var collection = await CreateClusteredCollection();
+
+        // The server requires the MMR limit; the client forwards the request unvalidated.
+        var exception = await Assert.ThrowsAnyAsync<WeaviateException>(async () =>
+            await collection.Query.Hybrid(
+                query: null,
+                vectors: new float[] { 1f, 0f, 0f },
+                diversitySelection: new Diversity.MMR(Balance: 0.5f),
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
+        Assert.NotNull(exception.InnerException);
+        Assert.Contains("MMR limit", exception.InnerException.Message);
+    }
+
+    /// <summary>
     /// Tests that test aggregate max vector distance
     /// </summary>
     [Fact]

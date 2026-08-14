@@ -59,6 +59,20 @@ internal partial class WeaviateGrpcClient : IDisposable
     }
 
     /// <summary>
+    /// The connected server version, or null when unknown. Used to reject requests
+    /// the server cannot process (e.g. BM25Operator.AndCross on pre-backport versions).
+    /// </summary>
+    private Version? _serverVersion;
+
+    /// <summary>
+    /// Sets the connected server version.
+    /// </summary>
+    internal void SetServerVersion(Version? serverVersion)
+    {
+        _serverVersion = serverVersion;
+    }
+
+    /// <summary>
     /// Internal constructor for testing. Accepts a pre-configured GrpcChannel to bypass network initialization.
     /// </summary>
     internal WeaviateGrpcClient(

@@ -349,6 +349,46 @@ public class CollectionTests
     }
 
     /// <summary>
+    /// Tests that GoogleVertex generative config serializes <c>location</c> when set, omits it
+    /// when unset, and round-trips it.
+    /// </summary>
+    [Fact]
+    public void Collection_GenerativeGoogleVertex_Serializes_And_RoundTrips_Location()
+    {
+        // Arrange
+        var withLocation = Assert.IsType<GenerativeConfig.GoogleVertex>(
+            Configure.Generative.GoogleVertex(projectId: "my-project", location: "us-east4")
+        );
+        var withoutLocation = Assert.IsType<GenerativeConfig.GoogleVertex>(
+            Configure.Generative.GoogleVertex(projectId: "my-project")
+        );
+
+        // Act
+        var jsonWith = JsonSerializer.Serialize(
+            withLocation,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+        var jsonWithout = JsonSerializer.Serialize(
+            withoutLocation,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        // Assert
+        Assert.Contains("\"location\":\"us-east4\"", jsonWith);
+        Assert.DoesNotContain("\"location\"", jsonWithout);
+
+        var roundTripped = GenerativeConfigSerialization.Factory(
+            GenerativeConfig.GoogleVertex.TypeValue,
+            JsonSerializer.Deserialize<object>(
+                jsonWith,
+                Rest.WeaviateRestClient.RestJsonSerializerOptions
+            )
+        );
+        var typed = Assert.IsType<GenerativeConfig.GoogleVertex>(roundTripped);
+        Assert.Equal("us-east4", typed.Location);
+    }
+
+    /// <summary>
     /// Tests that collection rerank deserializes into i reranker config
     /// </summary>
     [Fact]
