@@ -468,7 +468,7 @@ public static class Vectorizer
     /// has ever provided, so a collection configured with it could not be created. The Gemini API
     /// is reached through the <c>multi2vec-google</c> module by setting
     /// <see cref="Multi2VecGoogle.ApiEndpoint"/> to <c>generativelanguage.googleapis.com</c>,
-    /// which is what <see cref="VectorizerFactory.Multi2VecGoogleGemini(string[], string[], string[], string[], string, int?, string, int?, bool?)"/>
+    /// which is what <see cref="VectorizerFactory.Multi2VecGoogleGemini(string[], string[], string[], string[], string, int?, string, int?)"/>
     /// now returns. Kept only so existing source that names the type still compiles.
     /// </summary>
     [Obsolete(

@@ -369,8 +369,7 @@ public partial class VectorConfigListTests
                     textFields: new[] { "text" },
                     videoFields: new[] { "video" },
                     audioFields: new[] { "audio" },
-                    dimensions: 512,
-                    vectorizeCollectionName: false
+                    dimensions: 512
                 )
         );
 
@@ -399,7 +398,11 @@ public partial class VectorConfigListTests
         Assert.Contains("\"videoFields\":[\"video\"]", json);
         Assert.Contains("\"audioFields\":[\"audio\"]", json);
         Assert.Contains("\"dimensions\":512", json);
-        Assert.Contains("\"vectorizeClassName\":false", json);
+        // vectorizeClassName does nothing in a multi2vec module, so the factory does not offer
+        // it. The property is inherited shipped API on Multi2VecGoogle, so unlike
+        // Multi2VecTwelveLabs it still serializes here — but only as null under this bare
+        // options object, and the REST client's options drop it before the wire.
+        Assert.Contains("\"vectorizeClassName\":null", json);
         Assert.DoesNotContain("\"weights\"", json);
     }
 
@@ -458,7 +461,8 @@ public partial class VectorConfigListTests
                 + "\"textFields\":[0.23],\"videoFields\":[0.33,0.34]}",
             json
         );
-        // Left unset by this case, so the omit-when-null path stays covered.
+        // dimensions is left unset by this case, so the omit-when-null path stays covered;
+        // vectorizeClassName is never settable through this factory at all.
         Assert.Contains("\"dimensions\":null", json);
         Assert.Contains("\"vectorizeClassName\":null", json);
         Assert.DoesNotContain("depthFields", json);

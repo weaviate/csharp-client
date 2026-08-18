@@ -32,8 +32,7 @@ public class TestVectorizers : IntegrationTests
                     v.Multi2VecGoogleGemini(
                         imageFields: ["image"],
                         textFields: ["text"],
-                        dimensions: 512,
-                        vectorizeCollectionName: false
+                        dimensions: 512
                     )
             )
         );
@@ -49,7 +48,9 @@ public class TestVectorizers : IntegrationTests
         Assert.Equal("multi2vec-palm", google.Identifier);
         Assert.Equal("generativelanguage.googleapis.com", google.ApiEndpoint);
         Assert.Equal(512, google.Dimensions);
-        Assert.False(google.VectorizeCollectionName);
+        // The factory does not offer vectorizeClassName because no multi2vec module reads it,
+        // and the server confirms it: nothing is sent, and nothing is stored or defaulted back.
+        Assert.Null(google.VectorizeCollectionName);
         Assert.NotNull(google.ImageFields);
         Assert.Equal(["image"], google.ImageFields);
         Assert.NotNull(google.TextFields);

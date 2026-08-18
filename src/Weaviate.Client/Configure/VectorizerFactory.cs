@@ -417,7 +417,6 @@ public class VectorizerFactory
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
     /// <param name="dimensions">The dimensions</param>
-    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogleGemini(
         WeightedFields imageFields,
@@ -427,8 +426,7 @@ public class VectorizerFactory
         string? apiEndpoint = null,
         int? videoIntervalSeconds = null,
         string? model = null,
-        int? dimensions = null,
-        bool? vectorizeCollectionName = null
+        int? dimensions = null
     ) =>
         new Multi2VecGoogle
         {
@@ -444,7 +442,9 @@ public class VectorizerFactory
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
-            VectorizeCollectionName = vectorizeCollectionName,
+            // No multi2vec module reads vectorizeClassName, so it is not exposed here; left null
+            // so the key stays off the wire.
+            VectorizeCollectionName = null,
             // Named arguments are mandatory here: FromWeightedFields declares seven optional
             // modalities in the order image, text, audio, depth, imu, thermal, video, so the
             // positional call this replaced filed video weights under audio and audio weights
@@ -470,7 +470,6 @@ public class VectorizerFactory
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
     /// <param name="dimensions">The dimensions</param>
-    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogleGemini(
         string[]? imageFields = null,
@@ -480,8 +479,7 @@ public class VectorizerFactory
         string? apiEndpoint = null,
         int? videoIntervalSeconds = null,
         string? model = null,
-        int? dimensions = null,
-        bool? vectorizeCollectionName = null
+        int? dimensions = null
     ) =>
         new Multi2VecGoogle
         {
@@ -497,7 +495,9 @@ public class VectorizerFactory
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
-            VectorizeCollectionName = vectorizeCollectionName,
+            // No multi2vec module reads vectorizeClassName, so it is not exposed here; left null
+            // so the key stays off the wire.
+            VectorizeCollectionName = null,
         };
 
     /// <summary>
