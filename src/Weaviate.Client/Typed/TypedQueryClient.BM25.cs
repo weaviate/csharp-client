@@ -21,6 +21,7 @@ public partial class TypedQueryClient<T>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="searchOperator">BM25 search operator (AND/OR).</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="after">Cursor for pagination.</param>
     /// <param name="consistencyLevel">Consistency level for the query.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
@@ -39,6 +40,7 @@ public partial class TypedQueryClient<T>
         uint? offset = null,
         BM25Operator? searchOperator = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         AutoArray<string>? returnProperties = null,
@@ -58,6 +60,7 @@ public partial class TypedQueryClient<T>
             offset: offset,
             searchOperator: searchOperator,
             rerank: rerank,
+            boost: boost,
             after: after,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,
@@ -80,6 +83,7 @@ public partial class TypedQueryClient<T>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="searchOperator">BM25 search operator (AND/OR).</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="after">Cursor for pagination.</param>
     /// <param name="consistencyLevel">Consistency level for the query.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
@@ -97,6 +101,7 @@ public partial class TypedQueryClient<T>
         uint? offset = null,
         BM25Operator? searchOperator = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         AutoArray<string>? returnProperties = null,
@@ -115,6 +120,7 @@ public partial class TypedQueryClient<T>
             offset: offset,
             searchOperator: searchOperator,
             rerank: rerank,
+            boost: boost,
             after: after,
             consistencyLevel: consistencyLevel,
             returnProperties: returnProperties,

@@ -21,6 +21,7 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -42,6 +43,7 @@ public partial class GenerateClient
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
+            boost: boost,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -66,6 +68,7 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -88,6 +91,7 @@ public partial class GenerateClient
             limit: limit,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
+            boost: boost,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             consistencyLevel: _collectionClient.ConsistencyLevel,
@@ -111,6 +115,7 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -130,6 +135,7 @@ public partial class GenerateClient
             limit,
             offset,
             rerank,
+            boost,
             singlePrompt,
             groupedTask,
             provider,
@@ -154,6 +160,7 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -174,6 +181,7 @@ public partial class GenerateClient
             limit,
             offset,
             rerank,
+            boost,
             singlePrompt,
             groupedTask,
             provider,
@@ -194,6 +202,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
     /// <param name="groupedTask">Grouped task for generative AI.</param>
     /// <param name="provider">Generative AI provider configuration.</param>
@@ -211,6 +220,7 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -230,6 +240,7 @@ public partial class GenerateClient
             limit: limit,
             offset: offset,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
@@ -251,6 +262,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
     /// <param name="groupedTask">Grouped task for generative AI.</param>
     /// <param name="provider">Generative AI provider configuration.</param>
@@ -269,6 +281,7 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -289,6 +302,7 @@ public partial class GenerateClient
             limit: limit,
             offset: offset,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
@@ -309,6 +323,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
     /// <param name="groupedTask">Grouped task for generative AI.</param>
     /// <param name="provider">Generative AI provider configuration.</param>
@@ -326,6 +341,7 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -343,6 +359,7 @@ public partial class GenerateClient
             limit,
             offset,
             rerank,
+            boost,
             singlePrompt,
             groupedTask,
             provider,
@@ -364,6 +381,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
     /// <param name="groupedTask">Grouped task for generative AI.</param>
     /// <param name="provider">Generative AI provider configuration.</param>
@@ -382,6 +400,7 @@ public partial class GenerateClient
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -400,6 +419,7 @@ public partial class GenerateClient
             limit,
             offset,
             rerank,
+            boost,
             singlePrompt,
             groupedTask,
             provider,

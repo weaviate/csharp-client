@@ -26,6 +26,7 @@ public partial class TypedQueryClient<T>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -40,6 +41,7 @@ public partial class TypedQueryClient<T>
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -55,6 +57,7 @@ public partial class TypedQueryClient<T>
             diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             rerank: rerank,
+            boost: boost,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -82,6 +85,7 @@ public partial class TypedQueryClient<T>
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -97,6 +101,7 @@ public partial class TypedQueryClient<T>
         uint? limit = null,
         uint? offset = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -113,6 +118,7 @@ public partial class TypedQueryClient<T>
             diversitySelection: diversitySelection,
             autoLimit: autoLimit,
             rerank: rerank,
+            boost: boost,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,

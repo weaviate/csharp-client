@@ -1,5 +1,6 @@
 using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
+using Boost = Weaviate.Client.Models.Boost;
 using Rerank = Weaviate.Client.Models.Rerank;
 using V1 = Weaviate.Client.Grpc.Protobuf.V1;
 
@@ -34,6 +35,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="offset">The offset</param>
     /// <param name="groupBy">The group by</param>
     /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost</param>
     /// <param name="after">The after</param>
     /// <param name="tenant">The tenant</param>
     /// <param name="consistencyLevel">The consistency level</param>
@@ -53,6 +55,7 @@ internal partial class WeaviateGrpcClient
         uint? offset = null,
         GroupByRequest? groupBy = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         Guid? after = null,
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
@@ -108,6 +111,7 @@ internal partial class WeaviateGrpcClient
                     Query = rerank?.Query ?? string.Empty,
                 }
                 : null,
+            Boost = BuildBoost(boost),
             Generative =
                 (singlePrompt is null && groupedTask is null)
                     ? null
@@ -174,6 +178,106 @@ internal partial class WeaviateGrpcClient
 
         return request;
     }
+
+    /// <summary>
+    /// Builds the boost proto message from the boost model
+    /// </summary>
+    /// <param name="boost">The boost</param>
+    /// <returns>The boost proto message, or null when no boost is set</returns>
+    private static V1.Boost? BuildBoost(Boost? boost)
+    {
+        // The public Boost API takes double for every weight/decay so callers need no `f` suffix;
+        // the proto declares `optional float weight` / `optional float decay_value`, so this builder
+        // is the single point that narrows to float. NumericDecay origin/scale/offset stay double.
+        if (boost is null)
+        {
+            return null;
+        }
+
+        var result = new V1.Boost();
+        foreach (var condition in boost.Conditions)
+        {
+            var grpcCondition = new V1.Boost.Types.Condition();
+            if (condition.Filter is not null)
+            {
+                grpcCondition.Filter = condition.Filter.InternalFilter;
+            }
+            else if (condition.TimeDecay is not null)
+            {
+                var timeDecay = new V1.Boost.Types.TimeDecayFunction
+                {
+                    Property = condition.TimeDecay.Property,
+                    Origin = condition.TimeDecay.Origin,
+                    Scale = condition.TimeDecay.Scale,
+                };
+                if (condition.TimeDecay.Offset is not null)
+                {
+                    timeDecay.Offset = condition.TimeDecay.Offset;
+                }
+                if (condition.TimeDecay.DecayCurve.HasValue)
+                {
+                    timeDecay.Curve = MapDecayCurve(condition.TimeDecay.DecayCurve.Value);
+                }
+                SetIfNotNull(v => timeDecay.DecayValue = (float)v, condition.TimeDecay.DecayValue);
+                grpcCondition.TimeDecay = timeDecay;
+            }
+            else if (condition.NumericDecay is not null)
+            {
+                var numericDecay = new V1.Boost.Types.NumericDecayFunction
+                {
+                    Property = condition.NumericDecay.Property,
+                    Origin = condition.NumericDecay.Origin,
+                    Scale = condition.NumericDecay.Scale,
+                };
+                SetIfNotNull(v => numericDecay.Offset = v, condition.NumericDecay.Offset);
+                if (condition.NumericDecay.DecayCurve.HasValue)
+                {
+                    numericDecay.Curve = MapDecayCurve(condition.NumericDecay.DecayCurve.Value);
+                }
+                SetIfNotNull(
+                    v => numericDecay.DecayValue = (float)v,
+                    condition.NumericDecay.DecayValue
+                );
+                grpcCondition.NumericDecay = numericDecay;
+            }
+            else if (condition.PropertyValue is not null)
+            {
+                var propertyValue = new V1.Boost.Types.PropertyValueFunction
+                {
+                    Property = condition.PropertyValue.Property,
+                };
+                if (condition.PropertyValue.ValueModifier.HasValue)
+                {
+                    propertyValue.Modifier = condition.PropertyValue.ValueModifier.Value switch
+                    {
+                        Boost.Modifier.Log1P => V1.Boost.Types.PropertyValueModifier.Log1P,
+                        Boost.Modifier.Sqrt => V1.Boost.Types.PropertyValueModifier.Sqrt,
+                        _ => V1.Boost.Types.PropertyValueModifier.Unspecified,
+                    };
+                }
+                grpcCondition.PropertyValue = propertyValue;
+            }
+            SetIfNotNull(v => grpcCondition.Weight = (float)v, condition.Weight);
+            result.Conditions.Add(grpcCondition);
+        }
+        SetIfNotNull(v => result.Weight = (float)v, boost.Weight);
+        SetIfNotNull(v => result.Depth = v, boost.Depth);
+        return result;
+    }
+
+    /// <summary>
+    /// Maps the decay curve using the specified value
+    /// </summary>
+    /// <param name="curve">The curve</param>
+    /// <returns>The decay curve</returns>
+    private static V1.Boost.Types.DecayCurve MapDecayCurve(Boost.Curve curve) =>
+        curve switch
+        {
+            Boost.Curve.Exponential => V1.Boost.Types.DecayCurve.Exponential,
+            Boost.Curve.Gaussian => V1.Boost.Types.DecayCurve.Gauss,
+            Boost.Curve.Linear => V1.Boost.Types.DecayCurve.Linear,
+            _ => V1.Boost.Types.DecayCurve.Unspecified,
+        };
 
     /// <summary>
     /// Gets the generative provider using the specified provider

@@ -32,6 +32,7 @@ public partial class QueryClient
     /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -46,6 +47,7 @@ public partial class QueryClient
         Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -67,6 +69,7 @@ public partial class QueryClient
             filters: filters,
             groupBy: null,
             rerank: rerank,
+            boost: boost,
             singlePrompt: null,
             groupedTask: null,
             tenant: _collectionClient.Tenant,
@@ -98,6 +101,7 @@ public partial class QueryClient
     /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -113,6 +117,7 @@ public partial class QueryClient
         Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -134,6 +139,7 @@ public partial class QueryClient
             filters: filters,
             groupBy: groupBy,
             rerank: rerank,
+            boost: boost,
             singlePrompt: null,
             groupedTask: null,
             tenant: _collectionClient.Tenant,
@@ -161,6 +167,7 @@ public partial class QueryClient
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="targets">Target vectors factory function for multi-vector collections.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
@@ -179,6 +186,7 @@ public partial class QueryClient
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         TargetVectors.FactoryFn? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -199,6 +207,7 @@ public partial class QueryClient
             filters: filters,
             groupBy: null,
             rerank: rerank,
+            boost: boost,
             singlePrompt: null,
             groupedTask: null,
             tenant: _collectionClient.Tenant,
@@ -226,6 +235,7 @@ public partial class QueryClient
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="targets">Target vectors factory function for multi-vector collections.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
@@ -245,6 +255,7 @@ public partial class QueryClient
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         TargetVectors.FactoryFn? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -265,6 +276,7 @@ public partial class QueryClient
             filters: filters,
             groupBy: groupBy,
             rerank: rerank,
+            boost: boost,
             singlePrompt: null,
             groupedTask: null,
             tenant: _collectionClient.Tenant,
