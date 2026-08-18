@@ -67,10 +67,9 @@ public class VectorizerFactoryMulti
             Model = model,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -95,10 +94,9 @@ public class VectorizerFactoryMulti
             Model = model,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields

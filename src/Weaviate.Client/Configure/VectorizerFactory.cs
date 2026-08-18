@@ -78,10 +78,9 @@ public class VectorizerFactory
             Dimensions = dimensions,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields
@@ -113,10 +112,9 @@ public class VectorizerFactory
             Dimensions = dimensions,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -138,10 +136,9 @@ public class VectorizerFactory
             ImageFields = ModalityFields.OrNull(imageFields),
             InferenceUrl = inferenceUrl,
             TextFields = ModalityFields.OrNull(textFields),
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields
@@ -167,10 +164,9 @@ public class VectorizerFactory
             ImageFields = ModalityFields.OrNull(imageFields),
             InferenceUrl = inferenceUrl,
             TextFields = ModalityFields.OrNull(textFields),
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -201,10 +197,9 @@ public class VectorizerFactory
             Dimensions = dimensions,
             TextFields = ModalityFields.OrNull(textFields),
             Truncate = truncate,
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields
@@ -239,10 +234,9 @@ public class VectorizerFactory
             Dimensions = dimensions,
             TextFields = ModalityFields.OrNull(textFields),
             Truncate = truncate,
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -276,10 +270,9 @@ public class VectorizerFactory
             TextFields = ModalityFields.OrNull(textFields),
             ThermalFields = ModalityFields.OrNull(thermalFields),
             VideoFields = ModalityFields.OrNull(videoFields),
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             // This overload's parameters happen to be in FromWeightedFields' own declaration
             // order (image, text, audio, depth, imu, thermal, video), so the named arguments
             // are a safeguard rather than a correction: they keep the mapping right if either
@@ -326,10 +319,9 @@ public class VectorizerFactory
             TextFields = ModalityFields.OrNull(textFields),
             ThermalFields = ModalityFields.OrNull(thermalFields),
             VideoFields = ModalityFields.OrNull(videoFields),
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -372,10 +364,9 @@ public class VectorizerFactory
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             // Named arguments are mandatory here: FromWeightedFields declares seven optional
             // modalities in the order image, text, audio, depth, imu, thermal, video, so the
             // positional call this replaced filed video weights under audio and audio weights
@@ -428,10 +419,9 @@ public class VectorizerFactory
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -472,11 +462,10 @@ public class VectorizerFactory
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
-            // No multi2vec module reads vectorizeClassName, so it is not exposed here; left null
-            // so the key stays off the wire.
-#pragma warning disable CS0618
+            // Not offered as a parameter here, unlike Vertex; null keeps it off the wire.
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = null,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             // Named arguments are mandatory here: FromWeightedFields declares seven optional
             // modalities in the order image, text, audio, depth, imu, thermal, video, so the
             // positional call this replaced filed video weights under audio and audio weights
@@ -527,11 +516,10 @@ public class VectorizerFactory
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
-            // No multi2vec module reads vectorizeClassName, so it is not exposed here; left null
-            // so the key stays off the wire.
-#pragma warning disable CS0618
+            // Not offered as a parameter here, unlike Vertex; null keeps it off the wire.
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = null,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -565,10 +553,9 @@ public class VectorizerFactory
             TextFields = ModalityFields.OrNull(textFields),
             VideoFields = ModalityFields.OrNull(videoFields),
             Truncate = truncate,
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             // FromWeightedFields declares seven optional modalities in the order image, text,
             // audio, depth, imu, thermal, video. Video is the one at risk — positionally it
             // would land in audioFields, which this module does not have — and it was already
@@ -611,10 +598,9 @@ public class VectorizerFactory
             Model = model,
             TextFields = ModalityFields.OrNull(textFields),
             Truncate = truncate,
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -1172,10 +1158,9 @@ public class VectorizerFactory
             Dimensions = dimensions,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -1207,10 +1192,9 @@ public class VectorizerFactory
                 imageFields: imageFields,
                 textFields: textFields
             ),
-            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618
+#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 #pragma warning restore CA1822 // Mark members as static
 }

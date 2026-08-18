@@ -398,10 +398,9 @@ public partial class VectorConfigListTests
         Assert.Contains("\"videoFields\":[\"video\"]", json);
         Assert.Contains("\"audioFields\":[\"audio\"]", json);
         Assert.Contains("\"dimensions\":512", json);
-        // vectorizeClassName does nothing in a multi2vec module, so the factory does not offer
-        // it. The property is inherited shipped API on Multi2VecGoogle, so unlike
-        // Multi2VecTwelveLabs it still serializes here — but only as null under this bare
-        // options object, and the REST client's options drop it before the wire.
+        // The property is inherited shipped API on Multi2VecGoogle, so unlike Multi2VecTwelveLabs
+        // it still serializes here — but only as null under this bare options object, and the
+        // REST client's options drop it before the wire.
         Assert.Contains("\"vectorizeClassName\":null", json);
         Assert.DoesNotContain("\"weights\"", json);
     }
