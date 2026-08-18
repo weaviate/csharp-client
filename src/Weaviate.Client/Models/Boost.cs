@@ -118,8 +118,10 @@ public sealed record Boost
     /// Objects at the origin score 1; the score falls along the chosen curve as the property
     /// value moves away from the origin. Use this to favour more recent (or near-a-date) objects.
     /// </summary>
-    /// <param name="property">The name of the date property to measure distance from.</param>
-    /// <param name="scale">The distance from the origin at which the score equals <paramref name="decay"/>.</param>
+    /// <param name="property">The name of the date property to measure distance from; the first
+    /// letter is lower-cased to match the stored property name, as <c>Filter.Property</c> does.</param>
+    /// <param name="scale">The distance from the origin at which the score equals <paramref name="decay"/>.
+    /// Must be greater than zero.</param>
     /// <param name="origin">The reference point. If not set, the current time ("now") is used.</param>
     /// <param name="offset">Objects within this distance from the origin keep the full score of 1;
     /// decay starts beyond it. If not set, no offset is applied.</param>
@@ -133,6 +135,9 @@ public sealed record Boost
     /// per-condition weight: unbounded, and negative values demote matching objects.</param>
     /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
     /// If not set, the server default (100) is used.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="scale"/> is not greater than
+    /// zero, or <paramref name="offset"/> is negative. The server silently ignores a duration it
+    /// cannot use, so such a value would quietly disable the boost rather than fail.</exception>
     /// <returns>The boost</returns>
     public static Boost TimeDecay(
         string property,
@@ -143,22 +148,33 @@ public sealed record Boost
         float? decay = null,
         float? weight = null,
         uint? depth = null
-    ) =>
-        TimeDecay(
+    )
+    {
+        if (scale <= TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(scale),
+                scale,
+                "A time decay scale must be greater than zero. The server treats a non-positive scale as unusable and silently drops the boost."
+            );
+        }
+        return TimeDecay(
             property,
-            ToDurationString(scale),
+            ToDurationString(scale, nameof(scale)),
             origin?.ToString("o", CultureInfo.InvariantCulture),
-            offset is not null ? ToDurationString(offset.Value) : null,
+            offset is not null ? ToDurationString(offset.Value, nameof(offset)) : null,
             curve,
             decay,
             weight,
             depth
         );
+    }
 
     /// <summary>
     /// Rank objects by recency, with the origin and distances given as strings.
     /// </summary>
-    /// <param name="property">The name of the date property to measure distance from.</param>
+    /// <param name="property">The name of the date property to measure distance from; the first
+    /// letter is lower-cased to match the stored property name, as <c>Filter.Property</c> does.</param>
     /// <param name="scale">The distance from the origin at which the score equals <paramref name="decay"/>,
     /// as a duration string such as "7d", "24h", "30m".</param>
     /// <param name="origin">The reference point: "now" or an RFC3339 timestamp. If not set, "now" is used.</param>
@@ -190,7 +206,7 @@ public sealed record Boost
                 new Condition
                 {
                     TimeDecay = new TimeDecayFunction(
-                        property,
+                        property.Decapitalize(),
                         origin ?? "now",
                         scale,
                         offset,
@@ -209,7 +225,8 @@ public sealed record Boost
     /// Use this when "closer to X is better" (e.g. prefer prices near 50). For simple
     /// "higher is better" ranking without an origin, use <see cref="NumericProperty"/> instead.
     /// </summary>
-    /// <param name="property">The name of the numeric (int/number) property to measure distance from.</param>
+    /// <param name="property">The name of the numeric (int/number) property to measure distance from;
+    /// the first letter is lower-cased to match the stored property name, as <c>Filter.Property</c> does.</param>
     /// <param name="origin">The target value; objects closest to it score highest.</param>
     /// <param name="scale">The distance from the origin at which the score equals <paramref name="decay"/>.</param>
     /// <param name="offset">Objects within this distance from the origin keep the full score of 1;
@@ -240,7 +257,7 @@ public sealed record Boost
                 new Condition
                 {
                     NumericDecay = new NumericDecayFunction(
-                        property,
+                        property.Decapitalize(),
                         origin,
                         scale,
                         offset,
@@ -259,7 +276,8 @@ public sealed record Boost
     /// Use this for simple proportional ranking (e.g. popularity count, review score). For
     /// distance-based decay from a target value, use <see cref="NumericDecay"/> instead.
     /// </summary>
-    /// <param name="name">The name of the numeric (int/number) property to use as a ranking signal.</param>
+    /// <param name="name">The name of the numeric (int/number) property to use as a ranking signal;
+    /// the first letter is lower-cased to match the stored property name, as <c>Filter.Property</c> does.</param>
     /// <param name="modifier">A transform applied to the value before normalization:
     /// <see cref="Modifier.Log1P"/> or <see cref="Modifier.Sqrt"/>. If not set, the raw value is used.</param>
     /// <param name="weight">How much the boost influences the final score, in [0, 1]: the result is
@@ -277,7 +295,12 @@ public sealed record Boost
         uint? depth = null
     ) =>
         new(
-            [new Condition { PropertyValue = new PropertyValueFunction(name, modifier) }],
+            [
+                new Condition
+                {
+                    PropertyValue = new PropertyValueFunction(name.Decapitalize(), modifier),
+                },
+            ],
             weight,
             depth
         );
@@ -332,21 +355,43 @@ public sealed record Boost
         return new Boost(conditions, weight, depth);
     }
 
-    private static string ToDurationString(TimeSpan value)
+    // The server accepts only ^(\d+(\.\d+)?)(d|h|m|s|ms)$ and silently ignores a duration it cannot
+    // parse, which disables the boost instead of erroring. So format from the integer tick count:
+    // a double renders small values in exponent notation ("1E-07s"), which the server would reject.
+    private static string ToDurationString(TimeSpan value, string paramName)
     {
-        var totalSeconds = value.TotalSeconds;
-        if (totalSeconds >= 86400 && totalSeconds % 86400 == 0)
+        var ticks = value.Ticks;
+        if (ticks < 0)
         {
-            return $"{(long)(totalSeconds / 86400)}d";
+            throw new ArgumentOutOfRangeException(
+                paramName,
+                value,
+                "A time decay duration cannot be negative."
+            );
         }
-        if (totalSeconds >= 3600 && totalSeconds % 3600 == 0)
+        if (ticks >= TimeSpan.TicksPerDay && ticks % TimeSpan.TicksPerDay == 0)
         {
-            return $"{(long)(totalSeconds / 3600)}h";
+            return string.Create(CultureInfo.InvariantCulture, $"{ticks / TimeSpan.TicksPerDay}d");
         }
-        if (totalSeconds >= 60 && totalSeconds % 60 == 0)
+        if (ticks >= TimeSpan.TicksPerHour && ticks % TimeSpan.TicksPerHour == 0)
         {
-            return $"{(long)(totalSeconds / 60)}m";
+            return string.Create(CultureInfo.InvariantCulture, $"{ticks / TimeSpan.TicksPerHour}h");
         }
-        return string.Create(CultureInfo.InvariantCulture, $"{totalSeconds}s");
+        if (ticks >= TimeSpan.TicksPerMinute && ticks % TimeSpan.TicksPerMinute == 0)
+        {
+            return string.Create(
+                CultureInfo.InvariantCulture,
+                $"{ticks / TimeSpan.TicksPerMinute}m"
+            );
+        }
+        var seconds = ticks / TimeSpan.TicksPerSecond;
+        var fraction = ticks % TimeSpan.TicksPerSecond;
+        if (fraction == 0)
+        {
+            return string.Create(CultureInfo.InvariantCulture, $"{seconds}s");
+        }
+        // TicksPerSecond is 10^7, so seven digits carry the fraction exactly.
+        var digits = fraction.ToString("D7", CultureInfo.InvariantCulture).TrimEnd('0');
+        return string.Create(CultureInfo.InvariantCulture, $"{seconds}.{digits}s");
     }
 }

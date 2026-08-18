@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Weaviate.Client.Models;
 using Weaviate.Client.Tests.Unit.Mocks;
 using Weaviate.Client.Typed;
@@ -21,6 +23,13 @@ public class TestBoostSyntax : IAsyncLifetime
     /// The test media bytes
     /// </summary>
     private static readonly byte[] TestMediaBytes = [1, 2, 3, 4];
+
+    /// <summary>
+    /// The only duration format the server accepts for a time decay scale or offset
+    /// (weaviate 1.38.4, usecases/traverser/boost_scorer.go: durationPattern). A string outside
+    /// this pattern is silently ignored server-side, which disables the boost instead of erroring.
+    /// </summary>
+    private static readonly Regex ServerDurationPattern = new(@"^(\d+(?:\.\d+)?)(d|h|m|s|ms)$");
 
     /// <summary>
     /// The get request
@@ -223,6 +232,7 @@ public class TestBoostSyntax : IAsyncLifetime
     [InlineData(90, "90s")]
     [InlineData(30, "30s")]
     [InlineData(1.5, "1.5s")]
+    [InlineData(17280000, "200d")]
     public async Task NearText_TimeDecayBoost_TimeSpanScaleMatchesPythonDurationString(
         double seconds,
         string expected
@@ -240,6 +250,147 @@ public class TestBoostSyntax : IAsyncLifetime
         var condition = Assert.Single(request.Boost.Conditions);
         Assert.NotNull(condition.TimeDecay);
         Assert.Equal(expected, condition.TimeDecay.Scale);
+        AssertServerParsableNonZeroDuration(condition.TimeDecay.Scale);
+    }
+
+    /// <summary>
+    /// Tests that a sub-millisecond scale still serializes to a duration the server can parse.
+    /// The previous double-based formatting emitted exponent notation ("1E-07s"), and rounding
+    /// such a value to "0ms" would parse but silently turn the boost into a no-op
+    /// </summary>
+    /// <param name="ticks">The scale in ticks; 500 ticks is TimeSpan.FromMilliseconds(0.05)</param>
+    /// <param name="expected">The expected duration string</param>
+    [Theory]
+    [InlineData(1, "0.0000001s")]
+    [InlineData(500, "0.00005s")]
+    [InlineData(9999, "0.0009999s")]
+    public async Task NearText_TimeDecayBoost_SubMillisecondScaleStaysInServerContract(
+        long ticks,
+        string expected
+    )
+    {
+        await _collection.Query.NearText(
+            "banana",
+            boost: Boost.TimeDecay("publishedAt", scale: TimeSpan.FromTicks(ticks)),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.Boost);
+        var condition = Assert.Single(request.Boost.Conditions);
+        Assert.NotNull(condition.TimeDecay);
+        AssertServerParsableNonZeroDuration(condition.TimeDecay.Scale);
+        Assert.Equal(expected, condition.TimeDecay.Scale);
+    }
+
+    /// <summary>
+    /// Tests that a negative scale fails fast client-side rather than serializing to "-2592000s",
+    /// which the server cannot parse and silently ignores
+    /// </summary>
+    [Fact]
+    public void TimeDecay_Throws_OnNegativeScale()
+    {
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Boost.TimeDecay("publishedAt", scale: TimeSpan.FromDays(-30))
+        );
+        Assert.Equal("scale", exception.ParamName);
+    }
+
+    /// <summary>
+    /// Tests that a zero scale fails fast client-side: the server treats a non-positive scale as
+    /// unusable and silently drops the boost
+    /// </summary>
+    [Fact]
+    public void TimeDecay_Throws_OnZeroScale()
+    {
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Boost.TimeDecay("publishedAt", scale: TimeSpan.Zero)
+        );
+        Assert.Equal("scale", exception.ParamName);
+    }
+
+    /// <summary>
+    /// Tests that a negative offset fails fast client-side, naming the offset parameter
+    /// </summary>
+    [Fact]
+    public void TimeDecay_Throws_OnNegativeOffset()
+    {
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Boost.TimeDecay(
+                "publishedAt",
+                scale: TimeSpan.FromDays(7),
+                offset: TimeSpan.FromDays(-1)
+            )
+        );
+        Assert.Equal("offset", exception.ParamName);
+    }
+
+    /// <summary>
+    /// Tests that a zero offset is accepted: unlike scale, "no offset" is a meaningful request and
+    /// serializes to a duration the server parses to the same zero it would use when unset
+    /// </summary>
+    [Fact]
+    public async Task NearText_TimeDecayBoost_AcceptsZeroOffset()
+    {
+        await _collection.Query.NearText(
+            "banana",
+            boost: Boost.TimeDecay(
+                "publishedAt",
+                scale: TimeSpan.FromDays(7),
+                offset: TimeSpan.Zero
+            ),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.Boost);
+        var condition = Assert.Single(request.Boost.Conditions);
+        Assert.NotNull(condition.TimeDecay);
+        Assert.Equal("0s", condition.TimeDecay.Offset);
+        Assert.Matches(ServerDurationPattern, condition.TimeDecay.Offset);
+    }
+
+    /// <summary>
+    /// Tests that the string time decay overload lower-cases the first letter of the property
+    /// name, the way Filter.Property does, so the server's exact-match lookup resolves it
+    /// </summary>
+    [Fact]
+    public async Task NearText_TimeDecayBoost_DecapitalizesPropertyName()
+    {
+        await _collection.Query.NearText(
+            "banana",
+            boost: Boost.TimeDecay("PublishedAt", scale: "7d"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.Boost);
+        var condition = Assert.Single(request.Boost.Conditions);
+        Assert.NotNull(condition.TimeDecay);
+        Assert.Equal("publishedAt", condition.TimeDecay.Property);
+    }
+
+    /// <summary>
+    /// Tests that the TimeSpan time decay overload normalizes the property name the same way
+    /// </summary>
+    [Fact]
+    public async Task NearText_TimeDecayBoost_TimeSpanOverloadDecapitalizesPropertyName()
+    {
+        await _collection.Query.NearText(
+            "banana",
+            boost: Boost.TimeDecay("PublishedAt", scale: TimeSpan.FromDays(7)),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.Boost);
+        var condition = Assert.Single(request.Boost.Conditions);
+        Assert.NotNull(condition.TimeDecay);
+        Assert.Equal("publishedAt", condition.TimeDecay.Property);
     }
 
     /// <summary>
@@ -302,6 +453,26 @@ public class TestBoostSyntax : IAsyncLifetime
     }
 
     /// <summary>
+    /// Tests that a numeric decay boost lower-cases the first letter of the property name
+    /// </summary>
+    [Fact]
+    public async Task NearVector_NumericDecayBoost_DecapitalizesPropertyName()
+    {
+        await _collection.Query.NearVector(
+            new float[] { 1f, 2f, 3f },
+            boost: Boost.NumericDecay("Rating_number", origin: 5, scale: 1),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.Boost);
+        var condition = Assert.Single(request.Boost.Conditions);
+        Assert.NotNull(condition.NumericDecay);
+        Assert.Equal("rating_number", condition.NumericDecay.Property);
+    }
+
+    /// <summary>
     /// Tests that a numeric property boost with a modifier serializes it
     /// </summary>
     [Fact]
@@ -344,6 +515,26 @@ public class TestBoostSyntax : IAsyncLifetime
     }
 
     /// <summary>
+    /// Tests that a numeric property boost lower-cases the first letter of the property name
+    /// </summary>
+    [Fact]
+    public async Task NearObject_NumericPropertyBoost_DecapitalizesPropertyName()
+    {
+        await _collection.Query.NearObject(
+            Guid.NewGuid(),
+            boost: Boost.NumericProperty("Rating_number"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.Boost);
+        var condition = Assert.Single(request.Boost.Conditions);
+        Assert.NotNull(condition.PropertyValue);
+        Assert.Equal("rating_number", condition.PropertyValue.Property);
+    }
+
+    /// <summary>
     /// Tests that blend turns sub-boost weights into per-condition weights
     /// </summary>
     [Fact]
@@ -378,6 +569,35 @@ public class TestBoostSyntax : IAsyncLifetime
         Assert.NotNull(request.Boost.Conditions[1].PropertyValue);
         Assert.True(request.Boost.Conditions[2].HasWeight);
         Assert.Equal(-1f, request.Boost.Conditions[2].Weight);
+    }
+
+    /// <summary>
+    /// Tests that inside one blend a capitalised property name normalizes identically for a filter
+    /// condition and a property-value condition, so one cannot resolve while the other fails with
+    /// "no such prop"
+    /// </summary>
+    [Fact]
+    public async Task BM25_BlendBoost_NormalizesPropertyNamesLikeFilterProperty()
+    {
+        await _collection.Query.BM25(
+            "banana",
+            boost: Boost.Blend([
+                Boost.Filter(Filter.Property("Rating_number").IsGreaterThan(4)),
+                Boost.NumericProperty("Rating_number"),
+            ]),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.Boost);
+        Assert.Equal(2, request.Boost.Conditions.Count);
+        var filterCondition = request.Boost.Conditions[0].Filter;
+        var propertyCondition = request.Boost.Conditions[1].PropertyValue;
+        Assert.NotNull(filterCondition);
+        Assert.NotNull(propertyCondition);
+        Assert.Equal("rating_number", propertyCondition.Property);
+        Assert.Equal(filterCondition.Target.Property, propertyCondition.Property);
     }
 
     /// <summary>
@@ -439,6 +659,21 @@ public class TestBoostSyntax : IAsyncLifetime
         Assert.NotNull(request.Boost);
         Assert.True(request.Boost.HasWeight);
         Assert.Equal(0.5f, request.Boost.Weight);
+    }
+
+    /// <summary>
+    /// Asserts that a duration string matches the server's pattern and carries a non-zero
+    /// magnitude. A zero magnitude parses but makes the boost a silent no-op.
+    /// </summary>
+    /// <param name="duration">The duration string as it is sent on the wire</param>
+    private static void AssertServerParsableNonZeroDuration(string duration)
+    {
+        var match = ServerDurationPattern.Match(duration);
+        Assert.True(match.Success, $"'{duration}' is outside the server's duration pattern.");
+        Assert.True(
+            double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture) > 0,
+            $"'{duration}' has a zero magnitude, which disables the boost server-side."
+        );
     }
 
     /// <summary>
