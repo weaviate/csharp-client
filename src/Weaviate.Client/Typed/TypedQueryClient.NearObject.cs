@@ -21,6 +21,7 @@ public partial class TypedQueryClient<T>
     /// <param name="autoLimit">Automatic result limit threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="targets">Target vector configuration for named vectors.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
@@ -38,6 +39,7 @@ public partial class TypedQueryClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         TargetVectors.FactoryFn? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -56,6 +58,7 @@ public partial class TypedQueryClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
+            boost: boost,
             targets: targets,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -79,6 +82,7 @@ public partial class TypedQueryClient<T>
     /// <param name="autoLimit">Automatic result limit threshold.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="targets">Target vector configuration for named vectors.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
@@ -97,6 +101,7 @@ public partial class TypedQueryClient<T>
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         TargetVectors.FactoryFn? targets = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
@@ -116,6 +121,7 @@ public partial class TypedQueryClient<T>
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
+            boost: boost,
             targets: targets,
             returnProperties: returnProperties,
             returnReferences: returnReferences,

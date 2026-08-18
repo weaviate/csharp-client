@@ -31,6 +31,7 @@ public partial class GenerateClient
     /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
     /// <param name="groupedTask">Grouped task for generative AI.</param>
     /// <param name="provider">Generative AI provider configuration.</param>
@@ -48,6 +49,7 @@ public partial class GenerateClient
         Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -72,6 +74,7 @@ public partial class GenerateClient
             filters: filters,
             groupBy: null,
             rerank: rerank,
+            boost: boost,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             tenant: _collectionClient.Tenant,
@@ -106,6 +109,7 @@ public partial class GenerateClient
     /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
     /// <param name="autoLimit">Automatic result cutoff threshold.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generative AI.</param>
     /// <param name="groupedTask">Grouped task for generative AI.</param>
     /// <param name="provider">Generative AI provider configuration.</param>
@@ -124,6 +128,7 @@ public partial class GenerateClient
         Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -148,6 +153,7 @@ public partial class GenerateClient
             filters: filters,
             groupBy: groupBy,
             rerank: rerank,
+            boost: boost,
             singlePrompt: EnrichPrompt(singlePrompt, provider) as SinglePrompt,
             groupedTask: EnrichPrompt(groupedTask, provider) as GroupedTask,
             tenant: _collectionClient.Tenant,

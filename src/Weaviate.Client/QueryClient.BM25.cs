@@ -20,6 +20,7 @@ public partial class QueryClient
     /// <param name="offset">The offset</param>
     /// <param name="searchOperator">The search operator</param>
     /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="after">The after</param>
     /// <param name="consistencyLevel">The consistency level</param>
     /// <param name="returnProperties">The return properties</param>
@@ -38,6 +39,7 @@ public partial class QueryClient
         uint? offset = null,
         BM25Operator? searchOperator = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         AutoArray<string>? returnProperties = null,
@@ -57,6 +59,7 @@ public partial class QueryClient
             searchOperator: searchOperator,
             groupBy: groupBy,
             rerank: rerank,
+            boost: boost,
             after: after,
             tenant: _collectionClient.Tenant,
             consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
@@ -78,6 +81,7 @@ public partial class QueryClient
     /// <param name="offset">The offset</param>
     /// <param name="searchOperator">The search operator</param>
     /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="after">The after</param>
     /// <param name="consistencyLevel">The consistency level</param>
     /// <param name="returnProperties">The return properties</param>
@@ -95,6 +99,7 @@ public partial class QueryClient
         uint? offset = null,
         BM25Operator? searchOperator = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         Guid? after = null,
         ConsistencyLevels? consistencyLevel = null,
         AutoArray<string>? returnProperties = null,
@@ -114,6 +119,7 @@ public partial class QueryClient
             searchOperator: searchOperator,
             groupBy: null,
             rerank: rerank,
+            boost: boost,
             after: after,
             tenant: _collectionClient.Tenant,
             consistencyLevel: consistencyLevel ?? _collectionClient.ConsistencyLevel,
