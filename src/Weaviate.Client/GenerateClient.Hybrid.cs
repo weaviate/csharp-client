@@ -11,26 +11,26 @@ public partial class GenerateClient
     /// <summary>
     /// Hybrid search with generative AI capabilities.
     /// </summary>
-    /// <param name="query">The query</param>
-    /// <param name="alpha">The alpha</param>
-    /// <param name="queryProperties">The query properties</param>
-    /// <param name="fusionType">The fusion type</param>
-    /// <param name="maxVectorDistance">The max vector distance</param>
-    /// <param name="limit">The limit</param>
-    /// <param name="offset">The offset</param>
-    /// <param name="bm25Operator">The bm 25 operator</param>
-    /// <param name="diversitySelection">The diversity selection</param>
-    /// <param name="autoLimit">The auto limit</param>
-    /// <param name="filters">The filters</param>
-    /// <param name="rerank">The rerank</param>
-    /// <param name="singlePrompt">The single prompt</param>
-    /// <param name="groupedTask">The grouped task</param>
-    /// <param name="provider">The provider</param>
-    /// <param name="returnProperties">The return properties</param>
-    /// <param name="returnReferences">The return references</param>
-    /// <param name="returnMetadata">The return metadata</param>
-    /// <param name="includeVectors">The include vectors</param>
-    /// <param name="cancellationToken">The cancellation token</param>
+    /// <param name="query">Text query for the keyword (BM25) half of the search.</param>
+    /// <param name="alpha">Balance between the keyword and the vector half of the search: 0.0 is pure keyword (BM25), 1.0 is pure vector. If not specified, the server default of 0.75 is used, or 1.0 when no query text is given.</param>
+    /// <param name="queryProperties">Properties the keyword (BM25) half of the search runs against. If not specified, all text properties are searched.</param>
+    /// <param name="fusionType">How the keyword and vector result sets are fused: Ranked adds inverted ranks, RelativeScore adds normalized scores. If not specified, the server default (RelativeScore) is used.</param>
+    /// <param name="maxVectorDistance">Maximum distance allowed for the vector half of the search. If not specified, no distance threshold is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="bm25Operator">Operator for the keyword (BM25) half of the search, setting how many query tokens a property must match. If not specified, the server default (Or) is used.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public Task<GenerativeWeaviateResult> Hybrid(
         string query,
         float? alpha = null,
@@ -80,27 +80,27 @@ public partial class GenerateClient
     /// <summary>
     /// Hybrid search with generative AI capabilities.
     /// </summary>
-    /// <param name="query">The query</param>
-    /// <param name="vectors">The vectors</param>
-    /// <param name="alpha">The alpha</param>
-    /// <param name="queryProperties">The query properties</param>
-    /// <param name="fusionType">The fusion type</param>
-    /// <param name="maxVectorDistance">The max vector distance</param>
-    /// <param name="limit">The limit</param>
-    /// <param name="offset">The offset</param>
-    /// <param name="bm25Operator">The bm 25 operator</param>
-    /// <param name="diversitySelection">The diversity selection</param>
-    /// <param name="autoLimit">The auto limit</param>
-    /// <param name="filters">The filters</param>
-    /// <param name="rerank">The rerank</param>
-    /// <param name="singlePrompt">The single prompt</param>
-    /// <param name="groupedTask">The grouped task</param>
-    /// <param name="provider">The provider</param>
-    /// <param name="returnProperties">The return properties</param>
-    /// <param name="returnReferences">The return references</param>
-    /// <param name="returnMetadata">The return metadata</param>
-    /// <param name="includeVectors">The include vectors</param>
-    /// <param name="cancellationToken">The cancellation token</param>
+    /// <param name="query">Text query for the keyword (BM25) half of the search.</param>
+    /// <param name="vectors">Vector input for the vector half of the search. If not specified, the query text is vectorized and used.</param>
+    /// <param name="alpha">Balance between the keyword and the vector half of the search: 0.0 is pure keyword (BM25), 1.0 is pure vector. If not specified, the server default of 0.75 is used, or 1.0 when no query text is given.</param>
+    /// <param name="queryProperties">Properties the keyword (BM25) half of the search runs against. If not specified, all text properties are searched.</param>
+    /// <param name="fusionType">How the keyword and vector result sets are fused: Ranked adds inverted ranks, RelativeScore adds normalized scores. If not specified, the server default (RelativeScore) is used.</param>
+    /// <param name="maxVectorDistance">Maximum distance allowed for the vector half of the search. If not specified, no distance threshold is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="bm25Operator">Operator for the keyword (BM25) half of the search, setting how many query tokens a property must match. If not specified, the server default (Or) is used.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public async Task<GenerativeWeaviateResult> Hybrid(
         string? query,
         HybridVectorInput? vectors,
@@ -164,27 +164,27 @@ public partial class GenerateClient
     /// <summary>
     /// Hybrid search with generative AI capabilities and grouping.
     /// </summary>
-    /// <param name="query">The query</param>
-    /// <param name="groupBy">The group by</param>
-    /// <param name="alpha">The alpha</param>
-    /// <param name="queryProperties">The query properties</param>
-    /// <param name="fusionType">The fusion type</param>
-    /// <param name="maxVectorDistance">The max vector distance</param>
-    /// <param name="limit">The limit</param>
-    /// <param name="offset">The offset</param>
-    /// <param name="bm25Operator">The bm 25 operator</param>
-    /// <param name="diversitySelection">The diversity selection</param>
-    /// <param name="autoLimit">The auto limit</param>
-    /// <param name="filters">The filters</param>
-    /// <param name="rerank">The rerank</param>
-    /// <param name="singlePrompt">The single prompt</param>
-    /// <param name="groupedTask">The grouped task</param>
-    /// <param name="provider">The provider</param>
-    /// <param name="returnProperties">The return properties</param>
-    /// <param name="returnReferences">The return references</param>
-    /// <param name="returnMetadata">The return metadata</param>
-    /// <param name="includeVectors">The include vectors</param>
-    /// <param name="cancellationToken">The cancellation token</param>
+    /// <param name="query">Text query for the keyword (BM25) half of the search.</param>
+    /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="alpha">Balance between the keyword and the vector half of the search: 0.0 is pure keyword (BM25), 1.0 is pure vector. If not specified, the server default of 0.75 is used, or 1.0 when no query text is given.</param>
+    /// <param name="queryProperties">Properties the keyword (BM25) half of the search runs against. If not specified, all text properties are searched.</param>
+    /// <param name="fusionType">How the keyword and vector result sets are fused: Ranked adds inverted ranks, RelativeScore adds normalized scores. If not specified, the server default (RelativeScore) is used.</param>
+    /// <param name="maxVectorDistance">Maximum distance allowed for the vector half of the search. If not specified, no distance threshold is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="bm25Operator">Operator for the keyword (BM25) half of the search, setting how many query tokens a property must match. If not specified, the server default (Or) is used.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public Task<GenerativeGroupByResult> Hybrid(
         string query,
         GroupByRequest groupBy,
@@ -236,28 +236,28 @@ public partial class GenerateClient
     /// <summary>
     /// Hybrid search with generative AI capabilities and grouping.
     /// </summary>
-    /// <param name="query">The query</param>
-    /// <param name="vectors">The vectors</param>
-    /// <param name="groupBy">The group by</param>
-    /// <param name="alpha">The alpha</param>
-    /// <param name="queryProperties">The query properties</param>
-    /// <param name="fusionType">The fusion type</param>
-    /// <param name="maxVectorDistance">The max vector distance</param>
-    /// <param name="limit">The limit</param>
-    /// <param name="offset">The offset</param>
-    /// <param name="bm25Operator">The bm 25 operator</param>
-    /// <param name="diversitySelection">The diversity selection</param>
-    /// <param name="autoLimit">The auto limit</param>
-    /// <param name="filters">The filters</param>
-    /// <param name="rerank">The rerank</param>
-    /// <param name="singlePrompt">The single prompt</param>
-    /// <param name="groupedTask">The grouped task</param>
-    /// <param name="provider">The provider</param>
-    /// <param name="returnProperties">The return properties</param>
-    /// <param name="returnReferences">The return references</param>
-    /// <param name="returnMetadata">The return metadata</param>
-    /// <param name="includeVectors">The include vectors</param>
-    /// <param name="cancellationToken">The cancellation token</param>
+    /// <param name="query">Text query for the keyword (BM25) half of the search.</param>
+    /// <param name="vectors">Vector input for the vector half of the search. If not specified, the query text is vectorized and used.</param>
+    /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="alpha">Balance between the keyword and the vector half of the search: 0.0 is pure keyword (BM25), 1.0 is pure vector. If not specified, the server default of 0.75 is used, or 1.0 when no query text is given.</param>
+    /// <param name="queryProperties">Properties the keyword (BM25) half of the search runs against. If not specified, all text properties are searched.</param>
+    /// <param name="fusionType">How the keyword and vector result sets are fused: Ranked adds inverted ranks, RelativeScore adds normalized scores. If not specified, the server default (RelativeScore) is used.</param>
+    /// <param name="maxVectorDistance">Maximum distance allowed for the vector half of the search. If not specified, no distance threshold is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="bm25Operator">Operator for the keyword (BM25) half of the search, setting how many query tokens a property must match. If not specified, the server default (Or) is used.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public async Task<GenerativeGroupByResult> Hybrid(
         string? query,
         HybridVectorInput? vectors,
@@ -340,28 +340,28 @@ public static class GenerateClientHybridExtensions
     ///     singlePrompt: "Describe this item"
     /// );
     /// </example>
-    /// <param name="client">The client</param>
-    /// <param name="query">The query</param>
-    /// <param name="vectors">The vectors</param>
-    /// <param name="alpha">The alpha</param>
-    /// <param name="queryProperties">The query properties</param>
-    /// <param name="fusionType">The fusion type</param>
-    /// <param name="maxVectorDistance">The max vector distance</param>
-    /// <param name="limit">The limit</param>
-    /// <param name="offset">The offset</param>
-    /// <param name="bm25Operator">The bm 25 operator</param>
-    /// <param name="diversitySelection">The diversity selection</param>
-    /// <param name="autoLimit">The auto limit</param>
-    /// <param name="filters">The filters</param>
-    /// <param name="rerank">The rerank</param>
-    /// <param name="singlePrompt">The single prompt</param>
-    /// <param name="groupedTask">The grouped task</param>
-    /// <param name="provider">The provider</param>
-    /// <param name="returnProperties">The return properties</param>
-    /// <param name="returnReferences">The return references</param>
-    /// <param name="returnMetadata">The return metadata</param>
-    /// <param name="includeVectors">The include vectors</param>
-    /// <param name="cancellationToken">The cancellation token</param>
+    /// <param name="client">The client to run the search on.</param>
+    /// <param name="query">Text query for the keyword (BM25) half of the search.</param>
+    /// <param name="vectors">Lambda builder for the vector input used by the vector half of the search.</param>
+    /// <param name="alpha">Balance between the keyword and the vector half of the search: 0.0 is pure keyword (BM25), 1.0 is pure vector. If not specified, the server default of 0.75 is used, or 1.0 when no query text is given.</param>
+    /// <param name="queryProperties">Properties the keyword (BM25) half of the search runs against. If not specified, all text properties are searched.</param>
+    /// <param name="fusionType">How the keyword and vector result sets are fused: Ranked adds inverted ranks, RelativeScore adds normalized scores. If not specified, the server default (RelativeScore) is used.</param>
+    /// <param name="maxVectorDistance">Maximum distance allowed for the vector half of the search. If not specified, no distance threshold is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="bm25Operator">Operator for the keyword (BM25) half of the search, setting how many query tokens a property must match. If not specified, the server default (Or) is used.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public static async Task<GenerativeWeaviateResult> Hybrid(
         this GenerateClient client,
         string query,
@@ -414,29 +414,29 @@ public static class GenerateClientHybridExtensions
     /// Hybrid search with generative AI capabilities and grouping using a lambda to build HybridVectorInput.
     /// This allows chaining NearVector or NearText configuration with target vectors.
     /// </summary>
-    /// <param name="client">The client</param>
-    /// <param name="query">The query</param>
-    /// <param name="vectors">The vectors</param>
-    /// <param name="groupBy">The group by</param>
-    /// <param name="alpha">The alpha</param>
-    /// <param name="queryProperties">The query properties</param>
-    /// <param name="fusionType">The fusion type</param>
-    /// <param name="maxVectorDistance">The max vector distance</param>
-    /// <param name="limit">The limit</param>
-    /// <param name="offset">The offset</param>
-    /// <param name="bm25Operator">The bm 25 operator</param>
-    /// <param name="diversitySelection">The diversity selection</param>
-    /// <param name="autoLimit">The auto limit</param>
-    /// <param name="filters">The filters</param>
-    /// <param name="rerank">The rerank</param>
-    /// <param name="singlePrompt">The single prompt</param>
-    /// <param name="groupedTask">The grouped task</param>
-    /// <param name="provider">The provider</param>
-    /// <param name="returnProperties">The return properties</param>
-    /// <param name="returnReferences">The return references</param>
-    /// <param name="returnMetadata">The return metadata</param>
-    /// <param name="includeVectors">The include vectors</param>
-    /// <param name="cancellationToken">The cancellation token</param>
+    /// <param name="client">The client to run the search on.</param>
+    /// <param name="query">Text query for the keyword (BM25) half of the search.</param>
+    /// <param name="vectors">Lambda builder for the vector input used by the vector half of the search.</param>
+    /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="alpha">Balance between the keyword and the vector half of the search: 0.0 is pure keyword (BM25), 1.0 is pure vector. If not specified, the server default of 0.75 is used, or 1.0 when no query text is given.</param>
+    /// <param name="queryProperties">Properties the keyword (BM25) half of the search runs against. If not specified, all text properties are searched.</param>
+    /// <param name="fusionType">How the keyword and vector result sets are fused: Ranked adds inverted ranks, RelativeScore adds normalized scores. If not specified, the server default (RelativeScore) is used.</param>
+    /// <param name="maxVectorDistance">Maximum distance allowed for the vector half of the search. If not specified, no distance threshold is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="bm25Operator">Operator for the keyword (BM25) half of the search, setting how many query tokens a property must match. If not specified, the server default (Or) is used.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public static async Task<GenerativeGroupByResult> Hybrid(
         this GenerateClient client,
         string query,
