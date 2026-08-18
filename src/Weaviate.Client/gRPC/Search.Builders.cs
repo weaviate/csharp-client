@@ -186,6 +186,9 @@ internal partial class WeaviateGrpcClient
     /// <returns>The boost proto message, or null when no boost is set</returns>
     private static V1.Boost? BuildBoost(Boost? boost)
     {
+        // The public Boost API takes double for every weight/decay so callers need no `f` suffix;
+        // the proto declares `optional float weight` / `optional float decay_value`, so this builder
+        // is the single point that narrows to float. NumericDecay origin/scale/offset stay double.
         if (boost is null)
         {
             return null;
@@ -215,7 +218,7 @@ internal partial class WeaviateGrpcClient
                 {
                     timeDecay.Curve = MapDecayCurve(condition.TimeDecay.DecayCurve.Value);
                 }
-                SetIfNotNull(v => timeDecay.DecayValue = v, condition.TimeDecay.DecayValue);
+                SetIfNotNull(v => timeDecay.DecayValue = (float)v, condition.TimeDecay.DecayValue);
                 grpcCondition.TimeDecay = timeDecay;
             }
             else if (condition.NumericDecay is not null)
@@ -231,7 +234,10 @@ internal partial class WeaviateGrpcClient
                 {
                     numericDecay.Curve = MapDecayCurve(condition.NumericDecay.DecayCurve.Value);
                 }
-                SetIfNotNull(v => numericDecay.DecayValue = v, condition.NumericDecay.DecayValue);
+                SetIfNotNull(
+                    v => numericDecay.DecayValue = (float)v,
+                    condition.NumericDecay.DecayValue
+                );
                 grpcCondition.NumericDecay = numericDecay;
             }
             else if (condition.PropertyValue is not null)
@@ -251,10 +257,10 @@ internal partial class WeaviateGrpcClient
                 }
                 grpcCondition.PropertyValue = propertyValue;
             }
-            SetIfNotNull(v => grpcCondition.Weight = v, condition.Weight);
+            SetIfNotNull(v => grpcCondition.Weight = (float)v, condition.Weight);
             result.Conditions.Add(grpcCondition);
         }
-        SetIfNotNull(v => result.Weight = v, boost.Weight);
+        SetIfNotNull(v => result.Weight = (float)v, boost.Weight);
         SetIfNotNull(v => result.Depth = v, boost.Depth);
         return result;
     }

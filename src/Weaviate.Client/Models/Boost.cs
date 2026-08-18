@@ -12,11 +12,11 @@ namespace Weaviate.Client.Models;
 /// Use the static factory methods to build a boost, then pass it to a query or generate method via
 /// the <c>boost</c> parameter:
 /// <list type="bullet">
-/// <item><see cref="Filter(Filter, float?, uint?)"/>: promote or demote objects matching a filter condition.</item>
-/// <item><see cref="TimeDecay(string, TimeSpan, DateTimeOffset?, TimeSpan?, Curve?, float?, float?, uint?)"/>: rank by recency, decaying with distance from an origin date.</item>
+/// <item><see cref="Filter(Filter, double?, uint?)"/>: promote or demote objects matching a filter condition.</item>
+/// <item><see cref="TimeDecay(string, TimeSpan, DateTimeOffset?, TimeSpan?, Curve?, double?, double?, uint?)"/>: rank by recency, decaying with distance from an origin date.</item>
 /// <item><see cref="NumericDecay"/>: rank by closeness to a target numeric value.</item>
 /// <item><see cref="NumericProperty"/>: rank by a numeric property's raw value.</item>
-/// <item><see cref="Blend"/>: combine several of the above, each with its own weight.</item>
+/// <item><see cref="Blend(IEnumerable{Boost}, double?, uint?)"/>: combine several of the above, each with its own weight.</item>
 /// </list>
 ///
 /// Preview feature: requires Weaviate 1.38 or later. Older servers silently ignore the boost.
@@ -59,7 +59,7 @@ public sealed record Boost
         string Scale,
         string? Offset,
         Curve? DecayCurve,
-        float? DecayValue
+        double? DecayValue
     );
 
     internal sealed record NumericDecayFunction(
@@ -68,7 +68,7 @@ public sealed record Boost
         double Scale,
         double? Offset,
         Curve? DecayCurve,
-        float? DecayValue
+        double? DecayValue
     );
 
     internal sealed record PropertyValueFunction(string Property, Modifier? ValueModifier);
@@ -79,14 +79,14 @@ public sealed record Boost
         internal TimeDecayFunction? TimeDecay { get; init; }
         internal NumericDecayFunction? NumericDecay { get; init; }
         internal PropertyValueFunction? PropertyValue { get; init; }
-        internal float? Weight { get; init; }
+        internal double? Weight { get; init; }
     }
 
     internal IReadOnlyList<Condition> Conditions { get; }
-    internal float? Weight { get; }
+    internal double? Weight { get; }
     internal uint? Depth { get; }
 
-    private Boost(IReadOnlyList<Condition> conditions, float? weight, uint? depth)
+    private Boost(IReadOnlyList<Condition> conditions, double? weight, uint? depth)
     {
         Conditions = conditions;
         Weight = weight;
@@ -104,12 +104,13 @@ public sealed record Boost
     /// <param name="weight">How much the boost influences the final score, in [0, 1]: the result is
     /// (1 - weight) of the primary score plus weight of the boost score. 0 is a no-op.
     /// If not set, the server default of 0.5 is used.
-    /// When this boost is passed to <see cref="Blend"/>, the weight instead acts as the relative
-    /// per-condition weight: unbounded, and negative values demote matching objects.</param>
+    /// When this boost is passed to <see cref="Blend(IEnumerable{Boost}, double?, uint?)"/>, the
+    /// weight instead acts as the relative per-condition weight: unbounded, and negative values
+    /// demote matching objects.</param>
     /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
     /// If not set, the server default (100) is used.</param>
     /// <returns>The boost</returns>
-    public static Boost Filter(Filter filter, float? weight = null, uint? depth = null) =>
+    public static Boost Filter(Filter filter, double? weight = null, uint? depth = null) =>
         new([new Condition { Filter = filter }], weight, depth);
 
     /// <summary>
@@ -131,8 +132,9 @@ public sealed record Boost
     /// <param name="weight">How much the boost influences the final score, in [0, 1]: the result is
     /// (1 - weight) of the primary score plus weight of the boost score. 0 is a no-op.
     /// If not set, the server default of 0.5 is used.
-    /// When this boost is passed to <see cref="Blend"/>, the weight instead acts as the relative
-    /// per-condition weight: unbounded, and negative values demote matching objects.</param>
+    /// When this boost is passed to <see cref="Blend(IEnumerable{Boost}, double?, uint?)"/>, the
+    /// weight instead acts as the relative per-condition weight: unbounded, and negative values
+    /// demote matching objects.</param>
     /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
     /// If not set, the server default (100) is used.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="scale"/> is not greater than
@@ -145,8 +147,8 @@ public sealed record Boost
         DateTimeOffset? origin = null,
         TimeSpan? offset = null,
         Curve? curve = null,
-        float? decay = null,
-        float? weight = null,
+        double? decay = null,
+        double? weight = null,
         uint? depth = null
     )
     {
@@ -186,8 +188,9 @@ public sealed record Boost
     /// <param name="weight">How much the boost influences the final score, in [0, 1]: the result is
     /// (1 - weight) of the primary score plus weight of the boost score. 0 is a no-op.
     /// If not set, the server default of 0.5 is used.
-    /// When this boost is passed to <see cref="Blend"/>, the weight instead acts as the relative
-    /// per-condition weight: unbounded, and negative values demote matching objects.</param>
+    /// When this boost is passed to <see cref="Blend(IEnumerable{Boost}, double?, uint?)"/>, the
+    /// weight instead acts as the relative per-condition weight: unbounded, and negative values
+    /// demote matching objects.</param>
     /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
     /// If not set, the server default (100) is used.</param>
     /// <returns>The boost</returns>
@@ -197,8 +200,8 @@ public sealed record Boost
         string? origin = null,
         string? offset = null,
         Curve? curve = null,
-        float? decay = null,
-        float? weight = null,
+        double? decay = null,
+        double? weight = null,
         uint? depth = null
     ) =>
         new(
@@ -237,8 +240,9 @@ public sealed record Boost
     /// <param name="weight">How much the boost influences the final score, in [0, 1]: the result is
     /// (1 - weight) of the primary score plus weight of the boost score. 0 is a no-op.
     /// If not set, the server default of 0.5 is used.
-    /// When this boost is passed to <see cref="Blend"/>, the weight instead acts as the relative
-    /// per-condition weight: unbounded, and negative values demote matching objects.</param>
+    /// When this boost is passed to <see cref="Blend(IEnumerable{Boost}, double?, uint?)"/>, the
+    /// weight instead acts as the relative per-condition weight: unbounded, and negative values
+    /// demote matching objects.</param>
     /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
     /// If not set, the server default (100) is used.</param>
     /// <returns>The boost</returns>
@@ -248,8 +252,8 @@ public sealed record Boost
         double scale,
         double? offset = null,
         Curve? curve = null,
-        float? decay = null,
-        float? weight = null,
+        double? decay = null,
+        double? weight = null,
         uint? depth = null
     ) =>
         new(
@@ -283,15 +287,16 @@ public sealed record Boost
     /// <param name="weight">How much the boost influences the final score, in [0, 1]: the result is
     /// (1 - weight) of the primary score plus weight of the boost score. 0 is a no-op.
     /// If not set, the server default of 0.5 is used.
-    /// When this boost is passed to <see cref="Blend"/>, the weight instead acts as the relative
-    /// per-condition weight: unbounded, and negative values demote matching objects.</param>
+    /// When this boost is passed to <see cref="Blend(IEnumerable{Boost}, double?, uint?)"/>, the
+    /// weight instead acts as the relative per-condition weight: unbounded, and negative values
+    /// demote matching objects.</param>
     /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
     /// If not set, the server default (100) is used.</param>
     /// <returns>The boost</returns>
     public static Boost NumericProperty(
         string name,
         Modifier? modifier = null,
-        float? weight = null,
+        double? weight = null,
         uint? depth = null
     ) =>
         new(
@@ -323,7 +328,7 @@ public sealed record Boost
     /// <exception cref="ArgumentException">No boosts are provided, or an input boost has its own
     /// depth set (set <paramref name="depth"/> here on <c>Blend</c> instead).</exception>
     /// <returns>The boost</returns>
-    public static Boost Blend(IEnumerable<Boost> boosts, float? weight = null, uint? depth = null)
+    public static Boost Blend(IEnumerable<Boost> boosts, double? weight = null, uint? depth = null)
     {
         var inputs = boosts.ToList();
         if (inputs.Count == 0)
@@ -354,6 +359,25 @@ public sealed record Boost
         }
         return new Boost(conditions, weight, depth);
     }
+
+    /// <summary>
+    /// Re-weight a single boost, giving it an overall strength separate from its own weight.
+    ///
+    /// This is the one-boost form of <see cref="Blend(IEnumerable{Boost}, double?, uint?)"/>: the
+    /// input boost's weight becomes the per-condition weight and <paramref name="weight"/> sets the
+    /// overall strength of the result.
+    /// </summary>
+    /// <param name="boost">The boost to wrap, created via the other factory methods.</param>
+    /// <param name="weight">How much the combined boost influences the final score, in [0, 1]: the
+    /// result is (1 - weight) of the primary score plus weight of the boost score. 0 is a no-op.
+    /// If not set, the server default of 0.5 is used.</param>
+    /// <param name="depth">How many candidates the primary search fetches for the boost to re-score.
+    /// If not set, the server default (100) is used.</param>
+    /// <exception cref="ArgumentException"><paramref name="boost"/> has its own depth set (set
+    /// <paramref name="depth"/> here on <c>Blend</c> instead).</exception>
+    /// <returns>The boost</returns>
+    public static Boost Blend(Boost boost, double? weight = null, uint? depth = null) =>
+        Blend([boost], weight, depth);
 
     // The server accepts only ^(\d+(\.\d+)?)(d|h|m|s|ms)$ and silently ignores a duration it cannot
     // parse, which disables the boost instead of erroring. So format from the integer tick count:

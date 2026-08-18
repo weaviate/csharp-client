@@ -535,6 +535,104 @@ public class TestBoostSyntax : IAsyncLifetime
     }
 
     /// <summary>
+    /// Tests that every factory takes a plain double for weight and decay. None of these arguments
+    /// compiled while the surface was float? (CS1503: cannot convert from 'double' to 'float?'), and
+    /// each still reaches the wire as the proto's float.
+    /// </summary>
+    [Fact]
+    public async Task AllFactories_AcceptDoubleWeightAndDecay_WithoutFloatSuffix()
+    {
+        (Boost Boost, float Expected)[] cases =
+        [
+            (Boost.Filter(Filter.Property("category").IsEqual("fruit"), weight: 0.1), 0.1f),
+            (
+                Boost.TimeDecay(
+                    "publishedAt",
+                    scale: TimeSpan.FromDays(7),
+                    decay: 0.25,
+                    weight: 0.2
+                ),
+                0.2f
+            ),
+            (Boost.TimeDecay("publishedAt", scale: "7d", decay: 0.25, weight: 0.3), 0.3f),
+            (Boost.NumericDecay("price", origin: 50, scale: 10, decay: 0.25, weight: 0.4), 0.4f),
+            (Boost.NumericProperty("viewCount", weight: 0.5), 0.5f),
+            (Boost.Blend([Boost.NumericProperty("viewCount")], weight: 0.6), 0.6f),
+        ];
+
+        foreach (var (boost, expected) in cases)
+        {
+            await _collection.Query.BM25(
+                "banana",
+                boost: boost,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+
+            var request = _getRequest();
+            Assert.NotNull(request);
+            Assert.NotNull(request.Boost);
+            Assert.True(request.Boost.HasWeight);
+            Assert.Equal(expected, request.Boost.Weight);
+        }
+    }
+
+    /// <summary>
+    /// Tests that a double decay reaches the request's decay_value alongside a double weight
+    /// </summary>
+    [Fact]
+    public async Task TimeDecay_DoubleDecayAndWeight_SerializesBoth()
+    {
+        await _collection.Query.BM25(
+            "banana",
+            boost: Boost.TimeDecay("publishedAt", scale: "7d", decay: 0.5, weight: 0.7),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.Boost);
+        Assert.True(request.Boost.HasWeight);
+        Assert.Equal(0.7f, request.Boost.Weight);
+        var condition = Assert.Single(request.Boost.Conditions);
+        Assert.NotNull(condition.TimeDecay);
+        Assert.True(condition.TimeDecay.HasDecayValue);
+        Assert.Equal(0.5f, condition.TimeDecay.DecayValue);
+    }
+
+    /// <summary>
+    /// Tests that the double the caller passes is narrowed to float exactly once, at the wire
+    /// boundary: the proto declares optional float weight / optional float decay_value, so a value
+    /// with no exact float representation must arrive as the nearest float, not as the caller's
+    /// double
+    /// </summary>
+    [Fact]
+    public async Task DoubleWeightAndDecay_NarrowToFloatOnTheWire()
+    {
+        const double Unrepresentable = 0.123456789;
+
+        await _collection.Query.BM25(
+            "banana",
+            boost: Boost.TimeDecay(
+                "publishedAt",
+                scale: "7d",
+                decay: Unrepresentable,
+                weight: Unrepresentable
+            ),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        var request = _getRequest();
+        Assert.NotNull(request);
+        Assert.NotNull(request.Boost);
+        Assert.Equal(0.12345679f, request.Boost.Weight);
+        Assert.NotEqual(Unrepresentable, (double)request.Boost.Weight);
+        var condition = Assert.Single(request.Boost.Conditions);
+        Assert.NotNull(condition.TimeDecay);
+        Assert.Equal(0.12345679f, condition.TimeDecay.DecayValue);
+        Assert.NotEqual(Unrepresentable, (double)condition.TimeDecay.DecayValue);
+    }
+
+    /// <summary>
     /// Tests that blend turns sub-boost weights into per-condition weights
     /// </summary>
     [Fact]
@@ -617,6 +715,52 @@ public class TestBoostSyntax : IAsyncLifetime
     {
         Assert.Throws<ArgumentException>(() =>
             Boost.Blend([Boost.NumericProperty("viewCount", depth: 10)])
+        );
+    }
+
+    /// <summary>
+    /// Tests that the single-boost blend overload builds exactly the request a one-element
+    /// collection builds, closing the parity gap with the Python client's isinstance collapse
+    /// </summary>
+    [Fact]
+    public async Task Blend_SingleBoost_MatchesCollectionOverload()
+    {
+        static Boost Input() => Boost.NumericProperty("viewCount", weight: 2.0);
+
+        await _collection.Query.BM25(
+            "banana",
+            boost: Boost.Blend(Input(), weight: 0.8, depth: 300),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var fromSingle = _getRequest();
+        Assert.NotNull(fromSingle);
+        Assert.NotNull(fromSingle.Boost);
+
+        await _collection.Query.BM25(
+            "banana",
+            boost: Boost.Blend([Input()], weight: 0.8, depth: 300),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var fromCollection = _getRequest();
+        Assert.NotNull(fromCollection);
+        Assert.NotNull(fromCollection.Boost);
+
+        Assert.Equal(fromCollection.Boost, fromSingle.Boost);
+        Assert.Equal(0.8f, fromSingle.Boost.Weight);
+        Assert.Equal(300u, fromSingle.Boost.Depth);
+        var condition = Assert.Single(fromSingle.Boost.Conditions);
+        Assert.True(condition.HasWeight);
+        Assert.Equal(2f, condition.Weight);
+    }
+
+    /// <summary>
+    /// Tests that the single-boost blend overload still rejects a sub-boost carrying its own depth
+    /// </summary>
+    [Fact]
+    public void Blend_SingleBoost_Throws_OnSubBoostDepth()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            Boost.Blend(Boost.NumericProperty("viewCount", depth: 10))
         );
     }
 
