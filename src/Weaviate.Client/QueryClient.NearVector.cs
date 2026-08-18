@@ -21,7 +21,7 @@ public partial class QueryClient
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="rerank">The rerank</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
     /// <param name="returnMetadata">The return metadata</param>
@@ -80,7 +80,7 @@ public partial class QueryClient
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="rerank">The rerank</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
     /// <param name="returnMetadata">The return metadata</param>
@@ -140,7 +140,7 @@ public partial class QueryClient
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="rerank">The rerank</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
     /// <param name="returnMetadata">The return metadata</param>
@@ -196,7 +196,7 @@ public partial class QueryClient
     /// <param name="limit">The limit</param>
     /// <param name="offset">The offset</param>
     /// <param name="rerank">The rerank</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">The return properties</param>
     /// <param name="returnReferences">The return references</param>
     /// <param name="returnMetadata">The return metadata</param>
@@ -251,7 +251,7 @@ public partial class QueryClient
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -303,7 +303,7 @@ public partial class QueryClient
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -362,7 +362,7 @@ public partial class QueryClient
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>
@@ -412,7 +412,7 @@ public partial class QueryClient
     /// <param name="limit">Maximum number of results to return.</param>
     /// <param name="offset">Number of results to skip.</param>
     /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response.</param>
     /// <param name="returnReferences">Cross-references to return.</param>
     /// <param name="returnMetadata">Metadata to include in the response.</param>

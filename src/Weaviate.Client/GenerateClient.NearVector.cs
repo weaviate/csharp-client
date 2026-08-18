@@ -20,7 +20,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
     /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
     /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
     /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
@@ -85,7 +85,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
     /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
     /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
     /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
@@ -151,7 +151,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
     /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
     /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
     /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
@@ -214,7 +214,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
     /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
     /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
     /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
@@ -276,7 +276,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
     /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
     /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
     /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
@@ -336,7 +336,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
     /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
     /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
     /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
@@ -397,7 +397,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
     /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
     /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
     /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
@@ -455,7 +455,7 @@ public partial class GenerateClient
     /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
     /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
     /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
     /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>

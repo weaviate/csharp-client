@@ -24,7 +24,7 @@ public partial class TypedQueryClient<T>
     /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
     /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
     /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
@@ -88,7 +88,7 @@ public partial class TypedQueryClient<T>
     /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
     /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
     /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
@@ -156,7 +156,7 @@ public partial class TypedQueryClient<T>
     /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
     /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
     /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
@@ -223,7 +223,7 @@ public partial class TypedQueryClient<T>
     /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
     /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
     /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
@@ -320,7 +320,7 @@ public static class TypedQueryClientHybridExtensions
     /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
     /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
     /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
@@ -390,7 +390,7 @@ public static class TypedQueryClientHybridExtensions
     /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
-    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
     /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
     /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>

@@ -19,7 +19,7 @@ namespace Weaviate.Client.Models;
 /// <item><see cref="Blend(IEnumerable{Boost}, double?, uint?)"/>: combine several of the above, each with its own weight.</item>
 /// </list>
 ///
-/// Preview feature: requires Weaviate 1.38 or later. Older servers silently ignore the boost.
+/// Requires Weaviate 1.38 or later. Older servers silently ignore the boost.
 /// </summary>
 public sealed record Boost
 {
