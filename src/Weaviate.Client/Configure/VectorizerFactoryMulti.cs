@@ -52,7 +52,7 @@ public class VectorizerFactoryMulti
     /// <param name="textFields">The text fields</param>
     /// <param name="baseURL">The base url</param>
     /// <param name="model">The model</param>
-    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2MultiVecJinaAI(
         string[]? imageFields = null,
@@ -67,7 +67,10 @@ public class VectorizerFactoryMulti
             Model = model,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
+            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
+#pragma warning disable CS0618
             VectorizeCollectionName = vectorizeCollectionName,
+#pragma warning restore CS0618
         };
 
     /// <summary>
@@ -77,7 +80,7 @@ public class VectorizerFactoryMulti
     /// <param name="textFields">The text fields</param>
     /// <param name="baseURL">The base url</param>
     /// <param name="model">The model</param>
-    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
+    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2MultiVecJinaAI(
         WeightedFields imageFields,
@@ -92,7 +95,10 @@ public class VectorizerFactoryMulti
             Model = model,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
+            // Inert for multivector modules; still shipped API, and WEAVIATE002 requires it here.
+#pragma warning disable CS0618
             VectorizeCollectionName = vectorizeCollectionName,
+#pragma warning restore CS0618
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields

@@ -50,7 +50,10 @@ public class TestVectorizers : IntegrationTests
         Assert.Equal(512, google.Dimensions);
         // The factory does not offer vectorizeClassName because no multi2vec module reads it,
         // and the server confirms it: nothing is sent, and nothing is stored or defaulted back.
+        // Reading the obsolete property is the point of the assertion, hence the suppression.
+#pragma warning disable CS0618
         Assert.Null(google.VectorizeCollectionName);
+#pragma warning restore CS0618
         Assert.NotNull(google.ImageFields);
         Assert.Equal(["image"], google.ImageFields);
         Assert.NotNull(google.TextFields);
