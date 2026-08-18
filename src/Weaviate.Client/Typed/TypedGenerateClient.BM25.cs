@@ -21,6 +21,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="searchOperator">BM25 search operator (AND/OR)</param>
     /// <param name="rerank">Rerank configuration</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
@@ -42,6 +43,7 @@ public partial class TypedGenerateClient<T>
         uint? offset = null,
         BM25Operator? searchOperator = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -64,6 +66,7 @@ public partial class TypedGenerateClient<T>
             offset: offset,
             searchOperator: searchOperator,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,
@@ -89,6 +92,7 @@ public partial class TypedGenerateClient<T>
     /// <param name="offset">Offset for pagination</param>
     /// <param name="searchOperator">BM25 search operator (AND/OR)</param>
     /// <param name="rerank">Rerank configuration</param>
+    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
     /// <param name="singlePrompt">Single prompt for generation</param>
     /// <param name="groupedTask">Grouped prompt for generation</param>
     /// <param name="provider">Optional generative provider to enrich prompts that don't have a provider set. If the prompt already has a provider, it will not be overridden.</param>
@@ -109,6 +113,7 @@ public partial class TypedGenerateClient<T>
         uint? offset = null,
         BM25Operator? searchOperator = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         GenerativeProvider? provider = null,
@@ -130,6 +135,7 @@ public partial class TypedGenerateClient<T>
             offset: offset,
             searchOperator: searchOperator,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             provider: provider,

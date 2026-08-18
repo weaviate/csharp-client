@@ -20,6 +20,7 @@ public partial class QueryClient
     /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
     /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
     /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
@@ -38,6 +39,7 @@ public partial class QueryClient
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -59,6 +61,7 @@ public partial class QueryClient
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
+            boost: boost,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -80,6 +83,7 @@ public partial class QueryClient
     /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="filters">Filters to apply to the search.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
     /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
     /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
@@ -99,6 +103,7 @@ public partial class QueryClient
         uint? autoLimit = null,
         Filter? filters = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -120,6 +125,7 @@ public partial class QueryClient
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
+            boost: boost,
             targetVector: null,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
@@ -148,6 +154,7 @@ public partial class QueryClient
     /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
     /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
     /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
     /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
@@ -162,6 +169,7 @@ public partial class QueryClient
         Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -185,6 +193,7 @@ public partial class QueryClient
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
+            boost: boost,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
@@ -206,6 +215,7 @@ public partial class QueryClient
     /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
     /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Preview feature: requires Weaviate 1.38 or later; older servers silently ignore it.</param>
     /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
     /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
     /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
@@ -221,6 +231,7 @@ public partial class QueryClient
         Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -244,6 +255,7 @@ public partial class QueryClient
             filters: filters,
             tenant: _collectionClient.Tenant,
             rerank: rerank,
+            boost: boost,
             targetVector: input.TargetVectors,
             consistencyLevel: _collectionClient.ConsistencyLevel,
             returnProperties: returnProperties,
@@ -285,6 +297,7 @@ public static class QueryClientNearTextExtensions
         Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -303,6 +316,7 @@ public static class QueryClientNearTextExtensions
                 diversitySelection: diversitySelection,
                 autoLimit: autoLimit,
                 rerank: rerank,
+                boost: boost,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata,
@@ -324,6 +338,7 @@ public static class QueryClientNearTextExtensions
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
+            boost: boost,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,
@@ -359,6 +374,7 @@ public static class QueryClientNearTextExtensions
         Diversity? diversitySelection = null,
         uint? autoLimit = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         AutoArray<string>? returnProperties = null,
         IList<QueryReference>? returnReferences = null,
         MetadataQuery? returnMetadata = null,
@@ -378,6 +394,7 @@ public static class QueryClientNearTextExtensions
                 diversitySelection: diversitySelection,
                 autoLimit: autoLimit,
                 rerank: rerank,
+                boost: boost,
                 returnProperties: returnProperties,
                 returnReferences: returnReferences,
                 returnMetadata: returnMetadata,
@@ -400,6 +417,7 @@ public static class QueryClientNearTextExtensions
             autoLimit: autoLimit,
             filters: filters,
             rerank: rerank,
+            boost: boost,
             returnProperties: returnProperties,
             returnReferences: returnReferences,
             returnMetadata: returnMetadata,

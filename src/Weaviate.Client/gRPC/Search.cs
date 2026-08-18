@@ -1,5 +1,6 @@
 using Weaviate.Client.Internal;
 using Weaviate.Client.Models;
+using Boost = Weaviate.Client.Models.Boost;
 using Rerank = Weaviate.Client.Models.Rerank;
 using V1 = Weaviate.Client.Grpc.Protobuf.V1;
 
@@ -116,6 +117,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="tenant">The tenant</param>
     /// <param name="consistencyLevel">The consistency level</param>
     /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost</param>
     /// <param name="singlePrompt">The single prompt</param>
     /// <param name="groupedTask">The grouped task</param>
     /// <param name="returnMetadata">The return metadata</param>
@@ -138,6 +140,7 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         MetadataQuery? returnMetadata = null,
@@ -158,6 +161,7 @@ internal partial class WeaviateGrpcClient
             tenant: tenant,
             consistencyLevel: consistencyLevel,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             returnProperties: returnProperties,
@@ -189,6 +193,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="tenant">The tenant</param>
     /// <param name="consistencyLevel">The consistency level</param>
     /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost</param>
     /// <param name="singlePrompt">The single prompt</param>
     /// <param name="groupedTask">The grouped task</param>
     /// <param name="targetVector">The target vector</param>
@@ -214,6 +219,7 @@ internal partial class WeaviateGrpcClient
         string? tenant = null,
         ConsistencyLevels? consistencyLevel = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         TargetVectors? targetVector = null,
@@ -235,6 +241,7 @@ internal partial class WeaviateGrpcClient
             tenant: tenant,
             consistencyLevel: consistencyLevel,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             returnProperties: returnProperties,
@@ -269,6 +276,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="searchOperator">The search operator</param>
     /// <param name="groupBy">The group by</param>
     /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost</param>
     /// <param name="singlePrompt">The single prompt</param>
     /// <param name="groupedTask">The grouped task</param>
     /// <param name="after">The after</param>
@@ -291,6 +299,7 @@ internal partial class WeaviateGrpcClient
         BM25Operator? searchOperator = null,
         GroupByRequest? groupBy = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         Guid? after = null,
@@ -312,6 +321,7 @@ internal partial class WeaviateGrpcClient
             offset: offset,
             groupBy: groupBy,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             after: after,
@@ -346,6 +356,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="filters">The filters</param>
     /// <param name="groupBy">The group by</param>
     /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost</param>
     /// <param name="singlePrompt">The single prompt</param>
     /// <param name="groupedTask">The grouped task</param>
     /// <param name="tenant">The tenant</param>
@@ -373,6 +384,7 @@ internal partial class WeaviateGrpcClient
         Filter? filters = null,
         GroupByRequest? groupBy = null,
         Rerank? rerank = null,
+        Boost? boost = null,
         SinglePrompt? singlePrompt = null,
         GroupedTask? groupedTask = null,
         string? tenant = null,
@@ -400,6 +412,7 @@ internal partial class WeaviateGrpcClient
             offset: offset,
             groupBy: groupBy,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             tenant: tenant,
@@ -438,6 +451,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="filters">The filters</param>
     /// <param name="groupBy">The group by</param>
     /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost</param>
     /// <param name="singlePrompt">The single prompt</param>
     /// <param name="groupedTask">The grouped task</param>
     /// <param name="targetVector">The target vector</param>
@@ -461,6 +475,7 @@ internal partial class WeaviateGrpcClient
         Filter? filters,
         GroupByRequest? groupBy,
         Rerank? rerank,
+        Boost? boost,
         SinglePrompt? singlePrompt,
         GroupedTask? groupedTask,
         TargetVectors? targetVector,
@@ -484,6 +499,7 @@ internal partial class WeaviateGrpcClient
             tenant: tenant,
             consistencyLevel: consistencyLevel,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             returnProperties: returnProperties,
@@ -518,6 +534,7 @@ internal partial class WeaviateGrpcClient
     /// <param name="filters">The filters</param>
     /// <param name="groupBy">The group by</param>
     /// <param name="rerank">The rerank</param>
+    /// <param name="boost">The boost</param>
     /// <param name="singlePrompt">The single prompt</param>
     /// <param name="groupedTask">The grouped task</param>
     /// <param name="tenant">The tenant</param>
@@ -543,6 +560,7 @@ internal partial class WeaviateGrpcClient
         Filter? filters,
         GroupByRequest? groupBy,
         Rerank? rerank,
+        Boost? boost,
         SinglePrompt? singlePrompt,
         GroupedTask? groupedTask,
         string? tenant,
@@ -566,6 +584,7 @@ internal partial class WeaviateGrpcClient
             tenant: tenant,
             consistencyLevel: consistencyLevel,
             rerank: rerank,
+            boost: boost,
             singlePrompt: singlePrompt,
             groupedTask: groupedTask,
             returnProperties: returnProperties,
