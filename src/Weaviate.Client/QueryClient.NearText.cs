@@ -10,22 +10,22 @@ public partial class QueryClient
 {
     /// <summary>Performs a near-text search using the specified parameters.</summary>
     /// <param name="query">The search text.</param>
-    /// <param name="certainty">Certainty threshold for the search.</param>
-    /// <param name="distance">Distance threshold for the search.</param>
+    /// <param name="certainty">Certainty threshold for the search: the minimum similarity a result must reach. If not specified, no threshold is applied.</param>
+    /// <param name="distance">Distance threshold for the search: the maximum distance a result may have from the query vector. If not specified, no threshold is applied.</param>
     /// <param name="moveTo">Move-to configuration.</param>
     /// <param name="moveAway">Move-away configuration.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="offset">Number of results to skip.</param>
-    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
-    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="filters">Filters to apply to the search.</param>
-    /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
-    /// <param name="returnProperties">Properties to return in the response.</param>
-    /// <param name="returnReferences">Cross-references to return.</param>
-    /// <param name="returnMetadata">Metadata to include in the response.</param>
-    /// <param name="includeVectors">Vector configuration for returned objects.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     /// <returns>Search results.</returns>
     public async Task<WeaviateResult> NearText(
         AutoArray<string> query,
@@ -73,22 +73,22 @@ public partial class QueryClient
     /// <summary>Performs a near-text search with group-by using the specified parameters.</summary>
     /// <param name="query">The search text.</param>
     /// <param name="groupBy">Group-by configuration.</param>
-    /// <param name="certainty">Certainty threshold for the search.</param>
-    /// <param name="distance">Distance threshold for the search.</param>
+    /// <param name="certainty">Certainty threshold for the search: the minimum similarity a result must reach. If not specified, no threshold is applied.</param>
+    /// <param name="distance">Distance threshold for the search: the maximum distance a result may have from the query vector. If not specified, no threshold is applied.</param>
     /// <param name="moveTo">Move-to configuration.</param>
     /// <param name="moveAway">Move-away configuration.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="offset">Number of results to skip.</param>
-    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
-    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
     /// <param name="filters">Filters to apply to the search.</param>
-    /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
-    /// <param name="returnProperties">Properties to return in the response.</param>
-    /// <param name="returnReferences">Cross-references to return.</param>
-    /// <param name="returnMetadata">Metadata to include in the response.</param>
-    /// <param name="includeVectors">Vector configuration for returned objects.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     /// <returns>Grouped search results.</returns>
     public async Task<GroupByResult> NearText(
         AutoArray<string> query,
@@ -149,17 +149,17 @@ public partial class QueryClient
     /// </example>
     /// <param name="query">Lambda builder for creating NearTextInput with target vectors.</param>
     /// <param name="filters">Filters to apply to the search.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="offset">Number of results to skip.</param>
-    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
-    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
-    /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
-    /// <param name="returnProperties">Properties to return in the response.</param>
-    /// <param name="returnReferences">Cross-references to return.</param>
-    /// <param name="returnMetadata">Metadata to include in the response.</param>
-    /// <param name="includeVectors">Vector configuration for returned objects.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     /// <returns>Search results.</returns>
     public async Task<WeaviateResult> NearText(
         NearTextInput.FactoryFn query,
@@ -210,17 +210,17 @@ public partial class QueryClient
     /// <param name="query">Lambda builder for creating NearTextInput with target vectors.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="offset">Number of results to skip.</param>
-    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
-    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
-    /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
-    /// <param name="returnProperties">Properties to return in the response.</param>
-    /// <param name="returnReferences">Cross-references to return.</param>
-    /// <param name="returnMetadata">Metadata to include in the response.</param>
-    /// <param name="includeVectors">Vector configuration for returned objects.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     /// <returns>Grouped search results.</returns>
     public async Task<GroupByResult> NearText(
         NearTextInput.FactoryFn query,
@@ -275,6 +275,20 @@ public static class QueryClientNearTextExtensions
     /// <summary>
     /// Performs a near-text search using a NearTextInput record.
     /// </summary>
+    /// <param name="client">The client to run the search on.</param>
+    /// <param name="query">The near-text input.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public static async Task<WeaviateResult> NearText(
         this QueryClient client,
         NearTextInput query,
@@ -337,6 +351,21 @@ public static class QueryClientNearTextExtensions
     /// <summary>
     /// Performs a near-text search with group-by using a NearTextInput record.
     /// </summary>
+    /// <param name="client">The client to run the search on.</param>
+    /// <param name="query">The near-text input.</param>
+    /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public static async Task<GroupByResult> NearText(
         this QueryClient client,
         NearTextInput query,
