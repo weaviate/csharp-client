@@ -9,9 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`generative-deepseek`** — New `GenerativeConfigFactory.Deepseek(...)` collection config and `GenerativeProviderFactory.Deepseek(...)` runtime provider for the `generative-deepseek` module. Requires Weaviate ≥ 1.36.19.
+- **Incremental Backups** — `BackupCreateRequest.IncrementalBaseBackupId` names an existing backup to build on, so files unchanged since that backup are not copied again; `Backup.IncrementalBaseBackupId` surfaces it on `List()` and `GetStatus()`. `Create` throws `WeaviateVersionMismatchException` below 1.37.0, the documented feature floor. The server has accepted the field on create since 1.34.18, but only returns it on read from 1.37.6.
+- **`apiEndpoint` on `Multi2VecGoogle`** — Both `VectorizerFactory.Multi2VecGoogle(...)` overloads take an optional `apiEndpoint`, which selects the Gemini API (`generativelanguage.googleapis.com`) instead of Vertex AI. Both `Multi2VecGoogleGemini(...)` overloads also gained an optional `dimensions`.
+
+### Fixed
+
+- **Backup `Size` Dropped on List** — `BackupClient.List()` discarded the size and incremental base id it had already parsed from the response, so `Backup.Size` was null for every listed backup. Both fields are now mapped.
+- **Aggregate Zeros for Absent Values** — Int, Number, Boolean, Text and Date results, `Count` included, reported `0`, `0.0` or `false` where the server had sent no value at all. Every scalar is now presence-checked and left null when unset, so an empty aggregation is distinguishable from a genuine zero.
+- **`Multi2VecGoogleGemini` Emitted a Non-Existent Module** — The vectorizer declared the module name `multi2vec-google-gemini`, which no Weaviate server provides, so a collection configured with it could never be created. `VectorizerFactory.Multi2VecGoogleGemini(...)` now emits `multi2vec-google` with the Gemini API endpoint.
+
+### Changed
+
+- **`Multi2VecGoogleGemini` is now an `[Obsolete]` shim over `Multi2VecGoogle`** — This breaks at runtime, not only at compile time: the factory now returns a `Multi2VecGoogle`, so `is`/`as`/pattern matches on `Multi2VecGoogleGemini` silently stop matching, and a `switch` with arms for both types no longer compiles (`CS8120: The switch case is unreachable`). Bind the result as `Multi2VecGoogle` or `VectorizerConfig`.
+- **`Multi2VecGoogle.ProjectId` and `.Location` are no longer `required`** — Both getters changed from `string!` to `string?` so the Gemini endpoint, which is scoped to neither a project nor a region, can omit them. Callers with nullable reference types enabled may see CS8600/CS8601.
+- **`Aggregate.Boolean` counts are nullable** — `PercentageTrue`, `PercentageFalse`, `TotalTrue` and `TotalFalse` changed from `double`/`long` to `double?`/`long?`.
+- **`BackupCreateRequest` gained a trailing optional parameter** — Its primary constructor and `Deconstruct` went from six parameters to seven, so six-element positional deconstruction (`var (id, backend, inc, exc, cpu, comp) = req;`) no longer compiles; deconstruct seven elements instead.
+- **Binary compatibility** — The signature changes above are source-compatible for callers using named arguments, but not binary-compatible: assemblies compiled against 1.1.0 throw `MissingMethodException` until recompiled.
+
 ### Removed
 
 - **`ReplicationAsyncConfig.MaxWorkers` and `ReplicationAsyncConfig.AliveNodesCheckingFrequency`** — Both fields have been no-ops on the server since Weaviate 1.37.3 and are now removed from the user-facing model, the OpenAPI spec, and the generated DTO. Existing code that sets these properties will not compile after upgrading; no behavioral change results from the removal.
+- **`Multi2VecGoogleGemini.Model`** — Removed along with the rest of the type's own members; the base `Multi2VecGoogle` declares the same setting as `ModelId`. Migrate `.Model` → `.ModelId`.
 
 ---
 
@@ -67,7 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Vectorizers
 
-- **Audio Field Support** ([#302](https://github.com/weaviate/weaviate-csharp-client/pull/302)): `Multi2VecGoogle` and `Multi2VecGoogleGemini` vectorizers now support audio field configurations with configurable per-field weights.
+- **Audio Field Support** ([#302](https://github.com/weaviate/weaviate-csharp-client/pull/302)): `Multi2VecGoogle` and `Multi2VecGoogleGemini` vectorizers now support audio field configurations with configurable per-field weights. (`Multi2VecGoogleGemini` is deprecated in favour of `Multi2VecGoogle` — see Unreleased.)
 
 #### API Ergonomics
 
@@ -105,7 +126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Weaviate 1.36 support: HFresh vector index, async replication config, property index deletion
 - Critical fix: gRPC vector serialization no longer doubles dimensions for non-`float[]` vectors
 - Opt-in structured logging via `ILoggerFactory`
-- New vectorizers: `Multi2VecGoogleGemini` and `Multi2MultivecWeaviate`
+- New vectorizers: `Multi2VecGoogleGemini` (never functional — see Unreleased) and `Multi2MultivecWeaviate`
 
 ### Added
 
@@ -119,7 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Vectorizers
 
-- **Multi2VecGoogleGemini** ([#297](https://github.com/weaviate/weaviate-csharp-client/pull/297)): New vectorizer calling the Google Gemini API directly. Supports image, text, and video field weighting. No project ID or location required (unlike the Vertex AI variant). Defaults to `generativelanguage.googleapis.com`.
+- **Multi2VecGoogleGemini** ([#297](https://github.com/weaviate/weaviate-csharp-client/pull/297)): New vectorizer calling the Google Gemini API directly. Supports image, text, and video field weighting. No project ID or location required (unlike the Vertex AI variant). Defaults to `generativelanguage.googleapis.com`. **Correction:** this vectorizer declared the module name `multi2vec-google-gemini`, which no Weaviate server provides, so it could never create a collection; fixed in Unreleased.
 - **Multi2MultivecWeaviate** ([#291](https://github.com/weaviate/weaviate-csharp-client/pull/291)): Support for the `multi2multivec-weaviate` vectorizer, which produces multi-vector embeddings using Weaviate's built-in model.
 - **Cohere Reranker `BaseURL`** ([#287](https://github.com/weaviate/weaviate-csharp-client/pull/287)): Added `BaseURL` property to `RerankerCohereConfig` and a corresponding parameter to `RerankerConfigFactory.Cohere()`, enabling self-hosted or regional Cohere endpoints.
 

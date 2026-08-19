@@ -200,17 +200,8 @@ public partial class CollectionsTests : IntegrationTests
     /// than silently falling back to a default.
     /// </summary>
     /// <remarks>
-    /// Every float here is deliberately integral. On a class that uses named vectors, Weaviate
-    /// 1.39.0 rejects any fractional float in this module's config — <c>temperature: 0.7</c>
-    /// comes back as "Wrong temperature configuration, values are between 0.0 and 2.0". The
-    /// client sends plain JSON numbers and the same payload is accepted on a class-level
-    /// vectorizer, so this is a server-side defect, not a client one: the settings helper
-    /// receives the value as a <c>json.Number</c>, its non-integer path returns the caller's
-    /// "defaultValue", and generative-deepseek passes a -100 sentinel there
-    /// (usecases/modulecomponents/settings/class_settings_property_helper.go getNumberValue,
-    /// modules/generative-deepseek/config/class_settings.go getFloatProperty).
-    /// generative-openai fails identically. Fractional values and the exact wire keys are
-    /// covered by the unit test instead.
+    /// Integral floats only; the server drops fractional floats for this module on named-vector
+    /// classes. See PR #368. Fractional values are covered by the unit test instead.
     /// </remarks>
     [Fact]
     public async Task Collection_Creates_And_Retrieves_GenerativeDeepseek_Config()
