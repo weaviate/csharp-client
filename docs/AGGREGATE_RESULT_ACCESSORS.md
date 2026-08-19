@@ -107,11 +107,11 @@ if (quantityAgg != null)
     Console.WriteLine($"Total quantity: {quantityAgg.Sum}");
 }
 
-// Access boolean aggregation
+// Access boolean aggregation (its members are null when the server did not send them)
 var inStockAgg = result.Boolean("inStock");
-if (inStockAgg != null)
+if (inStockAgg?.PercentageTrue is { } inStockPercentage)
 {
-    Console.WriteLine($"In stock: {inStockAgg.PercentageTrue:P0}");
+    Console.WriteLine($"In stock: {inStockPercentage:P0}");
 }
 
 // Access date aggregation
@@ -157,9 +157,13 @@ if (result.TryGetText("category", out var category))
 }
 
 // Generic TryGet
-if (result.TryGet<Aggregate.Boolean>("inStock", out var stockAgg))
+if (
+    result.TryGet<Aggregate.Boolean>("inStock", out var stockAgg)
+    && stockAgg.TotalTrue is { } inStock
+    && stockAgg.TotalFalse is { } outOfStock
+)
 {
-    Console.WriteLine($"In stock: {stockAgg.TotalTrue}, Out of stock: {stockAgg.TotalFalse}");
+    Console.WriteLine($"In stock: {inStock}, Out of stock: {outOfStock}");
 }
 ```
 
@@ -196,7 +200,11 @@ result.Match("field",
     text: t => Console.WriteLine($"Text: {t.Count} occurrences"),
     integer: i => Console.WriteLine($"Integer: sum={i.Sum}"),
     number: n => Console.WriteLine($"Number: mean={n.Mean}"),
-    boolean: b => Console.WriteLine($"Boolean: {b.PercentageTrue:P0} true"),
+    boolean: b =>
+    {
+        if (b.PercentageTrue is { } percentage)
+            Console.WriteLine($"Boolean: {percentage:P0} true");
+    },
     date: d => Console.WriteLine($"Date range: {d.Minimum} to {d.Maximum}")
 );
 
@@ -205,7 +213,10 @@ var description = result.Match<string>("field",
     text: t => $"Text with {t.TopOccurrences.Count} unique values",
     integer: i => $"Integer ranging from {i.Minimum} to {i.Maximum}",
     number: n => $"Number with mean {n.Mean:F2}",
-    boolean: b => $"Boolean: {b.PercentageTrue:P0} true",
+    boolean: b =>
+        b.PercentageTrue is { } percentage
+            ? $"Boolean: {percentage:P0} true"
+            : "Boolean: percentage not returned",
     date: d => $"Dates from {d.Minimum:d} to {d.Maximum:d}"
 );
 
@@ -223,7 +234,10 @@ foreach (var (name, _) in result.Properties)
         text: t => $"{name}: {t.Count} items, top: {t.TopOccurrences.FirstOrDefault()?.Value}",
         integer: i => $"{name}: range [{i.Minimum}, {i.Maximum}], sum: {i.Sum}",
         number: n => $"{name}: range [{n.Minimum:F2}, {n.Maximum:F2}], mean: {n.Mean:F2}",
-        boolean: b => $"{name}: {b.TotalTrue} true, {b.TotalFalse} false",
+        boolean: b =>
+            b.TotalTrue is { } trueCount && b.TotalFalse is { } falseCount
+                ? $"{name}: {trueCount} true, {falseCount} false"
+                : $"{name}: boolean counts not returned",
         date: d => $"{name}: {d.Minimum:d} to {d.Maximum:d}"
     );
 
@@ -312,10 +326,13 @@ For boolean properties:
 | Property | Type | Description |
 |----------|------|-------------|
 | `Count` | `long?` | Number of values |
-| `TotalTrue` | `long` | Count of true values |
-| `TotalFalse` | `long` | Count of false values |
-| `PercentageTrue` | `double` | Percentage of true values (0-1) |
-| `PercentageFalse` | `double` | Percentage of false values (0-1) |
+| `TotalTrue` | `long?` | Count of true values |
+| `TotalFalse` | `long?` | Count of false values |
+| `PercentageTrue` | `double?` | Percentage of true values (0-1) |
+| `PercentageFalse` | `double?` | Percentage of false values (0-1) |
+
+Every member is nullable: null means the server did not send that value, which is not the same as
+zero. Check before formatting — interpolating a null renders as an empty string.
 
 ### Aggregate.Date
 

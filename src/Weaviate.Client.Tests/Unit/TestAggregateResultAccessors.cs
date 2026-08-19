@@ -1,4 +1,5 @@
 using Weaviate.Client.Models;
+using Agg = Weaviate.Client.Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation;
 
 namespace Weaviate.Client.Tests.Unit;
 
@@ -787,39 +788,28 @@ public class TestAggregateResultAccessors
     /// leaves one unset the client must report null, not the field type's zero — a returned 0,
     /// 0.0 or false is indistinguishable from a real aggregate. Driven straight off the proto
     /// message so an unset field is guaranteed, which a live server will not always produce:
-    /// Weaviate 1.39.0 always fills the four boolean members in, so only this test pins them.
+    /// it always fills the four boolean members in, so only this test pins them.
     /// </summary>
     [Fact]
     public void FromGrpcProperty_UnsetScalars_MapToNull()
     {
         var integer = AggregateResult.FromGrpcProperty(
-            new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation
-            {
-                Property = "intField",
-                Int =
-                    new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation.Types.Integer(),
-            }
+            new Agg { Property = "intField", Int = new Agg.Types.Integer() }
         );
         var typedInteger = Assert.IsType<Aggregate.Integer>(integer);
+        Assert.Null(typedInteger.Count);
         Assert.Null(typedInteger.Maximum);
         Assert.Null(typedInteger.Mean);
         Assert.Null(typedInteger.Median);
         Assert.Null(typedInteger.Minimum);
         Assert.Null(typedInteger.Mode);
         Assert.Null(typedInteger.Sum);
-        // Count is deliberately still read unconditionally, as python does: a count of 0 is a
-        // meaningful answer for an empty aggregate, not an absent one.
-        Assert.Equal(0, typedInteger.Count);
 
         var number = AggregateResult.FromGrpcProperty(
-            new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation
-            {
-                Property = "floatField",
-                Number =
-                    new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation.Types.Number(),
-            }
+            new Agg { Property = "floatField", Number = new Agg.Types.Number() }
         );
         var typedNumber = Assert.IsType<Aggregate.Number>(number);
+        Assert.Null(typedNumber.Count);
         Assert.Null(typedNumber.Maximum);
         Assert.Null(typedNumber.Mean);
         Assert.Null(typedNumber.Median);
@@ -828,18 +818,26 @@ public class TestAggregateResultAccessors
         Assert.Null(typedNumber.Sum);
 
         var boolean = AggregateResult.FromGrpcProperty(
-            new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation
-            {
-                Property = "boolField",
-                Boolean =
-                    new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation.Types.Boolean(),
-            }
+            new Agg { Property = "boolField", Boolean = new Agg.Types.Boolean() }
         );
         var typedBoolean = Assert.IsType<Aggregate.Boolean>(boolean);
+        Assert.Null(typedBoolean.Count);
         Assert.Null(typedBoolean.PercentageFalse);
         Assert.Null(typedBoolean.PercentageTrue);
         Assert.Null(typedBoolean.TotalFalse);
         Assert.Null(typedBoolean.TotalTrue);
+
+        var text = AggregateResult.FromGrpcProperty(
+            new Agg { Property = "textField", Text = new Agg.Types.Text() }
+        );
+        var typedText = Assert.IsType<Aggregate.Text>(text);
+        Assert.Null(typedText.Count);
+
+        var date = AggregateResult.FromGrpcProperty(
+            new Agg { Property = "dateField", Date = new Agg.Types.Date() }
+        );
+        var typedDate = Assert.IsType<Aggregate.Date>(date);
+        Assert.Null(typedDate.Count);
     }
 
     /// <summary>
@@ -850,20 +848,19 @@ public class TestAggregateResultAccessors
     public void FromGrpcProperty_SetScalars_MapToValues()
     {
         var integer = AggregateResult.FromGrpcProperty(
-            new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation
+            new Agg
             {
                 Property = "intField",
-                Int =
-                    new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation.Types.Integer
-                    {
-                        Count = 3,
-                        Maximum = 0,
-                        Mean = 0,
-                        Median = 2,
-                        Minimum = -5,
-                        Mode = 1,
-                        Sum = 0,
-                    },
+                Int = new Agg.Types.Integer
+                {
+                    Count = 3,
+                    Maximum = 0,
+                    Mean = 0,
+                    Median = 2,
+                    Minimum = -5,
+                    Mode = 1,
+                    Sum = 0,
+                },
             }
         );
         var typedInteger = Assert.IsType<Aggregate.Integer>(integer);
@@ -876,20 +873,19 @@ public class TestAggregateResultAccessors
         Assert.Equal(0, typedInteger.Sum);
 
         var number = AggregateResult.FromGrpcProperty(
-            new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation
+            new Agg
             {
                 Property = "floatField",
-                Number =
-                    new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation.Types.Number
-                    {
-                        Count = 2,
-                        Maximum = 0,
-                        Mean = 0,
-                        Median = 1.5,
-                        Minimum = -1.5,
-                        Mode = 0,
-                        Sum = 0,
-                    },
+                Number = new Agg.Types.Number
+                {
+                    Count = 2,
+                    Maximum = 0,
+                    Mean = 0,
+                    Median = 1.5,
+                    Minimum = -1.5,
+                    Mode = 0,
+                    Sum = 0,
+                },
             }
         );
         var typedNumber = Assert.IsType<Aggregate.Number>(number);
@@ -901,18 +897,17 @@ public class TestAggregateResultAccessors
         Assert.Equal(0, typedNumber.Sum);
 
         var boolean = AggregateResult.FromGrpcProperty(
-            new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation
+            new Agg
             {
                 Property = "boolField",
-                Boolean =
-                    new Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation.Types.Boolean
-                    {
-                        Count = 4,
-                        PercentageFalse = 0,
-                        PercentageTrue = 1,
-                        TotalFalse = 0,
-                        TotalTrue = 4,
-                    },
+                Boolean = new Agg.Types.Boolean
+                {
+                    Count = 4,
+                    PercentageFalse = 0,
+                    PercentageTrue = 1,
+                    TotalFalse = 0,
+                    TotalTrue = 4,
+                },
             }
         );
         var typedBoolean = Assert.IsType<Aggregate.Boolean>(boolean);

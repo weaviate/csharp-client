@@ -397,38 +397,6 @@ internal static class AggregatePropertyMapper
             _ => null,
         };
     }
-
-    /// <summary>
-    /// Converts a long value to the target type.
-    /// </summary>
-    private static object? ConvertToNumeric(long value, Type targetType)
-    {
-        return targetType switch
-        {
-            _ when targetType == typeof(long) => value,
-            _ when targetType == typeof(int) => (int)value,
-            _ when targetType == typeof(double) => (double)value,
-            _ when targetType == typeof(float) => (float)value,
-            _ when targetType == typeof(decimal) => (decimal)value,
-            _ => null,
-        };
-    }
-
-    /// <summary>
-    /// Converts a double value to the target type.
-    /// </summary>
-    private static object? ConvertToNumeric(double value, Type targetType)
-    {
-        return targetType switch
-        {
-            _ when targetType == typeof(double) => value,
-            _ when targetType == typeof(float) => (float)value,
-            _ when targetType == typeof(decimal) => (decimal)value,
-            _ when targetType == typeof(long) => (long)value,
-            _ when targetType == typeof(int) => (int)value,
-            _ => null,
-        };
-    }
 }
 
 /// <summary>

@@ -716,11 +716,12 @@ public partial record AggregateResult
     {
         return x.AggregationCase switch
         {
+            // Every scalar here is optional in aggregate.proto: unset maps to null, not 0/false.
             V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Text =>
                 (Aggregate.Property)
                     new Aggregate.Text
                     {
-                        Count = x.Text.Count,
+                        Count = x.Text.HasCount ? x.Text.Count : null,
                         TopOccurrences = (
                             x.Text.TopOccurences is null
                                 ? []
@@ -733,15 +734,10 @@ public partial record AggregateResult
                                 )
                         ).ToList(),
                     },
-            // Every scalar below is `optional` in aggregate.proto, and the server leaves them
-            // unset when there is nothing to aggregate — an empty result set. Reading them
-            // without a presence check yields the field type's zero, which a caller cannot tell
-            // apart from a real 0/0.0/false, so each one is gated on its Has* flag exactly as
-            // the Date branch further down already does.
             V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Int =>
                 new Aggregate.Integer
                 {
-                    Count = x.Int.Count,
+                    Count = x.Int.HasCount ? x.Int.Count : null,
                     Maximum = x.Int.HasMaximum ? x.Int.Maximum : null,
                     Mean = x.Int.HasMean ? x.Int.Mean : null,
                     Median = x.Int.HasMedian ? x.Int.Median : null,
@@ -752,7 +748,7 @@ public partial record AggregateResult
             V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Number =>
                 new Aggregate.Number
                 {
-                    Count = x.Number.Count,
+                    Count = x.Number.HasCount ? x.Number.Count : null,
                     Maximum = x.Number.HasMaximum ? x.Number.Maximum : null,
                     Mean = x.Number.HasMean ? x.Number.Mean : null,
                     Median = x.Number.HasMedian ? x.Number.Median : null,
@@ -763,7 +759,7 @@ public partial record AggregateResult
             V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Boolean =>
                 new Aggregate.Boolean
                 {
-                    Count = x.Boolean.Count,
+                    Count = x.Boolean.HasCount ? x.Boolean.Count : null,
                     PercentageFalse = x.Boolean.HasPercentageFalse
                         ? x.Boolean.PercentageFalse
                         : null,
@@ -774,7 +770,7 @@ public partial record AggregateResult
             V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Date =>
                 new Aggregate.Date
                 {
-                    Count = x.Date.Count,
+                    Count = x.Date.HasCount ? x.Date.Count : null,
                     Maximum = x.Date.HasMaximum
                         ? DateTime.Parse(
                             x.Date.Maximum,
@@ -1276,26 +1272,22 @@ public static partial class Aggregate
     public record Boolean : Property
     {
         /// <summary>
-        /// Gets or sets the value of the percentage false, or null when the server returned no
-        /// value because nothing matched.
+        /// Gets or sets the value of the percentage false, or null when the server did not send the value.
         /// </summary>
         public double? PercentageFalse { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the value of the percentage true, or null when the server returned no
-        /// value because nothing matched.
+        /// Gets or sets the value of the percentage true, or null when the server did not send the value.
         /// </summary>
         public double? PercentageTrue { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the value of the total false, or null when the server returned no value
-        /// because nothing matched.
+        /// Gets or sets the value of the total false, or null when the server did not send the value.
         /// </summary>
         public long? TotalFalse { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the value of the total true, or null when the server returned no value
-        /// because nothing matched.
+        /// Gets or sets the value of the total true, or null when the server did not send the value.
         /// </summary>
         public long? TotalTrue { get; internal set; }
     };

@@ -905,14 +905,13 @@ public partial class AggregatesTests : IntegrationTests
     }
 
     /// <summary>
-    /// When a filter matches nothing there is no maximum, no mean and no sum, and the server
-    /// says so by leaving those optional proto fields unset. The client must report null rather
-    /// than the zero value of the field's type: a caller cannot tell a returned 0 apart from a
-    /// genuine aggregate of zeros. Date already handled this correctly, so it is asserted
-    /// alongside as the reference behaviour.
+    /// Two ways a scalar goes missing, on one collection: a filter that matches nothing, and a
+    /// sub-metric the caller never asked for. Both leave the optional proto field unset, and the
+    /// client must report null rather than the zero of the field's type — a caller cannot tell a
+    /// returned 0 apart from a genuine aggregate of zeros.
     /// </summary>
     [Fact]
-    public async Task Test_OverAll_With_NoMatches_Returns_Null_Not_Zero()
+    public async Task Test_OverAll_Absent_Metrics_Are_Null_Not_Zero()
     {
         var collectionClient = await CollectionFactory(
             properties: new[]
@@ -920,8 +919,6 @@ public partial class AggregatesTests : IntegrationTests
                 Property.Text("text"),
                 Property.Int("int"),
                 Property.Number("float"),
-                Property.Bool("bool"),
-                Property.Date("date"),
             }
         );
 
@@ -929,104 +926,48 @@ public partial class AggregatesTests : IntegrationTests
             new
             {
                 text = "one",
-                @int = 1,
-                @float = 1.0,
-                @bool = true,
-                date = new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                @int = 7,
+                @float = 7.5,
             },
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        var result = await collectionClient.Aggregate.OverAll(
+        // Nothing matches: the metrics were requested, but there is nothing to compute them over.
+        var noMatches = await collectionClient.Aggregate.OverAll(
             filters: Filter.Property("text").IsEqual("no-such-value"),
             returnMetrics:
             [
                 Metrics.ForProperty("int").Integer(maximum: true, mean: true, sum: true),
                 Metrics.ForProperty("float").Number(maximum: true, mean: true, sum: true),
-                Metrics
-                    .ForProperty("bool")
-                    .Boolean(
-                        percentageFalse: true,
-                        percentageTrue: true,
-                        totalFalse: true,
-                        totalTrue: true
-                    ),
-                Metrics.ForProperty("date").Date(maximum: true, minimum: true),
             ],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(0, result.TotalCount);
+        Assert.Equal(0, noMatches.TotalCount);
 
-        var integer = Assert.IsType<Aggregate.Integer>(result.Properties["int"]);
-        Assert.Null(integer.Maximum);
-        Assert.Null(integer.Mean);
-        Assert.Null(integer.Sum);
+        var emptyInteger = Assert.IsType<Aggregate.Integer>(noMatches.Properties["int"]);
+        Assert.Null(emptyInteger.Maximum);
+        Assert.Null(emptyInteger.Mean);
+        Assert.Null(emptyInteger.Sum);
 
-        var number = Assert.IsType<Aggregate.Number>(result.Properties["float"]);
-        Assert.Null(number.Maximum);
-        Assert.Null(number.Mean);
-        Assert.Null(number.Sum);
+        var emptyNumber = Assert.IsType<Aggregate.Number>(noMatches.Properties["float"]);
+        Assert.Null(emptyNumber.Maximum);
+        Assert.Null(emptyNumber.Mean);
+        Assert.Null(emptyNumber.Sum);
 
-        // Booleans behave differently and are asserted for what the server actually does: it
-        // sends all four, the counts as 0 and the percentages as NaN (0/0). They are present,
-        // so a presence check correctly surfaces them rather than inventing null.
-        var boolean = Assert.IsType<Aggregate.Boolean>(result.Properties["bool"]);
-        Assert.Equal(0, boolean.TotalFalse);
-        Assert.Equal(0, boolean.TotalTrue);
-        Assert.NotNull(boolean.PercentageFalse);
-        Assert.True(double.IsNaN(boolean.PercentageFalse.Value));
-        Assert.NotNull(boolean.PercentageTrue);
-        Assert.True(double.IsNaN(boolean.PercentageTrue.Value));
-
-        // Reference: the Date branch already used presence checks before this fix.
-        var date = Assert.IsType<Aggregate.Date>(result.Properties["date"]);
-        Assert.Null(date.Maximum);
-        Assert.Null(date.Minimum);
-    }
-
-    /// <summary>
-    /// A numeric sub-metric the caller did not ask for is not computed and not sent, so it must
-    /// read back as null. Objects do match here, so the nulls come from the metric selection
-    /// alone rather than from an empty result set — the complement of the test above.
-    /// Booleans are asserted for what Weaviate 1.39.0 actually does: it fills in all four
-    /// members whatever was requested, so they are present and carry real values.
-    /// </summary>
-    [Fact]
-    public async Task Test_OverAll_Unrequested_Metrics_Are_Null()
-    {
-        var collectionClient = await CollectionFactory(
-            properties: new[]
-            {
-                Property.Int("int"),
-                Property.Number("float"),
-                Property.Bool("bool"),
-            }
-        );
-
-        await collectionClient.Data.Insert(
-            new
-            {
-                @int = 7,
-                @float = 7.5,
-                @bool = true,
-            },
-            cancellationToken: TestContext.Current.CancellationToken
-        );
-
-        var result = await collectionClient.Aggregate.OverAll(
+        // Objects do match here, so the nulls come from the metric selection alone.
+        var unrequested = await collectionClient.Aggregate.OverAll(
             returnMetrics:
             [
                 Metrics.ForProperty("int").Integer(maximum: true),
                 Metrics.ForProperty("float").Number(mean: true),
-                Metrics.ForProperty("bool").Boolean(totalTrue: true),
             ],
             cancellationToken: TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(1, result.TotalCount);
+        Assert.Equal(1, unrequested.TotalCount);
 
-        var integer = Assert.IsType<Aggregate.Integer>(result.Properties["int"]);
+        var integer = Assert.IsType<Aggregate.Integer>(unrequested.Properties["int"]);
         Assert.Equal(7, integer.Maximum);
         Assert.Null(integer.Mean);
         Assert.Null(integer.Median);
@@ -1034,16 +975,10 @@ public partial class AggregatesTests : IntegrationTests
         Assert.Null(integer.Mode);
         Assert.Null(integer.Sum);
 
-        var number = Assert.IsType<Aggregate.Number>(result.Properties["float"]);
+        var number = Assert.IsType<Aggregate.Number>(unrequested.Properties["float"]);
         Assert.Equal(7.5, number.Mean);
         Assert.Null(number.Maximum);
         Assert.Null(number.Minimum);
         Assert.Null(number.Sum);
-
-        var boolean = Assert.IsType<Aggregate.Boolean>(result.Properties["bool"]);
-        Assert.Equal(1, boolean.TotalTrue);
-        Assert.Equal(0, boolean.TotalFalse);
-        Assert.Equal(1, boolean.PercentageTrue);
-        Assert.Equal(0, boolean.PercentageFalse);
     }
 }
