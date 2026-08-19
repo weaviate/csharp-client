@@ -16,6 +16,9 @@ public class TestVectorizers : IntegrationTests
     public async Task Test_Multi2VecGoogleGemini_Creates_Collection()
     {
         RequireModule("multi2vec-google");
+        // The module is on every lane, but its Gemini path (apiEndpoint) only lands in 1.34.20;
+        // older builds still demand the Vertex projectId/location this factory omits.
+        RequireVersion("1.34.20");
 
         var collection = await CollectionFactory(
             name: "TestMulti2VecGoogleGemini",

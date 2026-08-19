@@ -408,6 +408,7 @@ public class VectorizerFactory
     /// Multi2Vec Google Gemini configuration (using Google AI Studio/Gemini API).
     /// Emits the <c>multi2vec-google</c> module with the Gemini API endpoint; there is no
     /// separate Gemini module, so no project id or location is sent.
+    /// Requires Weaviate server version 1.34.20 or later.
     /// </summary>
     /// <param name="imageFields">The image fields</param>
     /// <param name="textFields">The text fields</param>
@@ -458,6 +459,7 @@ public class VectorizerFactory
     /// Multi2Vec Google Gemini configuration (using Google AI Studio/Gemini API).
     /// Emits the <c>multi2vec-google</c> module with the Gemini API endpoint; there is no
     /// separate Gemini module, so no project id or location is sent.
+    /// Requires Weaviate server version 1.34.20 or later.
     /// </summary>
     /// <param name="imageFields">The image fields</param>
     /// <param name="textFields">The text fields</param>
