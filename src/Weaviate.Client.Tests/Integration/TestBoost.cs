@@ -3,7 +3,7 @@ using Weaviate.Client.Models;
 namespace Weaviate.Client.Tests.Integration;
 
 /// <summary>
-/// Integration tests for the Boost query parameter (soft-ranking, Weaviate 1.38+ Preview).
+/// Integration tests for the Boost query parameter (soft-ranking, Weaviate 1.38+).
 /// </summary>
 public partial class SearchTests
 {
@@ -107,7 +107,7 @@ public partial class SearchTests
     [Fact]
     public async Task Test_Boost_Filter_PromotesMatchingObjects()
     {
-        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0 (Preview)");
+        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0");
 
         var collection = await BoostCollectionFactory();
 
@@ -129,7 +129,7 @@ public partial class SearchTests
     [Fact]
     public async Task Test_Boost_NumericProperty_RanksByValue()
     {
-        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0 (Preview)");
+        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0");
 
         var collection = await BoostCollectionFactory();
 
@@ -149,7 +149,7 @@ public partial class SearchTests
     [Fact]
     public async Task Test_Boost_TimeDecay_PrefersRecentObjects()
     {
-        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0 (Preview)");
+        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0");
 
         var collection = await BoostCollectionFactory();
 
@@ -169,7 +169,7 @@ public partial class SearchTests
     [Fact]
     public async Task Test_Boost_NumericDecay_OnNearVector_PrefersClosestToOrigin()
     {
-        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0 (Preview)");
+        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0");
 
         var collection = await CollectionFactory<BoostDoc>(
             properties: Property.FromClass<BoostDoc>(),
@@ -209,7 +209,7 @@ public partial class SearchTests
     [Fact]
     public async Task Test_Boost_Blend_WeighsConditions()
     {
-        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0 (Preview)");
+        RequireVersion("1.38.0", message: "Boost API requires Weaviate >= 1.38.0");
 
         var collection = await BoostCollectionFactory();
 

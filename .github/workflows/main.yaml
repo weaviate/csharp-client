@@ -77,6 +77,12 @@ jobs:
           files: |
             **.cs
 
+      - name: Check XML param docs (query/generate API)
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          python3 ci/test_check_xml_param_docs.py
+          python3 ci/check_xml_param_docs.py
+
       - name: Setup .NET
         uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
         with:

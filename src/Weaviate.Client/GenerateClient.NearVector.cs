@@ -11,6 +11,24 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities.
     /// </summary>
+    /// <param name="vectors">The vector or named vectors to search near.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="certainty">Certainty threshold for the search: the minimum similarity a result must reach. If not specified, no threshold is applied.</param>
+    /// <param name="distance">Distance threshold for the search: the maximum distance a result may have from the query vector. If not specified, no threshold is applied.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public async Task<GenerativeWeaviateResult> NearVector(
         VectorSearchInput vectors,
         Filter? filters = null,
@@ -57,6 +75,25 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities and grouping.
     /// </summary>
+    /// <param name="vectors">The vector or named vectors to search near.</param>
+    /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="certainty">Certainty threshold for the search: the minimum similarity a result must reach. If not specified, no threshold is applied.</param>
+    /// <param name="distance">Distance threshold for the search: the maximum distance a result may have from the query vector. If not specified, no threshold is applied.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public async Task<GenerativeGroupByResult> NearVector(
         VectorSearchInput vectors,
         GroupByRequest groupBy,
@@ -105,6 +142,24 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities using lambda builder.
     /// </summary>
+    /// <param name="vectors">Lambda builder for the vector input to search near.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="certainty">Certainty threshold for the search: the minimum similarity a result must reach. If not specified, no threshold is applied.</param>
+    /// <param name="distance">Distance threshold for the search: the maximum distance a result may have from the query vector. If not specified, no threshold is applied.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public async Task<GenerativeWeaviateResult> NearVector(
         VectorSearchInput.FactoryFn vectors,
         Filter? filters = null,
@@ -149,6 +204,25 @@ public partial class GenerateClient
     /// <summary>
     /// Search near vector with generative AI capabilities and grouping using lambda builder.
     /// </summary>
+    /// <param name="vectors">Lambda builder for the vector input to search near.</param>
+    /// <param name="groupBy">Group-by configuration.</param>
+    /// <param name="filters">Filters to apply to the search.</param>
+    /// <param name="certainty">Certainty threshold for the search: the minimum similarity a result must reach. If not specified, no threshold is applied.</param>
+    /// <param name="distance">Distance threshold for the search: the maximum distance a result may have from the query vector. If not specified, no threshold is applied.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     public async Task<GenerativeGroupByResult> NearVector(
         VectorSearchInput.FactoryFn vectors,
         GroupByRequest groupBy,
@@ -197,20 +271,20 @@ public partial class GenerateClient
     /// </summary>
     /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="filters">Filters to apply to the search.</param>
-    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
-    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="offset">Number of results to skip.</param>
-    /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
-    /// <param name="singlePrompt">Single prompt for generative AI.</param>
-    /// <param name="groupedTask">Grouped task for generative AI.</param>
-    /// <param name="provider">Generative AI provider configuration.</param>
-    /// <param name="returnProperties">Properties to return in the response.</param>
-    /// <param name="returnReferences">Cross-references to return.</param>
-    /// <param name="returnMetadata">Metadata to include in the response.</param>
-    /// <param name="includeVectors">Vector configuration for returned objects.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     /// <returns>Generative search results.</returns>
     public async Task<GenerativeWeaviateResult> NearVector(
         NearVectorInput query,
@@ -257,20 +331,20 @@ public partial class GenerateClient
     /// <param name="query">Near-vector input containing vector, certainty, and distance.</param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
-    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
-    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="offset">Number of results to skip.</param>
-    /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
-    /// <param name="singlePrompt">Single prompt for generative AI.</param>
-    /// <param name="groupedTask">Grouped task for generative AI.</param>
-    /// <param name="provider">Generative AI provider configuration.</param>
-    /// <param name="returnProperties">Properties to return in the response.</param>
-    /// <param name="returnReferences">Cross-references to return.</param>
-    /// <param name="returnMetadata">Metadata to include in the response.</param>
-    /// <param name="includeVectors">Vector configuration for returned objects.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     /// <returns>Generative grouped search results.</returns>
     public async Task<GenerativeGroupByResult> NearVector(
         NearVectorInput query,
@@ -318,20 +392,20 @@ public partial class GenerateClient
     /// </summary>
     /// <param name="vectors"></param>
     /// <param name="filters">Filters to apply to the search.</param>
-    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
-    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="offset">Number of results to skip.</param>
-    /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
-    /// <param name="singlePrompt">Single prompt for generative AI.</param>
-    /// <param name="groupedTask">Grouped task for generative AI.</param>
-    /// <param name="provider">Generative AI provider configuration.</param>
-    /// <param name="returnProperties">Properties to return in the response.</param>
-    /// <param name="returnReferences">Cross-references to return.</param>
-    /// <param name="returnMetadata">Metadata to include in the response.</param>
-    /// <param name="includeVectors">Vector configuration for returned objects.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     /// <returns>Generative search results.</returns>
     public async Task<GenerativeWeaviateResult> NearVector(
         NearVectorInput.FactoryFn vectors,
@@ -376,20 +450,20 @@ public partial class GenerateClient
     /// <param name="vectors"></param>
     /// <param name="groupBy">Group-by configuration.</param>
     /// <param name="filters">Filters to apply to the search.</param>
-    /// <param name="diversitySelection">Diversity selection to apply to the results.</param>
-    /// <param name="autoLimit">Automatic result cutoff threshold.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="offset">Number of results to skip.</param>
-    /// <param name="rerank">Re-ranking configuration.</param>
-    /// <param name="boost">The boost for soft-ranking results. Preview: requires Weaviate 1.38+ (older servers silently ignore it)</param>
-    /// <param name="singlePrompt">Single prompt for generative AI.</param>
-    /// <param name="groupedTask">Grouped task for generative AI.</param>
-    /// <param name="provider">Generative AI provider configuration.</param>
-    /// <param name="returnProperties">Properties to return in the response.</param>
-    /// <param name="returnReferences">Cross-references to return.</param>
-    /// <param name="returnMetadata">Metadata to include in the response.</param>
-    /// <param name="includeVectors">Vector configuration for returned objects.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="diversitySelection">Diversity selection (MMR) to apply to the results. If not specified, no diversification is applied.</param>
+    /// <param name="autoLimit">Automatic result cutoff (autocut): results stop after this many jumps in score or distance. If not specified, no cutoff is applied.</param>
+    /// <param name="limit">Maximum number of results to return. If not specified, the server default limit is used.</param>
+    /// <param name="offset">Number of results to skip. If not specified, results start from the first object.</param>
+    /// <param name="rerank">Re-ranking configuration. Requires a reranker model integration on the collection.</param>
+    /// <param name="boost">Soft-ranking to apply to the results: promotes or demotes objects in the pool of candidates the search fetches, re-scoring them rather than excluding them the way a filter does. If not specified, no boost is applied. Requires Weaviate 1.38 or later; older servers silently ignore it.</param>
+    /// <param name="singlePrompt">Prompt run separately for each returned object. If not specified, no per-object generation is performed.</param>
+    /// <param name="groupedTask">Prompt run once over the whole result set. If not specified, no grouped generation is performed.</param>
+    /// <param name="provider">Generative provider applied to prompts that do not carry one. Throws if a prompt already has a provider.</param>
+    /// <param name="returnProperties">Properties to return in the response. If not specified, all non-blob properties are returned.</param>
+    /// <param name="returnReferences">Cross-references to return. If not specified, no references are returned.</param>
+    /// <param name="returnMetadata">Metadata to include in the response. If not specified, no metadata is returned.</param>
+    /// <param name="includeVectors">Vector configuration for returned objects. If not specified, no vectors are returned.</param>
+    /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
     /// <returns>Generative grouped search results.</returns>
     public async Task<GenerativeGroupByResult> NearVector(
         NearVectorInput.FactoryFn vectors,
