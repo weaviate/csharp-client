@@ -88,7 +88,8 @@ public class BackupClient
     }
 
     /// <summary>
-    /// The first Weaviate server version that accepts a file-based incremental backup base.
+    /// The version file-based incremental backups are documented against; the wire field itself
+    /// is older (1.34.18). Gate on the documented floor, as the python client does.
     /// </summary>
     private static readonly Version IncrementalBackupMinimumVersion = new(1, 37, 0);
 

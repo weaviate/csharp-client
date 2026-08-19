@@ -10,6 +10,40 @@ namespace Weaviate.Client.Tests.Unit;
 public class TestBackupClient
 {
     /// <summary>
+    /// A create response body, reused by the incremental-backup cases below.
+    /// </summary>
+    private const string CreateResponseJson = """
+        {
+            "id": "my-backup",
+            "backend": "filesystem",
+            "status": "STARTED",
+            "path": "/backups"
+        }
+        """;
+
+    /// <summary>
+    /// A client that answers POST /v1/backups with <see cref="CreateResponseJson"/>, pinned to a
+    /// server version so the incremental-backup version gate can be exercised.
+    /// </summary>
+    private static (WeaviateClient Client, MockHttpMessageHandler Handler) CreateBackupClient(
+        string serverVersion
+    ) =>
+        MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: req =>
+                req.Method == HttpMethod.Post
+                    ? new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(
+                            CreateResponseJson,
+                            System.Text.Encoding.UTF8,
+                            "application/json"
+                        ),
+                    }
+                    : null!,
+            serverVersion: serverVersion
+        );
+
+    /// <summary>
     /// CancelRestore() must issue a DELETE to /v1/backups/{backend}/{id}/restore.
     /// </summary>
     [Fact]
@@ -58,10 +92,10 @@ public class TestBackupClient
     }
 
     /// <summary>
-    /// GetStatus should populate Size from the response.
+    /// GetStatus should populate Size and the incremental base id from the response.
     /// </summary>
     [Fact]
-    public async Task GetStatus_SizeIsPopulatedFromResponse()
+    public async Task GetStatus_PopulatesSizeAndIncrementalBaseBackupId()
     {
         var json = """
             {
@@ -69,7 +103,8 @@ public class TestBackupClient
                 "status": "SUCCESS",
                 "path": "/backups",
                 "backend": "filesystem",
-                "size": 1.5
+                "size": 1.5,
+                "incremental_base_backup_id": "base-backup"
             }
             """;
 
@@ -87,6 +122,7 @@ public class TestBackupClient
         );
 
         Assert.Equal(1.5, backup.Size);
+        Assert.Equal("base-backup", backup.IncrementalBaseBackupId);
     }
 
     /// <summary>
@@ -218,45 +254,26 @@ public class TestBackupClient
     }
 
     /// <summary>
-    /// A create response body, reused by the incremental-backup cases below.
-    /// </summary>
-    private const string CreateResponseJson = """
-        {
-            "id": "my-backup",
-            "backend": "filesystem",
-            "status": "STARTED",
-            "path": "/backups"
-        }
-        """;
-
-    /// <summary>
     /// Create() must put IncrementalBaseBackupId on the wire under the spec's
-    /// <c>incremental_base_backup_id</c> key. Without it the client silently drops the
-    /// caller's request and takes a full backup instead of an incremental one.
+    /// <c>incremental_base_backup_id</c> key, or the client silently takes a full backup instead;
+    /// and omit the key when no base is asked for, which is why a plain backup still works on a
+    /// server below 1.37.0 — the gate is on the field, not the operation.
     /// </summary>
-    [Fact]
-    public async Task Create_SendsIncrementalBaseBackupId()
+    [Theory]
+    [InlineData("1.37.0", "base-backup")]
+    [InlineData("1.36.0", null)]
+    public async Task Create_SendsIncrementalBaseBackupId_OnlyWhenRequested(
+        string serverVersion,
+        string? incrementalBaseBackupId
+    )
     {
-        var (client, handler) = MockWeaviateClient.CreateWithMockHandler(
-            syncHandler: req =>
-                req.Method == HttpMethod.Post
-                    ? new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent(
-                            CreateResponseJson,
-                            System.Text.Encoding.UTF8,
-                            "application/json"
-                        ),
-                    }
-                    : null!,
-            serverVersion: "1.37.0"
-        );
+        var (client, handler) = CreateBackupClient(serverVersion);
 
         await client.Backup.Create(
             new BackupCreateRequest(
                 "my-backup",
                 new FilesystemBackend("/backups"),
-                IncrementalBaseBackupId: "base-backup"
+                IncrementalBaseBackupId: incrementalBaseBackupId
             ),
             TestContext.Current.CancellationToken
         );
@@ -265,64 +282,21 @@ public class TestBackupClient
         var body = await handler.LastRequest!.Content!.ReadAsStringAsync(
             TestContext.Current.CancellationToken
         );
-        Assert.Contains("\"incremental_base_backup_id\":\"base-backup\"", body);
+
+        if (incrementalBaseBackupId is null)
+            Assert.DoesNotContain("incremental_base_backup_id", body);
+        else
+            Assert.Contains($"\"incremental_base_backup_id\":\"{incrementalBaseBackupId}\"", body);
     }
 
     /// <summary>
-    /// A create request that asks for no base backup must not send the key at all, so a plain
-    /// backup is unchanged.
-    /// </summary>
-    [Fact]
-    public async Task Create_OmitsIncrementalBaseBackupId_WhenNotRequested()
-    {
-        var (client, handler) = MockWeaviateClient.CreateWithMockHandler(
-            syncHandler: req =>
-                req.Method == HttpMethod.Post
-                    ? new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent(
-                            CreateResponseJson,
-                            System.Text.Encoding.UTF8,
-                            "application/json"
-                        ),
-                    }
-                    : null!,
-            serverVersion: "1.37.0"
-        );
-
-        await client.Backup.Create(
-            new BackupCreateRequest("my-backup", new FilesystemBackend("/backups")),
-            TestContext.Current.CancellationToken
-        );
-
-        Assert.NotNull(handler.LastRequest);
-        var body = await handler.LastRequest!.Content!.ReadAsStringAsync(
-            TestContext.Current.CancellationToken
-        );
-        Assert.DoesNotContain("incremental_base_backup_id", body);
-    }
-
-    /// <summary>
-    /// Incremental backups arrived in Weaviate 1.37.0, so asking for one against an older
-    /// server must fail in the client rather than silently producing a full backup.
+    /// The 1.37.0 gate is the documented feature floor, not the wire field's age: asking for an
+    /// incremental backup against an older server must fail rather than silently taking a full one.
     /// </summary>
     [Fact]
     public async Task Create_Throws_WhenIncrementalRequestedOnOlderServer()
     {
-        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
-            syncHandler: req =>
-                req.Method == HttpMethod.Post
-                    ? new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent(
-                            CreateResponseJson,
-                            System.Text.Encoding.UTF8,
-                            "application/json"
-                        ),
-                    }
-                    : null!,
-            serverVersion: "1.36.0"
-        );
+        var (client, _) = CreateBackupClient("1.36.0");
 
         var exception = await Assert.ThrowsAsync<WeaviateVersionMismatchException>(async () =>
             await client.Backup.Create(
@@ -340,58 +314,23 @@ public class TestBackupClient
     }
 
     /// <summary>
-    /// The version gate is on the field, not the operation: a plain backup must still work on a
-    /// server older than 1.37.0.
+    /// List() parsed Size and the incremental base id and then dropped both; they must survive
+    /// onto the model, and be null rather than empty when the server omits them.
     /// </summary>
-    [Fact]
-    public async Task Create_PlainBackup_Succeeds_OnOlderServer()
+    [Theory]
+    [InlineData(
+        """[{"id":"my-backup","classes":["Article"],"status":"SUCCESS","startedAt":"2026-08-14T10:00:00Z","completedAt":"2026-08-14T10:05:00Z","size":2.5,"incremental_base_backup_id":"base-backup"}]""",
+        "base-backup"
+    )]
+    [InlineData(
+        """[{"id":"my-backup","classes":["Article"],"status":"SUCCESS","size":2.5}]""",
+        null
+    )]
+    public async Task List_PopulatesSizeAndIncrementalBaseBackupId(
+        string json,
+        string? expectedIncrementalBaseBackupId
+    )
     {
-        var (client, handler) = MockWeaviateClient.CreateWithMockHandler(
-            syncHandler: req =>
-                req.Method == HttpMethod.Post
-                    ? new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent(
-                            CreateResponseJson,
-                            System.Text.Encoding.UTF8,
-                            "application/json"
-                        ),
-                    }
-                    : null!,
-            serverVersion: "1.36.0"
-        );
-
-        await client.Backup.Create(
-            new BackupCreateRequest("my-backup", new FilesystemBackend("/backups")),
-            TestContext.Current.CancellationToken
-        );
-
-        Assert.NotNull(handler.LastRequest);
-    }
-
-    /// <summary>
-    /// List() parses the list payload and then discarded two fields it had already read: Size
-    /// was left null for every listed backup even though the property exists and the create
-    /// status path fills it, and the incremental base id had nowhere to go at all. Both must
-    /// survive onto the model.
-    /// </summary>
-    [Fact]
-    public async Task List_PopulatesSizeAndIncrementalBaseBackupId()
-    {
-        var json = """
-            [
-                {
-                    "id": "my-backup",
-                    "classes": ["Article"],
-                    "status": "SUCCESS",
-                    "startedAt": "2026-08-14T10:00:00Z",
-                    "completedAt": "2026-08-14T10:05:00Z",
-                    "size": 2.5,
-                    "incremental_base_backup_id": "base-backup"
-                }
-            ]
-            """;
-
         var (client, _) = MockWeaviateClient.CreateWithMockHandler(
             syncHandler: _ => new HttpResponseMessage(HttpStatusCode.OK)
             {
@@ -407,76 +346,6 @@ public class TestBackupClient
         var backup = Assert.Single(backups);
         Assert.Equal("my-backup", backup.Id);
         Assert.Equal(2.5, backup.Size);
-        Assert.Equal("base-backup", backup.IncrementalBaseBackupId);
-    }
-
-    /// <summary>
-    /// A full (non-incremental) backup has no base, and the server omits the key entirely, so
-    /// the model must report null rather than an empty string.
-    /// </summary>
-    [Fact]
-    public async Task List_IncrementalBaseBackupIdIsNull_ForFullBackup()
-    {
-        var json = """
-            [
-                {
-                    "id": "my-backup",
-                    "classes": ["Article"],
-                    "status": "SUCCESS",
-                    "size": 2.5
-                }
-            ]
-            """;
-
-        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
-            syncHandler: _ => new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"),
-            }
-        );
-
-        var backups = await client.Backup.List(
-            BackupStorageProvider.Filesystem,
-            TestContext.Current.CancellationToken
-        );
-
-        var backup = Assert.Single(backups);
-        Assert.Null(backup.IncrementalBaseBackupId);
-        Assert.Equal(2.5, backup.Size);
-    }
-
-    /// <summary>
-    /// The create-status response carries the same field, and the model is shared with the list
-    /// path, so leaving it unset there would reintroduce the same silent null.
-    /// </summary>
-    [Fact]
-    public async Task GetStatus_PopulatesIncrementalBaseBackupId()
-    {
-        var json = """
-            {
-                "id": "my-backup",
-                "status": "SUCCESS",
-                "path": "/backups",
-                "backend": "filesystem",
-                "size": 1.5,
-                "incremental_base_backup_id": "base-backup"
-            }
-            """;
-
-        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
-            syncHandler: _ => new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"),
-            }
-        );
-
-        var backup = await client.Backup.GetStatus(
-            new FilesystemBackend("/backups"),
-            "my-backup",
-            TestContext.Current.CancellationToken
-        );
-
-        Assert.Equal("base-backup", backup.IncrementalBaseBackupId);
-        Assert.Equal(1.5, backup.Size);
+        Assert.Equal(expectedIncrementalBaseBackupId, backup.IncrementalBaseBackupId);
     }
 }

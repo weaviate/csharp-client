@@ -297,8 +297,8 @@ public record Backup(
     public double? Size { get; init; }
 
     /// <summary>
-    /// Gets the id of the base backup this backup was built on, or null when the backup is not
-    /// incremental.
+    /// Gets the id of the base backup this backup was built on. Only servers 1.37.6 and later
+    /// return it; on older servers null does not mean the backup is non-incremental.
     /// </summary>
     public string? IncrementalBaseBackupId { get; init; }
 }
