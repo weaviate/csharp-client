@@ -61,7 +61,7 @@ public class VectorizerFactory
     /// <param name="region">AWS region.</param>
     /// <param name="model">Model name to use.</param>
     /// <param name="dimensions">Number of vector dimensions.</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
     /// <returns>Multi2VecAWSBedrock vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecAWSBedrock(
         WeightedFields imageFields,
@@ -78,9 +78,7 @@ public class VectorizerFactory
             Dimensions = dimensions,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields
@@ -95,7 +93,7 @@ public class VectorizerFactory
     /// <param name="region">AWS region.</param>
     /// <param name="model">Model name to use.</param>
     /// <param name="dimensions">Number of vector dimensions.</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
     /// <returns>Multi2VecAWSBedrock vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecAWSBedrock(
         string[]? imageFields = null,
@@ -112,9 +110,7 @@ public class VectorizerFactory
             Dimensions = dimensions,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -123,7 +119,7 @@ public class VectorizerFactory
     /// <param name="imageFields">Weighted image fields.</param>
     /// <param name="textFields">Weighted text fields.</param>
     /// <param name="inferenceUrl">Inference URL for the model.</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
     /// <returns>Multi2VecClip vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecClip(
         WeightedFields imageFields,
@@ -136,9 +132,7 @@ public class VectorizerFactory
             ImageFields = ModalityFields.OrNull(imageFields),
             InferenceUrl = inferenceUrl,
             TextFields = ModalityFields.OrNull(textFields),
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields
@@ -151,7 +145,7 @@ public class VectorizerFactory
     /// <param name="imageFields">Array of image field names.</param>
     /// <param name="textFields">Array of text field names.</param>
     /// <param name="inferenceUrl">Inference URL for the model.</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
     /// <returns>Multi2VecClip vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecClip(
         string[]? imageFields = null,
@@ -164,9 +158,7 @@ public class VectorizerFactory
             ImageFields = ModalityFields.OrNull(imageFields),
             InferenceUrl = inferenceUrl,
             TextFields = ModalityFields.OrNull(textFields),
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -178,7 +170,7 @@ public class VectorizerFactory
     /// <param name="model">Model name to use.</param>
     /// <param name="dimensions">Number of vector dimensions.</param>
     /// <param name="truncate">Truncation strategy.</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
     /// <returns>Multi2VecCohere vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecCohere(
         WeightedFields imageFields,
@@ -197,9 +189,7 @@ public class VectorizerFactory
             Dimensions = dimensions,
             TextFields = ModalityFields.OrNull(textFields),
             Truncate = truncate,
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             Weights = VectorizerWeights.FromWeightedFields(
                 imageFields: imageFields,
                 textFields: textFields
@@ -215,7 +205,7 @@ public class VectorizerFactory
     /// <param name="model">Model name to use.</param>
     /// <param name="dimensions">Number of vector dimensions.</param>
     /// <param name="truncate">Truncation strategy.</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
     /// <returns>Multi2VecCohere vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecCohere(
         string[]? imageFields = null,
@@ -234,9 +224,7 @@ public class VectorizerFactory
             Dimensions = dimensions,
             TextFields = ModalityFields.OrNull(textFields),
             Truncate = truncate,
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -249,7 +237,7 @@ public class VectorizerFactory
     /// <param name="imuFields">Weighted IMU fields.</param>
     /// <param name="thermalFields">Weighted thermal fields.</param>
     /// <param name="videoFields">Weighted video fields.</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">Whether to vectorize the collection name.</param>
     /// <returns>Multi2VecBind vectorizer configuration.</returns>
     public VectorizerConfig Multi2VecBind(
         WeightedFields imageFields,
@@ -270,9 +258,7 @@ public class VectorizerFactory
             TextFields = ModalityFields.OrNull(textFields),
             ThermalFields = ModalityFields.OrNull(thermalFields),
             VideoFields = ModalityFields.OrNull(videoFields),
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             // This overload's parameters happen to be in FromWeightedFields' own declaration
             // order (image, text, audio, depth, imu, thermal, video), so the named arguments
             // are a safeguard rather than a correction: they keep the mapping right if either
@@ -298,7 +284,7 @@ public class VectorizerFactory
     /// <param name="imuFields">The imu fields</param>
     /// <param name="thermalFields">The thermal fields</param>
     /// <param name="videoFields">The video fields</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecBind(
         string[]? imageFields = null,
@@ -319,9 +305,7 @@ public class VectorizerFactory
             TextFields = ModalityFields.OrNull(textFields),
             ThermalFields = ModalityFields.OrNull(thermalFields),
             VideoFields = ModalityFields.OrNull(videoFields),
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -336,7 +320,7 @@ public class VectorizerFactory
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
     /// <param name="dimensions">The dimensions</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <param name="apiEndpoint">The api endpoint</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogle(
@@ -364,9 +348,7 @@ public class VectorizerFactory
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             // Named arguments are mandatory here: FromWeightedFields declares seven optional
             // modalities in the order image, text, audio, depth, imu, thermal, video, so the
             // positional call this replaced filed video weights under audio and audio weights
@@ -391,7 +373,7 @@ public class VectorizerFactory
     /// <param name="videoIntervalSeconds">The video interval seconds</param>
     /// <param name="model">The model</param>
     /// <param name="dimensions">The dimensions</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <param name="apiEndpoint">The api endpoint</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecGoogle(
@@ -419,9 +401,7 @@ public class VectorizerFactory
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -450,8 +430,7 @@ public class VectorizerFactory
     ) =>
         new Multi2VecGoogle
         {
-            // The Gemini API is not scoped to a Vertex AI project or region; left null so both
-            // are omitted on the wire.
+            // The Gemini API has no Vertex project or region; null keeps both off the wire.
             ProjectId = null,
             Location = null,
             ApiEndpoint = apiEndpoint ?? "generativelanguage.googleapis.com",
@@ -462,10 +441,7 @@ public class VectorizerFactory
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
-            // Not offered as a parameter here, unlike Vertex; null keeps it off the wire.
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = null,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             // Named arguments are mandatory here: FromWeightedFields declares seven optional
             // modalities in the order image, text, audio, depth, imu, thermal, video, so the
             // positional call this replaced filed video weights under audio and audio weights
@@ -504,8 +480,7 @@ public class VectorizerFactory
     ) =>
         new Multi2VecGoogle
         {
-            // The Gemini API is not scoped to a Vertex AI project or region; left null so both
-            // are omitted on the wire.
+            // The Gemini API has no Vertex project or region; null keeps both off the wire.
             ProjectId = null,
             Location = null,
             ApiEndpoint = apiEndpoint ?? "generativelanguage.googleapis.com",
@@ -516,10 +491,7 @@ public class VectorizerFactory
             VideoIntervalSeconds = videoIntervalSeconds,
             ModelId = model,
             Dimensions = dimensions,
-            // Not offered as a parameter here, unlike Vertex; null keeps it off the wire.
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = null,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -532,7 +504,7 @@ public class VectorizerFactory
     /// <param name="dimensions">The dimensions</param>
     /// <param name="model">The model</param>
     /// <param name="truncate">The truncate</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecVoyageAI(
         WeightedFields imageFields,
@@ -553,9 +525,7 @@ public class VectorizerFactory
             TextFields = ModalityFields.OrNull(textFields),
             VideoFields = ModalityFields.OrNull(videoFields),
             Truncate = truncate,
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             // FromWeightedFields declares seven optional modalities in the order image, text,
             // audio, depth, imu, thermal, video. Video is the one at risk — positionally it
             // would land in audioFields, which this module does not have — and it was already
@@ -577,7 +547,7 @@ public class VectorizerFactory
     /// <param name="dimensions">The dimensions</param>
     /// <param name="model">The model</param>
     /// <param name="truncate">The truncate</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecVoyageAI(
         string[]? imageFields = null,
@@ -598,9 +568,7 @@ public class VectorizerFactory
             Model = model,
             TextFields = ModalityFields.OrNull(textFields),
             Truncate = truncate,
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -1141,7 +1109,7 @@ public class VectorizerFactory
     /// <param name="model">The model</param>
     /// <param name="baseURL">The base url</param>
     /// <param name="dimensions">The dimensions</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecJinaAI(
         string[]? imageFields = null,
@@ -1158,9 +1126,7 @@ public class VectorizerFactory
             Dimensions = dimensions,
             ImageFields = ModalityFields.OrNull(imageFields),
             TextFields = ModalityFields.OrNull(textFields),
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 
     /// <summary>
@@ -1171,7 +1137,7 @@ public class VectorizerFactory
     /// <param name="model">The model</param>
     /// <param name="baseURL">The base url</param>
     /// <param name="dimensions">The dimensions</param>
-    /// <param name="vectorizeCollectionName">Deprecated, has no effect.</param>
+    /// <param name="vectorizeCollectionName">The vectorize collection name</param>
     /// <returns>The vectorizer config</returns>
     public VectorizerConfig Multi2VecJinaAI(
         WeightedFields imageFields,
@@ -1192,9 +1158,7 @@ public class VectorizerFactory
                 imageFields: imageFields,
                 textFields: textFields
             ),
-#pragma warning disable CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
             VectorizeCollectionName = vectorizeCollectionName,
-#pragma warning restore CS0618 // Inert for multivector; WEAVIATE002 requires the assignment
         };
 #pragma warning restore CA1822 // Mark members as static
 }

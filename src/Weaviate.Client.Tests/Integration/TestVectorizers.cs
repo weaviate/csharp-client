@@ -11,12 +11,6 @@ public class TestVectorizers : IntegrationTests
 {
     /// <summary>
     /// Tests that the Google Gemini multimodal factory produces a collection the server accepts.
-    /// This is the whole point of the factory and it used to be impossible: the config emitted
-    /// the module name <c>multi2vec-google-gemini</c>, which no Weaviate build provides, so
-    /// creation failed with <c>no module with name "multi2vec-google-gemini" present</c>. Gemini
-    /// is reached through <c>multi2vec-google</c> (wire name <c>multi2vec-palm</c>) by pointing
-    /// <c>apiEndpoint</c> at the generative-language host, so the round trip must show that
-    /// module, that endpoint, and no Vertex-only project id or location.
     /// </summary>
     [Fact]
     public async Task Test_Multi2VecGoogleGemini_Creates_Collection()
@@ -48,11 +42,8 @@ public class TestVectorizers : IntegrationTests
         Assert.Equal("multi2vec-palm", google.Identifier);
         Assert.Equal("generativelanguage.googleapis.com", google.ApiEndpoint);
         Assert.Equal(512, google.Dimensions);
-        // The factory does not offer vectorizeClassName because no multi2vec module reads it,
-        // and the server confirms it: nothing is sent, and nothing is stored or defaulted back.
-#pragma warning disable CS0618 // Reading the obsolete property is the assertion
+        // The factory has no vectorizeClassName: nothing is sent, nothing stored or defaulted back.
         Assert.Null(google.VectorizeCollectionName);
-#pragma warning restore CS0618 // Reading the obsolete property is the assertion
         Assert.NotNull(google.ImageFields);
         Assert.Equal(["image"], google.ImageFields);
         Assert.NotNull(google.TextFields);
@@ -63,10 +54,7 @@ public class TestVectorizers : IntegrationTests
     }
 
     /// <summary>
-    /// Tests that the Vertex AI multimodal factory still produces a collection the server
-    /// accepts, and that project id and location survive the round trip. Kept alongside the
-    /// Gemini case because both now share one config type: a regression that dropped either
-    /// field would otherwise only show up on the Vertex path.
+    /// Tests that the Vertex AI factory creates a collection with project id and location intact.
     /// </summary>
     [Fact]
     public async Task Test_Multi2VecGoogle_Vertex_Creates_Collection()

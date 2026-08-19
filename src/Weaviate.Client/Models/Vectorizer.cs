@@ -187,12 +187,9 @@ public static class Vectorizer
         public string[]? TextFields { get; set; } = null;
 
         /// <summary>
-        /// Deprecated, has no effect.
-        /// No multivector module reads this setting server-side; it is only registered as a
-        /// class-config default. Retained because removing it would be a breaking change.
+        /// Gets or sets the value of the vectorize collection name
         /// </summary>
         [JsonPropertyName("vectorizeClassName")]
-        [Obsolete("Has no effect: no multivector module reads this setting.")]
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
@@ -233,12 +230,9 @@ public static class Vectorizer
         public string[]? TextFields { get; set; } = null;
 
         /// <summary>
-        /// Deprecated, has no effect.
-        /// No multivector module reads this setting server-side; it is only registered as a
-        /// class-config default. Retained because removing it would be a breaking change.
+        /// Gets or sets the value of the vectorize collection name
         /// </summary>
         [JsonPropertyName("vectorizeClassName")]
-        [Obsolete("Has no effect: no multivector module reads this setting.")]
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
@@ -295,12 +289,9 @@ public static class Vectorizer
         public string? Truncate { get; set; } = null;
 
         /// <summary>
-        /// Deprecated, has no effect.
-        /// No multivector module reads this setting server-side; it is only registered as a
-        /// class-config default. Retained because removing it would be a breaking change.
+        /// Gets or sets the value of the vectorize collection name
         /// </summary>
         [JsonPropertyName("vectorizeClassName")]
-        [Obsolete("Has no effect: no multivector module reads this setting.")]
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
@@ -361,12 +352,9 @@ public static class Vectorizer
         public string[]? VideoFields { get; set; } = null;
 
         /// <summary>
-        /// Deprecated, has no effect.
-        /// No multivector module reads this setting server-side; it is only registered as a
-        /// class-config default. Retained because removing it would be a breaking change.
+        /// Gets or sets the value of the vectorize collection name
         /// </summary>
         [JsonPropertyName("vectorizeClassName")]
-        [Obsolete("Has no effect: no multivector module reads this setting.")]
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
@@ -448,12 +436,9 @@ public static class Vectorizer
         public int? Dimensions { get; set; } = null;
 
         /// <summary>
-        /// Deprecated, has no effect.
-        /// No multivector module reads this setting server-side; it is only registered as a
-        /// class-config default. Retained because removing it would be a breaking change.
+        /// Gets or sets the value of the vectorize collection name
         /// </summary>
         [JsonPropertyName("vectorizeClassName")]
-        [Obsolete("Has no effect: no multivector module reads this setting.")]
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
@@ -478,20 +463,9 @@ public static class Vectorizer
     }
 
     /// <summary>
-    /// Deprecated. Use Multi2VecGoogle instead.
-    /// This type used to declare the module name <c>multi2vec-google-gemini</c>, which no server
-    /// has ever provided, so a collection configured with it could not be created. The Gemini API
-    /// is reached through the <c>multi2vec-google</c> module by setting
-    /// <see cref="Multi2VecGoogle.ApiEndpoint"/> to <c>generativelanguage.googleapis.com</c>,
-    /// which is what <see cref="VectorizerFactory.Multi2VecGoogleGemini(string[], string[], string[], string[], string, int?, string, int?)"/>
-    /// now returns. Kept only so existing source that names the type still compiles.
+    /// Deprecated. Use <see cref="Multi2VecGoogle"/> instead.
     /// </summary>
-    [Obsolete(
-        "Multi2VecGoogleGemini declared the non-existent module 'multi2vec-google-gemini' and "
-            + "could never create a collection. VectorizerFactory.Multi2VecGoogleGemini(...) now "
-            + "returns a Multi2VecGoogle with ApiEndpoint = 'generativelanguage.googleapis.com'; "
-            + "bind the result as Multi2VecGoogle (or VectorizerConfig) instead."
-    )]
+    [Obsolete("Use Multi2VecGoogle with ApiEndpoint = 'generativelanguage.googleapis.com'.")]
     public record Multi2VecGoogleGemini : Multi2VecGoogle
     {
         /// <summary>
@@ -541,12 +515,9 @@ public static class Vectorizer
         public string[]? TextFields { get; set; } = null;
 
         /// <summary>
-        /// Deprecated, has no effect.
-        /// No multivector module reads this setting server-side; it is only registered as a
-        /// class-config default. Retained because removing it would be a breaking change.
+        /// Gets or sets the value of the vectorize collection name
         /// </summary>
         [JsonPropertyName("vectorizeClassName")]
-        [Obsolete("Has no effect: no multivector module reads this setting.")]
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>
@@ -601,12 +572,9 @@ public static class Vectorizer
         internal VectorizerWeights? Weights { get; set; } = null;
 
         /// <summary>
-        /// Deprecated, has no effect.
-        /// No multivector module reads this setting server-side; it is only registered as a
-        /// class-config default. Retained because removing it would be a breaking change.
+        /// Gets or sets the value of the vectorize collection name
         /// </summary>
         [JsonPropertyName("vectorizeClassName")]
-        [Obsolete("Has no effect: no multivector module reads this setting.")]
         public bool? VectorizeCollectionName { get; set; } = null;
     }
 
@@ -690,12 +658,9 @@ public static class Vectorizer
         public bool? Truncate { get; set; } = null;
 
         /// <summary>
-        /// Deprecated, has no effect.
-        /// No multivector module reads this setting server-side; it is only registered as a
-        /// class-config default. Retained because removing it would be a breaking change.
+        /// Gets or sets the value of the vectorize collection name
         /// </summary>
         [JsonPropertyName("vectorizeClassName")]
-        [Obsolete("Has no effect: no multivector module reads this setting.")]
         public bool? VectorizeCollectionName { get; set; } = null;
 
         /// <summary>

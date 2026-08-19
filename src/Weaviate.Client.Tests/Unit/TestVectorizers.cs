@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Vectorizers;
 using Quantizers = Weaviate.Client.Models.VectorIndex.Quantizers;
@@ -377,9 +378,12 @@ public partial class VectorConfigListTests
         var dto = vc.Vectorizer?.ToDto() ?? default;
         var json = JsonSerializer.Serialize(
             dto,
+            // Mirrors WeaviateRestClient.RestJsonSerializerOptions, so what is absent here is
+            // absent on the wire.
             new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = false,
             }
         );
@@ -388,20 +392,16 @@ public partial class VectorConfigListTests
         Assert.Contains("\"multi2vec-palm\"", json);
         Assert.DoesNotContain("multi2vec-google-gemini", json);
         Assert.Contains("\"apiEndpoint\":\"generativelanguage.googleapis.com\"", json);
-        // Vertex-only settings the Gemini API has no equivalent of. This test serializes with a
-        // bare options object, so nulls are written out; the REST client's options drop them, so
-        // neither key reaches the wire.
-        Assert.Contains("\"projectId\":null", json);
-        Assert.Contains("\"location\":null", json);
+        // Vertex-only settings the Gemini API has no equivalent of; neither may be sent.
+        Assert.DoesNotContain("projectId", json);
+        Assert.DoesNotContain("location", json);
         Assert.Contains("\"imageFields\":[\"image\"]", json);
         Assert.Contains("\"textFields\":[\"text\"]", json);
         Assert.Contains("\"videoFields\":[\"video\"]", json);
         Assert.Contains("\"audioFields\":[\"audio\"]", json);
         Assert.Contains("\"dimensions\":512", json);
-        // The property is inherited shipped API on Multi2VecGoogle, so unlike Multi2VecTwelveLabs
-        // it still serializes here — but only as null under this bare options object, and the
-        // REST client's options drop it before the wire.
-        Assert.Contains("\"vectorizeClassName\":null", json);
+        // Inherited shipped API on Multi2VecGoogle, but this factory never sets it.
+        Assert.DoesNotContain("vectorizeClassName", json);
         Assert.DoesNotContain("\"weights\"", json);
     }
 
@@ -440,9 +440,12 @@ public partial class VectorConfigListTests
         var dto = vc.Vectorizer?.ToDto() ?? default;
         var json = JsonSerializer.Serialize(
             dto,
+            // Mirrors WeaviateRestClient.RestJsonSerializerOptions, so what is absent here is
+            // absent on the wire.
             new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = false,
             }
         );
@@ -462,8 +465,8 @@ public partial class VectorConfigListTests
         );
         // dimensions is left unset by this case, so the omit-when-null path stays covered;
         // vectorizeClassName is never settable through this factory at all.
-        Assert.Contains("\"dimensions\":null", json);
-        Assert.Contains("\"vectorizeClassName\":null", json);
+        Assert.DoesNotContain("dimensions", json);
+        Assert.DoesNotContain("vectorizeClassName", json);
         Assert.DoesNotContain("depthFields", json);
         Assert.DoesNotContain("imuFields", json);
         Assert.DoesNotContain("thermalFields", json);
