@@ -194,6 +194,55 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     /// <summary>
+    /// Tests that a generative-deepseek collection round-trips through a real server. The module
+    /// validates its own settings on create (temperature, both penalties and topP all have
+    /// ranges, and baseURL is parsed), so a misspelt key or a wrong type shows up here rather
+    /// than silently falling back to a default.
+    /// </summary>
+    /// <remarks>
+    /// Integral floats only; the server drops fractional floats for this module on named-vector
+    /// classes. See PR #368. Fractional values are covered by the unit test instead.
+    /// </remarks>
+    [Fact]
+    public async Task Collection_Creates_And_Retrieves_GenerativeDeepseek_Config()
+    {
+        RequireModule("generative-deepseek");
+
+        // Arrange
+        var collectionClient = await CollectionFactory(
+            properties: [Property.Text("Name")],
+            generativeConfig: Configure.Generative.Deepseek(
+                model: "deepseek-chat",
+                temperature: 1,
+                maxTokens: 2048,
+                frequencyPenalty: 0,
+                presencePenalty: 0,
+                topP: 1,
+                baseURL: "https://api.deepseek.com",
+                stop: ["\n\n"]
+            )
+        );
+
+        // Act
+        var collection = await _weaviate
+            .Collections.Use(collectionClient.Name)
+            .Config.Get(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.NotNull(collection);
+        var deepseek = Assert.IsType<GenerativeConfig.Deepseek>(collection.GenerativeConfig);
+        Assert.Equal("deepseek-chat", deepseek.Model);
+        Assert.Equal(1, deepseek.Temperature);
+        Assert.Equal(2048, deepseek.MaxTokens);
+        Assert.Equal(0, deepseek.FrequencyPenalty);
+        Assert.Equal(0, deepseek.PresencePenalty);
+        Assert.Equal(1, deepseek.TopP);
+        Assert.Equal("https://api.deepseek.com", deepseek.BaseURL);
+        Assert.NotNull(deepseek.Stop);
+        Assert.Equal(["\n\n"], deepseek.Stop);
+    }
+
+    /// <summary>
     /// Tests that test collections export
     /// </summary>
     [Fact]

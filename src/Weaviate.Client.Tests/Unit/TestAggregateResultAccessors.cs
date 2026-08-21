@@ -1,4 +1,5 @@
 using Weaviate.Client.Models;
+using Agg = Weaviate.Client.Grpc.Protobuf.V1.AggregateReply.Types.Aggregations.Types.Aggregation;
 
 namespace Weaviate.Client.Tests.Unit;
 
@@ -776,6 +777,144 @@ public class TestAggregateResultAccessors
         );
 
         Assert.Equal("Integer range [1, 50]", description);
+    }
+
+    #endregion
+
+    #region Grpc Presence Mapping
+
+    /// <summary>
+    /// Every scalar in the aggregate reply is <c>optional</c> in the proto. When the server
+    /// leaves one unset the client must report null, not the field type's zero — a returned 0,
+    /// 0.0 or false is indistinguishable from a real aggregate. Driven straight off the proto
+    /// message so an unset field is guaranteed, which a live server will not always produce:
+    /// it always fills the four boolean members in, so only this test pins them.
+    /// </summary>
+    [Fact]
+    public void FromGrpcProperty_UnsetScalars_MapToNull()
+    {
+        var integer = AggregateResult.FromGrpcProperty(
+            new Agg { Property = "intField", Int = new Agg.Types.Integer() }
+        );
+        var typedInteger = Assert.IsType<Aggregate.Integer>(integer);
+        Assert.Null(typedInteger.Count);
+        Assert.Null(typedInteger.Maximum);
+        Assert.Null(typedInteger.Mean);
+        Assert.Null(typedInteger.Median);
+        Assert.Null(typedInteger.Minimum);
+        Assert.Null(typedInteger.Mode);
+        Assert.Null(typedInteger.Sum);
+
+        var number = AggregateResult.FromGrpcProperty(
+            new Agg { Property = "floatField", Number = new Agg.Types.Number() }
+        );
+        var typedNumber = Assert.IsType<Aggregate.Number>(number);
+        Assert.Null(typedNumber.Count);
+        Assert.Null(typedNumber.Maximum);
+        Assert.Null(typedNumber.Mean);
+        Assert.Null(typedNumber.Median);
+        Assert.Null(typedNumber.Minimum);
+        Assert.Null(typedNumber.Mode);
+        Assert.Null(typedNumber.Sum);
+
+        var boolean = AggregateResult.FromGrpcProperty(
+            new Agg { Property = "boolField", Boolean = new Agg.Types.Boolean() }
+        );
+        var typedBoolean = Assert.IsType<Aggregate.Boolean>(boolean);
+        Assert.Null(typedBoolean.Count);
+        Assert.Null(typedBoolean.PercentageFalse);
+        Assert.Null(typedBoolean.PercentageTrue);
+        Assert.Null(typedBoolean.TotalFalse);
+        Assert.Null(typedBoolean.TotalTrue);
+
+        var text = AggregateResult.FromGrpcProperty(
+            new Agg { Property = "textField", Text = new Agg.Types.Text() }
+        );
+        var typedText = Assert.IsType<Aggregate.Text>(text);
+        Assert.Null(typedText.Count);
+
+        var date = AggregateResult.FromGrpcProperty(
+            new Agg { Property = "dateField", Date = new Agg.Types.Date() }
+        );
+        var typedDate = Assert.IsType<Aggregate.Date>(date);
+        Assert.Null(typedDate.Count);
+    }
+
+    /// <summary>
+    /// The complement of the case above: a scalar the server did set is carried through, so the
+    /// presence checks do not swallow real values. A deliberate zero must survive as zero.
+    /// </summary>
+    [Fact]
+    public void FromGrpcProperty_SetScalars_MapToValues()
+    {
+        var integer = AggregateResult.FromGrpcProperty(
+            new Agg
+            {
+                Property = "intField",
+                Int = new Agg.Types.Integer
+                {
+                    Count = 3,
+                    Maximum = 0,
+                    Mean = 0,
+                    Median = 2,
+                    Minimum = -5,
+                    Mode = 1,
+                    Sum = 0,
+                },
+            }
+        );
+        var typedInteger = Assert.IsType<Aggregate.Integer>(integer);
+        Assert.Equal(3, typedInteger.Count);
+        Assert.Equal(0, typedInteger.Maximum);
+        Assert.Equal(0, typedInteger.Mean);
+        Assert.Equal(2, typedInteger.Median);
+        Assert.Equal(-5, typedInteger.Minimum);
+        Assert.Equal(1, typedInteger.Mode);
+        Assert.Equal(0, typedInteger.Sum);
+
+        var number = AggregateResult.FromGrpcProperty(
+            new Agg
+            {
+                Property = "floatField",
+                Number = new Agg.Types.Number
+                {
+                    Count = 2,
+                    Maximum = 0,
+                    Mean = 0,
+                    Median = 1.5,
+                    Minimum = -1.5,
+                    Mode = 0,
+                    Sum = 0,
+                },
+            }
+        );
+        var typedNumber = Assert.IsType<Aggregate.Number>(number);
+        Assert.Equal(0, typedNumber.Maximum);
+        Assert.Equal(0, typedNumber.Mean);
+        Assert.Equal(1.5, typedNumber.Median);
+        Assert.Equal(-1.5, typedNumber.Minimum);
+        Assert.Equal(0, typedNumber.Mode);
+        Assert.Equal(0, typedNumber.Sum);
+
+        var boolean = AggregateResult.FromGrpcProperty(
+            new Agg
+            {
+                Property = "boolField",
+                Boolean = new Agg.Types.Boolean
+                {
+                    Count = 4,
+                    PercentageFalse = 0,
+                    PercentageTrue = 1,
+                    TotalFalse = 0,
+                    TotalTrue = 4,
+                },
+            }
+        );
+        var typedBoolean = Assert.IsType<Aggregate.Boolean>(boolean);
+        Assert.Equal(0, typedBoolean.PercentageFalse);
+        Assert.Equal(1, typedBoolean.PercentageTrue);
+        Assert.Equal(0, typedBoolean.TotalFalse);
+        Assert.Equal(4, typedBoolean.TotalTrue);
     }
 
     #endregion

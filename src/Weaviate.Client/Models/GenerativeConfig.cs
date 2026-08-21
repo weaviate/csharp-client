@@ -379,6 +379,68 @@ public static class GenerativeConfig
     }
 
     /// <summary>
+    /// Configuration for DeepSeek generative AI provider.
+    /// </summary>
+    public record Deepseek : IGenerativeConfig
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Deepseek"/> class.
+        /// </summary>
+        [JsonConstructor]
+        internal Deepseek() { }
+
+        /// <summary>
+        /// The type value for DeepSeek configuration.
+        /// </summary>
+        public const string TypeValue = "generative-deepseek";
+
+        /// <summary>
+        /// Gets the type identifier for the configuration.
+        /// </summary>
+        public string Type => TypeValue;
+
+        /// <summary>
+        /// Gets or sets the model identifier to use.
+        /// </summary>
+        public string? Model { get; set; }
+
+        /// <summary>
+        /// Gets or sets the temperature for controlling randomness in generation.
+        /// </summary>
+        public double? Temperature { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of tokens to generate.
+        /// </summary>
+        public int? MaxTokens { get; set; }
+
+        /// <summary>
+        /// Gets or sets the frequency penalty to reduce repetition.
+        /// </summary>
+        public double? FrequencyPenalty { get; set; }
+
+        /// <summary>
+        /// Gets or sets the presence penalty to encourage topic diversity.
+        /// </summary>
+        public double? PresencePenalty { get; set; }
+
+        /// <summary>
+        /// Gets or sets the top-p (nucleus) sampling parameter.
+        /// </summary>
+        public double? TopP { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base URL for the DeepSeek API endpoint.
+        /// </summary>
+        public string? BaseURL { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sequences where generation should stop.
+        /// </summary>
+        public string[]? Stop { get; set; }
+    }
+
+    /// <summary>
     /// Configuration for FriendliAI generative AI provider.
     /// </summary>
     public record FriendliAI : IGenerativeConfig

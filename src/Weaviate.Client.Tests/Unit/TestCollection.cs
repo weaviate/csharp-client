@@ -389,6 +389,80 @@ public class CollectionTests
     }
 
     /// <summary>
+    /// Tests that the DeepSeek generative config serializes every setting under the exact key
+    /// the module reads, omits what is unset, and round-trips. The keys are pinned literally
+    /// against modules/generative-deepseek/config/class_settings.go, in particular
+    /// <c>baseURL</c>: the camelCase policy happens to produce the right casing here, but a
+    /// <c>baseUrl</c>/<c>baseURL</c> slip is silent — the server just ignores the unknown key
+    /// and falls back to its default endpoint.
+    /// </summary>
+    [Fact]
+    public void Collection_GenerativeDeepseek_Serializes_And_RoundTrips()
+    {
+        // Arrange
+        var full = Assert.IsType<GenerativeConfig.Deepseek>(
+            Configure.Generative.Deepseek(
+                model: "deepseek-chat",
+                temperature: 0.7,
+                maxTokens: 2048,
+                frequencyPenalty: 0.5,
+                presencePenalty: 0.25,
+                topP: 0.9,
+                baseURL: "https://api.deepseek.com",
+                stop: ["\n\n"]
+            )
+        );
+        var empty = Assert.IsType<GenerativeConfig.Deepseek>(Configure.Generative.Deepseek());
+
+        // Act
+        var jsonFull = JsonSerializer.Serialize(
+            full,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+        var jsonEmpty = JsonSerializer.Serialize(
+            empty,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        // Assert
+        Assert.Equal("generative-deepseek", full.Type);
+        Assert.Contains("\"model\":\"deepseek-chat\"", jsonFull);
+        Assert.Contains("\"temperature\":0.7", jsonFull);
+        Assert.Contains("\"maxTokens\":2048", jsonFull);
+        Assert.Contains("\"frequencyPenalty\":0.5", jsonFull);
+        Assert.Contains("\"presencePenalty\":0.25", jsonFull);
+        Assert.Contains("\"topP\":0.9", jsonFull);
+        Assert.Contains("\"baseURL\":\"https://api.deepseek.com\"", jsonFull);
+        Assert.Contains("\"stop\":[\"\\n\\n\"]", jsonFull);
+        // Every generative config also writes its own "type": IGenerativeConfig.Type carries
+        // [JsonIgnore] but attributes on an interface member do not apply to the implementing
+        // property. Pre-existing for all providers and accepted by the server; asserted here so
+        // DeepSeek is shown to behave the same rather than differently.
+        Assert.Contains("\"type\":\"generative-deepseek\"", jsonFull);
+
+        // Nothing set means nothing else sent, so the server keeps its own defaults.
+        Assert.Equal("{\"type\":\"generative-deepseek\"}", jsonEmpty);
+
+        var roundTripped = GenerativeConfigSerialization.Factory(
+            GenerativeConfig.Deepseek.TypeValue,
+            JsonSerializer.Deserialize<object>(
+                jsonFull,
+                Rest.WeaviateRestClient.RestJsonSerializerOptions
+            )
+        );
+        var typed = Assert.IsType<GenerativeConfig.Deepseek>(roundTripped);
+        Assert.Equal("deepseek-chat", typed.Model);
+        Assert.Equal(0.7, typed.Temperature);
+        Assert.Equal(2048, typed.MaxTokens);
+        Assert.Equal(0.5, typed.FrequencyPenalty);
+        Assert.Equal(0.25, typed.PresencePenalty);
+        Assert.Equal(0.9, typed.TopP);
+        Assert.Equal("https://api.deepseek.com", typed.BaseURL);
+        Assert.NotNull(typed.Stop);
+        Assert.Equal(["\n\n"], typed.Stop);
+    }
+
+    /// <summary>
     /// Tests that collection rerank deserializes into i reranker config
     /// </summary>
     [Fact]

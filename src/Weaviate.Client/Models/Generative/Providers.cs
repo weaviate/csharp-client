@@ -823,6 +823,52 @@ public static class Providers
     }
 
     /// <summary>
+    /// Configuration for DeepSeek generative AI provider.
+    /// </summary>
+    public record Deepseek() : GenerativeProvider("deepseek")
+    {
+        /// <summary>
+        /// Gets or sets the base URL for the DeepSeek API endpoint.
+        /// </summary>
+        public string? BaseUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the model identifier to use.
+        /// </summary>
+        public string? Model { get; set; }
+
+        /// <summary>
+        /// Gets or sets the temperature for controlling randomness in generation.
+        /// </summary>
+        public double? Temperature { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of tokens to generate.
+        /// </summary>
+        public long? MaxTokens { get; set; }
+
+        /// <summary>
+        /// Gets or sets the frequency penalty to reduce repetition.
+        /// </summary>
+        public double? FrequencyPenalty { get; set; }
+
+        /// <summary>
+        /// Gets or sets the presence penalty to encourage topic diversity.
+        /// </summary>
+        public double? PresencePenalty { get; set; }
+
+        /// <summary>
+        /// Gets or sets the top-p (nucleus) sampling parameter.
+        /// </summary>
+        public double? TopP { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sequences where generation should stop.
+        /// </summary>
+        public List<string>? Stop { get; set; }
+    }
+
+    /// <summary>
     /// Configuration for FriendliAI generative AI provider.
     /// </summary>
     public record FriendliAI() : GenerativeProvider("friendliai")

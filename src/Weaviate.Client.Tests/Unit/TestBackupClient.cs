@@ -10,6 +10,40 @@ namespace Weaviate.Client.Tests.Unit;
 public class TestBackupClient
 {
     /// <summary>
+    /// A create response body, reused by the incremental-backup cases below.
+    /// </summary>
+    private const string CreateResponseJson = """
+        {
+            "id": "my-backup",
+            "backend": "filesystem",
+            "status": "STARTED",
+            "path": "/backups"
+        }
+        """;
+
+    /// <summary>
+    /// A client that answers POST /v1/backups with <see cref="CreateResponseJson"/>, pinned to a
+    /// server version so the incremental-backup version gate can be exercised.
+    /// </summary>
+    private static (WeaviateClient Client, MockHttpMessageHandler Handler) CreateBackupClient(
+        string serverVersion
+    ) =>
+        MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: req =>
+                req.Method == HttpMethod.Post
+                    ? new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(
+                            CreateResponseJson,
+                            System.Text.Encoding.UTF8,
+                            "application/json"
+                        ),
+                    }
+                    : null!,
+            serverVersion: serverVersion
+        );
+
+    /// <summary>
     /// CancelRestore() must issue a DELETE to /v1/backups/{backend}/{id}/restore.
     /// </summary>
     [Fact]
@@ -58,10 +92,10 @@ public class TestBackupClient
     }
 
     /// <summary>
-    /// GetStatus should populate Size from the response.
+    /// GetStatus should populate Size and the incremental base id from the response.
     /// </summary>
     [Fact]
-    public async Task GetStatus_SizeIsPopulatedFromResponse()
+    public async Task GetStatus_PopulatesSizeAndIncrementalBaseBackupId()
     {
         var json = """
             {
@@ -69,7 +103,8 @@ public class TestBackupClient
                 "status": "SUCCESS",
                 "path": "/backups",
                 "backend": "filesystem",
-                "size": 1.5
+                "size": 1.5,
+                "incremental_base_backup_id": "base-backup"
             }
             """;
 
@@ -87,6 +122,7 @@ public class TestBackupClient
         );
 
         Assert.Equal(1.5, backup.Size);
+        Assert.Equal("base-backup", backup.IncrementalBaseBackupId);
     }
 
     /// <summary>
@@ -215,5 +251,101 @@ public class TestBackupClient
         );
 
         Assert.Equal(expected, backup.Status);
+    }
+
+    /// <summary>
+    /// Create() must put IncrementalBaseBackupId on the wire under the spec's
+    /// <c>incremental_base_backup_id</c> key, or the client silently takes a full backup instead;
+    /// and omit the key when no base is asked for, which is why a plain backup still works on a
+    /// server below 1.37.0 — the gate is on the field, not the operation.
+    /// </summary>
+    [Theory]
+    [InlineData("1.37.0", "base-backup")]
+    [InlineData("1.36.0", null)]
+    public async Task Create_SendsIncrementalBaseBackupId_OnlyWhenRequested(
+        string serverVersion,
+        string? incrementalBaseBackupId
+    )
+    {
+        var (client, handler) = CreateBackupClient(serverVersion);
+
+        await client.Backup.Create(
+            new BackupCreateRequest(
+                "my-backup",
+                new FilesystemBackend("/backups"),
+                IncrementalBaseBackupId: incrementalBaseBackupId
+            ),
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.NotNull(handler.LastRequest);
+        var body = await handler.LastRequest!.Content!.ReadAsStringAsync(
+            TestContext.Current.CancellationToken
+        );
+
+        if (incrementalBaseBackupId is null)
+            Assert.DoesNotContain("incremental_base_backup_id", body);
+        else
+            Assert.Contains($"\"incremental_base_backup_id\":\"{incrementalBaseBackupId}\"", body);
+    }
+
+    /// <summary>
+    /// The 1.37.0 gate is the documented feature floor, not the wire field's age: asking for an
+    /// incremental backup against an older server must fail rather than silently taking a full one.
+    /// </summary>
+    [Fact]
+    public async Task Create_Throws_WhenIncrementalRequestedOnOlderServer()
+    {
+        var (client, _) = CreateBackupClient("1.36.0");
+
+        var exception = await Assert.ThrowsAsync<WeaviateVersionMismatchException>(async () =>
+            await client.Backup.Create(
+                new BackupCreateRequest(
+                    "my-backup",
+                    new FilesystemBackend("/backups"),
+                    IncrementalBaseBackupId: "base-backup"
+                ),
+                TestContext.Current.CancellationToken
+            )
+        );
+
+        Assert.Equal(new Version(1, 37, 0), exception.RequiredVersion);
+        Assert.Equal(new Version(1, 36, 0), exception.ActualVersion);
+    }
+
+    /// <summary>
+    /// List() parsed Size and the incremental base id and then dropped both; they must survive
+    /// onto the model, and be null rather than empty when the server omits them.
+    /// </summary>
+    [Theory]
+    [InlineData(
+        """[{"id":"my-backup","classes":["Article"],"status":"SUCCESS","startedAt":"2026-08-14T10:00:00Z","completedAt":"2026-08-14T10:05:00Z","size":2.5,"incremental_base_backup_id":"base-backup"}]""",
+        "base-backup"
+    )]
+    [InlineData(
+        """[{"id":"my-backup","classes":["Article"],"status":"SUCCESS","size":2.5}]""",
+        null
+    )]
+    public async Task List_PopulatesSizeAndIncrementalBaseBackupId(
+        string json,
+        string? expectedIncrementalBaseBackupId
+    )
+    {
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(
+            syncHandler: _ => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"),
+            }
+        );
+
+        var backups = await client.Backup.List(
+            BackupStorageProvider.Filesystem,
+            TestContext.Current.CancellationToken
+        );
+
+        var backup = Assert.Single(backups);
+        Assert.Equal("my-backup", backup.Id);
+        Assert.Equal(2.5, backup.Size);
+        Assert.Equal(expectedIncrementalBaseBackupId, backup.IncrementalBaseBackupId);
     }
 }

@@ -903,4 +903,82 @@ public partial class AggregatesTests : IntegrationTests
                 break;
         }
     }
+
+    /// <summary>
+    /// Two ways a scalar goes missing, on one collection: a filter that matches nothing, and a
+    /// sub-metric the caller never asked for. Both leave the optional proto field unset, and the
+    /// client must report null rather than the zero of the field's type — a caller cannot tell a
+    /// returned 0 apart from a genuine aggregate of zeros.
+    /// </summary>
+    [Fact]
+    public async Task Test_OverAll_Absent_Metrics_Are_Null_Not_Zero()
+    {
+        var collectionClient = await CollectionFactory(
+            properties: new[]
+            {
+                Property.Text("text"),
+                Property.Int("int"),
+                Property.Number("float"),
+            }
+        );
+
+        await collectionClient.Data.Insert(
+            new
+            {
+                text = "one",
+                @int = 7,
+                @float = 7.5,
+            },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Nothing matches: the metrics were requested, but there is nothing to compute them over.
+        var noMatches = await collectionClient.Aggregate.OverAll(
+            filters: Filter.Property("text").IsEqual("no-such-value"),
+            returnMetrics:
+            [
+                Metrics.ForProperty("int").Integer(maximum: true, mean: true, sum: true),
+                Metrics.ForProperty("float").Number(maximum: true, mean: true, sum: true),
+            ],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        Assert.Equal(0, noMatches.TotalCount);
+
+        var emptyInteger = Assert.IsType<Aggregate.Integer>(noMatches.Properties["int"]);
+        Assert.Null(emptyInteger.Maximum);
+        Assert.Null(emptyInteger.Mean);
+        Assert.Null(emptyInteger.Sum);
+
+        var emptyNumber = Assert.IsType<Aggregate.Number>(noMatches.Properties["float"]);
+        Assert.Null(emptyNumber.Maximum);
+        Assert.Null(emptyNumber.Mean);
+        Assert.Null(emptyNumber.Sum);
+
+        // Objects do match here, so the nulls come from the metric selection alone.
+        var unrequested = await collectionClient.Aggregate.OverAll(
+            returnMetrics:
+            [
+                Metrics.ForProperty("int").Integer(maximum: true),
+                Metrics.ForProperty("float").Number(mean: true),
+            ],
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        Assert.Equal(1, unrequested.TotalCount);
+
+        var integer = Assert.IsType<Aggregate.Integer>(unrequested.Properties["int"]);
+        Assert.Equal(7, integer.Maximum);
+        Assert.Null(integer.Mean);
+        Assert.Null(integer.Median);
+        Assert.Null(integer.Minimum);
+        Assert.Null(integer.Mode);
+        Assert.Null(integer.Sum);
+
+        var number = Assert.IsType<Aggregate.Number>(unrequested.Properties["float"]);
+        Assert.Equal(7.5, number.Mean);
+        Assert.Null(number.Maximum);
+        Assert.Null(number.Minimum);
+        Assert.Null(number.Sum);
+    }
 }

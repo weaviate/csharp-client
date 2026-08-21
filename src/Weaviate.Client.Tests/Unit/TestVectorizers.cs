@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Weaviate.Client.Models;
 using Weaviate.Client.Models.Vectorizers;
 using Quantizers = Weaviate.Client.Models.VectorIndex.Quantizers;
@@ -347,6 +348,10 @@ public partial class VectorConfigListTests
     /// <summary>
     /// Tests that Multi2VecGoogleGemini maps each string-array modality to its own key, and
     /// that the unweighted overload emits no <c>weights</c> object.
+    /// Also pins the module name: there is no <c>multi2vec-google-gemini</c> module on any
+    /// server, so the Gemini factory must emit the <c>multi2vec-google</c> module (under its
+    /// <c>multi2vec-palm</c> wire name) and select Gemini with <c>apiEndpoint</c> instead —
+    /// and must send neither <c>projectId</c> nor <c>location</c>, which are Vertex-only.
     /// </summary>
     [Fact]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -364,7 +369,8 @@ public partial class VectorConfigListTests
                     imageFields: new[] { "image" },
                     textFields: new[] { "text" },
                     videoFields: new[] { "video" },
-                    audioFields: new[] { "audio" }
+                    audioFields: new[] { "audio" },
+                    dimensions: 512
                 )
         );
 
@@ -372,18 +378,30 @@ public partial class VectorConfigListTests
         var dto = vc.Vectorizer?.ToDto() ?? default;
         var json = JsonSerializer.Serialize(
             dto,
+            // Mirrors WeaviateRestClient.RestJsonSerializerOptions, so what is absent here is
+            // absent on the wire.
             new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = false,
             }
         );
 
         // Assert
+        Assert.Contains("\"multi2vec-palm\"", json);
+        Assert.DoesNotContain("multi2vec-google-gemini", json);
+        Assert.Contains("\"apiEndpoint\":\"generativelanguage.googleapis.com\"", json);
+        // Vertex-only settings the Gemini API has no equivalent of; neither may be sent.
+        Assert.DoesNotContain("projectId", json);
+        Assert.DoesNotContain("location", json);
         Assert.Contains("\"imageFields\":[\"image\"]", json);
         Assert.Contains("\"textFields\":[\"text\"]", json);
         Assert.Contains("\"videoFields\":[\"video\"]", json);
         Assert.Contains("\"audioFields\":[\"audio\"]", json);
+        Assert.Contains("\"dimensions\":512", json);
+        // Inherited shipped API on Multi2VecGoogle, but this factory never sets it.
+        Assert.DoesNotContain("vectorizeClassName", json);
         Assert.DoesNotContain("\"weights\"", json);
     }
 
@@ -422,14 +440,20 @@ public partial class VectorConfigListTests
         var dto = vc.Vectorizer?.ToDto() ?? default;
         var json = JsonSerializer.Serialize(
             dto,
+            // Mirrors WeaviateRestClient.RestJsonSerializerOptions, so what is absent here is
+            // absent on the wire.
             new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = false,
             }
         );
 
         // Assert
+        Assert.Contains("\"multi2vec-palm\"", json);
+        Assert.DoesNotContain("multi2vec-google-gemini", json);
+        Assert.Contains("\"apiEndpoint\":\"generativelanguage.googleapis.com\"", json);
         Assert.Contains("\"imageFields\":[\"image\",\"thumbnail\"]", json);
         Assert.Contains("\"textFields\":[\"text\"]", json);
         Assert.Contains("\"videoFields\":[\"video\",\"clip\"]", json);
@@ -439,6 +463,10 @@ public partial class VectorConfigListTests
                 + "\"textFields\":[0.23],\"videoFields\":[0.33,0.34]}",
             json
         );
+        // dimensions is left unset by this case, so the omit-when-null path stays covered;
+        // vectorizeClassName is never settable through this factory at all.
+        Assert.DoesNotContain("dimensions", json);
+        Assert.DoesNotContain("vectorizeClassName", json);
         Assert.DoesNotContain("depthFields", json);
         Assert.DoesNotContain("imuFields", json);
         Assert.DoesNotContain("thermalFields", json);

@@ -317,6 +317,40 @@ public class GenerativeProviderFactory
         };
 
     /// <summary>
+    /// Creates a DeepSeek runtime provider configuration.
+    /// </summary>
+    /// <param name="baseUrl">The base url</param>
+    /// <param name="model">The model</param>
+    /// <param name="temperature">The temperature</param>
+    /// <param name="maxTokens">The max tokens</param>
+    /// <param name="frequencyPenalty">The frequency penalty</param>
+    /// <param name="presencePenalty">The presence penalty</param>
+    /// <param name="topP">The top</param>
+    /// <param name="stop">The stop</param>
+    /// <returns>The providers deepseek</returns>
+    public Providers.Deepseek Deepseek(
+        string? baseUrl = null,
+        string? model = null,
+        double? temperature = null,
+        long? maxTokens = null,
+        double? frequencyPenalty = null,
+        double? presencePenalty = null,
+        double? topP = null,
+        List<string>? stop = null
+    ) =>
+        new()
+        {
+            BaseUrl = baseUrl,
+            Model = model,
+            Temperature = temperature,
+            MaxTokens = maxTokens,
+            FrequencyPenalty = frequencyPenalty,
+            PresencePenalty = presencePenalty,
+            TopP = topP,
+            Stop = stop,
+        };
+
+    /// <summary>
     /// Dummies this instance
     /// </summary>
     /// <returns>The providers dummy</returns>

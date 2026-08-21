@@ -48,6 +48,11 @@ internal static class GenerativeConfigSerialization
                         text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
+                GenerativeConfig.Deepseek.TypeValue =>
+                    JsonSerializer.Deserialize<GenerativeConfig.Deepseek>(
+                        text,
+                        Rest.WeaviateRestClient.RestJsonSerializerOptions
+                    ),
                 GenerativeConfig.FriendliAI.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.FriendliAI>(
                         text,

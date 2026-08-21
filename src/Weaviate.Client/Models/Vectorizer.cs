@@ -380,14 +380,25 @@ public static class Vectorizer
         internal Multi2VecGoogle() { }
 
         /// <summary>
-        /// Gets or sets the value of the project id
+        /// Gets or sets the Google Cloud project id.
+        /// Required by Vertex AI; omitted when null, as it is for the Gemini
+        /// (generative-language) API, which is not scoped to a project.
         /// </summary>
-        public required string ProjectId { get; set; }
+        public string? ProjectId { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value of the location
+        /// Gets or sets the Google Vertex AI region.
+        /// Required by Vertex AI; omitted when null, as it is for the Gemini
+        /// (generative-language) API, which has no region.
         /// </summary>
-        public required string Location { get; set; }
+        public string? Location { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the value of the api endpoint.
+        /// Set to <c>generativelanguage.googleapis.com</c> to call the Gemini API instead of
+        /// Vertex AI; when omitted the server applies its default.
+        /// </summary>
+        public string? ApiEndpoint { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the value of the image fields
@@ -452,61 +463,16 @@ public static class Vectorizer
     }
 
     /// <summary>
-    /// The configuration for multi-media vectorization using the Google Gemini module.
-    /// See the documentation for detailed usage.
+    /// Deprecated. Use <see cref="Multi2VecGoogle"/> instead.
     /// </summary>
-    [Vectorizer("multi2vec-google-gemini")]
-    public record Multi2VecGoogleGemini : VectorizerConfig
+    [Obsolete("Use Multi2VecGoogle with ApiEndpoint = 'generativelanguage.googleapis.com'.")]
+    public record Multi2VecGoogleGemini : Multi2VecGoogle
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Multi2VecGoogleGemini"/> class
         /// </summary>
         [JsonConstructor]
         internal Multi2VecGoogleGemini() { }
-
-        /// <summary>
-        /// Gets or sets the value of the api endpoint
-        /// </summary>
-        public string? ApiEndpoint { get; set; } = "generativelanguage.googleapis.com";
-
-        /// <summary>
-        /// Gets or sets the value of the image fields
-        /// </summary>
-        public string[]? ImageFields { get; set; } = null;
-
-        /// <summary>
-        /// Gets or sets the value of the text fields
-        /// </summary>
-        public string[]? TextFields { get; set; } = null;
-
-        /// <summary>
-        /// Gets or sets the value of the video fields
-        /// </summary>
-        public string[]? VideoFields { get; set; } = null;
-
-        /// <summary>
-        /// Gets or sets the value of the audio fields
-        /// </summary>
-        public string[]? AudioFields { get; set; } = null;
-
-        /// <summary>
-        /// Gets or sets the value of the video interval seconds
-        /// </summary>
-        public int? VideoIntervalSeconds { get; set; } = null;
-
-        /// <summary>
-        /// Gets or sets the value of the model
-        /// </summary>
-        [JsonPropertyName("modelId")]
-        public string? Model { get; set; } = null;
-
-        /// <summary>
-        /// Gets or sets the per-modality weights (the <c>weights</c> object), omitted when null.
-        /// <c>[JsonInclude]</c> is required: the serializer skips internal properties by default.
-        /// </summary>
-        [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        internal VectorizerWeights? Weights { get; set; } = null;
     }
 
     /// <summary>

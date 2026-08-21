@@ -716,11 +716,12 @@ public partial record AggregateResult
     {
         return x.AggregationCase switch
         {
+            // Every scalar here is optional in aggregate.proto: unset maps to null, not 0/false.
             V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Text =>
                 (Aggregate.Property)
                     new Aggregate.Text
                     {
-                        Count = x.Text.Count,
+                        Count = x.Text.HasCount ? x.Text.Count : null,
                         TopOccurrences = (
                             x.Text.TopOccurences is null
                                 ? []
@@ -736,38 +737,40 @@ public partial record AggregateResult
             V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Int =>
                 new Aggregate.Integer
                 {
-                    Count = x.Int.Count,
-                    Maximum = x.Int.Maximum,
-                    Mean = x.Int.Mean,
-                    Median = x.Int.Median,
-                    Minimum = x.Int.Minimum,
-                    Mode = x.Int.Mode,
-                    Sum = x.Int.Sum,
+                    Count = x.Int.HasCount ? x.Int.Count : null,
+                    Maximum = x.Int.HasMaximum ? x.Int.Maximum : null,
+                    Mean = x.Int.HasMean ? x.Int.Mean : null,
+                    Median = x.Int.HasMedian ? x.Int.Median : null,
+                    Minimum = x.Int.HasMinimum ? x.Int.Minimum : null,
+                    Mode = x.Int.HasMode ? x.Int.Mode : null,
+                    Sum = x.Int.HasSum ? x.Int.Sum : null,
                 },
             V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Number =>
                 new Aggregate.Number
                 {
-                    Count = x.Number.Count,
-                    Maximum = x.Number.Maximum,
-                    Mean = x.Number.Mean,
-                    Median = x.Number.Median,
-                    Minimum = x.Number.Minimum,
-                    Mode = x.Number.Mode,
-                    Sum = x.Number.Sum,
+                    Count = x.Number.HasCount ? x.Number.Count : null,
+                    Maximum = x.Number.HasMaximum ? x.Number.Maximum : null,
+                    Mean = x.Number.HasMean ? x.Number.Mean : null,
+                    Median = x.Number.HasMedian ? x.Number.Median : null,
+                    Minimum = x.Number.HasMinimum ? x.Number.Minimum : null,
+                    Mode = x.Number.HasMode ? x.Number.Mode : null,
+                    Sum = x.Number.HasSum ? x.Number.Sum : null,
                 },
             V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Boolean =>
                 new Aggregate.Boolean
                 {
-                    Count = x.Boolean.Count,
-                    PercentageFalse = x.Boolean.PercentageFalse,
-                    PercentageTrue = x.Boolean.PercentageTrue,
-                    TotalFalse = x.Boolean.TotalFalse,
-                    TotalTrue = x.Boolean.TotalTrue,
+                    Count = x.Boolean.HasCount ? x.Boolean.Count : null,
+                    PercentageFalse = x.Boolean.HasPercentageFalse
+                        ? x.Boolean.PercentageFalse
+                        : null,
+                    PercentageTrue = x.Boolean.HasPercentageTrue ? x.Boolean.PercentageTrue : null,
+                    TotalFalse = x.Boolean.HasTotalFalse ? x.Boolean.TotalFalse : null,
+                    TotalTrue = x.Boolean.HasTotalTrue ? x.Boolean.TotalTrue : null,
                 },
             V1.AggregateReply.Types.Aggregations.Types.Aggregation.AggregationOneofCase.Date =>
                 new Aggregate.Date
                 {
-                    Count = x.Date.Count,
+                    Count = x.Date.HasCount ? x.Date.Count : null,
                     Maximum = x.Date.HasMaximum
                         ? DateTime.Parse(
                             x.Date.Maximum,
@@ -1269,24 +1272,24 @@ public static partial class Aggregate
     public record Boolean : Property
     {
         /// <summary>
-        /// Gets or sets the value of the percentage false
+        /// Gets or sets the value of the percentage false, or null when the server did not send the value.
         /// </summary>
-        public double PercentageFalse { get; internal set; }
+        public double? PercentageFalse { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the value of the percentage true
+        /// Gets or sets the value of the percentage true, or null when the server did not send the value.
         /// </summary>
-        public double PercentageTrue { get; internal set; }
+        public double? PercentageTrue { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the value of the total false
+        /// Gets or sets the value of the total false, or null when the server did not send the value.
         /// </summary>
-        public long TotalFalse { get; internal set; }
+        public long? TotalFalse { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the value of the total true
+        /// Gets or sets the value of the total true, or null when the server did not send the value.
         /// </summary>
-        public long TotalTrue { get; internal set; }
+        public long? TotalTrue { get; internal set; }
     };
 
     /// <summary>

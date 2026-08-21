@@ -295,18 +295,36 @@ public record Backup(
     /// Gets the size of the backup in GiB. Available after completion.
     /// </summary>
     public double? Size { get; init; }
+
+    /// <summary>
+    /// Gets the id of the base backup this backup was built on. Only servers 1.37.6 and later
+    /// return it; on older servers null does not mean the backup is non-incremental.
+    /// </summary>
+    public string? IncrementalBaseBackupId { get; init; }
 }
 
 /// <summary>
 /// Options for creating a backup
 /// </summary>
+/// <param name="Id">The identifier of the backup to create.</param>
+/// <param name="Backend">The storage backend to write the backup to.</param>
+/// <param name="IncludeCollections">The collections to include; all when null.</param>
+/// <param name="ExcludeCollections">The collections to exclude; none when null.</param>
+/// <param name="CPUPercentage">The share of CPU the backup may use.</param>
+/// <param name="CompressionLevel">The compression level to write with.</param>
+/// <param name="IncrementalBaseBackupId">
+/// The identifier of an existing backup to use as the base for a file-based incremental backup.
+/// Files unchanged since the base backup are not copied again and are restored from the base.
+/// Requires Weaviate server version 1.37.0 or later.
+/// </param>
 public record BackupCreateRequest(
     string Id,
     BackupBackend Backend,
     AutoArray<string>? IncludeCollections = null,
     AutoArray<string>? ExcludeCollections = null,
     int? CPUPercentage = null,
-    BackupCompressionLevel? CompressionLevel = null
+    BackupCompressionLevel? CompressionLevel = null,
+    string? IncrementalBaseBackupId = null
 );
 
 /// <summary>
