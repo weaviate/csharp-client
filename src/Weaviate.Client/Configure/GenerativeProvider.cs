@@ -317,7 +317,7 @@ public class GenerativeProviderFactory
         };
 
     /// <summary>
-    /// Deepseeks the base url
+    /// Creates a DeepSeek runtime provider configuration.
     /// </summary>
     /// <param name="baseUrl">The base url</param>
     /// <param name="model">The model</param>
