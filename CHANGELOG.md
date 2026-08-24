@@ -9,30 +9,105 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.2.0] — 2026-08-21
+
+### Highlights
+
+- **Boost**: a query-time soft-ranking rescorer available on every search and generate method (Weaviate ≥ 1.38)
+- **Diversity selection (MMR)**: on hybrid search (Weaviate ≥ 1.38.6) and on every `near*` search (Weaviate ≥ 1.37.0)
+- **`BM25Operator.AndCross`**: cross-property keyword AND, with a client-side server-version guard
+- New modules: `multi2vec-twelvelabs` vectorizer and `generative-deepseek`
+- New `Namespaces` RBAC permission scope for the 1.38 `manage_namespaces` action
+- Incremental backups, plus new `text2vec-aws` / `text2vec-google` / `text2vec-openai` / `text2vec-morph` / `generative-google` settings
+- Multimodal vectorizer weights now actually reach the wire — and the two Google multimodal factories were transposing video and audio fields
+- **Not binary-compatible with 1.1.x.** 125 public signatures gained trailing optional parameters; recompile against 1.2.0 (see *Changed*)
+
 ### Added
 
-- **`generative-deepseek`** — New `GenerativeConfigFactory.Deepseek(...)` collection config and `GenerativeProviderFactory.Deepseek(...)` runtime provider for the `generative-deepseek` module. Requires Weaviate ≥ 1.36.19.
-- **Incremental Backups** — `BackupCreateRequest.IncrementalBaseBackupId` names an existing backup to build on, so files unchanged since that backup are not copied again; `Backup.IncrementalBaseBackupId` surfaces it on `List()` and `GetStatus()`. `Create` throws `WeaviateVersionMismatchException` below 1.37.0, the documented feature floor. The server has accepted the field on create since 1.34.18, but only returns it on read from 1.37.6.
-- **`apiEndpoint` on `Multi2VecGoogle`** — Both `VectorizerFactory.Multi2VecGoogle(...)` overloads take an optional `apiEndpoint`, which selects the Gemini API (`generativelanguage.googleapis.com`) instead of Vertex AI. Both `Multi2VecGoogleGemini(...)` overloads also gained an optional `dimensions`.
+#### Query and Generate
+
+- **Boost — query-time soft ranking** ([#355](https://github.com/weaviate/weaviate-csharp-client/pull/355)) — New `Models.Boost` and an optional `boost` parameter on every BM25, Hybrid and `near*` search and generate method. A boost re-scores rather than filters: non-matching objects rank lower but are never dropped. Build one with the `Boost.*` factories. gRPC only. Requires Weaviate ≥ 1.38.
+- **Diversity selection via MMR** ([#366](https://github.com/weaviate/weaviate-csharp-client/pull/366)) — New `Models.Diversity` with `Diversity.MMR(uint? Limit = null, float? Balance = null)`, passed as the optional `diversitySelection` parameter; `Balance` is the trade-off in `[0.0, 1.0]` (`1.0` pure relevance, `0.0` pure diversity). Not offered on aggregation. **Floors differ by surface**: `near*` searches require Weaviate ≥ **1.37.0**, hybrid search ≥ **1.38.6**.
+- **`BM25Operator.AndCross`** ([#365](https://github.com/weaviate/weaviate-csharp-client/pull/365)) — New keyword operator requiring every query token to appear across the searched properties taken together rather than within one; all of them must share tokenization and analyzer settings. Landed in Weaviate **1.39.0**, backported to **1.37.15** and **1.38.8**, so the guard is per minor branch: **1.37.15** passes, **1.38.7** is refused with `WeaviateVersionMismatchException`.
+- **`searchOperator` on `Generate.BM25`** ([#365](https://github.com/weaviate/weaviate-csharp-client/pull/365)) — All four `GenerateClient` / `TypedGenerateClient<T>` BM25 overloads now take `searchOperator`, which was previously accepted everywhere except here, leaving `AndCross` unreachable from generative keyword search. Same position and version guard as on `Query.BM25`.
+
+#### Vectorizers
+
+- **`multi2vec-twelvelabs`** ([#367](https://github.com/weaviate/weaviate-csharp-client/pull/367)) — New `Models.Vectorizer.Multi2VecTwelveLabs` config record and `VectorizerFactory.Multi2VecTwelveLabs(...)` overloads taking `string[]` or `WeightedFields` field lists. Requires Weaviate ≥ 1.38.9 on the 1.38 branch, or ≥ 1.39.0.
+- **`dimensions` on `text2vec-aws`** ([#354](https://github.com/weaviate/weaviate-csharp-client/pull/354)) — `Text2VecAWS.Dimensions` and an optional `dimensions` on the `Text2VecAWSBedrock(...)` and `Text2VecAWSSagemaker(...)` factories, for models with a configurable embedding size.
+- **`location` on `text2vec-google`** ([#353](https://github.com/weaviate/weaviate-csharp-client/pull/353)) — `Vectorizer.Text2VecGoogle.Location` and an optional `location` parameter on `VectorizerFactory.Text2VecGoogleVertex(...)`, selecting the Vertex AI region.
+- **`endpoint` on `text2vec-openai` and `text2vec-morph`** ([#359](https://github.com/weaviate/weaviate-csharp-client/pull/359)) — `Endpoint` on both config records and an optional `endpoint` on the `Text2VecOpenAI(...)` and `Text2VecMorph(...)` factories, for proxied or self-hosted deployments.
+- **`apiEndpoint` on `Multi2VecGoogle`** ([#368](https://github.com/weaviate/weaviate-csharp-client/pull/368)) — `VectorizerFactory.Multi2VecGoogle(...)` takes an optional `apiEndpoint` selecting the Gemini API (`generativelanguage.googleapis.com`) rather than Vertex AI; `Multi2VecGoogleGemini(...)` also gained an optional `dimensions`.
+
+#### Generative
+
+- **`generative-deepseek`** ([#368](https://github.com/weaviate/weaviate-csharp-client/pull/368)) — New `GenerativeConfigFactory.Deepseek(...)` collection config and `GenerativeProviderFactory.Deepseek(...)` runtime provider for the `generative-deepseek` module. Requires Weaviate ≥ 1.36.19.
+- **`location` on `generative-google`** ([#359](https://github.com/weaviate/weaviate-csharp-client/pull/359)) — `Location` on `GenerativeConfig.GoogleVertex` and `Generative.Providers.GoogleVertex`, with an optional `location` on the matching factory, selecting the Vertex AI region.
+
+#### RBAC
+
+- **`Namespaces` Permission Scope** ([#356](https://github.com/weaviate/weaviate-csharp-client/pull/356)) — New `Models.Permissions.Namespaces` scope with a `Manage` flag and a `Models.NamespacesResource` filter (`Namespace`, default `"*"`, an exact name or a regex), mapping the Weaviate 1.38 RBAC action `manage_namespaces`. Requires Weaviate ≥ 1.38.0.
+
+#### Backup
+
+- **Incremental Backups** ([#368](https://github.com/weaviate/weaviate-csharp-client/pull/368)) — `BackupCreateRequest.IncrementalBaseBackupId` names an existing backup to build on, so unchanged files are not copied again, and is surfaced on `List()` and `GetStatus()`. `Create` throws `WeaviateVersionMismatchException` below 1.37.0; the field is accepted from 1.34.18 but only read back from 1.37.6.
 
 ### Fixed
 
-- **Backup `Size` Dropped on List** — `BackupClient.List()` discarded the size and incremental base id it had already parsed from the response, so `Backup.Size` was null for every listed backup. Both fields are now mapped.
-- **Aggregate Zeros for Absent Values** — Int, Number, Boolean, Text and Date results, `Count` included, reported `0`, `0.0` or `false` where the server had sent no value at all. Every scalar is now presence-checked and left null when unset, so an empty aggregation is distinguishable from a genuine zero.
-- **`Multi2VecGoogleGemini` Emitted a Non-Existent Module** — The vectorizer declared the module name `multi2vec-google-gemini`, which no Weaviate server provides, so a collection configured with it could never be created. `VectorizerFactory.Multi2VecGoogleGemini(...)` now emits `multi2vec-google` with the Gemini API endpoint.
+- **Multimodal Vectorizer Weights Never Reached the Wire** ([#359](https://github.com/weaviate/weaviate-csharp-client/pull/359)) — Weighted `multi2vec` factories assigned `VectorizerWeights`, but it never serialized, so per-modality weights were silently dropped and collections were created with uniform weighting. Weights now reach the wire, and are omitted when no modality carries any.
+- **Google Multimodal Factories Transposed Video and Audio** ([#359](https://github.com/weaviate/weaviate-csharp-client/pull/359)) — `Multi2VecGoogle` and `Multi2VecGoogleGemini` passed their video and audio field lists into the `audioFields` and `depthFields` parameters, so video weights were labelled as audio and audio weights landed under a modality the module does not have, which can fail collection creation.
+- **Empty Multimodal Modalities Sent as Empty Arrays** ([#359](https://github.com/weaviate/weaviate-csharp-client/pull/359)) — An empty `WeightedFields` or `string[]` serialized as e.g. `"textFields": []`, which the server rejects, so an image-only config failed collection creation and `Multi2VecBind` was unusable with a subset of its seven modalities. Empty is now sent as null.
+- **`generative-google` Sent an Empty `location`** ([#359](https://github.com/weaviate/weaviate-csharp-client/pull/359)) — An empty `location` was sent as present-but-empty, suppressing the server-side default. Vertex now sets it only when non-empty; Gemini leaves it unset.
+- **`multi2vec-twelvelabs` Sent `vectorizeCollectionName`** ([#367](https://github.com/weaviate/weaviate-csharp-client/pull/367)) — No `multi2vec` module reads the setting, but the client sent it, so it read back as though it had taken effect. Removed from `Multi2VecTwelveLabs` and its factories; the other `multi2vec` records keep theirs for now.
+- **`AndCross` Version Guard Threw a Server-Side Exception Type** ([#365](https://github.com/weaviate/weaviate-csharp-client/pull/365)) — The client-side guard threw `WeaviateFeatureNotSupportedException`, a `WeaviateServerException`. It now throws `WeaviateVersionMismatchException`, matching every other client-side version gate; update catch blocks written for the old type.
+- **Backup `Size` Dropped on List** ([#368](https://github.com/weaviate/weaviate-csharp-client/pull/368)) — `BackupClient.List()` discarded the size and incremental base id it had already parsed from the response, so `Backup.Size` was null for every listed backup. Both fields are now mapped.
+- **Aggregate Zeros for Absent Values** ([#368](https://github.com/weaviate/weaviate-csharp-client/pull/368)) — Aggregation scalars, `Count` included, reported `0`, `0.0` or `false` where the server had sent no value. They are now null when unset, so absence is distinguishable from a genuine zero.
+- **`Multi2VecGoogleGemini` Emitted a Non-Existent Module** ([#368](https://github.com/weaviate/weaviate-csharp-client/pull/368)) — The vectorizer declared the module name `multi2vec-google-gemini`, which no server provides, so such a collection could never be created. It now emits `multi2vec-google` with the Gemini API endpoint.
 
 ### Changed
 
-- **`Multi2VecGoogleGemini` is now an `[Obsolete]` shim over `Multi2VecGoogle`** — This breaks at runtime, not only at compile time: the factory now returns a `Multi2VecGoogle`, so `is`/`as`/pattern matches on `Multi2VecGoogleGemini` silently stop matching, and a `switch` with arms for both types no longer compiles (`CS8120: The switch case is unreachable`). Bind the result as `Multi2VecGoogle` or `VectorizerConfig`.
-- **`Multi2VecGoogle.ProjectId` and `.Location` are no longer `required`** — Both getters changed from `string!` to `string?` so the Gemini endpoint, which is scoped to neither a project nor a region, can omit them. Callers with nullable reference types enabled may see CS8600/CS8601.
-- **`Aggregate.Boolean` counts are nullable** — `PercentageTrue`, `PercentageFalse`, `TotalTrue` and `TotalFalse` changed from `double`/`long` to `double?`/`long?`.
-- **`BackupCreateRequest` gained a trailing optional parameter** — Its primary constructor and `Deconstruct` went from six parameters to seven, so six-element positional deconstruction (`var (id, backend, inc, exc, cpu, comp) = req;`) no longer compiles; deconstruct seven elements instead.
-- **Binary compatibility** — The signature changes above are source-compatible for callers using named arguments, but not binary-compatible: assemblies compiled against 1.1.0 throw `MissingMethodException` until recompiled.
+- **`Multi2VecGoogleGemini` is now an `[Obsolete]` shim over `Multi2VecGoogle`** ([#368](https://github.com/weaviate/weaviate-csharp-client/pull/368)) — The factory now returns a `Multi2VecGoogle`, so `is`/`as`/pattern matches on `Multi2VecGoogleGemini` silently stop matching and a `switch` with arms for both types no longer compiles (`CS8120`). Bind the result as `Multi2VecGoogle` or `VectorizerConfig`.
+- **`Multi2VecGoogle.ProjectId` and `.Location` are no longer `required`** ([#368](https://github.com/weaviate/weaviate-csharp-client/pull/368)) — Both are now `string?`, so a Gemini config can omit them. Callers with nullable reference types enabled may see CS8600/CS8601.
+- **`Aggregate.Boolean` counts are nullable** ([#368](https://github.com/weaviate/weaviate-csharp-client/pull/368)) — `PercentageTrue`, `PercentageFalse`, `TotalTrue` and `TotalFalse` changed from `double`/`long` to `double?`/`long?`.
+- **`BackupCreateRequest` gained a trailing optional parameter** ([#368](https://github.com/weaviate/weaviate-csharp-client/pull/368)) — Its primary constructor and `Deconstruct` went from six parameters to seven, so six-element positional deconstruction no longer compiles — deconstruct seven.
+- **Binary compatibility** — Source-compatible for callers using named arguments, but not binary-compatible: 125 public members gained a trailing optional parameter or a nullability change, so assemblies compiled against 1.1.0 or 1.1.1 throw `MissingMethodException` until recompiled against 1.2.0. **Migration: recompile.** No source change is needed unless you used positional arguments past the insertion point, deconstructed `BackupCreateRequest` positionally, or pattern-matched on `Multi2VecGoogleGemini` (see above).
+- **`Weaviate.Client.VectorData` republished at 1.2.0** — Ships under the same tag and version as the core client but has **no API or behavior changes**: its public surface is byte-identical to 1.1.0 and 1.1.1. The 1.2.0 build references the 1.2.0 core client, so upgrade the two together.
 
 ### Removed
 
-- **`ReplicationAsyncConfig.MaxWorkers` and `ReplicationAsyncConfig.AliveNodesCheckingFrequency`** — Both fields have been no-ops on the server since Weaviate 1.37.3 and are now removed from the user-facing model, the OpenAPI spec, and the generated DTO. Existing code that sets these properties will not compile after upgrading; no behavioral change results from the removal.
-- **`Multi2VecGoogleGemini.Model`** — Removed along with the rest of the type's own members; the base `Multi2VecGoogle` declares the same setting as `ModelId`. Migrate `.Model` → `.ModelId`.
+- **`Multi2VecGoogleGemini`'s own members** ([#368](https://github.com/weaviate/weaviate-csharp-client/pull/368)) — Now that the type is a shim over `Multi2VecGoogle`, its seven own properties are gone, replaced by the base type's equivalents. Migrate `.Model` → `.ModelId`; the rest keep their names.
+
+### Minimum Supported Weaviate Version
+
+| Feature                                                                                  | Minimum Weaviate Version                 |
+|------------------------------------------------------------------------------------------|------------------------------------------|
+| Core client                                                                              | 1.32.0                                   |
+| Diversity selection on `near-vector` / `near-object` / `near-text` / `near-media`        | 1.37.0                                   |
+| Incremental backup create (`IncrementalBaseBackupId`)                                     | 1.37.0 (read-back from 1.37.6)           |
+| `generative-deepseek`                                                                    | 1.36.19                                  |
+| Boost (all search and generate methods)                                                   | 1.38.0 (silently ignored below)          |
+| `Namespaces` RBAC permission scope                                                        | 1.38.0                                   |
+| Diversity selection on hybrid search                                                      | 1.38.6                                   |
+| `BM25Operator.AndCross`                                                                   | 1.39.0, backported to 1.37.15 and 1.38.8 |
+| `multi2vec-twelvelabs`                                                                    | 1.38.9 or 1.39.0                         |
+
+---
+
+## [1.1.1] — 2026-05-27
+
+### Added
+
+- **`text2vec-digitalocean` Vectorizer** ([#339](https://github.com/weaviate/weaviate-csharp-client/issues/339)) — New `Models.Vectorizer.Text2VecDigitalOcean` config record and `VectorizerFactory.Text2VecDigitalOcean(...)`. `model` (e.g. `qwen3-embedding-0.6b`) is required and comes first; `baseURL` is optional.
+
+### Fixed
+
+- **Vector Index Type Defaulting** ([#341](https://github.com/weaviate/weaviate-csharp-client/pull/341)) — The client wrote `"hnsw"` into every empty `vectorIndexType`, defeating `DEFAULT_VECTOR_INDEX`, added in Weaviate 1.37.5. The field is now left unset on servers ≥ 1.37.5, and still set to `"hnsw"` on servers below 1.37.5 or of undetermined version.
+
+### Removed
+
+- **`ReplicationAsyncConfig.MaxWorkers` and `ReplicationAsyncConfig.AliveNodesCheckingFrequency`** — Both have been no-ops on the server since Weaviate 1.37.3 and are now removed. Code that sets them will not compile after upgrading; behavior is unchanged.
 
 ---
 
@@ -217,7 +292,9 @@ Initial stable release of the Weaviate C# client.
 
 ---
 
-[Unreleased]: https://github.com/weaviate/weaviate-csharp-client/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/weaviate/weaviate-csharp-client/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/weaviate/weaviate-csharp-client/compare/1.1.1...1.2.0
+[1.1.1]: https://github.com/weaviate/weaviate-csharp-client/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/weaviate/weaviate-csharp-client/compare/1.0.1...1.1.0
 [1.0.1]: https://github.com/weaviate/weaviate-csharp-client/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/weaviate/weaviate-csharp-client/releases/tag/1.0.0
