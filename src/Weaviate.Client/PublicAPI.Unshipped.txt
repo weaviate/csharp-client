@@ -127,3 +127,7 @@ Weaviate.Client.Models.GenerativeConfig.Meta.Temperature.set -> void
 Weaviate.Client.Models.GenerativeConfig.Meta.TopP.get -> double?
 Weaviate.Client.Models.GenerativeConfig.Meta.TopP.set -> void
 Weaviate.Client.Models.GenerativeConfig.Meta.Type.get -> string!
+Weaviate.Client.Models.VectorIndex.Quantizers.RQ.Centering.get -> bool
+Weaviate.Client.Models.VectorIndex.Quantizers.RQ.Centering.set -> void
+Weaviate.Client.Models.VectorIndex.Quantizers.RQ.TrainingLimit.get -> int
+Weaviate.Client.Models.VectorIndex.Quantizers.RQ.TrainingLimit.set -> void

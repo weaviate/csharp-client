@@ -264,4 +264,58 @@ public partial class VectorIndexConfigTests
         Assert.Equal(8, rq.Bits);
         Assert.Equal(50, rq.RescoreLimit);
     }
+
+    /// <summary>
+    /// Tests that a centered 4-bit RQ config serializes <c>centering</c> and
+    /// <c>trainingLimit</c> under the exact keys the server reads
+    /// (entities/vectorindex/hnsw/rq_config.go), omits them when unset so the server
+    /// defaults apply, and round-trips.
+    /// </summary>
+    [Fact]
+    public void VectorIndexConfig_HNSW_With_Centered_RQ4_Roundtrip()
+    {
+        var original = new VectorIndex.HNSW
+        {
+            Quantizer = new VectorIndex.Quantizers.RQ
+            {
+                Bits = 4,
+                Centering = true,
+                RescoreLimit = 123,
+                TrainingLimit = 5012,
+            },
+        };
+        var plain = new VectorIndex.HNSW
+        {
+            Quantizer = new VectorIndex.Quantizers.RQ { Bits = 8, RescoreLimit = 123 },
+        };
+
+        var json = VectorIndexSerialization.SerializeHnsw(original);
+        var jsonPlain = VectorIndexSerialization.SerializeHnsw(plain);
+
+        using var doc = JsonDocument.Parse(json);
+        var rqJson = doc.RootElement.GetProperty("rq");
+        Assert.Equal(4, rqJson.GetProperty("bits").GetInt32());
+        Assert.True(rqJson.GetProperty("centering").GetBoolean());
+        Assert.Equal(123, rqJson.GetProperty("rescoreLimit").GetInt32());
+        Assert.Equal(5012, rqJson.GetProperty("trainingLimit").GetInt32());
+
+        // The default PQ/SQ blocks carry their own trainingLimit, so scope the omit check to rq.
+        using var docPlain = JsonDocument.Parse(jsonPlain);
+        var rqJsonPlain = docPlain.RootElement.GetProperty("rq");
+        Assert.False(rqJsonPlain.TryGetProperty("centering", out _));
+        Assert.False(rqJsonPlain.TryGetProperty("trainingLimit", out _));
+
+        var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(
+            json,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+        var roundtripped = (VectorIndex.HNSW?)VectorIndexSerialization.Factory("hnsw", dict);
+
+        Assert.NotNull(roundtripped?.Quantizer);
+        var rq4 = Assert.IsType<VectorIndex.Quantizers.RQ>(roundtripped?.Quantizer);
+        Assert.Equal(4, rq4.Bits);
+        Assert.True(rq4.Centering);
+        Assert.Equal(123, rq4.RescoreLimit);
+        Assert.Equal(5012, rq4.TrainingLimit);
+    }
 }
