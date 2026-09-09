@@ -530,6 +530,70 @@ public class CollectionTests
     }
 
     /// <summary>
+    /// Pins the exact wire keys — a wrong key or casing is silently ignored by the server.
+    /// </summary>
+    [Fact]
+    public void Collection_GenerativeMeta_Serializes_And_RoundTrips()
+    {
+        // Arrange
+        var full = Assert.IsType<GenerativeConfig.Meta>(
+            Configure.Generative.Meta(
+                model: "muse-spark-1.2",
+                temperature: 0.5,
+                maxTokens: 100,
+                frequencyPenalty: 0.1,
+                presencePenalty: 0.2,
+                topP: 0.9,
+                baseURL: "https://api.meta.ai",
+                reasoningEffort: "xhigh"
+            )
+        );
+        var empty = Assert.IsType<GenerativeConfig.Meta>(Configure.Generative.Meta());
+
+        // Act
+        var jsonFull = JsonSerializer.Serialize(
+            full,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+        var jsonEmpty = JsonSerializer.Serialize(
+            empty,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        // Assert
+        Assert.Equal("generative-meta", full.Type);
+        Assert.Contains("\"model\":\"muse-spark-1.2\"", jsonFull);
+        Assert.Contains("\"temperature\":0.5", jsonFull);
+        Assert.Contains("\"maxTokens\":100", jsonFull);
+        Assert.Contains("\"frequencyPenalty\":0.1", jsonFull);
+        Assert.Contains("\"presencePenalty\":0.2", jsonFull);
+        Assert.Contains("\"topP\":0.9", jsonFull);
+        Assert.Contains("\"baseURL\":\"https://api.meta.ai\"", jsonFull);
+        Assert.Contains("\"reasoningEffort\":\"xhigh\"", jsonFull);
+        Assert.Contains("\"type\":\"generative-meta\"", jsonFull);
+
+        // Nothing set means nothing else sent, so the server keeps its own defaults.
+        Assert.Equal("{\"type\":\"generative-meta\"}", jsonEmpty);
+
+        var roundTripped = GenerativeConfigSerialization.Factory(
+            GenerativeConfig.Meta.TypeValue,
+            JsonSerializer.Deserialize<object>(
+                jsonFull,
+                Rest.WeaviateRestClient.RestJsonSerializerOptions
+            )
+        );
+        var typed = Assert.IsType<GenerativeConfig.Meta>(roundTripped);
+        Assert.Equal("muse-spark-1.2", typed.Model);
+        Assert.Equal(0.5, typed.Temperature);
+        Assert.Equal(100, typed.MaxTokens);
+        Assert.Equal(0.1, typed.FrequencyPenalty);
+        Assert.Equal(0.2, typed.PresencePenalty);
+        Assert.Equal(0.9, typed.TopP);
+        Assert.Equal("https://api.meta.ai", typed.BaseURL);
+        Assert.Equal("xhigh", typed.ReasoningEffort);
+    }
+
+    /// <summary>
     /// Tests that collection rerank deserializes into i reranker config
     /// </summary>
     [Fact]

@@ -63,6 +63,11 @@ internal static class GenerativeConfigSerialization
                         text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
+                GenerativeConfig.Meta.TypeValue =>
+                    JsonSerializer.Deserialize<GenerativeConfig.Meta>(
+                        text,
+                        Rest.WeaviateRestClient.RestJsonSerializerOptions
+                    ),
                 GenerativeConfig.Mistral.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.Mistral>(
                         text,

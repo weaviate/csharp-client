@@ -290,6 +290,50 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     /// <summary>
+    /// Tests that a generative-meta collection round-trips through a real server.
+    /// </summary>
+    /// <remarks>
+    /// Fractional floats are dropped by the server's config parser — integral values only.
+    /// </remarks>
+    [Fact]
+    public async Task Collection_Creates_And_Retrieves_GenerativeMeta_Config()
+    {
+        RequireModule("generative-meta");
+
+        // Arrange
+        var collectionClient = await CollectionFactory(
+            properties: [Property.Text("Name")],
+            generativeConfig: Configure.Generative.Meta(
+                model: "muse-spark-1.2",
+                temperature: 1,
+                maxTokens: 100,
+                frequencyPenalty: 0,
+                presencePenalty: 0,
+                topP: 1,
+                baseURL: "https://api.meta.ai",
+                reasoningEffort: "xhigh"
+            )
+        );
+
+        // Act
+        var collection = await _weaviate
+            .Collections.Use(collectionClient.Name)
+            .Config.Get(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.NotNull(collection);
+        var meta = Assert.IsType<GenerativeConfig.Meta>(collection.GenerativeConfig);
+        Assert.Equal("muse-spark-1.2", meta.Model);
+        Assert.Equal(1, meta.Temperature);
+        Assert.Equal(100, meta.MaxTokens);
+        Assert.Equal(0, meta.FrequencyPenalty);
+        Assert.Equal(0, meta.PresencePenalty);
+        Assert.Equal(1, meta.TopP);
+        Assert.Equal("https://api.meta.ai", meta.BaseURL);
+        Assert.Equal("xhigh", meta.ReasoningEffort);
+    }
+
+    /// <summary>
     /// Tests that test collections export
     /// </summary>
     [Fact]

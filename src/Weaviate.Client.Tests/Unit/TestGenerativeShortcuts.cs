@@ -437,6 +437,53 @@ public class GenerativeShortcutsTests
         Assert.False(providerQuery.Digitalocean.HasPresencePenalty);
     }
 
+    /// <summary>
+    /// Tests that the Meta provider maps onto the gRPC message; unset optionals stay unset.
+    /// </summary>
+    [Fact]
+    public async Task GenerateClient_FetchObjects_WithMetaProvider_MapsSetFieldsAndOmitsUnset()
+    {
+        // Arrange
+        var provider = new Providers.Meta
+        {
+            BaseUrl = "https://api.meta.ai",
+            Model = "muse-spark-1.2",
+            Temperature = 0.5,
+            MaxTokens = 100,
+            FrequencyPenalty = 0.1,
+            TopP = 0.9,
+            ReasoningEffort = Providers.Meta.ReasoningEffortLevel.XHigh,
+        };
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
+
+        // Act
+        await client
+            .Collections.Use("TestCollection")
+            .Generate.FetchObjects(
+                limit: 10,
+                singlePrompt: "Summarize this",
+                provider: provider,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+
+        // Assert
+        var capturedRequest = getCapturedRequest();
+        Assert.NotNull(capturedRequest);
+        var providerQuery = capturedRequest!.Generative!.Single!.Queries[0];
+        Assert.NotNull(providerQuery.Meta);
+        Assert.Equal("https://api.meta.ai", providerQuery.Meta.BaseUrl);
+        Assert.Equal("muse-spark-1.2", providerQuery.Meta.Model);
+        Assert.Equal(0.5, providerQuery.Meta.Temperature);
+        Assert.Equal(100, providerQuery.Meta.MaxTokens);
+        Assert.Equal(0.1, providerQuery.Meta.FrequencyPenalty);
+        Assert.Equal(0.9, providerQuery.Meta.TopP);
+        Assert.Equal(
+            GenerativeMeta.Types.ReasoningEffort.Xhigh,
+            providerQuery.Meta.ReasoningEffort
+        );
+        Assert.False(providerQuery.Meta.HasPresencePenalty);
+    }
+
     #endregion
 
     #region Helper Methods

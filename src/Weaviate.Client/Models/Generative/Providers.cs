@@ -915,6 +915,93 @@ public static class Providers
     }
 
     /// <summary>
+    /// Configuration for Meta generative AI provider.
+    /// </summary>
+    public record Meta() : GenerativeProvider("meta")
+    {
+        /// <summary>
+        /// Specifies the reasoning effort level for reasoning models.
+        /// </summary>
+        public enum ReasoningEffortLevel
+        {
+            /// <summary>
+            /// Unspecified reasoning effort level.
+            /// </summary>
+            Unspecified = 0,
+
+            /// <summary>
+            /// No reasoning effort.
+            /// </summary>
+            None = 1,
+
+            /// <summary>
+            /// Minimal reasoning effort.
+            /// </summary>
+            Minimal = 2,
+
+            /// <summary>
+            /// Low reasoning effort.
+            /// </summary>
+            Low = 3,
+
+            /// <summary>
+            /// Medium reasoning effort.
+            /// </summary>
+            Medium = 4,
+
+            /// <summary>
+            /// High reasoning effort.
+            /// </summary>
+            High = 5,
+
+            /// <summary>
+            /// Extra-high reasoning effort.
+            /// </summary>
+            XHigh = 6,
+        }
+
+        /// <summary>
+        /// Gets or sets the base URL for the Meta API endpoint.
+        /// </summary>
+        public string? BaseUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the model identifier to use.
+        /// </summary>
+        public string? Model { get; set; }
+
+        /// <summary>
+        /// Gets or sets the temperature for controlling randomness in generation.
+        /// </summary>
+        public double? Temperature { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of tokens to generate.
+        /// </summary>
+        public long? MaxTokens { get; set; }
+
+        /// <summary>
+        /// Gets or sets the frequency penalty to reduce repetition.
+        /// </summary>
+        public double? FrequencyPenalty { get; set; }
+
+        /// <summary>
+        /// Gets or sets the presence penalty to encourage topic diversity.
+        /// </summary>
+        public double? PresencePenalty { get; set; }
+
+        /// <summary>
+        /// Gets or sets the top-p (nucleus) sampling parameter.
+        /// </summary>
+        public double? TopP { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reasoning effort level for reasoning models.
+        /// </summary>
+        public ReasoningEffortLevel? ReasoningEffort { get; set; }
+    }
+
+    /// <summary>
     /// Configuration for FriendliAI generative AI provider.
     /// </summary>
     public record FriendliAI() : GenerativeProvider("friendliai")

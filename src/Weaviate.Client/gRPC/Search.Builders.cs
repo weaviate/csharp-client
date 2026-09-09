@@ -567,6 +567,21 @@ internal partial class WeaviateGrpcClient
                 SetIfNotNull(v => result.Digitalocean.FrequencyPenalty = v, a.FrequencyPenalty);
                 SetIfNotNull(v => result.Digitalocean.PresencePenalty = v, a.PresencePenalty);
                 break;
+            case Models.Generative.Providers.Meta a:
+                result.Meta = new V1.GenerativeMeta
+                {
+                    BaseUrl = a.BaseUrl ?? string.Empty,
+                    Model = a.Model ?? string.Empty,
+                    ReasoningEffort = a.ReasoningEffort.HasValue
+                        ? (V1.GenerativeMeta.Types.ReasoningEffort)a.ReasoningEffort.Value
+                        : V1.GenerativeMeta.Types.ReasoningEffort.Unspecified,
+                };
+                SetIfNotNull(v => result.Meta.Temperature = v, a.Temperature);
+                SetIfNotNull(v => result.Meta.TopP = v, a.TopP);
+                SetIfNotNull(v => result.Meta.MaxTokens = v, a.MaxTokens);
+                SetIfNotNull(v => result.Meta.FrequencyPenalty = v, a.FrequencyPenalty);
+                SetIfNotNull(v => result.Meta.PresencePenalty = v, a.PresencePenalty);
+                break;
             case Models.Generative.Providers.FriendliAI a:
                 result.Friendliai = new V1.GenerativeFriendliAI
                 {

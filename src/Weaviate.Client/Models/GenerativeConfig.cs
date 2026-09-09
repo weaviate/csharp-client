@@ -545,6 +545,69 @@ public static class GenerativeConfig
     }
 
     /// <summary>
+    /// Configuration for Meta generative AI provider.
+    /// </summary>
+    public record Meta : IGenerativeConfig
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Meta"/> class.
+        /// </summary>
+        [JsonConstructor]
+        internal Meta() { }
+
+        /// <summary>
+        /// The type value for Meta configuration.
+        /// </summary>
+        public const string TypeValue = "generative-meta";
+
+        /// <summary>
+        /// Gets the type identifier for the configuration.
+        /// </summary>
+        public string Type => TypeValue;
+
+        /// <summary>
+        /// Gets or sets the model identifier to use.
+        /// </summary>
+        public string? Model { get; set; }
+
+        /// <summary>
+        /// Gets or sets the temperature for controlling randomness in generation.
+        /// </summary>
+        public double? Temperature { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of tokens to generate.
+        /// </summary>
+        public int? MaxTokens { get; set; }
+
+        /// <summary>
+        /// Gets or sets the frequency penalty to reduce repetition.
+        /// </summary>
+        public double? FrequencyPenalty { get; set; }
+
+        /// <summary>
+        /// Gets or sets the presence penalty to encourage topic diversity.
+        /// </summary>
+        public double? PresencePenalty { get; set; }
+
+        /// <summary>
+        /// Gets or sets the top-p (nucleus) sampling parameter.
+        /// </summary>
+        public double? TopP { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base URL for the Meta API endpoint.
+        /// </summary>
+        public string? BaseURL { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reasoning effort level for reasoning models.
+        /// One of "none", "minimal", "low", "medium", "high" or "xhigh".
+        /// </summary>
+        public string? ReasoningEffort { get; set; }
+    }
+
+    /// <summary>
     /// Configuration for Mistral generative AI provider.
     /// </summary>
     public record Mistral : IGenerativeConfig
