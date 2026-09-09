@@ -463,6 +463,73 @@ public class CollectionTests
     }
 
     /// <summary>
+    /// Pins the exact wire keys — a wrong key (e.g. <c>baseUrl</c>) is silently ignored by the server.
+    /// </summary>
+    [Fact]
+    public void Collection_GenerativeDigitalOcean_Serializes_And_RoundTrips()
+    {
+        // Arrange
+        var full = Assert.IsType<GenerativeConfig.DigitalOcean>(
+            Configure.Generative.DigitalOcean(
+                model: "llama-4-maverick",
+                temperature: 0.5,
+                maxTokens: 100,
+                frequencyPenalty: 0.1,
+                presencePenalty: 0.2,
+                topP: 0.9,
+                baseURL: "https://inference.do-ai.run",
+                stop: ["STOP"]
+            )
+        );
+        var empty = Assert.IsType<GenerativeConfig.DigitalOcean>(
+            Configure.Generative.DigitalOcean()
+        );
+
+        // Act
+        var jsonFull = JsonSerializer.Serialize(
+            full,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+        var jsonEmpty = JsonSerializer.Serialize(
+            empty,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        // Assert
+        Assert.Equal("generative-digitalocean", full.Type);
+        Assert.Contains("\"model\":\"llama-4-maverick\"", jsonFull);
+        Assert.Contains("\"temperature\":0.5", jsonFull);
+        Assert.Contains("\"maxTokens\":100", jsonFull);
+        Assert.Contains("\"frequencyPenalty\":0.1", jsonFull);
+        Assert.Contains("\"presencePenalty\":0.2", jsonFull);
+        Assert.Contains("\"topP\":0.9", jsonFull);
+        Assert.Contains("\"baseURL\":\"https://inference.do-ai.run\"", jsonFull);
+        Assert.Contains("\"stop\":[\"STOP\"]", jsonFull);
+        Assert.Contains("\"type\":\"generative-digitalocean\"", jsonFull);
+
+        // Nothing set means nothing else sent, so the server keeps its own defaults.
+        Assert.Equal("{\"type\":\"generative-digitalocean\"}", jsonEmpty);
+
+        var roundTripped = GenerativeConfigSerialization.Factory(
+            GenerativeConfig.DigitalOcean.TypeValue,
+            JsonSerializer.Deserialize<object>(
+                jsonFull,
+                Rest.WeaviateRestClient.RestJsonSerializerOptions
+            )
+        );
+        var typed = Assert.IsType<GenerativeConfig.DigitalOcean>(roundTripped);
+        Assert.Equal("llama-4-maverick", typed.Model);
+        Assert.Equal(0.5, typed.Temperature);
+        Assert.Equal(100, typed.MaxTokens);
+        Assert.Equal(0.1, typed.FrequencyPenalty);
+        Assert.Equal(0.2, typed.PresencePenalty);
+        Assert.Equal(0.9, typed.TopP);
+        Assert.Equal("https://inference.do-ai.run", typed.BaseURL);
+        Assert.NotNull(typed.Stop);
+        Assert.Equal(["STOP"], typed.Stop);
+    }
+
+    /// <summary>
     /// Tests that collection rerank deserializes into i reranker config
     /// </summary>
     [Fact]

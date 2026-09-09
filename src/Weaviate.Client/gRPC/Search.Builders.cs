@@ -554,6 +554,19 @@ internal partial class WeaviateGrpcClient
                 SetIfNotNull(v => result.Deepseek.PresencePenalty = v, a.PresencePenalty);
                 SetIfNotNull(v => result.Deepseek.TopP = v, a.TopP);
                 break;
+            case Models.Generative.Providers.DigitalOcean a:
+                result.Digitalocean = new V1.GenerativeDigitalOcean
+                {
+                    BaseUrl = a.BaseUrl ?? string.Empty,
+                    Model = a.Model ?? string.Empty,
+                    Stop = a.Stop != null ? new V1.TextArray { Values = { a.Stop } } : null,
+                };
+                SetIfNotNull(v => result.Digitalocean.Temperature = v, a.Temperature);
+                SetIfNotNull(v => result.Digitalocean.TopP = v, a.TopP);
+                SetIfNotNull(v => result.Digitalocean.MaxTokens = v, a.MaxTokens);
+                SetIfNotNull(v => result.Digitalocean.FrequencyPenalty = v, a.FrequencyPenalty);
+                SetIfNotNull(v => result.Digitalocean.PresencePenalty = v, a.PresencePenalty);
+                break;
             case Models.Generative.Providers.FriendliAI a:
                 result.Friendliai = new V1.GenerativeFriendliAI
                 {
