@@ -318,4 +318,37 @@ public partial class VectorIndexConfigTests
         Assert.Equal(123, rq4.RescoreLimit);
         Assert.Equal(5012, rq4.TrainingLimit);
     }
+
+    /// <summary>
+    /// Tests that serializing an RQ config with centering but without 4 bits throws, matching
+    /// the server rule, while a training limit without centering passes through — the server
+    /// accepts that combination and simply ignores the value.
+    /// </summary>
+    [Fact]
+    public void VectorIndexConfig_RQ_Centering_Without_4_Bits_Throws()
+    {
+        var withBits8 = new VectorIndex.HNSW
+        {
+            Quantizer = new VectorIndex.Quantizers.RQ { Bits = 8, Centering = true },
+        };
+        var withBitsUnset = new VectorIndex.HNSW
+        {
+            Quantizer = new VectorIndex.Quantizers.RQ { Centering = true },
+        };
+        var trainingLimitOnly = new VectorIndex.HNSW
+        {
+            Quantizer = new VectorIndex.Quantizers.RQ { Bits = 8, TrainingLimit = 5000 },
+        };
+
+        var ex = Assert.Throws<WeaviateClientException>(() =>
+            VectorIndexSerialization.SerializeHnsw(withBits8)
+        );
+        Assert.Contains("RQ centering requires bits: 4", ex.Message);
+
+        Assert.Throws<WeaviateClientException>(() =>
+            VectorIndexSerialization.SerializeHnsw(withBitsUnset)
+        );
+
+        _ = VectorIndexSerialization.SerializeHnsw(trainingLimitOnly);
+    }
 }
