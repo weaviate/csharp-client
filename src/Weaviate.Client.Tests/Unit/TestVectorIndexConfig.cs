@@ -320,35 +320,44 @@ public partial class VectorIndexConfigTests
     }
 
     /// <summary>
-    /// Tests that serializing an RQ config with centering but without 4 bits throws, matching
-    /// the server rule, while a training limit without centering passes through — the server
-    /// accepts that combination and simply ignores the value.
+    /// Tests that serializing an RQ config with centering or a training limit but without
+    /// 4 bits throws — deliberately stricter than the server, which ignores a training limit
+    /// when centering is off — while either parameter with 4 bits passes through.
     /// </summary>
     [Fact]
-    public void VectorIndexConfig_RQ_Centering_Without_4_Bits_Throws()
+    public void VectorIndexConfig_RQ_CenteredParams_Without_4_Bits_Throw()
     {
-        var withBits8 = new VectorIndex.HNSW
+        var centeringWithBits8 = new VectorIndex.HNSW
         {
             Quantizer = new VectorIndex.Quantizers.RQ { Bits = 8, Centering = true },
         };
-        var withBitsUnset = new VectorIndex.HNSW
+        var centeringWithBitsUnset = new VectorIndex.HNSW
         {
             Quantizer = new VectorIndex.Quantizers.RQ { Centering = true },
         };
-        var trainingLimitOnly = new VectorIndex.HNSW
+        var trainingLimitWithBits8 = new VectorIndex.HNSW
         {
             Quantizer = new VectorIndex.Quantizers.RQ { Bits = 8, TrainingLimit = 5000 },
         };
+        var trainingLimitWithBits4 = new VectorIndex.HNSW
+        {
+            Quantizer = new VectorIndex.Quantizers.RQ { Bits = 4, TrainingLimit = 5000 },
+        };
 
         var ex = Assert.Throws<WeaviateClientException>(() =>
-            VectorIndexSerialization.SerializeHnsw(withBits8)
+            VectorIndexSerialization.SerializeHnsw(centeringWithBits8)
         );
         Assert.Contains("RQ centering requires bits: 4", ex.Message);
 
         Assert.Throws<WeaviateClientException>(() =>
-            VectorIndexSerialization.SerializeHnsw(withBitsUnset)
+            VectorIndexSerialization.SerializeHnsw(centeringWithBitsUnset)
         );
 
-        _ = VectorIndexSerialization.SerializeHnsw(trainingLimitOnly);
+        var exTrainingLimit = Assert.Throws<WeaviateClientException>(() =>
+            VectorIndexSerialization.SerializeHnsw(trainingLimitWithBits8)
+        );
+        Assert.Contains("RQ trainingLimit requires bits: 4", exTrainingLimit.Message);
+
+        _ = VectorIndexSerialization.SerializeHnsw(trainingLimitWithBits4);
     }
 }
