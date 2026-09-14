@@ -336,20 +336,15 @@ internal static class VectorIndexMappingExtensions
         return quantizers.FirstOrDefault(q => q?.Enabled == true);
     }
 
-    // Deliberately stricter than the server, which ignores trainingLimit without centering:
-    // both centered-RQ4 parameters fail fast here unless bits is 4.
+    // The server enforces the same rule (entities/vectorindex/hnsw/rq_config.go); failing here
+    // just surfaces it before the request. TrainingLimit is deliberately not checked: the server
+    // accepts it with any bits value and simply ignores it unless centering is enabled.
     private static VectorIndex.Quantizers.RQ? ValidateRQ(VectorIndex.Quantizers.RQ? rq)
     {
         if (rq is { Centering: true } && rq.Bits != 4)
         {
             throw new WeaviateClientException(
                 $"RQ centering requires bits: 4, but got bits: {rq.Bits?.ToString() ?? "unset"}."
-            );
-        }
-        if (rq is { TrainingLimit: not 0 } && rq.Bits != 4)
-        {
-            throw new WeaviateClientException(
-                $"RQ trainingLimit requires bits: 4, but got bits: {rq.Bits?.ToString() ?? "unset"}."
             );
         }
         return rq;
