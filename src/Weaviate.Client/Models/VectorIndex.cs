@@ -254,6 +254,19 @@ public static class VectorIndex
             public bool Cache { get; set; }
 
             /// <summary>
+            /// Gets or sets whether to center the data before quantizing. Requires 4 bits and
+            /// is immutable once the collection is created (Weaviate 1.39.3 or later).
+            /// </summary>
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+            public bool Centering { get; set; }
+
+            /// <summary>
+            /// Gets or sets the number of vectors used to train the centering statistics.
+            /// </summary>
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+            public int TrainingLimit { get; set; }
+
+            /// <summary>
             /// Gets the type identifier for the quantizer.
             /// </summary>
             [JsonIgnore]

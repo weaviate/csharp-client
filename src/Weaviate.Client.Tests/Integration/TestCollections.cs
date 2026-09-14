@@ -1355,6 +1355,47 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     /// <summary>
+    /// Tests that test hnsw centered rq4
+    /// </summary>
+    [Fact]
+    public async Task Test_hnsw_centered_rq4()
+    {
+        RequireVersion("1.39.3", message: "RQ centering only supported in server version 1.39.3+");
+
+        var collection = await CollectionFactory(
+            vectorConfig:
+            [
+                Configure.Vector(
+                    "hnswRq4c",
+                    t => t.SelfProvided(),
+                    new VectorIndex.HNSW
+                    {
+                        Quantizer = new VectorIndex.Quantizers.RQ
+                        {
+                            Bits = 4,
+                            Centering = true,
+                            RescoreLimit = 20,
+                            TrainingLimit = 5000,
+                        },
+                    }
+                ),
+            ]
+        );
+        var config = await collection.Config.Get(TestContext.Current.CancellationToken);
+        Assert.NotNull(config);
+        var vcRQ = config.VectorConfig["hnswRq4c"];
+        Assert.NotNull(vcRQ);
+        var hnswConfig = vcRQ.VectorIndexConfig as VectorIndex.HNSW;
+        Assert.NotNull(hnswConfig);
+        var rqQuantizer = hnswConfig.Quantizer as VectorIndex.Quantizers.RQ;
+        Assert.NotNull(rqQuantizer);
+        Assert.Equal(4, rqQuantizer.Bits);
+        Assert.True(rqQuantizer.Centering);
+        Assert.Equal(20, rqQuantizer.RescoreLimit);
+        Assert.Equal(5000, rqQuantizer.TrainingLimit);
+    }
+
+    /// <summary>
     /// Tests that test flat rq
     /// </summary>
     [Fact]

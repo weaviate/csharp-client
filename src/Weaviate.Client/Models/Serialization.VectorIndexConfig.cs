@@ -336,6 +336,20 @@ internal static class VectorIndexMappingExtensions
         return quantizers.FirstOrDefault(q => q?.Enabled == true);
     }
 
+    // The server enforces the same rule (entities/vectorindex/hnsw/rq_config.go); failing here
+    // just surfaces it before the request. TrainingLimit is deliberately not checked: the server
+    // accepts it with any bits value and simply ignores it unless centering is enabled.
+    private static VectorIndex.Quantizers.RQ? ValidateRQ(VectorIndex.Quantizers.RQ? rq)
+    {
+        if (rq is { Centering: true } && rq.Bits != 4)
+        {
+            throw new WeaviateClientException(
+                $"RQ centering requires bits: 4, but got bits: {rq.Bits?.ToString() ?? "unset"}."
+            );
+        }
+        return rq;
+    }
+
     // HNSW mapping
     /// <summary>
     /// Returns the hnsw using the specified dto
@@ -471,7 +485,7 @@ internal static class VectorIndexMappingExtensions
                     dto.SQ = hnsw.Quantizer as VectorIndex.Quantizers.SQ;
                     break;
                 case "rq":
-                    dto.RQ = hnsw.Quantizer as VectorIndex.Quantizers.RQ;
+                    dto.RQ = ValidateRQ(hnsw.Quantizer as VectorIndex.Quantizers.RQ);
                     break;
                 case "none":
                     dto.SkipDefaultQuantization = true;
@@ -530,7 +544,7 @@ internal static class VectorIndexMappingExtensions
                 //     dto.SQ = flat.Quantizer as VectorIndex.Quantizers.SQ;
                 //     break;
                 case "rq":
-                    dto.RQ = flat.Quantizer as VectorIndex.Quantizers.RQ;
+                    dto.RQ = ValidateRQ(flat.Quantizer as VectorIndex.Quantizers.RQ);
                     break;
             }
         }
@@ -615,7 +629,7 @@ internal static class VectorIndexMappingExtensions
             SearchProbe = hfresh.SearchProbe,
             RQ = hfresh.Quantizer switch
             {
-                VectorIndex.Quantizers.RQ rq => rq,
+                VectorIndex.Quantizers.RQ rq => ValidateRQ(rq),
                 null => null,
                 _ => throw new WeaviateClientException(
                     $"HFresh only supports RQ quantization, but got '{hfresh.Quantizer.Type}'."
