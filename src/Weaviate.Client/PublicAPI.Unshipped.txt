@@ -59,3 +59,71 @@ Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Temperature.set -> void
 Weaviate.Client.Models.GenerativeConfig.DigitalOcean.TopP.get -> double?
 Weaviate.Client.Models.GenerativeConfig.DigitalOcean.TopP.set -> void
 Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Type.get -> string!
+const Weaviate.Client.Models.GenerativeConfig.Meta.TypeValue = "generative-meta" -> string!
+override sealed Weaviate.Client.Models.Generative.Providers.Meta.Equals(Weaviate.Client.Models.GenerativeProvider? other) -> bool
+override Weaviate.Client.Models.Generative.Providers.Meta.<Clone>$() -> Weaviate.Client.Models.Generative.Providers.Meta!
+override Weaviate.Client.Models.Generative.Providers.Meta.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Generative.Providers.Meta.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Generative.Providers.Meta.GetHashCode() -> int
+override Weaviate.Client.Models.Generative.Providers.Meta.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Generative.Providers.Meta.ToString() -> string!
+override Weaviate.Client.Models.GenerativeConfig.Meta.Equals(object? obj) -> bool
+override Weaviate.Client.Models.GenerativeConfig.Meta.GetHashCode() -> int
+override Weaviate.Client.Models.GenerativeConfig.Meta.ToString() -> string!
+static Weaviate.Client.Models.Generative.Providers.Meta.operator !=(Weaviate.Client.Models.Generative.Providers.Meta? left, Weaviate.Client.Models.Generative.Providers.Meta? right) -> bool
+static Weaviate.Client.Models.Generative.Providers.Meta.operator ==(Weaviate.Client.Models.Generative.Providers.Meta? left, Weaviate.Client.Models.Generative.Providers.Meta? right) -> bool
+static Weaviate.Client.Models.GenerativeConfig.Meta.operator !=(Weaviate.Client.Models.GenerativeConfig.Meta? left, Weaviate.Client.Models.GenerativeConfig.Meta? right) -> bool
+static Weaviate.Client.Models.GenerativeConfig.Meta.operator ==(Weaviate.Client.Models.GenerativeConfig.Meta? left, Weaviate.Client.Models.GenerativeConfig.Meta? right) -> bool
+virtual Weaviate.Client.Models.Generative.Providers.Meta.Equals(Weaviate.Client.Models.Generative.Providers.Meta? other) -> bool
+virtual Weaviate.Client.Models.GenerativeConfig.Meta.<Clone>$() -> Weaviate.Client.Models.GenerativeConfig.Meta!
+virtual Weaviate.Client.Models.GenerativeConfig.Meta.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.GenerativeConfig.Meta.Equals(Weaviate.Client.Models.GenerativeConfig.Meta? other) -> bool
+virtual Weaviate.Client.Models.GenerativeConfig.Meta.PrintMembers(System.Text.StringBuilder! builder) -> bool
+Weaviate.Client.GenerativeConfigFactory.Meta(string? model = null, double? temperature = null, int? maxTokens = null, double? frequencyPenalty = null, double? presencePenalty = null, double? topP = null, string? baseURL = null, string? reasoningEffort = null) -> Weaviate.Client.Models.IGenerativeConfig!
+Weaviate.Client.GenerativeProviderFactory.Meta(string? baseUrl = null, string? model = null, double? temperature = null, long? maxTokens = null, double? frequencyPenalty = null, double? presencePenalty = null, double? topP = null, Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel? reasoningEffort = null) -> Weaviate.Client.Models.Generative.Providers.Meta!
+Weaviate.Client.Models.Generative.Providers.Meta
+Weaviate.Client.Models.Generative.Providers.Meta.BaseUrl.get -> string?
+Weaviate.Client.Models.Generative.Providers.Meta.BaseUrl.set -> void
+Weaviate.Client.Models.Generative.Providers.Meta.FrequencyPenalty.get -> double?
+Weaviate.Client.Models.Generative.Providers.Meta.FrequencyPenalty.set -> void
+Weaviate.Client.Models.Generative.Providers.Meta.MaxTokens.get -> long?
+Weaviate.Client.Models.Generative.Providers.Meta.MaxTokens.set -> void
+Weaviate.Client.Models.Generative.Providers.Meta.Meta() -> void
+Weaviate.Client.Models.Generative.Providers.Meta.Meta(Weaviate.Client.Models.Generative.Providers.Meta! original) -> void
+Weaviate.Client.Models.Generative.Providers.Meta.Model.get -> string?
+Weaviate.Client.Models.Generative.Providers.Meta.Model.set -> void
+Weaviate.Client.Models.Generative.Providers.Meta.PresencePenalty.get -> double?
+Weaviate.Client.Models.Generative.Providers.Meta.PresencePenalty.set -> void
+Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffort.get -> Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel?
+Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffort.set -> void
+Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel
+Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel.High = 5 -> Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel
+Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel.Low = 3 -> Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel
+Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel.Medium = 4 -> Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel
+Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel.Minimal = 2 -> Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel
+Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel.None = 1 -> Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel
+Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel.Unspecified = 0 -> Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel
+Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel.XHigh = 6 -> Weaviate.Client.Models.Generative.Providers.Meta.ReasoningEffortLevel
+Weaviate.Client.Models.Generative.Providers.Meta.Temperature.get -> double?
+Weaviate.Client.Models.Generative.Providers.Meta.Temperature.set -> void
+Weaviate.Client.Models.Generative.Providers.Meta.TopP.get -> double?
+Weaviate.Client.Models.Generative.Providers.Meta.TopP.set -> void
+Weaviate.Client.Models.GenerativeConfig.Meta
+Weaviate.Client.Models.GenerativeConfig.Meta.BaseURL.get -> string?
+Weaviate.Client.Models.GenerativeConfig.Meta.BaseURL.set -> void
+Weaviate.Client.Models.GenerativeConfig.Meta.FrequencyPenalty.get -> double?
+Weaviate.Client.Models.GenerativeConfig.Meta.FrequencyPenalty.set -> void
+Weaviate.Client.Models.GenerativeConfig.Meta.MaxTokens.get -> int?
+Weaviate.Client.Models.GenerativeConfig.Meta.MaxTokens.set -> void
+Weaviate.Client.Models.GenerativeConfig.Meta.Meta(Weaviate.Client.Models.GenerativeConfig.Meta! original) -> void
+Weaviate.Client.Models.GenerativeConfig.Meta.Model.get -> string?
+Weaviate.Client.Models.GenerativeConfig.Meta.Model.set -> void
+Weaviate.Client.Models.GenerativeConfig.Meta.PresencePenalty.get -> double?
+Weaviate.Client.Models.GenerativeConfig.Meta.PresencePenalty.set -> void
+Weaviate.Client.Models.GenerativeConfig.Meta.ReasoningEffort.get -> string?
+Weaviate.Client.Models.GenerativeConfig.Meta.ReasoningEffort.set -> void
+Weaviate.Client.Models.GenerativeConfig.Meta.Temperature.get -> double?
+Weaviate.Client.Models.GenerativeConfig.Meta.Temperature.set -> void
+Weaviate.Client.Models.GenerativeConfig.Meta.TopP.get -> double?
+Weaviate.Client.Models.GenerativeConfig.Meta.TopP.set -> void
+Weaviate.Client.Models.GenerativeConfig.Meta.Type.get -> string!
