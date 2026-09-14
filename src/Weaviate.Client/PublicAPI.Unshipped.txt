@@ -1,1 +1,61 @@
 #nullable enable
+const Weaviate.Client.Models.GenerativeConfig.DigitalOcean.TypeValue = "generative-digitalocean" -> string!
+override sealed Weaviate.Client.Models.Generative.Providers.DigitalOcean.Equals(Weaviate.Client.Models.GenerativeProvider? other) -> bool
+override Weaviate.Client.Models.Generative.Providers.DigitalOcean.<Clone>$() -> Weaviate.Client.Models.Generative.Providers.DigitalOcean!
+override Weaviate.Client.Models.Generative.Providers.DigitalOcean.EqualityContract.get -> System.Type!
+override Weaviate.Client.Models.Generative.Providers.DigitalOcean.Equals(object? obj) -> bool
+override Weaviate.Client.Models.Generative.Providers.DigitalOcean.GetHashCode() -> int
+override Weaviate.Client.Models.Generative.Providers.DigitalOcean.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Weaviate.Client.Models.Generative.Providers.DigitalOcean.ToString() -> string!
+override Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Equals(object? obj) -> bool
+override Weaviate.Client.Models.GenerativeConfig.DigitalOcean.GetHashCode() -> int
+override Weaviate.Client.Models.GenerativeConfig.DigitalOcean.ToString() -> string!
+static Weaviate.Client.Models.Generative.Providers.DigitalOcean.operator !=(Weaviate.Client.Models.Generative.Providers.DigitalOcean? left, Weaviate.Client.Models.Generative.Providers.DigitalOcean? right) -> bool
+static Weaviate.Client.Models.Generative.Providers.DigitalOcean.operator ==(Weaviate.Client.Models.Generative.Providers.DigitalOcean? left, Weaviate.Client.Models.Generative.Providers.DigitalOcean? right) -> bool
+static Weaviate.Client.Models.GenerativeConfig.DigitalOcean.operator !=(Weaviate.Client.Models.GenerativeConfig.DigitalOcean? left, Weaviate.Client.Models.GenerativeConfig.DigitalOcean? right) -> bool
+static Weaviate.Client.Models.GenerativeConfig.DigitalOcean.operator ==(Weaviate.Client.Models.GenerativeConfig.DigitalOcean? left, Weaviate.Client.Models.GenerativeConfig.DigitalOcean? right) -> bool
+virtual Weaviate.Client.Models.Generative.Providers.DigitalOcean.Equals(Weaviate.Client.Models.Generative.Providers.DigitalOcean? other) -> bool
+virtual Weaviate.Client.Models.GenerativeConfig.DigitalOcean.<Clone>$() -> Weaviate.Client.Models.GenerativeConfig.DigitalOcean!
+virtual Weaviate.Client.Models.GenerativeConfig.DigitalOcean.EqualityContract.get -> System.Type!
+virtual Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Equals(Weaviate.Client.Models.GenerativeConfig.DigitalOcean? other) -> bool
+virtual Weaviate.Client.Models.GenerativeConfig.DigitalOcean.PrintMembers(System.Text.StringBuilder! builder) -> bool
+Weaviate.Client.GenerativeConfigFactory.DigitalOcean(string? model = null, double? temperature = null, int? maxTokens = null, double? frequencyPenalty = null, double? presencePenalty = null, double? topP = null, string? baseURL = null, string![]? stop = null) -> Weaviate.Client.Models.IGenerativeConfig!
+Weaviate.Client.GenerativeProviderFactory.DigitalOcean(string? baseUrl = null, string? model = null, double? temperature = null, long? maxTokens = null, double? frequencyPenalty = null, double? presencePenalty = null, double? topP = null, System.Collections.Generic.List<string!>? stop = null) -> Weaviate.Client.Models.Generative.Providers.DigitalOcean!
+Weaviate.Client.Models.Generative.Providers.DigitalOcean
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.BaseUrl.get -> string?
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.BaseUrl.set -> void
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.DigitalOcean() -> void
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.DigitalOcean(Weaviate.Client.Models.Generative.Providers.DigitalOcean! original) -> void
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.FrequencyPenalty.get -> double?
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.FrequencyPenalty.set -> void
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.MaxTokens.get -> long?
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.MaxTokens.set -> void
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.Model.get -> string?
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.Model.set -> void
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.PresencePenalty.get -> double?
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.PresencePenalty.set -> void
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.Stop.get -> System.Collections.Generic.List<string!>?
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.Stop.set -> void
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.Temperature.get -> double?
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.Temperature.set -> void
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.TopP.get -> double?
+Weaviate.Client.Models.Generative.Providers.DigitalOcean.TopP.set -> void
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.BaseURL.get -> string?
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.BaseURL.set -> void
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.DigitalOcean(Weaviate.Client.Models.GenerativeConfig.DigitalOcean! original) -> void
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.FrequencyPenalty.get -> double?
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.FrequencyPenalty.set -> void
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.MaxTokens.get -> int?
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.MaxTokens.set -> void
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Model.get -> string?
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Model.set -> void
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.PresencePenalty.get -> double?
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.PresencePenalty.set -> void
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Stop.get -> string![]?
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Stop.set -> void
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Temperature.get -> double?
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Temperature.set -> void
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.TopP.get -> double?
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.TopP.set -> void
+Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Type.get -> string!

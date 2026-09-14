@@ -243,6 +243,53 @@ public partial class CollectionsTests : IntegrationTests
     }
 
     /// <summary>
+    /// Tests that a generative-digitalocean collection round-trips through a real server.
+    /// </summary>
+    /// <remarks>
+    /// Fractional floats are dropped by the server's config parser — integral values only.
+    /// </remarks>
+    [Fact]
+    public async Task Collection_Creates_And_Retrieves_GenerativeDigitalOcean_Config()
+    {
+        RequireModule("generative-digitalocean");
+
+        // Arrange
+        var collectionClient = await CollectionFactory(
+            properties: [Property.Text("Name")],
+            generativeConfig: Configure.Generative.DigitalOcean(
+                model: "llama-4-maverick",
+                temperature: 1,
+                maxTokens: 100,
+                frequencyPenalty: 0,
+                presencePenalty: 0,
+                topP: 1,
+                baseURL: "https://inference.do-ai.run",
+                stop: ["STOP"]
+            )
+        );
+
+        // Act
+        var collection = await _weaviate
+            .Collections.Use(collectionClient.Name)
+            .Config.Get(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.NotNull(collection);
+        var digitalOcean = Assert.IsType<GenerativeConfig.DigitalOcean>(
+            collection.GenerativeConfig
+        );
+        Assert.Equal("llama-4-maverick", digitalOcean.Model);
+        Assert.Equal(1, digitalOcean.Temperature);
+        Assert.Equal(100, digitalOcean.MaxTokens);
+        Assert.Equal(0, digitalOcean.FrequencyPenalty);
+        Assert.Equal(0, digitalOcean.PresencePenalty);
+        Assert.Equal(1, digitalOcean.TopP);
+        Assert.Equal("https://inference.do-ai.run", digitalOcean.BaseURL);
+        Assert.NotNull(digitalOcean.Stop);
+        Assert.Equal(["STOP"], digitalOcean.Stop);
+    }
+
+    /// <summary>
     /// Tests that test collections export
     /// </summary>
     [Fact]

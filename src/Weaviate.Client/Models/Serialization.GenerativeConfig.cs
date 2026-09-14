@@ -53,6 +53,11 @@ internal static class GenerativeConfigSerialization
                         text,
                         Rest.WeaviateRestClient.RestJsonSerializerOptions
                     ),
+                GenerativeConfig.DigitalOcean.TypeValue =>
+                    JsonSerializer.Deserialize<GenerativeConfig.DigitalOcean>(
+                        text,
+                        Rest.WeaviateRestClient.RestJsonSerializerOptions
+                    ),
                 GenerativeConfig.FriendliAI.TypeValue =>
                     JsonSerializer.Deserialize<GenerativeConfig.FriendliAI>(
                         text,

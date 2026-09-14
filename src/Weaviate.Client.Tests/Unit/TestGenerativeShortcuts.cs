@@ -393,6 +393,50 @@ public class GenerativeShortcutsTests
         Assert.Null(providerQuery.Deepseek.Stop);
     }
 
+    /// <summary>
+    /// Tests that the DigitalOcean provider maps onto the gRPC message; unset optionals stay unset.
+    /// </summary>
+    [Fact]
+    public async Task GenerateClient_FetchObjects_WithDigitalOceanProvider_MapsSetFieldsAndOmitsUnset()
+    {
+        // Arrange
+        var provider = new Providers.DigitalOcean
+        {
+            BaseUrl = "https://inference.do-ai.run",
+            Model = "llama-4-maverick",
+            Temperature = 0.5,
+            MaxTokens = 100,
+            FrequencyPenalty = 0.1,
+            TopP = 0.9,
+            Stop = ["STOP"],
+        };
+        var (client, getCapturedRequest) = CreateClientWithRequestCapture();
+
+        // Act
+        await client
+            .Collections.Use("TestCollection")
+            .Generate.FetchObjects(
+                limit: 10,
+                singlePrompt: "Summarize this",
+                provider: provider,
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+
+        // Assert
+        var capturedRequest = getCapturedRequest();
+        Assert.NotNull(capturedRequest);
+        var providerQuery = capturedRequest!.Generative!.Single!.Queries[0];
+        Assert.NotNull(providerQuery.Digitalocean);
+        Assert.Equal("https://inference.do-ai.run", providerQuery.Digitalocean.BaseUrl);
+        Assert.Equal("llama-4-maverick", providerQuery.Digitalocean.Model);
+        Assert.Equal(0.5, providerQuery.Digitalocean.Temperature);
+        Assert.Equal(100, providerQuery.Digitalocean.MaxTokens);
+        Assert.Equal(0.1, providerQuery.Digitalocean.FrequencyPenalty);
+        Assert.Equal(0.9, providerQuery.Digitalocean.TopP);
+        Assert.Equal(["STOP"], providerQuery.Digitalocean.Stop.Values);
+        Assert.False(providerQuery.Digitalocean.HasPresencePenalty);
+    }
+
     #endregion
 
     #region Helper Methods
