@@ -154,7 +154,9 @@ public static class WeaviateServiceCollectionExtensions
     /// Similar to Connect.Cloud() but for dependency injection.
     /// </summary>
     /// <param name="services">The service collection.</param>
-    /// <param name="clusterEndpoint">The Weaviate Cloud cluster endpoint (e.g., "my-cluster.weaviate.cloud").</param>
+    /// <param name="clusterEndpoint">The cluster URL (e.g. "https://my-cluster.weaviate.cloud") or its bare
+    /// hostname (e.g. "my-cluster.weaviate.cloud"). Only the host is used: the scheme, including http://,
+    /// and any path are ignored, because Weaviate Cloud always uses TLS on port 443.</param>
     /// <param name="apiKey">API key for authentication.</param>
     /// <param name="headers">Additional HTTP headers to include in requests.</param>
     /// <param name="defaultTimeout">Default timeout for all operations.</param>
@@ -163,6 +165,9 @@ public static class WeaviateServiceCollectionExtensions
     /// <param name="queryTimeout">Timeout for query operations.</param>
     /// <param name="eagerInitialization">Whether to initialize the client eagerly on application startup. Default is true.</param>
     /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentException"><paramref name="clusterEndpoint"/> is empty, uses a scheme other
+    /// than http or https, contains user credentials, specifies a port other than 443, or does not have a
+    /// valid DNS hostname.</exception>
     public static IServiceCollection AddWeaviateCloud(
         this IServiceCollection services,
         string clusterEndpoint,
@@ -175,11 +180,13 @@ public static class WeaviateServiceCollectionExtensions
         bool eagerInitialization = true
     )
     {
+        var host = Internal.CloudEndpoint.NormalizeHost(clusterEndpoint, nameof(clusterEndpoint));
+
         services.AddWeaviate(
             options =>
             {
-                options.RestEndpoint = clusterEndpoint;
-                options.GrpcEndpoint = $"grpc-{clusterEndpoint}";
+                options.RestEndpoint = host;
+                options.GrpcEndpoint = $"grpc-{host}";
                 options.RestPort = 443;
                 options.GrpcPort = 443;
                 options.UseSsl = true;
@@ -250,10 +257,15 @@ public static class WeaviateServiceCollectionExtensions
     /// </summary>
     /// <typeparam name="TTokenService">A scoped <see cref="ITokenService"/> implementation.</typeparam>
     /// <param name="services">The service collection.</param>
-    /// <param name="clusterEndpoint">The Weaviate Cloud cluster endpoint (e.g. "my-cluster.weaviate.cloud").</param>
+    /// <param name="clusterEndpoint">The cluster URL (e.g. "https://my-cluster.weaviate.cloud") or its bare
+    /// hostname (e.g. "my-cluster.weaviate.cloud"). Only the host is used: the scheme, including http://,
+    /// and any path are ignored, because Weaviate Cloud always uses TLS on port 443.</param>
     /// <param name="eagerInitialization">Whether to initialize eagerly on startup. Defaults to <c>false</c>
     /// because the token service may depend on request context unavailable at startup.</param>
     /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentException"><paramref name="clusterEndpoint"/> is empty, uses a scheme other
+    /// than http or https, contains user credentials, specifies a port other than 443, or does not have a
+    /// valid DNS hostname.</exception>
     public static IServiceCollection AddWeaviateCloud<TTokenService>(
         this IServiceCollection services,
         string clusterEndpoint,
@@ -261,11 +273,13 @@ public static class WeaviateServiceCollectionExtensions
     )
         where TTokenService : class, ITokenService
     {
+        var host = Internal.CloudEndpoint.NormalizeHost(clusterEndpoint, nameof(clusterEndpoint));
+
         return services.AddWeaviate<TTokenService>(
             options =>
             {
-                options.RestEndpoint = clusterEndpoint;
-                options.GrpcEndpoint = $"grpc-{clusterEndpoint}";
+                options.RestEndpoint = host;
+                options.GrpcEndpoint = $"grpc-{host}";
                 options.RestPort = 443;
                 options.GrpcPort = 443;
                 options.UseSsl = true;
@@ -385,7 +399,9 @@ public static class WeaviateServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="name">The logical name of the client.</param>
-    /// <param name="clusterEndpoint">The Weaviate Cloud cluster endpoint (e.g., "my-cluster.weaviate.cloud").</param>
+    /// <param name="clusterEndpoint">The cluster URL (e.g. "https://my-cluster.weaviate.cloud") or its bare
+    /// hostname (e.g. "my-cluster.weaviate.cloud"). Only the host is used: the scheme, including http://,
+    /// and any path are ignored, because Weaviate Cloud always uses TLS on port 443.</param>
     /// <param name="apiKey">API key for authentication.</param>
     /// <param name="headers">Additional HTTP headers to include in requests.</param>
     /// <param name="defaultTimeout">Default timeout for all operations.</param>
@@ -393,6 +409,9 @@ public static class WeaviateServiceCollectionExtensions
     /// <param name="insertTimeout">Timeout for data operations.</param>
     /// <param name="queryTimeout">Timeout for query operations.</param>
     /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentException"><paramref name="clusterEndpoint"/> is empty, uses a scheme other
+    /// than http or https, contains user credentials, specifies a port other than 443, or does not have a
+    /// valid DNS hostname.</exception>
     public static IServiceCollection AddWeaviateCloud(
         this IServiceCollection services,
         string name,
@@ -405,12 +424,14 @@ public static class WeaviateServiceCollectionExtensions
         TimeSpan? queryTimeout = null
     )
     {
+        var host = Internal.CloudEndpoint.NormalizeHost(clusterEndpoint, nameof(clusterEndpoint));
+
         return services.AddWeaviateClient(
             name,
             options =>
             {
-                options.RestEndpoint = clusterEndpoint;
-                options.GrpcEndpoint = $"grpc-{clusterEndpoint}";
+                options.RestEndpoint = host;
+                options.GrpcEndpoint = $"grpc-{host}";
                 options.RestPort = 443;
                 options.GrpcPort = 443;
                 options.UseSsl = true;
