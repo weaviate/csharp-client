@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Weaviate Cloud Helpers Rejected the Cluster URL** — `Connect.Cloud`, `WeaviateClientBuilder.Cloud` and the endpoint overloads of `AddWeaviateCloud` used the endpoint verbatim as the host, so the cluster URL the Weaviate Cloud console shows (`https://my-cluster.weaviate.cloud`) failed with `UriFormatException`. They now accept that URL or a bare hostname and keep only the host, always connecting over TLS on port 443, and throw `ArgumentException` for any other scheme, embedded credentials, a port other than 443 or an invalid hostname (the DI overloads at registration).
+
 ---
 
 ## [1.2.0] — 2026-08-21
