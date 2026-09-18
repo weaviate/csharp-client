@@ -51,6 +51,19 @@ public static class Connect
     /// <summary>
     /// Creates a WeaviateClient connecting to Weaviate Cloud.
     /// </summary>
+    /// <param name="restEndpoint">The cluster URL (e.g. <c>https://my-cluster.weaviate.cloud</c>) or its
+    /// bare hostname (e.g. <c>my-cluster.weaviate.cloud</c>). Only the host is used: the scheme, including
+    /// <c>http://</c>, and any path are ignored, because Weaviate Cloud always uses TLS on port 443.</param>
+    /// <param name="apiKey">API key for authentication.</param>
+    /// <param name="headers">Additional HTTP headers to include in requests.</param>
+    /// <param name="httpMessageHandler">Optional HTTP message handler for REST requests.</param>
+    /// <param name="defaultTimeout">Default timeout for all operations.</param>
+    /// <param name="initTimeout">Timeout for initialization operations.</param>
+    /// <param name="insertTimeout">Timeout for data operations.</param>
+    /// <param name="queryTimeout">Timeout for query operations.</param>
+    /// <exception cref="ArgumentException"><paramref name="restEndpoint"/> is empty, uses a scheme other
+    /// than http or https, contains user credentials, specifies a port other than 443, or does not have a
+    /// valid DNS hostname.</exception>
     public static Task<WeaviateClient> Cloud(
         string restEndpoint,
         string? apiKey = null,

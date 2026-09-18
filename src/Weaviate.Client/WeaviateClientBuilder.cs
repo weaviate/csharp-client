@@ -178,26 +178,35 @@ public partial class WeaviateClientBuilder
     /// <summary>
     /// Clouds the rest endpoint
     /// </summary>
-    /// <param name="restEndpoint">The rest endpoint</param>
+    /// <param name="restEndpoint">The cluster URL (e.g. <c>https://my-cluster.weaviate.cloud</c>) or its
+    /// bare hostname (e.g. <c>my-cluster.weaviate.cloud</c>). Only the host is used: the scheme, including
+    /// <c>http://</c>, and any path are ignored, because Weaviate Cloud always uses TLS on port 443.</param>
     /// <param name="apiKey">The api key</param>
     /// <param name="headers">The headers</param>
     /// <param name="httpMessageHandler">The http message handler</param>
     /// <returns>The weaviate client builder</returns>
+    /// <exception cref="ArgumentException"><paramref name="restEndpoint"/> is empty, uses a scheme other
+    /// than http or https, contains user credentials, specifies a port other than 443, or does not have a
+    /// valid DNS hostname.</exception>
     public static WeaviateClientBuilder Cloud(
         string restEndpoint,
         string? apiKey = null,
         Dictionary<string, string>? headers = null,
         HttpMessageHandler? httpMessageHandler = null
-    ) =>
-        new WeaviateClientBuilder()
-            .WithRestEndpoint(restEndpoint)
-            .WithGrpcEndpoint($"grpc-{restEndpoint}")
+    )
+    {
+        var host = Internal.CloudEndpoint.NormalizeHost(restEndpoint, nameof(restEndpoint));
+
+        return new WeaviateClientBuilder()
+            .WithRestEndpoint(host)
+            .WithGrpcEndpoint($"grpc-{host}")
             .WithRestPort(443)
             .WithGrpcPort(443)
             .UseSsl(true)
             .WithCredentials(string.IsNullOrEmpty(apiKey) ? null : Auth.ApiKey(apiKey))
             .WithHeaders(headers)
             .WithHttpMessageHandler(httpMessageHandler);
+    }
 
     /// <summary>
     /// Adds the rest endpoint using the specified endpoint
