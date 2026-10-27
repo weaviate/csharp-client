@@ -1,6 +1,8 @@
 using Weaviate.Client.Models;
 using static Weaviate.Client.Models.VectorIndex;
 
+#pragma warning disable CS0618 // ReplicationConfig.AsyncEnabled still applies on servers before 1.38
+
 namespace Weaviate.Client.Tests.Integration;
 
 /// <summary>

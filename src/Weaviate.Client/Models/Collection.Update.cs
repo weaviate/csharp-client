@@ -412,11 +412,7 @@ public class VectorIndexConfigUpdate(VectorIndexConfig? WrappedVectorIndexConfig
     /// <exception cref="InvalidOperationException">VectorIndexConfig is not of type HNSW.</exception>
     public void UpdateHNSW(Action<VectorIndexConfigUpdateHNSW> c)
     {
-        VectorIndex.HNSW hnsw =
-            WrappedVectorIndexConfig as VectorIndex.HNSW
-            ?? throw new InvalidOperationException("VectorIndexConfig is not of type HNSW.");
-
-        c(new(hnsw));
+        c(new(As<VectorIndex.HNSW>("HNSW")));
     }
 
     /// <summary>
@@ -426,11 +422,7 @@ public class VectorIndexConfigUpdate(VectorIndexConfig? WrappedVectorIndexConfig
     /// <exception cref="InvalidOperationException">VectorIndexConfig is not of type Flat.</exception>
     public void UpdateFlat(Action<VectorIndexConfigUpdateFlat> c)
     {
-        VectorIndex.Flat flat =
-            WrappedVectorIndexConfig as VectorIndex.Flat
-            ?? throw new InvalidOperationException("VectorIndexConfig is not of type Flat.");
-
-        c(new(flat));
+        c(new(As<VectorIndex.Flat>("Flat")));
     }
 
     /// <summary>
@@ -440,12 +432,31 @@ public class VectorIndexConfigUpdate(VectorIndexConfig? WrappedVectorIndexConfig
     /// <exception cref="InvalidOperationException">VectorIndexConfig is not of type Dynamic.</exception>
     public void UpdateDynamic(Action<VectorIndexConfigUpdateDynamic> c)
     {
-        VectorIndex.Dynamic dynamic =
-            WrappedVectorIndexConfig as VectorIndex.Dynamic
-            ?? throw new InvalidOperationException("VectorIndexConfig is not of type Dynamic.");
-
-        c(new(dynamic));
+        c(new(As<VectorIndex.Dynamic>("Dynamic")));
     }
+
+    /// <summary>
+    /// Updates the mutable settings of an HFresh index.
+    /// </summary>
+    /// <param name="c">Sets the new values.</param>
+    /// <exception cref="InvalidOperationException">VectorIndexConfig is not of type HFresh.</exception>
+    public void UpdateHFresh(Action<VectorIndexConfigUpdateHFresh> c)
+    {
+        c(new(As<VectorIndex.HFresh>("HFresh")));
+    }
+
+    private T As<T>(string typeName)
+        where T : VectorIndexConfig =>
+        WrappedVectorIndexConfig switch
+        {
+            T config => config,
+            VectorIndex.None => throw new InvalidOperationException(
+                "The index of this vector was dropped with DeleteVectorIndex and cannot be updated."
+            ),
+            _ => throw new InvalidOperationException(
+                $"VectorIndexConfig is not of type {typeName}."
+            ),
+        };
 }
 
 /// <summary>
@@ -591,6 +602,61 @@ public class VectorIndexConfigUpdateFlat(VectorIndex.Flat WrappedFlat)
 }
 
 /// <summary>
+/// The vector index config update hfresh class
+/// </summary>
+public class VectorIndexConfigUpdateHFresh(VectorIndex.HFresh WrappedHFresh)
+{
+    /// <summary>
+    /// Gets or sets the maximum posting list size in KB
+    /// </summary>
+    public int? MaxPostingSizeKb
+    {
+        get => WrappedHFresh.MaxPostingSizeKb;
+        set => WrappedHFresh.MaxPostingSizeKb = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the number of posting lists probed at query time
+    /// </summary>
+    public int? SearchProbe
+    {
+        get => WrappedHFresh.SearchProbe;
+        set => WrappedHFresh.SearchProbe = value;
+    }
+
+    /// <summary>
+    /// Gets the RQ quantizer
+    /// </summary>
+    public QuantizerConfigUpdateRQ Quantizer
+    {
+        get
+        {
+            if (WrappedHFresh.Quantizer is not VectorIndex.Quantizers.RQ rq)
+            {
+                rq = new VectorIndex.Quantizers.RQ();
+                WrappedHFresh.Quantizer = rq;
+            }
+            return new(rq);
+        }
+    }
+}
+
+/// <summary>
+/// Tunable settings of the RQ quantizer
+/// </summary>
+public class QuantizerConfigUpdateRQ(VectorIndex.Quantizers.RQ WrappedRQ)
+{
+    /// <summary>
+    /// Gets or sets the limit for rescoring operations
+    /// </summary>
+    public int RescoreLimit
+    {
+        get => WrappedRQ.RescoreLimit;
+        set => WrappedRQ.RescoreLimit = value;
+    }
+}
+
+/// <summary>
 /// The replication config update class
 /// </summary>
 public class ReplicationConfigUpdate(ReplicationConfig WrappedReplicationConfig)
@@ -598,6 +664,7 @@ public class ReplicationConfigUpdate(ReplicationConfig WrappedReplicationConfig)
     /// <summary>
     /// Gets or sets the value of the async enabled
     /// </summary>
+    [Obsolete(ReplicationConfig.AsyncEnabledObsoleteMessage)]
     public bool AsyncEnabled
     {
         get => WrappedReplicationConfig.AsyncEnabled;

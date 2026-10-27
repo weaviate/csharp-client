@@ -80,9 +80,13 @@ public record ReplicationConfig : IEquatable<ReplicationConfig>
     /// </summary>
     public static ReplicationConfig Default => _default.Value;
 
+    internal const string AsyncEnabledObsoleteMessage =
+        "Weaviate 1.38 and later ignore AsyncEnabled and decide async replication server-side. Older servers still apply it.";
+
     /// <summary>
     /// Enable asynchronous replication (default: false).
     /// </summary>
+    [Obsolete(AsyncEnabledObsoleteMessage)]
     public bool AsyncEnabled { get; set; } = false;
 
     /// <summary>

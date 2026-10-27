@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`VectorIndexFilterStrategy.Pathseer`**: the `pathseer` HNSW filter strategy, so reading a collection that uses it no longer throws. Requires Weaviate ≥ 1.40.
+- **`UpdateHFresh`**: updates `MaxPostingSizeKb`, `SearchProbe` and the RQ `RescoreLimit` of an HFresh index.
+
+### Fixed
+
+- **Dropped vector indexes**: a vector dropped with `DeleteVectorIndex` now reads as `VectorIndex.None`. `Config.Update` and `AddVector` send it back unchanged, a create from an exported config leaves it out, and updating its index throws a clear error.
+
+### Deprecated
+
+- **`ReplicationConfig.AsyncEnabled`** and **`ReplicationConfigUpdate.AsyncEnabled`**: Weaviate ≥ 1.38 ignores the field. Still sent to older servers.
+
 ---
 
 ## [1.2.0] — 2026-08-21

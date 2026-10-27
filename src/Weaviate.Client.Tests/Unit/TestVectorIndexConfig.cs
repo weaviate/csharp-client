@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Weaviate.Client.Models;
 
 namespace Weaviate.Client.Tests.Unit;
@@ -350,5 +351,66 @@ public partial class VectorIndexConfigTests
         );
 
         _ = VectorIndexSerialization.SerializeHnsw(trainingLimitOnly);
+    }
+
+    /// <summary>
+    /// Tests that the pathseer filter strategy round-trips through serialization
+    /// </summary>
+    [Fact]
+    public void VectorIndexConfig_HNSW_Pathseer_Roundtrip()
+    {
+        var json = VectorIndexSerialization.SerializeHnsw(
+            new VectorIndex.HNSW
+            {
+                FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Pathseer,
+            }
+        );
+        Assert.Contains(@"""filterStrategy"":""pathseer""", json);
+
+        var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(
+            json,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+        var hnsw = (VectorIndex.HNSW?)VectorIndexSerialization.Factory("hnsw", dict);
+
+        Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Pathseer, hnsw?.FilterStrategy);
+    }
+
+    /// <summary>
+    /// Tests that UpdateHFresh writes the mutable fields to the serialized config
+    /// </summary>
+    [Fact]
+    public void VectorIndexConfig_UpdateHFresh_Serializes_Mutable_Fields()
+    {
+        var hfresh = new VectorIndex.HFresh
+        {
+            Replicas = 4,
+            Quantizer = new VectorIndex.Quantizers.RQ { Bits = 8 },
+        };
+
+        new VectorIndexConfigUpdate(hfresh).UpdateHFresh(u =>
+        {
+            u.MaxPostingSizeKb = 96;
+            u.SearchProbe = 128;
+            u.Quantizer.RescoreLimit = 50;
+        });
+
+        var json = JsonNode.Parse(VectorIndexSerialization.SerializeHFresh(hfresh))!;
+        Assert.Equal(96, (int)json["maxPostingSizeKB"]!);
+        Assert.Equal(128, (int)json["searchProbe"]!);
+        Assert.Equal(4, (int)json["replicas"]!);
+        Assert.Equal(50, (int)json["rq"]!["rescoreLimit"]!);
+        Assert.Equal(8, (int)json["rq"]!["bits"]!);
+    }
+
+    /// <summary>
+    /// Tests that UpdateHFresh refuses a config of another index type
+    /// </summary>
+    [Fact]
+    public void VectorIndexConfig_UpdateHFresh_On_HNSW_Throws()
+    {
+        Assert.Throws<InvalidOperationException>(() =>
+            new VectorIndexConfigUpdate(new VectorIndex.HNSW()).UpdateHFresh(_ => { })
+        );
     }
 }

@@ -1,6 +1,8 @@
 #nullable enable
 const Weaviate.Client.Models.GenerativeConfig.DigitalOcean.TypeValue = "generative-digitalocean" -> string!
+const Weaviate.Client.Models.VectorIndex.None.TypeValue = "none" -> string!
 override sealed Weaviate.Client.Models.Generative.Providers.DigitalOcean.Equals(Weaviate.Client.Models.GenerativeProvider? other) -> bool
+override sealed Weaviate.Client.Models.VectorIndex.None.Equals(Weaviate.Client.Models.VectorIndexConfig? other) -> bool
 override Weaviate.Client.Models.Generative.Providers.DigitalOcean.<Clone>$() -> Weaviate.Client.Models.Generative.Providers.DigitalOcean!
 override Weaviate.Client.Models.Generative.Providers.DigitalOcean.EqualityContract.get -> System.Type!
 override Weaviate.Client.Models.Generative.Providers.DigitalOcean.Equals(object? obj) -> bool
@@ -10,10 +12,17 @@ override Weaviate.Client.Models.Generative.Providers.DigitalOcean.ToString() -> 
 override Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Equals(object? obj) -> bool
 override Weaviate.Client.Models.GenerativeConfig.DigitalOcean.GetHashCode() -> int
 override Weaviate.Client.Models.GenerativeConfig.DigitalOcean.ToString() -> string!
+override Weaviate.Client.Models.VectorIndex.None.<Clone>$() -> Weaviate.Client.Models.VectorIndex.None!
+override Weaviate.Client.Models.VectorIndex.None.Equals(object? obj) -> bool
+override Weaviate.Client.Models.VectorIndex.None.GetHashCode() -> int
+override Weaviate.Client.Models.VectorIndex.None.ToString() -> string!
+override Weaviate.Client.Models.VectorIndex.None.Type.get -> string!
 static Weaviate.Client.Models.Generative.Providers.DigitalOcean.operator !=(Weaviate.Client.Models.Generative.Providers.DigitalOcean? left, Weaviate.Client.Models.Generative.Providers.DigitalOcean? right) -> bool
 static Weaviate.Client.Models.Generative.Providers.DigitalOcean.operator ==(Weaviate.Client.Models.Generative.Providers.DigitalOcean? left, Weaviate.Client.Models.Generative.Providers.DigitalOcean? right) -> bool
 static Weaviate.Client.Models.GenerativeConfig.DigitalOcean.operator !=(Weaviate.Client.Models.GenerativeConfig.DigitalOcean? left, Weaviate.Client.Models.GenerativeConfig.DigitalOcean? right) -> bool
 static Weaviate.Client.Models.GenerativeConfig.DigitalOcean.operator ==(Weaviate.Client.Models.GenerativeConfig.DigitalOcean? left, Weaviate.Client.Models.GenerativeConfig.DigitalOcean? right) -> bool
+static Weaviate.Client.Models.VectorIndex.None.operator !=(Weaviate.Client.Models.VectorIndex.None? left, Weaviate.Client.Models.VectorIndex.None? right) -> bool
+static Weaviate.Client.Models.VectorIndex.None.operator ==(Weaviate.Client.Models.VectorIndex.None? left, Weaviate.Client.Models.VectorIndex.None? right) -> bool
 virtual Weaviate.Client.Models.Generative.Providers.DigitalOcean.Equals(Weaviate.Client.Models.Generative.Providers.DigitalOcean? other) -> bool
 virtual Weaviate.Client.Models.GenerativeConfig.DigitalOcean.<Clone>$() -> Weaviate.Client.Models.GenerativeConfig.DigitalOcean!
 virtual Weaviate.Client.Models.GenerativeConfig.DigitalOcean.EqualityContract.get -> System.Type!
@@ -127,7 +136,22 @@ Weaviate.Client.Models.GenerativeConfig.Meta.Temperature.set -> void
 Weaviate.Client.Models.GenerativeConfig.Meta.TopP.get -> double?
 Weaviate.Client.Models.GenerativeConfig.Meta.TopP.set -> void
 Weaviate.Client.Models.GenerativeConfig.Meta.Type.get -> string!
+Weaviate.Client.Models.QuantizerConfigUpdateRQ
+Weaviate.Client.Models.QuantizerConfigUpdateRQ.QuantizerConfigUpdateRQ(Weaviate.Client.Models.VectorIndex.Quantizers.RQ! WrappedRQ) -> void
+Weaviate.Client.Models.QuantizerConfigUpdateRQ.RescoreLimit.get -> int
+Weaviate.Client.Models.QuantizerConfigUpdateRQ.RescoreLimit.set -> void
+Weaviate.Client.Models.VectorIndex.None
+Weaviate.Client.Models.VectorIndex.None.Equals(Weaviate.Client.Models.VectorIndex.None? other) -> bool
 Weaviate.Client.Models.VectorIndex.Quantizers.RQ.Centering.get -> bool
 Weaviate.Client.Models.VectorIndex.Quantizers.RQ.Centering.set -> void
 Weaviate.Client.Models.VectorIndex.Quantizers.RQ.TrainingLimit.get -> int
 Weaviate.Client.Models.VectorIndex.Quantizers.RQ.TrainingLimit.set -> void
+Weaviate.Client.Models.VectorIndexConfig.VectorIndexFilterStrategy.Pathseer = 2 -> Weaviate.Client.Models.VectorIndexConfig.VectorIndexFilterStrategy
+Weaviate.Client.Models.VectorIndexConfigUpdate.UpdateHFresh(System.Action<Weaviate.Client.Models.VectorIndexConfigUpdateHFresh!>! c) -> void
+Weaviate.Client.Models.VectorIndexConfigUpdateHFresh
+Weaviate.Client.Models.VectorIndexConfigUpdateHFresh.MaxPostingSizeKb.get -> int?
+Weaviate.Client.Models.VectorIndexConfigUpdateHFresh.MaxPostingSizeKb.set -> void
+Weaviate.Client.Models.VectorIndexConfigUpdateHFresh.Quantizer.get -> Weaviate.Client.Models.QuantizerConfigUpdateRQ!
+Weaviate.Client.Models.VectorIndexConfigUpdateHFresh.SearchProbe.get -> int?
+Weaviate.Client.Models.VectorIndexConfigUpdateHFresh.SearchProbe.set -> void
+Weaviate.Client.Models.VectorIndexConfigUpdateHFresh.VectorIndexConfigUpdateHFresh(Weaviate.Client.Models.VectorIndex.HFresh! WrappedHFresh) -> void
