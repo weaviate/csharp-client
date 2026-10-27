@@ -359,7 +359,10 @@ public partial record CollectionConfig : CollectionConfigCommon
             MultiTenancyConfig = config.MultiTenancyConfig,
             ReplicationConfig = config.ReplicationConfig,
             ShardingConfig = config.ShardingConfig,
-            VectorConfig = config.VectorConfig,
+            // The server rejects a dropped vector ("none") on create, e.g. from an exported config.
+            VectorConfig = config.VectorConfig is { } vc
+                ? new([.. vc.Values.Where(v => v.VectorIndexConfig is not VectorIndex.None)])
+                : null!,
             GenerativeConfig = config.GenerativeConfig,
             RerankerConfig = config.RerankerConfig,
             ObjectTTLConfig = config.ObjectTTLConfig,

@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Weaviate.Client.Models;
 using Weaviate.Client.Tests.Unit.Mocks;
 
 namespace Weaviate.Client.Tests.Unit;
@@ -59,5 +61,52 @@ public class CollectionVectorIndexTests
         handler
             .LastRequest!.ShouldHaveMethod(HttpMethod.Delete)
             .ShouldHavePath("/v1/schema/Article/vectors/default/index");
+    }
+
+    /// <summary>
+    /// A dropped vector reads as VectorIndex.None, is sent back unchanged on update and left out on create
+    /// </summary>
+    [Fact]
+    public void DroppedVector_ReadsAsNone_SentBackOnUpdate_OmittedOnCreate()
+    {
+        var json = """
+            {
+                "class": "Article",
+                "vectorConfig": {
+                    "kept": { "vectorIndexType": "hnsw", "vectorIndexConfig": {}, "vectorizer": { "none": {} } },
+                    "dropped": { "vectorIndexType": "none", "vectorizer": { "none": {} } }
+                }
+            }
+            """;
+        var dto = JsonSerializer.Deserialize<Rest.Dto.Class>(
+            json,
+            Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+
+        var config = dto!.ToModel();
+
+        Assert.IsType<VectorIndex.None>(config.VectorConfig["dropped"].VectorIndexConfig);
+        Assert.Equal("none", config.VectorConfig["dropped"].VectorIndexType);
+
+        var sentBack = config.ToDto().VectorConfig!["dropped"];
+        Assert.Equal("none", sentBack.VectorIndexType);
+        Assert.Null(sentBack.VectorIndexConfig);
+
+        var create = CollectionConfig.FromCollectionCreate(
+            new CollectionCreateParams { Name = "Article", VectorConfig = config.VectorConfig }
+        );
+        Assert.Equal(["kept"], create.VectorConfig.Keys);
+    }
+
+    /// <summary>
+    /// Updating the index of a dropped vector throws a clear error
+    /// </summary>
+    [Fact]
+    public void DroppedVector_UpdateIndex_Throws()
+    {
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            new VectorIndexConfigUpdate(new VectorIndex.None()).UpdateHNSW(_ => { })
+        );
+        Assert.Contains("dropped", ex.Message);
     }
 }
