@@ -155,6 +155,11 @@ public class DeleteManyResult
     public long Matches { get; set; }
 
     /// <summary>
+    /// The server's cap on objects deleted per call. When <see cref="Matches"/> exceeds it, the delete was capped. Null on servers before 1.40.
+    /// </summary>
+    public long? Limit { get; set; }
+
+    /// <summary>
     /// Gets or sets the value of the successful
     /// </summary>
     public long Successful { get; set; }

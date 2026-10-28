@@ -34,6 +34,10 @@ public partial class BatchDeleteTests : IntegrationTests
         Assert.Equal(1, result.Matches);
         Assert.Empty(result.Objects);
         Assert.Equal(1, result.Successful);
+        if (ServerVersionIsInRange("1.40.0"))
+            Assert.NotNull(result.Limit);
+        else
+            Assert.Null(result.Limit);
     }
 
     /// <summary>

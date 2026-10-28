@@ -736,5 +736,42 @@ public class BuildTargetVectorTest
         Assert.Equal(new[] { "zeta", "alpha", "beta" }, result.Targets);
     }
 
+    /// <summary>
+    /// Tests that combine rejects vector names that differ from the targets
+    /// </summary>
+    [Fact]
+    public void Combine_WithMismatchedNames_Throws()
+    {
+        var targetVectors = TargetVectors.ManualWeights(("title", 1.0), ("summary", 2.0));
+        var vectors = new Vectors { { "title", new[] { 1f, 0f } }, { "body", new[] { 0f, 1f } } };
+
+        var ex = Assert.Throws<ArgumentException>(() =>
+            VectorSearchInput.Combine(targetVectors, vectors)
+        );
+
+        Assert.Contains(
+            "The vector keys [body, title] must match the target vectors [summary, title]",
+            ex.Message
+        );
+    }
+
+    /// <summary>
+    /// Tests that combine accepts vector names in a different order than the targets
+    /// </summary>
+    [Fact]
+    public void Combine_WithNamesInDifferentOrder_Succeeds()
+    {
+        var targetVectors = TargetVectors.ManualWeights(("title", 1.0), ("summary", 2.0));
+        var vectors = new Vectors
+        {
+            { "summary", new[] { 0f, 1f } },
+            { "title", new[] { 1f, 0f } },
+        };
+
+        var result = VectorSearchInput.Combine(targetVectors, vectors);
+
+        Assert.Equal(new[] { "title", "summary" }, result.Targets);
+    }
+
     #endregion
 }

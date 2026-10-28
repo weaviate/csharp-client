@@ -394,12 +394,24 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
     /// Combines a TargetVectors configuration with an enumerable of NamedVectors.
     /// Supports multiple vectors per target (weights matched by order).
     /// </summary>
+    /// <exception cref="ArgumentException">The vector names differ from the target names.</exception>
     public static VectorSearchInput Combine(
         TargetVectors targetVectors,
         IEnumerable<NamedVector> vectors
     )
     {
         var targets = targetVectors.Targets.ToList();
+        var vectorList = vectors.ToList();
+
+        var keys = vectorList.Select(v => v.Name).Distinct().Order(StringComparer.Ordinal).ToList();
+        var targetNames = targets.Distinct().Order(StringComparer.Ordinal).ToList();
+        if (!keys.SequenceEqual(targetNames))
+        {
+            throw new ArgumentException(
+                $"The vector keys [{string.Join(", ", keys)}] must match the target vectors [{string.Join(", ", targetNames)}]",
+                nameof(vectors)
+            );
+        }
 
         IReadOnlyDictionary<string, IReadOnlyList<double>>? weights = null;
         if (targetVectors is WeightedTargetVectors weighted)
@@ -408,7 +420,7 @@ public sealed class VectorSearchInput : IEnumerable<NamedVector>
         }
 
         return new VectorSearchInput(
-            vectors: vectors,
+            vectors: vectorList,
             targets: targets,
             combination: targetVectors.Combination,
             weights: weights
