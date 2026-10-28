@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `DeleteManyResult.Limit`: the server's per-call delete cap, reported by Weaviate >= 1.40
+
+### Changed
+
+- `VectorSearchInput.Combine` throws `ArgumentException` when the vector names differ from the target vectors, instead of letting the server retarget them
+
 ---
 
 ## [1.2.0] — 2026-08-21

@@ -531,6 +531,7 @@ public class DataClient
         {
             Failed = reply.Failed,
             Matches = reply.Matches,
+            Limit = reply.HasLimit ? reply.Limit : null,
             Successful = reply.Successful,
             Objects = reply.Objects.Select(o => new DeleteManyObjectResult
             {

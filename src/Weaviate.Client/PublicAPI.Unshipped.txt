@@ -21,6 +21,8 @@ virtual Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Equals(Weaviate.Cli
 virtual Weaviate.Client.Models.GenerativeConfig.DigitalOcean.PrintMembers(System.Text.StringBuilder! builder) -> bool
 Weaviate.Client.GenerativeConfigFactory.DigitalOcean(string? model = null, double? temperature = null, int? maxTokens = null, double? frequencyPenalty = null, double? presencePenalty = null, double? topP = null, string? baseURL = null, string![]? stop = null) -> Weaviate.Client.Models.IGenerativeConfig!
 Weaviate.Client.GenerativeProviderFactory.DigitalOcean(string? baseUrl = null, string? model = null, double? temperature = null, long? maxTokens = null, double? frequencyPenalty = null, double? presencePenalty = null, double? topP = null, System.Collections.Generic.List<string!>? stop = null) -> Weaviate.Client.Models.Generative.Providers.DigitalOcean!
+Weaviate.Client.Models.DeleteManyResult.Limit.get -> long?
+Weaviate.Client.Models.DeleteManyResult.Limit.set -> void
 Weaviate.Client.Models.Generative.Providers.DigitalOcean
 Weaviate.Client.Models.Generative.Providers.DigitalOcean.BaseUrl.get -> string?
 Weaviate.Client.Models.Generative.Providers.DigitalOcean.BaseUrl.set -> void
