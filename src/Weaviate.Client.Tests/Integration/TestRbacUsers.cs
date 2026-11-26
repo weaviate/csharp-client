@@ -332,4 +332,54 @@ public class TestRbacUsers : RbacIntegrationTests
             await _weaviate.Users.Db.Delete(randomUserName, TestContext.Current.CancellationToken);
         }
     }
+
+    /// <summary>
+    /// Tests that a user's API key expiration can be set, read back, updated and cleared
+    /// </summary>
+    [Fact]
+    public async Task Test_UserExpiration()
+    {
+        RequireVersion("1.41.0");
+        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEAVIATE_LICENSE_KEY")))
+        {
+            Assert.Skip("WEAVIATE_LICENSE_KEY is not set");
+        }
+
+        var ct = TestContext.Current.CancellationToken;
+        var randomUserName = $"expiring-user-{Random.Shared.Next(1, 10_000)}";
+        var now = DateTimeOffset.FromUnixTimeSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        var inOneDay = now.AddDays(1);
+        var inTwoDays = now.AddDays(2);
+
+        try
+        {
+            var apiKey = await _weaviate.Users.Db.Create(randomUserName, inOneDay, ct);
+
+            var user = await _weaviate.Users.Db.Get(randomUserName, cancellationToken: ct);
+            Assert.Equal(inOneDay, user!.ExpiresAt);
+            var listed = await _weaviate.Users.Db.List(cancellationToken: ct);
+            Assert.Equal(inOneDay, listed.Single(u => u.UserId == randomUserName).ExpiresAt);
+            var userClient = await Connect.Local(
+                hostname: RestHost,
+                restPort: RestPort,
+                grpcPort: GrpcPort,
+                credentials: Auth.ApiKey(apiKey),
+                httpMessageHandler: _httpMessageHandler
+            );
+            var ownInfo = await userClient.Users.OwnInfo(ct);
+            Assert.Equal(inOneDay, ownInfo!.ExpiresAt);
+
+            await _weaviate.Users.Db.UpdateUserExpiration(randomUserName, inTwoDays, ct);
+            user = await _weaviate.Users.Db.Get(randomUserName, cancellationToken: ct);
+            Assert.Equal(inTwoDays, user!.ExpiresAt);
+
+            await _weaviate.Users.Db.UpdateUserExpiration(randomUserName, null, ct);
+            user = await _weaviate.Users.Db.Get(randomUserName, cancellationToken: ct);
+            Assert.Null(user!.ExpiresAt);
+        }
+        finally
+        {
+            await _weaviate.Users.Db.Delete(randomUserName, ct);
+        }
+    }
 }

@@ -402,6 +402,13 @@ internal static partial class WeaviateEndpoints
     /// <returns>The string</returns>
     internal static string UserDbDeactivate(string userId) => $"users/db/{userId}/deactivate";
 
+    /// <summary>
+    /// Users the db expiration using the specified user id
+    /// </summary>
+    /// <param name="userId">The user id</param>
+    /// <returns>The string</returns>
+    internal static string UserDbExpiration(string userId) => $"users/db/{userId}/expiration";
+
     // Authz Roles & Assignments endpoints
     /// <summary>
     /// Roleses
