@@ -385,7 +385,7 @@ public partial class VectorIndexConfigTests
         var hfresh = new VectorIndex.HFresh
         {
             Replicas = 4,
-            Quantizer = new VectorIndex.Quantizers.RQ { Bits = 8 },
+            Quantizer = new VectorIndex.Quantizers.RQ { Bits = 1 },
         };
 
         new VectorIndexConfigUpdate(hfresh).UpdateHFresh(u =>
@@ -400,7 +400,7 @@ public partial class VectorIndexConfigTests
         Assert.Equal(128, (int)json["searchProbe"]!);
         Assert.Equal(4, (int)json["replicas"]!);
         Assert.Equal(50, (int)json["rq"]!["rescoreLimit"]!);
-        Assert.Equal(8, (int)json["rq"]!["bits"]!);
+        Assert.Equal(1, (int)json["rq"]!["bits"]!);
     }
 
     /// <summary>

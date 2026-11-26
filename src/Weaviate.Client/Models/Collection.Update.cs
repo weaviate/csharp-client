@@ -412,7 +412,7 @@ public class VectorIndexConfigUpdate(VectorIndexConfig? WrappedVectorIndexConfig
     /// <exception cref="InvalidOperationException">VectorIndexConfig is not of type HNSW.</exception>
     public void UpdateHNSW(Action<VectorIndexConfigUpdateHNSW> c)
     {
-        c(new(As<VectorIndex.HNSW>("HNSW")));
+        c(new(As<VectorIndex.HNSW>()));
     }
 
     /// <summary>
@@ -422,7 +422,7 @@ public class VectorIndexConfigUpdate(VectorIndexConfig? WrappedVectorIndexConfig
     /// <exception cref="InvalidOperationException">VectorIndexConfig is not of type Flat.</exception>
     public void UpdateFlat(Action<VectorIndexConfigUpdateFlat> c)
     {
-        c(new(As<VectorIndex.Flat>("Flat")));
+        c(new(As<VectorIndex.Flat>()));
     }
 
     /// <summary>
@@ -432,7 +432,7 @@ public class VectorIndexConfigUpdate(VectorIndexConfig? WrappedVectorIndexConfig
     /// <exception cref="InvalidOperationException">VectorIndexConfig is not of type Dynamic.</exception>
     public void UpdateDynamic(Action<VectorIndexConfigUpdateDynamic> c)
     {
-        c(new(As<VectorIndex.Dynamic>("Dynamic")));
+        c(new(As<VectorIndex.Dynamic>()));
     }
 
     /// <summary>
@@ -442,10 +442,10 @@ public class VectorIndexConfigUpdate(VectorIndexConfig? WrappedVectorIndexConfig
     /// <exception cref="InvalidOperationException">VectorIndexConfig is not of type HFresh.</exception>
     public void UpdateHFresh(Action<VectorIndexConfigUpdateHFresh> c)
     {
-        c(new(As<VectorIndex.HFresh>("HFresh")));
+        c(new(As<VectorIndex.HFresh>()));
     }
 
-    private T As<T>(string typeName)
+    private T As<T>()
         where T : VectorIndexConfig =>
         WrappedVectorIndexConfig switch
         {
@@ -454,7 +454,7 @@ public class VectorIndexConfigUpdate(VectorIndexConfig? WrappedVectorIndexConfig
                 "The index of this vector was dropped with DeleteVectorIndex and cannot be updated."
             ),
             _ => throw new InvalidOperationException(
-                $"VectorIndexConfig is not of type {typeName}."
+                $"VectorIndexConfig is not of type {typeof(T).Name}."
             ),
         };
 }
@@ -602,7 +602,7 @@ public class VectorIndexConfigUpdateFlat(VectorIndex.Flat WrappedFlat)
 }
 
 /// <summary>
-/// The vector index config update hfresh class
+/// Mutable settings of an HFresh index
 /// </summary>
 public class VectorIndexConfigUpdateHFresh(VectorIndex.HFresh WrappedHFresh)
 {
