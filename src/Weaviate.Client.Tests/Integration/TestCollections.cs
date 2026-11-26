@@ -133,6 +133,27 @@ public partial class CollectionsTests : IntegrationTests
             expected.ReplicationConfig.AsyncEnabled = expected.ReplicationConfig.Factor > 1;
         }
 
+        // Weaviate 1.41+ reports an unset rescore factor or PQ rescore limit as -1.
+        foreach (var vc in export!.VectorConfig.Values)
+        {
+            switch (
+                (vc.VectorIndexConfig as VectorIndex.HNSW)?.Quantizer
+                ?? (vc.VectorIndexConfig as VectorIndex.Flat)?.Quantizer
+            )
+            {
+                case VectorIndex.Quantizers.BQ bq:
+                    bq.RescoreFactor = null;
+                    break;
+                case VectorIndex.Quantizers.PQ pq:
+                    pq.RescoreFactor = null;
+                    pq.RescoreLimit = null;
+                    break;
+                case VectorIndex.Quantizers.SQ sq:
+                    sq.RescoreFactor = null;
+                    break;
+            }
+        }
+
         Assert.Equal(expected, export);
     }
 #endif
@@ -1393,6 +1414,92 @@ public partial class CollectionsTests : IntegrationTests
         Assert.True(rqQuantizer.Centering);
         Assert.Equal(20, rqQuantizer.RescoreLimit);
         Assert.Equal(5000, rqQuantizer.TrainingLimit);
+    }
+
+    /// <summary>
+    /// Tests that an HNSW quantizer's rescore factor is set on create and changed on update
+    /// </summary>
+    [Theory]
+    [InlineData("bq")]
+    [InlineData("pq")]
+    [InlineData("sq")]
+    [InlineData("rq")]
+    public async Task Test_hnsw_quantizer_rescore_factor(string type)
+    {
+        RequireVersion(
+            "1.41.0",
+            message: "Rescore factor only supported in server version 1.41.0+"
+        );
+
+        VectorIndexConfig.QuantizerConfigBase Quantizer(double factor) =>
+            type switch
+            {
+                "bq" => new VectorIndex.Quantizers.BQ { RescoreLimit = 30, RescoreFactor = factor },
+                "pq" => new VectorIndex.Quantizers.PQ
+                {
+                    Centroids = 256,
+                    Encoder = new VectorIndex.Quantizers.PQ.EncoderConfig
+                    {
+                        Type = VectorIndex.Quantizers.EncoderType.Tile,
+                        Distribution = VectorIndex.Quantizers.DistributionType.Normal,
+                    },
+                    TrainingLimit = 100000,
+                    RescoreLimit = 30,
+                    RescoreFactor = factor,
+                },
+                "sq" => new VectorIndex.Quantizers.SQ
+                {
+                    TrainingLimit = 100000,
+                    RescoreLimit = 30,
+                    RescoreFactor = factor,
+                },
+                _ => new VectorIndex.Quantizers.RQ
+                {
+                    Bits = 8,
+                    RescoreLimit = 30,
+                    RescoreFactor = factor,
+                },
+            };
+        var collection = await CollectionFactory(
+            vectorConfig:
+            [
+                Configure.Vector(
+                    "default",
+                    t => t.SelfProvided(),
+                    new VectorIndex.HNSW { Quantizer = Quantizer(2.5) }
+                ),
+            ]
+        );
+
+        async Task<VectorIndexConfig.QuantizerConfigBase?> GetQuantizer()
+        {
+            var config = await collection.Config.Get(TestContext.Current.CancellationToken);
+            var hnsw = config?.VectorConfig["default"].VectorIndexConfig as VectorIndex.HNSW;
+            Assert.NotNull(hnsw?.Quantizer);
+            Assert.Equal(type, hnsw.Quantizer.Type);
+            return hnsw.Quantizer;
+        }
+
+        static (int? Limit, double? Factor) Rescore(VectorIndexConfig.QuantizerConfigBase? q) =>
+            q switch
+            {
+                VectorIndex.Quantizers.BQ bq => (bq.RescoreLimit, bq.RescoreFactor),
+                VectorIndex.Quantizers.PQ pq => (pq.RescoreLimit, pq.RescoreFactor),
+                VectorIndex.Quantizers.SQ sq => (sq.RescoreLimit, sq.RescoreFactor),
+                VectorIndex.Quantizers.RQ rq => (rq.RescoreLimit, rq.RescoreFactor),
+                _ => (null, null),
+            };
+
+        Assert.Equal((30, 2.5), Rescore(await GetQuantizer()));
+
+        await collection.Config.Update(
+            c =>
+                c.VectorConfig["default"]
+                    .VectorIndexConfig.UpdateHNSW(vic => vic.Quantizer = Quantizer(4)),
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.Equal((30, 4.0), Rescore(await GetQuantizer()));
     }
 
     /// <summary>

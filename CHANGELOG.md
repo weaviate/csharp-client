@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Quantizer rescore factor**: `RescoreFactor` on the PQ, BQ, SQ and RQ quantizers and `RescoreLimit` on PQ. Requires Weaviate ≥ 1.41.0. Older servers ignore them.
+
 ---
 
 ## [1.2.0] — 2026-08-21
