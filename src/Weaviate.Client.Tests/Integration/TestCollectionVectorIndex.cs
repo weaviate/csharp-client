@@ -29,7 +29,7 @@ public class TestCollectionVectorIndex : IntegrationTests
     }
 
     /// <summary>
-    /// Config.Get marks a dropped vector index, and an unrelated update still succeeds.
+    /// Config.Get marks or omits a dropped vector index, and an unrelated update still succeeds.
     /// </summary>
     [Fact]
     public async Task Update_WithDroppedVectorIndex_Succeeds()
@@ -62,8 +62,14 @@ public class TestCollectionVectorIndex : IntegrationTests
 
         var config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.IsNotType<VectorIndex.None>(config.VectorConfig["kept"].VectorIndexConfig);
-        Assert.IsType<VectorIndex.None>(config.VectorConfig["dropped"].VectorIndexConfig);
-        Assert.Equal("none", config.VectorConfig["dropped"].VectorIndexType);
+        // The server removes the entry once the drop's cleanup finishes.
+        Assert.True(
+            !config.VectorConfig.TryGetValue("dropped", out var dropped)
+                || (
+                    dropped.VectorIndexConfig is VectorIndex.None
+                    && dropped.VectorIndexType == "none"
+                )
+        );
 
         await collection.Config.Update(
             c => c.Description = "updated",
@@ -72,6 +78,9 @@ public class TestCollectionVectorIndex : IntegrationTests
 
         config = await collection.Config.Get(TestContext.Current.CancellationToken);
         Assert.Equal("updated", config.Description);
-        Assert.IsType<VectorIndex.None>(config.VectorConfig["dropped"].VectorIndexConfig);
+        Assert.True(
+            !config.VectorConfig.TryGetValue("dropped", out dropped)
+                || dropped.VectorIndexConfig is VectorIndex.None
+        );
     }
 }

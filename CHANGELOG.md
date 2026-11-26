@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Dropped vector indexes**: a vector dropped with `DeleteVectorIndex` now reads as `VectorIndex.None`. `Config.Update` and `AddVector` send it back unchanged, a create from an exported config leaves it out, and updating its index throws a clear error.
+- **Dropped vector indexes**: a vector dropped with `DeleteVectorIndex` now reads as `VectorIndex.None`. `Config.Update` and `AddVector` send it back unchanged, and updating its index throws a clear error.
 
 ### Deprecated
 

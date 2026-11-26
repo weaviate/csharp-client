@@ -64,10 +64,10 @@ public class CollectionVectorIndexTests
     }
 
     /// <summary>
-    /// A dropped vector reads as VectorIndex.None, is sent back unchanged on update and left out on create
+    /// A dropped vector reads as VectorIndex.None, is sent back unchanged on update
     /// </summary>
     [Fact]
-    public void DroppedVector_ReadsAsNone_SentBackOnUpdate_OmittedOnCreate()
+    public void DroppedVector_ReadsAsNone_SentBackOnUpdate()
     {
         var json = """
             {
@@ -91,11 +91,6 @@ public class CollectionVectorIndexTests
         var sentBack = config.ToDto().VectorConfig!["dropped"];
         Assert.Equal("none", sentBack.VectorIndexType);
         Assert.Null(sentBack.VectorIndexConfig);
-
-        var create = CollectionConfig.FromCollectionCreate(
-            new CollectionCreateParams { Name = "Article", VectorConfig = config.VectorConfig }
-        );
-        Assert.Equal(["kept"], create.VectorConfig.Keys);
     }
 
     /// <summary>
