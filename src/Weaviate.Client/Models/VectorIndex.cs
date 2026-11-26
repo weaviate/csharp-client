@@ -126,6 +126,12 @@ public abstract record VectorIndexConfig()
         /// </summary>
         [JsonStringEnumMemberName("acorn")]
         Acorn,
+
+        /// <summary>
+        /// PathSeer filter strategy. Requires Weaviate 1.40 or later.
+        /// </summary>
+        [JsonStringEnumMemberName("pathseer")]
+        Pathseer,
     }
 
     /// <summary>
@@ -579,6 +585,21 @@ public static class VectorIndex
 
         /// <summary>Gets or sets the multi-vector configuration.</summary>
         public MultiVectorConfig? MultiVector { get; set; }
+
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public override string Type => TypeValue;
+    }
+
+    /// <summary>
+    /// The index of this vector was dropped with <c>DeleteVectorIndex</c>. It can no longer be searched or updated.
+    /// </summary>
+    public sealed record None : VectorIndexConfig
+    {
+        /// <summary>The type discriminator string used by the Weaviate REST API.</summary>
+        public const string TypeValue = "none";
+
+        internal None() { }
 
         /// <inheritdoc/>
         [JsonIgnore]

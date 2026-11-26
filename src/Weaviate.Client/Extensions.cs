@@ -124,6 +124,7 @@ public static class WeaviateExtensions
             moduleConfig[collection.RerankerConfig.Type] = collection.RerankerConfig;
         }
 
+        // A dropped vector (VectorIndex.None) goes back as "none" with no config, as the server requires.
         var vectorConfig = collection.VectorConfig?.Values.ToDictionary(
             e => e.Name,
             e => new Rest.Dto.VectorConfig
@@ -163,7 +164,9 @@ public static class WeaviateExtensions
         {
             data.ReplicationConfig = new Rest.Dto.ReplicationConfig()
             {
+#pragma warning disable CS0618 // Still sent: servers before 1.38 apply it
                 AsyncEnabled = rc.AsyncEnabled,
+#pragma warning restore CS0618
                 DeletionStrategy = (Rest.Dto.ReplicationConfigDeletionStrategy?)rc.DeletionStrategy,
                 Factor = rc.Factor,
                 AsyncConfig = rc.AsyncConfig is ReplicationAsyncConfig ac
@@ -400,9 +403,11 @@ public static class WeaviateExtensions
                 (collection?.ReplicationConfig is Rest.Dto.ReplicationConfig rc)
                     ? new ReplicationConfig
                     {
+#pragma warning disable CS0618 // Still read: servers before 1.38 return it
                         AsyncEnabled =
                             rc.AsyncEnabled
                             ?? Weaviate.Client.Models.ReplicationConfig.Default.AsyncEnabled,
+#pragma warning restore CS0618
 
                         Factor =
                             rc.Factor ?? Weaviate.Client.Models.ReplicationConfig.Default.Factor,

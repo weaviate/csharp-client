@@ -675,6 +675,9 @@ internal static class VectorIndexSerialization
     {
         ArgumentException.ThrowIfNullOrEmpty(type);
 
+        if (type == VectorIndex.None.TypeValue)
+            return new VectorIndex.None();
+
         if (vectorIndexConfig is null)
             return null;
 

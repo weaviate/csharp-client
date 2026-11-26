@@ -1,5 +1,7 @@
 using Weaviate.Client.Models;
 
+#pragma warning disable CS0618 // ReplicationConfig.AsyncEnabled still applies on servers before 1.38
+
 namespace Weaviate.Client.Tests.Integration;
 
 /// <summary>
@@ -1518,6 +1520,72 @@ public partial class CollectionsTests : IntegrationTests
         Assert.NotNull(sqQuantizer);
         Assert.Equal(50000, sqQuantizer.TrainingLimit);
         Assert.Equal(100, sqQuantizer.RescoreLimit);
+    }
+
+    /// <summary>
+    /// Tests that an HNSW index with the pathseer filter strategy is created and read back
+    /// </summary>
+    [Fact]
+    public async Task Test_Pathseer_Filter_Strategy()
+    {
+        RequireVersion("1.40.0", message: "The pathseer filter strategy requires 1.40.0+");
+
+        var collection = await CollectionFactory(
+            vectorConfig:
+            [
+                Configure.Vector(
+                    "default",
+                    t => t.SelfProvided(),
+                    new VectorIndex.HNSW
+                    {
+                        FilterStrategy = VectorIndexConfig.VectorIndexFilterStrategy.Pathseer,
+                    }
+                ),
+            ]
+        );
+
+        var config = await collection.Config.Get(TestContext.Current.CancellationToken);
+        var hnsw = Assert.IsType<VectorIndex.HNSW>(
+            config.VectorConfig["default"].VectorIndexConfig
+        );
+        Assert.Equal(VectorIndexConfig.VectorIndexFilterStrategy.Pathseer, hnsw.FilterStrategy);
+    }
+
+    /// <summary>
+    /// Tests that the mutable HFresh settings can be updated
+    /// </summary>
+    [Fact]
+    public async Task Test_Update_HFresh()
+    {
+        RequireVersion("1.36.0", message: "HFresh requires 1.36.0+");
+
+        var collection = await CollectionFactory(
+            vectorConfig:
+            [
+                Configure.Vector("default", t => t.SelfProvided(), new VectorIndex.HFresh()),
+            ]
+        );
+
+        await collection.Config.Update(
+            c =>
+                c.VectorConfig["default"]
+                    .VectorIndexConfig.UpdateHFresh(h =>
+                    {
+                        h.MaxPostingSizeKb = 96;
+                        h.SearchProbe = 32;
+                        h.Quantizer.RescoreLimit = 123;
+                    }),
+            TestContext.Current.CancellationToken
+        );
+
+        var config = await collection.Config.Get(TestContext.Current.CancellationToken);
+        var hfresh = Assert.IsType<VectorIndex.HFresh>(
+            config.VectorConfig["default"].VectorIndexConfig
+        );
+        Assert.Equal(96, hfresh.MaxPostingSizeKb);
+        Assert.Equal(32, hfresh.SearchProbe);
+        var rq = Assert.IsType<VectorIndex.Quantizers.RQ>(hfresh.Quantizer);
+        Assert.Equal(123, rq.RescoreLimit);
     }
 
     /// <summary>
