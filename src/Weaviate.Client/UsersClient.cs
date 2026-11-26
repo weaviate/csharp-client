@@ -47,6 +47,9 @@ public class UsersClient
             dto.Username ?? string.Empty,
             (dto.Roles ?? []).Select(r => r.ToModel()),
             dto.Groups
-        );
+        )
+        {
+            ExpiresAt = UsersDatabaseClient.ExpiresAtOrNull(dto.ExpiresAt),
+        };
     }
 }

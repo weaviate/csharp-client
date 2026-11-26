@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **DB user API key expiration**: `UsersDatabaseClient.Create(userId, expiresAt)` and `UpdateUserExpiration(userId, expiresAt)` set when a DB user's API key expires, and `DatabaseUser.ExpiresAt` and `CurrentUserInfo.ExpiresAt` read it back. Requires Weaviate ≥ 1.41.0.
+
 ---
 
 ## [1.2.0] — 2026-08-21

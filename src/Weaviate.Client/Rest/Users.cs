@@ -87,18 +87,23 @@ internal partial class WeaviateRestClient
     /// Users the db create using the specified user id
     /// </summary>
     /// <param name="userId">The user id</param>
+    /// <param name="expiresAt">When the API key expires, or null to send no body</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>A task containing the dto user api key</returns>
     internal async Task<Dto.UserApiKey> UserDbCreate(
         string userId,
+        DateTimeOffset? expiresAt = null,
         CancellationToken cancellationToken = default
     )
     {
-        var response = await _httpClient.PostAsync(
-            WeaviateEndpoints.UserDb(userId),
-            null,
-            cancellationToken
-        );
+        var response = expiresAt is null
+            ? await _httpClient.PostAsync(WeaviateEndpoints.UserDb(userId), null, cancellationToken)
+            : await _httpClient.PostAsJsonAsync(
+                WeaviateEndpoints.UserDb(userId),
+                new Dto.UserCreateRequest { ExpiresAt = expiresAt },
+                options: RestJsonSerializerOptions,
+                cancellationToken: cancellationToken
+            );
 
         await response.ManageStatusCode(
             [HttpStatusCode.Created],
@@ -233,5 +238,35 @@ internal partial class WeaviateRestClient
         );
 
         return response.StatusCode == HttpStatusCode.OK;
+    }
+
+    /// <summary>
+    /// Sets the expiration of a db user's API key
+    /// </summary>
+    /// <param name="userId">The user id</param>
+    /// <param name="expiresAt">When the API key expires, or null for a key that never expires</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    internal async Task UserDbSetExpiration(
+        string userId,
+        DateTimeOffset? expiresAt,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var body = expiresAt is null
+            ? new Dto.UserExpirationRequest { NeverExpires = true }
+            : new Dto.UserExpirationRequest { ExpiresAt = expiresAt };
+
+        var response = await _httpClient.PutAsJsonAsync(
+            WeaviateEndpoints.UserDbExpiration(userId),
+            body,
+            options: RestJsonSerializerOptions,
+            cancellationToken: cancellationToken
+        );
+
+        await response.ManageStatusCode(
+            [HttpStatusCode.OK],
+            "update user expiration",
+            ResourceType.User
+        );
     }
 }

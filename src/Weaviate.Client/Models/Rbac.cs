@@ -11,7 +11,13 @@ public record DatabaseUser(
     DateTimeOffset? LastUsedAt,
     string? ApiKeyFirstLetters,
     IEnumerable<string> Roles
-);
+)
+{
+    /// <summary>
+    /// When the user's API key expires. <c>null</c> if it never expires.
+    /// </summary>
+    public DateTimeOffset? ExpiresAt { get; init; }
+}
 
 /// <summary>
 /// Represents the current authenticated user's info (own-info endpoint).
@@ -20,7 +26,13 @@ public record CurrentUserInfo(
     string Username,
     IEnumerable<RoleInfo> Roles,
     IEnumerable<string>? Groups
-);
+)
+{
+    /// <summary>
+    /// When the user's API key expires. <c>null</c> if it never expires.
+    /// </summary>
+    public DateTimeOffset? ExpiresAt { get; init; }
+}
 
 /// <summary>
 /// Simplified role representation.
