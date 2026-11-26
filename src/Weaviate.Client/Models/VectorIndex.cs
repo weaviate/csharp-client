@@ -220,6 +220,12 @@ public static class VectorIndex
             public int RescoreLimit { get; set; }
 
             /// <summary>
+            /// Gets or sets the rescore factor. Weaviate rescores at least the query limit multiplied
+            /// by this factor. The server reports -1 when it is unset.
+            /// </summary>
+            public double? RescoreFactor { get; set; }
+
+            /// <summary>
             /// Gets the type identifier for the quantizer.
             /// </summary>
             [JsonIgnore]
@@ -241,6 +247,12 @@ public static class VectorIndex
             /// </summary>
             [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
             public int RescoreLimit { get; set; }
+
+            /// <summary>
+            /// Gets or sets the rescore factor. Weaviate rescores at least the query limit multiplied
+            /// by this factor. The server reports -1 when it is unset.
+            /// </summary>
+            public double? RescoreFactor { get; set; }
 
             /// <summary>
             /// Gets or sets the number of bits for quantization.
@@ -287,6 +299,12 @@ public static class VectorIndex
             /// Gets or sets the limit for rescoring operations.
             /// </summary>
             public int RescoreLimit { get; set; }
+
+            /// <summary>
+            /// Gets or sets the rescore factor. Weaviate rescores at least the query limit multiplied
+            /// by this factor. The server reports -1 when it is unset.
+            /// </summary>
+            public double? RescoreFactor { get; set; }
 
             /// <summary>
             /// Gets or sets the training limit for the quantizer.
@@ -352,6 +370,17 @@ public static class VectorIndex
             /// Gets or sets the training limit for the quantizer.
             /// </summary>
             public int TrainingLimit { get; set; }
+
+            /// <summary>
+            /// Gets or sets the limit for rescoring operations.
+            /// </summary>
+            public int? RescoreLimit { get; set; }
+
+            /// <summary>
+            /// Gets or sets the rescore factor. Weaviate rescores at least the query limit multiplied
+            /// by this factor. The server reports -1 when it is unset.
+            /// </summary>
+            public double? RescoreFactor { get; set; }
 
             /// <summary>
             /// Gets the type identifier for the quantizer.

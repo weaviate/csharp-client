@@ -351,4 +351,57 @@ public partial class VectorIndexConfigTests
 
         _ = VectorIndexSerialization.SerializeHnsw(trainingLimitOnly);
     }
+
+    /// <summary>Tests that a quantizer's rescoreFactor (and PQ rescoreLimit) serializes and round-trips.</summary>
+    [Theory]
+    [InlineData("bq")]
+    [InlineData("pq")]
+    [InlineData("sq")]
+    [InlineData("rq")]
+    public void VectorIndexConfig_HNSW_Quantizer_RescoreFactor_Roundtrip(string type)
+    {
+        VectorIndexConfig.QuantizerConfigBase quantizer = type switch
+        {
+            "bq" => new VectorIndex.Quantizers.BQ { RescoreFactor = 2.5 },
+            "pq" => new VectorIndex.Quantizers.PQ { RescoreFactor = 2.5, RescoreLimit = 30 },
+            "sq" => new VectorIndex.Quantizers.SQ { RescoreFactor = 2.5 },
+            _ => new VectorIndex.Quantizers.RQ { Bits = 8, RescoreFactor = 2.5 },
+        };
+
+        var json = VectorIndexSerialization.SerializeHnsw(
+            new VectorIndex.HNSW { Quantizer = quantizer }
+        );
+
+        using var doc = JsonDocument.Parse(json);
+        var quantizerJson = doc.RootElement.GetProperty(type);
+        Assert.Equal(2.5, quantizerJson.GetProperty("rescoreFactor").GetDouble());
+        if (type == "pq")
+        {
+            Assert.Equal(30, quantizerJson.GetProperty("rescoreLimit").GetInt32());
+        }
+
+        var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(
+            json,
+            Weaviate.Client.Rest.WeaviateRestClient.RestJsonSerializerOptions
+        );
+        var roundtripped = (VectorIndex.HNSW?)VectorIndexSerialization.Factory("hnsw", dict);
+
+        Assert.Equal(type, roundtripped?.Quantizer?.Type);
+        switch (roundtripped?.Quantizer)
+        {
+            case VectorIndex.Quantizers.BQ bq:
+                Assert.Equal(2.5, bq.RescoreFactor);
+                break;
+            case VectorIndex.Quantizers.PQ pq:
+                Assert.Equal(2.5, pq.RescoreFactor);
+                Assert.Equal(30, pq.RescoreLimit);
+                break;
+            case VectorIndex.Quantizers.SQ sq:
+                Assert.Equal(2.5, sq.RescoreFactor);
+                break;
+            case VectorIndex.Quantizers.RQ rq:
+                Assert.Equal(2.5, rq.RescoreFactor);
+                break;
+        }
+    }
 }
