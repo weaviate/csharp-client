@@ -42,6 +42,12 @@ public class TestRbacRoles : RbacIntegrationTests
         var roles = (await _weaviate.Roles.ListAll(TestContext.Current.CancellationToken)).ToList();
         Assert.NotEmpty(roles);
         Assert.Contains(roles, r => r.Name == "viewer");
+
+        if (ServerVersionIsInRange("1.39.10"))
+        {
+            var viewer = roles.Single(r => r.Name == "viewer");
+            Assert.Contains(viewer.Permissions, p => p is Permissions.Backups { Read: true });
+        }
     }
 
     /// <summary>
@@ -608,6 +614,39 @@ public class TestRbacRoles : RbacIntegrationTests
             var fetchedScope = Assert.IsType<Permissions.Namespaces>(fetched.Permissions.Single());
             Assert.True(fetchedScope.Manage);
             Assert.Equal("*", fetchedScope.Resource.Namespace);
+        }
+        finally
+        {
+            await _weaviate.Roles.Delete(roleName, TestContext.Current.CancellationToken);
+        }
+    }
+
+    /// <summary>
+    /// Tests that create role with backups read permission round trips (Weaviate 1.39.10+)
+    /// </summary>
+    [Fact]
+    public async Task CreateRoleWithBackupsReadPermission()
+    {
+        RequireVersion("1.39.10");
+        var roleName = MakeRoleName("backups-read");
+        try
+        {
+            await _weaviate.Roles.Delete(roleName, TestContext.Current.CancellationToken);
+            await _weaviate.Roles.Create(
+                roleName,
+                [new Permissions.Backups("Article") { Read = true }],
+                TestContext.Current.CancellationToken
+            );
+
+            var fetched = await _weaviate.Roles.Get(
+                roleName,
+                TestContext.Current.CancellationToken
+            );
+            Assert.NotNull(fetched);
+            var scope = Assert.IsType<Permissions.Backups>(fetched!.Permissions.Single());
+            Assert.True(scope.Read);
+            Assert.False(scope.Manage);
+            Assert.Equal("Article", scope.Resource.Collection);
         }
         finally
         {

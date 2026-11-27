@@ -314,6 +314,64 @@ public class TestBackupClient
     }
 
     /// <summary>
+    /// Omitted IncludeRoles/IncludeUsers back up everything, so the keys must stay off the wire;
+    /// an empty list means none and must be sent as <c>[]</c>.
+    /// </summary>
+    [Fact]
+    public async Task Create_SendsIncludeRolesAndUsers_OnlyWhenSet()
+    {
+        var (client, handler) = CreateBackupClient("1.40.0");
+
+        await client.Backup.Create(
+            new BackupCreateRequest("my-backup", new FilesystemBackend("/backups")),
+            TestContext.Current.CancellationToken
+        );
+        var unset = await handler.LastRequest!.Content!.ReadAsStringAsync(
+            TestContext.Current.CancellationToken
+        );
+
+        await client.Backup.Create(
+            new BackupCreateRequest(
+                "my-backup",
+                new FilesystemBackend("/backups"),
+                IncludeRoles: Array.Empty<string>(),
+                IncludeUsers: "app-*"
+            ),
+            TestContext.Current.CancellationToken
+        );
+        var set = await handler.LastRequest!.Content!.ReadAsStringAsync(
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.DoesNotContain("includeRoles", unset);
+        Assert.DoesNotContain("includeUsers", unset);
+        Assert.Contains("\"includeRoles\":[]", set);
+        Assert.Contains("\"includeUsers\":[\"app-*\"]", set);
+    }
+
+    /// <summary>
+    /// Selecting roles or users is refused below 1.40.0 rather than silently backing up all of them.
+    /// </summary>
+    [Fact]
+    public async Task Create_Throws_WhenIncludeRolesRequestedOnOlderServer()
+    {
+        var (client, _) = CreateBackupClient("1.39.0");
+
+        var exception = await Assert.ThrowsAsync<WeaviateVersionMismatchException>(async () =>
+            await client.Backup.Create(
+                new BackupCreateRequest(
+                    "my-backup",
+                    new FilesystemBackend("/backups"),
+                    IncludeRoles: Array.Empty<string>()
+                ),
+                TestContext.Current.CancellationToken
+            )
+        );
+
+        Assert.Equal(new Version(1, 40, 0), exception.RequiredVersion);
+    }
+
+    /// <summary>
     /// List() parsed Size and the incremental base id and then dropped both; they must survive
     /// onto the model, and be null rather than empty when the server omits them.
     /// </summary>

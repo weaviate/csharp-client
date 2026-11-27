@@ -211,6 +211,12 @@ public static class Permissions
         public BackupsResource Resource { get; }
 
         /// <summary>
+        /// Grants read-only access to backups of the matching collections.
+        /// Requires Weaviate 1.39.10 or later.
+        /// </summary>
+        public bool Read { get; set; }
+
+        /// <summary>
         /// Gets or sets the value of the manage
         /// </summary>
         public bool Manage { get; set; }
@@ -240,6 +246,7 @@ public static class Permissions
         {
             var permissions = new[]
             {
+                (Action: Rest.Dto.PermissionAction.Read_backups, Allowed: Read),
                 (Action: Rest.Dto.PermissionAction.Manage_backups, Allowed: Manage),
             };
 

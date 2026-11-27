@@ -57,6 +57,7 @@ public class RolesClient
     )
     {
         await _client.EnsureInitializedAsync();
+        EnsureReadBackupsSupported(permissions);
         var dto = new Rest.Dto.Role
         {
             Name = name,
@@ -91,6 +92,7 @@ public class RolesClient
     )
     {
         await _client.EnsureInitializedAsync();
+        EnsureReadBackupsSupported(permissions);
         var dtos = permissions.SelectMany(p => p.ToDto()).ToList();
         var updated = await _client.RestClient.RoleAddPermissions(id, dtos, cancellationToken);
         return updated.ToModel();
@@ -110,6 +112,7 @@ public class RolesClient
     )
     {
         await _client.EnsureInitializedAsync();
+        EnsureReadBackupsSupported(permissions);
         var dtos = permissions.SelectMany(p => p.ToDto()).ToList();
         var updated = await _client.RestClient.RoleRemovePermissions(id, dtos, cancellationToken);
         return updated.ToModel();
@@ -129,6 +132,7 @@ public class RolesClient
     )
     {
         await _client.EnsureInitializedAsync();
+        EnsureReadBackupsSupported([permission]);
         var dto = permission.ToDto().Single();
         return await _client.RestClient.RoleHasPermission(id, dto, cancellationToken);
     }
@@ -163,5 +167,22 @@ public class RolesClient
         await _client.EnsureInitializedAsync();
         var list = await _client.RestClient.RoleGroupAssignments(roleId, cancellationToken);
         return list.Select(a => a.ToModel());
+    }
+
+    private static readonly Version ReadBackupsMinimumVersion = new(1, 39, 10);
+
+    private void EnsureReadBackupsSupported(IEnumerable<PermissionScope> permissions)
+    {
+        var serverVersion = _client.WeaviateVersion;
+        if (
+            serverVersion is not null
+            && serverVersion < ReadBackupsMinimumVersion
+            && permissions.OfType<Permissions.Backups>().Any(b => b.Read)
+        )
+            throw new WeaviateVersionMismatchException(
+                "Permissions.Backups.Read",
+                ReadBackupsMinimumVersion,
+                serverVersion
+            );
     }
 }

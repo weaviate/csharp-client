@@ -376,6 +376,33 @@ public class TestBackups : IntegrationTests
     }
 
     /// <summary>
+    /// Tests that a backup accepts empty role and user selections (Weaviate 1.40+)
+    /// </summary>
+    [Fact]
+    public async Task Test_Create_Backup_With_Include_Roles_And_Users()
+    {
+        RequireVersion("1.40.0");
+        var backupId = Helpers.GenerateUniqueIdentifier("bkp_rbac_select");
+
+        var article = await CollectionFactory(
+            name: "ArticleRbacSelect",
+            properties: [Property.Text("title")]
+        );
+
+        var created = await _weaviate.Backup.CreateSync(
+            new BackupCreateRequest(
+                backupId,
+                _backend,
+                IncludeCollections: new[] { article.Name },
+                IncludeRoles: Array.Empty<string>(),
+                IncludeUsers: Array.Empty<string>()
+            ),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Equal(BackupStatus.Success, created.Status);
+    }
+
+    /// <summary>
     /// Tests that test fail backup on non existing collection
     /// </summary>
     [Fact]

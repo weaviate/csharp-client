@@ -41,6 +41,11 @@ public class TestCollectionShards : IntegrationTests
                 Assert.NotEmpty(shard.Name);
                 // Status is an enum, so it always has a value
                 Assert.True(Enum.IsDefined(typeof(ShardStatus), shard.Status));
+                if (ServerVersionIsInRange("1.40.0"))
+                {
+                    Assert.NotNull(shard.PerNodeStatus);
+                    Assert.NotEmpty(shard.PerNodeStatus);
+                }
             }
         );
     }
