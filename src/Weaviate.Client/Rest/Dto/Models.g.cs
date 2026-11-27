@@ -187,6 +187,169 @@ namespace Weaviate.Client.Rest.Dto
 
     }
 
+    /// <summary>
+    /// A single database user's exportable API-key credential. Carries the argon2id key hash for strong-key users; for users whose key cannot be migrated (imported/weak, revoked, or missing a hash) secureHash is null and status names the reason.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record DBUserCredential
+    {
+        /// <summary>
+        /// The name (ID) of the user, without any namespace prefix.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("userId")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public string UserId { get; set; } = default!;
+
+        /// <summary>
+        /// The random identifier embedded in the user's API key, used to resolve the key hash. Exactly 16 characters for an importable record; empty when the export reports a user whose key is not carried.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("userIdentifier")]
+
+        public string? UserIdentifier { get; set; } = default!;
+
+        /// <summary>
+        /// The argon2id PHC hash of the user's API key. Null when the key cannot be migrated (see status).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("secureHash")]
+
+        public string? SecureHash { get; set; } = default!;
+
+        /// <summary>
+        /// First 3 letters of the associated API key.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("apiKeyFirstLetters")]
+        [System.ComponentModel.DataAnnotations.StringLength(3)]
+
+        public string? ApiKeyFirstLetters { get; set; } = default!;
+
+        /// <summary>
+        /// Whether the user is active. A deactivated (not revoked) user is carried with active=false and reproduced on import.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("active")]
+
+        public bool? Active { get; set; } = default!;
+
+        /// <summary>
+        /// Date and time in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
+
+        public System.DateTimeOffset? CreatedAt { get; set; } = default!;
+
+        /// <summary>
+        /// The namespace the user was bound to on the source. Informational on export; import binds the user to the request's target namespace.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("namespace")]
+
+        public string? Namespace { get; set; } = default!;
+
+        /// <summary>
+        /// Export classification. Only 'exported' carries a usable secureHash; the others report why the user was not carried.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public DBUserCredentialStatus? Status { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// The full set of database-user credential records on the source, one per user.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record UserExportResponse
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("users")]
+        [System.ComponentModel.DataAnnotations.Required]
+
+        public System.Collections.Generic.IList<DBUserCredential> Users { get; set; } = new System.Collections.Generic.List<DBUserCredential>();
+
+    }
+
+    /// <summary>
+    /// A batch of database-user credentials to recreate on the target, bound to a single target namespace.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record UserImportRequest
+    {
+        /// <summary>
+        /// The target namespace every user in this request is created under. Required on namespace-enabled clusters.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("namespace")]
+
+        public string? Namespace { get; set; } = default!;
+
+        /// <summary>
+        /// The credential records to import. Only records with a strong (argon2id) secureHash are importable.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("users")]
+        [System.ComponentModel.DataAnnotations.Required]
+
+        public System.Collections.Generic.IList<DBUserCredential> Users { get; set; } = new System.Collections.Generic.List<DBUserCredential>();
+
+    }
+
+    /// <summary>
+    /// The per-user outcome of an import batch.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record UserImportResponse
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [System.ComponentModel.DataAnnotations.Required]
+
+        public System.Collections.Generic.IList<UserImportResult> Results { get; set; } = new System.Collections.Generic.List<UserImportResult>();
+
+    }
+
+    /// <summary>
+    /// The outcome of importing a single database-user credential.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record UserImportResult
+    {
+        /// <summary>
+        /// The name (ID) of the user, without any namespace prefix.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("userId")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public string UserId { get; set; } = default!;
+
+        /// <summary>
+        /// The outcome for this user.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public UserImportResultStatus Status { get; set; } = default!;
+
+        /// <summary>
+        /// The reason, present only when status is 'error'.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("error")]
+
+        public string? Error { get; set; } = default!;
+
+    }
+
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal partial record Role
     {
@@ -387,62 +550,6 @@ namespace Weaviate.Client.Rest.Dto
 
     }
 
-    /// <summary>
-    /// An array of available words and contexts.
-    /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record C11yWordsResponse
-    {
-        /// <summary>
-        /// Weighted results for all words
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("concatenatedWord")]
-
-        public ConcatenatedWord? ConcatenatedWord { get; set; } = default!;
-
-        /// <summary>
-        /// Weighted results for per individual word
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("individualWords")]
-
-        public System.Collections.Generic.IList<IndividualWords>? IndividualWords { get; set; } = default!;
-
-    }
-
-    /// <summary>
-    /// A resource describing an extension to the contextinoary, containing both the identifier and the definition of the extension
-    /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record C11yExtension
-    {
-        /// <summary>
-        /// The new concept you want to extend. Must be an all-lowercase single word, or a space delimited compound word. Examples: 'foobarium', 'my custom concept'
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("concept")]
-
-        public string? Concept { get; set; } = default!;
-
-        /// <summary>
-        /// A list of space-delimited words or a sentence describing what the custom concept is about. Avoid using the custom concept itself. An Example definition for the custom concept 'foobarium': would be 'a naturally occurring element which can only be seen by programmers'
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("definition")]
-
-        public string? Definition { get; set; } = default!;
-
-        /// <summary>
-        /// Weight of the definition of the new concept where 1='override existing definition entirely' and 0='ignore custom definition'. Note that if the custom concept is not present in the contextionary yet, the weight cannot be less than 1.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("weight")]
-
-        public float? Weight { get; set; } = default!;
-
-    }
-
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal partial record Deprecation
     {
@@ -588,6 +695,9 @@ namespace Weaviate.Client.Rest.Dto
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal partial record IndexStatus
     {
+        /// <summary>
+        /// Canonical inverted-index type. Always one of `filterable`, `searchable`, `rangeFilters` — never the `rangeable` write-path alias.
+        /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
@@ -602,6 +712,14 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("progress")]
 
         public float? Progress { get; set; } = default!;
+
+        /// <summary>
+        /// ID of the reindex task driving this index entry. Present on every task-driven entry (`pending`, `indexing`, `failed`, `cancelled`); absent on a plain `ready` entry. A coupled searchable+filterable tokenization migration reports the same `taskId` on both affected entries.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("taskId")]
+
+        public string? TaskId { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("tokenization")]
 
@@ -631,116 +749,27 @@ namespace Weaviate.Client.Rest.Dto
 
     }
 
+    /// <summary>
+    /// Desired index configuration for `PUT /v1/schema/{className}/properties/{propertyName}/index/{indexType}`. The server diffs the body against the current state and either creates the index, migrates its configuration, or returns a NO_OP. Only fields relevant to the target index type are honored: `tokenization` applies to `searchable`/`filterable`, `algorithm` applies to `searchable`. `rangeFilters` takes no config fields. An empty body `{}` is valid and means "ensure the index exists with its current/default config". At most one configuration change may be requested per call (a body implying both a tokenization and an algorithm change is rejected).
+    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record IndexUpdateRequest
+    internal partial record IndexUpsertRequest
     {
-
-        [System.Text.Json.Serialization.JsonPropertyName("searchable")]
-
-        public IndexUpdateSearchable? Searchable { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("filterable")]
-
-        public IndexUpdateFilterable? Filterable { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("rangeable")]
-
-        public IndexUpdateRangeable? Rangeable { get; set; } = default!;
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record IndexUpdateSearchable
-    {
+        /// <summary>
+        /// Target tokenization for a `searchable` or `filterable` index. Required when creating a `searchable` index; optional otherwise (omitted = keep the current value). On `filterable` creation it must be omitted or equal the property's current tokenization.
+        /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("tokenization")]
 
         public string? Tokenization { get; set; } = default!;
 
         /// <summary>
-        /// When true, rebuilds the searchable index for this property from the stored objects. Preserves the current tokenization and BM25 algorithm. Only valid when the property's current algorithm is `blockmax`; on a WAND property the request is rejected with guidance to use `algorithm:"blockmax"` first.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("rebuild")]
-
-        public bool? Rebuild { get; set; } = default!;
-
-        /// <summary>
-        /// Switch the BM25 algorithm for this property's searchable index. Currently only `blockmax` is accepted. From WAND this triggers the Map → BlockMax migration; on an already-`blockmax` property the request is rejected. WAND is deprecated; downgrade is intentionally not supported.
+        /// Target BM25 algorithm for a `searchable` index. Only `blockmax` is a valid target (input aliases `block-max`, `block_max`, `blockmaxwand`, `bmw` are accepted case-insensitively). From WAND this triggers the Map → BlockMax migration; on an already-`blockmax` index it is a NO_OP. `wand` is rejected (deprecated); downgrade is intentionally not supported.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("algorithm")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
 
-        public IndexUpdateSearchableAlgorithm? Algorithm { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("enabled")]
-
-        public bool? Enabled { get; set; } = default!;
-
-        /// <summary>
-        /// When true, cancels the in-flight reindex task targeting this property's searchable index. The task transitions to CANCELLED; partial state is left on disk for the next-restart finalize.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("cancel")]
-
-        public bool? Cancel { get; set; } = default!;
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record IndexUpdateFilterable
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("rebuild")]
-
-        public bool? Rebuild { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("enabled")]
-
-        public bool? Enabled { get; set; } = default!;
-
-        /// <summary>
-        /// Change the tokenization used by the filterable index on this text/text[] property. Only valid when the property already has a filterable index. Use this for filterable-only properties; for properties that ALSO have a searchable index, prefer searchable.tokenization since it retokenizes both buckets in a single coordinated migration.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("tokenization")]
-
-        public string? Tokenization { get; set; } = default!;
-
-        /// <summary>
-        /// When true, cancels the in-flight reindex task targeting this property's filterable index.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("cancel")]
-
-        public bool? Cancel { get; set; } = default!;
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record IndexUpdateRangeable
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("enabled")]
-
-        public bool? Enabled { get; set; } = default!;
-
-        /// <summary>
-        /// When true, rebuilds the rangeable index from the existing filterable bucket (same source-of-truth as enable-rangeable).
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("rebuild")]
-
-        public bool? Rebuild { get; set; } = default!;
-
-        /// <summary>
-        /// When true, cancels the in-flight reindex task targeting this property's rangeable index.
-        /// </summary>
-
-        [System.Text.Json.Serialization.JsonPropertyName("cancel")]
-
-        public bool? Cancel { get; set; } = default!;
+        public string? Algorithm { get; set; } = default!;
 
     }
 
@@ -751,6 +780,10 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("taskId")]
 
         public string? TaskId { get; set; } = default!;
+
+        /// <summary>
+        /// What the server did. `STARTED`: a reindex task was submitted and `taskId` names it. `CANCELLED`: a cancel stopped the in-flight task named by `taskId`. `NO_OP`: a cancel found nothing in flight, and `taskId` is absent. Not a closed set: a newer server may answer with a value this client does not know, so report an unrecognized status rather than rejecting the response.
+        /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
 
@@ -1548,6 +1581,94 @@ namespace Weaviate.Client.Rest.Dto
 
         public int? GrpcMaxMessageSize { get; set; } = default!;
 
+        /// <summary>
+        /// License state of this Weaviate instance.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("license")]
+
+        public MetaLicense? License { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// License state of the current Weaviate instance.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record MetaLicense
+    {
+        /// <summary>
+        /// The product edition: community (no license key) or enterprise (license key configured).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("edition")]
+
+        public string? Edition { get; set; } = default!;
+
+        /// <summary>
+        /// Documentation page for the Weaviate Enterprise Edition.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("documentationHref")]
+
+        public string? DocumentationHref { get; set; } = default!;
+
+        /// <summary>
+        /// Current license status. Only present on Enterprise Edition; a Community Edition node has no license and therefore no license status.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("status")]
+
+        public string? Status { get; set; } = default!;
+
+        /// <summary>
+        /// The non-secret id of the configured license, empty when unlicensed.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("licenseId")]
+
+        public string? LicenseId { get; set; } = default!;
+
+        /// <summary>
+        /// When the license expires, if known.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("expiresAt")]
+
+        public System.DateTimeOffset? ExpiresAt { get; set; } = default!;
+
+        /// <summary>
+        /// When the license was last verified with the license service, if ever.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("lastCheckedAt")]
+
+        public System.DateTimeOffset? LastCheckedAt { get; set; } = default!;
+
+        /// <summary>
+        /// When the grace period ends, if the license is not currently valid.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("gracePeriodEndsAt")]
+
+        public System.DateTimeOffset? GracePeriodEndsAt { get; set; } = default!;
+
+        /// <summary>
+        /// Whether license enforcement is active.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("enforcing")]
+
+        public bool? Enforcing { get; set; } = default!;
+
+        /// <summary>
+        /// Whether the license is used on a cluster other than the one it was issued for.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("clusterMismatch")]
+
+        public bool? ClusterMismatch { get; set; } = default!;
+
     }
 
     /// <summary>
@@ -2117,7 +2238,7 @@ namespace Weaviate.Client.Rest.Dto
         public ObjectTtlConfig? ObjectTtlConfig { get; set; } = default!;
 
         /// <summary>
-        /// Specify how the vectors for this collection should be determined. The options are either `none` - this means you have to import a vector with each object yourself - or the name of a module that provides vectorization capabilities, such as `text2vec-weaviate`. If left empty, it will use the globally configured default ([`DEFAULT_VECTORIZER_MODULE`](https://docs.weaviate.io/deploy/configuration/env-vars)) which can itself either be `none` or a specific module.
+        /// Specify how the vectors for this collection should be determined. The options are either `none` - this means you have to import a vector with each object yourself - or the name of a module that provides vectorization capabilities, such as `text2vec-weaviate`. If left empty, it defaults to `none`.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("vectorizer")]
@@ -2200,6 +2321,14 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonPropertyName("bucketGeneration")]
 
         public long? BucketGeneration { get; set; } = default!;
+
+        /// <summary>
+        /// Internal RAFT-replicated per-property flag: true iff this property's searchable (BM25) bucket is on the blockmax (StrategyInverted) index. Stamped at migration cutover. Absent/null means "not stamped" and is resolved against the class-wide UsingBlockMaxWAND flag. Internal use; clients must not set this.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("searchableBlockmax")]
+
+        public bool? SearchableBlockmax { get; set; } = default!;
 
         /// <summary>
         /// Whether to include this property in the filterable, Roaring Bitmap index. If `false`, this property cannot be used in `where` filters. &lt;br/&gt;&lt;br/&gt;Note: Unrelated to vectorization behavior.
@@ -2379,7 +2508,7 @@ namespace Weaviate.Client.Rest.Dto
         public string? Name { get; set; } = default!;
 
         /// <summary>
-        /// Status of the shard
+        /// Deprecated: value is not consistent in replicated clusters.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
@@ -2387,7 +2516,15 @@ namespace Weaviate.Client.Rest.Dto
         public string? Status { get; set; } = default!;
 
         /// <summary>
-        /// Size of the vector queue of the shard
+        /// Status of the shard on each of its replicas
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("per_node_status")]
+
+        public System.Collections.Generic.IDictionary<string, string>? Per_node_status { get; set; } = default!;
+
+        /// <summary>
+        /// Deprecated: value is not consistent in replicated clusters.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("vectorQueueSize")]
@@ -2599,6 +2736,23 @@ namespace Weaviate.Client.Rest.Dto
 
         public BackupConfigCompressionLevel? CompressionLevel { get; set; } = Weaviate.Client.Rest.Dto.BackupConfigCompressionLevel.DefaultCompression;
 
+        /// <summary>
+        /// If true, shards of replicated collections proven in sync by async-replication checkpoints are archived by one replica instead of all, and restore copies them back to every replica; other shards are archived by every replica. Requires async replication, BACKUP_DEDUPE_ENABLED=true (else 422) and a Weaviate license key (else 403) on every node. Such backups restore only on versions that support this option; restoring needs no license.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("dedupeReplicas")]
+
+        public bool? DedupeReplicas { get; set; } = false;
+
+        /// <summary>
+        /// How long the coordinator waits for replica convergence proof before shards fall back to being archived by every replica. Only used when dedupeReplicas is set. The wait happens synchronously inside the backup creation request, which blocks for roughly 10 seconds plus up to this timeout; size client timeouts accordingly.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("dedupeConvergenceTimeoutSeconds")]
+        [System.ComponentModel.DataAnnotations.Range(1, 600)]
+
+        public int? DedupeConvergenceTimeoutSeconds { get; set; } = 60;
+
     }
 
     /// <summary>
@@ -2661,7 +2815,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// Request body for creating a backup for a set of collections.
+    /// Request body for creating a backup. The resolved selection must contain at least one collection, dynamic user, or RBAC role.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal partial record BackupCreateRequest
@@ -2683,7 +2837,7 @@ namespace Weaviate.Client.Rest.Dto
         public BackupConfig? Config { get; set; } = default!;
 
         /// <summary>
-        /// List of collections to include in the backup creation process. If not set, all collections are included. Cannot be used together with `exclude`. Permits wildcards, e.g. `*` or `prefix*`.
+        /// List of collections to include in the backup creation process. If not set, all collections the caller may back up are included. Cannot be used together with `exclude`. Permits wildcards, e.g. `*` or `prefix*`, which match only collections the caller may back up. A list that matches no collection is allowed when users or roles are selected, including through omitted identity selectors.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("include")]
@@ -2691,7 +2845,7 @@ namespace Weaviate.Client.Rest.Dto
         public System.Collections.Generic.IList<string>? Include { get; set; } = default!;
 
         /// <summary>
-        /// List of collections to exclude from the backup creation process. If not set, all collections are included. Cannot be used together with `include`. Permits wildcards, e.g. `*` or `prefix*`.
+        /// List of collections to exclude from the backup creation process. If not set, all collections the caller may back up are included. Cannot be used together with `include`. Permits wildcards, e.g. `*` or `prefix*`. Excluding every collection is allowed when users or roles are selected, including through omitted identity selectors.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("exclude")]
@@ -2699,12 +2853,20 @@ namespace Weaviate.Client.Rest.Dto
         public System.Collections.Generic.IList<string>? Exclude { get; set; } = default!;
 
         /// <summary>
-        /// List of dynamic DB users to include in the backup. Permits `*` and `?` wildcards, e.g. `*` or `prefix*`. When omitted, the whole dynamic-user store is captured as part of the cluster snapshot and no per-user permission check is applied; when set, only matching users are captured and each is authorized individually.
+        /// List of dynamic DB users to include in the backup. Permits `*` and `?` wildcards, e.g. `*` or `prefix*`. When omitted or null, the whole dynamic-user store is captured. An empty list or wildcards matching nothing omit the user snapshot; restoring it leaves existing users untouched. Otherwise, only matching users are captured. An exact user name that does not exist is rejected. Selected users, including those selected by omission, permit a backup with zero collections. No per-user permission check is applied.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("includeUsers")]
 
         public System.Collections.Generic.IList<string>? IncludeUsers { get; set; } = default!;
+
+        /// <summary>
+        /// List of RBAC roles to include in the backup. Permits `*` and `?` wildcards, e.g. `*` or `prefix*`. When omitted or null, the whole RBAC state is captured, including built-in roles and assignments. An empty list or wildcards matching nothing omit the RBAC snapshot; restoring it leaves existing roles untouched. Otherwise, only matching roles are captured. An exact role name that does not exist is rejected. Explicit selectors cannot select built-in roles: exact names are rejected and wildcards exclude them. Selected roles, including built-in roles selected by omission, permit a backup with zero collections. No per-role permission check is applied.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("includeRoles")]
+
+        public System.Collections.Generic.IList<string>? IncludeRoles { get; set; } = default!;
 
         /// <summary>
         /// The ID of an existing backup to use as the base for a file-based incremental backup. If set, only files that have changed since the base backup will be included in the new backup.
@@ -2782,7 +2944,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// Request body for restoring a backup for a set of collections (classes).
+    /// Request body for restoring a backup. A backup with no collections can restore users or roles when the matching restore option is enabled.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal partial record BackupRestoreRequest
@@ -2796,7 +2958,7 @@ namespace Weaviate.Client.Rest.Dto
         public RestoreConfig? Config { get; set; } = default!;
 
         /// <summary>
-        /// List of collections (classes) to include in the backup restoration process.
+        /// List of collections (classes) to include in the backup restoration process. If not set, all collections in the backup the caller may restore are included. Permits wildcards, e.g. `*` or `prefix*`, which match only collections the caller may restore. A list that matches no collection is rejected. Any entry is rejected when the backup contains no collections.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("include")]
@@ -2804,7 +2966,7 @@ namespace Weaviate.Client.Rest.Dto
         public System.Collections.Generic.IList<string>? Include { get; set; } = default!;
 
         /// <summary>
-        /// List of collections (classes) to exclude from the backup restoration process.
+        /// List of collections (classes) to exclude from the backup restoration process. Any entry is rejected when the backup contains no collections.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("exclude")]
@@ -3284,7 +3446,7 @@ namespace Weaviate.Client.Rest.Dto
         public System.DateTimeOffset? StartedAt { get; set; } = default!;
 
         /// <summary>
-        /// The time when the task was finished.
+        /// The time when the task reached a terminal status. Absent while the task is still running.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("finishedAt")]
@@ -3372,7 +3534,7 @@ namespace Weaviate.Client.Rest.Dto
         public string? Error { get; set; } = default!;
 
         /// <summary>
-        /// The time when the unit was last updated.
+        /// The time when the unit was last updated, including its transition to a terminal status. Absent for a unit that has not started yet.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("updatedAt")]
@@ -3380,7 +3542,7 @@ namespace Weaviate.Client.Rest.Dto
         public System.DateTimeOffset? UpdatedAt { get; set; } = default!;
 
         /// <summary>
-        /// The time when the unit finished.
+        /// The time when the unit reached a terminal status. Absent while the unit is still running.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("finishedAt")]
@@ -3943,7 +4105,7 @@ namespace Weaviate.Client.Rest.Dto
         public long? DeletionTimeUnixMilli { get; set; } = default!;
 
         /// <summary>
-        /// If true, the call will show which objects would be matched using the specified filter without deleting any objects. &lt;br/&gt;&lt;br/&gt;Depending on the configured verbosity, you will either receive a count of affected objects, or a list of IDs.
+        /// If true, the call reports what the filter matches and deletes nothing. &lt;br/&gt;&lt;br/&gt;Depending on the configured verbosity, you will either receive a count of matched objects, or a list of IDs. With a positive [`QUERY_MAXIMUM_RESULTS`](https://docs.weaviate.io/deploy/configuration/env-vars#QUERY_MAXIMUM_RESULTS) the count stops one above it, and the list holds at most `QUERY_MAXIMUM_RESULTS` IDs. Repeating the dry run reports the same count; for an exact total use an aggregate count, which resolves no objects.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("dryRun")]
@@ -3983,7 +4145,7 @@ namespace Weaviate.Client.Rest.Dto
         public long? DeletionTimeUnixMilli { get; set; } = default!;
 
         /// <summary>
-        /// If true, objects will not be deleted yet, but merely listed. Defaults to false.
+        /// If true, the call reported what the filter matched and deleted nothing. The list holds at most [`QUERY_MAXIMUM_RESULTS`](https://docs.weaviate.io/deploy/configuration/env-vars#QUERY_MAXIMUM_RESULTS) IDs. Defaults to false.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("dryRun")]
@@ -4399,7 +4561,7 @@ namespace Weaviate.Client.Rest.Dto
         public string? Home_node { get; set; } = default!;
 
         /// <summary>
-        /// Lifecycle state. "active" namespaces accept all operations. "deleting" namespaces are being removed: new classes, aliases, and users can no longer be created in the namespace, and the namespace itself disappears once removal completes.
+        /// Lifecycle state. "active" namespaces accept all operations. "suspended" namespaces reject new classes, aliases, users, roles, and role assignments, and their users can no longer authenticate; everything the namespace already owns is retained. "resuming" namespaces are on their way back to "active" and are still restricted the same way. "deleting" namespaces are being removed: new classes, aliases, and users can no longer be created in the namespace, and the namespace itself disappears once removal completes.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("state")]
@@ -4439,6 +4601,751 @@ namespace Weaviate.Client.Rest.Dto
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
 
         public string Home_node { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Request body for the aggregate endpoint. Phase 1 supports counts: the number of matching objects, in total or per group. Unknown fields are ignored (platform parity with the other endpoints). Reserved fields are accepted by the schema but rejected by the server with 422 until the corresponding feature ships. An empty body `{}` returns the collection's total object count.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record AggregateRequest
+    {
+        /// <summary>
+        /// The property to group by, as a bare property name. Each distinct value of the property forms one group (an object whose property holds several values counts toward each of them). Omitted or empty aggregates over all matching objects without grouping.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("groupBy")]
+
+        public string? GroupBy { get; set; } = default!;
+
+        /// <summary>
+        /// The aggregation metrics to return. Phase 1 supports only `count` (the number of matching objects, per group when `groupBy` is set); omitted or empty is equivalent to `["count"]`. The property-scoped `property:statistic` grammar (e.g. `price:mean`) is reserved and returns 422 (not yet supported).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("returnMetrics")]
+
+        public System.Collections.Generic.IList<string>? ReturnMetrics { get; set; } = default!;
+
+        /// <summary>
+        /// A conditional filter to limit the objects that are aggregated.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("where")]
+
+        public WhereFilter? Where { get; set; } = default!;
+
+        /// <summary>
+        /// The maximum number of groups to return, largest first. Must be positive and requires `groupBy`; omitted falls back to the server default (100 groups).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("limit")]
+
+        public long? Limit { get; set; } = default!;
+
+        /// <summary>
+        /// The tenant to aggregate in a multi-tenant collection.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("tenant")]
+
+        public string? Tenant { get; set; } = default!;
+
+        /// <summary>
+        /// Reserved for aggregate-over-search (aggregating the results of a vector, keyword or hybrid search). Returns 422 (not yet supported).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("over")]
+
+        public System.Collections.Generic.IDictionary<string, object>? Over { get; set; } = default!;
+
+        /// <summary>
+        /// Reserved for aggregate-over-search (the maximum number of search results to aggregate). Returns 422 (not yet supported).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("objectLimit")]
+
+        public long? ObjectLimit { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// The result of an aggregation. An ungrouped aggregation returns the flat form (`count` plus `tookMs`); a grouped aggregation returns `groups` plus `tookMs`. Exactly one of `count`/`groups` is present, except that a grouped aggregation which produced no groups (nothing matched, or no matching object carries the property) omits `groups` entirely.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record AggregateResponse
+    {
+        /// <summary>
+        /// The number of matching objects. Present only for ungrouped aggregations.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("count")]
+
+        public long? Count { get; set; } = default!;
+
+        /// <summary>
+        /// The groups, ordered by descending count. Present only for grouped aggregations.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("groups")]
+
+        public System.Collections.Generic.IList<AggregateGroup>? Groups { get; set; } = default!;
+
+        /// <summary>
+        /// Server-side processing time in milliseconds.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("tookMs")]
+
+        public long TookMs { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// One group of a grouped aggregation: the group's identity under `groupedBy` and its aggregated metrics (phase 1: `count`).
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record AggregateGroup
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("groupedBy")]
+        [System.ComponentModel.DataAnnotations.Required]
+
+        public AggregateGroupedBy GroupedBy { get; set; } = new AggregateGroupedBy();
+
+        /// <summary>
+        /// The number of objects in the group.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("count")]
+
+        public long Count { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// The identity of one group: the `groupBy` property (as a one-element path) and the property value that formed the group.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record AggregateGroupedBy
+    {
+        /// <summary>
+        /// The grouped property, as a one-element path.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("path")]
+        [System.ComponentModel.DataAnnotations.Required]
+
+        public System.Collections.Generic.IList<string> Path { get; set; } = new System.Collections.Generic.List<string>();
+
+        /// <summary>
+        /// The property value that formed the group. Typed as the property is: text values are strings, numeric values numbers, boolean values booleans; grouping by a reference property yields the reference's beacon URI as a string.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("value")]
+        [System.ComponentModel.DataAnnotations.Required]
+
+        public System.Collections.Generic.IDictionary<string, object> Value { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Request body for the bm25 search endpoint. Performs a keyword (BM25F) search over the collection's searchable text properties and returns the best-scoring objects. Extends the shared search fields (`SearchCommon`) with the bm25-specific `query` and `queryProperties`.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchBm25Request : SearchCommon
+    {
+        /// <summary>
+        /// The keyword query to score objects against, as a plain string. Must not be empty.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("query")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public string Query { get; set; } = default!;
+
+        /// <summary>
+        /// The properties to keyword-search, each optionally weighted with a `^boost` suffix (e.g. `title^2`). Omitted or empty searches every searchable text property. A property without a searchable index is rejected with 422.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("queryProperties")]
+
+        public System.Collections.Generic.IList<string>? QueryProperties { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Fields shared by every REST search request (near-text, bm25, hybrid, near-object). Unknown fields are ignored (platform parity with the other endpoints). Reserved fields are accepted by the schema but rejected by the server with 422 until the corresponding feature ships.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchCommon
+    {
+        /// <summary>
+        /// A conditional filter to limit the objects that are searched.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("where")]
+
+        public WhereFilter? Where { get; set; } = default!;
+
+        /// <summary>
+        /// The maximum number of objects to return. Omitted or `0` falls back to the server default (`QUERY_DEFAULTS_LIMIT`); a value above `QUERY_MAXIMUM_RESULTS` is rejected.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("limit")]
+
+        public long? Limit { get; set; } = default!;
+
+        /// <summary>
+        /// The number of objects to skip before returning results. Used with `limit` for pagination.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("offset")]
+
+        public long? Offset { get; set; } = default!;
+
+        /// <summary>
+        /// Cut results off at the first steep drop in score (autocut). The value is the number of score jumps to allow before cutting.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("autoLimit")]
+
+        public long? AutoLimit { get; set; } = default!;
+
+        /// <summary>
+        /// The non-reference properties to return. Omitted returns all non-reference, non-blob properties; an empty array returns no properties. References are selected with `returnReferences`.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("returnProperties")]
+
+        public System.Collections.Generic.IList<string>? ReturnProperties { get; set; } = default!;
+
+        /// <summary>
+        /// The cross-references to return under each result's `references` key. Each entry selects one reference property and what to return from the referenced objects. Omitted or empty returns no references.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("returnReferences")]
+
+        public System.Collections.Generic.IList<SearchReferenceSelector>? ReturnReferences { get; set; } = default!;
+
+        /// <summary>
+        /// The retrieval metadata to return under each result's `metadata` key. The object `id` is always returned as each result's `id` field. Omitted or empty returns no `metadata` block.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("returnMetadata")]
+
+        // TODO(system.text.json): Add string enum item converter
+
+        public System.Collections.Generic.IList<ReturnMetadata>? ReturnMetadata { get; set; } = default!;
+
+        /// <summary>
+        /// The tenant to search in a multi-tenant collection.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("tenant")]
+
+        public string? Tenant { get; set; } = default!;
+
+        /// <summary>
+        /// The consistency level for the read.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("consistencyLevel")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public SearchCommonConsistencyLevel? ConsistencyLevel { get; set; } = default!;
+
+        /// <summary>
+        /// Reserved for per-object retrieval-augmented generation. Returns 422 (not yet supported).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("singlePrompt")]
+
+        public string? SinglePrompt { get; set; } = default!;
+
+        /// <summary>
+        /// Reserved for grouped retrieval-augmented generation. Returns 422 (not yet supported).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("groupedTask")]
+
+        public string? GroupedTask { get; set; } = default!;
+
+        /// <summary>
+        /// Reserved for grouped search. Returns 422 (not yet supported).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("groupBy")]
+
+        public string? GroupBy { get; set; } = default!;
+
+        /// <summary>
+        /// Reserved for grouped search. Returns 422 (not yet supported).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("numberOfGroups")]
+
+        public long? NumberOfGroups { get; set; } = default!;
+
+        /// <summary>
+        /// Reserved for grouped search. Returns 422 (not yet supported).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("objectsPerGroup")]
+
+        public long? ObjectsPerGroup { get; set; } = default!;
+
+        /// <summary>
+        /// Reserved for reranking. Returns 422 (not yet supported).
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("rerank")]
+
+        public SearchRerank? Rerank { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Reserved for reranking. Returns 422 (not yet supported).
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchRerank
+    {
+        /// <summary>
+        /// The property to rerank on.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("property")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public string Property { get; set; } = default!;
+
+        /// <summary>
+        /// The query to rerank with. Defaults to the search query.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("query")]
+
+        public string? Query { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Selects one cross-reference to return, and what to return from each referenced object.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchReferenceSelector
+    {
+        /// <summary>
+        /// The reference property to follow.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("linkOn")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public string LinkOn { get; set; } = default!;
+
+        /// <summary>
+        /// The referenced collection to select. Required when `linkOn` is a multi-target reference.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("targetCollection")]
+
+        public string? TargetCollection { get; set; } = default!;
+
+        /// <summary>
+        /// The non-reference properties to return from each referenced object. Omitted returns all non-reference, non-blob properties of the referenced collection; an empty array returns no properties.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("returnProperties")]
+
+        public System.Collections.Generic.IList<string>? ReturnProperties { get; set; } = default!;
+
+        /// <summary>
+        /// The metadata to return under each referenced object's `metadata` key. Omitted or empty returns no `metadata` block.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("returnMetadata")]
+
+        // TODO(system.text.json): Add string enum item converter
+
+        public System.Collections.Generic.IList<ReturnMetadata2>? ReturnMetadata { get; set; } = default!;
+
+        /// <summary>
+        /// The cross-references to return from each referenced object. Nesting deeper than `QUERY_CROSS_REFERENCE_DEPTH_LIMIT` is rejected.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("returnReferences")]
+
+        public System.Collections.Generic.IList<SearchReferenceSelector>? ReturnReferences { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Request body for the hybrid search endpoint. Combines a keyword (BM25F) search and a vector search over the same query string, fusing both rankings into one result list. Extends the shared search fields (`SearchCommon`) with the hybrid-specific `query`, `alpha`, `fusionType`, `maxVectorDistance`, `queryProperties` and `targetVector`.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchHybridRequest : SearchCommon
+    {
+        /// <summary>
+        /// The query, as a plain string. It is scored with BM25F for the keyword part of the search and vectorized server-side for the vector part. Must not be empty.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("query")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public string Query { get; set; } = default!;
+
+        /// <summary>
+        /// The weight of the vector part of the search, between 0 and 1. `0` is a pure keyword search, `1` a pure vector search. Omitted defaults to `0.75`. With `0` the query is never vectorized, so a collection without a vectorizer module is searchable.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("alpha")]
+
+        public double? Alpha { get; set; } = default!;
+
+        /// <summary>
+        /// The algorithm that fuses the keyword and vector rankings: `ranked` (reciprocal-rank fusion) or `relativeScore` (normalized-score fusion). Omitted defaults to `relativeScore`.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("fusionType")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+
+        public SearchHybridRequestFusionType? FusionType { get; set; } = default!;
+
+        /// <summary>
+        /// The maximum vector distance of a match: objects farther than this from the query vector are excluded, from the keyword ranking too.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("maxVectorDistance")]
+
+        public double? MaxVectorDistance { get; set; } = default!;
+
+        /// <summary>
+        /// The properties the keyword part of the search scores against, each optionally weighted with a `^boost` suffix (e.g. `title^2`). Omitted or empty searches every searchable text property. A property without a searchable index is rejected with 422.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("queryProperties")]
+
+        public System.Collections.Generic.IList<string>? QueryProperties { get; set; } = default!;
+
+        /// <summary>
+        /// The named vector to search. Required when the collection has more than one named vector.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("targetVector")]
+
+        public string? TargetVector { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Request body for the near-object search endpoint. The stored vector of an existing object (the source object, referenced by `id`) anchors the search and the closest objects are returned. No query is vectorized — collections without a vectorizer module are fully searchable. Extends the shared search fields (`SearchCommon`) with the near-object-specific `id`, `certainty`, `distance` and `targetVector`.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchNearObjectRequest : SearchCommon
+    {
+        /// <summary>
+        /// The UUID of the source object whose stored vector anchors the search. A structurally invalid UUID is rejected at request validation; a well-formed UUID that matches no object in the collection is rejected with 400.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public System.Guid Id { get; set; } = default!;
+
+        /// <summary>
+        /// Minimum normalized certainty of a match. Only for cosine-distance vector indexes. Mutually exclusive with `distance`.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("certainty")]
+
+        public double? Certainty { get; set; } = default!;
+
+        /// <summary>
+        /// Maximum vector distance of a match. Mutually exclusive with `certainty`.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("distance")]
+
+        public double? Distance { get; set; } = default!;
+
+        /// <summary>
+        /// The named vector to search (the source object's vector for this name anchors the search). Required when the collection has more than one named vector.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("targetVector")]
+
+        public string? TargetVector { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Request body for the near-text search endpoint. The query is vectorized server-side by the collection's vectorizer module and the closest objects are returned. Extends the shared search fields (`SearchCommon`) with the near-text-specific `query`, `certainty`, `distance` and `targetVector`.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchNearTextRequest : SearchCommon
+    {
+        /// <summary>
+        /// The concept(s) to search for, as an array of strings. Multiple entries perform a multi-concept search. A single concept is a one-element array, e.g. `["space opera"]`.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("query")]
+        [System.ComponentModel.DataAnnotations.Required]
+
+        public System.Collections.Generic.IList<string> Query { get; set; } = new System.Collections.Generic.List<string>();
+
+        /// <summary>
+        /// Minimum normalized certainty of a match. Only for cosine-distance vector indexes. Mutually exclusive with `distance`.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("certainty")]
+
+        public double? Certainty { get; set; } = default!;
+
+        /// <summary>
+        /// Maximum vector distance of a match. Mutually exclusive with `certainty`.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("distance")]
+
+        public double? Distance { get; set; } = default!;
+
+        /// <summary>
+        /// The named vector to search. Required when the collection has more than one named vector.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("targetVector")]
+
+        public string? TargetVector { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// Request body for the near-vector search endpoint. The caller supplies the query vector and the closest objects are returned. No query is vectorized — collections without a vectorizer module are fully searchable. Extends the shared search fields (`SearchCommon`) with the near-vector-specific `vector`, `certainty`, `distance` and `targetVector`.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchNearVectorRequest : SearchCommon
+    {
+        /// <summary>
+        /// The query vector, as a non-empty array of numbers that fit a 32-bit float, e.g. `[0.12, -0.3, 0.98]`. It must have the dimensionality of the vector space it is searched against, that is of the collection's (target) vector. A vector of the wrong dimensionality is rejected with 422 by uncompressed HNSW and flat indexes; a BQ- or RQ-compressed HNSW index does not detect it and yields an empty result set instead.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("vector")]
+        [System.ComponentModel.DataAnnotations.Required]
+
+        public System.Collections.Generic.IDictionary<string, object> Vector { get; set; } = default!;
+
+        /// <summary>
+        /// Minimum normalized certainty of a match. Only for cosine-distance vector indexes. Mutually exclusive with `distance`.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("certainty")]
+
+        public double? Certainty { get; set; } = default!;
+
+        /// <summary>
+        /// Maximum vector distance of a match. Mutually exclusive with `certainty`.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("distance")]
+
+        public double? Distance { get; set; } = default!;
+
+        /// <summary>
+        /// The named vector to search (the query vector is compared against the vectors stored under this name, and must match their dimensionality). Required when the collection has more than one named vector.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("targetVector")]
+
+        public string? TargetVector { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// The result of a REST search: the matched objects as `{id, properties, references, metadata}` envelopes, plus the server-side processing time. Shared by all REST search endpoints.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchResponse
+    {
+        /// <summary>
+        /// The matched objects, ordered by relevance.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [System.ComponentModel.DataAnnotations.Required]
+
+        public System.Collections.Generic.IList<SearchResultObject> Results { get; set; } = new System.Collections.Generic.List<SearchResultObject>();
+
+        /// <summary>
+        /// Server-side processing time in milliseconds.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("tookMs")]
+
+        public long TookMs { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// The retrieval metadata of a single search hit, populated according to `returnMetadata`. Every field is optional and only present when it was requested and is computable for the search.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchResultMetadata
+    {
+        /// <summary>
+        /// The vector distance between the hit and the query.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("distance")]
+
+        public float? Distance { get; set; } = default!;
+
+        /// <summary>
+        /// The normalized certainty of the hit. Only computable on cosine-distance vector indexes.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("certainty")]
+
+        public double? Certainty { get; set; } = default!;
+
+        /// <summary>
+        /// The relevance score of the hit.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("score")]
+
+        public float? Score { get; set; } = default!;
+
+        /// <summary>
+        /// An explanation of how the score was computed.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("explainScore")]
+
+        public string? ExplainScore { get; set; } = default!;
+
+        /// <summary>
+        /// The object's creation time, as epoch milliseconds.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("creationTime")]
+
+        public long? CreationTime { get; set; } = default!;
+
+        /// <summary>
+        /// The object's last-update time, as epoch milliseconds.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("lastUpdateTime")]
+
+        public long? LastUpdateTime { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// The metadata of a referenced object, populated according to the selector's `returnMetadata`. Every field is optional and only present when it was requested.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchResultReferenceMetadata
+    {
+        /// <summary>
+        /// The referenced object's UUID.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("id")]
+
+        public System.Guid? Id { get; set; } = default!;
+
+        /// <summary>
+        /// The referenced object's creation time, as epoch milliseconds.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("creationTime")]
+
+        public long? CreationTime { get; set; } = default!;
+
+        /// <summary>
+        /// The referenced object's last-update time, as epoch milliseconds.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("lastUpdateTime")]
+
+        public long? LastUpdateTime { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// One referenced object: the selected non-reference properties under `properties`, deeper cross-references under `references`, and the requested metadata under `metadata`.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchResultReference
+    {
+        /// <summary>
+        /// The collection the referenced object belongs to. Returned for multi-target references.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("collection")]
+
+        public string? Collection { get; set; } = default!;
+
+        /// <summary>
+        /// The selected non-reference properties of the referenced object; nested (object / object[]) properties are pruned to the selected nested fields. Always present — `{}` when the selector selects no properties.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("properties")]
+        [System.ComponentModel.DataAnnotations.Required]
+
+        public System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, object>> Properties { get; set; } = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IDictionary<string, object>>();
+
+        /// <summary>
+        /// The cross-references selected one hop deeper. Omitted when the selector selects none, or when the referenced object has no entry for any of them.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("references")]
+
+        public System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<SearchResultReference>>? References { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+
+        public SearchResultReferenceMetadata? Metadata { get; set; } = default!;
+
+    }
+
+    /// <summary>
+    /// A single search hit: the object's `id` (always returned), the selected non-reference properties under `properties`, the selected cross-references under `references`, and the requested retrieval metadata under `metadata`.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record SearchResultObject
+    {
+        /// <summary>
+        /// The object's UUID. Always returned.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+
+        public System.Guid Id { get; set; } = default!;
+
+        /// <summary>
+        /// The selected non-reference properties of the object; nested (object / object[]) properties are pruned to the selected nested fields. Always present — `{}` when the request selects no properties.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("properties")]
+        [System.ComponentModel.DataAnnotations.Required]
+
+        public System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, object>> Properties { get; set; } = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IDictionary<string, object>>();
+
+        /// <summary>
+        /// The selected cross-references: reference property name to the array of referenced objects. Omitted when the request selects no references, or when the hit has no entry for any of the selected references.
+        /// </summary>
+
+        [System.Text.Json.Serialization.JsonPropertyName("references")]
+
+        public System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<SearchResultReference>>? References { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+
+        public SearchResultMetadata? Metadata { get; set; } = default!;
 
     }
 
@@ -4639,7 +5546,7 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     /// <summary>
-    /// The name of the inverted index to delete from the property.
+    /// The inverted index type to upsert. `rangeable` is accepted as a write-path alias for `rangeFilters`.
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal enum IndexName
@@ -4653,6 +5560,72 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeFilters")]
         RangeFilters = 2,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeable")]
+        Rangeable = 3,
+
+    }
+
+    /// <summary>
+    /// The name of the inverted index to delete from the property. `rangeable` is accepted as a write-path alias for `rangeFilters`.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum IndexName2
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"filterable")]
+        Filterable = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"searchable")]
+        Searchable = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeFilters")]
+        RangeFilters = 2,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeable")]
+        Rangeable = 3,
+
+    }
+
+    /// <summary>
+    /// The inverted index type to rebuild. `rangeable` is accepted as a write-path alias for `rangeFilters`.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum IndexName3
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"filterable")]
+        Filterable = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"searchable")]
+        Searchable = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeFilters")]
+        RangeFilters = 2,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeable")]
+        Rangeable = 3,
+
+    }
+
+    /// <summary>
+    /// The inverted index type whose in-flight task should be cancelled. `rangeable` is accepted as a write-path alias for `rangeFilters`.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum IndexName4
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"filterable")]
+        Filterable = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"searchable")]
+        Searchable = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeFilters")]
+        RangeFilters = 2,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeable")]
+        Rangeable = 3,
 
     }
 
@@ -4818,6 +5791,26 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record Response3
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("error")]
+
+        public string? Error { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal partial record Response4
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("error")]
+
+        public string? Error { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal enum DBUserInfoDbUserType
     {
 
@@ -4826,6 +5819,39 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"db_env_user")]
         Db_env_user = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum DBUserCredentialStatus
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"exported")]
+        Exported = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"imported_key")]
+        Imported_key = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"revoked")]
+        Revoked = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum UserImportResultStatus
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"created")]
+        Created = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"reconciled")]
+        Reconciled = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"skipped_exists")]
+        Skipped_exists = 2,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"error")]
+        Error = 3,
 
     }
 
@@ -4862,10 +5888,11 @@ namespace Weaviate.Client.Rest.Dto
         public string? Tenant { get; set; } = "*";
 
         /// <summary>
-        /// A string that specifies which objects this permission applies to. Can be an exact object ID or a regex pattern. The default value `*` applies the permission to all objects.
+        /// Deprecated: Object-level permissions are not supported. This field is ignored; the permission always applies to all objects. Kept for backward compatibility.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("object")]
+        [System.Obsolete]
 
         public string? Object { get; set; } = "*";
 
@@ -4897,7 +5924,7 @@ namespace Weaviate.Client.Rest.Dto
     internal partial record Users
     {
         /// <summary>
-        /// A string that specifies which users this permission applies to. Can be an exact user name or a regex pattern. The default value `*` applies the permission to all users.
+        /// A string that specifies which users this permission applies to. Can be an exact user name or a regex pattern. The default value `*` applies the permission to all users. Must be at most 256 bytes, must not contain '/', and must be a valid regex pattern. Creating a role or adding permissions also refuses ',', '"' and control characters.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("users")]
@@ -4910,7 +5937,7 @@ namespace Weaviate.Client.Rest.Dto
     internal partial record Groups
     {
         /// <summary>
-        /// A string that specifies which groups this permission applies to. Can be an exact group name or a regex pattern. The default value `*` applies the permission to all groups.
+        /// A string that specifies which groups this permission applies to. Can be an exact group name or a regex pattern. The default value `*` applies the permission to all groups. Must be at most 256 bytes, must not contain '/', and must be a valid regex pattern. Creating a role or adding permissions also refuses ',', '"' and control characters.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("group")]
@@ -4949,7 +5976,7 @@ namespace Weaviate.Client.Rest.Dto
     internal partial record Roles
     {
         /// <summary>
-        /// A string that specifies which roles this permission applies to. Can be an exact role name or a regex pattern. The default value `*` applies the permission to all roles.
+        /// A string that specifies which roles this permission applies to. Can be an exact role name or a regex pattern. The default value `*` applies the permission to all roles. Must be at most 256 bytes, must not contain '/', and must be a valid regex pattern. Creating a role or adding permissions also refuses ',', '"' and control characters.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("role")]
@@ -4992,7 +6019,7 @@ namespace Weaviate.Client.Rest.Dto
         public string? Collection { get; set; } = "*";
 
         /// <summary>
-        /// string or regex. if a specific shard name, if left empty it will be ALL or *
+        /// string or regex. if a specific shard name, if left empty it will be ALL or *. Must be at most 256 bytes, must not contain '/', and must be a valid regex pattern. Creating a role or adding permissions also refuses ',', '"' and control characters.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("shard")]
@@ -5013,7 +6040,7 @@ namespace Weaviate.Client.Rest.Dto
         public string? Collection { get; set; } = "*";
 
         /// <summary>
-        /// A string that specifies which aliases this permission applies to. Can be an exact alias name or a regex pattern. The default value `*` applies the permission to all aliases.
+        /// A string that specifies which aliases this permission applies to. Can be an exact alias name or a regex pattern. The default value `*` applies the permission to all aliases. Must be at most 256 bytes, must not contain '/', and must be a valid regex pattern. Creating a role or adding permissions also refuses ',', '"' and control characters.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("alias")]
@@ -5026,7 +6053,7 @@ namespace Weaviate.Client.Rest.Dto
     internal partial record Namespaces
     {
         /// <summary>
-        /// A string that specifies which namespaces this permission applies to. Can be an exact namespace name or a regex pattern. The default value `*` applies the permission to all namespaces.
+        /// A string that specifies which namespaces this permission applies to. Can be an exact namespace name or a regex pattern. The default value `*` applies the permission to all namespaces. Must be at most 256 bytes, must not contain '/', and must be a valid regex pattern. Creating a role or adding permissions also refuses ',', '"' and control characters.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("namespace")]
@@ -5042,156 +6069,119 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"manage_backups")]
         Manage_backups = 0,
 
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_backups")]
+        Read_backups = 1,
+
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_cluster")]
-        Read_cluster = 1,
+        Read_cluster = 2,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"create_data")]
-        Create_data = 2,
+        Create_data = 3,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_data")]
-        Read_data = 3,
+        Read_data = 4,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"update_data")]
-        Update_data = 4,
+        Update_data = 5,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"delete_data")]
-        Delete_data = 5,
+        Delete_data = 6,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_nodes")]
-        Read_nodes = 6,
+        Read_nodes = 7,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"create_roles")]
-        Create_roles = 7,
+        Create_roles = 8,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_roles")]
-        Read_roles = 8,
+        Read_roles = 9,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"update_roles")]
-        Update_roles = 9,
+        Update_roles = 10,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"delete_roles")]
-        Delete_roles = 10,
+        Delete_roles = 11,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"create_collections")]
-        Create_collections = 11,
+        Create_collections = 12,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_collections")]
-        Read_collections = 12,
+        Read_collections = 13,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"update_collections")]
-        Update_collections = 13,
+        Update_collections = 14,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"delete_collections")]
-        Delete_collections = 14,
+        Delete_collections = 15,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"assign_and_revoke_users")]
-        Assign_and_revoke_users = 15,
+        Assign_and_revoke_users = 16,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"create_users")]
-        Create_users = 16,
+        Create_users = 17,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_users")]
-        Read_users = 17,
+        Read_users = 18,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"update_users")]
-        Update_users = 18,
+        Update_users = 19,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"delete_users")]
-        Delete_users = 19,
+        Delete_users = 20,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"create_tenants")]
-        Create_tenants = 20,
+        Create_tenants = 21,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_tenants")]
-        Read_tenants = 21,
+        Read_tenants = 22,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"update_tenants")]
-        Update_tenants = 22,
+        Update_tenants = 23,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"delete_tenants")]
-        Delete_tenants = 23,
+        Delete_tenants = 24,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"create_replicate")]
-        Create_replicate = 24,
+        Create_replicate = 25,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_replicate")]
-        Read_replicate = 25,
+        Read_replicate = 26,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"update_replicate")]
-        Update_replicate = 26,
+        Update_replicate = 27,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"delete_replicate")]
-        Delete_replicate = 27,
+        Delete_replicate = 28,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"create_aliases")]
-        Create_aliases = 28,
+        Create_aliases = 29,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_aliases")]
-        Read_aliases = 29,
+        Read_aliases = 30,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"update_aliases")]
-        Update_aliases = 30,
+        Update_aliases = 31,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"delete_aliases")]
-        Delete_aliases = 31,
+        Delete_aliases = 32,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"assign_and_revoke_groups")]
-        Assign_and_revoke_groups = 32,
+        Assign_and_revoke_groups = 33,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_groups")]
-        Read_groups = 33,
+        Read_groups = 34,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"create_mcp")]
-        Create_mcp = 34,
+        Create_mcp = 35,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read_mcp")]
-        Read_mcp = 35,
+        Read_mcp = 36,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"update_mcp")]
-        Update_mcp = 36,
+        Update_mcp = 37,
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"manage_namespaces")]
-        Manage_namespaces = 37,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record ConcatenatedWord
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("concatenatedWord")]
-
-        public string? ConcatenatedWord1 { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("singleWords")]
-
-        public System.Collections.Generic.IList<System.Collections.Generic.IDictionary<string, object>>? SingleWords { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("concatenatedVector")]
-
-        public System.Collections.Generic.IList<float>? ConcatenatedVector { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("concatenatedNearestNeighbors")]
-
-        public System.Collections.Generic.IList<Anonymous5>? ConcatenatedNearestNeighbors { get; set; } = default!;
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record IndividualWords
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("word")]
-
-        public string? Word { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("present")]
-
-        public bool? Present { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("info")]
-
-        public Info? Info { get; set; } = default!;
+        Manage_namespaces = 38,
 
     }
 
@@ -5215,8 +6205,8 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"searchable")]
         Searchable = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeable")]
-        Rangeable = 2,
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rangeFilters")]
+        RangeFilters = 2,
 
     }
 
@@ -5262,15 +6252,6 @@ namespace Weaviate.Client.Rest.Dto
 
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"blockmax")]
         Blockmax = 1,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal enum IndexUpdateSearchableAlgorithm
-    {
-
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"blockmax")]
-        Blockmax = 0,
 
     }
 
@@ -5916,7 +6897,7 @@ namespace Weaviate.Client.Rest.Dto
     internal partial record Results
     {
         /// <summary>
-        /// How many objects were matched by the filter.
+        /// How many objects matched the filter. With a positive `limit` the count stops one above `limit`: at or below `limit` this is the exact number of matching objects and every one of them was handled by this call, and above `limit` more objects match than one call deletes, so call again. With a `limit` of 0 or below this is the exact number of matching objects and the call deletes none of them.
         /// </summary>
 
         [System.Text.Json.Serialization.JsonPropertyName("matches")]
@@ -6105,8 +7086,80 @@ namespace Weaviate.Client.Rest.Dto
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"active")]
         Active = 0,
 
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"suspended")]
+        Suspended = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"resuming")]
+        Resuming = 2,
+
         [System.Text.Json.Serialization.JsonStringEnumMemberName(@"deleting")]
-        Deleting = 1,
+        Deleting = 3,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum ReturnMetadata
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"distance")]
+        Distance = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"certainty")]
+        Certainty = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"score")]
+        Score = 2,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"explainScore")]
+        ExplainScore = 3,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"creationTime")]
+        CreationTime = 4,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"lastUpdateTime")]
+        LastUpdateTime = 5,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum SearchCommonConsistencyLevel
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"ONE")]
+        ONE = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"QUORUM")]
+        QUORUM = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"ALL")]
+        ALL = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum ReturnMetadata2
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"id")]
+        Id = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"creationTime")]
+        CreationTime = 1,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"lastUpdateTime")]
+        LastUpdateTime = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal enum SearchHybridRequestFusionType
+    {
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"ranked")]
+        Ranked = 0,
+
+        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"relativeScore")]
+        RelativeScore = 1,
 
     }
 
@@ -6186,34 +7239,6 @@ namespace Weaviate.Client.Rest.Dto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record Anonymous5
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("word")]
-
-        public string? Word { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("distance")]
-
-        public float? Distance { get; set; } = default!;
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial record Info
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("vector")]
-
-        public System.Collections.Generic.IList<float>? Vector { get; set; } = default!;
-
-        [System.Text.Json.Serialization.JsonPropertyName("nearestNeighbors")]
-
-        public System.Collections.Generic.IList<Anonymous5>? NearestNeighbors { get; set; } = default!;
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
     internal enum ResultStatus
     {
 
@@ -6276,43 +7301,6 @@ namespace Weaviate.Client.Rest.Dto
         FAILED = 2,
 
     }
-
-    [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.6.1.0 (NJsonSchema v11.5.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class FileResponse : System.IDisposable
-    {
-        private System.IDisposable? _client;
-        private System.IDisposable? _response;
-
-        public int StatusCode { get; private set; }
-
-        public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
-
-        public System.IO.Stream Stream { get; private set; }
-
-        public bool IsPartial
-        {
-            get { return StatusCode == 206; }
-        }
-
-        public FileResponse(int statusCode, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.IO.Stream stream, System.IDisposable? client, System.IDisposable? response)
-        {
-            StatusCode = statusCode;
-            Headers = headers;
-            Stream = stream;
-            _client = client;
-            _response = response;
-        }
-
-        public void Dispose()
-        {
-            Stream.Dispose();
-            if (_response != null)
-                _response.Dispose();
-            if (_client != null)
-                _client.Dispose();
-        }
-    }
-
 
 
 }

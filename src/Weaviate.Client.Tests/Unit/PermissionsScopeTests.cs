@@ -390,6 +390,31 @@ public class PermissionsScopeTests
     }
 
     /// <summary>
+    /// Tests that backups read and manage round trip through the dto (read_backups: Weaviate 1.39.10+)
+    /// </summary>
+    [Fact]
+    public void Backups_ToDto_RoundTrips()
+    {
+        var scope = new Permissions.Backups("Article") { Read = true, Manage = true };
+
+        var dtos = scope.ToDto().ToList();
+
+        Assert.Equal(
+            [
+                Weaviate.Client.Rest.Dto.PermissionAction.Read_backups,
+                Weaviate.Client.Rest.Dto.PermissionAction.Manage_backups,
+            ],
+            dtos.Select(d => d.Action)
+        );
+
+        var parsed = Assert.Single(Permissions.Backups.Parse(dtos));
+        var roundTripped = Assert.IsType<Permissions.Backups>(parsed);
+        Assert.True(roundTripped.Read);
+        Assert.True(roundTripped.Manage);
+        Assert.Equal("Article", roundTripped.Resource.Collection);
+    }
+
+    /// <summary>
     /// Tests that namespaces aggregates manage namespaces only (Weaviate 1.38+)
     /// </summary>
     [Fact]
@@ -458,6 +483,7 @@ public class PermissionsScopeTests
         // List of actions covered by tests
         var testedActions = new HashSet<string>
         {
+            "Read_backups",
             "Manage_backups",
             "Manage_namespaces",
             "Read_cluster",

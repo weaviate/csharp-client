@@ -221,6 +221,10 @@ internal partial record ShardStatusGetResponse
             Name = Name ?? string.Empty,
             Status = Models.ShardStatusExtensions.ParseStatus(Status),
             VectorQueueSize = VectorQueueSize,
+            PerNodeStatus = Per_node_status?.ToDictionary(
+                kv => kv.Key,
+                kv => Models.ShardStatusExtensions.ParseStatus(kv.Value)
+            ),
         };
     }
 }

@@ -317,6 +317,14 @@ public record Backup(
 /// Files unchanged since the base backup are not copied again and are restored from the base.
 /// Requires Weaviate server version 1.37.0 or later.
 /// </param>
+/// <param name="IncludeRoles">
+/// The RBAC roles to back up; accepts <c>*</c> and <c>?</c> wildcards. All when null, none when
+/// empty. Requires Weaviate server version 1.40.0 or later.
+/// </param>
+/// <param name="IncludeUsers">
+/// The database users to back up, with the same wildcard and null rules as
+/// <paramref name="IncludeRoles"/>. Requires Weaviate server version 1.40.0 or later.
+/// </param>
 public record BackupCreateRequest(
     string Id,
     BackupBackend Backend,
@@ -324,7 +332,9 @@ public record BackupCreateRequest(
     AutoArray<string>? ExcludeCollections = null,
     int? CPUPercentage = null,
     BackupCompressionLevel? CompressionLevel = null,
-    string? IncrementalBaseBackupId = null
+    string? IncrementalBaseBackupId = null,
+    AutoArray<string>? IncludeRoles = null,
+    AutoArray<string>? IncludeUsers = null
 );
 
 /// <summary>

@@ -272,6 +272,7 @@ internal static class PermissionResourceExtensions
 
         return new Permissions.Backups(resource.Collection)
         {
+            Read = actions.Contains(Rest.Dto.PermissionAction.Read_backups),
             Manage = actions.Contains(Rest.Dto.PermissionAction.Manage_backups),
         };
     }

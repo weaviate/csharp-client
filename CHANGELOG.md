@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`read_backups` RBAC action** ([#377](https://github.com/weaviate/weaviate-csharp-client/issues/377)): `Permissions.Backups.Read`. Setting it requires Weaviate ≥ 1.39.10; listing roles that carry it no longer fails.
+- **Backup role and user selection**: `BackupCreateRequest.IncludeRoles` and `IncludeUsers`, with `*` and `?` wildcards. Null backs up all, empty backs up none. Requires Weaviate ≥ 1.40.0.
+- **Per-replica shard status**: `ShardInfo.PerNodeStatus`, null on servers before 1.40.
+
+### Fixed
+
+- **Shard statuses from newer servers threw**: `ShardStatus` gains `Loading`, `LazyLoading`, `Shutdown`, `Unavailable` and `Recovering`. An unrecognized status now maps to `Unknown`.
+
+### Changed
+
+- REST DTOs regenerated from the Weaviate v1.40.2 OpenAPI spec.
+- **`BackupCreateRequest` gained two trailing optional parameters**: its primary constructor and `Deconstruct` went from seven parameters to nine, so seven-element positional deconstruction no longer compiles and callers built against 1.2.x must recompile.
+
 ---
 
 ## [1.2.0] — 2026-08-21

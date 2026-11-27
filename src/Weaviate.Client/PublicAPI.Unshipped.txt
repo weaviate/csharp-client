@@ -21,6 +21,14 @@ virtual Weaviate.Client.Models.GenerativeConfig.DigitalOcean.Equals(Weaviate.Cli
 virtual Weaviate.Client.Models.GenerativeConfig.DigitalOcean.PrintMembers(System.Text.StringBuilder! builder) -> bool
 Weaviate.Client.GenerativeConfigFactory.DigitalOcean(string? model = null, double? temperature = null, int? maxTokens = null, double? frequencyPenalty = null, double? presencePenalty = null, double? topP = null, string? baseURL = null, string![]? stop = null) -> Weaviate.Client.Models.IGenerativeConfig!
 Weaviate.Client.GenerativeProviderFactory.DigitalOcean(string? baseUrl = null, string? model = null, double? temperature = null, long? maxTokens = null, double? frequencyPenalty = null, double? presencePenalty = null, double? topP = null, System.Collections.Generic.List<string!>? stop = null) -> Weaviate.Client.Models.Generative.Providers.DigitalOcean!
+*REMOVED*Weaviate.Client.Models.BackupCreateRequest.BackupCreateRequest(string! Id, Weaviate.Client.Models.BackupBackend! Backend, Weaviate.Client.Internal.AutoArray<string!>? IncludeCollections = null, Weaviate.Client.Internal.AutoArray<string!>? ExcludeCollections = null, int? CPUPercentage = null, Weaviate.Client.Models.BackupCompressionLevel? CompressionLevel = null, string? IncrementalBaseBackupId = null) -> void
+*REMOVED*Weaviate.Client.Models.BackupCreateRequest.Deconstruct(out string! Id, out Weaviate.Client.Models.BackupBackend! Backend, out Weaviate.Client.Internal.AutoArray<string!>? IncludeCollections, out Weaviate.Client.Internal.AutoArray<string!>? ExcludeCollections, out int? CPUPercentage, out Weaviate.Client.Models.BackupCompressionLevel? CompressionLevel, out string? IncrementalBaseBackupId) -> void
+Weaviate.Client.Models.BackupCreateRequest.BackupCreateRequest(string! Id, Weaviate.Client.Models.BackupBackend! Backend, Weaviate.Client.Internal.AutoArray<string!>? IncludeCollections = null, Weaviate.Client.Internal.AutoArray<string!>? ExcludeCollections = null, int? CPUPercentage = null, Weaviate.Client.Models.BackupCompressionLevel? CompressionLevel = null, string? IncrementalBaseBackupId = null, Weaviate.Client.Internal.AutoArray<string!>? IncludeRoles = null, Weaviate.Client.Internal.AutoArray<string!>? IncludeUsers = null) -> void
+Weaviate.Client.Models.BackupCreateRequest.Deconstruct(out string! Id, out Weaviate.Client.Models.BackupBackend! Backend, out Weaviate.Client.Internal.AutoArray<string!>? IncludeCollections, out Weaviate.Client.Internal.AutoArray<string!>? ExcludeCollections, out int? CPUPercentage, out Weaviate.Client.Models.BackupCompressionLevel? CompressionLevel, out string? IncrementalBaseBackupId, out Weaviate.Client.Internal.AutoArray<string!>? IncludeRoles, out Weaviate.Client.Internal.AutoArray<string!>? IncludeUsers) -> void
+Weaviate.Client.Models.BackupCreateRequest.IncludeRoles.get -> Weaviate.Client.Internal.AutoArray<string!>?
+Weaviate.Client.Models.BackupCreateRequest.IncludeRoles.init -> void
+Weaviate.Client.Models.BackupCreateRequest.IncludeUsers.get -> Weaviate.Client.Internal.AutoArray<string!>?
+Weaviate.Client.Models.BackupCreateRequest.IncludeUsers.init -> void
 Weaviate.Client.Models.Generative.Providers.DigitalOcean
 Weaviate.Client.Models.Generative.Providers.DigitalOcean.BaseUrl.get -> string?
 Weaviate.Client.Models.Generative.Providers.DigitalOcean.BaseUrl.set -> void
@@ -127,6 +135,16 @@ Weaviate.Client.Models.GenerativeConfig.Meta.Temperature.set -> void
 Weaviate.Client.Models.GenerativeConfig.Meta.TopP.get -> double?
 Weaviate.Client.Models.GenerativeConfig.Meta.TopP.set -> void
 Weaviate.Client.Models.GenerativeConfig.Meta.Type.get -> string!
+Weaviate.Client.Models.Permissions.Backups.Read.get -> bool
+Weaviate.Client.Models.Permissions.Backups.Read.set -> void
+Weaviate.Client.Models.ShardInfo.PerNodeStatus.get -> System.Collections.Generic.IDictionary<string!, Weaviate.Client.Models.ShardStatus>?
+Weaviate.Client.Models.ShardInfo.PerNodeStatus.set -> void
+Weaviate.Client.Models.ShardStatus.LazyLoading = 4 -> Weaviate.Client.Models.ShardStatus
+Weaviate.Client.Models.ShardStatus.Loading = 3 -> Weaviate.Client.Models.ShardStatus
+Weaviate.Client.Models.ShardStatus.Recovering = 7 -> Weaviate.Client.Models.ShardStatus
+Weaviate.Client.Models.ShardStatus.Shutdown = 5 -> Weaviate.Client.Models.ShardStatus
+Weaviate.Client.Models.ShardStatus.Unavailable = 6 -> Weaviate.Client.Models.ShardStatus
+Weaviate.Client.Models.ShardStatus.Unknown = 8 -> Weaviate.Client.Models.ShardStatus
 Weaviate.Client.Models.VectorIndex.Quantizers.RQ.Centering.get -> bool
 Weaviate.Client.Models.VectorIndex.Quantizers.RQ.Centering.set -> void
 Weaviate.Client.Models.VectorIndex.Quantizers.RQ.TrainingLimit.get -> int

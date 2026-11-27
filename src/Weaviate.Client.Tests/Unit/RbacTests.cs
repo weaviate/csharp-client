@@ -112,4 +112,23 @@ public class RbacTests
             r => r.Name == "reader" && r.Permissions.Any(p => p is Permissions.Roles { Read: true })
         );
     }
+
+    /// <summary>
+    /// Sending read_backups to a server before 1.39.10 is refused client-side.
+    /// </summary>
+    [Fact]
+    public async Task RolesClient_Create_WithBackupsRead_ThrowsOnOlderServer()
+    {
+        var (client, _) = MockWeaviateClient.CreateWithMockHandler(serverVersion: "1.39.0");
+
+        var exception = await Assert.ThrowsAsync<WeaviateVersionMismatchException>(() =>
+            client.Roles.Create(
+                "backup-reader",
+                [new Permissions.Backups("*") { Read = true }],
+                TestContext.Current.CancellationToken
+            )
+        );
+
+        Assert.Equal(new Version(1, 39, 10), exception.RequiredVersion);
+    }
 }

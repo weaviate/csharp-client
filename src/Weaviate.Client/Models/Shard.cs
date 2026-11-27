@@ -24,6 +24,41 @@ public enum ShardStatus
     /// </summary>
     [EnumMember(Value = "INDEXING")]
     Indexing,
+
+    /// <summary>
+    /// The shard is loading.
+    /// </summary>
+    [EnumMember(Value = "LOADING")]
+    Loading,
+
+    /// <summary>
+    /// The shard is registered for lazy loading and not loaded yet.
+    /// </summary>
+    [EnumMember(Value = "LAZY_LOADING")]
+    LazyLoading,
+
+    /// <summary>
+    /// The shard is shutting down.
+    /// </summary>
+    [EnumMember(Value = "SHUTDOWN")]
+    Shutdown,
+
+    /// <summary>
+    /// The shard is unavailable.
+    /// </summary>
+    [EnumMember(Value = "UNAVAILABLE")]
+    Unavailable,
+
+    /// <summary>
+    /// The shard is recovering.
+    /// </summary>
+    [EnumMember(Value = "RECOVERING")]
+    Recovering,
+
+    /// <summary>
+    /// A status this client version does not recognize.
+    /// </summary>
+    Unknown,
 }
 
 /// <summary>
@@ -45,6 +80,12 @@ public record ShardInfo
     /// Gets or sets the size of the vector queue for the shard.
     /// </summary>
     public int? VectorQueueSize { get; set; }
+
+    /// <summary>
+    /// Gets or sets the status of the shard on each of its replicas, keyed by node name.
+    /// Null on servers before 1.40.
+    /// </summary>
+    public IDictionary<string, ShardStatus>? PerNodeStatus { get; set; }
 }
 
 /// <summary>
@@ -62,7 +103,8 @@ internal static class ShardStatusExtensions
     /// Parses a string value to a ShardStatus enum.
     /// </summary>
     internal static ShardStatus ParseStatus(string? value) =>
-        string.IsNullOrEmpty(value)
-            ? ShardStatus.Ready
-            : WeaviateExtensions.FromEnumMemberString<ShardStatus>(value);
+        string.IsNullOrEmpty(value) ? ShardStatus.Ready
+        : value.IsValidEnumMemberString<ShardStatus>()
+            ? WeaviateExtensions.FromEnumMemberString<ShardStatus>(value)
+        : ShardStatus.Unknown;
 }

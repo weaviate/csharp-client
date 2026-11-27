@@ -56,7 +56,18 @@ public class BackupClient
         CancellationToken cancellationToken = default
     )
     {
-        await EnsureIncrementalBackupSupported(request);
+        await EnsureFieldSupported(
+            !string.IsNullOrEmpty(request.IncrementalBaseBackupId),
+            nameof(BackupCreateRequest.IncrementalBaseBackupId),
+            IncrementalBackupMinimumVersion
+        );
+        await EnsureFieldSupported(
+            request.IncludeRoles is not null || request.IncludeUsers is not null,
+            request.IncludeRoles is not null
+                ? nameof(BackupCreateRequest.IncludeRoles)
+                : nameof(BackupCreateRequest.IncludeUsers),
+            RbacSelectionMinimumVersion
+        );
 
         var restRequest = BuildBackupCreateRequest(request);
         var response = await _client.RestClient.BackupCreate(
@@ -92,36 +103,23 @@ public class BackupClient
     /// is older (1.34.18). Gate on the documented floor, as the python client does.
     /// </summary>
     private static readonly Version IncrementalBackupMinimumVersion = new(1, 37, 0);
+    private static readonly Version RbacSelectionMinimumVersion = new(1, 40, 0);
 
     /// <summary>
-    /// Throws <see cref="WeaviateVersionMismatchException"/> when the request asks for an
-    /// incremental backup and the connected server predates support for it. Gated on the field
-    /// rather than on the whole operation, because plain backups still work on older servers.
+    /// Throws <see cref="WeaviateVersionMismatchException"/> when a request field is set and the
+    /// connected server predates it. Gated on the field rather than on the whole operation,
+    /// because plain backups still work on older servers. An unknown server version passes.
     /// </summary>
-    /// <param name="request">The request</param>
-    /// <exception cref="WeaviateVersionMismatchException">
-    /// Thrown when <see cref="BackupCreateRequest.IncrementalBaseBackupId"/> is set and the
-    /// connected server version is below 1.37.0.
-    /// </exception>
-    private async Task EnsureIncrementalBackupSupported(BackupCreateRequest request)
+    private async Task EnsureFieldSupported(bool isSet, string field, Version minimumVersion)
     {
-        if (string.IsNullOrEmpty(request.IncrementalBaseBackupId))
+        if (!isSet)
             return;
 
         await _client.EnsureInitializedAsync();
 
         var serverVersion = _client.WeaviateVersion;
-        if (serverVersion is null)
-            return;
-
-        if (serverVersion < IncrementalBackupMinimumVersion)
-        {
-            throw new WeaviateVersionMismatchException(
-                nameof(BackupCreateRequest.IncrementalBaseBackupId),
-                IncrementalBackupMinimumVersion,
-                serverVersion
-            );
-        }
+        if (serverVersion is not null && serverVersion < minimumVersion)
+            throw new WeaviateVersionMismatchException(field, minimumVersion, serverVersion);
     }
 
     /// <summary>
@@ -141,6 +139,8 @@ public class BackupClient
             Include = request.IncludeCollections?.ToList(),
             Exclude = request.ExcludeCollections?.ToList(),
             Incremental_base_backup_id = request.IncrementalBaseBackupId,
+            IncludeRoles = request.IncludeRoles?.ToList(),
+            IncludeUsers = request.IncludeUsers?.ToList(),
             Config = new Rest.Dto.BackupConfig
             {
                 Bucket = bucket,
